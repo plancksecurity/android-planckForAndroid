@@ -1,12 +1,6 @@
 package com.fsck.k9.activity;
 
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Pattern;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -38,10 +32,10 @@ import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
 import com.fsck.k9.FontSizes;
@@ -64,6 +58,7 @@ import com.fsck.k9.activity.compose.RecipientPresenter;
 import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
 import com.fsck.k9.activity.compose.SaveMessageTask;
 import com.fsck.k9.activity.misc.Attachment;
+import com.fsck.k9.com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.fragment.ProgressDialogFragment;
@@ -92,6 +87,12 @@ import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 
 @SuppressWarnings("deprecation")
@@ -245,6 +246,11 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private String mReferences;
     private String mInReplyTo;
 
+    private PEpProvider mPEpProvider;
+    private LinearLayout mPEpPanel;
+    private ImageView mPEpIndicator;
+    private TextView mPEpIndicatorText;
+
     private boolean mSourceProcessed = false;
 
     /**
@@ -375,6 +381,31 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
         mAttachments = (LinearLayout)findViewById(R.id.attachments);
 
+        mPEpPanel = (LinearLayout) findViewById(R.id.layout_pEp);
+        mPEpIndicator = (ImageView) findViewById(R.id.pEp_indicator);
+        mPEpIndicatorText = (TextView) findViewById(R.id.pEp_indicator_text);
+
+//        if(isPEpEnabled()) { // wire our stuff...
+//            View.OnFocusChangeListener pEpChangeTracker = new View.OnFocusChangeListener() {
+//                @Override
+//                public void onFocusChange(View v, boolean hasFocus) {
+//                    if (!hasFocus) {
+//                        // TODO trigger indicator
+//                        // CHECKME: I'd normally suck out all addresses, even those unchanged. How complex is a pEp-test for a single address?
+//                    }
+//                }
+//            };
+//
+//            // those trigger indicator changes
+//            mToView.setOnFocusChangeListener(pEpChangeTracker);
+//            mCcView.setOnFocusChangeListener(pEpChangeTracker);
+//            mBccView.setOnFocusChangeListener(pEpChangeTracker);
+//
+//            mPEpPanel.setVisibility(View.VISIBLE);
+//        } else {
+//            mPEpPanel.setVisibility(View.GONE);
+//        }
+
         TextWatcher draftNeedsChangingTextWatcher = new SimpleTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -504,7 +535,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         mFontSizes.setViewTextSize(mSubjectView, fontSize);
         mFontSizes.setViewTextSize(mMessageContentView, fontSize);
         mFontSizes.setViewTextSize(mSignatureView, fontSize);
-
+// TODO: pEp font sizes and skin stuff
 
         updateMessageFormat();
 
