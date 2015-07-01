@@ -52,6 +52,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -73,6 +74,7 @@ import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
 import com.fsck.k9.activity.loader.AttachmentContentLoader;
 import com.fsck.k9.activity.loader.AttachmentInfoLoader;
 import com.fsck.k9.activity.misc.Attachment;
+import com.fsck.k9.com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.fragment.ProgressDialogFragment;
@@ -298,6 +300,11 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
     private String mReferences;
     private String mInReplyTo;
+
+    private PEpProvider mPEpProvider;
+    private LinearLayout mPEpPanel;
+    private ImageView mPEpIndicator;
+    private TextView mPEpIndicatorText;
 
     private boolean mSourceProcessed = false;
 
@@ -562,6 +569,31 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             }
         });
 
+        mPEpPanel = (LinearLayout) findViewById(R.id.layout_pEp);
+        mPEpIndicator = (ImageView) findViewById(R.id.pEp_indicator);
+        mPEpIndicatorText = (TextView) findViewById(R.id.pEp_indicator_text);
+
+//        if(isPEpEnabled()) { // wire our stuff...
+//            View.OnFocusChangeListener pEpChangeTracker = new View.OnFocusChangeListener() {
+//                @Override
+//                public void onFocusChange(View v, boolean hasFocus) {
+//                    if (!hasFocus) {
+//                        // TODO trigger indicator
+//                        // CHECKME: I'd normally suck out all addresses, even those unchanged. How complex is a pEp-test for a single address?
+//                    }
+//                }
+//            };
+//
+//            // those trigger indicator changes
+//            mToView.setOnFocusChangeListener(pEpChangeTracker);
+//            mCcView.setOnFocusChangeListener(pEpChangeTracker);
+//            mBccView.setOnFocusChangeListener(pEpChangeTracker);
+//
+//            mPEpPanel.setVisibility(View.VISIBLE);
+//        } else {
+//            mPEpPanel.setVisibility(View.GONE);
+//        }
+
         TextWatcher draftNeedsChangingTextWatcher = new SimpleTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -702,7 +734,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         mFontSizes.setViewTextSize(mMessageContentView, fontSize);
         mFontSizes.setViewTextSize(mQuotedText, fontSize);
         mFontSizes.setViewTextSize(mSignatureView, fontSize);
-
+// TODO: pEp font sizes and skin stuff
 
         updateMessageFormat();
 
