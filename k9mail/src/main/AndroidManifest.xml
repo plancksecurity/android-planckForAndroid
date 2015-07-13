@@ -423,5 +423,9 @@
 
         </provider>
 
+        <activity
+            android:name=".activity.PEpStatus"
+            android:label="@string/title_activity_pep_status" >
+        </activity>
     </application>
 </manifest>
