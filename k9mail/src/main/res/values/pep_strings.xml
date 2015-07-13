@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pep_action">pEp state</string>
+    <string-array name="pep_states">
+        <item>pEpRatingUndefined</item>
+        <item>pEpRatingCannotDecrypt</item>
+        <item>pEpRatingHaveNoKey</item>
+        <item>pEpRatingUnencrypted</item>
+        <item>pEpRatingUnreliable</item>
+        <item>pEpRatingReliable</item>
+        <item>pEpRatingTrusted</item>
+        <item>pEpRatingTrustedAndAnonymized</item>
+        <item>pEpRatingFullyAnonymous</item>
+        <item>pEpRatingUnderAttack</item>
+        <item>pEpRatingB0rken</item>
+    </string-array>
+
+    <array name="pep_color">
+        <item>#000000<!--pEpRatingUndefined--></item>
+        <item>#DCDCDC<!--pEpRatingCannotDecrypt--></item>
+        <item>#DCDCDC<!--pEpRatingHaveNoKey--></item>
+        <item>#DCDCDC<!--pEpRatingUnencrypted--></item>
+        <item>#DCDCDC<!--pEpRatingUnreliable--></item>
+        <item>#FFFF00<!--pEpRatingReliable--></item>
+        <item>#00FF00 <!--pEpRatingTrusted--></item>
+        <item>#00FF00 <!--pEpRatingTrustedAndAnonymized--></item>
+        <item>#000000<!--pEpRatingFullyAnonymous--></item>
+        <item>#FF0000<!--pEpRatingUnderAttack--></item>
+        <item>#DCDCDC<!--pEpRatingB0rken--></item>
+    </array>
+
+    <string-array name="pep_title">
+        <item><!--pEpRatingUndefined--></item>
+        <item>p≡p – Cannot decrypt message.<!--pEpRatingCannotDecrypt--></item>
+        <item>p≡p – No private key.<!--pEpRatingHaveNoKey--></item>
+        <item>p≡p – This communication is unencrypted.<!--pEpRatingUnencrypted--></item>
+        <item>p≡p – This communication is unreliable.<!--pEpRatingUnreliable--></item>
+        <item>p≡p – This communication could be secure.<!--pEpRatingReliable--></item>
+        <item>p≡p – This communication is private and authentic.<!--pEpRatingTrusted--></item>
+        <item>p≡p – This communication is private and authentic.<!--pEpRatingTrustedAndAnonymized--></item>
+        <item>p≡p – This communication is private and authentic and anonymous.<!--pEpRatingFullyAnonymous--></item>
+        <item>p≡p – This communication is forged!<!--pEpRatingUnderAttack--></item>
+        <item>p≡p – Internal problem.<!--pEpRatingB0rken--></item>
+    </string-array>
+
+    <array name="pep_icon">
+        <item>@drawable/ic_action_pep_indicator<!--pEpRatingUndefined--></item>
+        <item>@drawable/ic_action_pep_indicator<!--pEpRatingCannotDecrypt--></item>
+        <item>@drawable/ic_action_pep_indicator<!--pEpRatingHaveNoKey--></item>
+        <item>@drawable/ic_action_pep_indicator<!--pEpRatingUnencrypted--></item>
+        <item>@drawable/ic_action_pep_indicator<!--pEpRatingUnreliable--></item>
+        <item>@drawable/ic_action_pep_indicator<!--pEpRatingReliable--></item>
+        <item>@drawable/ic_action_pep_indicator<!--pEpRatingTrusted--></item>
+        <item>@drawable/ic_action_pep_indicator<!--pEpRatingTrustedAndAnonymized--></item>
+        <item>@drawable/ic_action_pep_indicator<!--pEpRatingFullyAnonymous--></item>
+        <item>@drawable/ic_action_pep_indicator<!--pEpRatingUnderAttack--></item>
+        <item>@drawable/ic_action_pep_indicator<!--pEpRatingB0rken--></item>
+    </array>
+</resources>

@@ -423,8 +423,11 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/allowed_file_provider_paths" />
-
         </provider>
 
+        <activity
+            android:name=".activity.PEpStatus"
+            android:label="@string/title_activity_pep_status" >
+        </activity>
     </application>
 </manifest>
