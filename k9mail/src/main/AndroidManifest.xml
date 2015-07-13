@@ -396,11 +396,11 @@
             android:grantUriPermissions="true"
             android:multiprocess="true"
             android:readPermission="${applicationId}.permission.READ_ATTACHMENT">
-            
+
             <meta-data
                 android:name="de.cketti.safecontentresolver.ALLOW_INTERNAL_ACCESS"
                 android:value="true" />
-        
+
         </provider>
 
         <provider
@@ -439,5 +439,9 @@
                 android:resource="@xml/temp_file_provider_paths" />
         </provider>
 
+        <activity
+            android:name=".activity.PEpStatus"
+            android:label="@string/title_activity_pep_status" >
+        </activity>
     </application>
 </manifest>

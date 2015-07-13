@@ -20,6 +20,14 @@
         android:title="@string/add_from_contacts"
     />
     <item
+        android:id="@+id/pEp_indicator"
+        android:alphabeticShortcut="s"
+        android:title="@string/pep_action"
+        android:icon="@drawable/ic_action_pep_indicator"
+        android:showAsAction="always"
+        />
+
+    <item
         android:id="@+id/save"
         android:alphabeticShortcut="d"
         android:title="@string/save_draft_action"

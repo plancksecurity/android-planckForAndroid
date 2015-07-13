@@ -19,6 +19,8 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
 import android.content.pm.ActivityInfo;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -40,7 +42,6 @@ import android.view.View.OnFocusChangeListener;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,7 +69,9 @@ import com.fsck.k9.activity.compose.RecipientPresenter;
 import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
 import com.fsck.k9.activity.compose.SaveMessageTask;
 import com.fsck.k9.activity.misc.Attachment;
-import com.fsck.k9.com.fsck.k9.pEp.PEpProvider;
+import org.pEp.jniadapter.Color;
+import com.fsck.k9.pEp.DummyPepProviderImpl;
+import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.fragment.ProgressDialogFragment;
@@ -94,6 +97,8 @@ import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.message.QuotedTextMode;
 import com.fsck.k9.message.SimpleMessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
+import com.fsck.k9.provider.AttachmentProvider;
+import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
@@ -255,11 +260,11 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private String mReferences;
     private String mInReplyTo;
 
+    // pEp stuff
     private PEpProvider mPEpProvider;
-    private LinearLayout mPEpPanel;
-    private ImageView mPEpIndicator;
-    private TextView mPEpIndicatorText;
-
+    private MenuItem mPEpIndicator;
+    private Color mPEpColor = Color.pEpRatingUndefined;
+    private PePUIArtefactCache mPEpArtefactCache = null;
     private boolean mSourceProcessed = false;
 
     /**
@@ -404,21 +409,17 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 //                @Override
 //                public void onFocusChange(View v, boolean hasFocus) {
 //                    if (!hasFocus) {
-//                        // TODO trigger indicator
-//                        // CHECKME: I'd normally suck out all addresses, even those unchanged. How complex is a pEp-test for a single address?
+//                        handlePEpState();
 //                    }
 //                }
 //            };
 //
-//            // those trigger indicator changes
-//            mToView.setOnFocusChangeListener(pEpChangeTracker);
-//            mCcView.setOnFocusChangeListener(pEpChangeTracker);
-//            mBccView.setOnFocusChangeListener(pEpChangeTracker);
+//        handlePEpState();       // fire once to get everything set up.
 //
-//            mPEpPanel.setVisibility(View.VISIBLE);
-//        } else {
-//            mPEpPanel.setVisibility(View.GONE);
-//        }
+//        // those trigger indicator changes
+//        mToView.setOnFocusChangeListener(pEpChangeTracker);
+//        mCcView.setOnFocusChangeListener(pEpChangeTracker);
+//        mBccView.setOnFocusChangeListener(pEpChangeTracker);
 
         TextWatcher draftNeedsChangingTextWatcher = new SimpleTextWatcher() {
             @Override
@@ -708,6 +709,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         recipientPresenter.onSaveInstanceState(outState);
         quotedMessagePresenter.onSaveInstanceState(outState);
         attachmentPresenter.onSaveInstanceState(outState);
+        // TODO: trigger pep?
+
     }
 
     @Override
@@ -741,6 +744,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         updateFrom();
 
         updateMessageFormat();
+
+        // tODO: trigger pep
     }
 
     private void setTitle() {
@@ -1044,6 +1049,10 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             case R.id.add_attachment:
                 attachmentPresenter.onClickAddAttachment(recipientPresenter);
                 break;
+            case R.id.pEp_indicator:
+//                TODO> Review after rebase
+//                onPEpIndicator();
+                break;
             case R.id.read_receipt:
                 onReadReceipt();
                 break;
@@ -1052,6 +1061,33 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
         return true;
     }
+
+//  TODO> Review after rebase
+//    private void handlePEpState(boolean... withToast) {
+//        boolean reallyWithToast = true;
+//        if(withToast.length>0) reallyWithToast = withToast[0];
+//        updatePePState();
+//        if(mPEpIndicator!=null) {
+//            Drawable icon = mPEpArtefactCache.getIcon(mPEpColor);
+//            icon.setTint(mPEpArtefactCache.getColor(mPEpColor));        // FIXME: do it the old way(tm)
+//
+//            String msg = mPEpArtefactCache.getTitle(mPEpColor);
+//            if(reallyWithToast && !"".equals(msg)) Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+//        }
+//    }
+//
+//    private void updatePePState() {
+//        Address[] adresses = getRecipientAddresses();
+//        mPEpColor = mPEpProvider.getPrivacyState(adresses);
+//    }
+//
+//    private void onPEpIndicator() {
+//        // update color, just to be sure...
+//        handlePEpState(false);
+//
+//        mIgnoreOnPause = true;  // do *not* save state
+//        PEpStatus.actionShowStatus(this, mPEpColor);
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -1062,6 +1098,9 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         if (!mAccount.hasDraftsFolder()) {
             menu.findItem(R.id.save).setEnabled(false);
         }
+
+        mPEpIndicator = (MenuItem) menu.findItem(R.id.pEp_indicator);
+        // TODO: initialize state (or better in dlg ressource?)
 
         return true;
     }
