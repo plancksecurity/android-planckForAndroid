@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.fsck.k9.Account;
-import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 
 import org.pEp.jniadapter.Color;
@@ -28,7 +26,7 @@ public class PEpStatus extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pep_status);
+        setContentView(R.layout.pep_status);
     }
 
     @Override

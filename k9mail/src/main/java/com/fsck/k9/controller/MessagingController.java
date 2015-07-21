@@ -78,6 +78,8 @@ import com.fsck.k9.mailstore.LocalStore.PendingCommand;
 import com.fsck.k9.mail.store.pop3.Pop3Store;
 import com.fsck.k9.mailstore.UnavailableStorageException;
 import com.fsck.k9.notification.NotificationController;
+import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
 import com.fsck.k9.search.ConditionsTreeNode;
@@ -2959,11 +2961,15 @@ public class MessagingController implements Runnable {
                             final Message message,
                             MessagingListener listener) {
         try {
+            PEpProvider mPEpProvider = PEpProviderFactory.createProvider();
+            Message encryptedMessage = mPEpProvider.encryptMessage((MimeMessage)message);
+            // TODO: pEp: fiddle encryped/unencrypted message storage
+            // TODO: pEp: mail splitting for Bcc and different confidencies in target addresses
             LocalStore localStore = account.getLocalStore();
             LocalFolder localFolder = localStore.getFolder(account.getOutboxFolderName());
             localFolder.open(Folder.OPEN_MODE_RW);
-            localFolder.appendMessages(Collections.singletonList(message));
-            Message localMessage = localFolder.getMessage(message.getUid());
+            localFolder.appendMessages(Collections.singletonList(encryptedMessage));
+            Message localMessage = localFolder.getMessage(encryptedMessage.getUid());
             localMessage.setFlag(Flag.X_DOWNLOADED_FULL, true);
             localFolder.close();
             sendPendingMessages(account, listener);
@@ -3126,6 +3132,8 @@ public class MessagingController implements Runnable {
                         message.setFlag(Flag.X_SEND_IN_PROGRESS, true);
                         if (K9.DEBUG)
                             Log.i(K9.LOG_TAG, "Sending message with UID " + message.getUid());
+
+                        // latest possibility to fiddle enc/unenc stuff
                         transport.sendMessage(message);
                         message.setFlag(Flag.X_SEND_IN_PROGRESS, false);
                         message.setFlag(Flag.SEEN, true);
