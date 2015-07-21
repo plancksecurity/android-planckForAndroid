@@ -1,6 +1,8 @@
 package com.fsck.k9.pEp;
 
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.mail.internet.MimeMessage;
+import com.fsck.k9.message.MessageBuilder;
 
 import org.pEp.jniadapter.Color;
 
@@ -13,11 +15,26 @@ public interface PEpProvider {
      * calls the jni adapter to obtain the info. Accourding to fdik, this check returns fast (all
      * time consuming stuff (network i/o etc.) is done asynchronousely.
      *
-     * @param adresses array of addresses to be checked. We do not distinguish between To, Cc and
-     *                 Bcc
+     * @param toAdresses to adresses
+     * @param ccAdresses cc adresses
+     * @param bccAdresses bcc adresses
      * @return the privacy level of a mail sent to the set of recipients
      */
 
-    // FIXME: differentiatze between to, cc and bcc. Do I need from? Yes, I think...
-    Color getPrivacyState(Address[] adresses);
+    //TODO: do I nee from: here, too? I fear so :-)
+
+    public Color getPrivacyState(Address[] toAdresses, Address[] ccAdresses, Address[] bccAdresses);
+
+    /**
+     * Encrypts one k9 message. This one hides all the black magic associated with the real
+     * pEp library interaction.
+     *
+     * FIXME: where do I handle Cc:/Bcc: split?
+     * FIXME: where do I handle split for different privacy levels? Is this really necessary?
+     *
+     * @param source the (fully qualified) message to be encrypted.
+     * @return the encrypted message
+     */
+
+    public MimeMessage encryptMessage(MimeMessage source);
 }

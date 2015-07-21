@@ -97,6 +97,7 @@ import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.message.QuotedTextMode;
 import com.fsck.k9.message.SimpleMessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
+import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.provider.AttachmentProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.ui.EolConvertingEditText;
@@ -264,7 +265,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private PEpProvider mPEpProvider;
     private MenuItem mPEpIndicator;
     private Color mPEpColor = Color.pEpRatingUndefined;
-    private PePUIArtefactCache mPEpArtefactCache = null;
     private boolean mSourceProcessed = false;
 
     /**
@@ -413,8 +413,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 //                    }
 //                }
 //            };
-//
-//        handlePEpState();       // fire once to get everything set up.
 //
 //        // those trigger indicator changes
 //        mToView.setOnFocusChangeListener(pEpChangeTracker);
@@ -1062,23 +1060,31 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         return true;
     }
 
-//  TODO> Review after rebase
+    //  TODO> Review after rebase
 //    private void handlePEpState(boolean... withToast) {
 //        boolean reallyWithToast = true;
 //        if(withToast.length>0) reallyWithToast = withToast[0];
 //        updatePePState();
 //        if(mPEpIndicator!=null) {
-//            Drawable icon = mPEpArtefactCache.getIcon(mPEpColor);
-//            icon.setTint(mPEpArtefactCache.getColor(mPEpColor));        // FIXME: do it the old way(tm)
-//
-//            String msg = mPEpArtefactCache.getTitle(mPEpColor);
+//            mPEpIndicator.setIcon(makePePStatusIcon());
+//            String msg = PePUIArtefactCache.getInstance(getResources()).getTitle(mPEpColor);
 //            if(reallyWithToast && !"".equals(msg)) Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
 //        }
 //    }
 //
+//    private Drawable makePePStatusIcon() {
+//        PePUIArtefactCache c = PePUIArtefactCache.getInstance(getResources());
+//        Drawable statusIcon = c.getIcon(mPEpColor);
+//        statusIcon.setTint(c.getColor(mPEpColor));        // FIXME: pEp do it the old way(tm)
+//        return statusIcon;
+//    }
+//
 //    private void updatePePState() {
-//        Address[] adresses = getRecipientAddresses();
-//        mPEpColor = mPEpProvider.getPrivacyState(adresses);
+//        Address[] toAdresses = Address.parseUnencoded(mToView.getText().toString().trim());
+//        Address[] ccAdresses = Address.parseUnencoded(mToView.getText().toString().trim());
+//        Address[] bccAdresses = Address.parseUnencoded(mToView.getText().toString().trim());
+//
+//        mPEpColor = mPEpProvider.getPrivacyState(toAdresses, ccAdresses, bccAdresses);
 //    }
 //
 //    private void onPEpIndicator() {
@@ -1099,8 +1105,10 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             menu.findItem(R.id.save).setEnabled(false);
         }
 
+        // grab our icon and set it to the wanted color.
         mPEpIndicator = (MenuItem) menu.findItem(R.id.pEp_indicator);
-        // TODO: initialize state (or better in dlg ressource?)
+//  TODO> Review after rebase
+//        handlePEpState(false);       // fire once to get everything set up.
 
         return true;
     }

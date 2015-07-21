@@ -1,5 +1,6 @@
 package com.fsck.k9.pEp;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -19,8 +20,16 @@ public class PePUIArtefactCache
     private String[] title;
     private int[] color;
     private Drawable[] icon;
+    private static PePUIArtefactCache instance = null;
 
-    public PePUIArtefactCache(Resources resources) {
+    public synchronized static PePUIArtefactCache getInstance(Resources resources) {
+        if (instance == null) {
+            instance = new PePUIArtefactCache(resources);
+        }
+        return instance;
+    }
+
+    private PePUIArtefactCache(Resources resources) {
         fillIndexMapping(resources);
         title = resources.getStringArray(R.array.pep_title);
 
