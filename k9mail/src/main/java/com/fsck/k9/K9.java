@@ -46,6 +46,14 @@ import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
 
 public class K9 extends Application {
+    public static void setPEpExtraAccounts(String text) {
+        pEpExtraAccounts = text;
+    }
+
+    public static String getPEpExtraAccounts() {
+        return pEpExtraAccounts;
+    }
+
     /**
      * Components that are interested in knowing when the K9 instance is
      * available and ready (Android invokes Application.onCreate() after other
@@ -254,6 +262,7 @@ public class K9 extends Application {
     private static boolean sMessageViewMoveActionVisible = false;
     private static boolean sMessageViewCopyActionVisible = false;
     private static boolean sMessageViewSpamActionVisible = false;
+    private static String pEpExtraAccounts = "";
 
 
     /**
@@ -492,6 +501,9 @@ public class K9 extends Application {
         editor.putBoolean("messageViewCopyActionVisible", sMessageViewCopyActionVisible);
         editor.putBoolean("messageViewSpamActionVisible", sMessageViewSpamActionVisible);
 
+        editor.putString("pEpExtraAccounts", pEpExtraAccounts);
+
+
         fontSizes.save(editor);
     }
 
@@ -723,7 +735,8 @@ public class K9 extends Application {
         if (splitViewMode != null) {
             sSplitViewMode = SplitViewMode.valueOf(splitViewMode);
         }
-
+//  TODO> Review after rebase
+//        pEpExtraAccounts = sprefs.getString("pEpExtraAccounts", null);
         mAttachmentDefaultPath = storage.getString("attachmentdefaultpath",
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString());
         sUseBackgroundAsUnreadIndicator = storage.getBoolean("useBackgroundAsUnreadIndicator", true);

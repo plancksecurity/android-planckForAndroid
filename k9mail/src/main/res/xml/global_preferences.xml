@@ -393,6 +393,19 @@
     </PreferenceScreen>
 
     <PreferenceScreen
+        android:title="p≡p"
+        android:key="pep_global">
+        <EditTextPreference
+            android:persistent="false"
+            android:key="pep_extra_accounts"
+            android:singleLine="true"
+            android:title="Extra email addresses"
+            android:summary=""
+            android:dialogTitle="Extra email addresses:" />
+    </PreferenceScreen>
+
+
+    <PreferenceScreen
         android:title="@string/debug_preferences"
         android:key="debug_preferences">
 
@@ -409,4 +422,6 @@
             android:summary="@string/debug_enable_sensitive_logging_summary" />
 
     </PreferenceScreen>
+
+
 </PreferenceScreen>

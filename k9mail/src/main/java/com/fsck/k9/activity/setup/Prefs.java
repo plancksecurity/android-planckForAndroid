@@ -12,11 +12,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceScreen;
 import android.text.TextUtils;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fsck.k9.K9;
@@ -98,6 +100,7 @@ public class Prefs extends K9PreferenceActivity {
     private static final String PREFERENCE_THREADED_VIEW = "threaded_view";
     private static final String PREFERENCE_FOLDERLIST_WRAP_NAME = "folderlist_wrap_folder_name";
     private static final String PREFERENCE_SPLITVIEW_MODE = "splitview_mode";
+    private static final String PEP_EXTRA_ACCOUNTS = "pep_extra_accounts";
 
     private static final int ACTIVITY_CHOOSE_FOLDER = 1;
 
@@ -154,6 +157,7 @@ public class Prefs extends K9PreferenceActivity {
     private CheckBoxPreference mBackgroundAsUnreadIndicator;
     private CheckBoxPreference mThreadedView;
     private ListPreference mSplitViewMode;
+    private EditTextPreference mPEpExtraAccounts;
 
 
     public static void actionPrefs(Context context) {
@@ -418,9 +422,13 @@ public class Prefs extends K9PreferenceActivity {
         mVisibleRefileActions.setItems(visibleRefileActionsEntries);
         mVisibleRefileActions.setCheckedItems(visibleRefileActionsValues);
 
+        mPEpExtraAccounts = (EditTextPreference) findPreference(PEP_EXTRA_ACCOUNTS);
+        mPEpExtraAccounts.setText(K9.getPEpExtraAccounts());
+
         mSplitViewMode = (ListPreference) findPreference(PREFERENCE_SPLITVIEW_MODE);
         initListPreference(mSplitViewMode, K9.getSplitViewMode().name(),
                 mSplitViewMode.getEntries(), mSplitViewMode.getEntryValues());
+
     }
 
     private static String themeIdToName(K9.Theme theme) {
@@ -520,6 +528,7 @@ public class Prefs extends K9PreferenceActivity {
         K9.DEBUG_SENSITIVE = mSensitiveLogging.isChecked();
         K9.setHideUserAgent(mHideUserAgent.isChecked());
         K9.setHideTimeZone(mHideTimeZone.isChecked());
+        K9.setPEpExtraAccounts(mPEpExtraAccounts.getText());
 
         StorageEditor editor = storage.edit();
         K9.save(editor);

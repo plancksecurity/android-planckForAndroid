@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.content.Loader;
 import android.content.pm.ActivityInfo;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -76,7 +75,7 @@ import com.fsck.k9.activity.loader.AttachmentContentLoader;
 import com.fsck.k9.activity.loader.AttachmentInfoLoader;
 import com.fsck.k9.activity.misc.Attachment;
 import org.pEp.jniadapter.Color;
-import com.fsck.k9.pEp.DummyPepProviderImpl;
+
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;

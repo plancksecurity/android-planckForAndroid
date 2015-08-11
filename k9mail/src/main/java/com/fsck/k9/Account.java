@@ -115,6 +115,7 @@ public class Account implements BaseAccount, StoreConfig {
     public static final String IDENTITY_EMAIL_KEY = "email";
     public static final String IDENTITY_DESCRIPTION_KEY = "description";
 
+    public static final boolean DEFAULT_PEP_ENC_ON_SERVER = false;
     /*
      * http://developer.android.com/design/style/color.html
      * Note: Order does matter, it's the order in which they will be picked.
@@ -234,6 +235,7 @@ public class Account implements BaseAccount, StoreConfig {
     private ColorChip mFlaggedUnreadColorChip;
     private ColorChip mFlaggedReadColorChip;
 
+    private boolean mPEpStoreEncryptedOnServer;
 
     /**
      * Indicates whether this account is enabled, i.e. ready for use, or not.
@@ -342,6 +344,7 @@ public class Account implements BaseAccount, StoreConfig {
         mNotificationSetting.setRingtone("content://settings/system/notification_sound");
         mNotificationSetting.setLedColor(mChipColor);
 
+        mPEpStoreEncryptedOnServer = DEFAULT_PEP_ENC_ON_SERVER;
         cacheChips();
     }
 
@@ -430,7 +433,7 @@ public class Account implements BaseAccount, StoreConfig {
             compressionMap.put(type, useCompression);
         }
 
-        mAutoExpandFolderName = storage.getString(mUuid  + ".autoExpandFolderName", INBOX);
+        mAutoExpandFolderName = storage.getString(mUuid + ".autoExpandFolderName", INBOX);
 
         mAccountNumber = storage.getInt(mUuid + ".accountNumber", 0);
 
@@ -474,7 +477,8 @@ public class Account implements BaseAccount, StoreConfig {
         mEnabled = storage.getBoolean(mUuid + ".enabled", true);
         mMarkMessageAsReadOnView = storage.getBoolean(mUuid + ".markMessageAsReadOnView", true);
         mAlwaysShowCcBcc = storage.getBoolean(mUuid + ".alwaysShowCcBcc", false);
-
+//  TODO> Review after rebase
+//        mPEpStoreEncryptedOnServer = storage.getBoolean(mUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
         cacheChips();
 
         // Use email address as account description if necessary
@@ -743,6 +747,7 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putString(mUuid + ".ringtone", mNotificationSetting.getRingtone());
         editor.putBoolean(mUuid + ".led", mNotificationSetting.isLed());
         editor.putInt(mUuid + ".ledColor", mNotificationSetting.getLedColor());
+        editor.putBoolean(mUuid + ".pEpStoreEncrypredOnServer", mPEpStoreEncryptedOnServer);
 
         for (NetworkType type : NetworkType.values()) {
             Boolean useCompression = compressionMap.get(type);
@@ -1671,6 +1676,16 @@ public class Account implements BaseAccount, StoreConfig {
 
     public synchronized NotificationSetting getNotificationSetting() {
         return mNotificationSetting;
+    }
+
+
+    // TODO: pEp: do we really *need* synchronized here?!
+    public synchronized boolean isPEpStoreEncryptedOnServer() {
+        return mPEpStoreEncryptedOnServer;
+    }
+
+    public synchronized void setPEpStoreEncryptedOnServer(boolean mPEpStoreEncryptedOnServer) {
+        this.mPEpStoreEncryptedOnServer = mPEpStoreEncryptedOnServer;
     }
 
     /**
