@@ -273,6 +273,9 @@ public class GlobalSettings {
         s.put("confirmDiscardMessage", Settings.versions(
                 new V(40, new BooleanSetting(true))
             ));
+        s.put("pep_extra_accounts", Settings.versions(
+                new V(42, new StringSetting(""))
+        ));
         s.put("pgpInlineDialogCounter", Settings.versions(
                 new V(43, new IntegerRangeSetting(0, Integer.MAX_VALUE, 0))
         ));

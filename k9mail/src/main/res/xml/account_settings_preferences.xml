@@ -493,4 +493,15 @@
 
     </PreferenceScreen>
 
+    <PreferenceScreen
+        android:title="p≡p"
+        android:key="pep">
+
+        <CheckBoxPreference
+            android:persistent="false"
+            android:key="pep_save_encrypted"
+            android:title="Mails on server are encrypted"
+            android:defaultValue="true"
+            android:summary="Store serverside mails in encrypted form." />
+    </PreferenceScreen>
 </PreferenceScreen>

@@ -12,12 +12,23 @@ import org.pEp.jniadapter.Color;
 import java.util.HashMap;
 
 /**
- * Created by dietz on 04.07.15.
+ * Cache for texts and icons.
+ *
+ * (I am not completely sure that this is a perfect solution, because of permanently acquired
+ * ressources, but this would be very easily fixable.
+ *
+ * For the semantics, the pep_states array contains a list of enum Color elements, that are
+ * used UI-wise. The other arrays contain the respective items (texts, colors, icons) in the
+ * same order as the colors in pep_states.
+ *
+ * During initialization, pep_states is used to fill a hash map, that maps each color to an
+ * index into the other arrays. The hash map is later used to find the index for a specific color.
  */
 public class PePUIArtefactCache
 {
-    private static HashMap<Color,Integer> colorIndexMapping = null;
+    private HashMap<Color,Integer> colorIndexMapping = new HashMap<Color,Integer>();
     private String[] title;
+    private String[] description;
     private int[] color;
     private Drawable[] icon;
     private static PePUIArtefactCache instance = null;
@@ -31,7 +42,9 @@ public class PePUIArtefactCache
 
     private PePUIArtefactCache(Resources resources) {
         fillIndexMapping(resources);
+
         title = resources.getStringArray(R.array.pep_title);
+        description = resources.getStringArray(R.array.pep_description);
 
         TypedArray colors = resources.obtainTypedArray(R.array.pep_color);
         color = new int[colors.length()];
@@ -47,8 +60,6 @@ public class PePUIArtefactCache
     };
 
     private void fillIndexMapping(Resources resources) {
-        if(colorIndexMapping != null) return;               // only once...
-        colorIndexMapping = new HashMap<Color,Integer>();
         String[] colornames = resources.getStringArray(R.array.pep_states);
         for(int idx=0; idx < colornames.length; idx ++) {
             colorIndexMapping.put(Color.valueOf(colornames[idx]), idx);
@@ -57,6 +68,10 @@ public class PePUIArtefactCache
 
     public String getTitle(Color c) {
         return title[colorIndexMapping.get(c)];
+    }
+
+    public String getDescription(Color c) {
+        return description[colorIndexMapping.get(c)];
     }
 
     public Drawable getIcon(Color c) {

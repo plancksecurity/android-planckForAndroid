@@ -128,6 +128,7 @@ public class AccountSettings extends K9PreferenceActivity {
     private static final String PREFERENCE_TRASH_FOLDER = "trash_folder";
     private static final String PREFERENCE_ALWAYS_SHOW_CC_BCC = "always_show_cc_bcc";
 
+    private static final String PREFERENCE_PEP_SAVE_ENCRYPTED_ON_SERVER = "pep_save_encrypted";
 
     private Account mAccount;
     private boolean mIsMoveCapable = false;
@@ -183,6 +184,9 @@ public class AccountSettings extends K9PreferenceActivity {
     private OpenPgpAppPreference mCryptoApp;
     private OpenPgpKeyPreference mCryptoKey;
     private CheckBoxPreference mCryptoSupportSignOnly;
+
+    // flag: save mails only encrypted on server side
+    private CheckBoxPreference mPEpSaveEncrypted;
 
     private PreferenceScreen mSearchScreen;
     private CheckBoxPreference mCloudSearchEnabled;
@@ -731,6 +735,9 @@ public class AccountSettings extends K9PreferenceActivity {
             mCryptoMenu.setEnabled(false);
             mCryptoMenu.setSummary(R.string.account_settings_no_openpgp_provider_installed);
         }
+
+        mPEpSaveEncrypted = (CheckBoxPreference) findPreference(PREFERENCE_PEP_SAVE_ENCRYPTED_ON_SERVER);
+        mPEpSaveEncrypted.setChecked(mAccount.isPEpStoreEncryptedOnServer());
     }
 
     private void removeListEntry(ListPreference listPreference, String remove) {
@@ -860,6 +867,10 @@ public class AccountSettings extends K9PreferenceActivity {
                 MailService.actionRestartPushers(this, null);
             }
         }
+
+        // pEp:
+        mAccount.setPEpStoreEncryptedOnServer(mPEpSaveEncrypted.isChecked());
+
         // TODO: refresh folder list here
         mAccount.save(Preferences.getPreferences(this));
     }
