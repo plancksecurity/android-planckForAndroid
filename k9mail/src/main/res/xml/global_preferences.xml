@@ -450,6 +450,4 @@
             android:summary="@string/debug_enable_sensitive_logging_summary" />
 
     </PreferenceScreen>
-
-
 </PreferenceScreen>
