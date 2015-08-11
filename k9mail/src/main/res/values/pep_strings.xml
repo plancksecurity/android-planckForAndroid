@@ -20,7 +20,7 @@
         <item>#DCDCDC<!--pEpRatingCannotDecrypt--></item>
         <item>#DCDCDC<!--pEpRatingHaveNoKey--></item>
         <item>#DCDCDC<!--pEpRatingUnencrypted--></item>
-        <item>#DCDCDC<!--pEpRatingUnreliable--></item>
+        <item>#000000<!--pEpRatingUnreliable--></item>
         <item>#FFFF00<!--pEpRatingReliable--></item>
         <item>#00FF00 <!--pEpRatingTrusted--></item>
         <item>#00FF00 <!--pEpRatingTrustedAndAnonymized--></item>
@@ -30,7 +30,7 @@
     </array>
 
     <string-array name="pep_title">
-        <item><!--pEpRatingUndefined--></item>
+        <item>p≡p - Undefined.<!--pEpRatingUndefined--></item>
         <item>p≡p – Cannot decrypt message.<!--pEpRatingCannotDecrypt--></item>
         <item>p≡p – No private key.<!--pEpRatingHaveNoKey--></item>
         <item>p≡p – This communication is unencrypted.<!--pEpRatingUnencrypted--></item>
@@ -42,6 +42,30 @@
         <item>p≡p – This communication is forged!<!--pEpRatingUnderAttack--></item>
         <item>p≡p – Internal problem.<!--pEpRatingB0rken--></item>
     </string-array>
+
+    <string-array name="pep_description">
+        <item>No information available.<!--pEpRatingUndefined--></item>
+        <item>The key to decrypt this message is not available.
+                If this message was addressed to you, please inform the sender that you don\'t have the key.<!--pEpRatingCannotDecrypt--></item>
+        <item>p≡p – No private key.<!--pEpRatingHaveNoKey--></item>
+        <item>This communication is insecure.
+                You should be aware that there may be eavesdroppers and the message could be forged. It could be OK just as well.
+                <!--pEpRatingUnencrypted--></item>
+        <item>The message was encrypted but not in a feasible way or it wasn\'t signed.
+                There is no credible encryption for this message, so you should be aware that there may be eavesdroppers and the message could be forged. It could be OK just as well.
+                <!--pEpRatingUnreliable--></item>
+        <item>To ensure a private and authentic communication please do a handshake with the communication partner.
+               A handshake is needed only once per communication partner. After successfully doing a handshake each communication with that partner will be private and reliable for sure.
+                <!--pEpRatingReliable--></item>
+        <item>p≡p – This communication is private and authentic.<!--pEpRatingTrusted--></item>
+        <item>A handshake with the communication partner was done already.
+                The results make sure that each communication with this partner is secure.<!--pEpRatingTrustedAndAnonymized--></item>
+        <item>p≡p – This communication is private and authentic and anonymous.<!--pEpRatingFullyAnonymous--></item>
+        <item>"The encryption data is not matching. This probably is a forged message.
+                Do not trust this message! It probably is not from the communication partner indicated.<!--pEpRatingUnderAttack--></item>
+        <item>*poff*. No Ponies<!--pEpRatingB0rken--></item>
+    </string-array>
+
 
     <array name="pep_icon">
         <item>@drawable/ic_action_pep_indicator<!--pEpRatingUndefined--></item>

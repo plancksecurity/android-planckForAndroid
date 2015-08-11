@@ -21,6 +21,8 @@ import com.fsck.k9.R;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.preferences.Settings.*;
 
+//TODO: pEp: do I need my keys here, too?
+
 public class AccountSettings {
     public static final Map<String, TreeMap<Integer, SettingsDescription>> SETTINGS;
     public static final Map<Integer, SettingsUpgrader> UPGRADERS;
