@@ -49,7 +49,7 @@ public class PEpStatus extends Activity {
         Button trustwords = (Button) findViewById(R.id.pEp_trustwords);
 
         getWindow().getDecorView().setBackgroundColor(ui.getColor(m_pEpColor));
-        // somehow, the icon does not show up. OK. Later. After I have real bitmaps...
+        // TODO: pEp: somehow, the icon does not show up. OK. Later. After I have real bitmaps...
         pEpIcon.setImageDrawable(ui.getIcon(m_pEpColor));
         pEpIcon.setBackgroundColor(ui.getColor(m_pEpColor));
         pEpShortDesc.setText(ui.getTitle(m_pEpColor));
@@ -58,7 +58,6 @@ public class PEpStatus extends Activity {
         if(m_pEpColor == Color.pEpRatingReliable) {
             trustwords.setVisibility(View.VISIBLE);
         }
-
     }
 
     @Override
