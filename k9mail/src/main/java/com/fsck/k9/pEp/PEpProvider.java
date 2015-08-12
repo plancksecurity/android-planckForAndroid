@@ -15,6 +15,7 @@ public interface PEpProvider {
      * calls the jni adapter to obtain the info. Accourding to fdik, this check returns fast (all
      * time consuming stuff (network i/o etc.) is done asynchronousely.
      *
+     * @param from  from email adress
      * @param toAdresses to adresses
      * @param ccAdresses cc adresses
      * @param bccAdresses bcc adresses
@@ -23,7 +24,7 @@ public interface PEpProvider {
 
     //TODO: do I nee from: here, too? I fear so :-)
 
-    public Color getPrivacyState(Address[] toAdresses, Address[] ccAdresses, Address[] bccAdresses);
+    public Color getPrivacyState(Address from, Address[] toAdresses, Address[] ccAdresses, Address[] bccAdresses);
 
     /**
      * Encrypts one k9 message. This one hides all the black magic associated with the real
@@ -33,8 +34,9 @@ public interface PEpProvider {
      * FIXME: where do I handle split for different privacy levels? Is this really necessary?
      *
      * @param source the (fully qualified) message to be encrypted.
+     * @param extraKeys extra key ids to encrypt msg to...
      * @return the encrypted message
      */
 
-    public MimeMessage encryptMessage(MimeMessage source);
+    public MimeMessage encryptMessage(MimeMessage source, String[] extraKeys);
 }

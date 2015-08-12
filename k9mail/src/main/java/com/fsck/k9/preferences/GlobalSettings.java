@@ -276,6 +276,9 @@ public class GlobalSettings {
         s.put("pep_extra_accounts", Settings.versions(
                 new V(42, new StringSetting(""))
         ));
+        s.put("pep_use_keyserver", Settings.versions(
+                new V(39, new BooleanSetting(true))
+            ));
 
         SETTINGS = Collections.unmodifiableMap(s);
 

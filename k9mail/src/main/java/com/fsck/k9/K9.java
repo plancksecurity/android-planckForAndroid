@@ -54,6 +54,14 @@ public class K9 extends Application {
         return pEpExtraAccounts;
     }
 
+    public static void setPEpUseKeyserver(boolean use) {
+        pEpUseKeyserver = use;
+    }
+
+    public static boolean getPEpUseKeyserver() {
+        return pEpUseKeyserver;
+    }
+
     /**
      * Components that are interested in knowing when the K9 instance is
      * available and ready (Android invokes Application.onCreate() after other
@@ -263,6 +271,7 @@ public class K9 extends Application {
     private static boolean sMessageViewCopyActionVisible = false;
     private static boolean sMessageViewSpamActionVisible = false;
     private static String pEpExtraAccounts = "";
+    private static boolean pEpUseKeyserver = false;
 
 
     /**
@@ -502,7 +511,7 @@ public class K9 extends Application {
         editor.putBoolean("messageViewSpamActionVisible", sMessageViewSpamActionVisible);
 
         editor.putString("pEpExtraAccounts", pEpExtraAccounts);
-
+        editor.putBoolean("pEpUseKeyserver", pEpUseKeyserver);
 
         fontSizes.save(editor);
     }
@@ -737,6 +746,7 @@ public class K9 extends Application {
         }
 //  TODO> Review after rebase
 //        pEpExtraAccounts = sprefs.getString("pEpExtraAccounts", null);
+//        pEpUseKeyserver = sprefs.getBoolean("pEpUseKeyserver", false);
         mAttachmentDefaultPath = storage.getString("attachmentdefaultpath",
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString());
         sUseBackgroundAsUnreadIndicator = storage.getBoolean("useBackgroundAsUnreadIndicator", true);

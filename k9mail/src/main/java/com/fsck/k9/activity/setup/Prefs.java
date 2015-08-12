@@ -101,6 +101,7 @@ public class Prefs extends K9PreferenceActivity {
     private static final String PREFERENCE_FOLDERLIST_WRAP_NAME = "folderlist_wrap_folder_name";
     private static final String PREFERENCE_SPLITVIEW_MODE = "splitview_mode";
     private static final String PEP_EXTRA_ACCOUNTS = "pep_extra_accounts";
+    private static final String PEP_USE_KEYSERVER = "pep_use_keyserver";
 
     private static final int ACTIVITY_CHOOSE_FOLDER = 1;
 
@@ -158,6 +159,7 @@ public class Prefs extends K9PreferenceActivity {
     private CheckBoxPreference mThreadedView;
     private ListPreference mSplitViewMode;
     private EditTextPreference mPEpExtraAccounts;
+    private CheckBoxPreference mPEpUseKeyserver;
 
 
     public static void actionPrefs(Context context) {
@@ -422,8 +424,13 @@ public class Prefs extends K9PreferenceActivity {
         mVisibleRefileActions.setItems(visibleRefileActionsEntries);
         mVisibleRefileActions.setCheckedItems(visibleRefileActionsValues);
 
+        // TODO: pEp: add format checker, we want <keyid>,<keyid>,<keyid>...
         mPEpExtraAccounts = (EditTextPreference) findPreference(PEP_EXTRA_ACCOUNTS);
         mPEpExtraAccounts.setText(K9.getPEpExtraAccounts());
+
+        mPEpUseKeyserver =(CheckBoxPreference) findPreference(PEP_USE_KEYSERVER);
+        mPEpUseKeyserver.setChecked(K9.getPEpUseKeyserver());
+
 
         mSplitViewMode = (ListPreference) findPreference(PREFERENCE_SPLITVIEW_MODE);
         initListPreference(mSplitViewMode, K9.getSplitViewMode().name(),
@@ -529,6 +536,7 @@ public class Prefs extends K9PreferenceActivity {
         K9.setHideUserAgent(mHideUserAgent.isChecked());
         K9.setHideTimeZone(mHideTimeZone.isChecked());
         K9.setPEpExtraAccounts(mPEpExtraAccounts.getText());
+        K9.setPEpUseKeyserver(mPEpUseKeyserver.isChecked());
 
         StorageEditor editor = storage.edit();
         K9.save(editor);

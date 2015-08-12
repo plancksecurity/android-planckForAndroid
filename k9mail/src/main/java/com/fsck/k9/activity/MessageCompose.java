@@ -1607,11 +1607,13 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 //    }
 //
 //    private void updatePePState() {
+//        // TODO: pEp: check wether we take the right measures to get out addresses...
+//        Address from = Address.parseUnencoded(mIdentity.getEmail())[0];
 //        Address[] toAdresses = Address.parseUnencoded(mToView.getText().toString().trim());
 //        Address[] ccAdresses = Address.parseUnencoded(mToView.getText().toString().trim());
 //        Address[] bccAdresses = Address.parseUnencoded(mToView.getText().toString().trim());
 //
-//        mPEpColor = mPEpProvider.getPrivacyState(toAdresses, ccAdresses, bccAdresses);
+//        mPEpColor = mPEpProvider.getPrivacyState(from, toAdresses, ccAdresses, bccAdresses);
 //    }
 //
 //    private void onPEpIndicator() {
