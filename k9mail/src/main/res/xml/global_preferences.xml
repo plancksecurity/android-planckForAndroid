@@ -399,9 +399,13 @@
             android:persistent="false"
             android:key="pep_extra_accounts"
             android:singleLine="true"
-            android:title="Extra email addresses"
+            android:title="@string/pep_extra_addresses"
             android:summary=""
-            android:dialogTitle="Extra email addresses:" />
+            android:dialogTitle="@string/pep_extra_addresses" />
+        <CheckBoxPreference
+            android:persistent="false"
+            android:key="pep_use_keyserver"
+            android:title="@string/pep_use_keyserver"/>
     </PreferenceScreen>
 
 
