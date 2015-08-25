@@ -195,6 +195,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             }
         });
 
+        // TODO: pEp: if pep message probably then call onDownloadRemainder explicitely
         mMessageView.setOnDownloadButtonClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

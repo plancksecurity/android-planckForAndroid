@@ -40,59 +40,14 @@ public class DummyPepProviderImpl implements PEpProvider {
 
     @Override
     public MimeMessage encryptMessage(MimeMessage source, String[]extra) {
-        // TODO: pEp TextBodyBuilder oder MimeMessageHelper anschauen (s. MessageBuilder.java:324
-        String newBody;
-        dumpMimeMessage(source);
-        MimeMessage newMessage;
-        try {
-            Address[] to = source.getRecipients(Message.RecipientType.TO);
-            Color col = getPrivacyState(null, to, null, null);
-           // if (col == Color.pEpRatingTrusted || col == Color.pEpRatingReliable) {
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                source.getBody().writeTo(os);
-                newBody = "*** ENCRYPTED ***\n\r" + os.toString() + "\n\r*** Encryption ends ***";
-                os.close();
-
-          //  }
-
-            newMessage = source.clone();
-            newMessage.setUid(null);
-            MimeMessageHelper.setBody(newMessage, new TextBody(newBody));
-
-
-        } catch (Exception e) {
-            Log.d(K9.LOG_TAG, " error encrypting ", e);
-            newMessage = null;
-        }
-        dumpMimeMessage(newMessage);
-        return newMessage != null? newMessage:source;
+        return null;
+    }
+    @Override
+    public MimeMessage decryptMessage(MimeMessage source) {
+        return null;
+    }
+    public boolean mightBePEpMessage(MimeMessage source) {
+        return true;
     }
 
-    public void dumpMimeMessage(MimeMessage mm) {
-        String out = "Root:\n";
-
-        try {
-            for (String header:mm.getHeaderNames())
-                out += header + ":" + mm.getHeader(header) + "\n";
-            out += "\n";
-            out += "Message-Id:" + mm.getMessageId().hashCode() +"\n";
-            out += mangleBody((MimeMultipart)mm.getBody());
-            out += "hasAttachments:" + mm.hasAttachments();
-
-        } catch (Exception e) {
-            out += "\n\n" + e.getMessage();
-        }
-
-        Log.d("MIMEMESSAGE", out);
-
-    }
-
-    private String mangleBody(MimeMultipart body) throws Exception {
-        String rv = "Body:\n";
-        for(Part p: body.getBodyParts())
-                rv += "     " + new String(((BinaryMemoryBody) p).getData()) +"\n";
-            //rv+="  " + ((BinaryMemoryBody) p)(((LocalBodyPart) p).getBody())).getData().toString() +"\n";
-
-        return rv;
-    }
 }
