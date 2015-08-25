@@ -44,5 +44,7 @@ public class BinaryMemoryBody implements Body, RawDataBody, SizeAware {
     @Override
     public long getSize() {
         return data.length;
-    }
+    };
+
+    public byte[] getData() { return data; }
 }

@@ -77,6 +77,7 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.mailstore.LocalStore.PendingCommand;
 import com.fsck.k9.mail.store.pop3.Pop3Store;
 import com.fsck.k9.mailstore.UnavailableStorageException;
+import com.fsck.k9.pEp.DummyPepProviderImpl;
 import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
@@ -2961,15 +2962,11 @@ public class MessagingController implements Runnable {
                             final Message message,
                             MessagingListener listener) {
         try {
-            PEpProvider mPEpProvider = PEpProviderFactory.createProvider();
-            Message encryptedMessage = mPEpProvider.encryptMessage((MimeMessage)message);
-            // TODO: pEp: fiddle encryped/unencrypted message storage
-            // TODO: pEp: mail splitting for Bcc and different confidencies in target addresses
             LocalStore localStore = account.getLocalStore();
             LocalFolder localFolder = localStore.getFolder(account.getOutboxFolderName());
             localFolder.open(Folder.OPEN_MODE_RW);
-            localFolder.appendMessages(Collections.singletonList(encryptedMessage));
-            Message localMessage = localFolder.getMessage(encryptedMessage.getUid());
+            localFolder.appendMessages(Collections.singletonList(message));
+            Message localMessage = localFolder.getMessage(message.getUid());
             localMessage.setFlag(Flag.X_DOWNLOADED_FULL, true);
             localFolder.close();
             sendPendingMessages(account, listener);
@@ -3133,8 +3130,23 @@ public class MessagingController implements Runnable {
                         if (K9.DEBUG)
                             Log.i(K9.LOG_TAG, "Sending message with UID " + message.getUid());
 
-                        // latest possibility to fiddle enc/unenc stuff
-                        transport.sendMessage(message);
+                        // TODO: pEp latest possibility to fiddle enc/unenc stuff? -> yes!
+                        // if nothing to pep do as normal.
+                        // else
+                        //    encMsg = enc(msg)
+                        //    sendMsg(encMsg)
+                        //    if(cleartext on server: as normal
+                        //    else (if outfolder)
+                        //       delete cleartext in local sent mail,  // check what it does with local mails
+                        //       put enc'd variant there and proceed as usual
+
+
+//                            Message encryptedMessage = PEpProviderFactory.createProvider().encryptMessage((MimeMessage) message, null);
+//                            localFolder.appendMessages(Collections.singletonList(encryptedMessage));
+                         transport.sendMessage(message);
+//                            transport.sendMessage(encryptedMessage);
+//
+
                         message.setFlag(Flag.X_SEND_IN_PROGRESS, false);
                         message.setFlag(Flag.SEEN, true);
                         progress++;
@@ -3151,6 +3163,7 @@ public class MessagingController implements Runnable {
                                 Log.i(K9.LOG_TAG, "Moving sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
                             localFolder.moveMessages(Collections.singletonList(message), localSentFolder);
+                            // localFolder.moveMessages(Collections.singletonList(encryptedMessage), localSentFolder);
 
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moved sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
@@ -3159,6 +3172,12 @@ public class MessagingController implements Runnable {
                             command.command = PENDING_COMMAND_APPEND;
                             command.arguments = new String[] { localSentFolder.getName(), message.getUid() };
                             queuePendingCommand(account, command);
+
+//                            PendingCommand command2 = new PendingCommand();
+//                            command2.command = PENDING_COMMAND_APPEND;
+//                            command2.arguments = new String[] { localSentFolder.getName(), encryptedMessage.getUid() };
+//                            queuePendingCommand(account, command2);
+
                             processPendingCommands(account);
                         }
                     } catch (AuthenticationFailedException e) {
