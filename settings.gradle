@@ -1,4 +1,4 @@
-include ':k9mail'
+include ':k9mail', ':pEp-android-debug', ':pep-android-release'
 include ':k9mail-library'
 include ':plugins:Android-PullToRefresh:library'
 include ':plugins:HoloColorPicker'

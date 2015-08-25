@@ -2,8 +2,6 @@ package com.fsck.k9.pEp;
 
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.internet.MimeMessage;
-import com.fsck.k9.message.MessageBuilder;
-
 import org.pEp.jniadapter.Color;
 
 /**
@@ -21,10 +19,18 @@ public interface PEpProvider {
      * @param bccAdresses bcc adresses
      * @return the privacy level of a mail sent to the set of recipients
      */
-
-    //TODO: do I nee from: here, too? I fear so :-)
-
     public Color getPrivacyState(Address from, Address[] toAdresses, Address[] ccAdresses, Address[] bccAdresses);
+
+    /**
+     * Decrypts one k9 message. Hides all the black magic associated with the real
+     * pEp library interaction.
+     *
+     * @param source the (fully qualified) message to be decrypted.
+     * @return the decrypted message
+     *
+     * TODO: pEp: how do I get the color? Perhaps Via header value in return value?
+     */
+    public MimeMessage decryptMessage(MimeMessage source);
 
     /**
      * Encrypts one k9 message. This one hides all the black magic associated with the real
@@ -37,6 +43,12 @@ public interface PEpProvider {
      * @param extraKeys extra key ids to encrypt msg to...
      * @return the encrypted message
      */
-
     public MimeMessage encryptMessage(MimeMessage source, String[] extraKeys);
+
+    /**
+     * checks wether the message given as parameter might be a message that should be piped through pEp
+     * @param source
+     * @return
+     */
+    public boolean mightBePEpMessage(MimeMessage source);
 }
