@@ -24,6 +24,7 @@ dependencies {
     compile project(':plugins:Android-PullToRefresh:library')
     compile project(':plugins:HoloColorPicker')
     compile project(':plugins:openpgp-api-lib:openpgp-api')
+    compile project(':pEpJNIAdapter')
     compile 'commons-io:commons-io:2.4'
     compile "com.android.support:support-v4:${project.supportLibraryVersion}"
     compile 'net.sourceforge.htmlcleaner:htmlcleaner:2.16'
@@ -46,12 +47,13 @@ android {
     buildToolsVersion rootProject.buildToolsVersion
 
     defaultConfig {
-        applicationId "com.fsck.k9"
-        testApplicationId "com.fsck.k9.tests"
+//        applicationId "com.fsck.k9"
+//        testApplicationId "com.fsck.k9.tests"
 
         versionCode 23080
         versionName '5.108'
 
+        applicationId "com.pep.k9"
         minSdkVersion 15
         targetSdkVersion 22
 
@@ -74,7 +76,7 @@ android {
         }
 
         debug {
-            applicationIdSuffix ".debug"
+            // applicationIdSuffix ".debug"
             testCoverageEnabled rootProject.testCoverage
 
             buildConfigField "boolean", "DEVELOPER_MODE", "true"

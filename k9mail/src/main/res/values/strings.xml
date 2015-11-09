@@ -1159,5 +1159,6 @@ Please submit bug reports, contribute new features and ask questions at
     <string name="pEp_status_header">p€p Status</string>
     <string name="pep_extra_addresses">Extra key ids:</string>
     <string name="pep_use_keyserver">Use keyserver</string>
+    <string name="title_activity_pep_trustwords">Trustwords</string>
 
 </resources>
