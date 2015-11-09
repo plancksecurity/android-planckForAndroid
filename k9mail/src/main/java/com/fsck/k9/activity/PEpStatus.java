@@ -12,13 +12,15 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 
 import org.pEp.jniadapter.Color;
+import org.pEp.jniadapter.Identity;
 
-public class PEpStatus extends Activity {
+public class PEpStatus extends K9Activity {
 
     private static final String ACTION_SHOW_PEP_STATUS = "com.fsck.k9.intent.action.SHOW_PEP_STATUS";
     private static final String CURRENT_COLOR = "current_color";
@@ -32,7 +34,7 @@ public class PEpStatus extends Activity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         final Intent intent = getIntent();
@@ -48,15 +50,23 @@ public class PEpStatus extends Activity {
         TextView pEpLongText = (TextView) findViewById(R.id.pEpLongText);
         Button trustwords = (Button) findViewById(R.id.pEp_trustwords);
 
-        getWindow().getDecorView().setBackgroundColor(ui.getColor(m_pEpColor));
+        int pEpColor = ui.getColor(m_pEpColor);
+        getWindow().getDecorView().setBackgroundColor(pEpColor);
         // TODO: pEp: somehow, the icon does not show up. OK. Later. After I have real bitmaps...
         pEpIcon.setImageDrawable(ui.getIcon(m_pEpColor));
         pEpIcon.setBackgroundColor(ui.getColor(m_pEpColor));
         pEpShortDesc.setText(ui.getTitle(m_pEpColor));
+        pEpShortDesc.setTextColor(0xffffffff - pEpColor);       // simply invert the background. Might work :-}
         pEpLongText.setText(ui.getDescription(m_pEpColor));
+        pEpLongText.setTextColor(0xffffffff - pEpColor);
 
         if(m_pEpColor == Color.pEpRatingReliable) {
             trustwords.setVisibility(View.VISIBLE);
+            trustwords.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    PEpTrustwords.actionShowTrustwords(getApplicationContext(), new Identity(), new Identity());
+                }
+            });
         }
     }
 

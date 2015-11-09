@@ -5,6 +5,6 @@ package com.fsck.k9.pEp;
  */
 public class PEpProviderFactory {
     static public PEpProvider createProvider() {
-        return new DummyPepProviderImpl();
+        return new DummyPepProviderImpl(); // PEpProviderImpl();
     }
 }

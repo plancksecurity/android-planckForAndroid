@@ -46,6 +46,7 @@ public class DummyPepProviderImpl implements PEpProvider {
     public MimeMessage decryptMessage(MimeMessage source) {
         return null;
     }
+
     public boolean mightBePEpMessage(MimeMessage source) {
         return true;
     }
