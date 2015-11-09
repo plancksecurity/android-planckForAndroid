@@ -25,6 +25,7 @@ dependencies {
     compile project(':plugins:Android-PullToRefresh:library')
     compile project(':plugins:HoloColorPicker')
     compile project(':plugins:openpgp-api-lib:openpgp-api')
+    compile project(':pEpJNIAdapter')
     compile "com.squareup.okio:okio:${okioVersion}"
     compile 'commons-io:commons-io:2.4'
     compile "com.android.support:support-v4:${androidSupportLibraryVersion}"
@@ -47,12 +48,13 @@ android {
     buildToolsVersion androidBuildToolsVersion
 
     defaultConfig {
-        applicationId "com.fsck.k9"
-        testApplicationId "com.fsck.k9.tests"
+//        applicationId "com.fsck.k9"
+//        testApplicationId "com.fsck.k9.tests"
 
         versionCode 23191
         versionName '5.200-RC2'
 
+        applicationId "com.pep.k9"
         minSdkVersion 15
         targetSdkVersion 22
 
@@ -75,7 +77,7 @@ android {
         }
 
         debug {
-            applicationIdSuffix ".debug"
+            // applicationIdSuffix ".debug"
             testCoverageEnabled rootProject.testCoverage
 
             buildConfigField "boolean", "DEVELOPER_MODE", "true"
