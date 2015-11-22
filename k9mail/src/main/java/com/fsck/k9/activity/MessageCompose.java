@@ -574,8 +574,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         });
 
 // TODO> review after rebase
-//
-//        mPEpProvider = PEpProviderFactory.createProvider(getApplicationContext());
+//        mPEpProvider = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
 //
 //        View.OnFocusChangeListener pEpChangeTracker = new View.OnFocusChangeListener() {
 //                @Override

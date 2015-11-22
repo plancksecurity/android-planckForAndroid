@@ -22,6 +22,8 @@ public interface PEpProvider {
      * @return the privacy level of a mail sent to the set of recipients
      */
     public Color getPrivacyState(Address from, Address[] toAdresses, Address[] ccAdresses, Address[] bccAdresses);
+    public Color getPrivacyState(com.fsck.k9.mail.Message message);
+
 
     /**
      * Decrypts one k9 message. Hides all the black magic associated with the real
@@ -46,13 +48,6 @@ public interface PEpProvider {
      * @return the encrypted message
      */
     public MimeMessage encryptMessage(MimeMessage source, String[] extraKeys);
-
-    /**
-     * checks wether the message given as parameter might be a message that should be piped through pEp
-     * @param source
-     * @return
-     */
-    public boolean mightBePEpMessage(MimeMessage source);
 
     /**
      * Helper for pEp setup. Smells funny to have it in an interface, but fits nowhere else.

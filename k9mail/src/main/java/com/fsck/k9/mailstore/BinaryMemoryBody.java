@@ -32,9 +32,7 @@ public class BinaryMemoryBody implements Body, RawDataBody, SizeAware {
     }
 
     @Override
-    public void setEncoding(String encoding) throws UnavailableStorageException, MessagingException {
-        throw new RuntimeException("nope"); //FIXME
-    }
+    public void setEncoding(String encoding) throws UnavailableStorageException, MessagingException {}
 
     @Override
     public void writeTo(OutputStream out) throws IOException, MessagingException {

@@ -81,6 +81,7 @@ import com.fsck.k9.pEp.DummyPepProviderImpl;
 import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
 import com.fsck.k9.search.ConditionsTreeNode;
@@ -2829,7 +2830,7 @@ public class MessagingController implements Runnable {
 
                     LocalMessage message = localFolder.getMessage(uid);
                     if (message == null
-                    || message.getId() == 0) {
+                            || message.getId() == 0) {
                         throw new IllegalArgumentException("Message not found: folder=" + folder + ", uid=" + uid);
                     }
                     // IMAP search results will usually need to be downloaded before viewing.
@@ -3130,22 +3131,31 @@ public class MessagingController implements Runnable {
                         if (K9.DEBUG)
                             Log.i(K9.LOG_TAG, "Sending message with UID " + message.getUid());
 
-                        // TODO: pEp latest possibility to fiddle enc/unenc stuff? -> yes!
-                        // if nothing to pep do as normal.
-                        // else
-                        //    encMsg = enc(msg)
-                        //    sendMsg(encMsg)
-                        //    if(cleartext on server: as normal
-                        //    else (if outfolder)
-                        //       delete cleartext in local sent mail,  // check what it does with local mails
-                        //       put enc'd variant there and proceed as usual
+                        boolean doPEp = PEpUtils.sendViaPEp(message);
+                        if (doPEp) {
+                            // TODO: pEp latest possibility to fiddle enc/unenc stuff? -> yes!
+                            // if nothing to pep do as normal.
+                            // else
+                            //    encMsg = enc(msg)
+                            //    sendMsg(encMsg)
+                            //    if(cleartext on server: as normal
+                            //    else (if outfolder)
+                            //       delete cleartext in local sent mail,  // check what it does with local mails
+                            //       put enc'd variant there and proceed as usual
+
+                            Message encryptedMessage = PEpProviderFactory.createProvider().encryptMessage((MimeMessage) message, null);
+                            encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, true);
+                            // localFolder.appendMessages(Collections.singletonList(encryptedMessage));  // FIXME: really necessary?
+                            transport.sendMessage(encryptedMessage);
+                            encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, false);
+                            encryptedMessage.setFlag(Flag.SEEN, true);
 
 
-//                            Message encryptedMessage = PEpProviderFactory.createProvider().encryptMessage((MimeMessage) message, null);
-//                            localFolder.appendMessages(Collections.singletonList(encryptedMessage));
-                         transport.sendMessage(message);
-//                            transport.sendMessage(encryptedMessage);
-//
+                            // FIXME: perhaps save enc'd msg to server?
+                        }
+                        else {
+                            transport.sendMessage(message);
+                        }
 
                         message.setFlag(Flag.X_SEND_IN_PROGRESS, false);
                         message.setFlag(Flag.SEEN, true);
@@ -3172,7 +3182,7 @@ public class MessagingController implements Runnable {
                             command.command = PENDING_COMMAND_APPEND;
                             command.arguments = new String[] { localSentFolder.getName(), message.getUid() };
                             queuePendingCommand(account, command);
-
+// just if we want to save to server encrypted...
 //                            PendingCommand command2 = new PendingCommand();
 //                            command2.command = PENDING_COMMAND_APPEND;
 //                            command2.arguments = new String[] { localSentFolder.getName(), encryptedMessage.getUid() };
