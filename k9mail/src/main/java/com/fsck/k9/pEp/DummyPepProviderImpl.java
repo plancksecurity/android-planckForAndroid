@@ -1,5 +1,6 @@
 package com.fsck.k9.pEp;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.fsck.k9.K9;
@@ -49,6 +50,11 @@ public class DummyPepProviderImpl implements PEpProvider {
 
     public boolean mightBePEpMessage(MimeMessage source) {
         return true;
+    }
+
+    @Override
+    public void setup(Context c) {
+        // nop
     }
 
 }
