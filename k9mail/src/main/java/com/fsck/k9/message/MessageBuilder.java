@@ -98,7 +98,7 @@ public abstract class MessageBuilder {
             message.setHeader("Return-Receipt-To", from.toEncodedString());
         }
 
-        if (!K9.hideUserAgent()) {
+        if (!K9.hideUserAgent() && context != null) {       // if ctx not set, forget about user agent...
             message.setHeader("User-Agent", context.getString(R.string.message_header_mua));
         }
 

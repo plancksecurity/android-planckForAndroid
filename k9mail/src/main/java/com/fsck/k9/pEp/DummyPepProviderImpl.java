@@ -29,6 +29,7 @@ public class DummyPepProviderImpl implements PEpProvider {
     DummyPepProviderImpl() {
         // NOP - just to mask external usage, we have a factory
     }
+    public Color getPrivacyState(Message message) { return Color.pEpRatingB0rken; }
 
     @Override
     public Color getPrivacyState(Address from, Address[] toAdresses, Address[] ccAdresses, Address[] bccAdresses) {

@@ -2,10 +2,8 @@ package com.fsck.k9.pEp;
 
 import android.content.Context;
 import android.util.Log;
-
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.internet.MimeMessage;
-
 import org.pEp.jniadapter.AndroidHelper;
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Engine;
@@ -27,6 +25,15 @@ public class PEpProviderImpl implements PEpProvider {
             pEpInitialized = true;
         }
     }
+
+    @Override
+    public Color getPrivacyState(com.fsck.k9.mail.Message message) {
+            Address from = message.getFrom()[0];                            // FIXME: From is an array?!
+            Address[] to = message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO);
+            Address[] cc = message.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC);
+            Address[] bcc = message.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC);
+            return getPrivacyState(from, to, cc, bcc);
+        }
 
     @Override
     public Color getPrivacyState(Address from, Address[] toAdresses, Address[] ccAdresses, Address[] bccAdresses) {
@@ -51,9 +58,9 @@ public class PEpProviderImpl implements PEpProvider {
             Color rv = engine.outgoing_message_color(testee);   // stupid way to be able to patch the value in debugger
             return rv;
         } catch (Exception e) {
-            Log.e("Exception from pEp:", e.getMessage());
+            Log.e("pEp", e.getMessage());
         } catch (Throwable e) {
-            Log.e("Throwable from pEp:", e.getMessage());
+            Log.e("pEp", e.getMessage());
 
         } finally {
             if (engine != null) engine.close();
@@ -65,55 +72,49 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public MimeMessage decryptMessage(MimeMessage source) {
-        throw new RuntimeException("not ready");
-//        Message  srcMsg = null;
-//        Engine engine = null;
-//        Engine.decrypt_message_Return decReturn = null;
-//        try {
-//            engine = new Engine();
-//            srcMsg = PEpUtils.createIdentity(source);
-//           decReturn = engine.decrypt_message(srcMsg);
-//            // TODO: color?
-//            return PEpUtils.createIdentity(decReturn.dst);
-//        } catch (Throwable t) {
-//            Log.e("Error from pEp:", t.getMessage());  // TODO: schöner machen?
-//        } finally {
-//            if (engine != null) engine.close();
-//            if (srcMsg != null) srcMsg.close();
-//            if (decReturn != null) decReturn.dst.close();   // FIXME: really necessary?
-//        }
-//        return null;
+        Message  srcMsg = null;
+        Engine engine = null;
+        Engine.decrypt_message_Return decReturn = null;
+        try {
+            engine = new Engine();
+            srcMsg = PEpUtils.createMessage(source);
+            decReturn = engine.decrypt_message(srcMsg);
+            // TODO: color?
+            return PEpUtils.createMimeMessage(decReturn.dst);
+        } catch (Throwable t) {
+            Log.e("Error from pEp:", t.getMessage());  // TODO: schöner machen?
+        } finally {
+            if (engine != null) engine.close();
+            if (srcMsg != null) srcMsg.close();
+            if (decReturn != null) decReturn.dst.close();   // FIXME: really necessary?
+        }
+        return null;
     }
 
     @Override
     public MimeMessage encryptMessage(MimeMessage source, String[] extraKeys) {
-        throw new RuntimeException("not ready");
-//        Message  srcMsg = null;
-//        Message encMsg = null;
-//        Engine engine = null;
-//        try {
-//            engine = new Engine();
-//            srcMsg = PEpUtils.createIdentity(source);
-//            encMsg = engine.encrypt_message(srcMsg, convertExtraKeys(extraKeys));
-//            return PEpUtils.createIdentity(encMsg);
-//        } catch (Throwable t) {
-//            Log.e("Error from pEp:", t.getMessage());         // TODO: schöner machen?
-//        } finally {
-//            if (engine != null) engine.close();
-//            if (srcMsg != null) srcMsg.close();
+        Message  srcMsg = null;
+        Message encMsg = null;
+        Engine engine = null;
+        try {
+            engine = new Engine();
+            srcMsg = PEpUtils.createMessage(source);
+            srcMsg.setDir(Message.Direction.Outgoing);
+            encMsg = engine.encrypt_message(srcMsg, convertExtraKeys(extraKeys));
+            return PEpUtils.createMimeMessage(encMsg);
+        } catch (Throwable t) {
+            Log.e("Error from pEp:", t.getMessage());         // TODO: schöner machen?
+        } finally {
+            if (engine != null) engine.close();
+            if (srcMsg != null) srcMsg.close();
 //            if (encMsg != null) srcMsg.close();
-//        }
-//        return null;
-    }
-
-    @Override
-    public boolean mightBePEpMessage(MimeMessage source) {
-        //TODO pEp: some clever heuristics to identify possible pEp mails
-        return true;
+        }
+        return null;
     }
 
     private Vector<String> convertExtraKeys(String[] extraKeys) {
-        Vector<String> rv = new Vector<String>(extraKeys.length);
+        if(extraKeys == null || extraKeys.length == 0) return null;
+        Vector<String> rv = new Vector<String>();
         Collections.addAll(rv, extraKeys);
         return rv;
     }
