@@ -2,15 +2,23 @@ package com.fsck.k9.pEp;
 
 import android.util.Log;
 
+import com.fsck.k9.activity.misc.Attachment;
+import com.fsck.k9.crypto.PgpData;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.Part;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
+import com.fsck.k9.mailstore.LocalBodyPart;
+import com.fsck.k9.message.MessageBuilder;
+import com.fsck.k9.message.SimpleMessageFormat;
 
+import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 /**
@@ -18,7 +26,7 @@ import java.util.Vector;
  *
  */
 
-class PEpUtils {
+public class PEpUtils {
     static Vector<Identity> createIdentity(Address[] adrs) {
         Vector<Identity> rv = new Vector<Identity>(adrs.length);
         if(adrs == null) return rv;
@@ -37,6 +45,15 @@ class PEpUtils {
         return id;
     }
 
+    static Address[] createAddresses(Vector<Identity> ids) {
+        Address[] rv = new Address[ids.size()];
+        int idx = 0;
+        for (Identity i: ids)
+            rv[idx++] = createAddress(i);
+
+        return rv;
+    }
+
     static Address createAddress(Identity id) {
         Address adr = new Address(id.address, id.username);
         // Address() parses the address, eventually not setting it, therefore just a little sanity...
@@ -47,47 +64,96 @@ class PEpUtils {
     }
 
     static Message createMessage(MimeMessage mm) {
-        Message m = new Message();
-/*
-    public native void setDir(Direction value);
-    public void setId(String value) {
-    public void setShortmsg(String value) {
+        Message m = null;
+        try {
+            m = new Message();
 
-    public void setLongmsg(String value) {
-    public void setLongmsgFormatted(String value) {
-    public native void setAttachments(ArrayList<Blob> value);
+            m.setFrom(createIdentity(mm.getFrom()[0]));
+            m.setTo(createIdentity(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO)));
+            m.setCc(createIdentity(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC)));
+            m.setBcc(createIdentity(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC)));
 
-    public native void setSent(Date value);
+            m.setShortmsg(mm.getSubject());
+            // fiddle message txt from MimeMsg...
+            MimeMultipart mmp = (MimeMultipart) mm.getBody();
+            LocalBodyPart lbp = (LocalBodyPart) mmp.getBodyPart(1);
+            BinaryMemoryBody bmb = (BinaryMemoryBody) lbp.getBody();
+            m.setLongmsg(new String(bmb.getData(), "UTF-8"));
+            // TODO: handle receiving case (should be a 3rd bodypart then...)
 
-    public native void setRecv(Date value);
 
-    public native void setFrom(Identity value);
-
-    public native void setTo(ArrayList<Identity> value);
-
-    public native void setRecvBy(Identity value);
-
-    public native void setCc(ArrayList<Identity> value);
-
-    public native void setBcc(ArrayList<Identity> value);
-
-    public native void setReplyTo(ArrayList<Identity> value);
-
-    public void setInReplyTo(ArrayList<String> value) {
-    public void setReferences(ArrayList<String> value) {
-    public void setKeywords(ArrayList<String> value) {
-    public void setComments(String value) {
-    public void setOptFields(Vector<Pair<String, String>> value) {
-    public native void setEncFormat(Message.EncFormat value);
-  */
-        return m;
-    }
-
-    static MimeMessage createMimeMessage(Message m) {
+            return m;
+        } catch (Throwable t) {
+            if(m != null) m.close();
+            Log.e("pEp", "Could not create message:", t);
+        }
         return null;
     }
 
+    static MimeMessage createMimeMessage(Message m) {
+        // FIXME: are these new String()s really necessary? I think, the adapter does that already...
+        com.fsck.k9.Identity me = new com.fsck.k9.Identity();
+        me.setEmail(new String(m.getFrom().address));
+        me.setName(new String(m.getFrom().username));
+        try {
+            MimeMessage rv = new PEpMessageBuilder()
+                    .setSubject(new String(m.getShortmsg()))
+                    .setTo(createAddresses(m.getTo()))
+                            //    .setCc(createAddresses(m.getCc()))
+                            //    .setBcc(createAddresses(m.getBcc()))
+                            // .setInReplyTo(mInReplyTo)
+                            // .setReferences(mReferences)
+                            // .setRequestReadReceipt(mReadReceipt)
+                    .setIdentity(me)
+                    .setMessageFormat(SimpleMessageFormat.TEXT)             // FIXME: pEp: not only text
+                    .setText(new String(m.getLongmsg()))
+                    .setAttachments(m.getAttachments())
+                            // .setSignature(mSignatureView.getCharacters())
+                            // .setQuoteStyle(mQuoteStyle)
+                            // .setQuotedTextMode(mQuotedTextMode)
+                            // .setQuotedText(mQuotedText.getCharacters())
+                            // .setQuotedHtmlContent(mQuotedHtmlContent)
+                            // .setReplyAfterQuote(mAccount.isReplyAfterQuote())
+                            // .setSignatureBeforeQuotedText(mAccount.isSignatureBeforeQuotedText())
+                            // .setIdentityChanged(mIdentityChanged)
+                            // .setSignatureChanged(mSignatureChanged)
+                            // .setCursorPosition(mMessageContentView.getSelectionStart())
+                            // .setMessageReference(mMessageReference)
+                    .build();
 
+            rv.setHeader("User-Agent", "k9+pEp early alpha");
+
+            return rv;
+        }
+        catch (Exception e) {
+            Log.e("pEp", "Could not create MimeMessage: ", e);
+        };
+        return null;
+    }
+
+    private static ArrayList<Attachment> createAttachments(Message m) {
+        return new ArrayList<Attachment>();
+    }
+
+    public static boolean sendViaPEp(com.fsck.k9.mail.Message message) {
+        Color c = PEpProviderFactory.createProvider().getPrivacyState(message);
+        return (c == Color.pEpRatingFullyAnonymous ||
+                c == Color.pEpRatingReliable ||
+                c == Color.pEpRatingTrusted ||
+                c == Color.pEpRatingTrustedAndAnonymized ||
+                c == Color.pEpRatingUnreliable );
+    }
+
+    /**
+     * checks wether the message given as parameter might be a message that should be piped through pEp
+     * also checks wether msg has a pubkey attached
+     * @param source
+     * @return
+     */
+    public static boolean mightBePEpMessage(MimeMessage source) {
+        //TODO pEp: some clever heuristics to identify possible pEp mails
+        return true;
+    }
 
 
 
