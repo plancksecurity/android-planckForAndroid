@@ -12,7 +12,7 @@ import com.fsck.k9.R;
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
 
-public class PEpTrustwords extends Activity {
+public class PEpTrustwords extends K9Activity {
 
     private static final String ACTION_SHOW_PEP_TRUSTWORDS = "com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS";
     private final static String MY_IDENTITY="me";
@@ -30,7 +30,7 @@ public class PEpTrustwords extends Activity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final Intent intent = getIntent();
         myFingerprint = intent.getStringExtra(MY_IDENTITY);

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public interface Body {
+public interface  Body {
     /**
      * Returns the raw data of the body, without transfer encoding etc applied.
      * TODO perhaps it would be better to have an intermediate "simple part" class where this method could reside

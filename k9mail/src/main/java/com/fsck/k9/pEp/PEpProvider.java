@@ -1,5 +1,7 @@
 package com.fsck.k9.pEp;
 
+import android.content.Context;
+
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.internet.MimeMessage;
 import org.pEp.jniadapter.Color;
@@ -51,4 +53,11 @@ public interface PEpProvider {
      * @return
      */
     public boolean mightBePEpMessage(MimeMessage source);
+
+    /**
+     * Helper for pEp setup. Smells funny to have it in an interface, but fits nowhere else.
+     *
+     * @param c
+     */
+    public void setup(Context c);
 }
