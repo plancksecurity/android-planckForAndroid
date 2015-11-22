@@ -21,6 +21,7 @@ import java.util.Vector;
 class PEpUtils {
     static Vector<Identity> createIdentity(Address[] adrs) {
         Vector<Identity> rv = new Vector<Identity>(adrs.length);
+        if(adrs == null) return rv;
         for(Address adr : adrs)
             rv.add(createIdentity(adr));
         return rv;
@@ -29,9 +30,10 @@ class PEpUtils {
     static Identity createIdentity(Address adr) {
         Identity id = new Identity();
         id.address = adr.getAddress();
-        id.username = adr.getPersonal();
+        id.username = adr.getAddress();
+        id.user_id = adr.getAddress();          // hack to get an unique ID...
 
-        // TODO: do I have any kind of unique id for user_id?
+        // TODO: do I have any kind of unique id for user_id? (no, I don't, see hack from above)
         return id;
     }
 

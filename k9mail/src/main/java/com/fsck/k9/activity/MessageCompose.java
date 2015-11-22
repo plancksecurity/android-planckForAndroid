@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.content.Loader;
 import android.content.pm.ActivityInfo;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -571,8 +572,10 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 return true;
             }
         });
+
 // TODO> review after rebase
-//        mPEpProvider = PEpProviderFactory.createProvider();
+//
+//        mPEpProvider = PEpProviderFactory.createProvider(getApplicationContext());
 //
 //        View.OnFocusChangeListener pEpChangeTracker = new View.OnFocusChangeListener() {
 //                @Override
@@ -1587,7 +1590,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         return true;
     }
 
-    //  TODO> Review after rebase
+// TODO> review after rebase
 //    private void handlePEpState(boolean... withToast) {
 //        boolean reallyWithToast = true;
 //        if(withToast.length>0) reallyWithToast = withToast[0];
@@ -1602,7 +1605,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 //    private Drawable makePePStatusIcon() {
 //        PePUIArtefactCache c = PePUIArtefactCache.getInstance(getResources());
 //        Drawable statusIcon = c.getIcon(mPEpColor);
-//        statusIcon.setTint(c.getColor(mPEpColor));        // FIXME: pEp do it the old way(tm)
+//        statusIcon.setColorFilter(c.getColor(mPEpColor), PorterDuff.Mode.MULTIPLY);        // FIXME: pEp do it the old way(tm)
 //        return statusIcon;
 //    }
 //
@@ -1610,8 +1613,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 //        // TODO: pEp: check wether we take the right measures to get out addresses...
 //        Address from = Address.parseUnencoded(mIdentity.getEmail())[0];
 //        Address[] toAdresses = Address.parseUnencoded(mToView.getText().toString().trim());
-//        Address[] ccAdresses = Address.parseUnencoded(mToView.getText().toString().trim());
-//        Address[] bccAdresses = Address.parseUnencoded(mToView.getText().toString().trim());
+//        Address[] ccAdresses = Address.parseUnencoded(mCcView.getText().toString().trim());
+//        Address[] bccAdresses = Address.parseUnencoded(mBccView.getText().toString().trim());
 //
 //        mPEpColor = mPEpProvider.getPrivacyState(from, toAdresses, ccAdresses, bccAdresses);
 //    }

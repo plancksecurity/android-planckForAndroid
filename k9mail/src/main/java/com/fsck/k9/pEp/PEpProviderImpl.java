@@ -1,12 +1,15 @@
 package com.fsck.k9.pEp;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.internet.MimeMessage;
 
+import org.pEp.jniadapter.AndroidHelper;
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Engine;
+import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
 
 import java.util.Collections;
@@ -15,19 +18,38 @@ import java.util.Vector;
 /**
  * pep provider implementation. Dietz is the culprit.
  */
-public class PEpProviderImpl implements PEpProvider{
+public class PEpProviderImpl implements PEpProvider {
+    private static boolean pEpInitialized = false;
+
+    public synchronized void setup(Context c) {
+        if(!pEpInitialized) {
+            AndroidHelper.setup(c);
+            pEpInitialized = true;
+        }
+    }
+
     @Override
     public Color getPrivacyState(Address from, Address[] toAdresses, Address[] ccAdresses, Address[] bccAdresses) {
+        if(from == null || toAdresses.length == 0)
+            return Color.pEpRatingUndefined;
+
         Message testee = null;
         Engine engine = null;
         try {
             engine = new Engine();
             testee = new Message();
-            testee.setFrom(PEpUtils.createIdentity(from));
+            Identity idFrom = PEpUtils.createIdentity(from);
+            idFrom.me = true;
+            engine.myself(idFrom);              // not sure wether that call is necessary. But it should do no harm.
+            testee.setFrom(idFrom);
             testee.setTo(PEpUtils.createIdentity(toAdresses));
             testee.setCc(PEpUtils.createIdentity(ccAdresses));
             testee.setBcc(PEpUtils.createIdentity(bccAdresses));
-            return engine.outgoing_message_color(testee);
+            testee.setShortmsg("hello, world");
+            testee.setLongmsg("Lorem ipsum");
+            testee.setDir(Message.Direction.Outgoing);
+            Color rv = engine.outgoing_message_color(testee);   // stupid way to be able to patch the value in debugger
+            return rv;
         } catch (Exception e) {
             Log.e("Exception from pEp:", e.getMessage());
         } catch (Throwable e) {
