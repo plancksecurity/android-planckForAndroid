@@ -51,14 +51,14 @@ public class PEpStatus extends K9Activity {
         Button trustwords = (Button) findViewById(R.id.pEp_trustwords);
 
         int pEpColor = ui.getColor(m_pEpColor);
-        getWindow().getDecorView().setBackgroundColor(pEpColor);
+        // getWindow().getDecorView().setBackgroundColor(pEpColor);
         // TODO: pEp: somehow, the icon does not show up. OK. Later. After I have real bitmaps...
         pEpIcon.setImageDrawable(ui.getIcon(m_pEpColor));
-        pEpIcon.setBackgroundColor(ui.getColor(m_pEpColor));
+        pEpIcon.setBackgroundColor(pEpColor);
         pEpShortDesc.setText(ui.getTitle(m_pEpColor));
-        pEpShortDesc.setTextColor(0xffffffff - pEpColor);       // simply invert the background. Might work :-}
+        // pEpShortDesc.setTextColor(0xffffffff - pEpColor);       // simply invert the background. Might work :-}
         pEpLongText.setText(ui.getDescription(m_pEpColor));
-        pEpLongText.setTextColor(0xffffffff - pEpColor);
+        // pEpLongText.setTextColor(0xffffffff - pEpColor);
 
         if(m_pEpColor == Color.pEpRatingReliable) {
             trustwords.setVisibility(View.VISIBLE);
@@ -68,27 +68,5 @@ public class PEpStatus extends K9Activity {
                 }
             });
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_pep_status, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }
