@@ -1,15 +1,9 @@
 package com.fsck.k9.pEp;
 
 
-import android.content.Context;
-
-import com.fsck.k9.Account.QuoteStyle;
 import com.fsck.k9.Identity;
 import com.fsck.k9.K9;
-import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
-import com.fsck.k9.activity.misc.Attachment;
-import com.fsck.k9.crypto.PgpData;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.Message.RecipientType;
@@ -22,11 +16,6 @@ import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
-import com.fsck.k9.mailstore.TempFileBody;
-import com.fsck.k9.mailstore.TempFileMessageBody;
-import com.fsck.k9.message.IdentityHeaderBuilder;
-import com.fsck.k9.message.InsertableHtmlContent;
-import com.fsck.k9.message.QuotedTextMode;
 import com.fsck.k9.message.SimpleMessageFormat;
 
 
@@ -39,6 +28,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
+/**
+ * ripped from MessageBuilder and adopted:
+ * - keep attachments in Memory
+ *
+ */
 
 public class PEpMessageBuilder {
     private String subject;
@@ -160,6 +154,7 @@ public class PEpMessageBuilder {
         } else if (messageFormat == SimpleMessageFormat.TEXT) {
             // Text-only message.
             MimeMultipart mp = new MimeMultipart();
+            mp.setSubType("encrypted");
             mp.addBodyPart(new MimeBodyPart(body, "text/plain"));
             addAttachmentsToMessage(mp);
             MimeMessageHelper.setBody(message, mp);

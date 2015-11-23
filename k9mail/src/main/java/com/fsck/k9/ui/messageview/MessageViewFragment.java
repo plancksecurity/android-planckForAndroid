@@ -44,9 +44,12 @@ import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
+import com.fsck.k9.pEp.PEpProviderFactory;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.mailstore.MessageViewInfo.MessageViewContainer;
 import com.fsck.k9.ui.crypto.MessageCryptoCallback;
 import com.fsck.k9.ui.crypto.MessageCryptoHelper;
@@ -83,6 +86,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private PgpData mPgpData;
     private Account mAccount;
     private MessageReference mMessageReference;
+//    private LocalMessage mMessage;
     private LocalMessage mMessage;
     private MessageCryptoAnnotations messageAnnotations;
     private MessagingController mController;
@@ -167,6 +171,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 onDownloadRemainder();
             }
         });
+        // onDownloadRemainder();;
 
         mFragmentListener.messageHeaderViewAvailable(mMessageView.getMessageHeaderView());
 
@@ -226,8 +231,17 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void onLoadMessageFromDatabaseFinished(LocalMessage message) {
-        displayMessageHeader(message);
+        PEpUtils.dumpMimeMessage(message);
+        MimeMessage msg = PEpProviderFactory.createAndSetupProvider(getContext()).decryptMessage(message);
+        PEpUtils.dumpMimeMessage(msg);
+        /* try {
+            mMessage.setSubject(msg.getSubject());
+        } catch (MessagingException e) {
+            Log.e("pep", "subject", e);
+        }*/
 
+
+        displayMessageHeader(message);
         if (message.isBodyMissing()) {
             startDownloadingMessageBody(message);
         } else {
@@ -741,7 +755,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         @Override
         public void onLoadFinished(Loader<LocalMessage> loader, LocalMessage message) {
             setProgress(false);
+
             mMessage = message;
+
             if (message == null) {
                 onLoadMessageFromDatabaseFailed();
             } else {
