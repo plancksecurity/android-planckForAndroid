@@ -47,7 +47,7 @@ public class PEpProviderImpl implements PEpProvider {
             testee = new Message();
             Identity idFrom = PEpUtils.createIdentity(from);
             idFrom.me = true;
-            engine.myself(idFrom);              // not sure wether that call is necessary. But it should do no harm.
+            engine.myself(idFrom);              // not sure wether that call is necessary. But it should do no harm. If necessary, add below too. Now called in right context if only one account.
             testee.setFrom(idFrom);
             testee.setTo(PEpUtils.createIdentity(toAdresses));
             testee.setCc(PEpUtils.createIdentity(ccAdresses));
@@ -78,15 +78,16 @@ public class PEpProviderImpl implements PEpProvider {
         try {
             engine = new Engine();
             srcMsg = PEpUtils.createMessage(source);
+            srcMsg.setDir(Message.Direction.Incoming);
             decReturn = engine.decrypt_message(srcMsg);
             // TODO: color?
             return PEpUtils.createMimeMessage(decReturn.dst);
         } catch (Throwable t) {
-            Log.e("Error from pEp:", t.getMessage());  // TODO: schöner machen?
+            Log.e("pep", "Error from conversion:", t);
         } finally {
             if (engine != null) engine.close();
             if (srcMsg != null) srcMsg.close();
-            if (decReturn != null) decReturn.dst.close();   // FIXME: really necessary?
+//            if (decReturn != null) decReturn.dst.close();
         }
         return null;
     }
@@ -103,7 +104,7 @@ public class PEpProviderImpl implements PEpProvider {
             encMsg = engine.encrypt_message(srcMsg, convertExtraKeys(extraKeys));
             return PEpUtils.createMimeMessage(encMsg);
         } catch (Throwable t) {
-            Log.e("Error from pEp:", t.getMessage());         // TODO: schöner machen?
+            Log.e("pep", "Error from conversion:", t);
         } finally {
             if (engine != null) engine.close();
             if (srcMsg != null) srcMsg.close();

@@ -43,12 +43,20 @@ import com.fsck.k9.fragment.ProgressDialogFragment;
 import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
+import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
+import com.fsck.k9.pEp.PEpProviderFactory;
+import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.ui.crypto.MessageCryptoCallback;
+import com.fsck.k9.ui.crypto.MessageCryptoHelper;
+import com.fsck.k9.ui.message.LocalMessageLoader;
+import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
 import com.fsck.k9.view.MessageHeader;
 
 
@@ -78,6 +86,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private Account mAccount;
     private MessageReference mMessageReference;
+//    private LocalMessage mMessage;
     private LocalMessage mMessage;
     private MessagingController mController;
     private DownloadManager downloadManager;
@@ -183,6 +192,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 messageLoaderHelper.downloadCompleteMessage();
             }
         });
+        // onDownloadRemainder();;
 
         mFragmentListener.messageHeaderViewAvailable(mMessageView.getMessageHeaderView());
 

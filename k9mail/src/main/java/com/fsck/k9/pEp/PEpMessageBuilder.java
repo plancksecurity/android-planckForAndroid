@@ -24,6 +24,11 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
 
+/**
+ * ripped from MessageBuilder and adopted:
+ * - keep attachments in Memory
+ *
+ */
 
 public class PEpMessageBuilder {
     private String subject;
@@ -145,6 +150,7 @@ public class PEpMessageBuilder {
         } else if (messageFormat == SimpleMessageFormat.TEXT) {
             // Text-only message.
             MimeMultipart mp = new MimeMultipart();
+            mp.setSubType("encrypted");
             mp.addBodyPart(new MimeBodyPart(body, "text/plain"));
             addAttachmentsToMessage(mp);
             MimeMessageHelper.setBody(message, mp);

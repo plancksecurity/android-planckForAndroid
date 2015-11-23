@@ -3,12 +3,15 @@ package com.fsck.k9.pEp;
 import android.util.Log;
 import com.fsck.k9.activity.misc.Attachment;
 import com.fsck.k9.mail.Address;
-import com.fsck.k9.mail.Part;
+import com.fsck.k9.mail.Body;
+import com.fsck.k9.mail.BodyPart;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.internet.MimeMultipart;
+import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
 import com.fsck.k9.mailstore.LocalBodyPart;
 import com.fsck.k9.message.SimpleMessageFormat;
+import org.pEp.jniadapter.Blob;
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
@@ -63,20 +66,40 @@ public class PEpUtils {
         try {
             m = new Message();
 
+            // headers
             m.setFrom(createIdentity(mm.getFrom()[0]));
             m.setTo(createIdentity(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO)));
             m.setCc(createIdentity(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC)));
             m.setBcc(createIdentity(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC)));
 
+            // subject
             m.setShortmsg(mm.getSubject());
+
             // fiddle message txt from MimeMsg...
             MimeMultipart mmp = (MimeMultipart) mm.getBody();
-            LocalBodyPart lbp = (LocalBodyPart) mmp.getBodyPart(1);
+            LocalBodyPart lbp = (LocalBodyPart) mmp.getBodyPart(0);
             BinaryMemoryBody bmb = (BinaryMemoryBody) lbp.getBody();
             m.setLongmsg(new String(bmb.getData(), "UTF-8"));
-            // TODO: handle receiving case (should be a 3rd bodypart then...)
 
+            // and add attachments...
 
+            Vector<Blob> attachments = new Vector<Blob>();
+            int nrOfAttachment = mmp.getBodyParts().size();
+            for (int i = 1; i < nrOfAttachment; i++) {
+                BodyPart p = mmp.getBodyPart(i);
+
+                Log.d("pepdump", "Bodypart #"+i+":" + p.toString()+" Body:" + p.getBody().toString());
+                if (p.getBody() instanceof BinaryMemoryBody) {
+                    BinaryMemoryBody part = (BinaryMemoryBody) p.getBody();
+                    Blob blob = new Blob();
+                    blob.filename = "qwerty";
+                    blob.mime_type = p.getMimeType();
+                    blob.data = part.getData();
+                    attachments.add(blob);
+                    Log.d("pepdump", "BLOB #"+i+":" + blob.mime_type);
+                }
+            }
+            m.setAttachments(attachments);
             return m;
         } catch (Throwable t) {
             if(m != null) m.close();
@@ -91,7 +114,8 @@ public class PEpUtils {
         me.setEmail(new String(m.getFrom().address));
         me.setName(new String(m.getFrom().username));
         try {
-            MimeMessage rv = new PEpMessageBuilder()
+
+            PEpMessageBuilder pmb = new PEpMessageBuilder()
                     .setSubject(new String(m.getShortmsg()))
                     .setTo(createAddresses(m.getTo()))
                             //    .setCc(createAddresses(m.getCc()))
@@ -101,8 +125,13 @@ public class PEpUtils {
                             // .setRequestReadReceipt(mReadReceipt)
                     .setIdentity(me)
                     .setMessageFormat(SimpleMessageFormat.TEXT)             // FIXME: pEp: not only text
-                    .setText(new String(m.getLongmsg()))
-                    .setAttachments(m.getAttachments())
+                    .setText(new String(m.getLongmsg()));
+                    try {
+                        pmb.setAttachments(m.getAttachments());
+                    } catch (Exception e)  {
+                        Log.e("pepdump", "during getAttachments()", e);
+                        pmb.setAttachments(new Vector<Blob>());
+                    }
                             // .setSignature(mSignatureView.getCharacters())
                             // .setQuoteStyle(mQuoteStyle)
                             // .setQuotedTextMode(mQuotedTextMode)
@@ -114,14 +143,14 @@ public class PEpUtils {
                             // .setSignatureChanged(mSignatureChanged)
                             // .setCursorPosition(mMessageContentView.getSelectionStart())
                             // .setMessageReference(mMessageReference)
-                    .build();
+            MimeMessage rv = pmb.build();
 
             rv.setHeader("User-Agent", "k9+pEp early alpha");
 
             return rv;
         }
         catch (Exception e) {
-            Log.e("pEp", "Could not create MimeMessage: ", e);
+            Log.e("pepdump", "Could not create MimeMessage: ", e);
         };
         return null;
     }
@@ -156,31 +185,48 @@ public class PEpUtils {
 
 
     static public void dumpMimeMessage(MimeMessage mm) {
-        String out = "\nRoot:\n";
-
+        Log.e("pepdump", "Root:");
         try {
             for (String header:mm.getHeaderNames())
-                out += header + ": " + mm.getHeader(header) + "\n";
-            out += "\n";
-            out += "Message-Id: " + mm.getMessageId().hashCode() +"\n";
-            out += mangleBody((MimeMultipart)mm.getBody());
-            out += "hasAttachments:" + mm.hasAttachments();
+                Log.e("pepdump", header + ": " + mm.getHeader(header));
+
+            Log.e("pepdump",  "Message-Id: " + mm.getMessageId().hashCode() );
+            Log.e("pepdump", "hasAttachments:" + mm.hasAttachments());
+
+             mangleBody(mm.getBody(), 5);
 
         } catch (Exception e) {
-            out += "\n\n" + e.getMessage();
+            Log.e("pepdump", "", e);
         }
-
-        Log.d("MIMEMESSAGE", out);
-
     }
 
-    static private String mangleBody(MimeMultipart body) throws Exception {
-        String rv = "Body:\n";
-        for(Part p: body.getBodyParts())
-            rv += "     " + new String(((BinaryMemoryBody) p).getData()) +"\n";
-        //rv+="  " + ((BinaryMemoryBody) p)(((LocalBodyPart) p).getBody())).getData().toString() +"\n";
+    static private void mangleBody(Body body, int idx) throws Exception {
+        String prev = "                                                      ".substring(0, idx);
+        if (!(body instanceof MimeMultipart)) {
+            Log.e("pepdump", prev + "body: "+ body.toString());
+            if(body instanceof BinaryMemoryBody) {
+                byte[] arr = ((BinaryMemoryBody) body).getData();
+                Log.e("pepdump", prev + "Blob content: >" + new String(arr).substring(0, (arr.length > 50) ? 50 : arr.length) + "<");
+            }
+            if(body instanceof TextBody) {
+                TextBody tb = (TextBody) body;
+                Log.e("pepdump", prev+ "Textbody content >" + tb.getText()+"<");
+            }
+            return;
+        }
+        try {
+            MimeMultipart mmp = (MimeMultipart) body;
 
-        return rv;
+            Log.e("pepdump", prev + "Body:");
+            int nr = mmp.getBodyParts().size();
+            for (int i = 0; i < nr; i++) {
+                BodyPart p = mmp.getBodyPart(i);
+                Log.e("pepdump",prev + "Bodypart: " + p.toString());
+                mangleBody(p.getBody(), idx + 5);
+
+            }
+        } catch (Exception e) {
+            Log.e("pepdump", "b0rgd", e);
+        }
     }
-
 }
