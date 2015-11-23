@@ -195,7 +195,7 @@ public class PEpUtils {
         Log.e("pepdump", "Root:");
         try {
             for (String header:mm.getHeaderNames())
-                Log.e("pepdump", header + ": " + mm.getHeader(header));
+                Log.e("pepdump", header + ": " + mm.getHeader(header)[0]);
 
             Log.e("pepdump",  "Message-Id: " + mm.getMessageId().hashCode() );
             Log.e("pepdump", "hasAttachments:" + mm.hasAttachments());
