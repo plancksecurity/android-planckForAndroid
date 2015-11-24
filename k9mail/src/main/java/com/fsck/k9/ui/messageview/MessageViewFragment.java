@@ -49,6 +49,7 @@ import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
+import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.mailstore.MessageViewInfo.MessageViewContainer;

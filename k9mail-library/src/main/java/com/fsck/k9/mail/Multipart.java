@@ -20,6 +20,13 @@ public abstract class Multipart implements Body {
         part.setParent(this);
     }
 
+    public void removeBodyPart(int idx) {
+        BodyPart part = getBodyPart(idx);
+        part.setParent(null);
+        mParts.remove(part);
+    }
+
+
     public BodyPart getBodyPart(int index) {
         return mParts.get(index);
     }
