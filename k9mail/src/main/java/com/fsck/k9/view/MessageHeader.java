@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
@@ -70,6 +71,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     private OnLayoutChangedListener mOnLayoutChangedListener;
 
+    private ImageButton pEpIndicator;
     /**
      * Pair class is only available since API Level 5, so we need
      * this helper class unfortunately
@@ -132,6 +134,9 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         mMessageHelper = MessageHelper.getInstance(mContext);
 
         mSubjectView.setVisibility(VISIBLE);
+
+        pEpIndicator = (ImageButton) findViewById(R.id.pEp_indicator);
+
         hideAdditionalHeaders();
     }
 

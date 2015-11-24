@@ -80,7 +80,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public MimeMessage decryptMessage(MimeMessage source) {
+    public DecryptResult decryptMessage(MimeMessage source) {
         Message  srcMsg = null;
         Engine engine = null;
         Engine.decrypt_message_Return decReturn = null;
@@ -89,8 +89,10 @@ public class PEpProviderImpl implements PEpProvider {
             srcMsg = PEpUtils.createMessage(source);
             srcMsg.setDir(Message.Direction.Incoming);
             decReturn = engine.decrypt_message(srcMsg);
-            // TODO: color?
-            return PEpUtils.createMimeMessage(decReturn.dst);
+
+            MimeMessage resMsg = PEpUtils.createMimeMessage(decReturn.dst);
+            DecryptResult res = new DecryptResult(resMsg, decReturn.color);
+            return res;
         } catch (Throwable t) {
             Log.e("pep", "Error from conversion:", t);
         } finally {

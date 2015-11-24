@@ -152,7 +152,9 @@ public class PEpUtils {
                             // .setMessageReference(mMessageReference)
             MimeMessage rv = pmb.build();
 
-            rv.setHeader("User-Agent", "k9+pEp early alpha");
+            rv.setHeader("User-Agent", "k9+pEp late alpha");
+
+            rv.setHeader("x-pep-version","1.0");
 
             return rv;
         }
@@ -182,8 +184,13 @@ public class PEpUtils {
      * @return
      */
     public static boolean mightBePEpMessage(MimeMessage source) {
+        try {
+            return (source.getHeaderNames().contains("x-pep-version"));
+        } catch (Exception e) {
+            Log.e("pep", "reading message headers", e);
+        }
+        return false;
         //TODO pEp: some clever heuristics to identify possible pEp mails
-        return true;
     }
 
 
@@ -224,7 +231,7 @@ public class PEpUtils {
         try {
             MimeMultipart mmp = (MimeMultipart) body;
 
-            Log.e("pepdump", prev + "Body:");
+            Log.e("pepdump", prev + "MimeMultipart:");
             int nr = mmp.getBodyParts().size();
             for (int i = 0; i < nr; i++) {
                 BodyPart p = mmp.getBodyPart(i);

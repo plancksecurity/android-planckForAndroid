@@ -44,10 +44,14 @@ import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.internet.MimeBodyPart;
 import com.fsck.k9.mail.internet.MimeMessage;
+import com.fsck.k9.mail.internet.MimeMultipart;
+import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
+import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.mailstore.MessageViewInfo.MessageViewContainer;
@@ -232,21 +236,40 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private void onLoadMessageFromDatabaseFinished(LocalMessage message) {
         PEpUtils.dumpMimeMessage(message);
-        MimeMessage msg = PEpProviderFactory.createAndSetupProvider(getContext()).decryptMessage(message);
-        PEpUtils.dumpMimeMessage(msg);
-        /* try {
-            mMessage.setSubject(msg.getSubject());
-        } catch (MessagingException e) {
-            Log.e("pep", "subject", e);
-        }*/
-
-
+        if (PEpUtils.mightBePEpMessage(message)){
+            PEpProvider.DecryptResult result = PEpProviderFactory.createAndSetupProvider(getContext()).decryptMessage(message);
+            MimeMessage msg = result.msg;
+            PEpUtils.dumpMimeMessage(msg);
+            try {
+                message.setSubject(msg.getSubject());
+                mixMsgIntoMessage(message, msg);
+                // TODO: pep icon
+            } catch (MessagingException e) {
+                Log.e("pep", "fiddling msg", e);
+            }
+        }
         displayMessageHeader(message);
         if (message.isBodyMissing()) {
             startDownloadingMessageBody(message);
         } else {
             messageCryptoHelper.decryptOrVerifyMessagePartsIfNecessary(message);
         }
+    }
+
+    private void mixMsgIntoMessage(LocalMessage lm, MimeMessage mm) {
+        MimeMultipart mm_mmp = (MimeMultipart) mm.getBody();
+        MimeBodyPart mm_mbp = (MimeBodyPart) mm_mmp.getBodyPart(0);
+        TextBody mm_mtb = (TextBody) mm_mbp.getBody();
+        String mm_text = mm_mtb.getText();
+        Log.d("pep", "got text: >" + mm_text + "<");
+
+        // now: find the right part in lm and delete other attachments...
+        MimeMultipart lm_mmp = (MimeMultipart) lm.getBody();
+        MimeBodyPart lm_mbp = (MimeBodyPart) lm_mmp.getBodyPart(0);
+        lm_mbp.setBody(mm_mtb);
+        lm_mmp.removeBodyPart(3);
+        lm_mmp.removeBodyPart(2);
+        lm_mmp.removeBodyPart(1);
     }
 
     private void onLoadMessageFromDatabaseFailed() {
