@@ -34,7 +34,7 @@ public interface PEpProvider {
      *
      * TODO: pEp: how do I get the color? Perhaps Via header value in return value?
      */
-    public MimeMessage decryptMessage(MimeMessage source);
+    public DecryptResult decryptMessage(MimeMessage source);
 
     /**
      * Encrypts one k9 message. This one hides all the black magic associated with the real
@@ -55,4 +55,13 @@ public interface PEpProvider {
      * @param c
      */
     public void setup(Context c);
+
+    public class DecryptResult {
+        DecryptResult(MimeMessage msg, Color col) {
+            this.msg = msg;
+            this.col = col;
+        }
+        public MimeMessage msg;
+        public Color col;
+    }
 }

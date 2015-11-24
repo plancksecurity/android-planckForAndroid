@@ -45,7 +45,7 @@ public class DummyPepProviderImpl implements PEpProvider {
         return null;
     }
     @Override
-    public MimeMessage decryptMessage(MimeMessage source) {
+    public DecryptResult decryptMessage(MimeMessage source) {
         return null;
     }
 
