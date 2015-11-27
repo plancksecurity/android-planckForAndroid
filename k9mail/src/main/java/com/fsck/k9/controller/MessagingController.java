@@ -3113,8 +3113,6 @@ public class MessagingController implements Runnable {
                         continue;
                     }
 
-
-
                     localFolder.fetch(Collections.singletonList(message), fp, null);
                     try {
 
@@ -3127,38 +3125,20 @@ public class MessagingController implements Runnable {
                         }
 
 
-                        message.setFlag(Flag.X_SEND_IN_PROGRESS, true);
                         if (K9.DEBUG)
                             Log.i(K9.LOG_TAG, "Sending message with UID " + message.getUid());
 
-                        boolean doPEp = PEpUtils.sendViaPEp(message);
-                        if (doPEp) {
-                            // TODO: pEp latest possibility to fiddle enc/unenc stuff? -> yes!
-                            // if nothing to pep do as normal.
-                            // else
-                            //    encMsg = enc(msg)
-                            //    sendMsg(encMsg)
-                            //    if(cleartext on server: as normal
-                            //    else (if outfolder)
-                            //       delete cleartext in local sent mail,  // check what it does with local mails
-                            //       put enc'd variant there and proceed as usual
+                        // pep message...
+                        Message encryptedMessage = PEpProviderFactory.createProvider().encryptMessage((MimeMessage) message, null);
+                        localFolder.delete(Collections.singletonList(message), null);       // TODO: check wether this really does anything...
+                        localFolder.appendMessages(Collections.singletonList(encryptedMessage));
 
-                            Message encryptedMessage = PEpProviderFactory.createProvider().encryptMessage((MimeMessage) message, null);
-                            encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, true);
-                            // localFolder.appendMessages(Collections.singletonList(encryptedMessage));  // FIXME: really necessary?
-                            transport.sendMessage(encryptedMessage);
-                            encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, false);
-                            encryptedMessage.setFlag(Flag.SEEN, true);
+                        encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, true);
 
+                        transport.sendMessage(encryptedMessage);
+                        encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, false);
+                        encryptedMessage.setFlag(Flag.SEEN, true);
 
-                            // FIXME: perhaps save enc'd msg to server?
-                        }
-                        else {
-                            transport.sendMessage(message);
-                        }
-
-                        message.setFlag(Flag.X_SEND_IN_PROGRESS, false);
-                        message.setFlag(Flag.SEEN, true);
                         progress++;
                         for (MessagingListener l : getListeners()) {
                             l.synchronizeMailboxProgress(account, account.getSentFolderName(), progress, todo);
@@ -3172,21 +3152,15 @@ public class MessagingController implements Runnable {
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moving sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
-                            localFolder.moveMessages(Collections.singletonList(message), localSentFolder);
-                            // localFolder.moveMessages(Collections.singletonList(encryptedMessage), localSentFolder);
+                            localFolder.moveMessages(Collections.singletonList(encryptedMessage), localSentFolder);
 
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moved sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
                             PendingCommand command = new PendingCommand();
                             command.command = PENDING_COMMAND_APPEND;
-                            command.arguments = new String[] { localSentFolder.getName(), message.getUid() };
+                            command.arguments = new String[] { localSentFolder.getName(), encryptedMessage.getUid() };
                             queuePendingCommand(account, command);
-// just if we want to save to server encrypted...
-//                            PendingCommand command2 = new PendingCommand();
-//                            command2.command = PENDING_COMMAND_APPEND;
-//                            command2.arguments = new String[] { localSentFolder.getName(), encryptedMessage.getUid() };
-//                            queuePendingCommand(account, command2);
 
                             processPendingCommands(account);
                         }

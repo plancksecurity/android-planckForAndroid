@@ -236,18 +236,16 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private void onLoadMessageFromDatabaseFinished(LocalMessage message) {
         PEpUtils.dumpMimeMessage(message);
-        if (PEpUtils.mightBePEpMessage(message)){
-            PEpProvider.DecryptResult result = PEpProviderFactory.createAndSetupProvider(getContext()).decryptMessage(message);
-            MimeMessage msg = result.msg;
-            PEpUtils.dumpMimeMessage(msg);
-            try {
-                message.setSubject(msg.getSubject());
-                mixMsgIntoMessage(message, msg);
-                // TODO: pep icon
-            } catch (MessagingException e) {
-                Log.e("pep", "fiddling msg", e);
-            }
+        PEpProvider.DecryptResult result = PEpProviderFactory.createAndSetupProvider(getContext()).decryptMessage(message);
+        MimeMessage msg = result.msg;
+        PEpUtils.dumpMimeMessage(msg);
+        try {
+            message.setSubject(msg.getSubject());
+            mixMsgIntoMessage(message, msg);
+        } catch (MessagingException e) {
+            Log.e("pep", "fiddling msg", e);
         }
+        // TODO: pep icon
         displayMessageHeader(message);
         if (message.isBodyMissing()) {
             startDownloadingMessageBody(message);
