@@ -12,7 +12,7 @@ import org.pEp.jniadapter.Color;
 public interface PEpProvider {
     /**
      * checks the privacy level of the adresses supplied. This method creates a pEp message and
-     * calls the jni adapter to obtain the info. Accourding to fdik, this check returns fast (all
+     * calls the jni adapter to obtain the info. According to fdik, this check returns fast (all
      * time consuming stuff (network i/o etc.) is done asynchronousely.
      *
      * @param from  from email adress
@@ -24,10 +24,11 @@ public interface PEpProvider {
     public Color getPrivacyState(Address from, Address[] toAdresses, Address[] ccAdresses, Address[] bccAdresses);
     public Color getPrivacyState(com.fsck.k9.mail.Message message);
 
-
     /**
-     * Decrypts one k9 message. Hides all the black magic associated with the real
+     * Decrypts one k9 MimeMessage. Hides all the black magic associated with the real
      * pEp library interaction.
+     *
+     * Implications from feeding LocalMessages into decryptMessage are currently not complety understood...
      *
      * @param source the (fully qualified) message to be decrypted.
      * @return the decrypted message
@@ -40,8 +41,10 @@ public interface PEpProvider {
      * Encrypts one k9 message. This one hides all the black magic associated with the real
      * pEp library interaction.
      *
-     * FIXME: where do I handle Cc:/Bcc: split?
-     * FIXME: where do I handle split for different privacy levels? Is this really necessary?
+     * Implications from feeding LocalMessages into decryptMessage are currently not complety understood...
+     *
+     * FIXME: where do I handle Bcc: corner case?
+     * FIXME: where do I handle split for different privacy levels (To1 is green, To2 is yellow?) Is this really necessary?
      *
      * @param source the (fully qualified) message to be encrypted.
      * @param extraKeys extra key ids to encrypt msg to...
@@ -51,7 +54,7 @@ public interface PEpProvider {
 
     /**
      * Helper for pEp setup. Smells funny to have it in an interface, but fits nowhere else.
-     *
+     * FIXME: How long can I use the context?
      * @param c
      */
     public void setup(Context c);

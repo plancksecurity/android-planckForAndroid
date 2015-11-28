@@ -1,7 +1,6 @@
 package com.fsck.k9.pEp;
 
 import android.util.Log;
-import com.fsck.k9.activity.misc.Attachment;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.BodyPart;
@@ -12,11 +11,9 @@ import com.fsck.k9.mailstore.BinaryMemoryBody;
 import com.fsck.k9.mailstore.LocalBodyPart;
 import com.fsck.k9.message.SimpleMessageFormat;
 import org.pEp.jniadapter.Blob;
-import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
 
-import java.util.ArrayList;
 import java.util.Vector;
 
 /**
@@ -25,7 +22,7 @@ import java.util.Vector;
  */
 
 public class PEpUtils {
-    static Vector<Identity> createIdentity(Address[] adrs) {
+    static Vector<Identity> createIdentities(Address[] adrs) {
         Vector<Identity> rv = new Vector<Identity>(adrs.length);
         if(adrs == null) return rv;
         for(Address adr : adrs)
@@ -66,46 +63,74 @@ public class PEpUtils {
         try {
             m = new Message();
 
-            // headers
-            m.setFrom(createIdentity(mm.getFrom()[0]));
-            m.setTo(createIdentity(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO)));
-            m.setCc(createIdentity(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC)));
-            m.setBcc(createIdentity(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC)));
-
-            // subject
-            m.setShortmsg(mm.getSubject());
-
-            // fiddle message txt from MimeMsg...
-            MimeMultipart mmp = (MimeMultipart) mm.getBody();
-            LocalBodyPart lbp = (LocalBodyPart) mmp.getBodyPart(0);
-            BinaryMemoryBody bmb = (BinaryMemoryBody) lbp.getBody();
-            m.setLongmsg(new String(bmb.getData(), "UTF-8"));
-
-            // and add attachments...
-
-            Vector<Blob> attachments = new Vector<Blob>();
-            int nrOfAttachment = mmp.getBodyParts().size();
-            for (int i = 1; i < nrOfAttachment; i++) {
-                BodyPart p = mmp.getBodyPart(i);
-
-                Log.d("pepdump", "Bodypart #"+i+":" + p.toString()+" Body:" + p.getBody().toString());
-                if (p.getBody() instanceof BinaryMemoryBody) {
-                    BinaryMemoryBody part = (BinaryMemoryBody) p.getBody();
-                    Blob blob = new Blob();
-                    blob.filename = "qwerty";
-                    blob.mime_type = p.getMimeType();
-                    blob.data = part.getData();
-                    attachments.add(blob);
-                    Log.d("pepdump", "BLOB #"+i+":" + blob.mime_type);
-                }
-            }
-            m.setAttachments(attachments);
+            addHeaders(m, mm);
+            addBody(m, mm);
             return m;
         } catch (Throwable t) {
             if(m != null) m.close();
             Log.e("pEp", "Could not create message:", t);
         }
         return null;
+    }
+
+    private static void addBody(Message m, MimeMessage mm) {
+        try {
+            // fiddle message txt from MimeMsg...
+            MimeMultipart mmp = (MimeMultipart) mm.getBody();
+            LocalBodyPart lbp = (LocalBodyPart) mmp.getBodyPart(0);
+            BinaryMemoryBody bmb = (BinaryMemoryBody) lbp.getBody();
+            m.setLongmsg(new String(bmb.getData(), "UTF-8"));
+
+            //TODO: Handle pure text and multipart/alternative
+
+            // and add attachments...
+            Vector<Blob> attachments = new Vector<Blob>();
+            int nrOfAttachment = mmp.getBodyParts().size();
+            for (int i = 1; i < nrOfAttachment; i++) {
+                BodyPart p = mmp.getBodyPart(i);
+
+                Log.d("pep", "Bodypart #" + i + ":" + p.toString() + " Body:" + p.getBody().toString());
+                if (p.getBody() instanceof BinaryMemoryBody) {
+                    BinaryMemoryBody part = (BinaryMemoryBody) p.getBody();
+
+                    // TODO: filename
+                    Blob blob = new Blob();
+                    blob.filename = "qwerty";
+                    blob.mime_type = p.getMimeType();
+                    blob.data = part.getData();
+                    attachments.add(blob);
+                    Log.d("pep", "BLOB #" + i + ":" + blob.mime_type);
+                }
+            }
+            m.setAttachments(attachments);
+        } catch (Exception e) {
+            Log.e("pep", "creating message body", e);
+        }
+    }
+
+    private static void addHeaders(Message m, MimeMessage mm) {
+        // headers
+        m.setFrom(createIdentity(mm.getFrom()[0]));
+        m.setTo(createIdentities(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO)));
+        m.setCc(createIdentities(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC)));
+        m.setBcc(createIdentities(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC)));
+        m.setId(mm.getMessageId());
+        m.setInReplyTo(createMessageReferences(mm.getReferences()));
+        // m.setRecv();
+        m.setSent(mm.getSentDate());
+        m.setReplyTo(createIdentities(mm.getReplyTo()));
+        // m.setRecvBy();
+        m.setShortmsg(mm.getSubject());
+
+        // TODO: other headers
+    }
+
+    private static Vector<String> createMessageReferences(String[] references) {
+        Vector<String> rv = new Vector<String>();
+        if(references != null)
+            for(String s : references)
+                rv.add(s);
+        return rv;
     }
 
     static MimeMessage createMimeMessage(Message m) {
@@ -115,6 +140,7 @@ public class PEpUtils {
         me.setName(new String(m.getFrom().username));
         try {
 
+            // FIXME: the following sucks. It makes no sense, to shovel stuff from Message to the builder. But builder has to be reworked anyway.
             PEpMessageBuilder pmb = new PEpMessageBuilder()
                     .setSubject(new String(m.getShortmsg()))
                     .setTo(createAddresses(m.getTo()))
@@ -147,7 +173,7 @@ public class PEpUtils {
 
             rv.setHeader("User-Agent", "k9+pEp late alpha");
 
-            rv.setHeader("x-pep-version","1.0");
+            rv.setHeader("x-pep-version","1.0");            // FIXME: remove soon
 
             return rv;
         }
@@ -157,40 +183,11 @@ public class PEpUtils {
         return null;
     }
 
-    private static ArrayList<Attachment> createAttachments(Message m) {
-        return new ArrayList<Attachment>();
-    }
-
-    public static boolean sendViaPEp(com.fsck.k9.mail.Message message) {
-        Color c = PEpProviderFactory.createProvider().getPrivacyState(message);
-        return (c == Color.pEpRatingFullyAnonymous ||
-                c == Color.pEpRatingReliable ||
-                c == Color.pEpRatingTrusted ||
-                c == Color.pEpRatingTrustedAndAnonymized ||
-                c == Color.pEpRatingUnreliable );
-    }
-
     /**
-     * checks wether the message given as parameter might be a message that should be piped through pEp
-     * also checks wether msg has a pubkey attached
-     * @param source
-     * @return
+     * dumps a k9 msg to log
+     *
+     * @param mm mesage to dump
      */
-    public static boolean mightBePEpMessage(MimeMessage source) {
-        try {
-            return (source.getHeaderNames().contains("x-pep-version"));
-        } catch (Exception e) {
-            Log.e("pep", "reading message headers", e);
-        }
-        return false;
-        //TODO pEp: some clever heuristics to identify possible pEp mails
-    }
-
-
-
-
-
-
     static public void dumpMimeMessage(MimeMessage mm) {
         Log.e("pepdump", "Root:");
         try {
@@ -200,14 +197,14 @@ public class PEpUtils {
             Log.e("pepdump",  "Message-Id: " + mm.getMessageId().hashCode() );
             Log.e("pepdump", "hasAttachments:" + mm.hasAttachments());
 
-             mangleBody(mm.getBody(), 5);
+             dumpBody(mm.getBody(), 5);
 
         } catch (Exception e) {
             Log.e("pepdump", "", e);
         }
     }
 
-    static private void mangleBody(Body body, int idx) throws Exception {
+    static private void dumpBody(Body body, int idx) throws Exception {
         String prev = "                                                      ".substring(0, idx);
         if (!(body instanceof MimeMultipart)) {
             Log.e("pepdump", prev + "body: "+ body.toString());
@@ -229,7 +226,7 @@ public class PEpUtils {
             for (int i = 0; i < nr; i++) {
                 BodyPart p = mmp.getBodyPart(i);
                 Log.e("pepdump",prev + "Bodypart: " + p.toString());
-                mangleBody(p.getBody(), idx + 5);
+                dumpBody(p.getBody(), idx + 5);
 
             }
         } catch (Exception e) {
