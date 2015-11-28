@@ -54,23 +54,22 @@ public class PEpProviderImpl implements PEpProvider {
         try {
             engine = new Engine();
             testee = new Message();
+
             Identity idFrom = PEpUtils.createIdentity(from);
             idFrom.me = true;
             engine.myself(idFrom);              // not sure wether that call is necessary. But it should do no harm. If necessary, add below too. Now called in right context if only one account.
             testee.setFrom(idFrom);
-            testee.setTo(PEpUtils.createIdentity(toAdresses));
-            testee.setCc(PEpUtils.createIdentity(ccAdresses));
-            testee.setBcc(PEpUtils.createIdentity(bccAdresses));
-            testee.setShortmsg("hello, world");
+            testee.setTo(PEpUtils.createIdentities(toAdresses));
+            testee.setCc(PEpUtils.createIdentities(ccAdresses));
+            testee.setBcc(PEpUtils.createIdentities(bccAdresses));
+            testee.setShortmsg("hello, world");     // FIXME: do I need them?
             testee.setLongmsg("Lorem ipsum");
             testee.setDir(Message.Direction.Outgoing);
+
             Color rv = engine.outgoing_message_color(testee);   // stupid way to be able to patch the value in debugger
             return rv;
-        } catch (Exception e) {
-            Log.e("pEp", e.getMessage());
         } catch (Throwable e) {
-            Log.e("pEp", e.getMessage());
-
+            Log.e("pep", "during color test", e);
         } finally {
             if (engine != null) engine.close();
             if (testee != null) testee.close();
@@ -83,22 +82,22 @@ public class PEpProviderImpl implements PEpProvider {
     public DecryptResult decryptMessage(MimeMessage source) {
         Message  srcMsg = null;
         Engine engine = null;
-        Engine.decrypt_message_Return decReturn = null;
+        Engine.decrypt_message_Return decReturn;
         try {
             engine = new Engine();
+
             srcMsg = PEpUtils.createMessage(source);
             srcMsg.setDir(Message.Direction.Incoming);
+
             decReturn = engine.decrypt_message(srcMsg);
 
-            MimeMessage resMsg = PEpUtils.createMimeMessage(decReturn.dst);
-            DecryptResult res = new DecryptResult(resMsg, decReturn.color);
-            return res;
+            return new DecryptResult(PEpUtils.createMimeMessage(decReturn.dst), decReturn.color);
         } catch (Throwable t) {
             Log.e("pep", "Error from conversion:", t);
         } finally {
             if (engine != null) engine.close();
             if (srcMsg != null) srcMsg.close();
-//            if (decReturn != null) decReturn.dst.close();
+//            if (decReturn != null) decReturn.dst.close();         causes a SIGSEGV atm...
         }
         return null;
     }
@@ -119,7 +118,7 @@ public class PEpProviderImpl implements PEpProvider {
         } finally {
             if (engine != null) engine.close();
             if (srcMsg != null) srcMsg.close();
-//            if (encMsg != null) srcMsg.close();
+//            if (encMsg != null) srcMsg.close();       causes a SIGSEGV atm...
         }
         return null;
     }

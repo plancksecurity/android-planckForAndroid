@@ -3129,7 +3129,7 @@ public class MessagingController implements Runnable {
                             Log.i(K9.LOG_TAG, "Sending message with UID " + message.getUid());
 
                         // pep message...
-                        Message encryptedMessage = PEpProviderFactory.createProvider().encryptMessage((MimeMessage) message, null);
+                        Message encryptedMessage = PEpProviderFactory.createProvider().encryptMessage((MimeMessage) message, null); // TODO: Extra keys
                         localFolder.delete(Collections.singletonList(message), null);       // TODO: check wether this really does anything...
                         localFolder.appendMessages(Collections.singletonList(encryptedMessage));
 
