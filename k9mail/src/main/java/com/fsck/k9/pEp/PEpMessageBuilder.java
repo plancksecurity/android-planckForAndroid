@@ -2,16 +2,21 @@ package com.fsck.k9.pEp;
 
 import android.util.Log;
 
+import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.BodyPart;
 import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.internet.MimeBodyPart;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.internet.MimeMultipart;
+import com.fsck.k9.mail.internet.MimeUtility;
+import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
 import com.fsck.k9.mailstore.LocalBodyPart;
 
 import org.pEp.jniadapter.Blob;
 import org.pEp.jniadapter.Message;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Vector;
 
 /**
@@ -30,29 +35,64 @@ class PEpMessageBuilder {
         try {
             m = new Message();
 
-            addHeaders(m, mm);
-            addBody(m, mm);
+            addHeaders(m);
+            addBody(m);
             return m;
         } catch (Throwable t) {
             if(m != null) m.close();
-            Log.e("pEp", "Could not create message:", t);
+            Log.e("pEp", "Could not create pep message:", t);
         }
         return null;
     }
 
-    private void addBody(Message m, MimeMessage mm) {
-        try {
-            // fiddle message txt from MimeMsg...
-            MimeMultipart mmp = (MimeMultipart) mm.getBody();
-            LocalBodyPart lbp = (LocalBodyPart) mmp.getBodyPart(0);
-            BinaryMemoryBody bmb = (BinaryMemoryBody) lbp.getBody();
+    private void addBody(Message m) throws MessagingException, UnsupportedEncodingException {
+        // fiddle message txt from MimeMsg...
+        // the buildup of mm should be like the follwing:
+        // - html body if any, else plain text
+        // - plain text body if html above
+        // - many attachments (of type binarymemoryblob (hopefully ;-)).
+        Body b = mm.getBody();
+        if(b instanceof BinaryMemoryBody) {
+            BinaryMemoryBody bmb = (BinaryMemoryBody) b;
+            String text = new String(bmb.getData(), "UTF-8");
+            m.setLongmsg(text);
+            return;
+        }
+
+        MimeMultipart mmp = (MimeMultipart) b;
+        Vector<Blob> attachments = new Vector<Blob>();
+        int nrOfAttachment = mmp.getBodyParts().size();
+        for (int i = 0; i < nrOfAttachment; i++) {
+            MimeBodyPart mbp = (MimeBodyPart) mmp.getBodyPart(i);
+            Log.d("pep", "Bodypart #" + i + ":" + mbp.toString() + "mime type:" + mbp.getMimeType() + "  Body:" + mbp.getBody().toString());
+            if (mbp.isMimeType("text/plain")) {
+            /*    TextBody tb = (TextBody) mbp.getBody();
+                m.setLongmsg(tb.getText()); */
+                BinaryMemoryBody bmb = (BinaryMemoryBody) mbp.getBody();
+                String text = new String(bmb.getData(), "UTF-8");
+                m.setLongmsg(text);
+                Log.d("pep", "found Text: " + text);
+            } else if (mbp.getBody() instanceof BinaryMemoryBody) {
+                BinaryMemoryBody part = (BinaryMemoryBody) mbp.getBody();
+
+                Blob blob = new Blob();
+                blob.filename = MimeUtility.getHeaderParameter(mbp.getContentType(), "filename");     // TODO: test wether this works
+                blob.mime_type = mbp.getMimeType();
+                blob.data = part.getData();
+                attachments.add(blob);
+                Log.d("pep", "BLOB #" + i + ":" + blob.mime_type + ":" + blob.filename);
+            } else
+                Log.i("pep", "Could not process part #" + i + ": " + mbp.toString());
+            // TODO: HTML...
+        }
+
+/*            MimeBodyPart mbp = (MimeBodyPart) mmp.getBodyPart(0);
+            BinaryMemoryBody bmb = (BinaryMemoryBody) mbp.getBody();
             m.setLongmsg(new String(bmb.getData(), "UTF-8"));
 
             //TODO: Handle pure text and multipart/alternative
 
             // and add attachments...
-            Vector<Blob> attachments = new Vector<Blob>();
-            int nrOfAttachment = mmp.getBodyParts().size();
             for (int i = 1; i < nrOfAttachment; i++) {
                 BodyPart p = mmp.getBodyPart(i);
 
@@ -60,22 +100,18 @@ class PEpMessageBuilder {
                 if (p.getBody() instanceof BinaryMemoryBody) {
                     BinaryMemoryBody part = (BinaryMemoryBody) p.getBody();
 
-                    // TODO: filename
                     Blob blob = new Blob();
-                    blob.filename = "qwerty";
+                    blob.filename = MimeUtility.getHeaderParameter(p.getContentType(), "filename");     // TODO: test wether this works
                     blob.mime_type = p.getMimeType();
                     blob.data = part.getData();
                     attachments.add(blob);
-                    Log.d("pep", "BLOB #" + i + ":" + blob.mime_type);
+                    Log.d("pep", "BLOB #" + i + ":" + blob.mime_type + ":" + blob.filename);
                 }
-            }
-            m.setAttachments(attachments);
-        } catch (Exception e) {
-            Log.e("pep", "creating message body", e);
-        }
+            } */
+        m.setAttachments(attachments);
     }
 
-    private void addHeaders(Message m, MimeMessage mm) {
+    private void addHeaders(Message m) {
         try {
             // headers
             m.setFrom(PEpUtils.createIdentity(mm.getFrom()[0]));

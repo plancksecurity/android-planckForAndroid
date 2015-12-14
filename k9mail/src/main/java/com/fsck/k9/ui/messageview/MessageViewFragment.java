@@ -90,7 +90,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private PgpData mPgpData;
     private Account mAccount;
     private MessageReference mMessageReference;
-//    private LocalMessage mMessage;
     private LocalMessage mMessage;
     private MessageCryptoAnnotations messageAnnotations;
     private MessagingController mController;
@@ -261,13 +260,18 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         String mm_text = mm_mtb.getText();
         Log.d("pep", "got text: >" + mm_text + "<");
 
-        // now: find the right part in lm and delete other attachments...
-        MimeMultipart lm_mmp = (MimeMultipart) lm.getBody();
-        MimeBodyPart lm_mbp = (MimeBodyPart) lm_mmp.getBodyPart(0);
-        lm_mbp.setBody(mm_mtb);
-        lm_mmp.removeBodyPart(3);
-        lm_mmp.removeBodyPart(2);
-        lm_mmp.removeBodyPart(1);
+        try {
+            // now: find the right part in lm and delete other attachments...
+            // FIXME: attachment handling!
+            MimeMultipart lm_mmp = (MimeMultipart) lm.getBody();
+            MimeBodyPart lm_mbp = (MimeBodyPart) lm_mmp.getBodyPart(0);
+            lm_mbp.setBody(mm_mtb);
+            lm_mmp.removeBodyPart(3);
+            lm_mmp.removeBodyPart(2);
+            lm_mmp.removeBodyPart(1);
+        } catch (Exception e) {
+            Log.e("pep", "could not manipulate localmessage", e);
+        }
     }
 
     private void onLoadMessageFromDatabaseFailed() {

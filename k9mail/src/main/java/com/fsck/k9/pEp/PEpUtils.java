@@ -46,6 +46,7 @@ public class PEpUtils {
     }
 
     static Address[] createAddresses(Vector<Identity> ids) {
+        if(ids == null) return null;                // this should be consistent with pep api
         Address[] rv = new Address[ids.size()];
         int idx = 0;
         for (Identity i: ids)
