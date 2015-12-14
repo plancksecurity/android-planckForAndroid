@@ -60,10 +60,10 @@ public class PEpProviderImpl implements PEpProvider {
             Color rv = engine.outgoing_message_color(testee);   // stupid way to be able to patch the value in debugger
             return rv;
         } catch (Throwable e) {
-            Log.e("pep", "during color test", e);
+            Log.e("pep", "during color test:", e);
         } finally {
-            if (engine != null) engine.close();
             if (testee != null) testee.close();
+            if (engine != null) engine.close();
         }
 
         return Color.pEpRatingB0rken;
@@ -73,22 +73,22 @@ public class PEpProviderImpl implements PEpProvider {
     public DecryptResult decryptMessage(MimeMessage source) {
         Message  srcMsg = null;
         Engine engine = null;
-        Engine.decrypt_message_Return decReturn;
+        Engine.decrypt_message_Return decReturn = null;
         try {
             engine = new Engine();
 
-            srcMsg = PEpUtils.createMessage(source);
+            srcMsg = new PEpMessageBuilder(source).createMessage();
             srcMsg.setDir(Message.Direction.Incoming);
 
             decReturn = engine.decrypt_message(srcMsg);
 
-            return new DecryptResult(PEpUtils.createMimeMessage(decReturn.dst), decReturn.color);
+            return new DecryptResult(new MimeMessageBuilder().createMimeMessage(decReturn.dst), decReturn.color);
         } catch (Throwable t) {
-            Log.e("pep", "Error from conversion:", t);
+            Log.e("pep", "while decrypting message:", t);
         } finally {
-            if (engine != null) engine.close();
             if (srcMsg != null) srcMsg.close();
-//            if (decReturn != null) decReturn.dst.close();         causes a SIGSEGV atm...
+            if (decReturn != null) decReturn.dst.close();
+            if (engine != null) engine.close();
         }
         return null;
     }
@@ -100,16 +100,16 @@ public class PEpProviderImpl implements PEpProvider {
         Engine engine = null;
         try {
             engine = new Engine();
-            srcMsg = PEpUtils.createMessage(source);
+            srcMsg = new PEpMessageBuilder(source).createMessage();
             srcMsg.setDir(Message.Direction.Outgoing);
             encMsg = engine.encrypt_message(srcMsg, convertExtraKeys(extraKeys));
-            return PEpUtils.createMimeMessage(encMsg);
+            return new MimeMessageBuilder().createMimeMessage(encMsg);
         } catch (Throwable t) {
-            Log.e("pep", "Error from conversion:", t);
+            Log.e("pep", "while encrypting message:", t);
         } finally {
-            if (engine != null) engine.close();
             if (srcMsg != null) srcMsg.close();
-//            if (encMsg != null) srcMsg.close();       causes a SIGSEGV atm...
+            if (encMsg != null) srcMsg.close();
+            if (engine != null) engine.close();
         }
         return null;
     }

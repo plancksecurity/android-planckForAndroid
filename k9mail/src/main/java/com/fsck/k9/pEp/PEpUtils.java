@@ -9,7 +9,6 @@ import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
 import com.fsck.k9.mailstore.LocalBodyPart;
-import com.fsck.k9.message.SimpleMessageFormat;
 import org.pEp.jniadapter.Blob;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
@@ -20,6 +19,8 @@ import java.util.Vector;
  * some helper stuff
  *
  */
+
+// FIXME: this needs cleanup. separate message builder stuff to separate classes and leave only *small* helpers here!
 
 public class PEpUtils {
     static Vector<Identity> createIdentities(Address[] adrs) {
@@ -133,55 +134,6 @@ public class PEpUtils {
         return rv;
     }
 
-    static MimeMessage createMimeMessage(Message m) {
-        // FIXME: are these new String()s really necessary? I think, the adapter does that already...
-        com.fsck.k9.Identity me = new com.fsck.k9.Identity();
-        me.setEmail(new String(m.getFrom().address));
-        me.setName(new String(m.getFrom().username));
-        try {
-
-            // FIXME: the following sucks. It makes no sense, to shovel stuff from Message to the builder. But builder has to be reworked anyway.
-            PEpMessageBuilder pmb = new PEpMessageBuilder()
-                    .setSubject(new String(m.getShortmsg()))
-                    .setTo(createAddresses(m.getTo()))
-                            //    .setCc(createAddresses(m.getCc()))
-                            //    .setBcc(createAddresses(m.getBcc()))
-                            // .setInReplyTo(mInReplyTo)
-                            // .setReferences(mReferences)
-                            // .setRequestReadReceipt(mReadReceipt)
-                    .setIdentity(me)
-                    .setMessageFormat(SimpleMessageFormat.TEXT)             // FIXME: pEp: not only text
-                    .setText(new String(m.getLongmsg()));
-                    try {
-                        pmb.setAttachments(m.getAttachments());
-                    } catch (Exception e)  {
-                        Log.e("pepdump", "during getAttachments()", e);
-                        pmb.setAttachments(new Vector<Blob>());
-                    }
-                            // .setSignature(mSignatureView.getCharacters())
-                            // .setQuoteStyle(mQuoteStyle)
-                            // .setQuotedTextMode(mQuotedTextMode)
-                            // .setQuotedText(mQuotedText.getCharacters())
-                            // .setQuotedHtmlContent(mQuotedHtmlContent)
-                            // .setReplyAfterQuote(mAccount.isReplyAfterQuote())
-                            // .setSignatureBeforeQuotedText(mAccount.isSignatureBeforeQuotedText())
-                            // .setIdentityChanged(mIdentityChanged)
-                            // .setSignatureChanged(mSignatureChanged)
-                            // .setCursorPosition(mMessageContentView.getSelectionStart())
-                            // .setMessageReference(mMessageReference)
-            MimeMessage rv = pmb.build();
-
-            rv.setHeader("User-Agent", "k9+pEp late alpha");
-
-            rv.setHeader("x-pep-version","1.0");            // FIXME: remove soon
-
-            return rv;
-        }
-        catch (Exception e) {
-            Log.e("pepdump", "Could not create MimeMessage: ", e);
-        };
-        return null;
-    }
 
     /**
      * dumps a k9 msg to log
