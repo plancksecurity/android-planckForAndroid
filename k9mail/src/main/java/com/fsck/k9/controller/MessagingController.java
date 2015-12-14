@@ -62,7 +62,6 @@ import com.fsck.k9.pEp.DummyPepProviderImpl;
 import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
-import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
 import com.fsck.k9.search.ConditionsTreeNode;
@@ -3083,7 +3082,7 @@ public class MessagingController implements Runnable {
                         if (!account.hasSentFolder()) {
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Account does not have a sent mail folder; deleting sent message");
-                            message.setFlag(Flag.DELETED, true);
+//                            message.setFlag(Flag.DELETED, true);
                         } else {
                             LocalFolder localSentFolder = localStore.getFolder(account.getSentFolderName());
                             if (K9.DEBUG)
