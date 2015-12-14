@@ -39,6 +39,7 @@ import com.fsck.k9.mail.internet.BinaryTempFileBody;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
+import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.provider.UnreadWidgetProvider;
 import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.service.BootReceiver;
@@ -520,6 +521,7 @@ public class K9 extends Application {
 
     @Override
     public void onCreate() {
+        PEpProviderFactory.createAndSetupProvider(getApplicationContext());
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
         }

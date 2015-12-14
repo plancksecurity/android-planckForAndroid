@@ -90,7 +90,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private Account mAccount;
     private MessageReference mMessageReference;
-//    private LocalMessage mMessage;
     private LocalMessage mMessage;
     private MessagingController mController;
     private DownloadManager downloadManager;

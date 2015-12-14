@@ -85,16 +85,17 @@ public class PEpProviderImpl implements PEpProvider {
             return new DecryptResult(new MimeMessageBuilder().createMimeMessage(decReturn.dst), decReturn.color);
         } catch (Throwable t) {
             Log.e("pep", "while decrypting message:", t);
+            throw new RuntimeException("Could not decrypt");
         } finally {
             if (srcMsg != null) srcMsg.close();
-            if (decReturn != null) decReturn.dst.close();
+      //      if (decReturn != null) decReturn.dst.close();
             if (engine != null) engine.close();
         }
-        return null;
     }
 
     @Override
     public MimeMessage encryptMessage(MimeMessage source, String[] extraKeys) {
+        PEpUtils.dumpMimeMessage(source);
         Message  srcMsg = null;
         Message encMsg = null;
         Engine engine = null;
@@ -106,12 +107,12 @@ public class PEpProviderImpl implements PEpProvider {
             return new MimeMessageBuilder().createMimeMessage(encMsg);
         } catch (Throwable t) {
             Log.e("pep", "while encrypting message:", t);
+            throw new RuntimeException("Could not encrypt");
         } finally {
             if (srcMsg != null) srcMsg.close();
-            if (encMsg != null) srcMsg.close();
+    //        if (encMsg != null) srcMsg.close();
             if (engine != null) engine.close();
         }
-        return null;
     }
 
     private Vector<String> convertExtraKeys(String[] extraKeys) {
