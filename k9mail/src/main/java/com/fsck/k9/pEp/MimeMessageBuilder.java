@@ -57,8 +57,11 @@ class MimeMessageBuilder {
     MimeMessage createMimeMessage(Message m) {
         // FIXME: are these new String()s really necessary? I think, the adapter does that already...
         com.fsck.k9.Identity me = new com.fsck.k9.Identity();
-        me.setEmail(new String(m.getFrom().address));
-        me.setName(new String(m.getFrom().username));
+        org.pEp.jniadapter.Identity from = m.getFrom();
+        if(from != null) {
+            me.setEmail(new String(from.address));
+            me.setName(new String(from.username));
+        }
         try {
 
             // FIXME: the following sucks. It makes no sense, to shovel stuff from Message to the builder. But builder has to be reworked anyway.
@@ -77,6 +80,7 @@ class MimeMessageBuilder {
 
             MimeMessage rv = build();
 
+            rv.setMessageId(m.getId());
             rv.setHeader("User-Agent", "k9+pEp late alpha");
 
             return rv;
@@ -129,8 +133,6 @@ class MimeMessageBuilder {
         if (references != null) {
             message.setReferences(clobberVector(references));
         }
-
-        message.generateMessageId();
     }
 
     // move to peputils somewhen soon
@@ -197,8 +199,11 @@ class MimeMessageBuilder {
      */
     private void addAttachmentsToMessage(final MimeMultipart mp) throws MessagingException {
         Body body;
+        if(attachments == null) return;
         for (Blob attachment : attachments) {
             String contentType = attachment.mime_type;
+            String filename = attachment.filename;
+            if(filename == null) filename = "file";                 // TODO: why does pep engine not give file names?
             body = new BinaryMemoryBody(attachment.data, contentType);
 
             MimeBodyPart bp = new MimeBodyPart(body);
@@ -210,7 +215,7 @@ class MimeMessageBuilder {
              */
             bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, String.format("%s;\r\n name=\"%s\"",
                     contentType,
-                    EncoderUtil.encodeIfNecessary("qwerty",
+                    EncoderUtil.encodeIfNecessary(filename,
                             EncoderUtil.Usage.WORD_ENTITY, 7)));
 
             bp.setEncoding(MimeUtility.getEncodingforType(contentType));
