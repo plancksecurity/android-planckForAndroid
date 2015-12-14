@@ -9,7 +9,9 @@ import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.message.InsertableHtmlContent;
 
-class PEpTextBodyBuilder {
+// FIXME: make this part of MimeMessageBuilder
+
+class TextBodyBuilder {
     private boolean mIncludeQuotedText = true;
     private boolean mReplyAfterQuote = false;
     private boolean mSignatureBeforeQuotedText = false;
@@ -21,7 +23,7 @@ class PEpTextBodyBuilder {
     private String mQuotedText;
     private InsertableHtmlContent mQuotedTextHtml;
 
-    public PEpTextBodyBuilder(String messageContent) {
+    public TextBodyBuilder(String messageContent) {
         mMessageContent = messageContent;
     }
 
