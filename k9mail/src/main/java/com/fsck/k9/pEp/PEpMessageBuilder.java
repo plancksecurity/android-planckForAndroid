@@ -65,50 +65,31 @@ class PEpMessageBuilder {
         for (int i = 0; i < nrOfAttachment; i++) {
             MimeBodyPart mbp = (MimeBodyPart) mmp.getBodyPart(i);
             Log.d("pep", "Bodypart #" + i + ":" + mbp.toString() + "mime type:" + mbp.getMimeType() + "  Body:" + mbp.getBody().toString());
-            if (mbp.isMimeType("text/plain")) {
+            boolean plain = mbp.isMimeType("text/plain");
+            if (plain || mbp.isMimeType("text/html")) {
             /*    TextBody tb = (TextBody) mbp.getBody();
                 m.setLongmsg(tb.getText()); */
                 BinaryMemoryBody bmb = (BinaryMemoryBody) mbp.getBody();
                 String text = new String(bmb.getData(), "UTF-8");
-                m.setLongmsg(text);
+                if(plain)
+                    m.setLongmsg(text);
+                else
+                    m.setLongmsgFormatted(text);
                 Log.d("pep", "found Text: " + text);
             } else if (mbp.getBody() instanceof BinaryMemoryBody) {
                 BinaryMemoryBody part = (BinaryMemoryBody) mbp.getBody();
 
                 Blob blob = new Blob();
                 blob.filename = MimeUtility.getHeaderParameter(mbp.getContentType(), "filename");     // TODO: test wether this works
-                 if(blob.filename == null) blob.filename = "empty";
+                if(blob.filename == null) blob.filename = "empty";
                 blob.mime_type = mbp.getMimeType();
                 blob.data = part.getData();
                 attachments.add(blob);
                 Log.d("pep", "BLOB #" + i + ":" + blob.mime_type + ":" + blob.filename);
             } else
                 Log.i("pep", "Could not process part #" + i + ": " + mbp.toString());
-            // TODO: HTML...
         }
 
-/*            MimeBodyPart mbp = (MimeBodyPart) mmp.getBodyPart(0);
-            BinaryMemoryBody bmb = (BinaryMemoryBody) mbp.getBody();
-            m.setLongmsg(new String(bmb.getData(), "UTF-8"));
-
-            //TODO: Handle pure text and multipart/alternative
-
-            // and add attachments...
-            for (int i = 1; i < nrOfAttachment; i++) {
-                BodyPart p = mmp.getBodyPart(i);
-
-                Log.d("pep", "Bodypart #" + i + ":" + p.toString() + " Body:" + p.getBody().toString());
-                if (p.getBody() instanceof BinaryMemoryBody) {
-                    BinaryMemoryBody part = (BinaryMemoryBody) p.getBody();
-
-                    Blob blob = new Blob();
-                    blob.filename = MimeUtility.getHeaderParameter(p.getContentType(), "filename");     // TODO: test wether this works
-                    blob.mime_type = p.getMimeType();
-                    blob.data = part.getData();
-                    attachments.add(blob);
-                    Log.d("pep", "BLOB #" + i + ":" + blob.mime_type + ":" + blob.filename);
-                }
-            } */
         m.setAttachments(attachments);
     }
 
