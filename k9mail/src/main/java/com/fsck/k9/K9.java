@@ -519,7 +519,6 @@ public class K9 extends Application {
 
     @Override
     public void onCreate() {
-        PEpProviderFactory.createAndSetupProvider(getApplicationContext());
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
         }
