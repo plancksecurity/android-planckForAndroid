@@ -11,7 +11,7 @@ import com.fsck.k9.message.InsertableHtmlContent;
 
 // FIXME: make this part of MimeMessageBuilder
 
-class TextBodyBuilder {
+class MimeTextBodyBuilder {
     private boolean mIncludeQuotedText = true;
     private boolean mReplyAfterQuote = false;
     private boolean mSignatureBeforeQuotedText = false;
@@ -23,7 +23,7 @@ class TextBodyBuilder {
     private String mQuotedText;
     private InsertableHtmlContent mQuotedTextHtml;
 
-    public TextBodyBuilder(String messageContent) {
+    public MimeTextBodyBuilder(String messageContent) {
         mMessageContent = messageContent;
     }
 
