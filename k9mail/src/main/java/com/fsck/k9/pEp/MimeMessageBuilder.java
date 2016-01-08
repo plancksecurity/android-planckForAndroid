@@ -20,6 +20,7 @@ import com.fsck.k9.message.SimpleMessageFormat;
 
 
 import org.apache.james.mime4j.codec.EncoderUtil;
+import org.apache.james.mime4j.util.MimeUtil;
 import org.pEp.jniadapter.Blob;
 import org.pEp.jniadapter.Message;
 
@@ -139,10 +140,18 @@ class MimeMessageBuilder {
         Body body;
         Vector<Blob> attachments = pEpMessage.getAttachments();
         if(attachments == null) return;
-        for (Blob attachment : attachments) {
+
+        for (int i = 0; i < attachments.size(); i++) {
+            Blob attachment = attachments.get(i);
             String contentType = attachment.mime_type;
             String filename = attachment.filename;
             if(filename == null) filename = "file";                 // TODO: why does pep engine not give file names?
+
+            Log.d("pep", "BLOB #" + i + ":" + contentType + ":" + filename);
+            Log.d("pep", ">"+new String(attachment.data)+"<");
+
+            filename = EncoderUtil.encodeIfNecessary(filename, EncoderUtil.Usage.WORD_ENTITY, 7);
+
             body = new BinaryMemoryBody(attachment.data, contentType);
 
             MimeBodyPart bp = new MimeBodyPart(body);
@@ -152,12 +161,10 @@ class MimeMessageBuilder {
              * header value (all parameters at once) will be encoded by
              * MimeHeader.writeTo().
              */
-            bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, String.format("%s;\r\n name=\"%s\"",
-                    contentType,
-                    EncoderUtil.encodeIfNecessary(filename,
-                            EncoderUtil.Usage.WORD_ENTITY, 7)));
+            bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, String.format("%s;\r\n name=\"%s\"", contentType, filename));
 
-            bp.setEncoding(MimeUtility.getEncodingforType(contentType));
+            // bp.setEncoding(MimeUtility.getEncodingforType(contentType));
+            bp.setEncoding(MimeUtil.ENC_8BIT);
 
             /*
              * TODO: Oh the joys of MIME...
@@ -176,7 +183,7 @@ class MimeMessageBuilder {
              */
             bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
                     "attachment;\r\n filename=\"%s\";\r\n size=%d",
-                    "qwerty", attachment.data.length));
+                    filename, attachment.data.length));
 
             mp.addBodyPart(bp);
         }
@@ -221,8 +228,9 @@ class MimeMessageBuilder {
     // move to peputils somewhen soon
     private String clobberVector(Vector<String> sv) {   // FIXME: how do revs come out of array? "<...>" or "...."?
         String rt = "";
-        for( String cur : sv)
-            rt += cur + " ";
+        if(sv != null)
+            for( String cur : sv)
+                rt += cur + " ";
         return rt;
     }
 }

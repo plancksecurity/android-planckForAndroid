@@ -258,7 +258,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         MimeBodyPart mm_mbp = (MimeBodyPart) mm_mmp.getBodyPart(0);
         TextBody mm_mtb = (TextBody) mm_mbp.getBody();
         String mm_text = mm_mtb.getText();
-        Log.d("pep", "got text: >" + mm_text + "<");
 
         try {
             // now: find the right part in lm and delete other attachments...
