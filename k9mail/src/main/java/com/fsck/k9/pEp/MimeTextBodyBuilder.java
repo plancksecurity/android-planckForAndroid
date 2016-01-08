@@ -104,7 +104,7 @@ class MimeTextBodyBuilder {
             }
 
             // Convert the text to HTML
-            // text = textToHtmlFragment(text);
+            text = textToHtmlFragment(text);
 
             //TODO: Wrap this in proper HTML tags
 
