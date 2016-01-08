@@ -3018,15 +3018,15 @@ public class MessagingController {
 
                         // pep message...
                         Message encryptedMessage = PEpProviderFactory.createProvider().encryptMessage((MimeMessage) message, null); // TODO: Extra keys
-                        localFolder.delete(Collections.singletonList(message), null);       // TODO: check wether this really does anything...
+                        message.setFlag(Flag.DELETED, true);
                         message = null;                                                     // to prevent accidentially using the wrong msg further on...
                         localFolder.appendMessages(Collections.singletonList(encryptedMessage));
 
                         encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, true);
-
                         transport.sendMessage(encryptedMessage);
                         encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, false);
                         encryptedMessage.setFlag(Flag.SEEN, true);
+                        encryptedMessage = localFolder.getMessage(encryptedMessage.getUid());   // save & reload to gain a LocalMessage...
 
                         progress++;
                         for (MessagingListener l : getListeners()) {
