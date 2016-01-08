@@ -50,14 +50,16 @@ class MimeMessageBuilder {
 
     private Vector<Blob> attachments;
 
-    public MimeMessageBuilder() {
+    private Message pEpMessage;
 
+    public MimeMessageBuilder(Message m) {
+        this.pEpMessage = m;
     }
 
-    MimeMessage createMimeMessage(Message m) {
+    MimeMessage createMessage() {
         // FIXME: are these new String()s really necessary? I think, the adapter does that already...
         com.fsck.k9.Identity me = new com.fsck.k9.Identity();
-        org.pEp.jniadapter.Identity from = m.getFrom();
+        org.pEp.jniadapter.Identity from = pEpMessage.getFrom();
         if(from != null) {
             me.setEmail(new String(from.address));
             me.setName(new String(from.username));
@@ -65,22 +67,23 @@ class MimeMessageBuilder {
         try {
 
             // FIXME: the following sucks. It makes no sense, to shovel stuff from Message to the builder. But builder has to be reworked anyway.
-            setSubject(new String(m.getShortmsg()))
-                    .setTo(PEpUtils.createAddresses(m.getTo()))
-                    .setCc(PEpUtils.createAddresses(m.getCc()))
-                    .setBcc(PEpUtils.createAddresses(m.getBcc()))
-                    .setInReplyTo(m.getInReplyTo())
-                    .setReferences(m.getReferences())
+            // FIXME: Are the new String()s really necessary? Iirc I added them to work around some memory mgmt issues in jniadapter, but it would not work that way anyway...
+            setSubject(new String(pEpMessage.getShortmsg()))
+                    .setTo(PEpUtils.createAddresses(pEpMessage.getTo()))
+                    .setCc(PEpUtils.createAddresses(pEpMessage.getCc()))
+                    .setBcc(PEpUtils.createAddresses(pEpMessage.getBcc()))
+                    .setInReplyTo(pEpMessage.getInReplyTo())
+                    .setReferences(pEpMessage.getReferences())
                     .setIdentity(me)
                     .setMessageFormat(SimpleMessageFormat.TEXT)             // FIXME: pEp: not only text
-                    .setText(new String(m.getLongmsg()))
-                    .setAttachments(m.getAttachments());
+                    .setText(new String(pEpMessage.getLongmsg()))
+                    .setAttachments(pEpMessage.getAttachments());
 
             //TODO: other header fields. See Message.getOpt<something>
 
             MimeMessage rv = build();
 
-            rv.setMessageId(m.getId());
+            rv.setMessageId(pEpMessage.getId());
             rv.setHeader("User-Agent", "k9+pEp late alpha");
 
             return rv;
@@ -276,61 +279,61 @@ class MimeMessageBuilder {
         return body;
     }
 
-    public MimeMessageBuilder setSubject(String subject) {
+    private MimeMessageBuilder setSubject(String subject) {
         this.subject = subject;
         return this;
     }
 
-    public MimeMessageBuilder setTo(Address[] to) {
+    private MimeMessageBuilder setTo(Address[] to) {
         this.to = to;
         return this;
     }
 
-    public MimeMessageBuilder setCc(Address[] cc) {
+    private MimeMessageBuilder setCc(Address[] cc) {
         this.cc = cc;
         return this;
     }
 
-    public MimeMessageBuilder setBcc(Address[] bcc) {
+    private MimeMessageBuilder setBcc(Address[] bcc) {
         this.bcc = bcc;
         return this;
     }
 
-    public MimeMessageBuilder setInReplyTo(Vector<String> inReplyTo) {
+    private MimeMessageBuilder setInReplyTo(Vector<String> inReplyTo) {
         this.inReplyTo = inReplyTo;
         return this;
     }
 
-    public MimeMessageBuilder setReferences(Vector<String> references) {
+    private MimeMessageBuilder setReferences(Vector<String> references) {
         this.references = references;
         return this;
     }
 
-    public MimeMessageBuilder setRequestReadReceipt(boolean requestReadReceipt) {
+    private MimeMessageBuilder setRequestReadReceipt(boolean requestReadReceipt) {
         this.requestReadReceipt = requestReadReceipt;
         return this;
     }
 
-    public MimeMessageBuilder setIdentity(Identity identity) {
+    private MimeMessageBuilder setIdentity(Identity identity) {
         this.identity = identity;
         return this;
     }
 
-    public MimeMessageBuilder setMessageFormat(SimpleMessageFormat messageFormat) {
+    private MimeMessageBuilder setMessageFormat(SimpleMessageFormat messageFormat) {
         this.messageFormat = messageFormat;
         return this;
     }
 
-    public MimeMessageBuilder setText(String text) {
+    private MimeMessageBuilder setText(String text) {
         this.text = text;
         return this;
     }
 
-    public Vector<Blob> getAttachments() {
+    private Vector<Blob> getAttachments() {
         return attachments;
     }
 
-    public MimeMessageBuilder setAttachments(Vector<Blob> attachments) {
+    private MimeMessageBuilder setAttachments(Vector<Blob> attachments) {
         this.attachments = attachments;
         return this;
     }
