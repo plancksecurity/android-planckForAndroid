@@ -82,7 +82,7 @@ public class PEpProviderImpl implements PEpProvider {
 
             decReturn = engine.decrypt_message(srcMsg);
 
-            return new DecryptResult(new MimeMessageBuilder().createMimeMessage(decReturn.dst), decReturn.color);
+            return new DecryptResult(new MimeMessageBuilder(decReturn.dst).createMessage(), decReturn.color);
         } catch (Throwable t) {
             Log.e("pep", "while decrypting message:", t);
             throw new RuntimeException("Could not decrypt");
@@ -104,12 +104,13 @@ public class PEpProviderImpl implements PEpProvider {
             srcMsg = new PEpMessageBuilder(source).createMessage();
             srcMsg.setDir(Message.Direction.Outgoing);
             encMsg = engine.encrypt_message(srcMsg, convertExtraKeys(extraKeys));
-            return new MimeMessageBuilder().createMimeMessage(encMsg);
+            return new MimeMessageBuilder(encMsg).createMessage();
         } catch (Throwable t) {
             Log.e("pep", "while encrypting message:", t);
             throw new RuntimeException("Could not encrypt");
         } finally {
             if (srcMsg != null) srcMsg.close();
+            // FIXME: deletion of encMsg still seems to be broken...
     //        if (encMsg != null) srcMsg.close();
             if (engine != null) engine.close();
         }

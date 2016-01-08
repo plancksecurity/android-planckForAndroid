@@ -3067,6 +3067,7 @@ public class MessagingController implements Runnable {
                         // pep message...
                         Message encryptedMessage = PEpProviderFactory.createProvider().encryptMessage((MimeMessage) message, null); // TODO: Extra keys
                         localFolder.delete(Collections.singletonList(message), null);       // TODO: check wether this really does anything...
+                        message = null;                                                     // to prevent accidentially using the wrong msg further on...
                         localFolder.appendMessages(Collections.singletonList(encryptedMessage));
 
                         encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, true);
@@ -3082,7 +3083,7 @@ public class MessagingController implements Runnable {
                         if (!account.hasSentFolder()) {
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Account does not have a sent mail folder; deleting sent message");
-//                            message.setFlag(Flag.DELETED, true);
+                            encryptedMessage.setFlag(Flag.DELETED, true);
                         } else {
                             LocalFolder localSentFolder = localStore.getFolder(account.getSentFolderName());
                             if (K9.DEBUG)
