@@ -147,13 +147,13 @@ public class PEpUtils {
             for (String header:mm.getHeaderNames())
                 Log.e("pepdump", header + ": " + mm.getHeader(header)[0]);
 
-            Log.e("pepdump",  "Message-Id: " + mm.getMessageId().hashCode() );
+            // Log.e("pepdump",  "Message-Id: " + mm.getMessageId().hashCode() );
             Log.e("pepdump", "hasAttachments:" + mm.hasAttachments());
 
              dumpBody(mm.getBody(), 5);
 
         } catch (Exception e) {
-            Log.e("pepdump", "", e);
+            Log.e("pepdump", "b0rged", e);
         }
     }
 

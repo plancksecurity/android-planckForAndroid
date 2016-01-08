@@ -104,6 +104,7 @@ public class PEpProviderImpl implements PEpProvider {
             srcMsg = new PEpMessageBuilder(source).createMessage();
             srcMsg.setDir(Message.Direction.Outgoing);
             encMsg = engine.encrypt_message(srcMsg, convertExtraKeys(extraKeys));
+            if(encMsg == null) encMsg = srcMsg;         // FIXME: this should be done by the engine!
             return new MimeMessageBuilder(encMsg).createMessage();
         } catch (Throwable t) {
             Log.e("pep", "while encrypting message:", t);
@@ -111,7 +112,7 @@ public class PEpProviderImpl implements PEpProvider {
         } finally {
             if (srcMsg != null) srcMsg.close();
             // FIXME: deletion of encMsg still seems to be broken...
-    //        if (encMsg != null) srcMsg.close();
+    //        if (encMsg != null) encMsg.close();
             if (engine != null) engine.close();
         }
     }
