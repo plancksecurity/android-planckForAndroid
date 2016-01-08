@@ -77,7 +77,7 @@ class PEpMessageBuilder {
 
                 Blob blob = new Blob();
                 blob.filename = MimeUtility.getHeaderParameter(mbp.getContentType(), "filename");     // TODO: test wether this works
-                if(blob.filename == null) blob.filename = "empty";
+                 if(blob.filename == null) blob.filename = "empty";
                 blob.mime_type = mbp.getMimeType();
                 blob.data = part.getData();
                 attachments.add(blob);
