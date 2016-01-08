@@ -67,8 +67,6 @@ class PEpMessageBuilder {
             Log.d("pep", "Bodypart #" + i + ":" + mbp.toString() + "mime type:" + mbp.getMimeType() + "  Body:" + mbp.getBody().toString());
             boolean plain = mbp.isMimeType("text/plain");
             if (plain || mbp.isMimeType("text/html")) {
-            /*    TextBody tb = (TextBody) mbp.getBody();
-                m.setLongmsg(tb.getText()); */
                 BinaryMemoryBody bmb = (BinaryMemoryBody) mbp.getBody();
                 String text = new String(bmb.getData(), "UTF-8");
                 if(plain)
