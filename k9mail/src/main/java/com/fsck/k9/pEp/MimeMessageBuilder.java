@@ -1,11 +1,10 @@
 package com.fsck.k9.pEp;
 
 
+import android.text.TextUtils;
 import android.util.Log;
 
-import com.fsck.k9.Identity;
 import com.fsck.k9.K9;
-import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mail.MessagingException;
@@ -36,21 +35,7 @@ import java.util.Vector;
 
 
 class MimeMessageBuilder {
-/*    private String subject;
-    private Address[] to;
-    private Address[] cc;
-    private Address[] bcc;
-    private Vector<String> inReplyTo;
-    private Vector<String> references;
-    private boolean requestReadReceipt;
-    private Identity identity;
-    private SimpleMessageFormat messageFormat;
-    private String text;
-
-    private Vector<Blob> attachments;
-*/
     private SimpleMessageFormat messageFormat = SimpleMessageFormat.TEXT;
-
 
     private Message pEpMessage;
 
@@ -62,6 +47,7 @@ class MimeMessageBuilder {
         try {
             MimeMessage message = new MimeMessage();
 
+            evaluateMessageFormat();
             buildHeader(message);
             buildBody(message);
 
@@ -71,6 +57,13 @@ class MimeMessageBuilder {
             Log.e("pepdump", "Could not create MimeMessage: ", e);
         };
         return null;
+    }
+
+    private void evaluateMessageFormat() {
+        if(!TextUtils.isEmpty(pEpMessage.getLongmsgFormatted()))
+            messageFormat = SimpleMessageFormat.HTML;
+        else
+            messageFormat = SimpleMessageFormat.TEXT;
     }
 
     private void buildHeader(MimeMessage message) throws MessagingException {
@@ -92,25 +85,22 @@ class MimeMessageBuilder {
     }
 
     private void buildBody(MimeMessage message) throws MessagingException {
-        // Build the body.
-        // TODO FIXME - body can be either an HTML or Text part, depending on whether we're in
-        // HTML mode or not.  Should probably fix this so we don't mix up html and text parts.
-        TextBody body = buildText();
+        TextBody body = buildText();        // builds eitehr plain or html
 
         // text/plain part when messageFormat == MessageFormat.HTML
         TextBody bodyPlain = null;
 
         if (messageFormat == SimpleMessageFormat.HTML) {
-/*            // HTML message (with alternative text part)
+            // HTML message (with alternative text part)
 
             // This is the compiled MIME part for an HTML message.
             MimeMultipart composedMimeMessage = new MimeMultipart();
             composedMimeMessage.setSubType("alternative");   // Let the receiver select either the text or the HTML part.
             composedMimeMessage.addBodyPart(new MimeBodyPart(body, "text/html"));
-            bodyPlain = buildText(isDraft, SimpleMessageFormat.TEXT);
+            bodyPlain = buildText(SimpleMessageFormat.TEXT);
             composedMimeMessage.addBodyPart(new MimeBodyPart(bodyPlain, "text/plain"));
 
-            if (hasAttachments) {
+            if (pEpMessage.getAttachments() != null) {
                 // If we're HTML and have attachments, we have a MimeMultipart container to hold the
                 // whole message (mp here), of which one part is a MimeMultipart container
                 // (composedMimeMessage) with the user's composed messages, and subsequent parts for
@@ -123,7 +113,7 @@ class MimeMessageBuilder {
                 // If no attachments, our multipart/alternative part is the only one we need.
                 MimeMessageHelper.setBody(message, composedMimeMessage);
             }
-*/
+
         } else if (messageFormat == SimpleMessageFormat.TEXT) {
             // Text-only message.
             MimeMultipart mp = new MimeMultipart();
@@ -205,21 +195,25 @@ class MimeMessageBuilder {
      * original message.
      */
     private TextBody buildText(SimpleMessageFormat simpleMessageFormat) {
-        String messageText = pEpMessage.getLongmsg();               // FIXME: depends on simpleMessageFormat
+        String messageText = null;
+        if(simpleMessageFormat == SimpleMessageFormat.HTML)
+            messageText = pEpMessage.getLongmsgFormatted();
+        else
+            messageText = pEpMessage.getLongmsg();
 
-        TextBodyBuilder textBodyBuilder = new TextBodyBuilder(messageText);
+        MimeTextBodyBuilder mimeTextBodyBuilder = new MimeTextBodyBuilder(messageText);
 
-        textBodyBuilder.setIncludeQuotedText(false);
+        mimeTextBodyBuilder.setIncludeQuotedText(false);
 
-        textBodyBuilder.setInsertSeparator(false);
+        mimeTextBodyBuilder.setInsertSeparator(false);
 
-        textBodyBuilder.setAppendSignature(false);
+        mimeTextBodyBuilder.setAppendSignature(false);
 
         TextBody body;
         if (simpleMessageFormat == SimpleMessageFormat.HTML) {
-            body = textBodyBuilder.buildTextHtml();
+            body = mimeTextBodyBuilder.buildTextHtml();
         } else {
-            body = textBodyBuilder.buildTextPlain();
+            body = mimeTextBodyBuilder.buildTextPlain();
         }
         return body;
     }
@@ -232,4 +226,3 @@ class MimeMessageBuilder {
         return rt;
     }
 }
-

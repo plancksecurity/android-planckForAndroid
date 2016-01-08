@@ -263,9 +263,12 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         try {
             // now: find the right part in lm and delete other attachments...
             // FIXME: attachment handling!
+            // FIXME: HTML/Text handling
             MimeMultipart lm_mmp = (MimeMultipart) lm.getBody();
             MimeBodyPart lm_mbp = (MimeBodyPart) lm_mmp.getBodyPart(0);
             lm_mbp.setBody(mm_mtb);
+
+            // FIXME: the following does not work ;-)
             lm_mmp.removeBodyPart(3);
             lm_mmp.removeBodyPart(2);
             lm_mmp.removeBodyPart(1);
