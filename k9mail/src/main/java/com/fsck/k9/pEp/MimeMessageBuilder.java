@@ -208,7 +208,10 @@ class MimeMessageBuilder {
         else
             messageText = pEpMessage.getLongmsg();
 
-        if(messageText==null) messageText="Got null msg text";
+        if(messageText==null) {       // FIXME: This must (should?) never happen!
+            messageText="Got null msg text (This Is A Bug!)";
+            Log.e("pep", "got null msg txt longmsg="+pEpMessage.getLongmsg()+" format=" + pEpMessage.getLongmsgFormatted());
+        }
 
         MimeTextBodyBuilder mimeTextBodyBuilder = new MimeTextBodyBuilder(messageText);
 
