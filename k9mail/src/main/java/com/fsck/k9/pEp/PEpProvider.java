@@ -64,7 +64,7 @@ public interface PEpProvider {
             this.msg = msg;
             this.col = col;
         }
-        public MimeMessage msg;
-        public Color col;
+        final public MimeMessage msg;
+        final public Color col;
     }
 }

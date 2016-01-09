@@ -208,6 +208,8 @@ class MimeMessageBuilder {
         else
             messageText = pEpMessage.getLongmsg();
 
+        if(messageText==null) messageText="Got null msg text";
+
         MimeTextBodyBuilder mimeTextBodyBuilder = new MimeTextBodyBuilder(messageText);
 
         mimeTextBodyBuilder.setIncludeQuotedText(false);

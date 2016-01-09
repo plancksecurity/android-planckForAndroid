@@ -168,7 +168,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             }
         });
 
-        // TODO: pEp: if pep message probably then call onDownloadRemainder explicitely
         mMessageView.setOnDownloadButtonClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -235,7 +234,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void onLoadMessageFromDatabaseFinished(LocalMessage message) {
-        PEpUtils.dumpMimeMessage(message);
+      /*  PEpUtils.dumpMimeMessage(message);
         PEpProvider.DecryptResult result = PEpProviderFactory.createAndSetupProvider(getContext()).decryptMessage(message);
         MimeMessage msg = result.msg;
         PEpUtils.dumpMimeMessage(msg);
@@ -244,7 +243,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             mixMsgIntoMessage(message, msg);
         } catch (MessagingException e) {
             Log.e("pep", "fiddling msg", e);
-        }
+        }*/
         // TODO: pep icon
         displayMessageHeader(message);
         if (message.isBodyMissing()) {

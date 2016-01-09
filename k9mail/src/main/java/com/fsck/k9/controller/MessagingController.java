@@ -77,10 +77,11 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.mailstore.LocalStore.PendingCommand;
 import com.fsck.k9.mail.store.pop3.Pop3Store;
 import com.fsck.k9.mailstore.UnavailableStorageException;
-import com.fsck.k9.pEp.DummyPepProviderImpl;
+import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
 import com.fsck.k9.search.ConditionsTreeNode;
@@ -1126,6 +1127,8 @@ public class MessagingController implements Runnable {
                                  final LocalFolder localFolder, List<Message> inputMessages,
                                  boolean flagSyncOnly) throws MessagingException {
 
+        //@@@ pEp
+
         final Date earliestDate = account.getEarliestPollDate();
         Date downloadStarted = new Date(); // now
 
@@ -1428,12 +1431,25 @@ public class MessagingController implements Runnable {
                     }
 
                     // Store the updated message locally
-                    final LocalMessage localMessage = localFolder.storeSmallMessage(message, new Runnable() {
+                    LocalMessage localMessage = localFolder.storeSmallMessage(message, new Runnable() {
                         @Override
                         public void run() {
                             progress.incrementAndGet();
                         }
                     });
+                    FetchProfile fp = new FetchProfile();
+                    fp.add(FetchProfile.Item.ENVELOPE);
+                    fp.add(FetchProfile.Item.BODY);
+                    localFolder.fetch(Collections.singletonList(localMessage), fp, null);
+
+                    PEpUtils.dumpMimeMessage(localMessage);
+                    PEpProvider.DecryptResult result = PEpProviderFactory.createProvider().decryptMessage(localMessage);
+                    MimeMessage decryptedMessage = result.msg;
+                    PEpUtils.dumpMimeMessage(decryptedMessage);
+                    localMessage.destroy();
+                    Map<String, String> uidMap = localFolder.appendMessages(Collections.singletonList(decryptedMessage));
+                    localMessage = localFolder.getMessage(decryptedMessage.getUid());
+                    localFolder.fetch(Collections.singletonList(localMessage), fp, null);
 
                     // Increment the number of "new messages" if the newly downloaded message is
                     // not marked as read.
@@ -2712,6 +2728,8 @@ public class MessagingController implements Runnable {
         });
     }
 
+    //@@@ pEp: better place for pep? I think so...
+
     public boolean loadMessageForViewRemoteSynchronous(final Account account, final String folder,
             final String uid, final MessagingListener listener, final boolean force,
             final boolean loadPartialFromSearch) {
@@ -2787,6 +2805,8 @@ public class MessagingController implements Runnable {
                 }
                 message.setFlag(Flag.X_DOWNLOADED_FULL, true);
             }
+
+
 
             // now that we have the full message, refresh the headers
             for (MessagingListener l : getListeners(listener)) {
@@ -3188,7 +3208,7 @@ public class MessagingController implements Runnable {
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
                     }
                 } catch (Exception e) {
-                    lastFailure = e;
+                     lastFailure = e;
                     wasPermanentFailure = false;
 
                     Log.e(K9.LOG_TAG, "Failed to fetch message for sending", e);
