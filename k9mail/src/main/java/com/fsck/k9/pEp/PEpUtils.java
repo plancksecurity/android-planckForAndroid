@@ -163,11 +163,11 @@ public class PEpUtils {
             Log.e("pepdump", prev + "body: "+ body.toString());
             if(body instanceof BinaryMemoryBody) {
                 byte[] arr = ((BinaryMemoryBody) body).getData();
-                Log.e("pepdump", prev + "Blob content: >" + new String(arr).substring(0, (arr.length > 50) ? 50 : arr.length) + "<");
+                Log.e("pepdump", prev + "Blob content: >" + startOf(new String(arr), 100)  + "<");
             }
             if(body instanceof TextBody) {
                 TextBody tb = (TextBody) body;
-                Log.e("pepdump", prev+ "Textbody content >" + tb.getText()+"<");
+                Log.e("pepdump", prev+ "Textbody content >" + startOf(tb.getText(),100)+"<");
             }
             return;
         }
@@ -185,5 +185,10 @@ public class PEpUtils {
         } catch (Exception e) {
             Log.e("pepdump", "b0rgd", e);
         }
+    }
+
+    static public String startOf(String s, int length) {
+        String rv = s.substring(0, (s.length() > length) ? length : s.length());
+        return rv.replace("\n", "<nl>").replace("\r", "<cr>");
     }
 }
