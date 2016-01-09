@@ -46,6 +46,7 @@ import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeBodyPart;
 import com.fsck.k9.mail.internet.MimeMessage;
+import com.fsck.k9.mail.internet.MimeMessageHelper;
 import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
@@ -255,9 +256,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private void mixMsgIntoMessage(LocalMessage lm, MimeMessage mm) {
         MimeMultipart mm_mmp = (MimeMultipart) mm.getBody();
-        MimeBodyPart mm_mbp = (MimeBodyPart) mm_mmp.getBodyPart(0);
+        MimeBodyPart mm_mbp = (MimeBodyPart) mm_mmp.getBodyPart(1);
         TextBody mm_mtb = (TextBody) mm_mbp.getBody();
-        String mm_text = mm_mtb.getText();
 
         try {
             // now: find the right part in lm and delete other attachments...
@@ -265,12 +265,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             // FIXME: HTML/Text handling
             MimeMultipart lm_mmp = (MimeMultipart) lm.getBody();
             MimeBodyPart lm_mbp = (MimeBodyPart) lm_mmp.getBodyPart(0);
-            lm_mbp.setBody(mm_mtb);
+            MimeMessageHelper.setBody(lm_mbp,mm_mtb);
 
-            // FIXME: the following does not work ;-)
-            lm_mmp.removeBodyPart(3);
-            lm_mmp.removeBodyPart(2);
-            lm_mmp.removeBodyPart(1);
         } catch (Exception e) {
             Log.e("pep", "could not manipulate localmessage", e);
         }
