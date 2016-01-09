@@ -1344,12 +1344,13 @@ public class MessagingController {
                         return;
                     }
 
-                    if (account.getMaximumAutoDownloadMessageSize() > 0 &&
-                    message.getSize() > account.getMaximumAutoDownloadMessageSize()) {
-                        largeMessages.add(message);
-                    } else {
+                    // commented out, we might need it again later...
+//                    if (account.getMaximumAutoDownloadMessageSize() > 0 &&
+//                    message.getSize() > account.getMaximumAutoDownloadMessageSize()) {
+//                        largeMessages.add(message);
+//                    } else {
                         smallMessages.add(message);
-                    }
+//                    }
                 } catch (Exception e) {
                     Log.e(K9.LOG_TAG, "Error while storing downloaded message.", e);
                     addErrorMessage(account, null, e);
