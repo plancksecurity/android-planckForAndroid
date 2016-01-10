@@ -4,15 +4,20 @@ import android.util.Log;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.BodyPart;
+import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.internet.MimeMultipart;
+import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
 import com.fsck.k9.mailstore.LocalBodyPart;
+import org.apache.commons.io.IOUtils;
 import org.pEp.jniadapter.Blob;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Vector;
 
 /**
@@ -25,7 +30,6 @@ import java.util.Vector;
 public class PEpUtils {
     static Vector<Identity> createIdentities(Address[] adrs) {
         Vector<Identity> rv = new Vector<Identity>(adrs.length);
-        if(adrs == null) return rv;
         for(Address adr : adrs)
             rv.add(createIdentity(adr));
         return rv;
@@ -141,28 +145,28 @@ public class PEpUtils {
      *
      * @param mm mesage to dump
      */
-    static public void dumpMimeMessage(MimeMessage mm) {
+    static public void dumpMimeMessage(String tag, MimeMessage mm) {
         Log.e("pepdump", "Root:");
         try {
             for (String header:mm.getHeaderNames())
-                Log.e("pepdump", header + ": " + mm.getHeader(header)[0]);
+                Log.e("pepdump", tag + " " + header + ": " + mm.getHeader(header)[0]);
 
             // Log.e("pepdump",  "Message-Id: " + mm.getMessageId().hashCode() );
-            Log.e("pepdump", "hasAttachments:" + mm.hasAttachments());
+            Log.e("pepdump", tag + " hasAttachments:" + mm.hasAttachments());
 
-             dumpBody(mm.getBody(), 5);
+             dumpBody(tag, mm.getBody(), 5);
 
         } catch (Exception e) {
-            Log.e("pepdump", "b0rged", e);
+            Log.e("pepdump", tag + " b0rged", e);
         }
     }
 
-    static private void dumpBody(Body body, int idx) throws Exception {
-        String prev = "                                                      ".substring(0, idx);
+    static private void dumpBody(String tag, Body body, int idx) throws Exception {
+        String prev = tag + "                                                      ".substring(0, idx);
         if (!(body instanceof MimeMultipart)) {
             Log.e("pepdump", prev + "body: "+ body.toString());
             if(body instanceof BinaryMemoryBody) {
-                byte[] arr = ((BinaryMemoryBody) body).getData();
+                byte[] arr = extractBodyContent(body);
                 Log.e("pepdump", prev + "Blob content: >" + startOf(new String(arr), 100)  + "<");
             }
             if(body instanceof TextBody) {
@@ -179,16 +183,24 @@ public class PEpUtils {
             for (int i = 0; i < nr; i++) {
                 BodyPart p = mmp.getBodyPart(i);
                 Log.e("pepdump",prev + "Bodypart: " + p.toString());
-                dumpBody(p.getBody(), idx + 5);
+                dumpBody(tag, p.getBody(), idx + 5);
 
             }
         } catch (Exception e) {
-            Log.e("pepdump", "b0rgd", e);
+            Log.e("pepdump", tag + " b0rgd", e);
         }
     }
 
     static public String startOf(String s, int length) {
         String rv = s.substring(0, (s.length() > length) ? length : s.length());
         return rv.replace("\n", "<nl>").replace("\r", "<cr>");
+    }
+
+    static byte[] extractBodyContent(Body body) throws MessagingException, IOException {
+        InputStream is = MimeUtility.decodeBody(body);
+        byte[] rv = IOUtils.toByteArray(is);
+        is.close();
+
+        return rv;
     }
 }

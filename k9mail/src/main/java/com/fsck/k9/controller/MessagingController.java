@@ -1126,8 +1126,6 @@ public class MessagingController implements Runnable {
             final LocalFolder localFolder, List<Message> inputMessages,
             boolean flagSyncOnly, boolean purgeToVisibleLimit) throws MessagingException {
 
-        //@@@ pEp
-
         final Date earliestDate = account.getEarliestPollDate();
         Date downloadStarted = new Date(); // now
 
@@ -1432,27 +1430,41 @@ public class MessagingController implements Runnable {
                         return;
                     }
 
+                    Log.d("pep", "in download loop (nr="+number+") pre pep");
+                    PEpUtils.dumpMimeMessage("downloadSmallMessages", (MimeMessage) message);
+                    PEpProvider.DecryptResult result = PEpProviderFactory.createProvider().decryptMessage((MimeMessage) message);
+                    MimeMessage decryptedMessage = result.msg;
+                    decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
+                    decryptedMessage.addHeader("X-EncStatus", result.col.name());
+                    PEpUtils.dumpMimeMessage("downloadSmallMessages", decryptedMessage);
+                    Log.d("pep", "in download loop (nr=" + number + ") post pep");
+
                     // Store the updated message locally
-                    LocalMessage localMessage = localFolder.storeSmallMessage(message, new Runnable() {
+                    LocalMessage localMessage = localFolder.storeSmallMessage(decryptedMessage, new Runnable() {
                         @Override
                         public void run() {
                             progress.incrementAndGet();
                         }
                     });
+
+                    /*  wrong place I think...
                     FetchProfile fp = new FetchProfile();
                     fp.add(FetchProfile.Item.ENVELOPE);
                     fp.add(FetchProfile.Item.BODY);
                     localFolder.fetch(Collections.singletonList(localMessage), fp, null);
 
-                    PEpUtils.dumpMimeMessage(localMessage);
+                    Log.d("pep", "in download loop (nr="+number+") pre pep");
+                    PEpUtils.dumpMimeMessage("downloadSmallMessages", localMessage);
                     PEpProvider.DecryptResult result = PEpProviderFactory.createProvider().decryptMessage(localMessage);
                     MimeMessage decryptedMessage = result.msg;
-                    PEpUtils.dumpMimeMessage(decryptedMessage);
+                    decryptedMessage.addHeader("X-EncStatus", result.col.name());
+                    PEpUtils.dumpMimeMessage("downloadSmallMessages", decryptedMessage);
                     localMessage.destroy();
-                    Map<String, String> uidMap = localFolder.appendMessages(Collections.singletonList(decryptedMessage));
+                    localFolder.appendMessages(Collections.singletonList(decryptedMessage));
                     localMessage = localFolder.getMessage(decryptedMessage.getUid());
-                    localFolder.fetch(Collections.singletonList(localMessage), fp, null);
-
+                    localFolder.fetch(Collections.singletonList(localMessage), fp, null);       // FIXME: really necessary? Take a look at prev impl, might be that it only loads headers
+                    Log.d("pep", "in download loop (nr=" + number + ") post pep");
+*/
                     // Increment the number of "new messages" if the newly downloaded message is
                     // not marked as read.
                     if (!localMessage.isSet(Flag.SEEN)) {

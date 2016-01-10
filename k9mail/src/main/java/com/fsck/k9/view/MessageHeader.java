@@ -1,11 +1,6 @@
 package com.fsck.k9.view;
 
 
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Parcel;
@@ -27,7 +22,6 @@ import android.widget.LinearLayout;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.fsck.k9.Account;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
@@ -44,6 +38,11 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.ui.messageview.OnCryptoClickListener;
+
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 
 public class MessageHeader extends LinearLayout implements OnClickListener, OnLongClickListener {
@@ -262,6 +261,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     }
 
     public void populate(final Message message, final Account account) {
+        //@@@ pEp: todo: populate pep indicator
         final Contacts contacts = K9.showContactName() ? mContacts : null;
         final CharSequence from = MessageHelper.toFriendly(message.getFrom(), contacts);
         final CharSequence to = MessageHelper.toFriendly(message.getRecipients(Message.RecipientType.TO), contacts);

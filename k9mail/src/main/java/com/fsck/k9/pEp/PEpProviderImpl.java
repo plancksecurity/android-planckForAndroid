@@ -71,6 +71,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public DecryptResult decryptMessage(MimeMessage source) {
+        Log.d("pep", "decryptMessage() enter");
         Message  srcMsg = null;
         Engine engine = null;
         Engine.decrypt_message_Return decReturn = null;
@@ -80,9 +81,12 @@ public class PEpProviderImpl implements PEpProvider {
             srcMsg = new PEpMessageBuilder(source).createMessage();
             srcMsg.setDir(Message.Direction.Incoming);
 
+            Log.d("pep", "decryptMessage() before decrypt");
             decReturn = engine.decrypt_message(srcMsg);
+            Log.d("pep", "decryptMessage() after decrypt");
 
             return new DecryptResult(new MimeMessageBuilder(decReturn.dst).createMessage(), decReturn.color);
+            // return new DecryptResult(new MimeMessageBuilder(srcMsg).createMessage(), Color.pEpRatingB0rken);
         } catch (Throwable t) {
             Log.e("pep", "while decrypting message:", t);
             throw new RuntimeException("Could not decrypt");
@@ -90,12 +94,13 @@ public class PEpProviderImpl implements PEpProvider {
             if (srcMsg != null) srcMsg.close();
       //      if (decReturn != null) decReturn.dst.close();
             if (engine != null) engine.close();
+            Log.d("pep", "decryptMessage() exit");
         }
     }
 
     @Override
     public MimeMessage encryptMessage(MimeMessage source, String[] extraKeys) {
-        PEpUtils.dumpMimeMessage(source);
+        Log.d("pep", "encryptMessage() enter");
         Message  srcMsg = null;
         Message encMsg = null;
         Engine engine = null;
@@ -103,8 +108,12 @@ public class PEpProviderImpl implements PEpProvider {
             engine = new Engine();
             srcMsg = new PEpMessageBuilder(source).createMessage();
             srcMsg.setDir(Message.Direction.Outgoing);
+
+            Log.d("pep", "encryptMessage() before encrypt");
             encMsg = engine.encrypt_message(srcMsg, convertExtraKeys(extraKeys));
-            if(encMsg == null) encMsg = srcMsg;         // FIXME: this should be done by the engine!
+            Log.d("pep", "encryptMessage() after encrypt");
+
+            if(encMsg == null) encMsg = srcMsg;         // FIXME: this should be done by the engine! I could return source, but this would mask engine and my own errors...
             return new MimeMessageBuilder(encMsg).createMessage();
         } catch (Throwable t) {
             Log.e("pep", "while encrypting message:", t);
@@ -114,6 +123,7 @@ public class PEpProviderImpl implements PEpProvider {
             // FIXME: deletion of encMsg still seems to be broken...
     //        if (encMsg != null) encMsg.close();
             if (engine != null) engine.close();
+            Log.d("pep", "encryptMessage() exit");
         }
     }
 

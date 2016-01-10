@@ -75,7 +75,7 @@ class MimeMessageBuilder {
         message.setRecipients(RecipientType.BCC, PEpUtils.createAddresses(pEpMessage.getBcc()));
         message.setSubject(pEpMessage.getShortmsg());
         message.setMessageId(pEpMessage.getId());
-        if (!K9.hideUserAgent()) {       // if ctx not set, forget about user agent...
+        if (!K9.hideUserAgent()) {
             message.setHeader("User-Agent", "K9/pEp early beta");
         }
 
@@ -90,6 +90,8 @@ class MimeMessageBuilder {
 
         // text/plain part when messageFormat == MessageFormat.HTML
         TextBody bodyPlain = null;
+
+        // FIXME: the following is for sure not correct, at least with respect to mime types
 
         if (messageFormat == SimpleMessageFormat.HTML) {
             // HTML message (with alternative text part)
@@ -147,7 +149,7 @@ class MimeMessageBuilder {
             String filename = attachment.filename;
             if(filename == null) filename = "file";                 // TODO: why does pep engine not give file names?
 
-            Log.d("pep", "BLOB #" + i + ":" + contentType + ":" + filename);
+            Log.d("pep", "MimeMessageBuilder: BLOB #" + i + ":" + contentType + ":" + filename);
             Log.d("pep", ">"+new String(attachment.data)+"<");
 
             filename = EncoderUtil.encodeIfNecessary(filename, EncoderUtil.Usage.WORD_ENTITY, 7);
