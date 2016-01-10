@@ -32,6 +32,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
+import com.fsck.k9.activity.PEpStatus;
 import com.fsck.k9.activity.misc.ContactPictureLoader;
 import com.fsck.k9.helper.ClipboardManager;
 import com.fsck.k9.helper.ContactPicture;
@@ -44,6 +45,9 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeUtility;
+import com.fsck.k9.pEp.PePUIArtefactCache;
+
+import org.pEp.jniadapter.Color;
 import com.fsck.k9.ui.messageview.OnCryptoClickListener;
 
 import com.fsck.k9.pEp.PEpUtils;
