@@ -45,6 +45,9 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.cache.EmailProviderCache;
+import com.fsck.k9.helper.Contacts;
+import com.fsck.k9.helper.MessageHelper;
+import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.AuthenticationFailedException;
 import com.fsck.k9.mail.CertificateValidationException;
 import com.fsck.k9.mail.power.TracingPowerManager;
@@ -1434,7 +1437,7 @@ public class MessagingController implements Runnable {
                     PEpProvider.DecryptResult result = PEpProviderFactory.createProvider().decryptMessage((MimeMessage) message);
                     MimeMessage decryptedMessage = result.msg;
                     decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
-                    decryptedMessage.addHeader("X-EncStatus", result.col.name());
+                    decryptedMessage.addHeader(MimeHeader.HEADER_PEPCOLOR, result.col.name());
                     PEpUtils.dumpMimeMessage("downloadSmallMessages", decryptedMessage);
                     Log.d("pep", "in download loop (nr=" + number + ") post pep");
 
