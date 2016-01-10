@@ -721,8 +721,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         updateFrom();
 
         updateMessageFormat();
-
-        // tODO: trigger pep
     }
 
     private void setTitle() {
