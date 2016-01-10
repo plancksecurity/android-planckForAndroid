@@ -1435,7 +1435,7 @@ public class MessagingController implements Runnable {
                     PEpProvider.DecryptResult result = PEpProviderFactory.createProvider().decryptMessage((MimeMessage) message);
                     MimeMessage decryptedMessage = result.msg;
                     decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
-                    decryptedMessage.addHeader("X-EncStatus", result.col.name());
+                    decryptedMessage.addHeader(MimeHeader.HEADER_PEPCOLOR, result.col.name());
                     PEpUtils.dumpMimeMessage("downloadSmallMessages", decryptedMessage);
                     Log.d("pep", "in download loop (nr=" + number + ") post pep");
 

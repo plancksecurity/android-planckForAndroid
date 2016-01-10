@@ -86,11 +86,22 @@ class MimeMessageBuilder {
     }
 
     private void buildBody(MimeMessage message) throws MessagingException {
+        if (pEpMessage.getEncFormat() != Message.EncFormat.None) {   // we have an encrypted msg. Therefore, just attachments...
+            MimeMultipart mp = new MimeMultipart();
+            mp.setSubType("encrypted; protocol=\"application/pgp-encrypted\"");
+            addAttachmentsToMessage(mp);
+            MimeMessageHelper.setBody(message, mp);
+
+            return;
+        }
+
+        // the following copied from MessageBuilder...
+
         TextBody body = buildText();        // builds eitehr plain or html
 
         // text/plain part when messageFormat == MessageFormat.HTML
         TextBody bodyPlain = null;
-
+        boolean hasAttachments = pEpMessage.getAttachments() != null;
         // FIXME: the following is for sure not correct, at least with respect to mime types
 
         if (messageFormat == SimpleMessageFormat.HTML) {
@@ -103,7 +114,7 @@ class MimeMessageBuilder {
             bodyPlain = buildText(SimpleMessageFormat.TEXT);
             composedMimeMessage.addBodyPart(new MimeBodyPart(bodyPlain, "text/plain"));
 
-            if (pEpMessage.getAttachments() != null) {
+            if (hasAttachments) {
                 // If we're HTML and have attachments, we have a MimeMultipart container to hold the
                 // whole message (mp here), of which one part is a MimeMultipart container
                 // (composedMimeMessage) with the user's composed messages, and subsequent parts for
@@ -119,13 +130,17 @@ class MimeMessageBuilder {
 
         } else if (messageFormat == SimpleMessageFormat.TEXT) {
             // Text-only message.
-            MimeMultipart mp = new MimeMultipart();
-            mp.setSubType("encrypted");                     // FIXME: not for incoming stuff!
-            mp.addBodyPart(new MimeBodyPart(body, "text/plain"));
-            addAttachmentsToMessage(mp);
-            MimeMessageHelper.setBody(message, mp);
-        }
+            if (hasAttachments) {
+                MimeMultipart mp = new MimeMultipart();
+                mp.addBodyPart(new MimeBodyPart(body, "text/plain"));
+                addAttachmentsToMessage(mp);
+                MimeMessageHelper.setBody(message, mp);
+            } else {
+                // No attachments to include, just stick the text body in the message and call it good.
+                MimeMessageHelper.setBody(message, body);
+            }
 
+        }
     }
 
     public TextBody buildText() {
@@ -167,34 +182,26 @@ class MimeMessageBuilder {
             else
                 bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, contentType);
 
-            bp.setEncoding(MimeUtil.ENC_8BIT);
+            if (pEpMessage.getEncFormat() == Message.EncFormat.None || i > 1) {
+                bp.setEncoding(MimeUtil.ENC_8BIT);
 
-            /*
-             * TODO: Oh the joys of MIME...
-             *
-             * From RFC 2183 (The Content-Disposition Header Field):
-             * "Parameter values longer than 78 characters, or which
-             *  contain non-ASCII characters, MUST be encoded as specified
-             *  in [RFC 2184]."
-             *
-             * Example:
-             *
-             * Content-Type: application/x-stuff
-             *  title*1*=us-ascii'en'This%20is%20even%20more%20
-             *  title*2*=%2A%2A%2Afun%2A%2A%2A%20
-             *  title*3="isn't it!"
-             */
-            String disposition="attachment";
-            if(pEpMessage.getEncFormat() != Message.EncFormat.None && i == 1)       // if encrypted, 2nd attachment is pgp data. This shall be inline.
-                disposition="inline";
-            if(filename != null)
-                bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
-                        "%s;\r\n filename=\"%s\";\r\n size=%d",
-                        disposition, filename, attachment.data.length));
-            else
-                bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
-                        "%s;\r\n size=%d",
-                        disposition, attachment.data.length));
+                if (filename != null)
+                    bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
+                            "attachment;\r\n filename=\"%s\";\r\n size=%d",
+                            filename, attachment.data.length));
+                else
+                    bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
+                            "attachment;\r\n size=%d",
+                            attachment.data.length));
+            } else {                // we all live in pgp...
+                if(i==0) {
+                    bp.addHeader(MimeHeader.HEADER_CONTENT_DESCRIPTION, "PGP/MIME version identification");
+                } else if (i==1) {
+                    bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
+                            "inline;\r\n filename=\"%s\";\r\n size=%d",
+                            filename, attachment.data.length));
+                }
+            }
 
             mp.addBodyPart(bp);
         }
