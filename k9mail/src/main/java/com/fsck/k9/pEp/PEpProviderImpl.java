@@ -86,7 +86,6 @@ public class PEpProviderImpl implements PEpProvider {
             Log.d("pep", "decryptMessage() after decrypt");
 
             return new DecryptResult(new MimeMessageBuilder(decReturn.dst).createMessage(), decReturn.color);
-            // return new DecryptResult(new MimeMessageBuilder(srcMsg).createMessage(), Color.pEpRatingB0rken);
         } catch (Throwable t) {
             Log.e("pep", "while decrypting message:", t);
             throw new RuntimeException("Could not decrypt");

@@ -1448,24 +1448,6 @@ public class MessagingController implements Runnable {
                         }
                     });
 
-                    /*  wrong place I think...
-                    FetchProfile fp = new FetchProfile();
-                    fp.add(FetchProfile.Item.ENVELOPE);
-                    fp.add(FetchProfile.Item.BODY);
-                    localFolder.fetch(Collections.singletonList(localMessage), fp, null);
-
-                    Log.d("pep", "in download loop (nr="+number+") pre pep");
-                    PEpUtils.dumpMimeMessage("downloadSmallMessages", localMessage);
-                    PEpProvider.DecryptResult result = PEpProviderFactory.createProvider().decryptMessage(localMessage);
-                    MimeMessage decryptedMessage = result.msg;
-                    decryptedMessage.addHeader("X-EncStatus", result.col.name());
-                    PEpUtils.dumpMimeMessage("downloadSmallMessages", decryptedMessage);
-                    localMessage.destroy();
-                    localFolder.appendMessages(Collections.singletonList(decryptedMessage));
-                    localMessage = localFolder.getMessage(decryptedMessage.getUid());
-                    localFolder.fetch(Collections.singletonList(localMessage), fp, null);       // FIXME: really necessary? Take a look at prev impl, might be that it only loads headers
-                    Log.d("pep", "in download loop (nr=" + number + ") post pep");
-*/
                     // Increment the number of "new messages" if the newly downloaded message is
                     // not marked as read.
                     if (!localMessage.isSet(Flag.SEEN)) {
@@ -3097,15 +3079,13 @@ public class MessagingController implements Runnable {
 
                         // pep message...
                         Message encryptedMessage = PEpProviderFactory.createProvider().encryptMessage((MimeMessage) message, null); // TODO: Extra keys
-                        message.setFlag(Flag.DELETED, true);
-                        message = null;                                                     // to prevent accidentially using the wrong msg further on...
-                        localFolder.appendMessages(Collections.singletonList(encryptedMessage));
+
+                        // FIXME: add pep color to msg
 
                         encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, true);
                         transport.sendMessage(encryptedMessage);
                         encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, false);
                         encryptedMessage.setFlag(Flag.SEEN, true);
-                        encryptedMessage = localFolder.getMessage(encryptedMessage.getUid());   // save & reload to gain a LocalMessage...
 
                         progress++;
                         for (MessagingListener l : getListeners()) {
@@ -3114,23 +3094,36 @@ public class MessagingController implements Runnable {
                         if (!account.hasSentFolder()) {
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Account does not have a sent mail folder; deleting sent message");
-                            encryptedMessage.setFlag(Flag.DELETED, true);
+                            message.setFlag(Flag.DELETED, true);
                         } else {
-                            LocalFolder localSentFolder = localStore.getFolder(account.getSentFolderName());
+                            LocalFolder localSentFolder = (LocalFolder) localStore.getFolder(account.getSentFolderName());
+                            boolean encOnServer = account.isPEpStoreEncryptedOnServer();
+
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moving sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
-                            localFolder.moveMessages(Collections.singletonList(encryptedMessage), localSentFolder);
+                            if(encOnServer)
+                                localSentFolder.appendMessages(Collections.singletonList(encryptedMessage));
+                            else
+                                localFolder.moveMessages(Collections.singletonList(message), localSentFolder);
 
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moved sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
+                            Message toMove = encOnServer?encryptedMessage : message;
                             PendingCommand command = new PendingCommand();
                             command.command = PENDING_COMMAND_APPEND;
-                            command.arguments = new String[] { localSentFolder.getName(), encryptedMessage.getUid() };
-                            queuePendingCommand(account, command);
+                            command.arguments = new String[] { localSentFolder.getName(), toMove.getUid() };
+                            queuePendingCommand(account, command);              // FIXME: do I really have to fiddle around with localsentfolder or is msg found anywhere by its id?
 
                             processPendingCommands(account);
+
+                            if(encOnServer) {       // delete all traces, msg will be sync'ed from server...
+                            // FIXME: This costs us a round trip and might break color detection. Perhaps do some magic (Id) and move message to localSent? But this won't stop broken color detection...
+                                // localSentFolder.delete(Collections.singletonList(encryptedMessage), null);
+                                message.setFlag(Flag.DELETED, true);
+                                encryptedMessage.setFlag(Flag.DELETED, true);
+                            }
                         }
                     } catch (AuthenticationFailedException e) {
                         lastFailure = e;
