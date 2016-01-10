@@ -115,7 +115,7 @@ public class Account implements BaseAccount, StoreConfig {
     public static final String IDENTITY_EMAIL_KEY = "email";
     public static final String IDENTITY_DESCRIPTION_KEY = "description";
 
-    public static final boolean DEFAULT_PEP_ENC_ON_SERVER = false;
+    public static final boolean DEFAULT_PEP_ENC_ON_SERVER = true;
     /*
      * http://developer.android.com/design/style/color.html
      * Note: Order does matter, it's the order in which they will be picked.
@@ -573,6 +573,7 @@ public class Account implements BaseAccount, StoreConfig {
         editor.remove(mUuid + ".messageFormat");
         editor.remove(mUuid + ".messageReadReceipt");
         editor.remove(mUuid + ".notifyMailCheck");
+        editor.remove(mUuid + ".pEpStoreEncryptedOnServer");
         for (NetworkType type : NetworkType.values()) {
             editor.remove(mUuid + ".useCompression." + type.name());
         }
@@ -747,7 +748,7 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putString(mUuid + ".ringtone", mNotificationSetting.getRingtone());
         editor.putBoolean(mUuid + ".led", mNotificationSetting.isLed());
         editor.putInt(mUuid + ".ledColor", mNotificationSetting.getLedColor());
-        editor.putBoolean(mUuid + ".pEpStoreEncrypredOnServer", mPEpStoreEncryptedOnServer);
+        editor.putBoolean(mUuid + ".pEpStoreEncryptedOnServer", mPEpStoreEncryptedOnServer);
 
         for (NetworkType type : NetworkType.values()) {
             Boolean useCompression = compressionMap.get(type);
