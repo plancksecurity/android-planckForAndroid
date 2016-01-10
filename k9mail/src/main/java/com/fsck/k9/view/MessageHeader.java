@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Set;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.SpannableString;
@@ -31,6 +33,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
+import com.fsck.k9.activity.PEpStatus;
 import com.fsck.k9.activity.misc.ContactPictureLoader;
 import com.fsck.k9.helper.ClipboardManager;
 import com.fsck.k9.helper.ContactPicture;
@@ -41,7 +44,11 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeUtility;
+import com.fsck.k9.pEp.PePUIArtefactCache;
+
+import org.pEp.jniadapter.Color;
 
 public class MessageHeader extends LinearLayout implements OnClickListener, OnLongClickListener {
     private Context mContext;
@@ -71,7 +78,8 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     private OnLayoutChangedListener mOnLayoutChangedListener;
 
-    private ImageButton pEpIndicator;
+    private ImageButton mPEpIndicator;
+    private Color mPEpColor;
     /**
      * Pair class is only available since API Level 5, so we need
      * this helper class unfortunately
@@ -135,7 +143,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
         mSubjectView.setVisibility(VISIBLE);
 
-        pEpIndicator = (ImageButton) findViewById(R.id.pEp_indicator);
+        mPEpIndicator = (ImageButton) findViewById(R.id.pEp_indicator);
 
         hideAdditionalHeaders();
     }
@@ -151,6 +159,9 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
             case R.id.cc: {
                 expand((TextView)view, ((TextView)view).getEllipsize() != null);
                 layoutChanged();
+            }
+            case R.id.pEp_indicator: {
+                PEpStatus.actionShowStatus(mContext, mPEpColor);
             }
         }
     }
@@ -253,8 +264,25 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     }
 
+    private Drawable makePePStatusIcon() {
+        PePUIArtefactCache c = PePUIArtefactCache.getInstance(getResources());
+        Drawable statusIcon = c.getIcon(mPEpColor);
+        statusIcon.setColorFilter(c.getColor(mPEpColor), PorterDuff.Mode.MULTIPLY);        // FIXME: pEp do it the old way(tm)
+        return statusIcon;
+    }
+
     public void populate(final Message message, final Account account) throws MessagingException {
-        //@@@ pEp: todo: populate pep indicator
+        String[] pEpColor = message.getHeader(MimeHeader.HEADER_PEPCOLOR);
+        if(pEpColor != null)
+            mPEpColor = Color.valueOf(pEpColor[0]);
+        else
+            mPEpColor = Color.pEpRatingUndefined;
+
+        mPEpIndicator.setImageDrawable(makePePStatusIcon());
+        Toast.makeText(mContext, PePUIArtefactCache.getInstance(getResources()).getTitle(mPEpColor), Toast.LENGTH_LONG).show();
+
+        mPEpIndicator.setOnClickListener(this);
+
         final Contacts contacts = K9.showContactName() ? mContacts : null;
         final CharSequence from = MessageHelper.toFriendly(message.getFrom(), contacts);
         final CharSequence to = MessageHelper.toFriendly(message.getRecipients(Message.RecipientType.TO), contacts);

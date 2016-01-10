@@ -896,7 +896,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         outState.putBoolean(STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT, alreadyNotifiedUserOfEmptySubject);
 
         recipientPresenter.onSaveInstanceState(outState);
-        // TODO: trigger pep?
 
     }
 
@@ -967,8 +966,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         updateFrom();
 
         updateMessageFormat();
-
-        // tODO: trigger pep
     }
 
     private void setTitle() {
