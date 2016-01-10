@@ -147,14 +147,13 @@ class MimeMessageBuilder {
             Blob attachment = attachments.get(i);
             String contentType = attachment.mime_type;
             String filename = attachment.filename;
-            if(filename == null) filename = "file";                 // TODO: why does pep engine not give file names?
 
             Log.d("pep", "MimeMessageBuilder: BLOB #" + i + ":" + contentType + ":" + filename);
             Log.d("pep", ">"+new String(attachment.data)+"<");
 
-            filename = EncoderUtil.encodeIfNecessary(filename, EncoderUtil.Usage.WORD_ENTITY, 7);
+            if (filename != null) filename = EncoderUtil.encodeIfNecessary(filename, EncoderUtil.Usage.WORD_ENTITY, 7);
 
-            body = new BinaryMemoryBody(attachment.data, contentType);
+            body = new BinaryMemoryBody(attachment.data, MimeUtil.ENC_8BIT);
 
             MimeBodyPart bp = new MimeBodyPart(body);
 
@@ -163,9 +162,11 @@ class MimeMessageBuilder {
              * header value (all parameters at once) will be encoded by
              * MimeHeader.writeTo().
              */
-            bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, String.format("%s;\r\n name=\"%s\"", contentType, filename));
+            if(filename != null)
+                bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, String.format("%s;\r\n name=\"%s\"", contentType, filename));
+            else
+                bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, contentType);
 
-            // bp.setEncoding(MimeUtility.getEncodingforType(contentType));
             bp.setEncoding(MimeUtil.ENC_8BIT);
 
             /*
@@ -183,9 +184,17 @@ class MimeMessageBuilder {
              *  title*2*=%2A%2A%2Afun%2A%2A%2A%20
              *  title*3="isn't it!"
              */
-            bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
-                    "attachment;\r\n filename=\"%s\";\r\n size=%d",
-                    filename, attachment.data.length));
+            String disposition="attachment";
+            if(pEpMessage.getEncFormat() != Message.EncFormat.None && i == 1)       // if encrypted, 2nd attachment is pgp data. This shall be inline.
+                disposition="inline";
+            if(filename != null)
+                bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
+                        "%s;\r\n filename=\"%s\";\r\n size=%d",
+                        disposition, filename, attachment.data.length));
+            else
+                bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
+                        "%s;\r\n size=%d",
+                        disposition, attachment.data.length));
 
             mp.addBodyPart(bp);
         }
