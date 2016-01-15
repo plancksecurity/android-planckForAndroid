@@ -109,6 +109,7 @@ class PEpMessageBuilder {
             // m.setRecv();
             m.setSent(mm.getSentDate());
             m.setReplyTo(PEpUtils.createIdentities(mm.getReplyTo()));
+            m.setReferences(createMessageReferences(mm.getReferences()));
             // m.setRecvBy();
             m.setShortmsg(mm.getSubject());
 
