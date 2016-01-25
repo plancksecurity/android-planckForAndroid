@@ -15,7 +15,7 @@ import java.util.HashMap;
  * Cache for texts and icons.
  *
  * (I am not completely sure that this is a perfect solution, because of permanently acquired
- * ressources, but this would be very easily fixable.
+ * ressources, but this would be very easily fixable.)
  *
  * For the semantics, the pep_states array contains a list of enum Color elements, that are
  * used UI-wise. The other arrays contain the respective items (texts, colors, icons) in the
