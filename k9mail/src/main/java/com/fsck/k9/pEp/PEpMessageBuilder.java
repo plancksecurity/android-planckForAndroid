@@ -18,7 +18,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Vector;
 
 /**
- * Created by dietz on 14.12.15.
+ * Makes a pEp message from a k9 message
  */
 
 class PEpMessageBuilder {
@@ -29,21 +29,21 @@ class PEpMessageBuilder {
     }
 
     Message createMessage() {
-        Message m = null;
+        Message pEpMsg = null;
         try {
-            m = new Message();
+            pEpMsg = new Message();
 
-            addHeaders(m);
-            addBody(m);
-            return m;
+            addHeaders(pEpMsg);
+            addBody(pEpMsg);
+            return pEpMsg;
         } catch (Throwable t) {
-            if(m != null) m.close();
+            if(pEpMsg != null) pEpMsg.close();
             Log.e("pEp", "Could not create pep message:", t);
         }
         return null;
     }
 
-    private void addBody(Message m) throws MessagingException, IOException, UnsupportedEncodingException {
+    private void addBody(Message pEpMsg) throws MessagingException, IOException, UnsupportedEncodingException {
         // fiddle message txt from MimeMsg...
         // the buildup of mm should be like the follwing:
         // - html body if any, else plain text
@@ -52,39 +52,39 @@ class PEpMessageBuilder {
         Body b = mm.getBody();
         if(!(b instanceof MimeMultipart)) {
             String text = new String(PEpUtils.extractBodyContent(b), "UTF-8");   // FIXME: Encoding!
-            m.setLongmsg(text);
+            pEpMsg.setLongmsg(text);
             return;
         }
 
         MimeMultipart mmp = (MimeMultipart) b;
         Vector<Blob> attachments = new Vector<Blob>();
-        handleMultipart(m, mmp, attachments);
+        handleMultipart(pEpMsg, mmp, attachments);           // recurse into the Joys of Mime...
 
-        m.setAttachments(attachments);
+        pEpMsg.setAttachments(attachments);
     }
 
-    private void handleMultipart(Message m, MimeMultipart mmp, Vector<Blob> attachments) throws MessagingException, IOException, UnsupportedEncodingException {
-        int nrOfAttachment = mmp.getBodyParts().size();
-        for (int i = 0; i < nrOfAttachment; i++) {
-            MimeBodyPart mbp = (MimeBodyPart) mmp.getBodyPart(i);
+    private void handleMultipart(Message pEpMsg, MimeMultipart mmp, Vector<Blob> attachments) throws MessagingException, IOException, UnsupportedEncodingException {
+        int nrOfParts = mmp.getBodyParts().size();
+        for (int part = 0; part < nrOfParts; part++) {
+            MimeBodyPart mbp = (MimeBodyPart) mmp.getBodyPart(part);
             Body mbp_body = mbp.getBody();
-            Log.d("pep", "Bodypart #" + i + ":" + mbp.toString() + "mime type:" + mbp.getMimeType() + "  Body:" + mbp.getBody().toString());
+            Log.d("pep", "Bodypart #" + part + ":" + mbp.toString() + "mime type:" + mbp.getMimeType() + "  Body:" + mbp.getBody().toString());
             if (mbp_body instanceof MimeMultipart) {
-                handleMultipart(m, (MimeMultipart) mbp_body, attachments);
-                return;
+                handleMultipart(pEpMsg, (MimeMultipart) mbp_body, attachments);
+                continue;
             }
 
             boolean plain = mbp.isMimeType("text/plain");
             if (plain || mbp.isMimeType("text/html")) {
                 String text = new String(PEpUtils.extractBodyContent(mbp_body), "UTF-8");      // FIXME: encoding!
                 if(plain)
-                    m.setLongmsg(text);
+                    pEpMsg.setLongmsg(text);
                 else
-                    m.setLongmsgFormatted(text);
+                    pEpMsg.setLongmsgFormatted(text);
                 Log.d("pep", "found Text: " + text);
             } else  {
                 Blob blob = new Blob();
-                blob.filename = MimeUtility.getHeaderParameter(mbp.getContentType(), "name");     // TODO: test wether this works
+                blob.filename = MimeUtility.getHeaderParameter(mbp.getContentType(), "name");
                 if(blob.filename == null) {
                     blob.filename = "file";
                     Log.e("pep", "Could not determine filename.");
@@ -92,7 +92,7 @@ class PEpMessageBuilder {
                 blob.mime_type = mbp.getMimeType();
                 blob.data = PEpUtils.extractBodyContent(mbp_body);
                 attachments.add(blob);
-                Log.d("pep", "PePMessageBuilder: BLOB #" + i + ":" + blob.mime_type + ":" + blob.filename);
+                Log.d("pep", "PePMessageBuilder: BLOB #" + part + ":" + blob.mime_type + ":" + blob.filename);
             }
         }
     }
@@ -106,11 +106,9 @@ class PEpMessageBuilder {
             m.setBcc(PEpUtils.createIdentities(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC)));
             m.setId(mm.getMessageId());
             m.setInReplyTo(createMessageReferences(mm.getReferences()));
-            // m.setRecv();
             m.setSent(mm.getSentDate());
             m.setReplyTo(PEpUtils.createIdentities(mm.getReplyTo()));
             m.setReferences(createMessageReferences(mm.getReferences()));
-            // m.setRecvBy();
             m.setShortmsg(mm.getSubject());
 
             // TODO: other headers

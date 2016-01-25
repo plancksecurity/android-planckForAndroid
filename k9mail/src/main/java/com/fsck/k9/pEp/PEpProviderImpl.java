@@ -121,7 +121,10 @@ public class PEpProviderImpl implements PEpProvider {
             encMsg = engine.encrypt_message(srcMsg, convertExtraKeys(extraKeys));
             Log.d("pep", "encryptMessage() after encrypt");
 
-            if(encMsg == null) encMsg = srcMsg;         // FIXME: this should be done by the engine! I could return source, but this would mask engine and my own errors...
+            if(encMsg == null) {
+                Log.e("pep", "engine returned null.");
+                encMsg = srcMsg;         // FIXME: this should be done by the engine! I could return source, but this would mask engine and my own errors...
+            }
             return new MimeMessageBuilder(encMsg).createMessage();
         } catch (Throwable t) {
             Log.e("pep", "while encrypting message:", t);
