@@ -46,13 +46,13 @@ class MimeMessageBuilder {
 
     MimeMessage createMessage() {
         try {
-            MimeMessage message = new MimeMessage();
+            MimeMessage mimeMsg = new MimeMessage();
 
             evaluateMessageFormat();
-            buildHeader(message);
-            buildBody(message);
+            buildHeader(mimeMsg);
+            buildBody(mimeMsg);
 
-            return message;
+            return mimeMsg;
         }
         catch (Exception e) {
             Log.e("pepdump", "Could not create MimeMessage: ", e);
@@ -67,30 +67,31 @@ class MimeMessageBuilder {
             messageFormat = SimpleMessageFormat.TEXT;
     }
 
-    private void buildHeader(MimeMessage message) throws MessagingException {
-        message.addSentDate(new Date(), K9.hideTimeZone());
-        message.setFrom(PEpUtils.createAddress(pEpMessage.getFrom()));
-        message.setRecipients(RecipientType.TO, PEpUtils.createAddresses(pEpMessage.getTo()));
-        message.setRecipients(RecipientType.CC, PEpUtils.createAddresses(pEpMessage.getCc()));
-        message.setRecipients(RecipientType.BCC, PEpUtils.createAddresses(pEpMessage.getBcc()));
-        message.setSubject(pEpMessage.getShortmsg());
-        message.setMessageId(pEpMessage.getId());
+    private void buildHeader(MimeMessage mimeMsg) throws MessagingException {
+        mimeMsg.addSentDate(new Date(), K9.hideTimeZone());
+        mimeMsg.setFrom(PEpUtils.createAddress(pEpMessage.getFrom()));
+        mimeMsg.setRecipients(RecipientType.TO, PEpUtils.createAddresses(pEpMessage.getTo()));
+        mimeMsg.setRecipients(RecipientType.CC, PEpUtils.createAddresses(pEpMessage.getCc()));
+        mimeMsg.setRecipients(RecipientType.BCC, PEpUtils.createAddresses(pEpMessage.getBcc()));
+        mimeMsg.setSubject(pEpMessage.getShortmsg());
+        mimeMsg.setMessageId(pEpMessage.getId());
         if (!K9.hideUserAgent()) {
-            message.setHeader("User-Agent", "K9/pEp early beta");
+            mimeMsg.setHeader("User-Agent", "K9/pEp early beta");       // FIXME: put to ressource (or use predef'd one...)
         }
 
-        message.setReplyTo(PEpUtils.createAddresses(pEpMessage.getReplyTo()));
-        message.setInReplyTo(clobberVector(pEpMessage.getInReplyTo()));
-        message.setReferences(clobberVector(pEpMessage.getReferences()));
+        mimeMsg.setReplyTo(PEpUtils.createAddresses(pEpMessage.getReplyTo()));
+        mimeMsg.setInReplyTo(clobberVector(pEpMessage.getInReplyTo()));
+        mimeMsg.setReferences(clobberVector(pEpMessage.getReferences()));
         //TODO: other header fields. See Message.getOpt<something>
     }
 
-    private void buildBody(MimeMessage message) throws MessagingException {
+    private void buildBody(MimeMessage mimeMsg) throws MessagingException {
         if (pEpMessage.getEncFormat() != Message.EncFormat.None) {   // we have an encrypted msg. Therefore, just attachments...
+            // FIXME: how do I add some text ("this mail encrypted by pEp") before the first mime part?
             MimeMultipart mp = new MimeMultipart();
-            mp.setSubType("encrypted; protocol=\"application/pgp-encrypted\"");
+            mp.setSubType("encrypted; protocol=\"application/pgp-encrypted\"");     // FIXME: what if other enc types?
             addAttachmentsToMessage(mp);
-            MimeMessageHelper.setBody(message, mp);
+            MimeMessageHelper.setBody(mimeMsg, mp);
 
             return;
         }
@@ -122,10 +123,10 @@ class MimeMessageBuilder {
                 MimeMultipart mp = new MimeMultipart();
                 mp.addBodyPart(new MimeBodyPart(composedMimeMessage));
                 addAttachmentsToMessage(mp);
-                MimeMessageHelper.setBody(message, mp);
+                MimeMessageHelper.setBody(mimeMsg, mp);
             } else {
                 // If no attachments, our multipart/alternative part is the only one we need.
-                MimeMessageHelper.setBody(message, composedMimeMessage);
+                MimeMessageHelper.setBody(mimeMsg, composedMimeMessage);
             }
 
         } else if (messageFormat == SimpleMessageFormat.TEXT) {
@@ -134,10 +135,10 @@ class MimeMessageBuilder {
                 MimeMultipart mp = new MimeMultipart();
                 mp.addBodyPart(new MimeBodyPart(body, "text/plain"));
                 addAttachmentsToMessage(mp);
-                MimeMessageHelper.setBody(message, mp);
+                MimeMessageHelper.setBody(mimeMsg, mp);
             } else {
                 // No attachments to include, just stick the text body in the message and call it good.
-                MimeMessageHelper.setBody(message, body);
+                MimeMessageHelper.setBody(mimeMsg, body);
             }
 
         }
@@ -182,6 +183,9 @@ class MimeMessageBuilder {
             else
                 bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, contentType);
 
+            // FIXME: the following lines lack clearness of flow...
+            /* if msg is plain text or if it's one of the non-special pgp attachments (Attachment #1 and #2 have special meaning,
+               see "else" branch then dont't treat special (means, use attachment disposition) */
             if (pEpMessage.getEncFormat() == Message.EncFormat.None || i > 1) {
                 bp.setEncoding(MimeUtil.ENC_8BIT);
 
@@ -194,10 +198,10 @@ class MimeMessageBuilder {
                             "attachment;\r\n size=%d",
                             attachment.data.length));
             } else {                // we all live in pgp...
-                if(i==0) {
+                if(i==0) {        // 1st. attachment is pgp version if encrypted.
                     bp.addHeader(MimeHeader.HEADER_CONTENT_DESCRIPTION, "PGP/MIME version identification");
                 } else if (i==1) {
-                    bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
+                    bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,    // 2nd field is enc'd content.
                             "inline;\r\n filename=\"%s\";\r\n size=%d",
                             filename, attachment.data.length));
                 }
@@ -219,6 +223,8 @@ class MimeMessageBuilder {
      * @return {@link TextBody} instance that contains the entered text and possibly the quoted
      * original message.
      */
+
+    /* FIXME: the following logic needs some intense testing. Not completely sure whether I broke threading and quoting badly somewhere... */
     private TextBody buildText(SimpleMessageFormat simpleMessageFormat) {
         String messageText = null;
         if(simpleMessageFormat == SimpleMessageFormat.HTML)
@@ -227,7 +233,7 @@ class MimeMessageBuilder {
             messageText = pEpMessage.getLongmsg();
 
         if(messageText==null) {       // FIXME: This must (should?) never happen!
-            messageText="Got null msg text (This Is A Bug!)";
+            messageText="Got null msg text (This Is A Bug, please report!)";                // FIXME: Other text for production?
             Log.e("pep", "got null msg txt longmsg="+pEpMessage.getLongmsg()+" format=" + pEpMessage.getLongmsgFormatted());
         }
 
@@ -253,7 +259,7 @@ class MimeMessageBuilder {
         String rt = "";
         if(sv != null)
             for( String cur : sv)
-                rt += cur + " ";
+                rt += cur + "; ";
         return rt;
     }
 }
