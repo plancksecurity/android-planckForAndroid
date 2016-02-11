@@ -162,7 +162,11 @@ public class PEpUtils {
     }
 
     static private void dumpBody(String tag, Body body, int idx) throws Exception {
-        String prev = tag + "                                                      ".substring(0, idx);
+        String prev = tag + "                                                                                                                                                        ".substring(0, idx);
+        if(body==null) {
+            Log.e("pepdump", "null body");
+            return;
+        }
         if (!(body instanceof MimeMultipart)) {
             Log.e("pepdump", prev + "body: "+ body.toString());
             if(body instanceof BinaryMemoryBody) {

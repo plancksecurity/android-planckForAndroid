@@ -1520,7 +1520,8 @@ public class Account implements BaseAccount, StoreConfig {
     }
 
     public synchronized int getMaximumAutoDownloadMessageSize() {
-        return maximumAutoDownloadMessageSize;
+        return 0;                                                       // pEp: always fetch everything...
+        // return maximumAutoDownloadMessageSize;
     }
 
     public synchronized void setMaximumAutoDownloadMessageSize(int maximumAutoDownloadMessageSize) {
