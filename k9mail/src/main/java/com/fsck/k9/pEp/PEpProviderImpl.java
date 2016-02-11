@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
 
 import org.pEp.jniadapter.AndroidHelper;
@@ -93,14 +94,15 @@ public class PEpProviderImpl implements PEpProvider {
             Log.d("pep", "decryptMessage() before decrypt");
             decReturn = engine.decrypt_message(srcMsg);
             Log.d("pep", "decryptMessage() after decrypt");
-
-            return new DecryptResult(new MimeMessageBuilder(decReturn.dst).createMessage(), decReturn.color);
+            MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
+            decMsg.addHeader(MimeHeader.HEADER_PEPCOLOR, decReturn.color.name());
+            return new DecryptResult(decMsg, decReturn.color);
         } catch (Throwable t) {
             Log.e("pep", "while decrypting message:", t);
             throw new RuntimeException("Could not decrypt");
         } finally {
             if (srcMsg != null) srcMsg.close();
-      //      if (decReturn != null) decReturn.dst.close();
+            if (decReturn != null) decReturn.dst.close();
             if (engine != null) engine.close();
             Log.d("pep", "decryptMessage() exit");
         }
@@ -131,8 +133,7 @@ public class PEpProviderImpl implements PEpProvider {
             throw new RuntimeException("Could not encrypt");
         } finally {
             if (srcMsg != null) srcMsg.close();
-            // FIXME: deletion of encMsg still seems to be broken...
-    //        if (encMsg != null) encMsg.close();
+            if (encMsg != null) encMsg.close();
             if (engine != null) engine.close();
             Log.d("pep", "encryptMessage() exit");
         }

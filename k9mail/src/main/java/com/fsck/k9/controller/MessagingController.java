@@ -1411,6 +1411,12 @@ public class MessagingController {
 
                         return;
                     }
+                    if (message.getBody() == null) {
+                        // we can't do anything atm....
+                        Log.e("pep", "message not complete in downloadSmall (msgid=" + message.getId()+")");
+                        return;
+                    }
+
 
                     Log.d("pep", "in download loop (nr="+number+") pre pep");
                     PEpUtils.dumpMimeMessage("downloadSmallMessages", (MimeMessage) message);
@@ -1418,8 +1424,6 @@ public class MessagingController {
                     PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
                     MimeMessage decryptedMessage = result.msg;
                     decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
-                    decryptedMessage.addHeader(MimeHeader.HEADER_PEPCOLOR, result.col.name());
-
 
                     // Store the updated message locally
                     final LocalMessage localMessage = localFolder.storeSmallMessage(decryptedMessage, new Runnable() {
@@ -1435,7 +1439,6 @@ public class MessagingController {
                         // thats it.
                     }
                     Log.d("pep", "in download loop (nr=" + number + ") post pep");
-
 
                     // Increment the number of "new messages" if the newly downloaded message is
                     // not marked as read.

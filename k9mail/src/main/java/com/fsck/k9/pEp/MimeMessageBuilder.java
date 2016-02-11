@@ -68,7 +68,8 @@ class MimeMessageBuilder {
     }
 
     private void buildHeader(MimeMessage mimeMsg) throws MessagingException {
-        mimeMsg.addSentDate(new Date(), K9.hideTimeZone());
+        if(pEpMessage.getSent() != null) mimeMsg.addSentDate(pEpMessage.getSent(), K9.hideTimeZone());
+        else Log.e("pep", "sent daten == null from engine.");       // FIXME: this should never happen
         mimeMsg.setFrom(PEpUtils.createAddress(pEpMessage.getFrom()));
         mimeMsg.setRecipients(RecipientType.TO, PEpUtils.createAddresses(pEpMessage.getTo()));
         mimeMsg.setRecipients(RecipientType.CC, PEpUtils.createAddresses(pEpMessage.getCc()));
