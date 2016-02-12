@@ -1455,7 +1455,7 @@ public class MessagingController implements Runnable {
                     });
 
                     if(!account.isPEpStoreEncryptedOnServer()) {    // put unenc'd msg to server...
-                        // delete decmsg on server
+                        // TODO: delete decmsg on server
                         // move msg to server
                         // thats it.
                     }
@@ -3137,6 +3137,9 @@ public class MessagingController implements Runnable {
                                 // FIXME: This costs us a round trip and might break color detection. Perhaps do some magic (Id) and move message to localSent? But this won't stop broken color detection...
                                 message.setFlag(Flag.DELETED, true);
                                 localSentFolder.destroyMessages(Collections.singletonList(encryptedMessage));
+                                for (MessagingListener l : getListeners()) {
+                                    l.folderStatusChanged(account, localSentFolder.getName(), localSentFolder.getUnreadMessageCount());
+                                }
                             }
                         }
                     } catch (AuthenticationFailedException e) {
