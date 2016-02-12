@@ -253,23 +253,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         }
     }
 
-    private void mixMsgIntoMessage(LocalMessage lm, MimeMessage mm) {
-        MimeMultipart mm_mmp = (MimeMultipart) mm.getBody();
-        MimeBodyPart mm_mbp = (MimeBodyPart) mm_mmp.getBodyPart(1);
-        TextBody mm_mtb = (TextBody) mm_mbp.getBody();
-
-        try {
-            // now: find the right part in lm and delete other attachments...
-            // FIXME: attachment handling!
-            // FIXME: HTML/Text handling
-            MimeMultipart lm_mmp = (MimeMultipart) lm.getBody();
-            MimeBodyPart lm_mbp = (MimeBodyPart) lm_mmp.getBodyPart(0);
-            MimeMessageHelper.setBody(lm_mbp,mm_mtb);
-
-        } catch (Exception e) {
-            Log.e("pep", "could not manipulate localmessage", e);
-        }
-    }
 
     private void onLoadMessageFromDatabaseFailed() {
         // mMessageView.showStatusMessage(mContext.getString(R.string.status_invalid_id_error));

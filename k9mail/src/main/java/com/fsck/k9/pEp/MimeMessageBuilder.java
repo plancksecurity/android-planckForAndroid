@@ -170,7 +170,7 @@ class MimeMessageBuilder {
 
             if (filename != null) filename = EncoderUtil.encodeIfNecessary(filename, EncoderUtil.Usage.WORD_ENTITY, 7);
 
-            body = new BinaryMemoryBody(attachment.data, MimeUtil.ENC_8BIT);
+            body = new BinaryMemoryBody(attachment.data, MimeUtil.ENC_8BIT);  // FIXME: encoding right?
 
             MimeBodyPart bp = new MimeBodyPart(body);
 
