@@ -287,6 +287,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         else
             mPEpColor = Color.pEpRatingUndefined;
 
+        Log.i("pEp", "got color " + mPEpColor);
         mPEpIndicator.setImageDrawable(makePePStatusIcon());
         Toast.makeText(mContext, PePUIArtefactCache.getInstance(getResources()).getTitle(mPEpColor), Toast.LENGTH_LONG).show();
 
