@@ -1,15 +1,11 @@
 package com.fsck.k9.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import com.fsck.k9.R;
-
-import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
 
 public class PEpTrustwords extends K9Activity {
@@ -22,7 +18,7 @@ public class PEpTrustwords extends K9Activity {
     private String otherFingerprint;
 
     public static void actionShowTrustwords(Context context, Identity me, Identity you) {
-        Intent i = new Intent(context, PEpStatus.class);
+        Intent i = new Intent(context, PEpTrustwords.class);
         i.setAction(ACTION_SHOW_PEP_TRUSTWORDS);
         i.putExtra(MY_IDENTITY, me.fpr);
         i.putExtra(OTHER_IDENTITY, you.fpr);

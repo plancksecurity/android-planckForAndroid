@@ -1,22 +1,16 @@
 package com.fsck.k9.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PePUIArtefactCache;
-
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
 
@@ -64,7 +58,7 @@ public class PEpStatus extends K9Activity {
             trustwords.setVisibility(View.VISIBLE);
             trustwords.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    PEpTrustwords.actionShowTrustwords(getApplicationContext(), new Identity(), new Identity());
+                    PEpTrustwords.actionShowTrustwords(PEpStatus.this, new Identity(), new Identity());
                 }
             });
         }
