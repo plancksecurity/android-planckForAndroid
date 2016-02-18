@@ -133,7 +133,6 @@ public class PEpProviderImpl implements PEpProvider {
             throw new RuntimeException("Could not encrypt");
         } finally {
             if (srcMsg != null) srcMsg.close();
-            if (encMsg != null) encMsg.close();
             if (engine != null) engine.close();
             Log.d("pep", "encryptMessage() exit");
         }
