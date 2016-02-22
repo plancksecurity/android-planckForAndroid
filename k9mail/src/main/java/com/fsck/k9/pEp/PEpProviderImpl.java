@@ -102,7 +102,7 @@ public class PEpProviderImpl implements PEpProvider {
             throw new RuntimeException("Could not decrypt");
         } finally {
             if (srcMsg != null) srcMsg.close();
-            if (decReturn != null) decReturn.dst.close();
+            if (decReturn != null && decReturn.dst != srcMsg) decReturn.dst.close();
             if (engine != null) engine.close();
             Log.d("pep", "decryptMessage() exit");
         }

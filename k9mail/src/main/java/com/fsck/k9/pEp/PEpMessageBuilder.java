@@ -1,15 +1,12 @@
 package com.fsck.k9.pEp;
 
 import android.util.Log;
-
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeBodyPart;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.mail.internet.MimeUtility;
-import com.fsck.k9.mailstore.BinaryMemoryBody;
-
 import org.pEp.jniadapter.Blob;
 import org.pEp.jniadapter.Message;
 
@@ -50,8 +47,14 @@ class PEpMessageBuilder {
         // - plain text body if html above
         // - many attachments (of type binarymemoryblob (hopefully ;-)).
         Body b = mm.getBody();
-        if(!(b instanceof MimeMultipart)) {
-            String text = new String(PEpUtils.extractBodyContent(b), "UTF-8");   // FIXME: Encoding!
+        if(!(b instanceof MimeMultipart)) { //FIXME: Don't do this assumption (if not Multipart then plain or html text)
+            String charset =  MimeUtility.getHeaderParameter(mm.getContentType(), "charset");
+            if (charset == null) {
+            // failback when the header doesn't have charset parameter, defaults to UTF-8
+            // FIXME: Encoding, trate non text body types like application/pgp-keys
+                charset = "UTF-8";
+            }
+            String text = new String(PEpUtils.extractBodyContent(b), charset);
             pEpMsg.setLongmsg(text);
             return;
         }
@@ -82,10 +85,11 @@ class PEpMessageBuilder {
                 handleMultipart(pEpMsg, (MimeMultipart) mbp_body, attachments);
                 continue;
             }
+            //FIXME> Deal with non text and non multipart message and non attachments
 
             boolean plain = mbp.isMimeType("text/plain");
             if (plain || mbp.isMimeType("text/html")) {
-                String text = new String(PEpUtils.extractBodyContent(mbp_body), "UTF-8");      // FIXME: encoding!
+                String text = new String(PEpUtils.extractBodyContent(mbp_body), MimeUtility.getHeaderParameter(mbp.getContentType(), "charset"));
                 if(plain)
                     pEpMsg.setLongmsg(text);
                 else
