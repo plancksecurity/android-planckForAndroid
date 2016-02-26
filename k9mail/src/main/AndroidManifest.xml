@@ -426,11 +426,11 @@
         </provider>
 
         <activity
-            android:name=".activity.PEpStatus"
+            android:name=".pEp.ui.PEpStatus"
             android:label="@string/title_activity_pep_status" >
         </activity>
         <activity
-            android:name=".activity.PEpTrustwords"
+            android:name=".pEp.ui.PEpTrustwords"
             android:label="@string/title_activity_pep_trustwords"
             android:parentActivityName=".activity.K9Activity" >
             <meta-data

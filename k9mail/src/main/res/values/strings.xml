@@ -1152,7 +1152,8 @@ Please submit bug reports, contribute new features and ask questions at
     <string name="crypto_mode_private">Always Sign, Always Encrypt.</string>
     <string name="error_crypto_provider_connect">Cannot connect to crypto provider, check your settings or click crypto icon to retry!</string>
     <string name="error_crypto_provider_ui_required">Crypto provider access denied, click crypto icon to retry!</string>
-    <string name="title_activity_pep_status">PEpStatus</string>
+
+    <string name="title_activity_pep_status">p≡p status</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
