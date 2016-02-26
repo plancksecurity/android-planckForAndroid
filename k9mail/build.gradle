@@ -41,6 +41,9 @@ dependencies {
     testCompile "org.robolectric:robolectric:${robolectricVersion}"
     testCompile "junit:junit:${junitVersion}"
     testCompile "org.mockito:mockito-core:${mockitoVersion}"
+
+    compile 'com.android.support:recyclerview-v7:21.0.+'
+    compile 'com.jakewharton:butterknife:7.0.1'
 }
 
 android {
