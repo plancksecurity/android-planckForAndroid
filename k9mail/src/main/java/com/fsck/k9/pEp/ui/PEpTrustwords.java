@@ -1,4 +1,4 @@
-package com.fsck.k9.activity;
+package com.fsck.k9.pEp.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.fsck.k9.R;
+import com.fsck.k9.activity.K9Activity;
 import org.pEp.jniadapter.Identity;
 
 public class PEpTrustwords extends K9Activity {
