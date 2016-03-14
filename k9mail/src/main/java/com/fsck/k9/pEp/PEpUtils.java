@@ -12,10 +12,9 @@ import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
 import com.fsck.k9.mailstore.LocalBodyPart;
 import org.apache.commons.io.IOUtils;
-import org.pEp.jniadapter.Blob;
 import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Message;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Vector;
@@ -62,81 +61,6 @@ public class PEpUtils {
         if(adr.getAddress() == null && id.address != null)
             throw new RuntimeException("Could not convert Identiy.address " + id.address + " to Address.");
         return adr;
-    }
-
-    static Message createMessage(MimeMessage mm) {
-        Message m = null;
-        try {
-            m = new Message();
-
-            addHeaders(m, mm);
-            addBody(m, mm);
-            return m;
-        } catch (Throwable t) {
-            if(m != null) m.close();
-            Log.e("pEp", "Could not create message:", t);
-        }
-        return null;
-    }
-
-    private static void addBody(Message m, MimeMessage mm) {
-        try {
-            // fiddle message txt from MimeMsg...
-            MimeMultipart mmp = (MimeMultipart) mm.getBody();
-            LocalBodyPart lbp = (LocalBodyPart) mmp.getBodyPart(0);
-            BinaryMemoryBody bmb = (BinaryMemoryBody) lbp.getBody();
-            m.setLongmsg(new String(bmb.getData(), "UTF-8"));
-
-            //TODO: Handle pure text and multipart/alternative
-
-            // and add attachments...
-            Vector<Blob> attachments = new Vector<Blob>();
-            int nrOfAttachment = mmp.getBodyParts().size();
-            for (int i = 1; i < nrOfAttachment; i++) {
-                BodyPart p = mmp.getBodyPart(i);
-
-                Log.d("pep", "Bodypart #" + i + ":" + p.toString() + " Body:" + p.getBody().toString());
-                if (p.getBody() instanceof BinaryMemoryBody) {
-                    BinaryMemoryBody part = (BinaryMemoryBody) p.getBody();
-
-                    // TODO: filename
-                    Blob blob = new Blob();
-                    blob.filename = "qwerty";
-                    blob.mime_type = p.getMimeType();
-                    blob.data = part.getData();
-                    attachments.add(blob);
-                    Log.d("pep", "BLOB #" + i + ":" + blob.mime_type);
-                }
-            }
-            m.setAttachments(attachments);
-        } catch (Exception e) {
-            Log.e("pep", "creating message body", e);
-        }
-    }
-
-    private static void addHeaders(Message m, MimeMessage mm) {
-        // headers
-        m.setFrom(createIdentity(mm.getFrom()[0]));
-        m.setTo(createIdentities(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO)));
-        m.setCc(createIdentities(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC)));
-        m.setBcc(createIdentities(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC)));
-        m.setId(mm.getMessageId());
-        m.setInReplyTo(createMessageReferences(mm.getReferences()));
-        // m.setRecv();
-        m.setSent(mm.getSentDate());
-        m.setReplyTo(createIdentities(mm.getReplyTo()));
-        // m.setRecvBy();
-        m.setShortmsg(mm.getSubject());
-
-        // TODO: other headers
-    }
-
-    private static Vector<String> createMessageReferences(String[] references) {
-        Vector<String> rv = new Vector<String>();
-        if(references != null)
-            for(String s : references)
-                rv.add(s);
-        return rv;
     }
 
 
@@ -202,9 +126,11 @@ public class PEpUtils {
 
     static byte[] extractBodyContent(Body body) throws MessagingException, IOException {
         InputStream is = MimeUtility.decodeBody(body);
-        byte[] rv = IOUtils.toByteArray(is);
-        is.close();
-
-        return rv;
+        if (is != null) {
+            byte[] rv = IOUtils.toByteArray(is);
+            is.close();
+            return rv;
+        }
+        return new ByteArrayOutputStream().toByteArray();
     }
 }

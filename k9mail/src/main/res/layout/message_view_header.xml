@@ -49,7 +49,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical" >
 
-                    <ImageButton
+                    <ImageView
                         android:id="@+id/pEp_indicator"
                         android:layout_width="40dp"
                         android:layout_height="40dp"

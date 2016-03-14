@@ -11,19 +11,14 @@
     android:id="@+id/pep_status_layout"
     >
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/pEpIcon"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/ic_action_pep_indicator" />
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="18sp"
+        android:textStyle="bold"
         android:text="Large Text"
-        android:id="@+id/pEpShortDesc" />
+        android:id="@+id/pEpShortDesc"
+            android:paddingBottom="8dp"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -48,5 +43,6 @@
             android:scrollbars="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:visibility="invisible"
             />
 </LinearLayout>

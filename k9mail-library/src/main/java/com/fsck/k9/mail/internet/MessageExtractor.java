@@ -456,7 +456,7 @@ public class MessageExtractor {
         return false;
     }
 
-    private static String getContentDisposition(Part part) {
+    public static String getContentDisposition(Part part) {
         String disposition = part.getDisposition();
         if (disposition != null) {
             return MimeUtility.getHeaderParameter(disposition, null);

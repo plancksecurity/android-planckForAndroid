@@ -35,6 +35,7 @@ public class PEpProviderImpl implements PEpProvider {
             return getPrivacyState(from, to, cc, bcc);
         }
 
+    //Don't instantiate a new engine
     @Override
     public Color getPrivacyState(Address from, Address[] toAdresses, Address[] ccAdresses, Address[] bccAdresses) {
         if(from == null || toAdresses.length == 0)
