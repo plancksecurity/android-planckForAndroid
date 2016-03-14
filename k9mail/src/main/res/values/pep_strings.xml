@@ -16,17 +16,17 @@
     </string-array>
 
     <array name="pep_color">
-        <item>#000000<!--pEpRatingUndefined--></item>
-        <item>#DCDCDC<!--pEpRatingCannotDecrypt--></item>
-        <item>#DCDCDC<!--pEpRatingHaveNoKey--></item>
-        <item>#DCDCDC<!--pEpRatingUnencrypted--></item>
-        <item>#000000<!--pEpRatingUnreliable--></item>
-        <item>#FFFF00<!--pEpRatingReliable--></item>
-        <item>#00FF00 <!--pEpRatingTrusted--></item>
-        <item>#00FF00 <!--pEpRatingTrustedAndAnonymized--></item>
-        <item>#000000<!--pEpRatingFullyAnonymous--></item>
-        <item>#FF0000<!--pEpRatingUnderAttack--></item>
-        <item>#DCDCDC<!--pEpRatingB0rken--></item>
+        <item>@color/pep_gray<!--pEpRatingUndefined--></item>
+        <item>@color/pep_gray<!--pEpRatingCannotDecrypt--></item>
+        <item>@color/pep_gray<!--pEpRatingHaveNoKey--></item>
+        <item>@color/pep_gray<!--pEpRatingUnencrypted--></item>
+        <item>@color/pep_gray<!--pEpRatingUnreliable--></item>
+        <item>@color/pep_yellow<!--pEpRatingReliable--></item>
+        <item>@color/pep_green<!--pEpRatingTrusted--></item>
+        <item>@color/pep_green<!--pEpRatingTrustedAndAnonymized--></item>
+        <item>@color/pep_green<!--pEpRatingFullyAnonymous--></item>
+        <item>@color/pep_red<!--pEpRatingUnderAttack--></item>
+        <item>@color/pep_red<!--pEpRatingB0rken--></item>
     </array>
 
     <string-array name="pep_title">

@@ -1,14 +1,13 @@
 package com.fsck.k9.pEp;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-
 import com.fsck.k9.R;
-
+import com.fsck.k9.mail.Address;
 import org.pEp.jniadapter.Color;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -80,5 +79,14 @@ public class PePUIArtefactCache
 
     public int getColor(Color c) {
         return color[colorIndexMapping.get(c)];
+    }
+
+
+    public ArrayList <Address> getRecipients() {
+        ArrayList <Address> recipients = new ArrayList<Address>();
+        for (int i = 0; i < 10; i++) {
+            recipients.add(new Address("dummie"+i+"@dummie.com", "dummie"+i));
+        }
+        return recipients;
     }
 }
