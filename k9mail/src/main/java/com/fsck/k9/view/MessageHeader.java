@@ -1,10 +1,5 @@
 package com.fsck.k9.view;
 
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
@@ -22,18 +17,11 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
-import android.widget.CheckBox;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.QuickContactBadge;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import android.widget.*;
 import com.fsck.k9.Account;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.ui.PEpStatus;
 import com.fsck.k9.activity.misc.ContactPictureLoader;
 import com.fsck.k9.helper.ClipboardManager;
 import com.fsck.k9.helper.ContactPicture;
@@ -47,8 +35,13 @@ import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.pEp.PePUIArtefactCache;
-
+import com.fsck.k9.pEp.ui.PEpStatus;
 import org.pEp.jniadapter.Color;
+
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 public class MessageHeader extends LinearLayout implements OnClickListener, OnLongClickListener {
     private Context mContext;
@@ -78,7 +71,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     private OnLayoutChangedListener mOnLayoutChangedListener;
 
-    private ImageButton mPEpIndicator;
+    private ImageView mPEpIndicator;
     private Color mPEpColor;
     /**
      * Pair class is only available since API Level 5, so we need
@@ -143,7 +136,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
         mSubjectView.setVisibility(VISIBLE);
 
-        mPEpIndicator = (ImageButton) findViewById(R.id.pEp_indicator);
+        mPEpIndicator = (ImageView) findViewById(R.id.pEp_indicator);
 
         hideAdditionalHeaders();
     }
@@ -278,7 +271,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         else
             mPEpColor = Color.pEpRatingUndefined;
 
-        Log.i("pEp", "got color " + mPEpColor);
+        Log.i("pEp", "got color " + mPEpColor + " " + mPEpColor.value);
         mPEpIndicator.setImageDrawable(makePePStatusIcon());
         Toast.makeText(mContext, PePUIArtefactCache.getInstance(getResources()).getTitle(mPEpColor), Toast.LENGTH_LONG).show();
 

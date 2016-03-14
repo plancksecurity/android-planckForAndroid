@@ -1,7 +1,6 @@
 package com.fsck.k9.pEp;
 
 import android.util.Log;
-
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.BodyPart;
@@ -11,14 +10,10 @@ import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
-import com.fsck.k9.mailstore.LocalBodyPart;
-import com.fsck.k9.message.SimpleMessageFormat;
-
 import org.apache.commons.io.IOUtils;
-import org.pEp.jniadapter.Blob;
 import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Message;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Vector;
@@ -130,9 +125,11 @@ public class PEpUtils {
 
     static byte[] extractBodyContent(Body body) throws MessagingException, IOException {
         InputStream is = MimeUtility.decodeBody(body);
-        byte[] rv = IOUtils.toByteArray(is);
-        is.close();
-
-        return rv;
+        if (is != null) {
+            byte[] rv = IOUtils.toByteArray(is);
+            is.close();
+            return rv;
+        }
+        return new ByteArrayOutputStream().toByteArray();
     }
 }
