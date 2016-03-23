@@ -17,20 +17,25 @@ import android.widget.Button;
 import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import com.fsck.k9.Account;
 import com.fsck.k9.K9;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class PEpStatus extends K9Activity {
 
     private static final String ACTION_SHOW_PEP_STATUS = "com.fsck.k9.intent.action.SHOW_PEP_STATUS";
     private static final String CURRENT_COLOR = "current_color";
+    private static final String MYSELF = "isComposedKey";
     private Color m_pEpColor = Color.pEpRatingB0rken;
     PePUIArtefactCache ui;
 
@@ -38,19 +43,26 @@ public class PEpStatus extends K9Activity {
     TextView pEpShortDesc;
     @Bind(R.id.pEpLongText)
     TextView pEpLongText;
-    @Bind(R.id.pEp_trustwords)
-    Button trustwords;
     @Bind(R.id.my_recycler_view)
     RecyclerView recipientsView;
     RecyclerView.Adapter recipientsAdapter;
     RecyclerView.LayoutManager recipientsLayoutManager;
 
+    String myself = "";
+    private PEpProvider pEp;
 
 
-    public static void actionShowStatus(Context context, Color currentColor) {
+    public static void actionShowStatus(Context context, Color currentColor, String myself) {
         Intent i = new Intent(context, PEpStatus.class);
         i.setAction(ACTION_SHOW_PEP_STATUS);
         i.putExtra(CURRENT_COLOR, currentColor.toString());
+        i.putExtra(MYSELF, myself);
+        for (Account account : Preferences.getPreferences(context).getAccounts()) {
+            for (com.fsck.k9.Identity identity : account.getIdentities()) {
+
+            Log.i("PEpStatus", "actionShowStatus " + account.toString() + " " + identity.getEmail());
+            }
+        }
         context.startActivity(i);
     }
 
@@ -59,7 +71,6 @@ public class PEpStatus extends K9Activity {
         super.onCreate(savedInstanceState);
 
         load_pEp_color();
-
         setContentView(R.layout.pep_status);
         ButterKnife.bind(PEpStatus.this);
 
@@ -68,15 +79,11 @@ public class PEpStatus extends K9Activity {
         setUpContactList();
         loadPepTexts();
         setStatusBarPepColor();
-
-        if (m_pEpColor == Color.pEpRatingReliable) {
-            trustwords.setVisibility(View.VISIBLE);
-            trustwords.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    PEpTrustwords.actionShowTrustwords(PEpStatus.this, new Identity(), new Identity());
-                }
-            });
+        if (getIntent() != null && getIntent().hasExtra(MYSELF)) {
+            myself = getIntent().getStringExtra(MYSELF);
         }
+        pEp = ((K9) getApplication()).getpEpProvider();
+
     }
 
     private void loadPepTexts() {
@@ -122,10 +129,10 @@ public class PEpStatus extends K9Activity {
     }
 
     private void setUpContactList() {
-        String[] dummieContactList = {"dummie1@a.com","dummie2@a.com","dummie3@a.com","dummie4@a.com", };
         recipientsLayoutManager = new LinearLayoutManager(this);
         ((LinearLayoutManager) recipientsLayoutManager).setOrientation(LinearLayoutManager.VERTICAL);
         recipientsView.setLayoutManager(recipientsLayoutManager);
+        recipientsView.setVisibility(View.VISIBLE);
         recipientsAdapter = new RecipientsAdapter(ui.getRecipients());
         recipientsView.setAdapter(recipientsAdapter);
         recipientsView.addItemDecoration(new SimpleDividerItemDecoration(this));
@@ -158,9 +165,36 @@ public class PEpStatus extends K9Activity {
     }
 
     private class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolder> {
-        private final ArrayList <Address> dataset;
+        private final List <Identity> dataset;
+        private View.OnClickListener onHandshakeClick = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Identity id =dataset.get(viewHolder.getAdapterPosition());
+                Identity myId = PEpUtils.createIdentity(new Address(myself), getApplicationContext());
+                id = ((K9) getApplication()).updateIdentity(id);
+                myId = ((K9) getApplication()).updateIdentity(myId);
 
-        public RecipientsAdapter(ArrayList dataset) {
+                String trust;
+                String longPartnerTrustkeys = ((K9) getApplication()).getpEpProvider().trustwords(id);
+                String longMyTrustKeys = ((K9) getApplication()).getpEpProvider().trustwords(myId);
+                String myTrust = PEpUtils.getShortTrustKey(longMyTrustKeys);
+                String theirTrust =  PEpUtils.getShortTrustKey(longPartnerTrustkeys);
+                if (myId.fpr.compareTo(id.fpr) > 0)
+                {
+                    trust = theirTrust + myTrust;
+                }
+                else
+                {
+                    trust = myTrust + theirTrust;
+                }
+                Log.i("RecipientsAdapter", "onClick " + trust);
+
+                PEpTrustwords.actionRequestHandshake(PEpStatus.this, trust, viewHolder.getAdapterPosition());
+            }
+        };
+        private ViewHolder viewHolder;
+
+        public RecipientsAdapter(List dataset) {
             this.dataset = dataset;
         }
 
@@ -172,14 +206,30 @@ public class PEpStatus extends K9Activity {
                     .inflate(R.layout.pep_recipient_row, parent, false);
             // set the view's size, margins, paddings and layout parameters
 
-            ViewHolder vh = new ViewHolder(v);
-            return vh;
+            viewHolder = new ViewHolder(v);
+            return viewHolder;
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            holder.contactEmail.setText(dataset.get(position).getPersonal());
+        public void onBindViewHolder(ViewHolder holder, final int position) {
+            if (dataset.get(position).username == null
+                    || dataset.get(position).username.equals("")) {
+                holder.contactEmail.setText(dataset.get(position).address);
+            }
+            else {
+                holder.contactEmail.setText(dataset.get(position).username);
+            }
+            Color color = pEp.getIdentityColor(dataset.get(position));
+            Log.i("onBindViewHolder", "onBindViewHolder: " + color);
+            ((View) holder.contactEmail.getParent()).setBackgroundColor(ui.getColor(color));
+            if (color.value != Color.pEpRatingYellow.value) {
+                holder.handshakeButton.setVisibility(View.GONE);
+            } else {
+                holder.handshakeButton.setOnClickListener(onHandshakeClick);
+            }
         }
+
+
 
         @Override
         public int getItemCount() {
@@ -223,6 +273,21 @@ public class PEpStatus extends K9Activity {
 
                 mDivider.setBounds(left, top, right, bottom);
                 mDivider.draw(c);
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PEpTrustwords.HANDSHAKE_REQUEST) {
+            if (resultCode == RESULT_OK) {
+               int position = data.getIntExtra(PEpTrustwords.PARTNER_POSITION, PEpTrustwords.DEFAULT_POSITION);
+                Identity partner = ui.getRecipients().get(position);
+                recipientsAdapter.notifyDataSetChanged();
+                Log.i("PEpStatus", "onActivityResult " + position);
+                Log.i("PEpStatus", "onActivityResult " + pEp.getIdentityColor(partner));
+                Log.i("PEpStatus", "onActivityResult " + partner.address);
             }
         }
     }

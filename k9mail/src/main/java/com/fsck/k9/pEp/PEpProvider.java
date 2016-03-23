@@ -1,10 +1,10 @@
 package com.fsck.k9.pEp;
 
 import android.content.Context;
-
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.internet.MimeMessage;
 import org.pEp.jniadapter.Color;
+import org.pEp.jniadapter.Identity;
 
 /**
  * Created by dietz on 01.07.15.
@@ -58,6 +58,18 @@ public interface PEpProvider {
      * @param c
      */
     public void setup(Context c);
+
+    Color getIdentityColor(Address address);
+
+    Color getIdentityColor(Identity identity);
+
+    String trustwords(Identity id);
+
+    void close();
+
+    Identity updateIdentity(Identity id);
+
+    void trustPersonaKey(Identity id);
 
     public class DecryptResult {
         DecryptResult(MimeMessage msg, Color col) {

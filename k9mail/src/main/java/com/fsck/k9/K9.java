@@ -1,30 +1,15 @@
 
 package com.fsck.k9;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.SynchronousQueue;
-
+import android.app.Activity;
 import android.app.Application;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.StrictMode;
+import android.os.*;
 import android.text.format.Time;
 import android.util.Log;
-
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.MessageCompose;
@@ -36,18 +21,33 @@ import com.fsck.k9.mail.K9MailLib;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.BinaryTempFileBody;
+import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mailstore.LocalStore;
+import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.provider.UnreadWidgetProvider;
-import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.service.BootReceiver;
 import com.fsck.k9.service.MailService;
 import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
+import org.pEp.jniadapter.*;
+import org.pEp.jniadapter.Identity;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 
 public class K9 extends Application {
+    private PEpProvider pEpProvider;
+
+
+    public PEpProvider getpEpProvider() { return pEpProvider;}
     public static void setPEpExtraAccounts(String text) {
         pEpExtraAccounts = text;
     }
@@ -62,6 +62,10 @@ public class K9 extends Application {
 
     public static boolean getPEpUseKeyserver() {
         return pEpUseKeyserver;
+    }
+
+    public Identity updateIdentity(Identity id) {
+        return pEpProvider.updateIdentity(id);
     }
 
     /**
@@ -527,7 +531,7 @@ public class K9 extends Application {
 
     @Override
     public void onCreate() {
-        PEpProviderFactory.createAndSetupProvider(getApplicationContext());
+        pEpProvider = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
 
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
@@ -536,6 +540,7 @@ public class K9 extends Application {
         PRNGFixes.apply();
 
         super.onCreate();
+        registerActivityLifecycleCallbacks(lifecycleCallbacks);
         app = this;
         Globals.setContext(this);
         oAuth2TokenStore = new AndroidAccountOAuth2TokenStore(this);
@@ -1384,6 +1389,8 @@ public class K9 extends Application {
         return sDatabasesUpToDate;
     }
 
+
+
     /**
      * Remember that all account databases are using the most recent database schema.
      *
@@ -1402,4 +1409,50 @@ public class K9 extends Application {
             editor.commit();
         }
     }
+
+    private ActivityLifecycleCallbacks lifecycleCallbacks = new ActivityLifecycleCallbacks() {
+        int activityCount = 0;
+        @Override
+        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+            ++activityCount;
+            pEpProvider = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
+        }
+
+        @Override
+        public void onActivityStarted(Activity activity) {
+
+        }
+
+        @Override
+        public void onActivityResumed(Activity activity) {
+
+        }
+
+        @Override
+        public void onActivityPaused(Activity activity) {
+
+        }
+
+        @Override
+        public void onActivityStopped(Activity activity) {
+
+        }
+
+        @Override
+        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+
+        }
+
+        @Override
+        public void onActivityDestroyed(Activity activity) {
+            --activityCount;
+            Log.i("K9", "onActivityDestroyed " + activityCount);
+            if (activityCount == 0) {
+                pEpProvider.close();
+                pEpProvider = null;
+            }
+        }
+    };
+
+
 }

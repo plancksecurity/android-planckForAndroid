@@ -89,6 +89,8 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     private ImageView mPEpIndicator;
     private Color mPEpColor;
+    private PePUIArtefactCache c;
+
     /**
      * Pair class is only available since API Level 5, so we need
      * this helper class unfortunately
@@ -107,6 +109,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         super(context, attrs);
         mContext = context;
         mContacts = Contacts.getInstance(mContext);
+        c = PePUIArtefactCache.getInstance(getResources());
     }
 
     @Override
@@ -178,7 +181,26 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
                 break;
             }
             case R.id.pEp_indicator: {
-                PEpStatus.actionShowStatus(mContext, mPEpColor);
+                ArrayList <org.pEp.jniadapter.Identity> adresses = new ArrayList<Identity>();
+                adresses.addAll(PEpUtils.createIdentities(mMessage.getFrom(), getContext()));
+                try {
+                    adresses.addAll(PEpUtils.createIdentities(mMessage.getRecipients(Message.RecipientType.TO), getContext()));
+                    adresses.addAll(PEpUtils.createIdentities(mMessage.getRecipients(Message.RecipientType.CC), getContext()));
+
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                }
+                PePUIArtefactCache.getInstance(getResources()).setRecipients(adresses);
+                try {
+                    for (String s : mMessage.getHeaderNames()) {
+                        for (String s1 : mMessage.getHeader(s)) {
+                            Log.i("MessageHeader", "onClick " + s + " " + s1);
+                        }
+                    }
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                }
+                PEpStatus.actionShowStatus(mContext, mPEpColor, Preferences.getPreferences(mContext).getDefaultAccount().getIdentity(0).getEmail());
             }
         }
     }
@@ -278,7 +300,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     }
 
     private Drawable makePePStatusIcon() {
-        PePUIArtefactCache c = PePUIArtefactCache.getInstance(getResources());
         Drawable statusIcon = c.getIcon(mPEpColor);
         statusIcon.setColorFilter(c.getColor(mPEpColor), PorterDuff.Mode.MULTIPLY);        // FIXME: pEp do it the old way(tm)
         return statusIcon;
