@@ -1,26 +1,11 @@
 package com.fsck.k9.pEp;
 
 import android.content.Context;
-import android.util.Log;
-
-import com.fsck.k9.K9;
 import com.fsck.k9.mail.Address;
-import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.Message;
-import com.fsck.k9.mail.Part;
 import com.fsck.k9.mail.internet.MimeMessage;
-import com.fsck.k9.mail.internet.MimeMessageHelper;
-import com.fsck.k9.mail.internet.MimeMultipart;
-import com.fsck.k9.mail.internet.TextBody;
-import com.fsck.k9.mailstore.BinaryMemoryBody;
-import com.fsck.k9.mailstore.LocalBodyPart;
-import com.fsck.k9.message.MessageBuilder;
-import com.fsck.k9.message.SimpleMessageFormat;
-
 import org.pEp.jniadapter.Color;
-
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
+import org.pEp.jniadapter.Identity;
 
 /**
  * Created by dietz on 01.07.15.
@@ -58,4 +43,35 @@ public class DummyPepProviderImpl implements PEpProvider {
         // nop
     }
 
+    @Override
+    public Color getIdentityColor(Address address) {
+        return null;
+        //nop
+    }
+
+    @Override
+    public void close() {
+        //nop
+    }
+
+    @Override
+    public Identity updateIdentity(Identity id) {
+        return null;
+    }
+
+    @Override
+    public void trustPersonaKey(Identity id) {
+        //nop
+    }
+
+    @Override
+    public String trustwords(Identity id) {
+        return null;
+        //np
+    }
+
+    @Override
+    public Color getIdentityColor(Identity ident) {
+        return null;
+    }
 }

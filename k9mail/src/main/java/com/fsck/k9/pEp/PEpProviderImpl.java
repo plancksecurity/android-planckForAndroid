@@ -2,17 +2,11 @@ package com.fsck.k9.pEp;
 
 import android.content.Context;
 import android.util.Log;
-
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
-
-import org.pEp.jniadapter.AndroidHelper;
-import org.pEp.jniadapter.Color;
-import org.pEp.jniadapter.Engine;
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Message;
+import org.pEp.jniadapter.*;
 
 import java.util.Collections;
 import java.util.Vector;
@@ -22,12 +16,22 @@ import java.util.Vector;
  */
 public class PEpProviderImpl implements PEpProvider {
     private static boolean pEpInitialized = false;
+    private Context context;
+    private Engine engine;
 
     public synchronized void setup(Context c) {
         if(!pEpInitialized) {
             AndroidHelper.setup(c);
             pEpInitialized = true;
         }
+
+        context = c;
+        try {
+            engine = new Engine();
+        } catch (pEpException e) {
+            Log.e("pEpProvider", "setup: ", e);
+        }
+
     }
 
     @Override
@@ -52,29 +56,34 @@ public class PEpProviderImpl implements PEpProvider {
             return Color.pEpRatingUndefined;
 
         Message testee = null;
-        Engine engine = null;
         try {
-            engine = new Engine();
+            if (engine == null) {
+                engine = new Engine();
+
+            }
             testee = new Message();
 
-            Identity idFrom = PEpUtils.createIdentity(from);
+            Identity idFrom = PEpUtils.createIdentity(from, context);
             idFrom.me = true;
             engine.myself(idFrom);              // not sure wether that call is necessary. But it should do no harm. If necessary, add below too. Now called in right context if only one account.
             testee.setFrom(idFrom);
-            testee.setTo(PEpUtils.createIdentities(toAdresses));
-            testee.setCc(PEpUtils.createIdentities(ccAdresses));
-            testee.setBcc(PEpUtils.createIdentities(bccAdresses));
+            testee.setTo(PEpUtils.createIdentities(toAdresses, context));
+            testee.setCc(PEpUtils.createIdentities(ccAdresses, context));
+            testee.setBcc(PEpUtils.createIdentities(bccAdresses, context));
             testee.setShortmsg("hello, world");     // FIXME: do I need them?
             testee.setLongmsg("Lorem ipsum");
             testee.setDir(Message.Direction.Outgoing);
 
             Color rv = engine.outgoing_message_color(testee);   // stupid way to be able to patch the value in debugger
+            idFrom = engine.updateIdentity(idFrom);
+            Log.i("PEpProviderImpl", "getPrivacyState " + idFrom.fpr);
+
             return rv;
         } catch (Throwable e) {
             Log.e("pep", "during color test:", e);
         } finally {
             if (testee != null) testee.close();
-            if (engine != null) engine.close();
+//            if (engine != null) engine.close();
         }
 
         return Color.pEpRatingB0rken;
@@ -89,7 +98,7 @@ public class PEpProviderImpl implements PEpProvider {
         try {
             engine = new Engine();
 
-            srcMsg = new PEpMessageBuilder(source).createMessage();
+            srcMsg = new PEpMessageBuilder(source).createMessage(context);
             srcMsg.setDir(Message.Direction.Incoming);
 
             Log.d("pep", "decryptMessage() before decrypt");
@@ -117,7 +126,7 @@ public class PEpProviderImpl implements PEpProvider {
         Engine engine = null;
         try {
             engine = new Engine();
-            srcMsg = new PEpMessageBuilder(source).createMessage();
+            srcMsg = new PEpMessageBuilder(source).createMessage(context);
             srcMsg.setDir(Message.Direction.Outgoing);
 
             Log.d("pep", "encryptMessage() before encrypt");
@@ -144,5 +153,78 @@ public class PEpProviderImpl implements PEpProvider {
         Vector<String> rv = new Vector<String>();
         Collections.addAll(rv, extraKeys);
         return rv;
+    }
+
+
+    @Override
+    public Color getIdentityColor(Address address) {
+        Identity ident = PEpUtils.createIdentity(address, context);
+        try {
+            if (engine == null) {
+                engine = new Engine();
+            }
+            Color rv = engine.identity_color(ident);
+            return rv;
+        } catch (Throwable e) {
+            Log.e("pep", "during color test:", e);
+        }
+        return Color.pEpRatingB0rken;
+    }
+
+    @Override
+    public Color getIdentityColor(Identity ident) {
+        try {
+            if (engine == null) {
+                engine = new Engine();
+            }
+            Color rv = engine.identity_color(ident);
+            return rv;
+        } catch (Throwable e) {
+            Log.e("pep", "during color test:", e);
+        }
+        return Color.pEpRatingB0rken;
+    }
+
+    @Override
+    public String trustwords(Identity id) {
+        try {
+            if (engine == null) {
+                engine = new Engine();
+            }
+            id = engine.updateIdentity(id);
+            return engine.trustwords(id);
+        } catch (Throwable e) {
+            Log.e("pep", "during trustwords:", e);
+        }
+        return "";
+    }
+    @Override
+    public void close() {
+        if (engine != null) engine.close();
+    }
+
+    @Override
+    public Identity updateIdentity(Identity id) {
+        try {
+            if (engine == null) {
+                engine = new Engine();
+            }
+           return engine.updateIdentity(id);
+        } catch (Throwable e) {
+            Log.e("pep", "during update identity:", e);
+        }
+        return id;
+    }
+
+    @Override
+    public void trustPersonaKey(Identity id) {
+        try {
+            if (engine == null) {
+                engine = new Engine();
+            }
+            engine.trustPersonalKey(id);
+        } catch (Throwable e) {
+            Log.e("pep", "during trustwords:", e);
+        }
     }
 }

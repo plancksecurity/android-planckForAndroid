@@ -105,6 +105,7 @@ import com.fsck.k9.message.SimpleMessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.provider.AttachmentProvider;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpStatus;
 import com.fsck.k9.ui.EolConvertingEditText;
@@ -247,6 +248,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
      */
     private boolean mSourceMessageProcessed = false;
     private int mMaxLoaderId = 0;
+    private PePUIArtefactCache pEpUiCache;
+    private PEpProvider pEp;
 
     private RecipientPresenter recipientPresenter;
     private MessageBuilder currentMessageBuilder;
@@ -314,7 +317,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private String mInReplyTo;
 
     // pEp stuff
-    private PEpProvider mPEpProvider;
     private MenuItem mPEpIndicator;
     private Color mPEpColor = Color.pEpRatingUndefined;
     private boolean mSourceProcessed = false;
@@ -581,8 +583,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         });
 
 // TODO> review after rebase
-//        mPEpProvider = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
-//
 //        View.OnFocusChangeListener pEpChangeTracker = new View.OnFocusChangeListener() {
 //                @Override
 //                public void onFocusChange(View v, boolean hasFocus) {
@@ -738,8 +738,9 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         mFontSizes.setViewTextSize(mQuotedText, fontSize);
         mFontSizes.setViewTextSize(mSignatureView, fontSize);
 // TODO: pEp font sizes and skin stuff
-
+        pEpUiCache = PePUIArtefactCache.getInstance(getResources());
         updateMessageFormat();
+        pEp = ((K9) getApplication()).getpEpProvider();
 
         setTitle();
 
@@ -1600,7 +1601,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 //        updatePePState();
 //        if(mPEpIndicator!=null) {
 //            mPEpIndicator.setIcon(makePePStatusIcon());
-//            String msg = PePUIArtefactCache.getInstance(getResources()).getTitle(mPEpColor);
+//            String msg = pEpUiCache.getTitle(mPEpColor);
 //            if(reallyWithToast && !"".equals(msg)) Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
 //        }
 //    }
@@ -1619,15 +1620,20 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 //        Address[] ccAdresses = Address.parseUnencoded(mCcView.getText().toString().trim());
 //        Address[] bccAdresses = Address.parseUnencoded(mBccView.getText().toString().trim());
 //
-//        mPEpColor = mPEpProvider.getPrivacyState(from, toAdresses, ccAdresses, bccAdresses);
+//        mPEpColor = pEp.getPrivacyState(from, toAdresses, ccAdresses, bccAdresses);
 //    }
 //
 //    private void onPEpIndicator() {
+//        ArrayList <org.pEp.jniadapter.Identity> recipients = new ArrayList<org.pEp.jniadapter.Identity>();
 //        // update color, just to be sure...
 //        handlePEpState(false);
+//        recipients.addAll(PEpUtils.createIdentities(Address.parseUnencoded(mToView.getText().toString().trim()), getApplicationContext()));
+//        recipients.addAll(PEpUtils.createIdentities(Address.parseUnencoded(mCcView.getText().toString().trim()), getApplicationContext()));
+//        recipients.addAll(PEpUtils.createIdentities(Address.parseUnencoded(mBccView.getText().toString().trim()), getApplicationContext()));
 //
 //        mIgnoreOnPause = true;  // do *not* save state
-//        PEpStatus.actionShowStatus(this, mPEpColor);
+//        pEpUiCache.setRecipients(recipients);
+//        PEpStatus.actionShowStatus(this, mPEpColor, Address.parseUnencoded(mIdentity.getEmail())[0].getAddress());
 //    }
 
     @Override
