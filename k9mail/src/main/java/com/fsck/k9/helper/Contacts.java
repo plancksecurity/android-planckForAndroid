@@ -289,4 +289,22 @@ public class Contacts {
         return c;
     }
 
+    public String getContactId(String address) {
+        String result;
+        final Cursor c = getContactByAddress(address);
+        if (c == null) {
+            return address;
+        }
+
+        try {
+            if (!c.moveToFirst()) {
+                return address;
+            }
+
+             result = c.getString(CONTACT_ID_INDEX);
+        } finally {
+            c.close();
+        }
+        return result;
+    }
 }

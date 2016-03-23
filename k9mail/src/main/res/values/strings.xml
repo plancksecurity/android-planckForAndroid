@@ -1231,5 +1231,7 @@ Please submit bug reports, contribute new features and ask questions at
     <string name="pep_extra_addresses">Extra key ids:</string>
     <string name="pep_use_keyserver">Use keyserver</string>
     <string name="title_activity_pep_trustwords">Trustwords</string>
+    <string name="confirm_trustwords">Yes - Confirm</string>
+    <string name="wrong_trustwords">Wrong Trustwords</string>
 
 </resources>

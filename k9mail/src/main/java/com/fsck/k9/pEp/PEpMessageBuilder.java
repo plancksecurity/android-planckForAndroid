@@ -1,5 +1,6 @@
 package com.fsck.k9.pEp;
 
+import android.content.Context;
 import android.util.Log;
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.MessagingException;
@@ -24,12 +25,12 @@ class PEpMessageBuilder {
         mm = m;
     }
 
-    Message createMessage() {
+    Message createMessage(Context context) {
         Message pEpMsg = null;
         try {
             pEpMsg = new Message();
 
-            addHeaders(pEpMsg);
+            addHeaders(pEpMsg, context);
             addBody(pEpMsg);
             return pEpMsg;
         } catch (Throwable t) {
@@ -126,19 +127,21 @@ class PEpMessageBuilder {
     }
 
 
-    private void addHeaders(Message m) {
-            m.setFrom(PEpUtils.createIdentity(mm.getFrom()[0]));
-            m.setTo(PEpUtils.createIdentities(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO)));
-            m.setCc(PEpUtils.createIdentities(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC)));
-            m.setBcc(PEpUtils.createIdentities(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC)));
+    private void addHeaders(Message m, Context context) {
+            // headers
+            m.setFrom(PEpUtils.createIdentity(mm.getFrom()[0], context));
+            m.setTo(PEpUtils.createIdentities(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO), context));
+            m.setCc(PEpUtils.createIdentities(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC), context));
+            m.setBcc(PEpUtils.createIdentities(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC), context));
             m.setId(mm.getMessageId());
             m.setInReplyTo(createMessageReferences(mm.getReferences()));
             m.setSent(mm.getSentDate());
-            m.setReplyTo(PEpUtils.createIdentities(mm.getReplyTo()));
+            m.setReplyTo(PEpUtils.createIdentities(mm.getReplyTo(), context));
             m.setReferences(createMessageReferences(mm.getReferences()));
             m.setShortmsg(mm.getSubject());
 
             // TODO: other headers
+
     }
 
     private Vector<String> createMessageReferences(String[] references) {

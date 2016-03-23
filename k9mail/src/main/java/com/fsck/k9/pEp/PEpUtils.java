@@ -1,6 +1,8 @@
 package com.fsck.k9.pEp;
 
+import android.content.Context;
 import android.util.Log;
+import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.BodyPart;
@@ -27,18 +29,25 @@ import java.util.Vector;
 // FIXME: this needs cleanup. separate message builder stuff to separate classes and leave only *small* helpers here!
 
 public class PEpUtils {
-    static Vector<Identity> createIdentities(Address[] adrs) {
+    private static final String TRUSTWORDS_SEPARATOR = " ";
+
+    public static Vector<Identity> createIdentities(Address[] adrs, Context context) {
         Vector<Identity> rv = new Vector<Identity>(adrs.length);
         for(Address adr : adrs)
-            rv.add(createIdentity(adr));
+            rv.add(createIdentity(adr, context));
         return rv;
     }
 
-    static Identity createIdentity(Address adr) {
+    public static Identity createIdentity(Address adr, Context context) {
         Identity id = new Identity();
         id.address = adr.getAddress();
         id.username = adr.getAddress();
-        id.user_id = adr.getAddress();          // hack to get an unique ID...
+        try {
+            id.user_id = Contacts.getInstance(context).getContactId(adr.getAddress());
+        } catch (Exception e) {
+            id.user_id = adr.getAddress();
+        }
+        // hack to get an unique ID...
 
         // TODO: do I have any kind of unique id for user_id? (no, I don't, see hack from above)
         return id;
@@ -132,5 +141,15 @@ public class PEpUtils {
             return rv;
         }
         return new ByteArrayOutputStream().toByteArray();
+    }
+
+    public static String getShortTrustKey(String longMyTrustKeys) {
+        StringBuilder builder = new StringBuilder();
+        String[] trustArray = longMyTrustKeys.split(TRUSTWORDS_SEPARATOR);
+        for (int i = 0; i < 5; i++) {
+            builder.append(trustArray[i]);
+            builder.append(TRUSTWORDS_SEPARATOR);
+        }
+        return builder.toString();
     }
 }

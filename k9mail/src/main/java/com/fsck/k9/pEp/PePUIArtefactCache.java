@@ -4,8 +4,8 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import com.fsck.k9.R;
-import com.fsck.k9.mail.Address;
 import org.pEp.jniadapter.Color;
+import org.pEp.jniadapter.Identity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +31,7 @@ public class PePUIArtefactCache
     private int[] color;
     private Drawable[] icon;
     private static PePUIArtefactCache instance = null;
+    private ArrayList<Identity> recipients;
 
     public synchronized static PePUIArtefactCache getInstance(Resources resources) {
         if (instance == null) {
@@ -82,11 +83,14 @@ public class PePUIArtefactCache
     }
 
 
-    public ArrayList <Address> getRecipients() {
-        ArrayList <Address> recipients = new ArrayList<Address>();
-        for (int i = 0; i < 10; i++) {
-            recipients.add(new Address("dummie"+i+"@dummie.com", "dummie"+i));
+    public ArrayList<Identity> getRecipients() {
+        if (recipients == null) {
+            return new ArrayList<Identity>();
         }
         return recipients;
+    }
+
+    public void setRecipients(ArrayList<Identity> recipients) {
+        this.recipients = recipients;
     }
 }

@@ -430,10 +430,10 @@
         <activity
             android:name=".pEp.ui.PEpTrustwords"
             android:label="@string/title_activity_pep_trustwords"
-            android:parentActivityName=".activity.K9Activity" >
+            android:parentActivityName=".pEp.ui.PEpStatus" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.fsck.k9.activity.K9Activity" />
+                android:value=".pEp.ui.PEpStatus" />
         </activity>
     </application>
 </manifest>

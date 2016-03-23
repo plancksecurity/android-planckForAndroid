@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.fsck.k9.Account;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.misc.ContactPictureLoader;
 import com.fsck.k9.helper.ClipboardManager;
@@ -40,11 +41,14 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeUtility;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpStatus;
 import com.fsck.k9.ui.messageview.OnCryptoClickListener;
 import org.pEp.jniadapter.Color;
+import org.pEp.jniadapter.Identity;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -82,6 +86,8 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     private ImageView mPEpIndicator;
     private Color mPEpColor;
+    private PePUIArtefactCache c;
+
     /**
      * Pair class is only available since API Level 5, so we need
      * this helper class unfortunately
@@ -100,6 +106,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         super(context, attrs);
         mContext = context;
         mContacts = Contacts.getInstance(mContext);
+        c = PePUIArtefactCache.getInstance(getResources());
     }
 
     @Override
@@ -170,7 +177,19 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
                 break;
             }
             case R.id.pEp_indicator: {
-                PEpStatus.actionShowStatus(mContext, mPEpColor);
+                ArrayList<Identity> adresses = new ArrayList<Identity>();
+                adresses.addAll(PEpUtils.createIdentities(mMessage.getFrom(), getContext()));
+                adresses.addAll(PEpUtils.createIdentities(mMessage.getRecipients(Message.RecipientType.TO), getContext()));
+                adresses.addAll(PEpUtils.createIdentities(mMessage.getRecipients(Message.RecipientType.CC), getContext()));
+
+                PePUIArtefactCache.getInstance(getResources()).setRecipients(adresses);
+
+                for (String s : mMessage.getHeaderNames()) {
+                    for (String s1 : mMessage.getHeader(s)) {
+                        Log.i("MessageHeader", "onClick " + s + " " + s1);
+                    }
+                }
+                PEpStatus.actionShowStatus(mContext, mPEpColor, Preferences.getPreferences(mContext).getDefaultAccount().getIdentity(0).getEmail());
             }
         }
     }
@@ -270,7 +289,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     }
 
     private Drawable makePePStatusIcon() {
-        PePUIArtefactCache c = PePUIArtefactCache.getInstance(getResources());
         Drawable statusIcon = c.getIcon(mPEpColor);
         statusIcon.setColorFilter(c.getColor(mPEpColor), PorterDuff.Mode.MULTIPLY);        // FIXME: pEp do it the old way(tm)
         return statusIcon;
