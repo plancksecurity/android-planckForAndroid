@@ -59,9 +59,9 @@ public interface PEpProvider {
      */
     public void setup(Context c);
 
-    Color getIdentityColor(Address address);
+    Color identityColor(Address address);
 
-    Color getIdentityColor(Identity identity);
+    Color identityColor(Identity identity);
 
     String trustwords(Identity id);
 

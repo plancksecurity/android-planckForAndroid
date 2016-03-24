@@ -142,13 +142,20 @@ public class PEpUtils {
         return new ByteArrayOutputStream().toByteArray();
     }
 
-    public static String getShortTrustKey(String longMyTrustKeys) {
+    public static String getShortTrustwords(String trustwords) {
         StringBuilder builder = new StringBuilder();
-        String[] trustArray = longMyTrustKeys.split(TRUSTWORDS_SEPARATOR);
-        for (int i = 0; i < 5; i++) {
-            builder.append(trustArray[i]);
-            builder.append(TRUSTWORDS_SEPARATOR);
+        String[] trustArray = trustwords.split(TRUSTWORDS_SEPARATOR);
+
+        if (trustArray.length > 5) {
+            for (int i = 0; i < 5; i++) {
+                builder.append(trustArray[i]);
+                builder.append(TRUSTWORDS_SEPARATOR);
+            }
         }
         return builder.toString();
+    }
+
+    public static String getShortTrustWords(PEpProvider pEp, Identity id) {
+        return getShortTrustwords(pEp.trustwords(id));
     }
 }
