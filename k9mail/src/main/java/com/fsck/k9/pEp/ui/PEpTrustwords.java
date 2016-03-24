@@ -26,8 +26,6 @@ public class PEpTrustwords extends K9Activity {
     public static final int DEFAULT_POSITION = -1;
     public static final int HANDSHAKE_REQUEST = 1;
 
-    private String myFingerprint;
-    private String otherFingerprint;
     private Identity partner;
     private int partnerPosition;
 
@@ -48,13 +46,10 @@ public class PEpTrustwords extends K9Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final Intent intent = getIntent();
-        myFingerprint = intent.getStringExtra(MY_IDENTITY);
-        otherFingerprint = intent.getStringExtra(OTHER_IDENTITY);
-
 
         setContentView(R.layout.pep_trustwords);
         ButterKnife.bind(this);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
         pEp = ((K9) getApplication()).getpEpProvider();
         uiCache = PePUIArtefactCache.getInstance(getResources());
 
@@ -104,6 +99,13 @@ public class PEpTrustwords extends K9Activity {
         returnIntent.putExtra(PARTNER_POSITION, partnerPosition);
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
+
+    }
+
+    @OnClick(R.id.wrongTrustwords) public void wrongTrustWords() {
+//        pEp.trustPersonaKey(partner);
+//        setResult(Activity.RESULT_OK);
+       finish();
 
     }
 }

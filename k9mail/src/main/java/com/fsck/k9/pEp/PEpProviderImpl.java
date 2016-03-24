@@ -155,7 +155,7 @@ public class PEpProviderImpl implements PEpProvider {
 
 
     @Override
-    public Color getIdentityColor(Address address) {
+    public Color identityColor(Address address) {
         Identity ident = PEpUtils.createIdentity(address, context);
         try {
             if (engine == null) {
@@ -170,13 +170,12 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public Color getIdentityColor(Identity ident) {
+    public Color identityColor(Identity ident) {
         try {
             if (engine == null) {
                 engine = new Engine();
             }
-            Color rv = engine.identity_color(ident);
-            return rv;
+            return engine.identity_color(ident);
         } catch (Throwable e) {
             Log.e("pep", "during color test:", e);
         }

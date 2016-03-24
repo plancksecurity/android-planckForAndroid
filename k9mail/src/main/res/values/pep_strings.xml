@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="pep_action">pEp state</string>
+    <string name="handshake">Handshake</string>
     <string-array name="pep_states">
         <item>pEpRatingUndefined</item>
         <item>pEpRatingCannotDecrypt</item>
