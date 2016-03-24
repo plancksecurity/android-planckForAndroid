@@ -165,7 +165,7 @@ public class PEpProviderImpl implements PEpProvider {
             }
             Color rv = engine.identity_color(ident);
             return rv;
-        } catch (Throwable e) {
+        } catch (pEpException e) {
             Log.e("pep", "during color test:", e);
         }
         return Color.pEpRatingB0rken;
@@ -178,7 +178,7 @@ public class PEpProviderImpl implements PEpProvider {
                 engine = new Engine();
             }
             return engine.identity_color(ident);
-        } catch (Throwable e) {
+        } catch (pEpException e) {
             Log.e("pep", "during color test:", e);
         }
         return Color.pEpRatingB0rken;
@@ -192,7 +192,7 @@ public class PEpProviderImpl implements PEpProvider {
             }
             id = engine.updateIdentity(id);
             return engine.trustwords(id);
-        } catch (Throwable e) {
+        } catch (pEpException e) {
             Log.e("pep", "during trustwords:", e);
         }
         return "";
@@ -209,7 +209,7 @@ public class PEpProviderImpl implements PEpProvider {
                 engine = new Engine();
             }
            return engine.updateIdentity(id);
-        } catch (Throwable e) {
+        } catch (pEpException e) {
             Log.e("pep", "during update identity:", e);
         }
         return id;
@@ -222,8 +222,32 @@ public class PEpProviderImpl implements PEpProvider {
                 engine = new Engine();
             }
             engine.trustPersonalKey(id);
-        } catch (Throwable e) {
+        } catch (pEpException e) {
             Log.e("pep", "during trustwords:", e);
+        }
+    }
+
+    @Override
+    public void keyCompromised(Identity id) {
+        if (engine == null) {
+            try {
+                engine = new Engine();
+                engine.keyCompromized(id);
+            } catch (pEpException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void resetTrust(Identity id) {
+        if (engine == null) {
+            try {
+                engine = new Engine();
+                engine.keyResetTrust(id);
+            } catch (pEpException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
