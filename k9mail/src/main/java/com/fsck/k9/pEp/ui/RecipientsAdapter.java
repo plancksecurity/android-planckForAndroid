@@ -44,6 +44,7 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
             myId = pEp.myself(myId);
 
             String trust;
+            pEp.myself(myId);
             String myTrust = PEpUtils.getShortTrustWords(pEp, myId);
             String theirTrust = PEpUtils.getShortTrustWords(pEp, id);
             if (myId.fpr.compareTo(id.fpr) > 0) {
