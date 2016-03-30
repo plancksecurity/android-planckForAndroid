@@ -43,6 +43,7 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
             myId = pEp.updateIdentity(myId);
 
             String trust;
+            pEp.myself(myId);
             String myTrust = PEpUtils.getShortTrustWords(pEp, myId);
             String theirTrust = PEpUtils.getShortTrustWords(pEp, id);if (myId.fpr.compareTo(id.fpr) > 0) {
                 trust = theirTrust + myTrust;
@@ -120,7 +121,7 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
         }
 
         private void renderColor(Color color) {
-            int colorCode = PePUIArtefactCache.getInstance(context.getResources()).getColor(color);
+            int colorCode = PePUIArtefactCache.getInstance(context).getColor(color);
             container.setBackgroundColor(colorCode);
         }
 

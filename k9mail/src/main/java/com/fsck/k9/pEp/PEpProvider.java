@@ -113,6 +113,8 @@ public interface PEpProvider {
      */
     void resetTrust(Identity id);
 
+    void myself(Identity myId);
+
     class DecryptResult {
         DecryptResult(MimeMessage msg, Color col) {
             this.msg = msg;

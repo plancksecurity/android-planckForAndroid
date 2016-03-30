@@ -553,7 +553,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         mFontSizes.setViewTextSize(mMessageContentView, fontSize);
         mFontSizes.setViewTextSize(mSignatureView, fontSize);
 // TODO: pEp font sizes and skin stuff
-        pEpUiCache = PePUIArtefactCache.getInstance(getResources());
+        pEpUiCache = PePUIArtefactCache.getInstance(getApplicationContext());
         updateMessageFormat();
         pEp = ((K9) getApplication()).getpEpProvider();
 
@@ -1065,24 +1065,27 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         return true;
     }
 
-// TODO> review after rebase
+//    // TODO> review after rebase
 //    private void handlePEpState(boolean... withToast) {
 //        boolean reallyWithToast = true;
 //        if(withToast.length>0) reallyWithToast = withToast[0];
 //        updatePePState();
 //        if(mPEpIndicator!=null) {
-//            mPEpIndicator.setIcon(makePePStatusIcon());
+//            mPEpIndicator.setIcon(pEpUiCache.getIcon(mPEpColor));
 //            String msg = pEpUiCache.getTitle(mPEpColor);
-//            if(reallyWithToast && !"".equals(msg)) Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+//            if(reallyWithToast && !"".equals(msg)) {
+//
+////                Snackbar snack = Snackbar.make(parentLayout, msg, Snackbar.LENGTH_LONG);
+////                View view = snack.getView();
+////                FrameLayout.LayoutParams params =(FrameLayout.LayoutParams)view.getLayoutParams();
+////                params.gravity = Gravity.TOP;
+////                view.setLayoutParams(params);
+////                snack.show();
+////                Toast toast = Toast.makeText(this, msg, Toast.LENGTH_LONG);
+//            }
 //        }
 //    }
 //
-//    private Drawable makePePStatusIcon() {
-//        PePUIArtefactCache c = PePUIArtefactCache.getInstance(getResources());
-//        Drawable statusIcon = c.getIcon(mPEpColor);
-//        statusIcon.setColorFilter(c.getColor(mPEpColor), PorterDuff.Mode.MULTIPLY);        // FIXME: pEp do it the old way(tm)
-//        return statusIcon;
-//    }
 //
 //    private void updatePePState() {
 //        // TODO: pEp: check wether we take the right measures to get out addresses...

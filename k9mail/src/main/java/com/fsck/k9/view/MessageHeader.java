@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.SpannableString;
@@ -89,7 +87,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     private ImageView mPEpIndicator;
     private Color mPEpColor;
-    private PePUIArtefactCache c;
+    private PePUIArtefactCache pePUIArtefactCache;
 
     /**
      * Pair class is only available since API Level 5, so we need
@@ -109,7 +107,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         super(context, attrs);
         mContext = context;
         mContacts = Contacts.getInstance(mContext);
-        c = PePUIArtefactCache.getInstance(getResources());
+        pePUIArtefactCache = PePUIArtefactCache.getInstance(context);
     }
 
     @Override
@@ -190,7 +188,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
                 } catch (MessagingException e) {
                     e.printStackTrace();
                 }
-                PePUIArtefactCache.getInstance(getResources()).setRecipients(adresses);
+                pePUIArtefactCache.setRecipients(adresses);
                 try {
                     for (String s : mMessage.getHeaderNames()) {
                         for (String s1 : mMessage.getHeader(s)) {
@@ -299,12 +297,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     }
 
-    private Drawable makePePStatusIcon() {
-        Drawable statusIcon = c.getIcon(mPEpColor);
-        statusIcon.setColorFilter(c.getColor(mPEpColor), PorterDuff.Mode.MULTIPLY);        // FIXME: pEp do it the old way(tm)
-        return statusIcon;
-    }
-
     public void populate(final Message message, final Account account) throws MessagingException {
         String[] pEpColor = message.getHeader(MimeHeader.HEADER_PEPCOLOR);
         if(pEpColor != null)
@@ -313,8 +305,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
             mPEpColor = Color.pEpRatingUndefined;
 
         Log.i("pEp", "got color " + mPEpColor + " " + mPEpColor.value);
-        mPEpIndicator.setImageDrawable(makePePStatusIcon());
-        Toast.makeText(mContext, PePUIArtefactCache.getInstance(getResources()).getTitle(mPEpColor), Toast.LENGTH_LONG).show();
+        mPEpIndicator.setImageDrawable(pePUIArtefactCache.getIcon(mPEpColor));
 
         mPEpIndicator.setOnClickListener(this);
 

@@ -7,13 +7,18 @@
         <item>pEpRatingCannotDecrypt</item>
         <item>pEpRatingHaveNoKey</item>
         <item>pEpRatingUnencrypted</item>
+        <item>pEpRatingUnencryptedForSome</item>
         <item>pEpRatingUnreliable</item>
+        <item>pEpRatingYellow</item>
         <item>pEpRatingReliable</item>
+        <item>pEpRatingGreen</item>
         <item>pEpRatingTrusted</item>
         <item>pEpRatingTrustedAndAnonymized</item>
         <item>pEpRatingFullyAnonymous</item>
-        <item>pEpRatingUnderAttack</item>
+        <item>pEpRatingMistrust</item>
+        <item>pEpRatingRed</item>
         <item>pEpRatingB0rken</item>
+        <item>pEpRatingUnderAttack</item>
     </string-array>
 
     <array name="pep_color">
@@ -21,13 +26,18 @@
         <item>@color/pep_gray<!--pEpRatingCannotDecrypt--></item>
         <item>@color/pep_gray<!--pEpRatingHaveNoKey--></item>
         <item>@color/pep_gray<!--pEpRatingUnencrypted--></item>
+        <item>@color/pep_gray<!--pEpRatingUnencryptedForSome--></item>
         <item>@color/pep_gray<!--pEpRatingUnreliable--></item>
+        <item>@color/pep_yellow<!--pEpRatingYellow--></item>
         <item>@color/pep_yellow<!--pEpRatingReliable--></item>
+        <item>@color/pep_green<!--pEpRatingGreen--></item>
         <item>@color/pep_green<!--pEpRatingTrusted--></item>
         <item>@color/pep_green<!--pEpRatingTrustedAndAnonymized--></item>
         <item>@color/pep_green<!--pEpRatingFullyAnonymous--></item>
-        <item>@color/pep_red<!--pEpRatingUnderAttack--></item>
+        <item>@color/pep_red<!--pEpRatingMissTrust--></item>
+        <item>@color/pep_red<!--pEpRatingRed--></item>
         <item>@color/pep_red<!--pEpRatingB0rken--></item>
+        <item>@color/pep_red<!--pEpRatingUnderAttack--></item>
     </array>
 
     <string-array name="pep_title">
@@ -35,13 +45,18 @@
         <item>p≡p – Cannot decrypt message.<!--pEpRatingCannotDecrypt--></item>
         <item>p≡p – No private key.<!--pEpRatingHaveNoKey--></item>
         <item>p≡p – This communication is unencrypted.<!--pEpRatingUnencrypted--></item>
+        <item>p≡p – This communication is unencrypted for some.<!--pEpRatingUnencryptedForSome--></item>
         <item>p≡p – This communication is unreliable.<!--pEpRatingUnreliable--></item>
+        <item>p≡p – This communication could be secure.<!--pEpRatingYellow--></item>
         <item>p≡p – This communication could be secure.<!--pEpRatingReliable--></item>
+        <item>p≡p – This communication is private and authentic.<!--pEpRatingGreen--></item>
         <item>p≡p – This communication is private and authentic.<!--pEpRatingTrusted--></item>
         <item>p≡p – This communication is private and authentic.<!--pEpRatingTrustedAndAnonymized--></item>
         <item>p≡p – This communication is private and authentic and anonymous.<!--pEpRatingFullyAnonymous--></item>
-        <item>p≡p – This communication is forged!<!--pEpRatingUnderAttack--></item>
+        <item>p≡p – This communication is miss trusted!<!--pEpRatingMissTrust--></item>
+        <item>p≡p – This communication is miss trusted!<!--pEpRatingRed--></item>
         <item>p≡p – Internal problem.<!--pEpRatingB0rken--></item>
+        <item>p≡p – This communication is forged!<!--pEpRatingUnderAttack--></item>
     </string-array>
 
     <string-array name="pep_description">
