@@ -1,8 +1,11 @@
 package com.fsck.k9.pEp;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import com.fsck.k9.R;
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
@@ -25,22 +28,27 @@ import java.util.HashMap;
  */
 public class PePUIArtefactCache
 {
+    private final Context context;
     private HashMap<Color,Integer> colorIndexMapping = new HashMap<Color,Integer>();
     private String[] title;
     private String[] description;
     private int[] color;
-    private Drawable[] icon;
+    private Drawable icon;
     private static PePUIArtefactCache instance = null;
     private ArrayList<Identity> recipients;
+    private Resources resources;
 
-    public synchronized static PePUIArtefactCache getInstance(Resources resources) {
+    public synchronized static PePUIArtefactCache getInstance(Context context) {
         if (instance == null) {
-            instance = new PePUIArtefactCache(resources);
+            instance = new PePUIArtefactCache(context);
         }
         return instance;
     }
 
-    private PePUIArtefactCache(Resources resources) {
+    private PePUIArtefactCache(Context context) {
+        this.context = context;
+        this.resources = context.getResources();
+
         fillIndexMapping(resources);
 
         title = resources.getStringArray(R.array.pep_title);
@@ -52,12 +60,7 @@ public class PePUIArtefactCache
             color[idx] = colors.getColor(idx, 0);
         colors.recycle();
 
-        TypedArray icons = resources.obtainTypedArray(R.array.pep_icon);
-        icon = new Drawable[icons.length()];
-        for(int idx=0; idx < icons.length(); idx++)
-            icon[idx] = icons.getDrawable(idx);
-        icons.recycle();
-    };
+    }
 
     private void fillIndexMapping(Resources resources) {
         String[] colornames = resources.getStringArray(R.array.pep_states);
@@ -74,12 +77,14 @@ public class PePUIArtefactCache
         return description[colorIndexMapping.get(c)];
     }
 
-    public Drawable getIcon(Color c) {
-        return icon[colorIndexMapping.get(c)];
+    public Drawable getIcon(Color pEpColor) {
+        Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_action_pep_indicator);
+        icon.setColorFilter(getColor(pEpColor), PorterDuff.Mode.MULTIPLY);
+        return icon;
     }
 
-    public int getColor(Color c) {
-        return color[colorIndexMapping.get(c)];
+    public int getColor(Color pepColor) {
+        return PEpUtils.getColorColor(pepColor, resources);
     }
 
 

@@ -75,7 +75,7 @@ public class PEpStatus extends K9Activity {
     }
 
     private void initPep() {
-        ui = PePUIArtefactCache.getInstance(getResources());
+        ui = PePUIArtefactCache.getInstance(getApplicationContext());
         pEp = ((K9) getApplication()).getpEpProvider();
     }
 
