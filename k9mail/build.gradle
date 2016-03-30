@@ -54,10 +54,12 @@ android {
 //        applicationId "com.fsck.k9"
 //        testApplicationId "com.fsck.k9.tests"
 
-        versionCode 23191
-        versionName '5.200-RC2'
+//        versionCode 23191
+//        versionName '5.200-RC2'
 
         applicationId "com.pep.k9"
+        versionCode 23080012
+        versionName '1.0.1 p≡p'
         minSdkVersion 15
         targetSdkVersion 22
 
