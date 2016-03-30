@@ -2,6 +2,7 @@
 <resources>
     <string name="pep_action">pEp state</string>
     <string name="handshake">Handshake</string>
+    <string name="account_setup_genereting_keys">Making easy your privacy</string>
     <string-array name="pep_states">
         <item>pEpRatingUndefined</item>
         <item>pEpRatingCannotDecrypt</item>

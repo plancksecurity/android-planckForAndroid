@@ -467,6 +467,7 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
                 }
                 case OUTGOING: {
                     checkOutgoing();
+                    pEpGenerateAccountKeys();
                     break;
                 }
             }
@@ -484,6 +485,14 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
             } finally {
                 transport.close();
             }
+        }
+
+        private void pEpGenerateAccountKeys() {
+            publishProgress(R.string.account_setup_genereting_keys);
+            PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
+            Identity myIdentity = PEpUtils.createIdentity(new Address(account.getEmail()), getApplicationContext());
+            pEp.myself(myIdentity);
+            pEp.close();
         }
 
         private void checkIncoming() throws MessagingException {
