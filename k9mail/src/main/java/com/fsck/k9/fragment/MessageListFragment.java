@@ -1935,6 +1935,11 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
                 holder.from.setTypeface(Typeface.create(holder.from.getTypeface(), maybeBoldTypeface));
                 if (mSenderAboveSubject) {
                     if (hasAttachments) holder.attachment.setVisibility(View.VISIBLE);
+                    holder.from.setCompoundDrawablesWithIntrinsicBounds(
+                            statusHolder, // left
+                            null, // top
+                            null, // right
+                            null); // bottom
 
                     holder.from.setText(displayName);
                 } else {
@@ -1945,6 +1950,11 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
             if (holder.subject != null ) {
                 if (!mSenderAboveSubject) {
                     if (hasAttachments) holder.attachment.setVisibility(View.VISIBLE);
+                    holder.subject.setCompoundDrawablesWithIntrinsicBounds(
+                            statusHolder, // left
+                            null, // top
+                            null, // right
+                            null); // bottom
                 }
 
                 holder.subject.setTypeface(Typeface.create(holder.subject.getTypeface(), maybeBoldTypeface));
