@@ -17,24 +17,28 @@ import android.view.View.OnClickListener;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.fsck.k9.*;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
+import com.fsck.k9.Account;
+import com.fsck.k9.K9;
+import com.fsck.k9.Preferences;
+import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmentListener;
-import com.fsck.k9.mail.AuthenticationFailedException;
-import com.fsck.k9.mail.CertificateValidationException;
-import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.Store;
-import com.fsck.k9.mail.Transport;
-import com.fsck.k9.mail.store.webdav.WebDavStore;
+import com.fsck.k9.mail.*;
 import com.fsck.k9.mail.filter.Hex;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.X509Certificate;
-import java.security.NoSuchAlgorithmException;
+import com.fsck.k9.mail.store.webdav.WebDavStore;
+import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpProviderFactory;
+import com.fsck.k9.pEp.PEpUtils;
+import org.pEp.jniadapter.Identity;
+
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -467,6 +471,7 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
                 }
                 case OUTGOING: {
                     checkOutgoing();
+                    pEpGenerateAccountKeys();
                     break;
                 }
             }
@@ -484,6 +489,14 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
             } finally {
                 transport.close();
             }
+        }
+
+        private void pEpGenerateAccountKeys() {
+            publishProgress(R.string.account_setup_genereting_keys);
+            PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
+            Identity myIdentity = PEpUtils.createIdentity(new Address(account.getEmail()), getApplicationContext());
+            pEp.myself(myIdentity);
+            pEp.close();
         }
 
         private void checkIncoming() throws MessagingException {
