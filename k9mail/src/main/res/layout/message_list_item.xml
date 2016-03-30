@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:orientation="horizontal"
@@ -69,9 +70,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_toLeftOf="@+id/flagged_bottom_right"
                 android:layout_marginLeft="1dip"
-                android:layout_marginRight="3dip"
                 android:bufferType="spannable"
                 android:layout_below="@+id/subject_wrapper"
                 android:singleLine="false"
@@ -80,18 +79,21 @@
                 android:longClickable="false"
                 android:layout_alignWithParentIfMissing="false"
                 android:gravity="top"
-                android:layout_alignParentBottom="false"/>
+                android:layout_alignParentBottom="false"
+                tools:text="Preview"
+                android:layout_alignRight="@+id/subject_wrapper"
+                android:layout_alignEnd="@+id/subject_wrapper"/>
 
         <LinearLayout
                 android:id="@+id/subject_wrapper"
-                android:layout_centerInParent="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="false"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentBottom="false"
                 android:layout_alignParentLeft="false"
-                android:layout_toLeftOf="@+id/date">
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/date"
+                android:layout_toStartOf="@+id/date">
 
             <TextView
                     android:id="@+id/sender_compact"
@@ -104,6 +106,8 @@
                     android:layout_marginLeft="1dip"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?android:attr/textColorPrimary"
+                    tools:text="Sender compact"
+
                     />
 
             <TextView
@@ -117,6 +121,8 @@
                     android:singleLine="true"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?android:attr/textColorPrimary"
+                    tools:text="Subject"
+
                     />
 
             <TextView
@@ -131,6 +137,8 @@
                     android:paddingBottom="1dip"
                     android:paddingLeft="4dip"
                     android:focusable="false"
+                    tools:text="ThreadCount"
+
                     />
         </LinearLayout>
 
@@ -162,19 +170,37 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorSecondary"/>
 
-        <CheckBox
-                android:id="@+id/flagged_bottom_right"
-                style="?android:attr/starStyle"
+        <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:layout_below="@+id/date"
                 android:layout_alignParentRight="true"
                 android:paddingTop="5dip"
                 android:paddingLeft="2dip"
                 android:paddingRight="4dip"
-                android:focusable="false"
-                android:visibility="visible"
-                android:gravity="center_vertical"/>
+                android:orientation="horizontal"
+                android:layout_alignBottom="@+id/preview">
+
+
+            <ImageView
+                    android:id="@+id/attachment_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_email_attachment_small"
+                    android:layout_gravity="center"
+                    android:padding="4dp"
+                    android:visibility="gone"
+                    />
+            <CheckBox
+                    android:id="@+id/flagged_bottom_right"
+                    style="?android:attr/starStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:visibility="visible"
+                    android:gravity="center_vertical"
+                    android:focusable="false"/>
+        </LinearLayout>
+
 
 
     </RelativeLayout>

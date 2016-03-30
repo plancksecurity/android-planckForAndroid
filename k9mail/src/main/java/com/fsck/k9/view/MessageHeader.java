@@ -1,6 +1,5 @@
 package com.fsck.k9.view;
 
-
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
@@ -106,7 +105,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         super(context, attrs);
         mContext = context;
         mContacts = Contacts.getInstance(mContext);
-        c = PePUIArtefactCache.getInstance(getResources());
+        c = PePUIArtefactCache.getInstance(mContext);
     }
 
     @Override
@@ -148,11 +147,9 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         mToView.setOnLongClickListener(this);
         mCcView.setOnLongClickListener(this);
 
-        mCryptoStatusIcon = (MessageCryptoStatusView) findViewById(R.id.crypto_status_icon);
-        mCryptoStatusIcon.setOnClickListener(this);
-
         mMessageHelper = MessageHelper.getInstance(mContext);
 
+        mSubjectView.setVisibility(VISIBLE);
 
         mPEpIndicator = (ImageView) findViewById(R.id.pEp_indicator);
 
@@ -182,7 +179,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
                 adresses.addAll(PEpUtils.createIdentities(mMessage.getRecipients(Message.RecipientType.TO), getContext()));
                 adresses.addAll(PEpUtils.createIdentities(mMessage.getRecipients(Message.RecipientType.CC), getContext()));
 
-                PePUIArtefactCache.getInstance(getResources()).setRecipients(adresses);
+                PePUIArtefactCache.getInstance(mContext).setRecipients(adresses);
 
                 for (String s : mMessage.getHeaderNames()) {
                     for (String s1 : mMessage.getHeader(s)) {
@@ -303,7 +300,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
         Log.i("pEp", "got color " + mPEpColor + " " + mPEpColor.value);
         mPEpIndicator.setImageDrawable(makePePStatusIcon());
-        Toast.makeText(mContext, PePUIArtefactCache.getInstance(getResources()).getTitle(mPEpColor), Toast.LENGTH_LONG).show();
+        Toast.makeText(mContext, PePUIArtefactCache.getInstance(mContext).getTitle(mPEpColor), Toast.LENGTH_LONG).show();
 
         mPEpIndicator.setOnClickListener(this);
 

@@ -1678,14 +1678,13 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
 
     class MessageListAdapter extends CursorAdapter {
 
-        private Drawable mAttachmentIcon;
+//        private Drawable mAttachmentIcon;
         private Drawable mForwardedIcon;
         private Drawable mAnsweredIcon;
         private Drawable mForwardedAnsweredIcon;
 
         MessageListAdapter() {
             super(getActivity(), null, 0);
-            mAttachmentIcon = getResources().getDrawable(R.drawable.ic_email_attachment_small);
             mAnsweredIcon = getResources().getDrawable(R.drawable.ic_email_answered_small);
             mForwardedIcon = getResources().getDrawable(R.drawable.ic_email_forwarded_small);
             mForwardedAnsweredIcon = getResources().getDrawable(R.drawable.ic_email_forwarded_answered_small);
@@ -1708,7 +1707,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
             MessageViewHolder holder = new MessageViewHolder();
             holder.date = (TextView) view.findViewById(R.id.date);
             holder.chip = view.findViewById(R.id.chip);
-
+            holder.attachment = view.findViewById(R.id.attachment_icon);
 
             if (mPreviewLines == 0 && mContactsPictureLoader == null) {
                 view.findViewById(R.id.preview).setVisibility(View.GONE);
@@ -1935,11 +1934,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
             if (holder.from != null ) {
                 holder.from.setTypeface(Typeface.create(holder.from.getTypeface(), maybeBoldTypeface));
                 if (mSenderAboveSubject) {
-                    holder.from.setCompoundDrawablesWithIntrinsicBounds(
-                            statusHolder, // left
-                            null, // top
-                            hasAttachments ? mAttachmentIcon : null, // right
-                            null); // bottom
+                    if (hasAttachments) holder.attachment.setVisibility(View.VISIBLE);
 
                     holder.from.setText(displayName);
                 } else {
@@ -1949,11 +1944,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
 
             if (holder.subject != null ) {
                 if (!mSenderAboveSubject) {
-                    holder.subject.setCompoundDrawablesWithIntrinsicBounds(
-                            statusHolder, // left
-                            null, // top
-                            hasAttachments ? mAttachmentIcon : null, // right
-                            null); // bottom
+                    if (hasAttachments) holder.attachment.setVisibility(View.VISIBLE);
                 }
 
                 holder.subject.setTypeface(Typeface.create(holder.subject.getTypeface(), maybeBoldTypeface));
@@ -1995,6 +1986,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         public CheckBox selected;
         public int position = -1;
         public QuickContactBadge contactBadge;
+        public View attachment;
         @Override
         public void onClick(View view) {
             if (position != -1) {

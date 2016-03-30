@@ -19,12 +19,13 @@ import java.util.Vector;
  * pep provider implementation. Dietz is the culprit.
  */
 public class PEpProviderImpl implements PEpProvider {
+    private static final String TAG = "pEp";
     private static boolean pEpInitialized = false;
     private Context context;
     private Engine engine;
 
     public synchronized void setup(Context c) {
-        if(!pEpInitialized) {
+        if (!pEpInitialized) {
             AndroidHelper.setup(c);
             pEpInitialized = true;
         }
@@ -50,7 +51,7 @@ public class PEpProviderImpl implements PEpProvider {
     //Don't instantiate a new engine
     @Override
     public Color getPrivacyState(Address from, Address[] toAdresses, Address[] ccAdresses, Address[] bccAdresses) {
-        if(from == null || toAdresses.length == 0)
+        if (from == null || toAdresses.length == 0)
             return Color.pEpRatingUndefined;
 
         Message testee = null;
@@ -74,11 +75,11 @@ public class PEpProviderImpl implements PEpProvider {
 
             Color rv = engine.outgoing_message_color(testee);   // stupid way to be able to patch the value in debugger
             idFrom = engine.updateIdentity(idFrom);
-            Log.i("PEpProviderImpl", "getPrivacyState " + idFrom.fpr);
+            Log.i(TAG, "getPrivacyState " + idFrom.fpr);
 
             return rv;
         } catch (Throwable e) {
-            Log.e("pep", "during color test:", e);
+            Log.e(TAG, "during color test:", e);
         } finally {
             if (testee != null) testee.close();
 //            if (engine != null) engine.close();
@@ -89,8 +90,8 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public DecryptResult decryptMessage(MimeMessage source) {
-        Log.d("pep", "decryptMessage() enter");
-        Message  srcMsg = null;
+        Log.d(TAG, "decryptMessage() enter");
+        Message srcMsg = null;
         Engine engine = null;
         Engine.decrypt_message_Return decReturn = null;
         try {
@@ -99,27 +100,27 @@ public class PEpProviderImpl implements PEpProvider {
             srcMsg = new PEpMessageBuilder(source).createMessage(context);
             srcMsg.setDir(Message.Direction.Incoming);
 
-            Log.d("pep", "decryptMessage() before decrypt");
+            Log.d(TAG, "decryptMessage() before decrypt");
             decReturn = engine.decrypt_message(srcMsg);
-            Log.d("pep", "decryptMessage() after decrypt");
+            Log.d(TAG, "decryptMessage() after decrypt");
             MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
             decMsg.addHeader(MimeHeader.HEADER_PEPCOLOR, decReturn.color.name());
             return new DecryptResult(decMsg, decReturn.color);
         } catch (Throwable t) {
-            Log.e("pep", "while decrypting message:", t);
+            Log.e(TAG, "while decrypting message:", t);
             throw new RuntimeException("Could not decrypt");
         } finally {
             if (srcMsg != null) srcMsg.close();
             if (decReturn != null && decReturn.dst != srcMsg) decReturn.dst.close();
             if (engine != null) engine.close();
-            Log.d("pep", "decryptMessage() exit");
+            Log.d(TAG, "decryptMessage() exit");
         }
     }
 
     @Override
     public MimeMessage encryptMessage(MimeMessage source, String[] extraKeys) {
-        Log.d("pep", "encryptMessage() enter");
-        Message  srcMsg = null;
+        Log.d(TAG, "encryptMessage() enter");
+        Message srcMsg = null;
         Message encMsg = null;
         Engine engine = null;
         try {
@@ -127,27 +128,27 @@ public class PEpProviderImpl implements PEpProvider {
             srcMsg = new PEpMessageBuilder(source).createMessage(context);
             srcMsg.setDir(Message.Direction.Outgoing);
 
-            Log.d("pep", "encryptMessage() before encrypt");
+            Log.d(TAG, "encryptMessage() before encrypt");
             encMsg = engine.encrypt_message(srcMsg, convertExtraKeys(extraKeys));
-            Log.d("pep", "encryptMessage() after encrypt");
+            Log.d(TAG, "encryptMessage() after encrypt");
 
-            if(encMsg == null) {
-                Log.e("pep", "engine returned null.");
+            if (encMsg == null) {
+                Log.e(TAG, "engine returned null.");
                 encMsg = srcMsg;         // FIXME: this should be done by the engine! I could return source, but this would mask engine and my own errors...
             }
             return new MimeMessageBuilder(encMsg).createMessage();
         } catch (Throwable t) {
-            Log.e("pep", "while encrypting message:", t);
+            Log.e(TAG, "while encrypting message:", t);
             throw new RuntimeException("Could not encrypt");
         } finally {
             if (srcMsg != null) srcMsg.close();
             if (engine != null) engine.close();
-            Log.d("pep", "encryptMessage() exit");
+            Log.d(TAG, "encryptMessage() exit");
         }
     }
 
     private Vector<String> convertExtraKeys(String[] extraKeys) {
-        if(extraKeys == null || extraKeys.length == 0) return null;
+        if (extraKeys == null || extraKeys.length == 0) return null;
         Vector<String> rv = new Vector<String>();
         Collections.addAll(rv, extraKeys);
         return rv;
@@ -164,7 +165,7 @@ public class PEpProviderImpl implements PEpProvider {
             Color rv = engine.identity_color(ident);
             return rv;
         } catch (pEpException e) {
-            Log.e("pep", "during color test:", e);
+            Log.e(TAG, "during color test:", e);
         }
         return Color.pEpRatingB0rken;
     }
@@ -177,7 +178,7 @@ public class PEpProviderImpl implements PEpProvider {
             }
             return engine.identity_color(ident);
         } catch (pEpException e) {
-            Log.e("pep", "during color test:", e);
+            Log.e(TAG, "during color test:", e);
         }
         return Color.pEpRatingB0rken;
     }
@@ -191,10 +192,11 @@ public class PEpProviderImpl implements PEpProvider {
             id = engine.updateIdentity(id);
             return engine.trustwords(id);
         } catch (pEpException e) {
-            Log.e("pep", "during trustwords:", e);
+            Log.e(TAG, "during trustwords:", e);
         }
         return "";
     }
+
     @Override
     public void close() {
         if (engine != null) engine.close();
@@ -206,9 +208,9 @@ public class PEpProviderImpl implements PEpProvider {
             if (engine == null) {
                 engine = new Engine();
             }
-           return engine.updateIdentity(id);
+            return engine.updateIdentity(id);
         } catch (pEpException e) {
-            Log.e("pep", "during update identity:", e);
+            Log.e(TAG, "during update identity:", e);
         }
         return id;
     }
@@ -219,10 +221,10 @@ public class PEpProviderImpl implements PEpProvider {
             if (engine == null) {
                 engine = new Engine();
             }
-            engine.trustPersonalKey(id);
         } catch (pEpException e) {
-            Log.e("pep", "during trustwords:", e);
+            Log.e(TAG, "during trustwords:", e);
         }
+        engine.trustPersonalKey(id);
     }
 
     @Override
@@ -230,11 +232,11 @@ public class PEpProviderImpl implements PEpProvider {
         if (engine == null) {
             try {
                 engine = new Engine();
-                engine.keyCompromized(id);
             } catch (pEpException e) {
-                e.printStackTrace();
+                Log.e("pEp", "keyCompromised: ", e);
             }
         }
+        engine.keyCompromized(id);
     }
 
     @Override
@@ -242,10 +244,22 @@ public class PEpProviderImpl implements PEpProvider {
         if (engine == null) {
             try {
                 engine = new Engine();
-                engine.keyResetTrust(id);
             } catch (pEpException e) {
                 e.printStackTrace();
             }
         }
+        engine.keyResetTrust(id);
+    }
+
+    @Override
+    public void myself(Identity myId) {
+        if (engine == null) {
+            try {
+                engine = new Engine();
+            } catch (pEpException e) {
+                Log.e(TAG, "myself: ", e);
+            }
+        }
+        engine.myself(myId);
     }
 }

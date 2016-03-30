@@ -1,7 +1,9 @@
 package com.fsck.k9.pEp;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.Log;
+import com.fsck.k9.R;
 import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Body;
@@ -14,6 +16,7 @@ import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
 import com.fsck.k9.mailstore.LocalBodyPart;
 import org.apache.commons.io.IOUtils;
+import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
 
 import java.io.ByteArrayOutputStream;
@@ -159,4 +162,18 @@ public class PEpUtils {
     public static String getShortTrustWords(PEpProvider pEp, Identity id) {
         return getShortTrustwords(pEp.trustwords(id));
     }
+
+
+    public static int getColorColor(Color pepColor, Resources resources) {
+        if (pepColor.value <= Color.pEpRatingRed.value) {
+            return resources.getColor(R.color.pep_red);
+        } else if (pepColor.value < Color.pEpRatingYellow.value) {
+            return resources.getColor(R.color.pep_gray);
+        } else if (pepColor.value < Color.pEpRatingGreen.value) {
+            return resources.getColor(R.color.pep_yellow);
+        } else {
+            return resources.getColor(R.color.pep_green);
+        }
+    }
 }
+

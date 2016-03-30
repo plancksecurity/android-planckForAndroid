@@ -19,8 +19,6 @@ import org.pEp.jniadapter.Identity;
 public class PEpTrustwords extends K9Activity {
 
     private static final String ACTION_SHOW_PEP_TRUSTWORDS = "com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS";
-    private final static String MY_IDENTITY="me";
-    private final static String OTHER_IDENTITY="you";
     private static final String TRUSTWORDS = "trustwordsKey";
     public static final String PARTNER_POSITION = "partnerPositionKey";
     public static final int DEFAULT_POSITION = -1;
@@ -51,7 +49,7 @@ public class PEpTrustwords extends K9Activity {
         ButterKnife.bind(this);
         if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
         pEp = ((K9) getApplication()).getpEpProvider();
-        uiCache = PePUIArtefactCache.getInstance(getResources());
+        uiCache = PePUIArtefactCache.getInstance(getApplicationContext());
 
         if (getIntent() != null) {
             if (intent.hasExtra(TRUSTWORDS)) {
@@ -102,10 +100,14 @@ public class PEpTrustwords extends K9Activity {
 
     }
 
-    @OnClick(R.id.wrongTrustwords) public void wrongTrustWords() {
-//        pEp.trustPersonaKey(partner);
-//        setResult(Activity.RESULT_OK);
-       finish();
+    @OnClick(R.id.wrongTrustwords)
+    public void wrongTrustwords() {
+        pEp.keyCompromised(partner);
+        pEp.identityColor(partner);
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(PARTNER_POSITION, partnerPosition);
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
 
     }
 }
