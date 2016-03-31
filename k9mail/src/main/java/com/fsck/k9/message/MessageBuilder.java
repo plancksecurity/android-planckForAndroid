@@ -130,7 +130,7 @@ public abstract class MessageBuilder {
             message.setFlag(Flag.X_DRAFT_OPENPGP_INLINE, true);
         }
     }
-    
+
     protected MimeMultipart createMimeMultipart() {
         String boundary = boundaryGenerator.generateBoundary();
         return new MimeMultipart(boundary);
