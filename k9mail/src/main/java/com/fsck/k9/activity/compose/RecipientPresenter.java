@@ -759,6 +759,18 @@ public class RecipientPresenter implements PermissionPingCallback {
         return forceUnencrypted;
     }
 
+    public void onMenuSetPgpInline(boolean enablePgpInline) {
+        cryptoEnablePgpInline = enablePgpInline;
+        updateCryptoStatus();
+        if (enablePgpInline) {
+            recipientMvpView.showOpenPgpInlineDialog(true);
+        }
+    }
+
+    public void onClickPgpInlineIndicator() {
+        recipientMvpView.showOpenPgpInlineDialog(false);
+    }
+
     public enum CryptoProviderState {
         UNCONFIGURED,
         UNINITIALIZED,

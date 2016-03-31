@@ -30,6 +30,8 @@ import com.fsck.k9.activity.compose.ComposeCryptoStatus.SendErrorState;
 import com.fsck.k9.activity.compose.CryptoSettingsDialog.OnCryptoModeChangedListener;
 import com.fsck.k9.activity.compose.IdentityAdapter.IdentityContainer;
 import com.fsck.k9.activity.compose.PgpInlineDialog.OnOpenPgpInlineChangeListener;
+import com.fsck.k9.activity.compose.RecipientMvpView;
+import com.fsck.k9.activity.compose.RecipientPresenter;
 import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
 import com.fsck.k9.activity.loader.AttachmentContentLoader;
 import com.fsck.k9.activity.loader.AttachmentInfoLoader;
@@ -1287,6 +1289,12 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 break;
             case R.id.add_from_contacts:
                 recipientPresenter.onMenuAddFromContacts();
+                break;
+            case R.id.openpgp_inline_enable:
+                recipientPresenter.onMenuSetPgpInline(true);
+                break;
+            case R.id.openpgp_inline_disable:
+                recipientPresenter.onMenuSetPgpInline(false);
                 break;
             case R.id.openpgp_inline_enable:
                 recipientPresenter.onMenuSetPgpInline(true);
