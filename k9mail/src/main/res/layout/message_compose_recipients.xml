@@ -47,6 +47,19 @@
             style="@style/ComposeEditText"
             />
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:layout_gravity="center_vertical"
+            android:id="@+id/pgp_inline_indicator"
+            android:src="@drawable/compatibility"
+            android:tint="@color/light_black"
+            android:visibility="gone"
+            tools:visibility="visible"
+            />
+
+
         <com.fsck.k9.view.ToolableViewAnimator
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
