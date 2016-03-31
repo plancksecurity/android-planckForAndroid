@@ -1207,13 +1207,6 @@ Please submit bug reports, contribute new features and ask questions at
     <string name="messageview_crypto_warning_insecure">This message was signed by an <b>insecure key!</b></string>
     <string name="messageview_crypto_warning_error">There was an <b>error in this message\'s signature!</b></string>
 
-    <string name="xoauth2_auth_cancelled_by_user">Authentication cancelled</string>
-    <string name="xoauth2_unable_to_contact_auth_server">Unable to contact authentication server</string>
-    <string name="xoauth2_error_contacting_auth_server">Error contacting authentication server</string>
-    <string name="xoauth2_account_doesnt_exist">Account doesn\'t exist</string>
-
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
 
     <string name="error_crypto_inline_attach">PGP/INLINE mode does not support attachments!</string>
     <string name="enable_inline_pgp">Enable PGP/INLINE</string>
@@ -1226,5 +1219,14 @@ Please submit bug reports, contribute new features and ask questions at
     <string name="openpgp_inline_ok">Got it!</string>
     <string name="openpgp_inline_disable">Disable</string>
     <string name="openpgp_inline_keep_enabled">Keep Enabled</string>
+
+    <string name="xoauth2_auth_cancelled_by_user">Authentication cancelled</string>
+    <string name="xoauth2_unable_to_contact_auth_server">Unable to contact authentication server</string>
+    <string name="xoauth2_error_contacting_auth_server">Error contacting authentication server</string>
+    <string name="xoauth2_account_doesnt_exist">Account doesn\'t exist</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
 
 </resources>

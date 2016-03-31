@@ -50,16 +50,17 @@
             android:id="@+id/force_unencrypted"
             android:title="@string/force_unprotected"
             app:showAsAction="never"/>
+
     <item
         android:id="@+id/openpgp_inline_enable"
         android:alphabeticShortcut="i"
         android:title="@string/enable_inline_pgp"
-        app:showAsAction="never"
+        android:showAsAction="never"
         />
     <item
         android:id="@+id/openpgp_inline_disable"
         android:alphabeticShortcut="i"
         android:title="@string/disable_inline_pgp"
-        app:showAsAction="never"
+        android:showAsAction="never"
         />
 </menu>

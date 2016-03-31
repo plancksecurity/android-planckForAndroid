@@ -6,11 +6,13 @@ import java.util.List;
 
 import android.app.LoaderManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
