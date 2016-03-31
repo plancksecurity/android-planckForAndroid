@@ -188,6 +188,9 @@ public class ComposeCryptoStatus {
             if (enablePgpInline == null) {
                 throw new AssertionError("enablePgpInline must be set!");
             }
+            if (enablePgpInline == null) {
+                throw new AssertionError("enablePgpInline must be set. this is a bug!");
+            }
 
             ArrayList<String> recipientAddresses = new ArrayList<>();
             boolean allKeysAvailable = true;
