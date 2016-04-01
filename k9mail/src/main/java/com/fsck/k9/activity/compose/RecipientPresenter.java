@@ -30,6 +30,7 @@ import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.message.PgpMessageBuilder;
+import com.fsck.k9.message.ComposePgpInlineDecider;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import org.openintents.openpgp.IOpenPgpService2;
@@ -167,6 +168,12 @@ public class RecipientPresenter implements PermissionPingCallback {
 
                 }
             }
+
+            boolean shouldSendAsPgpInline = ComposePgpInlineDecider.getInstance().shouldReplyInline(message);
+            if (shouldSendAsPgpInline) {
+                cryptoEnablePgpInline = true;
+            }
+
         } catch (MessagingException e) {
             // can't happen, we know the recipient types exist
             throw new AssertionError(e);
