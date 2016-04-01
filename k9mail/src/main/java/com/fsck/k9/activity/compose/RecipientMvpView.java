@@ -499,6 +499,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         return new Address(getFrom());
     }
 
+
     public enum CryptoStatusDisplayType {
         UNCONFIGURED(VIEW_INDEX_HIDDEN),
         UNINITIALIZED(VIEW_INDEX_HIDDEN),
