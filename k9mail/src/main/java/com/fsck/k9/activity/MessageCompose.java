@@ -101,13 +101,6 @@ import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
 import org.pEp.jniadapter.Color;
-import com.fsck.k9.view.MessageWebView;
-import org.htmlcleaner.CleanerProperties;
-import org.htmlcleaner.HtmlCleaner;
-import org.htmlcleaner.SimpleHtmlSerializer;
-import org.htmlcleaner.TagNode;
-import org.openintents.openpgp.util.OpenPgpApi;
-import org.pEp.jniadapter.Color;
 
 import java.util.HashMap;
 import java.util.List;
