@@ -2,13 +2,11 @@ package com.fsck.k9.activity.compose;
 
 
 import android.app.PendingIntent;
-import android.content.Context;
 import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
@@ -385,9 +383,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     }
 
     public void showOpenPgpInlineDialog(boolean firstTime) {
-        hideKeyboard();
-
-        PgpInlineDialog dialog = PgpInlineDialog.newInstance(firstTime);
+        PgpInlineDialog dialog = PgpInlineDialog.newInstance(firstTime, R.id.pgp_inline_indicator);
         dialog.show(activity.getFragmentManager(), "openpgp_inline");
     }
 
@@ -454,16 +450,6 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         return new Address(getFrom());
     }
 
-    private void hideKeyboard() {
-        InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-
-        // check if no view has focus
-        View v = activity.getCurrentFocus();
-        if (v == null)
-            return;
-
-        inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
-    }
 
     public enum CryptoStatusDisplayType {
         UNCONFIGURED(VIEW_INDEX_HIDDEN),

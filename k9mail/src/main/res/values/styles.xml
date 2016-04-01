@@ -51,6 +51,10 @@
         <item name="android:textColorHint">#aaa</item>
     </style>
 
+    <style name="ShowcaseTheme" parent="ShowcaseView.Light">
+        <item name="sv_backgroundColor">#99444444</item>
+    </style>
+
     <style name="pEpIndicatorTVActionBarStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">32dp</item>
