@@ -25,6 +25,7 @@ public class PgpInlineDialog extends HighlightDialogFragment {
 
         Bundle args = new Bundle();
         args.putInt(ARG_FIRST_TIME, firstTime ? 1 : 0);
+
         args.putInt(ARG_HIGHLIGHT_VIEW, showcaseView);
         dialog.setArguments(args);
 
