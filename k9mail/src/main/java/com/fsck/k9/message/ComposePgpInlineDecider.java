@@ -9,6 +9,15 @@ import com.fsck.k9.mail.Part;
 
 
 public class ComposePgpInlineDecider {
+
+
+    private static ComposePgpInlineDecider sDecider = new ComposePgpInlineDecider();
+
+
+    public static ComposePgpInlineDecider getInstance() {
+        return sDecider;
+    }
+
     public boolean shouldReplyInline(Message localMessage) {
         // TODO more criteria for this? maybe check the User-Agent header?
         return messageHasPgpInlineParts(localMessage);
@@ -18,4 +27,5 @@ public class ComposePgpInlineDecider {
         List<Part> inlineParts = MessageDecryptVerifier.findPgpInlineParts(localMessage);
         return !inlineParts.isEmpty();
     }
+
 }
