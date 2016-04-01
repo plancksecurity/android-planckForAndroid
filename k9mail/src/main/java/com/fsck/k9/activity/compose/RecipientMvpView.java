@@ -389,9 +389,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     }
 
     public void showOpenPgpInlineDialog(boolean firstTime) {
-        hideKeyboard();
-
-        PgpInlineDialog dialog = PgpInlineDialog.newInstance(firstTime);
+        PgpInlineDialog dialog = PgpInlineDialog.newInstance(firstTime, R.id.pgp_inline_indicator);
         dialog.show(activity.getFragmentManager(), "openpgp_inline");
     }
 
