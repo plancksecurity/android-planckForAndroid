@@ -1,5 +1,6 @@
 package com.fsck.k9.ui.messageview;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 
@@ -18,6 +19,7 @@ import android.content.Loader;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.test.mock.MockApplication;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
@@ -43,18 +45,17 @@ import com.fsck.k9.fragment.ProgressDialogFragment;
 import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
+import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.internet.MimeBodyPart;
-import com.fsck.k9.mail.internet.MimeMessage;
-import com.fsck.k9.mail.internet.MimeMessageHelper;
-import com.fsck.k9.mail.internet.MimeMultipart;
-import com.fsck.k9.mail.internet.TextBody;
+import com.fsck.k9.mail.internet.*;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.ui.PEpStatus;
 import com.fsck.k9.mailstore.MessageViewInfo.MessageViewContainer;
 import com.fsck.k9.ui.crypto.MessageCryptoCallback;
 import com.fsck.k9.ui.crypto.MessageCryptoHelper;
@@ -62,6 +63,8 @@ import com.fsck.k9.ui.message.DecodeMessageLoader;
 import com.fsck.k9.ui.message.LocalMessageLoader;
 import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
 import com.fsck.k9.view.MessageHeader;
+import org.pEp.jniadapter.Color;
+import org.pEp.jniadapter.Identity;
 
 public class MessageViewFragment extends Fragment implements ConfirmationDialogFragmentListener,
         AttachmentViewCallback, OpenPgpHeaderViewCallback, MessageCryptoCallback {
@@ -76,6 +79,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private static final int LOCAL_MESSAGE_LOADER_ID = 1;
     private static final int DECODE_MESSAGE_LOADER_ID = 2;
+    private Color mPEpColor;
+    private PePUIArtefactCache pePUIArtefactCache;
 
     public static MessageViewFragment newInstance(MessageReference reference) {
         MessageViewFragment fragment = new MessageViewFragment();
@@ -177,7 +182,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         // onDownloadRemainder();;
 
         mFragmentListener.messageHeaderViewAvailable(mMessageView.getMessageHeaderView());
-
+        pePUIArtefactCache = PePUIArtefactCache.getInstance(getContext());
         return view;
     }
 
@@ -264,7 +269,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private void onMessageDownloadFinished(LocalMessage message) {
         mMessage = message;
-
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.destroyLoader(LOCAL_MESSAGE_LOADER_ID);
         loaderManager.destroyLoader(DECODE_MESSAGE_LOADER_ID);
@@ -734,6 +738,29 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         }
     }
 
+    public void onPepStatus() {
+        ArrayList<Identity> adresses = new ArrayList<Identity>();
+        adresses.addAll(PEpUtils.createIdentities(mMessage.getFrom(), getContext()));
+        try {
+            adresses.addAll(PEpUtils.createIdentities(mMessage.getRecipients(Message.RecipientType.TO), getContext()));
+            adresses.addAll(PEpUtils.createIdentities(mMessage.getRecipients(Message.RecipientType.CC), getContext()));
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+        pePUIArtefactCache.setRecipients(adresses);
+        try {
+            for (String s : mMessage.getHeaderNames()) {
+                for (String s1 : mMessage.getHeader(s)) {
+                    Log.i("MessageHeader", "onClick " + s + " " + s1);
+                }
+            }
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+        PEpStatus.actionShowStatus(getActivity(), mPEpColor, Preferences.getPreferences(mContext).getDefaultAccount().getIdentity(0).getEmail());
+    }
+
     public interface MessageViewFragmentListener {
         public void onForward(LocalMessage mMessage, PgpData mPgpData);
         public void disableDeleteAction();
@@ -762,6 +789,21 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             setProgress(false);
 
             mMessage = message;
+
+            String[] pEpColor = new String[0];
+            try {
+                pEpColor = message.getHeader(MimeHeader.HEADER_PEPCOLOR);
+                if(pEpColor != null)
+                    mPEpColor = Color.valueOf(pEpColor[0]);
+                else
+                    mPEpColor = Color.pEpRatingUndefined;
+
+                PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), mPEpColor);
+
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+
 
             if (message == null) {
                 onLoadMessageFromDatabaseFailed();

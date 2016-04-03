@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="pep_action">pEp state</string>
+    <string name="pep_action">p≡p state</string>
+    <string name="pep">p≡p</string>
     <string name="handshake">Handshake</string>
-    <string name="account_setup_genereting_keys">Making easy your privacy</string>
+    <string name="account_setup_genereting_keys">Making your privacyeasy </string>
     <string-array name="pep_states">
         <item>pEpRatingUndefined</item>
         <item>pEpRatingCannotDecrypt</item>
@@ -67,20 +68,31 @@
         <item>p≡p – No private key.<!--pEpRatingHaveNoKey--></item>
         <item>This communication is insecure.
                 You should be aware that there may be eavesdroppers and the message could be forged. It could be OK just as well.
-                <!--pEpRatingUnencrypted--></item>
+            <!--pEpRatingUnencrypted--></item>
+        <item>This communication is insecure for some.
+                You should be aware that there may be eavesdroppers and the message could be forged. It could be OK just as well.
+            <!--pEpRatingUnencryptedForSome--></item>
         <item>The message was encrypted but not in a feasible way or it wasn\'t signed.
                 There is no credible encryption for this message, so you should be aware that there may be eavesdroppers and the message could be forged. It could be OK just as well.
                 <!--pEpRatingUnreliable--></item>
         <item>To ensure a private and authentic communication please do a handshake with the communication partner.
                A handshake is needed only once per communication partner. After successfully doing a handshake each communication with that partner will be private and reliable for sure.
-                <!--pEpRatingReliable--></item>
+            <!--pEpRatingYellow--></item>
+                <item>To ensure a private and authentic communication please do a handshake with the communication partner.
+               A handshake is needed only once per communication partner. After successfully doing a handshake each communication with that partner will be private and reliable for sure.
+                    <!--pEpRatingReliable--></item>
+        <item>p≡p – This communication is private and authentic.<!--pEpRatingGreen--></item>
         <item>p≡p – This communication is private and authentic.<!--pEpRatingTrusted--></item>
         <item>A handshake with the communication partner was done already.
                 The results make sure that each communication with this partner is secure.<!--pEpRatingTrustedAndAnonymized--></item>
         <item>p≡p – This communication is private and authentic and anonymous.<!--pEpRatingFullyAnonymous--></item>
-        <item>"The encryption data is not matching. This probably is a forged message.
-                Do not trust this message! It probably is not from the communication partner indicated.<!--pEpRatingUnderAttack--></item>
+        <item>"The sender is not Trusted.
+                Do not trust this message! It probably is not from the communication partner indicated.<!--pEpRatingMissTrust--></item>
+                <item>"The encryption data is not matching. This probably is a forged message.
+                Do not trust this message! It probably is not from the communication partner indicated.<!--pEpRatingRed--></item>
         <item>*poff*. No Ponies<!--pEpRatingB0rken--></item>
+                <item>"The encryption data is not matching. This probably is a forged message.
+                Do not trust this message! It probably is not from the communication partner indicated.<!--pEpRatingUnderAttack--></item>
     </string-array>
 
 

@@ -45,19 +45,19 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical" >
 
-                    <ImageView
-                        android:id="@+id/pEp_indicator"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_alignParentTop="false"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:src="@drawable/ic_action_pep_indicator"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true" />
+                    <!--<ImageView-->
+                        <!--android:id="@+id/pEp_indicator"-->
+                        <!--android:layout_width="40dp"-->
+                        <!--android:layout_height="40dp"-->
+                        <!--android:layout_marginTop="8dp"-->
+                        <!--android:layout_marginLeft="8dp"-->
+                        <!--android:layout_alignParentTop="false"-->
+                        <!--android:layout_marginRight="8dp"-->
+                        <!--android:layout_marginBottom="8dp"-->
+                        <!--android:src="@drawable/ic_action_pep_indicator"-->
+                        <!--android:clickable="true"-->
+                        <!--android:focusable="true"-->
+                        <!--android:focusableInTouchMode="true" />-->
 
                     <QuickContactBadge
                         android:id="@+id/contact_badge"
@@ -65,7 +65,7 @@
                         android:layout_height="40dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginLeft="8dp"
-                        android:layout_below="@+id/pEp_indicator" />
+                        />
 
                     <!-- State icons -->
                     <LinearLayout

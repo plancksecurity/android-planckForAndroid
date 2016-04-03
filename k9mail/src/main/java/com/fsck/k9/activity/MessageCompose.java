@@ -23,6 +23,7 @@ import android.content.*;
 import android.content.IntentSender.SendIntentException;
 import android.content.pm.ActivityInfo;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.*;
@@ -1593,12 +1594,13 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
         return true;
     }
-
 //    // TODO> review after rebase
 //    private void handlePEpState(boolean... withToast) {
 //        boolean reallyWithToast = true;
 //        if(withToast.length>0) reallyWithToast = withToast[0];
 //        updatePePState();
+//        PEpUtils.colorActionBar(pEpUiCache, getActionBar(), mPEpColor);
+//
 //        if(mPEpIndicator!=null) {
 //            mPEpIndicator.setIcon(pEpUiCache.getIcon(mPEpColor));
 //            String msg = pEpUiCache.getTitle(mPEpColor);
