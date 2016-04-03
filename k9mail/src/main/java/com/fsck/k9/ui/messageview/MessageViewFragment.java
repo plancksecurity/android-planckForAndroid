@@ -1,5 +1,8 @@
 package com.fsck.k9.ui.messageview;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.app.DialogFragment;
@@ -39,16 +42,21 @@ import com.fsck.k9.fragment.ProgressDialogFragment;
 import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
+import com.fsck.k9.mail.Message;
+import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
+import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.ui.PEpStatus;
 import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
 import com.fsck.k9.view.MessageHeader;
+import org.pEp.jniadapter.Color;
+import org.pEp.jniadapter.Identity;
 
-import java.util.Collections;
-import java.util.Locale;
 
 
 public class MessageViewFragment extends Fragment implements ConfirmationDialogFragmentListener,
@@ -62,6 +70,10 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public static final int REQUEST_MASK_LOADER_HELPER = (1 << 8);
     public static final int REQUEST_MASK_CRYPTO_PRESENTER = (1 << 9);
+    private static final int LOCAL_MESSAGE_LOADER_ID = 1;
+    private static final int DECODE_MESSAGE_LOADER_ID = 2;
+    private Color mPEpColor;
+    private PePUIArtefactCache pePUIArtefactCache;
 
     public static MessageViewFragment newInstance(MessageReference reference) {
         MessageViewFragment fragment = new MessageViewFragment();
@@ -184,7 +196,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         // onDownloadRemainder();;
 
         mFragmentListener.messageHeaderViewAvailable(mMessageView.getMessageHeaderView());
-
+        pePUIArtefactCache = PePUIArtefactCache.getInstance(getContext());
         return view;
     }
 
@@ -689,6 +701,22 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     @Override
     public void onClickShowCryptoKey() {
         messageCryptoPresenter.onClickShowCryptoKey();
+    }
+
+    public void onPepStatus() {
+        ArrayList<Identity> adresses = new ArrayList<Identity>();
+        adresses.addAll(PEpUtils.createIdentities(mMessage.getFrom(), getContext()));
+            adresses.addAll(PEpUtils.createIdentities(mMessage.getRecipients(Message.RecipientType.TO), getContext()));
+            adresses.addAll(PEpUtils.createIdentities(mMessage.getRecipients(Message.RecipientType.CC), getContext()));
+
+        pePUIArtefactCache.setRecipients(adresses);
+            for (String s : mMessage.getHeaderNames()) {
+                for (String s1 : mMessage.getHeader(s)) {
+                    Log.i("MessageHeader", "onClick " + s + " " + s1);
+                }
+            }
+
+        PEpStatus.actionShowStatus(getActivity(), mPEpColor, Preferences.getPreferences(mContext).getDefaultAccount().getIdentity(0).getEmail());
     }
 
     public interface MessageViewFragmentListener {

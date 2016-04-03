@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
@@ -83,7 +82,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     private OnLayoutChangedListener mOnLayoutChangedListener;
     private OnCryptoClickListener onCryptoClickListener;
 
-    private ImageView mPEpIndicator;
+    //private ImageView mPEpIndicator;
     private Color mPEpColor;
     private PePUIArtefactCache c;
 
@@ -151,7 +150,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
         mSubjectView.setVisibility(VISIBLE);
 
-        mPEpIndicator = (ImageView) findViewById(R.id.pEp_indicator);
+        //mPEpIndicator = (ImageView) findViewById(R.id.pEp_indicator);
 
         hideAdditionalHeaders();
     }
@@ -299,10 +298,10 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
             mPEpColor = Color.pEpRatingUndefined;
 
         Log.i("pEp", "got color " + mPEpColor + " " + mPEpColor.value);
-        mPEpIndicator.setImageDrawable(makePePStatusIcon());
         Toast.makeText(mContext, PePUIArtefactCache.getInstance(mContext).getTitle(mPEpColor), Toast.LENGTH_LONG).show();
+        //mPEpIndicator.setImageDrawable(pePUIArtefactCache.getIcon(mPEpColor));
 
-        mPEpIndicator.setOnClickListener(this);
+        //mPEpIndicator.setOnClickListener(this);
 
         final Contacts contacts = K9.showContactName() ? mContacts : null;
         final CharSequence from = MessageHelper.toFriendly(message.getFrom(), contacts);
@@ -375,7 +374,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         mForwardedIcon.setVisibility(message.isSet(Flag.FORWARDED) ? View.VISIBLE : View.GONE);
         mFlagged.setChecked(message.isSet(Flag.FLAGGED));
 
-        mChip.setBackgroundColor(mAccount.getChipColor());
+        if (Preferences.getPreferences(getContext()).getAccounts().size() > 1) mChip.setBackgroundColor(mAccount.getChipColor());
 
         setVisibility(View.VISIBLE);
 

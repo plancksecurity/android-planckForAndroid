@@ -12,11 +12,18 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Medium Text"
-            android:id="@+id/tvEmail"
+            android:id="@+id/tvUsername"
             android:layout_gravity="center"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"/>
+    />
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Medium Text"
+            android:id="@+id/tvAddress"
+            android:layout_gravity="center"
+            android:layout_below="@id/tvUsername"
+    />
 
     <Button
             android:layout_width="wrap_content"

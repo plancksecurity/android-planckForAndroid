@@ -90,9 +90,9 @@ public class PEpStatus extends K9Activity {
             ActionBar actionBar = getActionBar();
             actionBar.setBackgroundDrawable(colorDrawable);
             actionBar.setTitle(getString(R.string.title_activity_pep_status));
-            actionBar.setSubtitle(ui.getTitle(m_pEpColor));
+//            actionBar.setSubtitle(ui.getTitle(m_pEpColor));
             fixActionBarTitleColor();
-            fixActionBarSubtitleColor();
+//            fixActionBarSubtitleColor();
 
         }
     }
@@ -144,6 +144,7 @@ public class PEpStatus extends K9Activity {
 
 
     private void renderStatusBarPepColor() {
+        if (ui.getColor(m_pEpColor) == getResources().getColor(R.color.pep_gray)) return ;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();
             // clear FLAG_TRANSLUCENT_STATUS flag:

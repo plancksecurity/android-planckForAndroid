@@ -1,7 +1,9 @@
 package com.fsck.k9.pEp;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import com.fsck.k9.R;
 import com.fsck.k9.helper.Contacts;
@@ -26,7 +28,6 @@ import java.util.Vector;
 
 /**
  * some helper stuff
- *
  */
 
 // FIXME: this needs cleanup. separate message builder stuff to separate classes and leave only *small* helpers here!
@@ -36,7 +37,7 @@ public class PEpUtils {
 
     public static Vector<Identity> createIdentities(Address[] adrs, Context context) {
         Vector<Identity> rv = new Vector<Identity>(adrs.length);
-        for(Address adr : adrs)
+        for (Address adr : adrs)
             rv.add(createIdentity(adr, context));
         return rv;
     }
@@ -44,12 +45,18 @@ public class PEpUtils {
     public static Identity createIdentity(Address adr, Context context) {
         Identity id = new Identity();
         id.address = adr.getAddress();
-        id.username = adr.getAddress();
+        if (adr.getPersonal() != null) {
+            id.username = adr.getPersonal();
+        }
         try {
             id.user_id = Contacts.getInstance(context).getContactId(adr.getAddress());
         } catch (Exception e) {
             id.user_id = adr.getAddress();
         }
+        PEpProvider provider = PEpProviderFactory.createProvider();
+        id = provider.updateIdentity(id);
+        provider.close();
+        provider = null;
         // hack to get an unique ID...
 
         // TODO: do I have any kind of unique id for user_id? (no, I don't, see hack from above)
@@ -173,6 +180,13 @@ public class PEpUtils {
             return resources.getColor(R.color.pep_yellow);
         } else {
             return resources.getColor(R.color.pep_green);
+        }
+    }
+
+    public static void colorActionBar(PePUIArtefactCache pEpUiCache, ActionBar actionBar, Color mPEpColor) {
+        if (actionBar != null) {
+            ColorDrawable colorDrawable = new ColorDrawable(pEpUiCache.getColor(mPEpColor));
+            actionBar.setBackgroundDrawable(colorDrawable);
         }
     }
 }
