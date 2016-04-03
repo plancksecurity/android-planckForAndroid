@@ -15,7 +15,7 @@
   <!--Welcome message-->
   <string name="welcome_message_title">Bienvenido a K-9 Mail</string>
   <!--Default signature-->
-  <string name="default_signature">-- \nEnviado desde mi dispositivo Android con K-9 Mail. Por favor, disculpa mi brevedad.</string>
+  <string name="default_signature">-- \nEnviado desde mi dispositivo Android con K-9 Mail/p≡p. Por favor disculpa mi brevedad.</string>
   <!--General strings that include the app name-->
   <string name="account_delete_dlg_instructions_fmt">La cuenta \"<xliff:g id="account">%s</xliff:g>\" será eliminada de K-9 Mail.</string>
   <string name="account_recreate_dlg_instructions_fmt">Los datos de \"<xliff:g id="account">%s</xliff:g>\" serán eliminados de K-9 Mail, pero se mantendrá su configuración.</string>
