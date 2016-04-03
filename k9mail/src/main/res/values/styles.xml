@@ -65,5 +65,13 @@
         <item name="android:tint">?attr/tintColorBulletPointNegative</item>
     </style>
 
+    <style name="pEpIndicatorTVActionBarStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">right</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
 </resources>
 
