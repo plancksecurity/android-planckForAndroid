@@ -65,6 +65,12 @@
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
             android:textSize="16sp" />
+        <TextView
+                android:id="@+id/tvPep"
+                android:text="@string/pep"
+                fontPath="fonts/UniversLTStd.otf"
+                style="@style/pEpIndicatorTVActionBarStyle"/>
     </LinearLayout>
+
 
 </FrameLayout>

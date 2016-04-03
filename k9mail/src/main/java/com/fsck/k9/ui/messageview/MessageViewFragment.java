@@ -744,6 +744,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         void showNextMessageOrReturn();
         void messageHeaderViewAvailable(MessageHeader messageHeaderView);
         void updateMenu();
+        public void setPepStatusEnabled(boolean enable);
     }
 
     public boolean isInitialized() {
@@ -765,6 +766,12 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                     mPEpColor = Color.pEpRatingUndefined;
 
                 PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), mPEpColor);
+                if (pePUIArtefactCache.getColor(mPEpColor) == getResources().getColor(R.color.pep_gray)) {
+                    mFragmentListener.setPepStatusEnabled(false);
+                }
+                else {
+                    mFragmentListener.setPepStatusEnabled(true);
+                }
 
             } catch (MessagingException e) {
                 e.printStackTrace();
