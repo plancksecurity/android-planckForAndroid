@@ -85,7 +85,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     private OnLayoutChangedListener mOnLayoutChangedListener;
     private OnCryptoClickListener onCryptoClickListener;
 
-    private ImageView mPEpIndicator;
+    //private ImageView mPEpIndicator;
     private Color mPEpColor;
     private PePUIArtefactCache pePUIArtefactCache;
 
@@ -156,7 +156,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
         mSubjectView.setVisibility(VISIBLE);
 
-        mPEpIndicator = (ImageView) findViewById(R.id.pEp_indicator);
+        //mPEpIndicator = (ImageView) findViewById(R.id.pEp_indicator);
 
         hideAdditionalHeaders();
     }
@@ -178,28 +178,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
                 onCryptoClickListener.onCryptoClick();
                 break;
             }
-            case R.id.pEp_indicator: {
-                ArrayList <org.pEp.jniadapter.Identity> adresses = new ArrayList<Identity>();
-                adresses.addAll(PEpUtils.createIdentities(mMessage.getFrom(), getContext()));
-                try {
-                    adresses.addAll(PEpUtils.createIdentities(mMessage.getRecipients(Message.RecipientType.TO), getContext()));
-                    adresses.addAll(PEpUtils.createIdentities(mMessage.getRecipients(Message.RecipientType.CC), getContext()));
 
-                } catch (MessagingException e) {
-                    e.printStackTrace();
-                }
-                pePUIArtefactCache.setRecipients(adresses);
-                try {
-                    for (String s : mMessage.getHeaderNames()) {
-                        for (String s1 : mMessage.getHeader(s)) {
-                            Log.i("MessageHeader", "onClick " + s + " " + s1);
-                        }
-                    }
-                } catch (MessagingException e) {
-                    e.printStackTrace();
-                }
-                PEpStatus.actionShowStatus(mContext, mPEpColor, Preferences.getPreferences(mContext).getDefaultAccount().getIdentity(0).getEmail());
-            }
         }
     }
 
@@ -305,9 +284,9 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
             mPEpColor = Color.pEpRatingUndefined;
 
         Log.i("pEp", "got color " + mPEpColor + " " + mPEpColor.value);
-        mPEpIndicator.setImageDrawable(pePUIArtefactCache.getIcon(mPEpColor));
+        //mPEpIndicator.setImageDrawable(pePUIArtefactCache.getIcon(mPEpColor));
 
-        mPEpIndicator.setOnClickListener(this);
+        //mPEpIndicator.setOnClickListener(this);
 
         final Contacts contacts = K9.showContactName() ? mContacts : null;
         final CharSequence from = MessageHelper.toFriendly(message.getFrom(), contacts);
@@ -380,7 +359,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         mForwardedIcon.setVisibility(message.isSet(Flag.FORWARDED) ? View.VISIBLE : View.GONE);
         mFlagged.setChecked(message.isSet(Flag.FLAGGED));
 
-        mChip.setBackgroundColor(mAccount.getChipColor());
+        if (Preferences.getPreferences(getContext()).getAccounts().size() > 1) mChip.setBackgroundColor(mAccount.getChipColor());
 
         setVisibility(View.VISIBLE);
 

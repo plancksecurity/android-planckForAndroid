@@ -47,6 +47,9 @@ import com.fsck.k9.fragment.MessageListFragment;
 import com.fsck.k9.fragment.MessageListFragment.MessageListFragmentListener;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.preferences.StorageEditor;
+import com.fsck.k9.mailstore.LocalMessage;
+import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification;
@@ -60,6 +63,9 @@ import com.fsck.k9.view.MessageTitleView;
 import com.fsck.k9.view.ViewSwitcher;
 import com.fsck.k9.view.ViewSwitcher.OnSwitchCompleteListener;
 import de.cketti.library.changelog.ChangeLog;
+
+import java.util.Collection;
+import java.util.List;
 
 
 /**
@@ -921,6 +927,10 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 updateMenu();
                 return true;
             }
+            case R.id.pEp_indicator: {
+                mMessageViewFragment.onPepStatus();
+
+            }
         }
 
         if (!mSingleFolderMode) {
@@ -1014,6 +1024,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             menu.findItem(R.id.toggle_message_view_theme).setVisible(false);
             menu.findItem(R.id.show_headers).setVisible(false);
             menu.findItem(R.id.hide_headers).setVisible(false);
+            menu.findItem(R.id.pEp_indicator).setVisible(false);
         } else {
             // hide prev/next buttons in split mode
             if (mDisplayMode != DisplayMode.MESSAGE_VIEW) {
@@ -1502,6 +1513,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     private void showMessageList() {
+        PEpUtils.colorActionBar(PePUIArtefactCache.getInstance(getApplicationContext()), getActionBar(), org.pEp.jniadapter.Color.pEpRatingUnencrypted);
         mMessageListWasDisplayed = true;
         mDisplayMode = DisplayMode.MESSAGE_LIST;
         mViewSwitcher.showFirstView();

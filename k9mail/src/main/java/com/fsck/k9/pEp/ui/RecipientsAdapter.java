@@ -79,17 +79,16 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         Identity identity = identities.get(position);
-        Color color = pEp.identityColor(identity);
-        holder.render(color, position, getShownName(identity));
+        holder.render(position, identity);
     }
 
-    private String getShownName(Identity identity) {
-        if (identity.username == null || identity.username.equals("")) {
-            return identity.address;
-        } else {
-            return identity.username;
-        }
-    }
+//    private String getShownName(Identity identity) {
+//        if (identity.username == null || identity.username.equals("")) {
+//            return identity.address;
+//        } else {
+//            return identity.username;
+//        }
+//    }
 
 
     @Override
@@ -99,7 +98,9 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
-        public TextView contactEmail;
+        public TextView identityUserName;
+        public TextView identityAdress;
+
         public Button handshakeButton;
         public View container;
         public Context context;
@@ -107,7 +108,8 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
         public ViewHolder(View view) {
             super(view);
             context = view.getContext();
-            contactEmail = ((TextView) view.findViewById(R.id.tvEmail));
+            identityUserName = ((TextView) view.findViewById(R.id.tvUsername));
+            identityAdress = ((TextView) view.findViewById(R.id.tvAddress));
             handshakeButton = ((Button) view.findViewById(R.id.buttonHandshake));
             container = view.findViewById(R.id.recipientContainer);
         }
@@ -130,17 +132,19 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
             container.setTag(position);
         }
 
-        public void render(Color color, int position, String shownName) {
+        public void render(int position, Identity identity) {
+            Color color = pEp.identityColor(identity);
             renderColor(color);
             renderButton(color);
             setPosition(position);
-            renderShownName(shownName, color);
+            renderIdentity(identity, color);
         }
 
-        private void renderShownName(String shownName, Color color) {
-            contactEmail.setText(shownName);
+        private void renderIdentity(Identity identity, Color color) {
+            if (identity.username != null) identityUserName.setText(identity.username);
+            if (identity.address != null) identityAdress.setText(identity.address);
             if (color.value >= Color.pEpRatingGreen.value) {
-                contactEmail.setTextColor(android.graphics.Color.WHITE);
+                identityUserName.setTextColor(android.graphics.Color.WHITE);
             }
         }
     }
