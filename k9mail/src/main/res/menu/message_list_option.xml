@@ -245,11 +245,4 @@
                 android:title="@string/global_settings_action"/>
         </menu>
     </item>
-    <item
-            android:id="@+id/pEp_indicator"
-            android:alphabeticShortcut="s"
-            android:title="@string/pep_action"
-            android:icon="@drawable/ic_action_pep_indicator"
-            android:showAsAction="always"
-            />
 </menu>

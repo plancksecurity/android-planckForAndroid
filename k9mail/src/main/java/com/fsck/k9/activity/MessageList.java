@@ -84,6 +84,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     // Used for navigating to next/previous message
     private static final int PREVIOUS = 1;
     private static final int NEXT = 2;
+    private TextView mActionBarPepStatus;
 
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
@@ -531,10 +532,22 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         mActionBarTitle = (TextView) customView.findViewById(R.id.actionbar_title_first);
         mActionBarSubTitle = (TextView) customView.findViewById(R.id.actionbar_title_sub);
         mActionBarUnread = (TextView) customView.findViewById(R.id.actionbar_unread_count);
+        mActionBarPepStatus = (TextView) findViewById(R.id.tvPep);
+        initializePepStatus();
         mActionBarProgress = (ProgressBar) customView.findViewById(R.id.actionbar_progress);
         mActionButtonIndeterminateProgress = getActionButtonIndeterminateProgress();
 
         mActionBar.setDisplayHomeAsUpEnabled(true);
+    }
+//    // TODO> review after rebase
+    private void initializePepStatus() {
+//        mActionBarPepStatus.setVisibility(View.GONE);
+//        mActionBarPepStatus.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                mMessageViewFragment.onPepStatus();
+//            }
+//        });
     }
 
     @SuppressLint("InflateParams")
@@ -901,10 +914,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 updateMenu();
                 return true;
             }
-            case R.id.pEp_indicator: {
-                mMessageViewFragment.onPepStatus();
-
-            }
         }
 
         if (!mSingleFolderMode) {
@@ -998,7 +1007,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             menu.findItem(R.id.toggle_message_view_theme).setVisible(false);
             menu.findItem(R.id.show_headers).setVisible(false);
             menu.findItem(R.id.hide_headers).setVisible(false);
-            menu.findItem(R.id.pEp_indicator).setVisible(false);
         } else {
             // hide prev/next buttons in split mode
             if (mDisplayMode != DisplayMode.MESSAGE_VIEW) {
@@ -1513,6 +1521,12 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     @Override
     public void updateMenu() {
         invalidateOptionsMenu();
+    }
+
+    @Override
+    public void setPepStatusEnabled(boolean enable) {
+        if (enable) mActionBarPepStatus.setVisibility(View.VISIBLE);
+        else mActionBarPepStatus.setVisibility(View.GONE);
     }
 
     @Override
