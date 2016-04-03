@@ -103,6 +103,8 @@ import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.DatabasePreviewType;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalStore;
+import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.MessageColumns;
@@ -1747,6 +1749,8 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
             holder.selected.setOnClickListener(holder);
 
 
+
+
             view.setTag(holder);
 
             return view;
@@ -1806,7 +1810,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
             boolean selected = mSelected.contains(uniqueId);
 
 
-            holder.chip.setBackgroundColor(account.getChipColor());
+            if (Preferences.getPreferences(getActivity().getApplicationContext()).getAccounts().size() > 1) holder.chip.setBackgroundColor(account.getChipColor());
 
             if (mCheckboxes) {
                 holder.selected.setChecked(selected);
