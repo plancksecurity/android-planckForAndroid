@@ -4,17 +4,13 @@ import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -22,6 +18,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
@@ -70,7 +67,6 @@ public class PEpStatus extends K9Activity {
         setUpActionBar();
         setUpContactList(myself, pEp);
         loadPepTexts();
-        renderStatusBarPepColor();
 
     }
 
@@ -85,29 +81,10 @@ public class PEpStatus extends K9Activity {
     }
 
     private void setUpActionBar() {
-        ColorDrawable colorDrawable = new ColorDrawable(ui.getColor(m_pEpColor));
         if (getActionBar() != null) {
             ActionBar actionBar = getActionBar();
-            actionBar.setBackgroundDrawable(colorDrawable);
             actionBar.setTitle(getString(R.string.title_activity_pep_status));
-//            actionBar.setSubtitle(ui.getTitle(m_pEpColor));
-            fixActionBarTitleColor();
-//            fixActionBarSubtitleColor();
-
-        }
-    }
-
-    private void fixActionBarSubtitleColor() {
-        TextView actionBarSubTitle = (TextView) findViewById(getActionBarSubTitleId());
-        if (ui.getColor(m_pEpColor) == getResources().getColor(R.color.pep_green)) {
-            actionBarSubTitle.setTextColor(actionBarSubTitle.getCurrentTextColor() + 0x00111111);
-        }
-    }
-
-    private void fixActionBarTitleColor() {
-        TextView actionBarTitle = (TextView) findViewById(getActionBarTitleId());
-        if (ui.getColor(m_pEpColor) == getResources().getColor(R.color.pep_green)) {
-            actionBarTitle.setTextColor(android.graphics.Color.WHITE);
+            PEpUtils.colorActionBar(ui, actionBar, m_pEpColor);
         }
     }
 
@@ -133,33 +110,6 @@ public class PEpStatus extends K9Activity {
         recipientsView.addItemDecoration(new SimpleDividerItemDecoration(this));
 
     }
-
-    private int getActionBarTitleId() {
-        return getResources().getIdentifier("action_bar_title", "id", "android");
-    }
-
-    private int getActionBarSubTitleId() {
-        return getResources().getIdentifier("action_bar_subtitle", "id", "android");
-    }
-
-
-    private void renderStatusBarPepColor() {
-        if (ui.getColor(m_pEpColor) == getResources().getColor(R.color.pep_gray)) return ;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = this.getWindow();
-            // clear FLAG_TRANSLUCENT_STATUS flag:
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            // finally change the color, we set the pEpColor in status bar, but 10% darker.
-            int color = (ui.getColor(m_pEpColor) & 0x00FFFFFF);
-            float[] hsv = new float[3];
-            android.graphics.Color.colorToHSV(color, hsv);
-            hsv[2] *= 0.9;
-            window.setStatusBarColor(android.graphics.Color.HSVToColor(hsv));
-        }
-    }
-
 
     public class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
         private Drawable mDivider;
@@ -197,6 +147,9 @@ public class PEpStatus extends K9Activity {
                 Identity partner = ui.getRecipients().get(position);
                 Log.i("PEpStatus", "onActivityResult " + pEp.identityColor(partner));
                 recipientsAdapter.notifyDataSetChanged();
+                PEpUtils.colorActionBar(ui, getActionBar(), m_pEpColor);
+
+
             }
         }
     }

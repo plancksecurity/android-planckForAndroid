@@ -43,6 +43,7 @@ dependencies {
     testCompile "org.mockito:mockito-core:${mockitoVersion}"
 
     compile 'com.android.support:recyclerview-v7:21.0.+'
+    compile 'com.android.support:cardview-v7:22.1.+'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
 }
@@ -59,9 +60,9 @@ android {
 //        versionName '5.200-RC2'
 
         applicationId "com.pep.k9"
-        versionCode 23080012
-        versionName '1.0.1 p≡p'
-        minSdkVersion 15
+        versionCode 23080014
+        versionName '1.0.3 p≡p'
+        minSdkVersion 18
         targetSdkVersion 22
 
         generatedDensities = ['mdpi', 'hdpi', 'xhdpi']
