@@ -3,7 +3,7 @@
     <string name="pep_action">p≡p state</string>
     <string name="pep">p≡p</string>
     <string name="handshake">Handshake</string>
-    <string name="account_setup_genereting_keys">Making your privacyeasy </string>
+    <string name="account_setup_genereting_keys">Making your privacy easy </string>
     <string-array name="pep_states">
         <item>pEpRatingUndefined</item>
         <item>pEpRatingCannotDecrypt</item>
