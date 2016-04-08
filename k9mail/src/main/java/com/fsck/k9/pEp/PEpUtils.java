@@ -45,18 +45,19 @@ public class PEpUtils {
     public static Identity createIdentity(Address adr, Context context) {
         Identity id = new Identity();
         id.address = adr.getAddress();
-        if (adr.getPersonal() != null) {
-            id.username = adr.getPersonal();
-        }
+        id.username = adr.getAddress();
+//        if (adr.getPersonal() != null) {
+//            id.username = adr.getPersonal();
+//        } else id.us
         try {
             id.user_id = Contacts.getInstance(context).getContactId(adr.getAddress());
         } catch (Exception e) {
             id.user_id = adr.getAddress();
         }
-        PEpProvider provider = PEpProviderFactory.createProvider();
-        id = provider.updateIdentity(id);
-        provider.close();
-        provider = null;
+//        PEpProvider provider = PEpProviderFactory.createProvider();
+//        id = provider.updateIdentity(id);
+//        provider.close();
+//        provider = null;
         // hack to get an unique ID...
 
         // TODO: do I have any kind of unique id for user_id? (no, I don't, see hack from above)
