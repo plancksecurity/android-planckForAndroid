@@ -3,28 +3,18 @@ package com.fsck.k9.pEp;
 
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.fsck.k9.K9;
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.internet.MimeBodyPart;
-import com.fsck.k9.mail.internet.MimeHeader;
-import com.fsck.k9.mail.internet.MimeMessage;
-import com.fsck.k9.mail.internet.MimeMessageHelper;
-import com.fsck.k9.mail.internet.MimeMultipart;
-import com.fsck.k9.mail.internet.MimeUtility;
-import com.fsck.k9.mail.internet.TextBody;
+import com.fsck.k9.mail.internet.*;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
 import com.fsck.k9.message.SimpleMessageFormat;
-
-
 import org.apache.james.mime4j.codec.EncoderUtil;
 import org.apache.james.mime4j.util.MimeUtil;
 import org.pEp.jniadapter.Blob;
 import org.pEp.jniadapter.Message;
 
-import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -36,6 +26,7 @@ import java.util.Vector;
 
 
 class MimeMessageBuilder {
+    private static final String DEFAULT_KEY_NAME = "pEpkey.asc";
     private SimpleMessageFormat messageFormat = SimpleMessageFormat.TEXT;
 
     private Message pEpMessage;
@@ -44,13 +35,12 @@ class MimeMessageBuilder {
         this.pEpMessage = m;
     }
 
-    MimeMessage createMessage() {
+    MimeMessage createMessage(boolean shrinkPepKey) {
         try {
             MimeMessage mimeMsg = new MimeMessage();
-
             evaluateMessageFormat();
             buildHeader(mimeMsg);
-            buildBody(mimeMsg);
+            buildBody(mimeMsg, shrinkPepKey);
 
             return mimeMsg;
         }
@@ -86,12 +76,12 @@ class MimeMessageBuilder {
         //TODO: other header fields. See Message.getOpt<something>
     }
 
-    private void buildBody(MimeMessage mimeMsg) throws MessagingException {
+    private void buildBody(MimeMessage mimeMsg, boolean shrinkPepKey) throws MessagingException {
         if (pEpMessage.getEncFormat() != Message.EncFormat.None) {   // we have an encrypted msg. Therefore, just attachments...
             // FIXME: how do I add some text ("this mail encrypted by pEp") before the first mime part?
             MimeMultipart mp = new MimeMultipart();
             mp.setSubType("encrypted; protocol=\"application/pgp-encrypted\"");     // FIXME: what if other enc types?
-            addAttachmentsToMessage(mp);
+            addAttachmentsToMessage(mp, shrinkPepKey);
             MimeMessageHelper.setBody(mimeMsg, mp);
 
             return;
@@ -123,7 +113,7 @@ class MimeMessageBuilder {
                 // the attachments.
                 MimeMultipart mp = new MimeMultipart();
                 mp.addBodyPart(new MimeBodyPart(composedMimeMessage));
-                addAttachmentsToMessage(mp);
+                addAttachmentsToMessage(mp, shrinkPepKey);
                 MimeMessageHelper.setBody(mimeMsg, mp);
             } else {
                 // If no attachments, our multipart/alternative part is the only one we need.
@@ -135,7 +125,7 @@ class MimeMessageBuilder {
             if (hasAttachments) {
                 MimeMultipart mp = new MimeMultipart();
                 mp.addBodyPart(new MimeBodyPart(body, "text/plain"));
-                addAttachmentsToMessage(mp);
+                addAttachmentsToMessage(mp, shrinkPepKey);
                 MimeMessageHelper.setBody(mimeMsg, mp);
             } else {
                 // No attachments to include, just stick the text body in the message and call it good.
@@ -153,9 +143,10 @@ class MimeMessageBuilder {
      * Add attachments as parts into a MimeMultipart container.
      *
      * @param mp MimeMultipart container in which to insert parts.
+     * @param shrinkPepKey
      * @throws MessagingException
      */
-    private void addAttachmentsToMessage(final MimeMultipart mp) throws MessagingException {
+    private void addAttachmentsToMessage(final MimeMultipart mp, boolean shrinkPepKey) throws MessagingException {
         Body body;
         Vector<Blob> attachments = pEpMessage.getAttachments();
         if(attachments == null) return;
@@ -164,51 +155,53 @@ class MimeMessageBuilder {
             Blob attachment = attachments.get(i);
             String contentType = attachment.mime_type;
             String filename = attachment.filename;
+            if (!(shrinkPepKey && filename != null && filename.equals(DEFAULT_KEY_NAME))) {
+                Log.d("pep", "MimeMessageBuilder: BLOB #" + i + ":" + contentType + ":" + filename);
+                Log.d("pep", ">" + new String(attachment.data) + "<");
 
-            Log.d("pep", "MimeMessageBuilder: BLOB #" + i + ":" + contentType + ":" + filename);
-            Log.d("pep", ">"+new String(attachment.data)+"<");
+                if (filename != null)
+                    filename = EncoderUtil.encodeIfNecessary(filename, EncoderUtil.Usage.WORD_ENTITY, 7);
 
-            if (filename != null) filename = EncoderUtil.encodeIfNecessary(filename, EncoderUtil.Usage.WORD_ENTITY, 7);
+                body = new BinaryMemoryBody(attachment.data, MimeUtil.ENC_8BIT);  // FIXME: encoding right?
 
-            body = new BinaryMemoryBody(attachment.data, MimeUtil.ENC_8BIT);  // FIXME: encoding right?
-
-            MimeBodyPart bp = new MimeBodyPart(body);
+                MimeBodyPart bp = new MimeBodyPart(body);
 
             /*
              * Correctly encode the filename here. Otherwise the whole
              * header value (all parameters at once) will be encoded by
              * MimeHeader.writeTo().
              */
-            if(filename != null)
-                bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, String.format("%s;\r\n name=\"%s\"", contentType, filename));
-            else
-                bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, contentType);
+                if (filename != null)
+                    bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, String.format("%s;\r\n name=\"%s\"", contentType, filename));
+                else
+                    bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, contentType);
 
-            // FIXME: the following lines lack clearness of flow...
+                // FIXME: the following lines lack clearness of flow...
             /* if msg is plain text or if it's one of the non-special pgp attachments (Attachment #1 and #2 have special meaning,
                see "else" branch then dont't treat special (means, use attachment disposition) */
-            if (pEpMessage.getEncFormat() == Message.EncFormat.None || i > 1) {
-                bp.setEncoding(MimeUtil.ENC_8BIT);
+                if (pEpMessage.getEncFormat() == Message.EncFormat.None || i > 1) {
+                    bp.setEncoding(MimeUtil.ENC_8BIT);
 
-                if (filename != null)
-                    bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
-                            "attachment;\r\n filename=\"%s\";\r\n size=%d",
-                            filename, attachment.data.length));
-                else
-                    bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
-                            "attachment;\r\n size=%d",
-                            attachment.data.length));
-            } else {                // we all live in pgp...
-                if(i==0) {        // 1st. attachment is pgp version if encrypted.
-                    bp.addHeader(MimeHeader.HEADER_CONTENT_DESCRIPTION, "PGP/MIME version identification");
-                } else if (i==1) {
-                    bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,    // 2nd field is enc'd content.
-                            "inline;\r\n filename=\"%s\";\r\n size=%d",
-                            filename, attachment.data.length));
+                    if (filename != null)
+                        bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
+                                "attachment;\r\n filename=\"%s\";\r\n size=%d",
+                                filename, attachment.data.length));
+                    else
+                        bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
+                                "attachment;\r\n size=%d",
+                                attachment.data.length));
+                } else {                // we all live in pgp...
+                    if (i == 0) {        // 1st. attachment is pgp version if encrypted.
+                        bp.addHeader(MimeHeader.HEADER_CONTENT_DESCRIPTION, "PGP/MIME version identification");
+                    } else if (i == 1) {
+                        bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,    // 2nd field is enc'd content.
+                                "inline;\r\n filename=\"%s\";\r\n size=%d",
+                                filename, attachment.data.length));
+                    }
                 }
-            }
 
-            mp.addBodyPart(bp);
+                mp.addBodyPart(bp);
+            }
         }
     }
 
