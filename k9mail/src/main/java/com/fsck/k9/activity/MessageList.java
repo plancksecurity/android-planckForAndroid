@@ -539,20 +539,15 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
         mActionBar.setDisplayHomeAsUpEnabled(true);
     }
-//    // TODO> review after rebase
+
     private void initializePepStatus() {
-//        mActionBarPepStatus.setVisibility(View.GONE);
+        //    // TODO> review after rebase
 //        mActionBarPepStatus.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
 //                mMessageViewFragment.onPepStatus();
 //            }
 //        });
-    }
-
-    @SuppressLint("InflateParams")
-    private View getActionButtonIndeterminateProgress() {
-        return getLayoutInflater().inflate(R.layout.actionbar_indeterminate_progress_actionview, null);
     }
 
     @Override
@@ -1525,8 +1520,9 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     @Override
     public void setPepStatusEnabled(boolean enable) {
-        if (enable) mActionBarPepStatus.setVisibility(View.VISIBLE);
-        else mActionBarPepStatus.setVisibility(View.GONE);
+        //TODO> Determinate if show or not show pEp on noColour&grey
+//        if (enable) mActionBarPepStatus.setVisibility(View.VISIBLE);
+//        else mActionBarPepStatus.setVisibility(View.GONE);
     }
 
     @Override
