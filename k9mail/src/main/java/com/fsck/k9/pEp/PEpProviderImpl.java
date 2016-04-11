@@ -103,7 +103,8 @@ public class PEpProviderImpl implements PEpProvider {
             Log.d(TAG, "decryptMessage() before decrypt");
             decReturn = engine.decrypt_message(srcMsg);
             Log.d(TAG, "decryptMessage() after decrypt");
-            MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
+            MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage(true);
+
             decMsg.addHeader(MimeHeader.HEADER_PEPCOLOR, decReturn.color.name());
             return new DecryptResult(decMsg, decReturn.color);
         } catch (Throwable t) {
@@ -136,7 +137,7 @@ public class PEpProviderImpl implements PEpProvider {
                 Log.e(TAG, "engine returned null.");
                 encMsg = srcMsg;         // FIXME: this should be done by the engine! I could return source, but this would mask engine and my own errors...
             }
-            return new MimeMessageBuilder(encMsg).createMessage();
+            return new MimeMessageBuilder(encMsg).createMessage(false);
         } catch (Throwable t) {
             Log.e(TAG, "while encrypting message:", t);
             throw new RuntimeException("Could not encrypt");
