@@ -93,10 +93,9 @@ public class PEpProviderImpl implements PEpProvider {
     public DecryptResult decryptMessage(MimeMessage source) {
         Log.d(TAG, "decryptMessage() enter");
         Message srcMsg = null;
-        Engine engine = null;
         Engine.decrypt_message_Return decReturn = null;
         try {
-            engine = new Engine();
+            if (engine == null) engine = new Engine();
 
             srcMsg = new PEpMessageBuilder(source).createMessage(context);
             srcMsg.setDir(Message.Direction.Incoming);
@@ -114,7 +113,6 @@ public class PEpProviderImpl implements PEpProvider {
         } finally {
             if (srcMsg != null) srcMsg.close();
             if (decReturn != null && decReturn.dst != srcMsg) decReturn.dst.close();
-            if (engine != null) engine.close();
             Log.d(TAG, "decryptMessage() exit");
         }
     }
@@ -124,9 +122,8 @@ public class PEpProviderImpl implements PEpProvider {
         Log.d(TAG, "encryptMessage() enter");
         Message srcMsg = null;
         Message encMsg = null;
-        Engine engine = null;
         try {
-            engine = new Engine();
+            if (engine == null) engine = new Engine();
             srcMsg = new PEpMessageBuilder(source).createMessage(context);
             srcMsg.setDir(Message.Direction.Outgoing);
 
@@ -144,7 +141,6 @@ public class PEpProviderImpl implements PEpProvider {
             throw new RuntimeException("Could not encrypt");
         } finally {
             if (srcMsg != null) srcMsg.close();
-            if (engine != null) engine.close();
             Log.d(TAG, "encryptMessage() exit");
         }
     }
