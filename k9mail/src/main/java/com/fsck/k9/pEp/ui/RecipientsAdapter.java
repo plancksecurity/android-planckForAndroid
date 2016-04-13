@@ -72,6 +72,19 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
         }
     };
 
+    private View.OnClickListener onResetClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int position = ((Integer) v.getTag());
+            Identity id = identities.get(position);
+            id = pEp.updateIdentity(id);
+            Log.i("RecipientsAdapter", "onResetClick " + id.address);
+            pEp.resetTrust(id);
+            notifyDataSetChanged();
+
+        }
+    };
+
     public RecipientsAdapter(Activity context,
                              List<Identity> identities,
                              PEpProvider pEp,
