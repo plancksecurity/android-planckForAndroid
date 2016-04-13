@@ -155,6 +155,8 @@ public class MessagingController implements Runnable {
 
     private boolean mBusy;
 
+    private PEpProvider pEpProvider;
+
     private final Context context;
     private final NotificationController notificationController;
     private final Contacts contacts;
@@ -253,6 +255,7 @@ public class MessagingController implements Runnable {
     @Override
     public void run() {
         Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+        pEpProvider = PEpProviderFactory.createProvider();
         while (!stopped) {
             String commandDescription = null;
             try {
@@ -1441,7 +1444,7 @@ public class MessagingController implements Runnable {
 
                     Log.d("pep", "in download loop (nr="+number+") pre pep");
                     PEpUtils.dumpMimeMessage("downloadSmallMessages", (MimeMessage) message);
-                    PEpProvider.DecryptResult result = PEpProviderFactory.createProvider().decryptMessage((MimeMessage) message);
+                    PEpProvider.DecryptResult result = pEpProvider.decryptMessage((MimeMessage) message);
                     PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
                     MimeMessage decryptedMessage = result.msg;
                     decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
@@ -3090,7 +3093,6 @@ public class MessagingController implements Runnable {
                             Log.i(K9.LOG_TAG, "Sending message with UID " + message.getUid());
 
                         // pEp the message to send...
-                        PEpProvider pEpProvider = PEpProviderFactory.createProvider();
                         Message encryptedMessage = pEpProvider.encryptMessage((MimeMessage) message, null); // TODO: Extra keys
 
                         encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, true);

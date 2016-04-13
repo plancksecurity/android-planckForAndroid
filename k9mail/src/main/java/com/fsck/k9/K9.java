@@ -32,7 +32,6 @@ import com.fsck.k9.service.BootReceiver;
 import com.fsck.k9.service.MailService;
 import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
-import org.pEp.jniadapter.*;
 import org.pEp.jniadapter.Identity;
 
 import java.io.File;
@@ -525,8 +524,6 @@ public class K9 extends Application {
 
     @Override
     public void onCreate() {
-        pEpProvider = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
-
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
         }
@@ -534,7 +531,7 @@ public class K9 extends Application {
         PRNGFixes.apply();
 
         super.onCreate();
-        registerActivityLifecycleCallbacks(lifecycleCallbacks);
+        pEpSetupUiEngineSession();
         app = this;
         Globals.setContext(this);
         oAuth2TokenStore = new AndroidAccountOAuth2TokenStore(this);
@@ -636,6 +633,10 @@ public class K9 extends Application {
         });
 
         notifyObservers();
+    }
+
+    private void pEpSetupUiEngineSession() {
+        registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
     }
 
     /**
@@ -1386,12 +1387,14 @@ public class K9 extends Application {
         }
     }
 
-    private ActivityLifecycleCallbacks lifecycleCallbacks = new ActivityLifecycleCallbacks() {
+    private ActivityLifecycleCallbacks activityLifecycleCallbacks = new ActivityLifecycleCallbacks() {
         int activityCount = 0;
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+            if (activityCount == 0) {
+                pEpProvider = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
+            }
             ++activityCount;
-            pEpProvider = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
         }
 
         @Override
@@ -1422,7 +1425,6 @@ public class K9 extends Application {
         @Override
         public void onActivityDestroyed(Activity activity) {
             --activityCount;
-            Log.i("K9", "onActivityDestroyed " + activityCount);
             if (activityCount == 0) {
                 pEpProvider.close();
                 pEpProvider = null;
