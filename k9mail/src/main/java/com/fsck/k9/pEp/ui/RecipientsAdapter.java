@@ -56,6 +56,19 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
         }
     };
 
+    private View.OnClickListener onResetClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int position = ((Integer) v.getTag());
+            Identity id = identities.get(position);
+            id = pEp.updateIdentity(id);
+            Log.i("RecipientsAdapter", "onResetClick " + id.address);
+            pEp.resetTrust(id);
+            notifyDataSetChanged();
+
+        }
+    };
+
     public RecipientsAdapter(Activity context,
                              List<Identity> identities,
                              PEpProvider pEp,
@@ -82,14 +95,6 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
         holder.render(position, identity);
     }
 
-//    private String getShownName(Identity identity) {
-//        if (identity.username == null || identity.username.equals("")) {
-//            return identity.address;
-//        } else {
-//            return identity.username;
-//        }
-//    }
-
 
     @Override
     public int getItemCount() {
@@ -115,9 +120,15 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
         }
 
         private void renderButton(Color color) {
-            if (color.value != Color.pEpRatingYellow.value) {
+            if (color.value != Color.pEpRatingRed.value
+                    && color.value < Color.pEpRatingYellow.value) {
                 handshakeButton.setVisibility(View.GONE);
-            } else {
+            } else if (color.value == Color.pEpRatingRed.value
+                    || color.value >= Color.pEpRatingGreen.value){
+                handshakeButton.setText(context.getString(R.string.reset_trust));
+                handshakeButton.setOnClickListener(onResetClick);
+            } else if (color.value == Color.pEpRatingYellow.value){
+                handshakeButton.setText(context.getString(R.string.handshake));
                 handshakeButton.setOnClickListener(onHandshakeClick);
             }
         }
