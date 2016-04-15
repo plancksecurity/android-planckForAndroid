@@ -147,7 +147,7 @@ public class PEpStatus extends K9Activity {
                 Identity partner = ui.getRecipients().get(position);
                 Log.i("PEpStatus", "onActivityResult " + pEp.identityColor(partner));
                 recipientsAdapter.notifyDataSetChanged();
-                PEpUtils.colorActionBar(ui, getActionBar(), m_pEpColor);
+                PEpUtils.colorActionBar(ui, getActionBar(), pEp.identityColor(partner));
 
 
             }
