@@ -110,7 +110,7 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
     }
 
     private void handleCertificateValidationException(CertificateValidationException cve) {
-        Log.e(K9.LOG_TAG, "Error while testing settings", cve);
+        Log.e(K9.LOG_TAG, "Error while testing settings (cve)", cve);
 
         X509Certificate[] chain = cve.getCertChain();
         // Avoid NullPointerException in acceptKeyDialog()
@@ -438,7 +438,7 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
                 finish();
 
             } catch (AuthenticationFailedException afe) {
-                Log.e(K9.LOG_TAG, "Error while testing settings", afe);
+                Log.e(K9.LOG_TAG, "Error while testing settings (auth failed)", afe);
                 showErrorDialog(
                         R.string.account_setup_failed_dlg_auth_message_fmt,
                         afe.getMessage() == null ? "" : afe.getMessage());

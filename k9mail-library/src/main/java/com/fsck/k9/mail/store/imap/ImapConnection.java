@@ -27,8 +27,14 @@ import java.util.regex.Pattern;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.fsck.k9.mail.Authentication;
@@ -64,6 +70,7 @@ class ImapConnection {
 
     private final ConnectivityManager connectivityManager;
     private final OAuth2TokenProvider oauthTokenProvider;
+    private final AccountManager accountManager;
     private final TrustedSocketFactory socketFactory;
     private final int socketConnectTimeout;
     private final int socketReadTimeout;
