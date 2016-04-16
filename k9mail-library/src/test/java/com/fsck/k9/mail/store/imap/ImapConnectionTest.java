@@ -367,7 +367,6 @@ public class ImapConnectionTest {
             imapConnection.open();
             fail("Expected exception");
         } catch (MessagingException e) {
-            //FIXME: Throw ConnectException
             assertEquals("Cannot connect to host", e.getMessage());
             assertTrue(e.getCause() instanceof IOException);
         }
