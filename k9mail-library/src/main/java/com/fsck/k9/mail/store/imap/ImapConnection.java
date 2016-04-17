@@ -75,6 +75,7 @@ class ImapConnection {
     private int nextCommandTag;
     private Set<String> capabilities = new HashSet<String>();
     private ImapSettings settings;
+    private Exception stacktraceForClose;
 
 
     public ImapConnection(ImapSettings settings, TrustedSocketFactory socketFactory,
@@ -101,6 +102,9 @@ class ImapConnection {
     public void open() throws IOException, MessagingException {
         if (isOpen()) {
             return;
+        } else if (stacktraceForClose != null) {
+            throw new IllegalStateException("open() called after close(). " +
+                    "Check wrapped exception to see where close() was called.", stacktraceForClose);
         }
 
         boolean authSuccess = false;
@@ -635,6 +639,8 @@ class ImapConnection {
     }
 
     public void close() {
+        stacktraceForClose = new Exception();
+
         IOUtils.closeQuietly(inputStream);
         IOUtils.closeQuietly(outputStream);
         IOUtils.closeQuietly(socket);
