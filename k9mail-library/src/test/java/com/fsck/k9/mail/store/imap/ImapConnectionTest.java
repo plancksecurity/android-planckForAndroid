@@ -639,7 +639,8 @@ public class ImapConnectionTest {
     @Test
     public void isConnected_withoutPreviousOpen_shouldReturnFalse() throws Exception {
         ImapConnection imapConnection = createImapConnection(
-                settings, socketFactory, connectivityManager, oAuth2TokenProvider);
+                settings, socketFactory, connectivityManager,
+                oAuth2TokenProvider);
 
         boolean result = imapConnection.isConnected();
 
