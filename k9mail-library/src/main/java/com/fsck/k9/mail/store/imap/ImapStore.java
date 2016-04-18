@@ -338,7 +338,7 @@ public class ImapStore extends RemoteStore {
     }
 
     void releaseConnection(ImapConnection connection) {
-        if (connection != null && connection.isOpen()) {
+        if (connection != null && connection.isConnected()) {
             synchronized (connections) {
                 connections.offer(connection);
             }

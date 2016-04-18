@@ -251,7 +251,7 @@ public class ImapStoreTest {
     @Test
     public void getConnection_calledAfterRelease_shouldReturnCachedImapConnection() throws Exception {
         ImapConnection imapConnection = mock(ImapConnection.class);
-        when(imapConnection.isOpen()).thenReturn(true);
+        when(imapConnection.isConnected()).thenReturn(true);
         imapStore.enqueueImapConnection(imapConnection);
         ImapConnection connection = imapStore.getConnection();
         imapStore.releaseConnection(connection);
@@ -269,7 +269,7 @@ public class ImapStoreTest {
         imapStore.enqueueImapConnection(imapConnectionOne);
         imapStore.enqueueImapConnection(imapConnectionTwo);
         imapStore.getConnection();
-        when(imapConnectionOne.isOpen()).thenReturn(false);
+        when(imapConnectionOne.isConnected()).thenReturn(false);
         imapStore.releaseConnection(imapConnectionOne);
 
         ImapConnection result = imapStore.getConnection();
@@ -284,7 +284,7 @@ public class ImapStoreTest {
         imapStore.enqueueImapConnection(imapConnectionOne);
         imapStore.enqueueImapConnection(imapConnectionTwo);
         imapStore.getConnection();
-        when(imapConnectionOne.isOpen()).thenReturn(true);
+        when(imapConnectionOne.isConnected()).thenReturn(true);
         doThrow(IOException.class).when(imapConnectionOne).executeSimpleCommand(Commands.NOOP);
         imapStore.releaseConnection(imapConnectionOne);
 
