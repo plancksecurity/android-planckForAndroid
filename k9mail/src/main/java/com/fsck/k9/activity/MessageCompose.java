@@ -14,6 +14,7 @@ import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.*;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -216,11 +217,22 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     }
 
     enum Action {
-        COMPOSE,
-        REPLY,
-        REPLY_ALL,
-        FORWARD,
-        EDIT_DRAFT
+        COMPOSE(R.string.compose_title_compose),
+        REPLY(R.string.compose_title_reply),
+        REPLY_ALL(R.string.compose_title_reply_all),
+        FORWARD(R.string.compose_title_forward),
+        EDIT_DRAFT(R.string.compose_title_compose);
+
+        private final int titleResource;
+
+        Action(@StringRes int titleResource) {
+            this.titleResource = titleResource;
+        }
+
+        @StringRes
+        public int getTitleResource() {
+            return titleResource;
+        }
     }
 
     /**
@@ -826,25 +838,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     }
 
     private void setTitle() {
-        switch (mAction) {
-            case REPLY: {
-                setTitle(R.string.compose_title_reply);
-                break;
-            }
-            case REPLY_ALL: {
-                setTitle(R.string.compose_title_reply_all);
-                break;
-            }
-            case FORWARD: {
-                setTitle(R.string.compose_title_forward);
-                break;
-            }
-            case COMPOSE:
-            default: {
-                setTitle(R.string.compose_title_compose);
-                break;
-            }
-        }
+        setTitle(mAction.getTitleResource());
     }
 
     @Nullable
