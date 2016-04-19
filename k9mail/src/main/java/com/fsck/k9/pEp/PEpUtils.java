@@ -23,6 +23,7 @@ import org.pEp.jniadapter.Identity;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -34,9 +35,9 @@ import java.util.Vector;
 public class PEpUtils {
     private static final String TRUSTWORDS_SEPARATOR = " ";
 
-    public static Vector<Identity> createIdentities(Address[] adrs, Context context) {
-        Vector<Identity> rv = new Vector<Identity>(adrs.length);
-        for (Address adr : adrs)
+    public static Vector<Identity> createIdentities(List <Address> addressList, Context context) {
+        Vector<Identity> rv = new Vector<Identity>(addressList.size());
+        for (Address adr : addressList)
             rv.add(createIdentity(adr, context));
         return rv;
     }

@@ -1,17 +1,7 @@
 package com.fsck.k9.ui.messageview;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Locale;
-
-import android.app.Activity;
-import android.app.DialogFragment;
-import android.app.DownloadManager;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.LoaderManager;
+import android.app.*;
 import android.app.LoaderManager.LoaderCallbacks;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -19,17 +9,11 @@ import android.content.Loader;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.test.mock.MockApplication;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.View;
+import android.view.*;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.Toast;
-
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -47,24 +31,27 @@ import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.internet.*;
+import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpProviderFactory;
+import com.fsck.k9.mailstore.MessageViewInfo.MessageViewContainer;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpStatus;
-import com.fsck.k9.mailstore.MessageViewInfo.MessageViewContainer;
+import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
 import com.fsck.k9.ui.crypto.MessageCryptoCallback;
 import com.fsck.k9.ui.crypto.MessageCryptoHelper;
 import com.fsck.k9.ui.message.DecodeMessageLoader;
 import com.fsck.k9.ui.message.LocalMessageLoader;
-import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
 import com.fsck.k9.view.MessageHeader;
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Locale;
 
 public class MessageViewFragment extends Fragment implements ConfirmationDialogFragmentListener,
         AttachmentViewCallback, OpenPgpHeaderViewCallback, MessageCryptoCallback {
@@ -182,7 +169,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         // onDownloadRemainder();;
 
         mFragmentListener.messageHeaderViewAvailable(mMessageView.getMessageHeaderView());
-        pePUIArtefactCache = PePUIArtefactCache.getInstance(getContext());
+        pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
         return view;
     }
 
@@ -740,10 +727,10 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void onPepStatus() {
         ArrayList<Identity> adresses = new ArrayList<Identity>();
-        adresses.addAll(PEpUtils.createIdentities(mMessage.getFrom(), getContext()));
+        adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getFrom()), getApplicationContext()));
         try {
-            adresses.addAll(PEpUtils.createIdentities(mMessage.getRecipients(Message.RecipientType.TO), getContext()));
-            adresses.addAll(PEpUtils.createIdentities(mMessage.getRecipients(Message.RecipientType.CC), getContext()));
+            adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), getApplicationContext()));
+            adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.CC)), getApplicationContext()));
 
         } catch (MessagingException e) {
             e.printStackTrace();

@@ -6,6 +6,8 @@ import com.fsck.k9.mail.internet.MimeMessage;
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
 
+import java.util.List;
+
 /**
  * Created by dietz on 01.07.15.
  */
@@ -21,7 +23,7 @@ public interface PEpProvider {
      * @param bccAdresses bcc adresses
      * @return the privacy level of a mail sent to the set of recipients
      */
-    Color getPrivacyState(Address from, Address[] toAdresses, Address[] ccAdresses, Address[] bccAdresses);
+    Color getPrivacyState(Address from, List<Address> toAdresses, List<Address> ccAdresses, List<Address> bccAdresses);
 
     Color getPrivacyState(com.fsck.k9.mail.Message message);
 

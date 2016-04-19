@@ -1,11 +1,6 @@
 package com.fsck.k9.activity.compose;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -16,7 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-
+import android.view.MenuItem;
 import com.fsck.k9.Account;
 import com.fsck.k9.Identity;
 import com.fsck.k9.K9;
@@ -32,12 +27,19 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.LocalMessage;
+import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import org.openintents.openpgp.IOpenPgpService2;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.openintents.openpgp.util.OpenPgpApi.PermissionPingCallback;
 import org.openintents.openpgp.util.OpenPgpServiceConnection;
 import org.openintents.openpgp.util.OpenPgpServiceConnection.OnBound;
+import org.pEp.jniadapter.Color;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 
 public class RecipientPresenter implements PermissionPingCallback {
@@ -62,7 +64,7 @@ public class RecipientPresenter implements PermissionPingCallback {
     private PendingIntent pendingUserInteractionIntent;
     private CryptoProviderState cryptoProviderState = CryptoProviderState.UNCONFIGURED;
     private OpenPgpServiceConnection openPgpServiceConnection;
-
+    private PEpProvider pEp;
 
     // persistent state, saved during onSaveInstanceState
     private RecipientType lastFocusedType = RecipientType.TO;
@@ -73,7 +75,7 @@ public class RecipientPresenter implements PermissionPingCallback {
     public RecipientPresenter(Context context, RecipientMvpView recipientMvpView, Account account) {
         this.recipientMvpView = recipientMvpView;
         this.context = context;
-
+        pEp = ((K9) context.getApplicationContext()).getpEpProvider();
         recipientMvpView.setPresenter(this);
         onSwitchAccount(account);
         updateCryptoStatus();
@@ -680,6 +682,27 @@ public class RecipientPresenter implements PermissionPingCallback {
             Log.e(K9.LOG_TAG, "obtained openpgpapi object, but service is not bound! inconsistent state?");
         }
         return new OpenPgpApi(context, openPgpServiceConnection.getService());
+    }
+
+    public void updatepEpState(Address from) {
+        List<Address> toAdresses = recipientMvpView.getToAddresses();
+        List<Address> ccAdresses = recipientMvpView.getCcAddresses();
+        List<Address> bccAdresses = recipientMvpView.getBccAddresses();
+        Color pEpColor = pEp.getPrivacyState(from, toAdresses, ccAdresses, bccAdresses);
+        recipientMvpView.setpEpColor(pEpColor);
+
+    }
+
+    public void handlepEpState(Address from, boolean... withToast) {
+        recipientMvpView.handlepEpState(from, withToast);
+    }
+
+    public void setpEpIndicator(MenuItem pEpIndicator) {
+        recipientMvpView.setpEpIndicator(pEpIndicator);
+    }
+
+    public void onPepIndicator(String from) {
+        recipientMvpView.onPepIndicator(from);
     }
 
     public enum CryptoProviderState {

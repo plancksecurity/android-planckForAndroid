@@ -1,17 +1,6 @@
 package com.fsck.k9.activity;
 
 
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
@@ -22,16 +11,8 @@ import android.app.PendingIntent;
 import android.content.*;
 import android.content.IntentSender.SendIntentException;
 import android.content.pm.ActivityInfo;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.*;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -40,30 +21,12 @@ import android.util.TypedValue;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.AutoCompleteTextView.Validator;
 import android.widget.*;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import com.fsck.k9.*;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
 import com.fsck.k9.Account.QuoteStyle;
-import com.fsck.k9.FontSizes;
-import com.fsck.k9.Identity;
-import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
-import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.ComposeCryptoStatus;
 import com.fsck.k9.activity.compose.ComposeCryptoStatus.SendErrorState;
 import com.fsck.k9.activity.compose.CryptoSettingsDialog.OnCryptoModeChangedListener;
@@ -76,17 +39,9 @@ import com.fsck.k9.activity.misc.Attachment;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.fragment.ProgressDialogFragment;
+import com.fsck.k9.fragment.ProgressDialogFragment.CancelListener;
 import com.fsck.k9.helper.*;
 import com.fsck.k9.mail.*;
-import com.fsck.k9.fragment.ProgressDialogFragment.CancelListener;
-import com.fsck.k9.helper.Contacts;
-import com.fsck.k9.helper.HtmlConverter;
-import com.fsck.k9.helper.IdentityHelper;
-import com.fsck.k9.helper.MailTo;
-import com.fsck.k9.helper.SimpleTextWatcher;
-import com.fsck.k9.helper.Utility;
-import com.fsck.k9.mail.Address;
-import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mail.internet.MessageExtractor;
@@ -95,41 +50,19 @@ import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.mailstore.LocalBodyPart;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.message.*;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.message.IdentityField;
-import com.fsck.k9.message.IdentityHeaderParser;
-import com.fsck.k9.message.InsertableHtmlContent;
-import com.fsck.k9.message.MessageBuilder;
-import com.fsck.k9.message.PgpMessageBuilder;
-import com.fsck.k9.message.QuotedTextMode;
-import com.fsck.k9.message.SimpleMessageBuilder;
-import com.fsck.k9.message.SimpleMessageFormat;
-import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.provider.AttachmentProvider;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.ui.PEpStatus;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.view.MessageWebView;
 import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.SimpleHtmlSerializer;
 import org.htmlcleaner.TagNode;
-import org.openintents.openpgp.IOpenPgpService2;
 import org.openintents.openpgp.util.OpenPgpApi;
-import org.openintents.openpgp.util.OpenPgpServiceConnection;
-import org.pEp.jniadapter.Color;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.openintents.openpgp.util.OpenPgpServiceConnection.OnBound;
 
 
 @SuppressWarnings("deprecation")
@@ -249,8 +182,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
      */
     private boolean mSourceMessageProcessed = false;
     private int mMaxLoaderId = 0;
-    private PePUIArtefactCache pEpUiCache;
-    private PEpProvider pEp;
+//    private PePUIArtefactCache pEpUiCache;
+
 
     private RecipientPresenter recipientPresenter;
     private MessageBuilder currentMessageBuilder;
@@ -317,9 +250,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private String mReferences;
     private String mInReplyTo;
 
-    // pEp stuff
-    private MenuItem mPEpIndicator;
-    private Color mPEpColor = Color.pEpRatingUndefined;
+
     private boolean mSourceProcessed = false;
 
     /**
@@ -583,20 +514,14 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             }
         });
 
-// TODO> review after rebase
-//        View.OnFocusChangeListener pEpChangeTracker = new View.OnFocusChangeListener() {
-//                @Override
-//                public void onFocusChange(View v, boolean hasFocus) {
-//                    if (!hasFocus) {
-//                        handlePEpState();
-//                    }
-//                }
-//            };
-//
-//        // those trigger indicator changes
-//        mToView.setOnFocusChangeListener(pEpChangeTracker);
-//        mCcView.setOnFocusChangeListener(pEpChangeTracker);
-//        mBccView.setOnFocusChangeListener(pEpChangeTracker);
+        recipientMvpView.addpEpOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    handlePEpState();
+                }
+            }
+        });
 
         TextWatcher draftNeedsChangingTextWatcher = new SimpleTextWatcher() {
             @Override
@@ -739,9 +664,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         mFontSizes.setViewTextSize(mQuotedText, fontSize);
         mFontSizes.setViewTextSize(mSignatureView, fontSize);
 // TODO: pEp font sizes and skin stuff
-        pEpUiCache = PePUIArtefactCache.getInstance(getApplicationContext());
         updateMessageFormat();
-        pEp = ((K9) getApplication()).getpEpProvider();
+
 
         setTitle();
 
@@ -1584,7 +1508,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 break;
             case R.id.pEp_indicator:
 //                TODO> Review after rebase
-//                onPEpIndicator();
+                onPEpIndicator();
                 break;
             case R.id.read_receipt:
                 onReadReceipt();
@@ -1594,52 +1518,16 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
         return true;
     }
-//    // TODO> review after rebase
-//    private void handlePEpState(boolean... withToast) {
-//        boolean reallyWithToast = true;
-//        if(withToast.length>0) reallyWithToast = withToast[0];
-//        updatePePState();
-//        PEpUtils.colorActionBar(pEpUiCache, getActionBar(), mPEpColor);
-//
-//        if(mPEpIndicator!=null) {
-//            mPEpIndicator.setIcon(pEpUiCache.getIcon(mPEpColor));
-//            String msg = pEpUiCache.getTitle(mPEpColor);
-//            if(reallyWithToast && !"".equals(msg)) {
-//
-////                Snackbar snack = Snackbar.make(parentLayout, msg, Snackbar.LENGTH_LONG);
-////                View view = snack.getView();
-////                FrameLayout.LayoutParams params =(FrameLayout.LayoutParams)view.getLayoutParams();
-////                params.gravity = Gravity.TOP;
-////                view.setLayoutParams(params);
-////                snack.show();
-////                Toast toast = Toast.makeText(this, msg, Toast.LENGTH_LONG);
-//            }
-//        }
-//    }
-//
-//
-//    private void updatePePState() {
-//        // TODO: pEp: check wether we take the right measures to get out addresses...
-//        Address from = Address.parseUnencoded(mIdentity.getEmail())[0];
-//        Address[] toAdresses = Address.parseUnencoded(mToView.getText().toString().trim());
-//        Address[] ccAdresses = Address.parseUnencoded(mCcView.getText().toString().trim());
-//        Address[] bccAdresses = Address.parseUnencoded(mBccView.getText().toString().trim());
-//
-//        mPEpColor = pEp.getPrivacyState(from, toAdresses, ccAdresses, bccAdresses);
-//    }
-//
-//    private void onPEpIndicator() {
-//        ArrayList <org.pEp.jniadapter.Identity> recipients = new ArrayList<org.pEp.jniadapter.Identity>();
-//        // update color, just to be sure...
-//        handlePEpState(false);
-//        recipients.addAll(PEpUtils.createIdentities(Address.parseUnencoded(mToView.getText().toString().trim()), getApplicationContext()));
-//        recipients.addAll(PEpUtils.createIdentities(Address.parseUnencoded(mCcView.getText().toString().trim()), getApplicationContext()));
-//        recipients.addAll(PEpUtils.createIdentities(Address.parseUnencoded(mBccView.getText().toString().trim()), getApplicationContext()));
-//
-//        mIgnoreOnPause = true;  // do *not* save state
-//        pEpUiCache.setRecipients(recipients);
-//        PEpStatus.actionShowStatus(this, mPEpColor, Address.parseUnencoded(mIdentity.getEmail())[0].getAddress());
-//    }
+
+    private void handlePEpState(boolean... withToast) {
+        Address from = Address.parseUnencoded(mIdentity.getEmail())[0];
+        recipientPresenter.handlepEpState(from, withToast);
+    }
+
+    private void onPEpIndicator() {
+        handlePEpState(false);
+        recipientPresenter.onPepIndicator(mIdentity.getEmail());
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -1652,9 +1540,9 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
 
         // grab our icon and set it to the wanted color.
-        mPEpIndicator = (MenuItem) menu.findItem(R.id.pEp_indicator);
+        recipientPresenter.setpEpIndicator(menu.findItem(R.id.pEp_indicator));
 //  TODO> Review after rebase
-//        handlePEpState(false);       // fire once to get everything set up.
+        handlePEpState(false);       // fire once to get everything set up.
 
         return true;
     }
