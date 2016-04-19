@@ -842,6 +842,27 @@ public class RecipientPresenter implements PermissionPingCallback {
     }
 
 
+    public void updatepEpState(Address from) {
+        List<Address> toAdresses = recipientMvpView.getToAddresses();
+        List<Address> ccAdresses = recipientMvpView.getCcAddresses();
+        List<Address> bccAdresses = recipientMvpView.getBccAddresses();
+        Color pEpColor = pEp.getPrivacyState(from, toAdresses, ccAdresses, bccAdresses);
+        recipientMvpView.setpEpColor(pEpColor);
+
+    }
+
+    public void handlepEpState(Address from, boolean... withToast) {
+        recipientMvpView.handlepEpState(from, withToast);
+    }
+
+    public void setpEpIndicator(MenuItem pEpIndicator) {
+        recipientMvpView.setpEpIndicator(pEpIndicator);
+    }
+
+    public void onPepIndicator(String from) {
+        recipientMvpView.onPepIndicator(from);
+    }
+
     public enum CryptoProviderState {
         UNCONFIGURED,
         UNINITIALIZED,
