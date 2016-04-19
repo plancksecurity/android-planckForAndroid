@@ -2593,7 +2593,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
 
         String body = mailTo.getBody();
-        if (body != null && !subject.isEmpty()) {
+        if (body != null && !body.isEmpty()) {
             mMessageContentView.setCharacters(body);
         }
     }
