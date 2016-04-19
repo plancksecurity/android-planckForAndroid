@@ -117,6 +117,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
     public static final String EXTRA_ACCOUNT = "account";
     public static final String EXTRA_MESSAGE_REFERENCE = "message_reference";
+
     public static final String EXTRA_PEP_COLOR = "pEpColor";
     public static final String EXTRA_MESSAGE_DECRYPTION_RESULT  = "message_decryption_result";
     public static final String EXTRA_MESSAGE_BODY  = "messageBody";
