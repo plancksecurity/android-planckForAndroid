@@ -2,12 +2,12 @@ package com.fsck.k9.activity.compose;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.MessageReference;
+import com.fsck.k9.mailstore.LocalMessage;
 
 public class MessageActions {
     /**
@@ -28,12 +28,16 @@ public class MessageActions {
     /**
      * Get intent for composing a new message as a reply to the given message. If replyAll is true
      * the function is reply all instead of simply reply.
+     * @param messageBody optional, for decrypted messages, null if it should be grabbed from the given message
      */
     public static Intent getActionReplyIntent(
-            Context context, MessageReference messageReference, boolean replyAll, Parcelable decryptionResult) {
+            Context context,
+            LocalMessage message,
+            boolean replyAll,
+            String messageBody) {
         Intent i = new Intent(context, MessageCompose.class);
-        i.putExtra(MessageCompose.EXTRA_MESSAGE_DECRYPTION_RESULT, decryptionResult);
-        i.putExtra(MessageCompose.EXTRA_MESSAGE_REFERENCE, messageReference);
+        i.putExtra(MessageCompose.EXTRA_MESSAGE_BODY, messageBody);
+        i.putExtra(MessageCompose.EXTRA_MESSAGE_REFERENCE, message.makeMessageReference());
         if (replyAll) {
             i.setAction(MessageCompose.ACTION_REPLY_ALL);
         } else {
@@ -54,19 +58,27 @@ public class MessageActions {
     /**
      * Compose a new message as a reply to the given message. If replyAll is true the function
      * is reply all instead of simply reply.
+     * @param messageBody optional, for decrypted messages, null if it should be grabbed from the given message
      */
     public static void actionReply(
-            Context context, MessageReference messageReference, boolean replyAll, Parcelable decryptionResult) {
-        context.startActivity(getActionReplyIntent(context, messageReference, replyAll, decryptionResult));
+            Context context,
+            LocalMessage message,
+            boolean replyAll,
+            String messageBody) {
+        context.startActivity(getActionReplyIntent(context, message, replyAll, messageBody));
     }
 
     /**
      * Compose a new message as a forward of the given message.
+     * @param messageBody optional, for decrypted messages, null if it should be grabbed from the given message
      */
-    public static void actionForward(Context context, MessageReference messageReference, Parcelable decryptionResult) {
+    public static void actionForward(
+            Context context,
+            LocalMessage message,
+            String messageBody) {
         Intent i = new Intent(context, MessageCompose.class);
-        i.putExtra(MessageCompose.EXTRA_MESSAGE_REFERENCE, messageReference);
-        i.putExtra(MessageCompose.EXTRA_MESSAGE_DECRYPTION_RESULT, decryptionResult);
+        i.putExtra(MessageCompose.EXTRA_MESSAGE_BODY, messageBody);
+        i.putExtra(MessageCompose.EXTRA_MESSAGE_REFERENCE, message.makeMessageReference());
         i.setAction(MessageCompose.ACTION_FORWARD);
         context.startActivity(i);
     }
