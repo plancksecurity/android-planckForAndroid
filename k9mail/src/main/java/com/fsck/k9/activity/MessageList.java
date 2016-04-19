@@ -1,9 +1,5 @@
 package com.fsck.k9.activity;
 
-
-import java.util.Collection;
-import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.FragmentManager;
@@ -555,13 +551,18 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     private void initializePepStatus() {
-        //    // TODO> review after rebase
-//        mActionBarPepStatus.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                mMessageViewFragment.onPepStatus();
-//            }
-//        });
+        mActionBarPepStatus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mMessageViewFragment.onPepStatus();
+            }
+        });
+    }
+
+
+    @SuppressLint("InflateParams")
+    private View getActionButtonIndeterminateProgress() {
+        return getLayoutInflater().inflate(R.layout.actionbar_indeterminate_progress_actionview, null);
     }
 
     @Override

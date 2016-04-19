@@ -754,9 +754,8 @@ public class K9 extends Application {
         if (splitViewMode != null) {
             sSplitViewMode = SplitViewMode.valueOf(splitViewMode);
         }
-//  TODO> Review after rebase
-//        pEpExtraAccounts = sprefs.getString("pEpExtraAccounts", null);
-//        pEpUseKeyserver = sprefs.getBoolean("pEpUseKeyserver", false);
+        pEpExtraAccounts = storage.getString("pEpExtraAccounts", null);
+        pEpUseKeyserver = storage.getBoolean("pEpUseKeyserver", false);
         mAttachmentDefaultPath = storage.getString("attachmentdefaultpath",
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString());
         sUseBackgroundAsUnreadIndicator = storage.getBoolean("useBackgroundAsUnreadIndicator", true);

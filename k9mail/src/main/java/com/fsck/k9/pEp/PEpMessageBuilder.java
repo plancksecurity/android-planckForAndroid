@@ -11,6 +11,7 @@ import org.pEp.jniadapter.Message;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.Vector;
 
 /**
@@ -131,13 +132,13 @@ class PEpMessageBuilder {
         try {
             // headers
             m.setFrom(PEpUtils.createIdentity(mm.getFrom()[0], context));
-            m.setTo(PEpUtils.createIdentities(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO), context));
-            m.setCc(PEpUtils.createIdentities(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC), context));
-            m.setBcc(PEpUtils.createIdentities(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC), context));
+            m.setTo(PEpUtils.createIdentities(Arrays.asList(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO)), context));
+            m.setCc(PEpUtils.createIdentities(Arrays.asList(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC)), context));
+            m.setBcc(PEpUtils.createIdentities(Arrays.asList(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC)), context));
             m.setId(mm.getMessageId());
             m.setInReplyTo(createMessageReferences(mm.getReferences()));
             m.setSent(mm.getSentDate());
-            m.setReplyTo(PEpUtils.createIdentities(mm.getReplyTo(), context));
+            m.setReplyTo(PEpUtils.createIdentities(Arrays.asList(mm.getReplyTo()), context));
             m.setReferences(createMessageReferences(mm.getReferences()));
             m.setShortmsg(mm.getSubject());
 

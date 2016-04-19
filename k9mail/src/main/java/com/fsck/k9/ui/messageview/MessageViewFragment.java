@@ -2,6 +2,7 @@ package com.fsck.k9.ui.messageview;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 
@@ -28,7 +29,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
-
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -44,6 +44,9 @@ import com.fsck.k9.fragment.ProgressDialogFragment;
 import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
+import com.fsck.k9.mail.Message;
+import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
@@ -52,15 +55,15 @@ import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
+import com.fsck.k9.mailstore.MessageViewInfo.MessageViewContainer;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpStatus;
-import com.fsck.k9.mailstore.MessageViewInfo.MessageViewContainer;
+import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
 import com.fsck.k9.ui.crypto.MessageCryptoCallback;
 import com.fsck.k9.ui.crypto.MessageCryptoHelper;
 import com.fsck.k9.ui.message.DecodeMessageLoader;
 import com.fsck.k9.ui.message.LocalMessageLoader;
-import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
 import com.fsck.k9.view.MessageHeader;
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
@@ -201,7 +204,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         });
 
         mFragmentListener.messageHeaderViewAvailable(mMessageView.getMessageHeaderView());
-        pePUIArtefactCache = PePUIArtefactCache.getInstance(getContext());
+        pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
         return view;
     }
 
@@ -713,10 +716,10 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void onPepStatus() {
         ArrayList<Identity> adresses = new ArrayList<Identity>();
-        adresses.addAll(PEpUtils.createIdentities(mMessage.getFrom(), getContext()));
+        adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getFrom()), getApplicationContext()));
         try {
-            adresses.addAll(PEpUtils.createIdentities(mMessage.getRecipients(Message.RecipientType.TO), getContext()));
-            adresses.addAll(PEpUtils.createIdentities(mMessage.getRecipients(Message.RecipientType.CC), getContext()));
+            adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), getApplicationContext()));
+            adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.CC)), getApplicationContext()));
 
         } catch (MessagingException e) {
             e.printStackTrace();
