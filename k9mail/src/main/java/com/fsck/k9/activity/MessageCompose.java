@@ -126,7 +126,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         "com.fsck.k9.activity.MessageCompose.stateKeySourceMessageProced";
     private static final String STATE_KEY_DRAFT_ID = "com.fsck.k9.activity.MessageCompose.draftId";
     private static final String STATE_IDENTITY_CHANGED =
-        "com.fsck.k9.activity.MessageCompose.identityChanged";
+        "com.fsck.thk9.activity.MessageCompose.identityChanged";
     private static final String STATE_IDENTITY =
         "com.fsck.k9.activity.MessageCompose.identity";
     private static final String STATE_IN_REPLY_TO = "com.fsck.k9.activity.MessageCompose.inReplyTo";
