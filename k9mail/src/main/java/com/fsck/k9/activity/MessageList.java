@@ -1,9 +1,5 @@
 package com.fsck.k9.activity;
 
-
-import java.util.Collection;
-import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.FragmentManager;
@@ -20,7 +16,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
-import android.view.*;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -42,7 +44,6 @@ import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
@@ -546,13 +547,18 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     private void initializePepStatus() {
-        //    // TODO> review after rebase
-//        mActionBarPepStatus.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                mMessageViewFragment.onPepStatus();
-//            }
-//        });
+        mActionBarPepStatus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mMessageViewFragment.onPepStatus();
+            }
+        });
+    }
+
+
+    @SuppressLint("InflateParams")
+    private View getActionButtonIndeterminateProgress() {
+        return getLayoutInflater().inflate(R.layout.actionbar_indeterminate_progress_actionview, null);
     }
 
     @Override
@@ -1522,13 +1528,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     public void updateMenu() {
         invalidateOptionsMenu();
     }
-
-    @Override
-    public void setPepStatusEnabled(boolean enable) {
-        //TODO> Determinate if show or not show pEp on noColour&grey
-//        if (enable) mActionBarPepStatus.setVisibility(View.VISIBLE);
-//        else mActionBarPepStatus.setVisibility(View.GONE);
-    }
+    
 
     @Override
     public void disableDeleteAction() {

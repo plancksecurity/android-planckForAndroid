@@ -249,9 +249,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private String mReferences;
     private String mInReplyTo;
 
-    // pEp stuff
-    private MenuItem mPEpIndicator;
-    private Color mPEpColor = Color.pEpRatingUndefined;
+
     private boolean mSourceProcessed = false;
 
     /**
@@ -383,20 +381,14 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         mAttachments = (LinearLayout)findViewById(R.id.attachments);
 
 
-//        if(isPEpEnabled()) { // wire our stuff...
-//            View.OnFocusChangeListener pEpChangeTracker = new View.OnFocusChangeListener() {
-//                @Override
-//                public void onFocusChange(View v, boolean hasFocus) {
-//                    if (!hasFocus) {
-//                        handlePEpState();
-//                    }
-//                }
-//            };
-//
-//        // those trigger indicator changes
-//        mToView.setOnFocusChangeListener(pEpChangeTracker);
-//        mCcView.setOnFocusChangeListener(pEpChangeTracker);
-//        mBccView.setOnFocusChangeListener(pEpChangeTracker);
+        recipientMvpView.addpEpOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    handlePEpState();
+                }
+            }
+        });
 
         TextWatcher draftNeedsChangingTextWatcher = new SimpleTextWatcher() {
             @Override
@@ -528,9 +520,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         mFontSizes.setViewTextSize(mMessageContentView, fontSize);
         mFontSizes.setViewTextSize(mSignatureView, fontSize);
 // TODO: pEp font sizes and skin stuff
-        pEpUiCache = PePUIArtefactCache.getInstance(getApplicationContext());
         updateMessageFormat();
-        pEp = ((K9) getApplication()).getpEpProvider();
+
 
         setTitle();
 
@@ -1019,7 +1010,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 break;
             case R.id.pEp_indicator:
 //                TODO> Review after rebase
-//                onPEpIndicator();
+                onPEpIndicator();
                 break;
             case R.id.read_receipt:
                 onReadReceipt();
@@ -1029,52 +1020,16 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
         return true;
     }
-//    // TODO> review after rebase
-//    private void handlePEpState(boolean... withToast) {
-//        boolean reallyWithToast = true;
-//        if(withToast.length>0) reallyWithToast = withToast[0];
-//        updatePePState();
-//        PEpUtils.colorActionBar(pEpUiCache, getActionBar(), mPEpColor);
-//
-//        if(mPEpIndicator!=null) {
-//            mPEpIndicator.setIcon(pEpUiCache.getIcon(mPEpColor));
-//            String msg = pEpUiCache.getTitle(mPEpColor);
-//            if(reallyWithToast && !"".equals(msg)) {
-//
-////                Snackbar snack = Snackbar.make(parentLayout, msg, Snackbar.LENGTH_LONG);
-////                View view = snack.getView();
-////                FrameLayout.LayoutParams params =(FrameLayout.LayoutParams)view.getLayoutParams();
-////                params.gravity = Gravity.TOP;
-////                view.setLayoutParams(params);
-////                snack.show();
-////                Toast toast = Toast.makeText(this, msg, Toast.LENGTH_LONG);
-//            }
-//        }
-//    }
-//
-//
-//    private void updatePePState() {
-//        // TODO: pEp: check wether we take the right measures to get out addresses...
-//        Address from = Address.parseUnencoded(mIdentity.getEmail())[0];
-//        Address[] toAdresses = Address.parseUnencoded(mToView.getText().toString().trim());
-//        Address[] ccAdresses = Address.parseUnencoded(mCcView.getText().toString().trim());
-//        Address[] bccAdresses = Address.parseUnencoded(mBccView.getText().toString().trim());
-//
-//        mPEpColor = pEp.getPrivacyState(from, toAdresses, ccAdresses, bccAdresses);
-//    }
-//
-//    private void onPEpIndicator() {
-//        ArrayList <org.pEp.jniadapter.Identity> recipients = new ArrayList<org.pEp.jniadapter.Identity>();
-//        // update color, just to be sure...
-//        handlePEpState(false);
-//        recipients.addAll(PEpUtils.createIdentities(Address.parseUnencoded(mToView.getText().toString().trim()), getApplicationContext()));
-//        recipients.addAll(PEpUtils.createIdentities(Address.parseUnencoded(mCcView.getText().toString().trim()), getApplicationContext()));
-//        recipients.addAll(PEpUtils.createIdentities(Address.parseUnencoded(mBccView.getText().toString().trim()), getApplicationContext()));
-//
-//        mIgnoreOnPause = true;  // do *not* save state
-//        pEpUiCache.setRecipients(recipients);
-//        PEpStatus.actionShowStatus(this, mPEpColor, Address.parseUnencoded(mIdentity.getEmail())[0].getAddress());
-//    }
+
+    private void handlePEpState(boolean... withToast) {
+        Address from = Address.parseUnencoded(mIdentity.getEmail())[0];
+        recipientPresenter.handlepEpState(from, withToast);
+    }
+
+    private void onPEpIndicator() {
+        handlePEpState(false);
+        recipientPresenter.onPepIndicator(mIdentity.getEmail());
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -1087,9 +1042,9 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
 
         // grab our icon and set it to the wanted color.
-        mPEpIndicator = (MenuItem) menu.findItem(R.id.pEp_indicator);
+        recipientPresenter.setpEpIndicator(menu.findItem(R.id.pEp_indicator));
 //  TODO> Review after rebase
-//        handlePEpState(false);       // fire once to get everything set up.
+        handlePEpState(false);       // fire once to get everything set up.
 
         return true;
     }

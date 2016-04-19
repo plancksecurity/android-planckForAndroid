@@ -47,6 +47,7 @@ import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -174,9 +175,9 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
             }
             case R.id.pEp_indicator: {
                 ArrayList<Identity> adresses = new ArrayList<Identity>();
-                adresses.addAll(PEpUtils.createIdentities(mMessage.getFrom(), getContext()));
-                adresses.addAll(PEpUtils.createIdentities(mMessage.getRecipients(Message.RecipientType.TO), getContext()));
-                adresses.addAll(PEpUtils.createIdentities(mMessage.getRecipients(Message.RecipientType.CC), getContext()));
+                adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getFrom()), getContext()));
+                adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), getContext()));
+                adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.CC)), getContext()));
 
                 PePUIArtefactCache.getInstance(mContext).setRecipients(adresses);
 

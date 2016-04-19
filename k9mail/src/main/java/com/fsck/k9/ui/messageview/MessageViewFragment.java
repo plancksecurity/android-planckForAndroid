@@ -1,6 +1,7 @@
 package com.fsck.k9.ui.messageview;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 
@@ -19,10 +20,7 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.View;
+import android.view.*;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -43,7 +41,6 @@ import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
-import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
@@ -56,7 +53,6 @@ import com.fsck.k9.view.MessageCryptoDisplayStatus;
 import com.fsck.k9.view.MessageHeader;
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
-
 
 
 public class MessageViewFragment extends Fragment implements ConfirmationDialogFragmentListener,
@@ -196,7 +192,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         // onDownloadRemainder();;
 
         mFragmentListener.messageHeaderViewAvailable(mMessageView.getMessageHeaderView());
-        pePUIArtefactCache = PePUIArtefactCache.getInstance(getContext());
+        pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
         return view;
     }
 
@@ -705,9 +701,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void onPepStatus() {
         ArrayList<Identity> adresses = new ArrayList<Identity>();
-        adresses.addAll(PEpUtils.createIdentities(mMessage.getFrom(), getContext()));
-            adresses.addAll(PEpUtils.createIdentities(mMessage.getRecipients(Message.RecipientType.TO), getContext()));
-            adresses.addAll(PEpUtils.createIdentities(mMessage.getRecipients(Message.RecipientType.CC), getContext()));
+        adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getFrom()), getContext()));
+            adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), getContext()));
+            adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.CC)), getContext()));
 
         pePUIArtefactCache.setRecipients(adresses);
             for (String s : mMessage.getHeaderNames()) {

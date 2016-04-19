@@ -12,7 +12,9 @@ import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
 import org.pEp.jniadapter.pEpException;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -42,16 +44,16 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public Color getPrivacyState(com.fsck.k9.mail.Message message) {
             Address from = message.getFrom()[0];                            // FIXME: From is an array?!
-            Address[] to = message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO);
-            Address[] cc = message.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC);
-            Address[] bcc = message.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC);
+            List<Address> to = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO));
+            List<Address> cc = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC));
+            List<Address> bcc = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC));
             return getPrivacyState(from, to, cc, bcc);
         }
 
     //Don't instantiate a new engine
     @Override
-    public Color getPrivacyState(Address from, Address[] toAdresses, Address[] ccAdresses, Address[] bccAdresses) {
-        if (from == null || toAdresses.length == 0)
+    public Color getPrivacyState(Address from, List<Address> toAdresses, List<Address> ccAdresses, List<Address> bccAdresses) {
+        if (from == null || toAdresses.size() == 0)
             return Color.pEpRatingUndefined;
 
         Message testee = null;

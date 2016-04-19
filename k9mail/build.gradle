@@ -8,7 +8,7 @@ repositories {
 }
 
 ext {
-    supportLibraryVersion = '23.1.1'
+    supportLibraryVersion = '23.3.0'
 }
 
 //noinspection GroovyAssignabilityCheck
@@ -19,11 +19,11 @@ configurations.all {
 }
 
 dependencies {
+    compile project(':pEpJNIAdapter')
     compile project(':k9mail-library')
     compile project(':plugins:Android-PullToRefresh:library')
     compile project(':plugins:HoloColorPicker')
     compile project(':plugins:openpgp-api-lib:openpgp-api')
-    compile project(':pEpJNIAdapter')
     compile 'commons-io:commons-io:2.4'
     compile "com.android.support:support-v4:${project.supportLibraryVersion}"
     compile 'net.sourceforge.htmlcleaner:htmlcleaner:2.16'
@@ -38,8 +38,8 @@ dependencies {
     testCompile 'org.robolectric:robolectric:3.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
-    compile 'com.android.support:recyclerview-v7:22.1.+'
-    compile 'com.android.support:cardview-v7:22.1.+'
+    compile "com.android.support:recyclerview-v7:${project.supportLibraryVersion}"
+    compile "com.android.support:cardview-v7:${project.supportLibraryVersion}"
 
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
@@ -50,15 +50,15 @@ android {
     buildToolsVersion rootProject.buildToolsVersion
 
     defaultConfig {
+        //Original config
 //        applicationId "com.fsck.k9"
 //        testApplicationId "com.fsck.k9.tests"
-
 //        versionCode 23080
 //        versionName '5.108'
 
         applicationId "com.pep.k9"
-        versionCode 23080014
-        versionName '1.0.3 p≡p'
+        versionCode 23080015
+        versionName '1.0.4 p≡p'
         minSdkVersion 18
         targetSdkVersion 22
 
@@ -103,6 +103,15 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
     productFlavors {
+    }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi'
+            universalApk false
+        }
     }
 }
 
