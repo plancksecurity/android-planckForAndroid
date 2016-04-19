@@ -1218,7 +1218,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     @Override
     public void onResendMessage(LocalMessage message) {
-        MessageActions.actionEditDraft(this, message.makeMessageReference());
+        com.fsck.k9.activity.compose.MessageActions.actionEditDraft(this, message.makeMessageReference());
     }
 
     @Override
