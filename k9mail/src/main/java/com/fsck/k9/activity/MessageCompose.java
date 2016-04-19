@@ -127,6 +127,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
     public static final String EXTRA_PEP_COLOR = "pEpColor";
     public static final String EXTRA_MESSAGE_DECRYPTION_RESULT  = "message_decryption_result";
+    public static final String EXTRA_MESSAGE_BODY  = "messageBody";
 
     private static final String STATE_KEY_SOURCE_MESSAGE_PROCED =
         "com.fsck.k9.activity.MessageCompose.stateKeySourceMessageProced";
