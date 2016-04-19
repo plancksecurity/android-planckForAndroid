@@ -3025,7 +3025,7 @@ public class MessagingController implements Runnable {
                 Log.i(K9.LOG_TAG, "Scanning folder '" + account.getOutboxFolderName() + "' (" + localFolder.getId() + ") for messages to send");
 
             Transport transport = Transport.getInstance(K9.app, account,
-                    new AndroidAccountOAuth2TokenStore(K9.app));
+                    K9.oAuth2TokenStore);
             for (LocalMessage message : localMessages) {
                 if (message.isSet(Flag.DELETED)) {
                     message.destroy();
