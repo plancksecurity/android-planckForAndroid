@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
 import com.fsck.k9.FontSizes;
@@ -56,6 +57,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     private final RecipientSelectView toView;
     private final RecipientSelectView ccView;
     private final RecipientSelectView bccView;
+    private final TextView fromView;
     private final ViewAnimator cryptoStatusView;
     private final ViewAnimator recipientExpanderContainer;
     private final ViewAnimator cryptoSpecialModeIndicator;
@@ -70,6 +72,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     public RecipientMvpView(MessageCompose activity) {
         this.activity = activity;
 
+        fromView = (TextView) activity.findViewById(R.id.identity);
         toView = (RecipientSelectView) activity.findViewById(R.id.to);
         ccView = (RecipientSelectView) activity.findViewById(R.id.cc);
         bccView = (RecipientSelectView) activity.findViewById(R.id.bcc);
@@ -448,10 +451,10 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         this.pEpColor = pEpColor;
     }
 
-    public void handlepEpState(Address from, boolean... withToast) {
+    public void handlepEpState(boolean... withToast) {
         boolean reallyWithToast = true;
         if(withToast.length>0) reallyWithToast = withToast[0];
-        updatePePState(from);
+        updatePePState();
         PEpUtils.colorActionBar(pEpUiCache, activity.getActionBar(), pEpColor);
 
         if(pEpIndicator!=null) {
@@ -470,15 +473,15 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         }
     }
 
-    private void updatePePState(Address from) {
-        presenter.updatepEpState(from);
+     void updatePePState() {
+        presenter.updatepEpState();
     }
 
     public void setpEpIndicator(MenuItem pEpIndicator) {
         this.pEpIndicator = pEpIndicator;
     }
 
-    public void onPepIndicator(String from) {
+    public void onPepIndicator() {
         ArrayList<Identity> recipients = new ArrayList<org.pEp.jniadapter.Identity>();
         // update color, just to be sure...
         recipients.addAll(PEpUtils.createIdentities(getToAddresses(), activity.getApplicationContext()));
@@ -487,7 +490,11 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
 //        mIgnoreOnPause = true;  // do *not* save state
         pEpUiCache.setRecipients(recipients);
-        PEpStatus.actionShowStatus(activity, pEpColor, from);
+        PEpStatus.actionShowStatus(activity, pEpColor, getFrom());
+    }
+
+    public Address getFromAddress() {
+        return new Address(getFrom());
     }
 
     public enum CryptoStatusDisplayType {
@@ -511,6 +518,10 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         CryptoStatusDisplayType(int childToDisplay) {
             this.childToDisplay = childToDisplay;
         }
+    }
+
+    public String getFrom() {
+        return fromView.getText().toString();
     }
 
     public enum CryptoSpecialModeDisplayType {

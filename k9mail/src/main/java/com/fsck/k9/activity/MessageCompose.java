@@ -398,18 +398,16 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
         mAttachments = (LinearLayout)findViewById(R.id.attachments);
 
-        mPEpPanel = (LinearLayout) findViewById(R.id.layout_pEp);
-        mPEpIndicator = (ImageView) findViewById(R.id.pEp_indicator);
-        mPEpIndicatorText = (TextView) findViewById(R.id.pEp_indicator_text);
 
-        recipientMvpView.addpEpOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    handlePEpState();
-                }
-            }
-        });
+//TODO> Review if is really needed
+//        recipientMvpView.addpEpOnFocusChangeListener(new OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                if (!hasFocus) {
+//                    handlePEpState();
+//                }
+//            }
+//        });
 
         TextWatcher draftNeedsChangingTextWatcher = new SimpleTextWatcher() {
             @Override
@@ -1053,13 +1051,12 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     }
 
     private void handlePEpState(boolean... withToast) {
-        Address from = Address.parseUnencoded(mIdentity.getEmail())[0];
-        recipientPresenter.handlepEpState(from, withToast);
+        recipientPresenter.handlepEpState(withToast);
     }
 
     private void onPEpIndicator() {
         handlePEpState(false);
-        recipientPresenter.onPepIndicator(mIdentity.getEmail());
+        recipientPresenter.onPepIndicator();
     }
 
     @Override

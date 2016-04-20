@@ -16,4 +16,5 @@
     <issue id="ExtraTranslation" severity="error">
         <ignore path="src/main/res/values-zh-rTW/plugin_strings.xml" />
     </issue>
+    <issue id="ManifestResource" severity="ignore" />
 </lint>
