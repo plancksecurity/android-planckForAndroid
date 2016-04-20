@@ -1553,7 +1553,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     public void updateMenu() {
         invalidateOptionsMenu();
     }
-    
+
 
     @Override
     public void disableDeleteAction() {
