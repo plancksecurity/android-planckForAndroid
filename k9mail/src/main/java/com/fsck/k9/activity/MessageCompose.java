@@ -1022,13 +1022,12 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     }
 
     private void handlePEpState(boolean... withToast) {
-        Address from = Address.parseUnencoded(mIdentity.getEmail())[0];
-        recipientPresenter.handlepEpState(from, withToast);
+        recipientPresenter.handlepEpState(withToast);
     }
 
     private void onPEpIndicator() {
         handlePEpState(false);
-        recipientPresenter.onPepIndicator(mIdentity.getEmail());
+        recipientPresenter.onPepIndicator();
     }
 
     @Override
