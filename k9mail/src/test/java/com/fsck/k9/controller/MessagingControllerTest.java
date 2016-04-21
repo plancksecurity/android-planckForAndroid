@@ -783,4 +783,17 @@ public class MessagingControllerTest {
         newAccountsInOrder.addAll(newAccounts.values());
         accountsInOrder.set(Preferences.getPreferences(appContext), newAccountsInOrder);
     }
+
+    private void setAccountsInPreferences(Map<String, Account> newAccounts)
+            throws Exception {
+        Field accounts = Preferences.class.getDeclaredField("accounts");
+        accounts.setAccessible(true);
+        accounts.set(Preferences.getPreferences(appContext), newAccounts);
+
+        Field accountsInOrder = Preferences.class.getDeclaredField("accountsInOrder");
+        accountsInOrder.setAccessible(true);
+        ArrayList<Account> newAccountsInOrder = new ArrayList<>();
+        newAccountsInOrder.addAll(newAccounts.values());
+        accountsInOrder.set(Preferences.getPreferences(appContext), newAccountsInOrder);
+    }
 }
