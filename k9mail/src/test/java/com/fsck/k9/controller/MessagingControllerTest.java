@@ -114,6 +114,8 @@ public class MessagingControllerTest {
     private LocalMessage localNewMessage2;
     private volatile boolean hasFetchedMessage = false;
 
+    private Context appContext;
+
 
     @Before
     public void setUp() throws MessagingException {
