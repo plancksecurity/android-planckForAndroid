@@ -131,7 +131,7 @@ android {
             universalApk false
         }
     }
-    buildToolsVersion '23.0.3'
+    buildToolsVersion '23.0.1'
 }
 
 if (project.hasProperty('keyAlias')) {
