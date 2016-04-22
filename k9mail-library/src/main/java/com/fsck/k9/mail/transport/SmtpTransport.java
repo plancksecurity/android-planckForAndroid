@@ -12,6 +12,7 @@ import com.fsck.k9.mail.filter.PeekableInputStream;
 import com.fsck.k9.mail.filter.SmtpDataStuffing;
 import com.fsck.k9.mail.internet.CharsetSupport;
 import com.fsck.k9.mail.CertificateValidationException;
+import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
 import com.fsck.k9.mail.ssl.TrustedSocketFactory;
 import com.fsck.k9.mail.store.StoreConfig;
 
@@ -21,6 +22,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.security.GeneralSecurityException;
 import java.util.*;
@@ -31,6 +33,7 @@ import static com.fsck.k9.mail.CertificateValidationException.Reason.MissingCapa
 
 public class SmtpTransport extends Transport {
     private TrustedSocketFactory mTrustedSocketFactory;
+    private OAuth2TokenProvider oauthTokenProvider;
 
     /**
      * Decodes a SmtpTransport URI.
@@ -102,7 +105,7 @@ public class SmtpTransport extends Transport {
                 username = decodeUtf8(userInfoParts[0]);
                 password = decodeUtf8(userInfoParts[1]);
             } else if (userInfoParts.length == 3) {
-                // NOTE: In SmptTransport URIs, the authType comes last!
+                // NOTE: In SmtpTransport URIs, the authType comes last!
                 authType = AuthType.valueOf(userInfoParts[2]);
                 username = decodeUtf8(userInfoParts[0]);
                 if (authType == AuthType.EXTERNAL) {
@@ -184,7 +187,8 @@ public class SmtpTransport extends Transport {
     private boolean m8bitEncodingAllowed;
     private int mLargestAcceptableMessage;
 
-    public SmtpTransport(StoreConfig storeConfig, TrustedSocketFactory trustedSocketFactory)
+    public SmtpTransport(StoreConfig storeConfig, TrustedSocketFactory trustedSocketFactory,
+                         OAuth2TokenProvider oauth2TokenProvider)
             throws MessagingException {
         ServerSettings settings;
         try {
@@ -203,6 +207,7 @@ public class SmtpTransport extends Transport {
         mPassword = settings.password;
         mClientCertificateAlias = settings.clientCertificateAlias;
         mTrustedSocketFactory = trustedSocketFactory;
+        oauthTokenProvider = oauth2TokenProvider;
     }
 
     @Override
@@ -300,18 +305,22 @@ public class SmtpTransport extends Transport {
             boolean authPlainSupported = false;
             boolean authCramMD5Supported = false;
             boolean authExternalSupported = false;
+            boolean authXoauth2Supported = false;
             if (extensions.containsKey("AUTH")) {
                 List<String> saslMech = Arrays.asList(extensions.get("AUTH").split(" "));
                 authLoginSupported = saslMech.contains("LOGIN");
                 authPlainSupported = saslMech.contains("PLAIN");
                 authCramMD5Supported = saslMech.contains("CRAM-MD5");
                 authExternalSupported = saslMech.contains("EXTERNAL");
+                authXoauth2Supported = saslMech.contains("XOAUTH2");
             }
             parseOptionalSizeValue(extensions);
 
             if (mUsername != null
                     && mUsername.length() > 0
-                    && (mPassword != null && mPassword.length() > 0 || AuthType.EXTERNAL == mAuthType)) {
+                    && ((mPassword != null && mPassword.length() > 0) ||
+                        AuthType.EXTERNAL == mAuthType ||
+                        AuthType.XOAUTH2 == mAuthType)) {
 
                 switch (mAuthType) {
 
@@ -339,7 +348,13 @@ public class SmtpTransport extends Transport {
                         throw new MessagingException("Authentication method CRAM-MD5 is unavailable.");
                     }
                     break;
-
+                case XOAUTH2:
+                    if (authXoauth2Supported) {
+                        saslXoauth2(mUsername);
+                    } else {
+                        throw new MessagingException("Authentication method XOAUTH2 is unavailable.");
+                    }
+                    break;
                 case EXTERNAL:
                     if (authExternalSupported) {
                         saslAuthExternal(mUsername);
@@ -755,6 +770,45 @@ public class SmtpTransport extends Transport {
                 throw exception;
             }
         }
+    }
+
+    private void saslXoauth2(String username) throws MessagingException, IOException {
+        try {
+            attemptXoauth2(username);
+        } catch (NegativeSmtpReplyException exception) {
+            if (exception.getReplyCode() == 535) {
+                // Authentication credentials invalid
+
+                //We could avoid this double check if we had a reasonable chance of knowing
+                //if a token was invalid before use (e.g. due to expiry). But we don't
+                //This is the intended behaviour per AccountManager
+                Log.v(LOG_TAG, "Authentication exception, invalidating token and re-trying", exception);
+                oauthTokenProvider.invalidateToken(username);
+                try {
+                    attemptXoauth2(username);
+                } catch (NegativeSmtpReplyException exception2) {
+                    if (exception2.getReplyCode() == 535) {
+                        // Authentication credentials invalid
+                        //Okay, we failed on a new token.
+                        //Invalidate the token anyway but assume it's permanent.
+                        Log.v(LOG_TAG, "Authentication exception for new token, permanent error assumed", exception2);
+                        oauthTokenProvider.invalidateToken(username);
+                        throw new AuthenticationFailedException(exception2.getMessage(), exception2);
+                    } else {
+                        throw exception2;
+                    }
+                }
+            } else {
+                throw exception;
+            }
+        }
+    }
+
+    private void attemptXoauth2(String username) throws MessagingException, IOException {
+        executeSimpleCommand("AUTH XOAUTH2 " +
+                Authentication.computeXoauth(username,
+                        oauthTokenProvider.getToken(username, OAuth2TokenProvider.OAUTH2_TIMEOUT)),
+                true);
     }
 
     private void saslAuthExternal(String username) throws MessagingException, IOException {
