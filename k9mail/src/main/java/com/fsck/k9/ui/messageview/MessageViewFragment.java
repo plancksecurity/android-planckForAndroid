@@ -345,7 +345,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void onForward() {
         if (mMessage != null) {
-            mFragmentListener.onForward(mMessage, messageCryptoPresenter.getDecryptionResultForReply(), mPEpColor);
+            mFragmentListener.onForward(mMessage, messageCryptoPresenter.getDecryptionResultForReply());
         }
     }
 
@@ -704,10 +704,10 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public void onPepStatus() {
-        ArrayList<Identity> adresses = new ArrayList<Identity>();
-        adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getFrom()), getContext()));
-            adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), getContext()));
-            adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.CC)), getContext()));
+        ArrayList<Identity> adresses = new ArrayList<>();
+        adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getFrom()), getApplicationContext()));
+        adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), getApplicationContext()));
+        adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.CC)), getApplicationContext()));
 
         pePUIArtefactCache.setRecipients(adresses);
             for (String s : mMessage.getHeaderNames()) {
@@ -720,7 +720,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public interface MessageViewFragmentListener {
-        void onForward(LocalMessage mMessage, Parcelable decryptionResultForReply, Color mPEpColor);
+        void onForward(LocalMessage mMessage, Parcelable decryptionResultForReply);
         void disableDeleteAction();
         void onReplyAll(LocalMessage mMessage, Parcelable decryptionResultForReply);
         void onReply(LocalMessage mMessage, Parcelable decryptionResultForReply);
