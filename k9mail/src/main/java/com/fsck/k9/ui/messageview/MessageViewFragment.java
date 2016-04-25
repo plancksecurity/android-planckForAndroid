@@ -716,13 +716,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     public void onPepStatus() {
         ArrayList<Identity> adresses = new ArrayList<>();
         adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getFrom()), getApplicationContext()));
-        try {
-            adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), getApplicationContext()));
-            adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.CC)), getApplicationContext()));
+        adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), getApplicationContext()));
+        adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.CC)), getApplicationContext()));
 
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
         pePUIArtefactCache.setRecipients(adresses);
         try {
             for (String s : mMessage.getHeaderNames()) {

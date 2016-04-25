@@ -39,16 +39,13 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public Color getPrivacyState(com.fsck.k9.mail.Message message) {
-        try {
-            Address from = message.getFrom()[0];                            // FIXME: From is an array?!
-            List<Address> to = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO));
-            List<Address> cc = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC));
-            List<Address> bcc = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC));
-            return getPrivacyState(from, to, cc, bcc);
-        } catch (MessagingException me) {
-            Log.e(TAG, "Could not extract addresses: " + me.getMessage());
-        }
-        return Color.pEpRatingB0rken;
+
+        Address from = message.getFrom()[0];                            // FIXME: From is an array?!
+        List<Address> to = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO));
+        List<Address> cc = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC));
+        List<Address> bcc = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC));
+        return getPrivacyState(from, to, cc, bcc);
+
     }
 
     @Override
