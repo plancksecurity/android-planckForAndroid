@@ -146,4 +146,8 @@ public class TextBody implements Body, SizeAware {
     public String getEncoding() {
         return encoding;
     }
+
+    public String getEncoding() {
+        return mEncoding;
+    }
 }
