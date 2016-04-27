@@ -413,7 +413,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 //                }
 //            }
 //        });
-
         TextWatcher draftNeedsChangingTextWatcher = new SimpleTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
