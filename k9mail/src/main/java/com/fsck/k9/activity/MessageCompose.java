@@ -795,6 +795,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
         quotedMessagePresenter.builderSetProperties(builder);
 
+        quotedMessagePresenter.builderSetProperties(builder);
+
         return builder;
     }
 
