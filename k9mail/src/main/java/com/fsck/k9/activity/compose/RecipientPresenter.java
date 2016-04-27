@@ -27,6 +27,7 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.LocalMessage;
+import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import org.openintents.openpgp.IOpenPgpService2;
@@ -683,6 +684,11 @@ public class RecipientPresenter implements PermissionPingCallback {
             Log.e(K9.LOG_TAG, "obtained openpgpapi object, but service is not bound! inconsistent state?");
         }
         return new OpenPgpApi(context, openPgpServiceConnection.getService());
+    }
+
+    public void builderSetProperties(PgpMessageBuilder pgpBuilder) {
+        pgpBuilder.setOpenPgpApi(getOpenPgpApi());
+        pgpBuilder.setCryptoStatus(getCurrentCryptoStatus());
     }
 
     public void updatepEpState() {
