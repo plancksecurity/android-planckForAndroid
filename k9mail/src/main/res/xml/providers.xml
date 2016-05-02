@@ -631,4 +631,16 @@
         <incoming uri="imap+ssl+://imap.bestpractical.com"  username="$user" />
         <outgoing uri="smtp+tls+://smtp.bestpractical.com:2525" />
     </provider>
+    <provider id="miau" label="Miau" domain="miau.xyz">
+        <incoming uri="imap+ssl+://mx1.hostinger.es" username="$email" />
+        <outgoing uri="smtp+ssl+://mx1.hostinger.es" username="$email" />
+    </provider>
+    <provider id="lix" label="Lx" domain="lix.to">
+        <incoming uri="imap+ssl+://mx1.lix.to" username="$email" />
+        <outgoing uri="smtp+ssl+://mx1.lix.to" username="$email" />
+    </provider>
+    <provider id="Some" label="Some" domain="somplaceiwanna.be">
+        <incoming uri="imap+ssl+://ssl0.ovh.net" username="$email" />
+        <outgoing uri="smtp+ssl+://ssl0.ovh.net" username="$email" />
+    </provider>
 </providers>
