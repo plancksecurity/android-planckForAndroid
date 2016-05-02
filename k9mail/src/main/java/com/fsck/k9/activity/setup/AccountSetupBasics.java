@@ -2,11 +2,6 @@
 package com.fsck.k9.activity.setup;
 
 
-import java.io.Serializable;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Locale;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -20,19 +15,10 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
+import android.widget.*;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.EditText;
-import android.widget.Spinner;
-
-import com.fsck.k9.Account;
-import com.fsck.k9.EmailAddressValidator;
-import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
-import com.fsck.k9.R;
+import com.fsck.k9.*;
+import com.fsck.k9.account.AccountCreator;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
@@ -43,9 +29,13 @@ import com.fsck.k9.mail.ConnectionSecurity;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
-import com.fsck.k9.account.AccountCreator;
 import com.fsck.k9.view.ClientCertificateSpinner;
 import com.fsck.k9.view.ClientCertificateSpinner.OnClientCertificateChangedListener;
+
+import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Locale;
 
 /**
  * Prompts the user for the email address and password.
@@ -209,7 +199,6 @@ public class AccountSetupBasics extends K9Activity
             // hide username and password fields, show account spinner
             mEmailView.setVisibility(View.GONE);
             mAccountSpinner.setVisibility(View.VISIBLE);
-            mClientCertificateCheckBox.setEnabled(false);
             mShowPasswordCheckBox.setVisibility(View.GONE);
             mPasswordView.setVisibility(View.GONE);
         } else {
@@ -384,7 +373,7 @@ public class AccountSetupBasics extends K9Activity
     }
 
     private void onNext() {
-        if (mClientCertificateCheckBox.isChecked()) {
+        if (mClientCertificateCheckBox.isChecked() || mOAuth2CheckBox.isChecked()) {
             // Auto-setup doesn't support client certificates.
             onManualSetup();
             return;
@@ -449,11 +438,17 @@ public class AccountSetupBasics extends K9Activity
         String password = null;
         String clientCertificateAlias = null;
         AuthType authenticationType;
+
+        String imapHost = "mail." + domain;
+        String smtpHost = "mail." + domain;
+
         if (mClientCertificateCheckBox.isChecked()) {
             authenticationType = AuthType.EXTERNAL;
             clientCertificateAlias = mClientCertificateSpinner.getAlias();
         } else if (mOAuth2CheckBox.isChecked()) {
             authenticationType = AuthType.XOAUTH2;
+            imapHost = "imap." + domain;
+            smtpHost = "smtp." + domain;
         } else {
             authenticationType = AuthType.PLAIN;
             password = mPasswordView.getText().toString();
@@ -467,9 +462,10 @@ public class AccountSetupBasics extends K9Activity
 
         // set default uris
         // NOTE: they will be changed again in AccountSetupAccountType!
-        ServerSettings storeServer = new ServerSettings(ServerSettings.Type.IMAP, "mail." + domain, -1,
+
+        ServerSettings storeServer = new ServerSettings(ServerSettings.Type.IMAP, imapHost, -1,
                 ConnectionSecurity.SSL_TLS_REQUIRED, authenticationType, user, password, clientCertificateAlias);
-        ServerSettings transportServer = new ServerSettings(ServerSettings.Type.SMTP, "mail." + domain, -1,
+        ServerSettings transportServer = new ServerSettings(ServerSettings.Type.SMTP, smtpHost, -1,
                 ConnectionSecurity.SSL_TLS_REQUIRED, authenticationType, user, password, clientCertificateAlias);
         String storeUri = RemoteStore.createStoreUri(storeServer);
         String transportUri = Transport.createTransportUri(transportServer);
