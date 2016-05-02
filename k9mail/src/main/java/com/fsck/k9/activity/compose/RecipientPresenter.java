@@ -31,8 +31,6 @@ import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.message.ComposePgpInlineDecider;
 import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.message.ComposePgpInlineDecider;
-import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import org.openintents.openpgp.IOpenPgpService2;
 import org.openintents.openpgp.util.OpenPgpApi;
