@@ -53,7 +53,8 @@ public class PEpProviderImpl implements PEpProvider {
     //Don't instantiate a new engine
     @Override
     public Color getPrivacyState(Address from, List<Address> toAdresses, List<Address> ccAdresses, List<Address> bccAdresses) {
-        if (from == null || toAdresses.size() == 0)
+        int recipientsSize = toAdresses.size() + ccAdresses.size() + bccAdresses.size();
+        if (from == null || recipientsSize == 0)
             return Color.pEpRatingUndefined;
 
         Message testee = null;
