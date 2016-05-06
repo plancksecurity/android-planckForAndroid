@@ -20,7 +20,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/selectable_item_background"
-            android:text="@string/settings_import" />
+            android:text="@string/settings_import"
+                android:visibility="gone"/>
 
         <Button
             android:id="@+id/next"

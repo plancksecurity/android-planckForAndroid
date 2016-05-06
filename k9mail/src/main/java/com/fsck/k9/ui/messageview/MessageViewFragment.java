@@ -781,7 +781,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             String[] pEpColor = new String[0];
             try {
                 pEpColor = message.getHeader(MimeHeader.HEADER_PEPCOLOR);
-                if(pEpColor != null)
+                if(pEpColor != null && pEpColor.length > 0)
                     mPEpColor = Color.valueOf(pEpColor[0]);
                 else
                     mPEpColor = Color.pEpRatingUndefined;
