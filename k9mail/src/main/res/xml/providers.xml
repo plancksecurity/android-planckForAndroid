@@ -624,7 +624,7 @@
 
     <!-- Developers' vanity providers -->
     <provider id="fsck.com" label="Jesse's personal mail" domain="fsck.com" >
-        <incoming uri="imap+ssl+://fsck.com"  username="$user" />
+        <incoming uri="imap+ssl+://fsck.com"  username="$user" />f
         <outgoing uri="smtp+tls+://mail.bestpractical.com:2525" />
     </provider>
     <provider id="bestpractical.com" label="Best Practical Solutions" domain="bestpractical.com" >
@@ -642,5 +642,13 @@
     <provider id="Some" label="Some" domain="somplaceiwanna.be">
         <incoming uri="imap+ssl+://ssl0.ovh.net" username="$email" />
         <outgoing uri="smtp+ssl+://ssl0.ovh.net" username="$email" />
+    </provider>
+    <provider id="peptestch" label="pEp Test" domain="peptest.ch">
+        <incoming uri="imap+ssl+://mail.syhosting.ch" username="$email" />
+        <outgoing uri="smtp+tls+://mail.syhosting.ch" username="$email" />
+    </provider>
+    <provider id="pepSecurity" label="pEp Security" domain="pep-security.net">
+        <incoming uri="imap+ssl+://mail.pep-security.net" username="$user@pep-security.intranet" />
+        <outgoing uri="smtp+tls+://mail.pep-security.net" username="$user@pep-security.intranet" />
     </provider>
 </providers>
