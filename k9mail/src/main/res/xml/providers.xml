@@ -624,7 +624,7 @@
 
     <!-- Developers' vanity providers -->
     <provider id="fsck.com" label="Jesse's personal mail" domain="fsck.com" >
-        <incoming uri="imap+ssl+://fsck.com"  username="$user" />f
+        <incoming uri="imap+ssl+://fsck.com"  username="$user" />
         <outgoing uri="smtp+tls+://mail.bestpractical.com:2525" />
     </provider>
     <provider id="bestpractical.com" label="Best Practical Solutions" domain="bestpractical.com" >
