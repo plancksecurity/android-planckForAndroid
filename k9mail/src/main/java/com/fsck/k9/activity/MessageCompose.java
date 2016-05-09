@@ -364,7 +364,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         mChooseIdentityButton.setOnClickListener(this);
 
         RecipientMvpView recipientMvpView = new RecipientMvpView(this);
-        recipientPresenter = new RecipientPresenter(this, recipientMvpView, mAccount);
+        ComposePgpInlineDecider composePgpInlineDecider = new ComposePgpInlineDecider();
+        recipientPresenter = new RecipientPresenter(this, recipientMvpView, mAccount, composePgpInlineDecider);
 
         mSubjectView = (EditText) findViewById(R.id.subject);
         mSubjectView.getInputExtras(true).putBoolean("allowEmoji", true);
