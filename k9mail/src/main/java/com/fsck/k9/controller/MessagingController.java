@@ -1,27 +1,5 @@
 package com.fsck.k9.controller;
 
-import android.os.SystemClock;
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -31,70 +9,42 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.os.Process;
+import android.os.SystemClock;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
-
-import com.fsck.k9.Account;
+import com.fsck.k9.*;
 import com.fsck.k9.Account.DeletePolicy;
 import com.fsck.k9.Account.Expunge;
-import com.fsck.k9.AccountStats;
-import com.fsck.k9.K9;
 import com.fsck.k9.K9.Intents;
-import com.fsck.k9.Preferences;
-import com.fsck.k9.R;
-import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.cache.EmailProviderCache;
-import com.fsck.k9.helper.Contacts;
-import com.fsck.k9.helper.MessageHelper;
-import com.fsck.k9.mail.internet.MimeHeader;
-import com.fsck.k9.mail.AuthenticationFailedException;
-import com.fsck.k9.mail.CertificateValidationException;
+import com.fsck.k9.mail.*;
+import com.fsck.k9.mail.Folder.FolderType;
+import com.fsck.k9.mail.Message.RecipientType;
+import com.fsck.k9.mail.internet.*;
 import com.fsck.k9.mail.power.TracingPowerManager;
 import com.fsck.k9.mail.power.TracingPowerManager.TracingWakeLock;
-import com.fsck.k9.mail.Address;
-import com.fsck.k9.mail.FetchProfile;
-import com.fsck.k9.mail.Flag;
-import com.fsck.k9.mail.Folder;
-import com.fsck.k9.mail.Folder.FolderType;
-
-import com.fsck.k9.mail.Message;
-import com.fsck.k9.mail.Message.RecipientType;
-import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.Part;
-import com.fsck.k9.mail.PushReceiver;
-import com.fsck.k9.mail.Pusher;
-import com.fsck.k9.mail.Store;
-import com.fsck.k9.mail.Transport;
-import com.fsck.k9.mail.internet.MessageExtractor;
-import com.fsck.k9.mail.internet.MimeMessage;
-import com.fsck.k9.mail.internet.MimeMessageHelper;
-import com.fsck.k9.mail.internet.MimeUtility;
-import com.fsck.k9.mail.internet.TextBody;
-import com.fsck.k9.mailstore.LocalFolder.MoreMessages;
-import com.fsck.k9.mailstore.MessageRemovalListener;
-import com.fsck.k9.mail.MessageRetrievalListener;
-import com.fsck.k9.mailstore.LocalFolder;
-import com.fsck.k9.mailstore.LocalMessage;
-import com.fsck.k9.mailstore.LocalStore;
-import com.fsck.k9.mailstore.LocalStore.PendingCommand;
 import com.fsck.k9.mail.store.pop3.Pop3Store;
-import com.fsck.k9.mailstore.UnavailableStorageException;
-import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.mailstore.*;
+import com.fsck.k9.mailstore.LocalFolder.MoreMessages;
+import com.fsck.k9.mailstore.LocalStore.PendingCommand;
 import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
-import com.fsck.k9.search.ConditionsTreeNode;
-import com.fsck.k9.search.LocalSearch;
-import com.fsck.k9.search.SearchAccount;
-import com.fsck.k9.search.SearchSpecification;
-import com.fsck.k9.search.SqlQueryBuilder;
+import com.fsck.k9.search.*;
 
-import org.pEp.jniadapter.Color;
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -3147,12 +3097,12 @@ public class MessagingController implements Runnable {
                             Log.i(K9.LOG_TAG, "Sending message with UID " + message.getUid());
 
                         // pEp the message to send...
-                        Message encryptedMessage = pEpProvider.encryptMessage((MimeMessage) message, null); // TODO: Extra keys
+                        List <MimeMessage> encryptedMessages = pEpProvider.encryptMessage(message, null); // TODO: Extra keys
+                        Message encryptedMessageToSave = encryptedMessages.get(PEpProvider.ENCRYPTED_MESSAGE_POSITION); //
 
-                        encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, true);
-                        transport.sendMessage(encryptedMessage);
-                        encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, false);
-                        encryptedMessage.setFlag(Flag.SEEN, true);
+                        for (Message encryptedMessage : encryptedMessages) {
+                            sendMessage(transport, encryptedMessage);
+                        }
 
                         progress++;
                         for (MessagingListener l : getListeners()) {
@@ -3171,7 +3121,7 @@ public class MessagingController implements Runnable {
                                 Log.i(K9.LOG_TAG, "Moving sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
                             if(encOnServer)
-                                localSentFolder.appendMessages(Collections.singletonList(encryptedMessage));    // if insecure server, push enc'd msg to sent folder
+                                localSentFolder.appendMessages(Collections.singletonList(encryptedMessageToSave));    // if insecure server, push enc'd msg to sent folder
                             else {
                                 // if secure server, add color indicator and move plaintext to server
                                 message.addHeader(MimeHeader.HEADER_PEPCOLOR, pEpProvider.getPrivacyState(message).name());     // FIXME: this sucks. I should get the "real" color from encryptMessage()!
@@ -3181,7 +3131,7 @@ public class MessagingController implements Runnable {
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moved sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
-                            Message toMove = encOnServer? encryptedMessage : message;
+                            Message toMove = encOnServer? encryptedMessageToSave : message;
                             PendingCommand command = new PendingCommand();
                             command.command = PENDING_COMMAND_APPEND;
                             command.arguments = new String[] { localSentFolder.getName(), toMove.getUid() };
@@ -3192,7 +3142,7 @@ public class MessagingController implements Runnable {
                             if(encOnServer) {       // delete all traces, msg will be sync'ed again from server...
                                 // FIXME: This costs us a round trip and might break color detection. Perhaps do some magic (Id) and move message to localSent? But this won't stop broken color detection...
                                 message.setFlag(Flag.DELETED, true);
-                                localSentFolder.destroyMessages(Collections.singletonList(encryptedMessage));
+                                localSentFolder.destroyMessages(Collections.singletonList(encryptedMessageToSave));
                                 for (MessagingListener l : getListeners()) {
                                     l.folderStatusChanged(account, localSentFolder.getName(), localSentFolder.getUnreadMessageCount());
                                 }
@@ -3258,6 +3208,13 @@ public class MessagingController implements Runnable {
             }
             closeFolder(localFolder);
         }
+    }
+
+    private void sendMessage(Transport transport, Message encryptedMessage) throws MessagingException {
+        encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, true);
+        transport.sendMessage(encryptedMessage);
+        encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, false);
+        encryptedMessage.setFlag(Flag.SEEN, true);
     }
 
     private void handleSendFailure(Account account, Store localStore, Folder localFolder, Message message,
