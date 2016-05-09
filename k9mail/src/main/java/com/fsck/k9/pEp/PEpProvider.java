@@ -5,6 +5,7 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.internet.MimeMessage;
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
+import org.pEp.jniadapter.Message;
 
 import java.util.List;
 
@@ -12,6 +13,12 @@ import java.util.List;
  * Created by dietz on 01.07.15.
  */
 public interface PEpProvider {
+    /**
+     * If is outgoing any copy of the message encrypted (yellow, green, and unsecure for some) it will be putted in this position,
+     * if not, all copies will be unencrypted.
+     */
+    int ENCRYPTED_MESSAGE_POSITION = 0;
+
     /**
      * checks the privacy level of the adresses supplied. This method creates a pEp message and
      * calls the jni adapter to obtain the info. According to fdik, this check returns fast (all
@@ -24,8 +31,9 @@ public interface PEpProvider {
      * @return the privacy level of a mail sent to the set of recipients
      */
     Color getPrivacyState(Address from, List<Address> toAdresses, List<Address> ccAdresses, List<Address> bccAdresses);
-
     Color getPrivacyState(com.fsck.k9.mail.Message message);
+    Color getPrivacyState(Message message);
+
 
     /**
      * Decrypts one k9 MimeMessage. Hides all the black magic associated with the real
@@ -53,7 +61,7 @@ public interface PEpProvider {
      * @param extraKeys extra key ids to encrypt msg to...
      * @return the encrypted message
      */
-    MimeMessage encryptMessage(MimeMessage source, String[] extraKeys);
+    List<MimeMessage> encryptMessage(MimeMessage source, String[] extraKeys);
 
     /**
      * Helper for pEp setup. Smells funny to have it in an interface, but fits nowhere else.
