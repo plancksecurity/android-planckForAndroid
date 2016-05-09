@@ -2,16 +2,14 @@ package com.fsck.k9.pEp;
 
 import android.content.Context;
 import android.util.Log;
-import com.fsck.k9.mail.Address;
-import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.*;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
 import org.pEp.jniadapter.*;
+import org.pEp.jniadapter.Identity;
+import org.pEp.jniadapter.Message;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * pep provider implementation. Dietz is the culprit.
@@ -51,10 +49,23 @@ public class PEpProviderImpl implements PEpProvider {
         return Color.pEpRatingB0rken;
     }
 
+    @Override
+    public Color getPrivacyState(Message message) {
+        try {
+            if (engine == null) {
+                engine = new Engine();
+            }
+            return engine.outgoing_message_color(message);
+        } catch (pEpException e) {
+            Log.e(TAG, "during update identity:", e);
+        }
+        return Color.pEpRatingB0rken;
+    }
+
     //Don't instantiate a new engine
     @Override
-    public Color getPrivacyState(Address from, List<Address> toAdresses, List<Address> ccAdresses, List<Address> bccAdresses) {
-        int recipientsSize = toAdresses.size() + ccAdresses.size() + bccAdresses.size();
+    public Color getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses) {
+        int recipientsSize = toAddresses.size() + ccAddresses.size() + bccAddresses.size();
         if (from == null || recipientsSize == 0)
             return Color.pEpRatingUndefined;
 
@@ -70,18 +81,21 @@ public class PEpProviderImpl implements PEpProvider {
             idFrom.me = true;
             engine.myself(idFrom);              // not sure wether that call is necessary. But it should do no harm. If necessary, add below too. Now called in right context if only one account.
             testee.setFrom(idFrom);
-            testee.setTo(PEpUtils.createIdentities(toAdresses, context));
-            testee.setCc(PEpUtils.createIdentities(ccAdresses, context));
-            testee.setBcc(PEpUtils.createIdentities(bccAdresses, context));
+            testee.setTo(PEpUtils.createIdentities(toAddresses, context));
+            testee.setCc(PEpUtils.createIdentities(ccAddresses, context));
+            testee.setBcc(PEpUtils.createIdentities(bccAddresses, context));
             testee.setShortmsg("hello, world");     // FIXME: do I need them?
             testee.setLongmsg("Lorem ipsum");
             testee.setDir(Message.Direction.Outgoing);
 
-            Color rv = engine.outgoing_message_color(testee);   // stupid way to be able to patch the value in debugger
+            Color result = engine.outgoing_message_color(testee);   // stupid way to be able to patch the value in debugger
             idFrom = engine.updateIdentity(idFrom);
             Log.i(TAG, "getPrivacyState " + idFrom.fpr);
-
-            return rv;
+            if (result.value != Color.pEpRatingUnencrypted.value) return result;
+            else {
+                if (isUnencryptedForSome(toAddresses, ccAddresses, bccAddresses))
+                    return Color.pEpRatingUnencryptedForSome;
+            }
         } catch (Throwable e) {
             Log.e(TAG, "during color test:", e);
         } finally {
@@ -90,6 +104,19 @@ public class PEpProviderImpl implements PEpProvider {
         }
 
         return Color.pEpRatingB0rken;
+    }
+
+    private boolean isUnencryptedForSome(List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses) {
+        for (Address toAddress : toAddresses) {
+            if (identityColor(toAddress) != Color.pEpRatingUnencrypted) return true;
+        }
+        for (Address ccAddress : ccAddresses) {
+            if (identityColor(ccAddress) != Color.pEpRatingUnencrypted) return true;
+        }
+        for (Address bccAddress : bccAddresses) {
+            if (identityColor(bccAddress) != Color.pEpRatingUnencrypted) return true;
+        }
+        return false;
     }
 
     @Override
@@ -106,7 +133,7 @@ public class PEpProviderImpl implements PEpProvider {
             Log.d(TAG, "decryptMessage() before decrypt");
             decReturn = engine.decrypt_message(srcMsg);
             Log.d(TAG, "decryptMessage() after decrypt");
-            MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage(true);
+            MimeMessage decMsg = new MimeMessageBuilder(this, decReturn.dst).createMessage(true);
 
             decMsg.addHeader(MimeHeader.HEADER_PEPCOLOR, decReturn.color.name());
             return new DecryptResult(decMsg, decReturn.color);
@@ -121,7 +148,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public MimeMessage encryptMessage(MimeMessage source, String[] extraKeys) {
+    public List<MimeMessage> encryptMessage(MimeMessage source, String[] extraKeys) {
         Log.d(TAG, "encryptMessage() enter");
         Message srcMsg = null;
         Message encMsg = null;
@@ -138,7 +165,7 @@ public class PEpProviderImpl implements PEpProvider {
                 Log.e(TAG, "engine returned null.");
                 encMsg = srcMsg;         // FIXME: this should be done by the engine! I could return source, but this would mask engine and my own errors...
             }
-            return new MimeMessageBuilder(encMsg).createMessage(false);
+            return new MimeMessageBuilder(this, encMsg).createMessages(false);
         } catch (Throwable t) {
             Log.e(TAG, "while encrypting message:", t);
             throw new RuntimeException("Could not encrypt");
@@ -159,43 +186,24 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public Color identityColor(Address address) {
         Identity ident = PEpUtils.createIdentity(address, context);
-        try {
-            if (engine == null) {
-                engine = new Engine();
-            }
-            Color rv = engine.identity_color(ident);
-            return rv;
-        } catch (pEpException e) {
-            Log.e(TAG, "during color test:", e);
-        }
-        return Color.pEpRatingB0rken;
+        return identityColor(ident);
     }
 
     @Override
     public Color identityColor(Identity ident) {
+        createEngineInstanceIfNeeded();
         try {
-            if (engine == null) {
-                engine = new Engine();
-            }
             return engine.identity_color(ident);
         } catch (pEpException e) {
-            Log.e(TAG, "during color test:", e);
+            return Color.pEpRatingB0rken;
         }
-        return Color.pEpRatingB0rken;
     }
 
     @Override
     public String trustwords(Identity id) {
-        try {
-            if (engine == null) {
-                engine = new Engine();
-            }
-            id = engine.updateIdentity(id);
-            return engine.trustwords(id);
-        } catch (pEpException e) {
-            Log.e(TAG, "during trustwords:", e);
-        }
-        return "";
+        createEngineInstanceIfNeeded();
+        engine.updateIdentity(id);
+        return engine.trustwords(id);
     }
 
     @Override
@@ -205,62 +213,41 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public Identity updateIdentity(Identity id) {
-        try {
-            if (engine == null) {
-                engine = new Engine();
-            }
-            return engine.updateIdentity(id);
-        } catch (pEpException e) {
-            Log.e(TAG, "during update identity:", e);
-        }
-        return id;
+        createEngineInstanceIfNeeded();
+        return engine.updateIdentity(id);
     }
 
     @Override
     public void trustPersonaKey(Identity id) {
-        try {
-            if (engine == null) {
-                engine = new Engine();
-            }
-        } catch (pEpException e) {
-            Log.e(TAG, "during trustwords:", e);
-        }
+        createEngineInstanceIfNeeded();
         engine.trustPersonalKey(id);
     }
 
     @Override
     public void keyCompromised(Identity id) {
-        if (engine == null) {
-            try {
-                engine = new Engine();
-            } catch (pEpException e) {
-                Log.e("pEp", "keyCompromised: ", e);
-            }
-        }
+        createEngineInstanceIfNeeded();
         engine.keyCompromized(id);
     }
 
     @Override
     public void resetTrust(Identity id) {
-        if (engine == null) {
-            try {
-                engine = new Engine();
-            } catch (pEpException e) {
-                e.printStackTrace();
-            }
-        }
+        createEngineInstanceIfNeeded();
         engine.keyResetTrust(id);
     }
 
     @Override
     public void myself(Identity myId) {
+        createEngineInstanceIfNeeded();
+        engine.myself(myId);
+    }
+
+    private void createEngineInstanceIfNeeded() {
         if (engine == null) {
             try {
                 engine = new Engine();
             } catch (pEpException e) {
-                Log.e(TAG, "myself: ", e);
+                Log.e(TAG, "createEngineInstanceIfNeeded", e);
             }
         }
-        engine.myself(myId);
     }
 }

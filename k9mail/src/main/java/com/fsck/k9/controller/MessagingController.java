@@ -3047,12 +3047,12 @@ public class MessagingController {
                             Log.i(K9.LOG_TAG, "Sending message with UID " + message.getUid());
 
                         // pEp the message to send...
-                        Message encryptedMessage = pEpProvider.encryptMessage((MimeMessage) message, null); // TODO: Extra keys
+                        List <MimeMessage> encryptedMessages = pEpProvider.encryptMessage(message, null); // TODO: Extra keys
+                        Message encryptedMessageToSave = encryptedMessages.get(PEpProvider.ENCRYPTED_MESSAGE_POSITION); //
 
-                        encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, true);
-                        transport.sendMessage(encryptedMessage);
-                        encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, false);
-                        encryptedMessage.setFlag(Flag.SEEN, true);
+                        for (Message encryptedMessage : encryptedMessages) {
+                            sendMessage(transport, encryptedMessage);
+                        }
 
                         progress++;
                         for (MessagingListener l : getListeners()) {
@@ -3071,7 +3071,7 @@ public class MessagingController {
                                 Log.i(K9.LOG_TAG, "Moving sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
                             if(encOnServer)
-                                localSentFolder.appendMessages(Collections.singletonList(encryptedMessage));    // if insecure server, push enc'd msg to sent folder
+                                localSentFolder.appendMessages(Collections.singletonList(encryptedMessageToSave));    // if insecure server, push enc'd msg to sent folder
                             else {
                                 // if secure server, add color indicator and move plaintext to server
                                 message.addHeader(MimeHeader.HEADER_PEPCOLOR, pEpProvider.getPrivacyState(message).name());     // FIXME: this sucks. I should get the "real" color from encryptMessage()!
@@ -3081,7 +3081,7 @@ public class MessagingController {
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moved sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
-                            Message toMove = encOnServer? encryptedMessage : message;
+                            Message toMove = encOnServer? encryptedMessageToSave : message;
                             PendingCommand command = new PendingCommand();
                             command.command = PENDING_COMMAND_APPEND;
                             command.arguments = new String[] { localSentFolder.getName(), toMove.getUid() };
@@ -3092,7 +3092,7 @@ public class MessagingController {
                             if(encOnServer) {       // delete all traces, msg will be sync'ed again from server...
                                 // FIXME: This costs us a round trip and might break color detection. Perhaps do some magic (Id) and move message to localSent? But this won't stop broken color detection...
                                 message.setFlag(Flag.DELETED, true);
-                                localSentFolder.destroyMessages(Collections.singletonList(encryptedMessage));
+                                localSentFolder.destroyMessages(Collections.singletonList(encryptedMessageToSave));
                                 for (MessagingListener l : getListeners()) {
                                     l.folderStatusChanged(account, localSentFolder.getName(), localSentFolder.getUnreadMessageCount());
                                 }
@@ -3158,6 +3158,13 @@ public class MessagingController {
             }
             closeFolder(localFolder);
         }
+    }
+
+    private void sendMessage(Transport transport, Message encryptedMessage) throws MessagingException {
+        encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, true);
+        transport.sendMessage(encryptedMessage);
+        encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, false);
+        encryptedMessage.setFlag(Flag.SEEN, true);
     }
 
     private void handleSendFailure(Account account, Store localStore, Folder localFolder, Message message,

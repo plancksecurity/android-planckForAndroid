@@ -1,6 +1,7 @@
 package com.fsck.k9.pEp;
 
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import com.fsck.k9.K9;
@@ -15,6 +16,8 @@ import org.apache.james.mime4j.util.MimeUtil;
 import org.pEp.jniadapter.Blob;
 import org.pEp.jniadapter.Message;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -27,27 +30,37 @@ import java.util.Vector;
 
 class MimeMessageBuilder {
     private static final String DEFAULT_KEY_NAME = "pEpkey.asc";
+    private final PEpProvider pEp;
     private SimpleMessageFormat messageFormat = SimpleMessageFormat.TEXT;
 
     private Message pEpMessage;
 
-    public MimeMessageBuilder(Message m) {
+    public MimeMessageBuilder(PEpProvider pEp, Message m) {
         this.pEpMessage = m;
+        this.pEp = pEp;
     }
 
-    MimeMessage createMessage(boolean shrinkPepKey) {
+    List <MimeMessage> createMessages(boolean shrinkPepKey) {
+        List<MimeMessage> messages = new ArrayList<>();
         try {
-            MimeMessage mimeMsg = new MimeMessage();
-            evaluateMessageFormat();
-            buildHeader(mimeMsg);
-            buildBody(mimeMsg, shrinkPepKey);
+            MimeMessage mimeMsg = createMessage(shrinkPepKey);
+            messages.add(mimeMsg);
 
-            return mimeMsg;
+            return messages;
         }
         catch (Exception e) {
             Log.e("pepdump", "Could not create MimeMessage: ", e);
         };
         return null;
+    }
+
+    @NonNull
+    public MimeMessage createMessage(boolean shrinkPepKey) throws MessagingException {
+        MimeMessage mimeMsg = new MimeMessage();
+        evaluateMessageFormat();
+        buildHeader(mimeMsg);
+        buildBody(mimeMsg, shrinkPepKey);
+        return mimeMsg;
     }
 
     private void evaluateMessageFormat() {
