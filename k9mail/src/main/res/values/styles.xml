@@ -55,6 +55,16 @@
         <item name="sv_backgroundColor">#99444444</item>
     </style>
 
+    <style name="PositiveBulletPoint">
+        <item name="android:src">@drawable/bullet_point_positive</item>
+        <item name="android:tint">?attr/tintColorBulletPointPositive</item>
+    </style>
+
+    <style name="NegativeBulletPoint">
+        <item name="android:src">@drawable/bullet_point_negative</item>
+        <item name="android:tint">?attr/tintColorBulletPointNegative</item>
+    </style>
+
     <style name="pEpIndicatorTVActionBarStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">32dp</item>
