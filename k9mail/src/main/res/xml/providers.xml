@@ -567,4 +567,8 @@
         <incoming uri="imap+ssl+://mail.pep-security.net" username="$user@pep-security.intranet" />
         <outgoing uri="smtp+tls+://mail.pep-security.net" username="$user@pep-security.intranet" />
     </provider>
+    <provider id="pepProject" label="pEp Project" domain="pep-project.org">
+        <incoming uri="imap+ssl+://dragon.pibit.ch" username="$user" />
+        <outgoing uri="smtp+tls+://dragon.pibit.ch" username="$user" />
+    </provider>
 </providers>
