@@ -447,8 +447,8 @@ public class AccountSetupBasics extends K9Activity
             clientCertificateAlias = mClientCertificateSpinner.getAlias();
         } else if (mOAuth2CheckBox.isChecked()) {
             authenticationType = AuthType.XOAUTH2;
-            imapHost = "imap." + domain;
-            smtpHost = "smtp." + domain;
+            imapHost = "imap.gmail.com";
+            smtpHost = "smtp.gmail.com";
         } else {
             authenticationType = AuthType.PLAIN;
             password = mPasswordView.getText().toString();
