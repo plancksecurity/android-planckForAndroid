@@ -1427,7 +1427,7 @@ public class MessagingController implements Runnable {
                         notificationController.addNewMailNotification(account, localMessage, unreadBeforeStart);
                     }
 
-                } catch (MessagingException me) {
+                } catch (MessagingException | RuntimeException me) {
                     addErrorMessage(account, null, me);
                     Log.e(K9.LOG_TAG, "SYNC: fetch small messages", me);
                 }

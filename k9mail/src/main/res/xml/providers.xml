@@ -555,7 +555,7 @@
         <incoming uri="imap+ssl+://mx1.lix.to" username="$email" />
         <outgoing uri="smtp+ssl+://mx1.lix.to" username="$email" />
     </provider>
-    <provider id="Some" label="Some" domain="somplaceiwanna.be">
+    <provider id="Some" label="Some" domain="someplaceiwanna.be">
         <incoming uri="imap+ssl+://ssl0.ovh.net" username="$email" />
         <outgoing uri="smtp+ssl+://ssl0.ovh.net" username="$email" />
     </provider>
