@@ -47,17 +47,17 @@
         <item>p≡p - Undefined.<!--pEpRatingUndefined--></item>
         <item>p≡p – Cannot decrypt message.<!--pEpRatingCannotDecrypt--></item>
         <item>p≡p – No private key.<!--pEpRatingHaveNoKey--></item>
-        <item>p≡p – This communication is unencrypted.<!--pEpRatingUnencrypted--></item>
-        <item>p≡p – This communication is unencrypted for some.<!--pEpRatingUnencryptedForSome--></item>
+        <item>p≡p – This communication is unprotected.<!--pEpRatingUnencrypted--></item>
+        <item>p≡p – This communication is unprotected for some.<!--pEpRatingUnencryptedForSome--></item>
         <item>p≡p – This communication is unreliable.<!--pEpRatingUnreliable--></item>
         <item>p≡p – This communication could be secure.<!--pEpRatingYellow--></item>
         <item>p≡p – This communication could be secure.<!--pEpRatingReliable--></item>
-        <item>p≡p – This communication is private and authentic.<!--pEpRatingGreen--></item>
-        <item>p≡p – This communication is private and authentic.<!--pEpRatingTrusted--></item>
-        <item>p≡p – This communication is private and authentic.<!--pEpRatingTrustedAndAnonymized--></item>
-        <item>p≡p – This communication is private and authentic and anonymous.<!--pEpRatingFullyAnonymous--></item>
-        <item>p≡p – This communication is miss trusted!<!--pEpRatingMissTrust--></item>
-        <item>p≡p – This communication is miss trusted!<!--pEpRatingRed--></item>
+        <item>p≡p – This communication is secure and trusted.<!--pEpRatingGreen--></item>
+        <item>p≡p – This communication is secure and trusted.<!--pEpRatingTrusted--></item>
+        <item>p≡p – This communication is secure and trusted.<!--pEpRatingTrustedAndAnonymized--></item>
+        <item>p≡p – This communication is secure and trusted and anonymous.<!--pEpRatingFullyAnonymous--></item>
+        <item>p≡p – This communication is mistrusted!<!--pEpRatingMissTrust--></item>
+        <item>p≡p – This communication is mistrusted!<!--pEpRatingRed--></item>
         <item>p≡p – Internal problem.<!--pEpRatingB0rken--></item>
         <item>p≡p – This communication is forged!<!--pEpRatingUnderAttack--></item>
     </string-array>
@@ -67,17 +67,17 @@
         <item>The key to decrypt this message is not available.
                 If this message was addressed to you, please inform the sender that you don\'t have the key.<!--pEpRatingCannotDecrypt--></item>
         <item>p≡p – No private key.<!--pEpRatingHaveNoKey--></item>
-        <item>This communication is insecure.
+        <item>This communication is not secure.
                 You should be aware that there may be eavesdroppers and the message could be forged. It could be OK just as well.
             <!--pEpRatingUnencrypted--></item>
-        <item>This communication is insecure for some.
-                You should be aware that there may be eavesdroppers and the message could be forged. It could be OK just as well.
+        <item>This communication is not secure for all communication partners.
+                Please be aware this message is not secure for all communication partners.
             <!--pEpRatingUnencryptedForSome--></item>
         <item>The message was encrypted but not in a feasible way or it wasn\'t signed.
                 There is no credible encryption for this message, so you should be aware that there may be eavesdroppers and the message could be forged. It could be OK just as well.
-                <!--pEpRatingUnreliable--></item>
-        <item>To ensure a private and authentic communication please do a handshake with the communication partner.
-               A handshake is needed only once per communication partner. After successfully doing a handshake each communication with that partner will be private and reliable for sure.
+            <!--pEpRatingUnreliable--></item>
+        <item> This message is encrypted but you can upgrade the privacy and authentication level with your communication partner.
+               Complete a handshake with your communication partner. A handshake is needed only once per partner and will ensure private and reliable communication.
             <!--pEpRatingYellow--></item>
                 <item>To ensure a private and authentic communication please do a handshake with the communication partner.
                A handshake is needed only once per communication partner. After successfully doing a handshake each communication with that partner will be private and reliable for sure.
