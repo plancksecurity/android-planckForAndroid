@@ -293,7 +293,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     public void populate(final Message message, final Account account) {
         String[] pEpColor = message.getHeader(MimeHeader.HEADER_PEPCOLOR);
-        if(pEpColor != null)
+        if(pEpColor != null && pEpColor.length > 0)
             mPEpColor = Color.valueOf(pEpColor[0]);
         else
             mPEpColor = Color.pEpRatingUndefined;

@@ -1,6 +1,7 @@
 package com.fsck.k9.pEp;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.MessagingException;
@@ -99,7 +100,6 @@ public class PEpProviderImpl implements PEpProvider {
             Log.e(TAG, "during color test:", e);
         } finally {
             if (testee != null) testee.close();
-//            if (engine != null) engine.close();
         }
 
         return Color.pEpRatingB0rken;
@@ -114,26 +114,6 @@ public class PEpProviderImpl implements PEpProvider {
         }
         for (Address bccAddress : bccAddresses) {
             if (identityColor(bccAddress).value > Color.pEpRatingUnencrypted.value) return true;
-        }
-        return false;
-    }
-
-    private boolean isUnencryptedForSome(Message message) {
-        if (message.getTo() != null) {
-            for (Identity toIdentity : message.getTo()) {
-                if (identityColor(toIdentity).value > Color.pEpRatingUnencrypted.value) return true;
-            }
-        }
-
-        if (message.getCc() != null) {
-            for (Identity ccIdentity : message.getCc()) {
-                if (identityColor(ccIdentity).value > Color.pEpRatingUnencrypted.value) return true;
-            }
-        }
-        if (message.getBcc() != null) {
-            for (Identity bccIdentity : message.getBcc()) {
-                if (identityColor(bccIdentity).value > Color.pEpRatingUnencrypted.value) return true;
-            }
         }
         return false;
     }
@@ -169,57 +149,94 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public List<MimeMessage> encryptMessage(MimeMessage source, String[] extraKeys) {
         Log.d(TAG, "encryptMessage() enter");
-        Message srcMsg = null;
-        Message encMsg = null;
-        List <Message> messagesTo_pEp = new ArrayList<>();
+        List <MimeMessage> resultMessages = new ArrayList<>();
 
         try {
             if (engine == null) engine = new Engine();
-            srcMsg = new PEpMessageBuilder(source).createMessage(context);
-            if (isUnencryptedForSome(srcMsg) || srcMsg.getBcc() != null && srcMsg.getBcc().size() > 1) {
-                Message toEncryptMessage = prepareMessageToSend(source, true);
-                messagesTo_pEp.add(toEncryptMessage);
-
-                if (toEncryptMessage.getBcc() != null) {
-                    for (Identity identity : toEncryptMessage.getBcc()) {
-                        Message message = new PEpMessageBuilder(source).createMessage(context);
-                        message.setTo(null);
-                        message.setCc(null);
-                        Vector <Identity> oneBCCList = new Vector<>();
-                        oneBCCList.add(identity);
-                        message.setBcc(oneBCCList);
-                        messagesTo_pEp.add(message);
-                    }
-                    toEncryptMessage.setBcc(null);
-                    if(toEncryptMessage.getTo() == null
-                            && toEncryptMessage.getCc() == null
-                            && toEncryptMessage.getBcc() == null) {
-                        messagesTo_pEp.remove(ENCRYPTED_MESSAGE_POSITION);
-                    }
-                }
-
-                Message unencryptedMessage = prepareMessageToSend(source, false);
-                messagesTo_pEp.add(unencryptedMessage);
-
-            } else {
-                messagesTo_pEp.add(srcMsg);
-            }
-
-            List<MimeMessage> messages = new ArrayList<>();
-            for (Message message : messagesTo_pEp) {
-                messages.add(getEncryptedCopy(message, extraKeys));
-            }
-
-            return messages;
+            resultMessages.addAll(getEncryptedCopies(source, extraKeys));
+            resultMessages.addAll(getUnencryptedCopies(source, extraKeys));
+            return resultMessages;
         } catch (Throwable t) {
             Log.e(TAG, "while encrypting message:", t);
             throw new RuntimeException("Could not encrypt");
         } finally {
-            if (srcMsg != null) srcMsg.close();
-            for (Message message : messagesTo_pEp) {
-                if (message != null) message.close();
-            }
             Log.d(TAG, "encryptMessage() exit");
+        }
+    }
+
+    private List<MimeMessage> getUnencryptedCopies(MimeMessage source, String[] extraKeys) throws MessagingException, pEpException {
+        List<MimeMessage> messages = new ArrayList<>();
+        messages.add(getUnencryptedBCCCopy(source));
+        messages.add(getEncryptedCopy(getUnencryptedCopyWithoutBCC(source), extraKeys));
+        return messages;
+
+    }
+
+    private Message getUnencryptedCopyWithoutBCC(MimeMessage source) throws MessagingException {
+        Message message = stripEncryptedRecipients(source);
+        message.setBcc(null);
+        return message;
+    }
+
+    private MimeMessage getUnencryptedBCCCopy(MimeMessage source) throws MessagingException {
+        Message message = stripEncryptedRecipients(source);
+        message.setTo(null);
+        message.setCc(null);
+        MimeMessage result = new MimeMessageBuilder(this, message).createMessage(false);
+        message.close();
+        return result;
+    }
+
+    @NonNull
+    private List<MimeMessage> encryptMessages(String[] extraKeys, List<Message> messagesToEncrypt) throws pEpException, MessagingException {
+        List<MimeMessage> messages = new ArrayList<>();
+        for (Message message : messagesToEncrypt) {
+            messages.add(getEncryptedCopy(message, extraKeys));
+        }
+        return messages;
+    }
+
+    private List <MimeMessage> getEncryptedCopies(MimeMessage source, String[] extraKeys) throws pEpException, MessagingException {
+        List<MimeMessage> result = new ArrayList<>();
+        List<Message> messagesToEncrypt = new ArrayList<>();
+        Message toEncryptMessage = stripUnencryptedRecipients(source);
+        messagesToEncrypt.add(toEncryptMessage);
+
+        if (toEncryptMessage.getBcc() != null) {
+            handleEncryptedBCC(source, toEncryptMessage, messagesToEncrypt);
+        }
+
+        result.addAll(encryptMessages(extraKeys, messagesToEncrypt));
+
+        for (Message message : messagesToEncrypt) {
+            message.close();
+        }
+        return result;
+    }
+
+    private Message stripUnencryptedRecipients(MimeMessage source) {
+        return stripRecipients(source, false);
+    }
+
+    private Message stripEncryptedRecipients(MimeMessage source) {
+        return stripRecipients(source, true);
+    }
+
+    private void handleEncryptedBCC(MimeMessage source, Message pEpMessage, List<Message> outgoingMessageList) {
+        for (Identity identity : pEpMessage.getBcc()) {
+            Message message = new PEpMessageBuilder(source).createMessage(context);
+            message.setTo(null);
+            message.setCc(null);
+            Vector<Identity> oneBCCList = new Vector<>();
+            oneBCCList.add(identity);
+            message.setBcc(oneBCCList);
+            outgoingMessageList.add(message);
+        }
+        pEpMessage.setBcc(null);
+        if(pEpMessage.getTo() == null
+                && pEpMessage.getCc() == null
+                && pEpMessage.getBcc() == null) {
+            outgoingMessageList.remove(ENCRYPTED_MESSAGE_POSITION);
         }
     }
 
@@ -232,11 +249,11 @@ public class PEpProviderImpl implements PEpProvider {
         return new MimeMessageBuilder(this, currentEnc).createMessage(false);
     }
 
-    private Message prepareMessageToSend(MimeMessage src, boolean encrypted) {
+    private Message stripRecipients(MimeMessage src, boolean encrypted) {
         Message message = new PEpMessageBuilder(src).createMessage(context);
-        message.setTo(removeRecipients(message.getTo(), !encrypted));
-        message.setCc(removeRecipients(message.getCc(), !encrypted));
-        message.setBcc(removeRecipients(message.getBcc(), !encrypted));
+        message.setTo(removeRecipients(message.getTo(), encrypted));
+        message.setCc(removeRecipients(message.getCc(), encrypted));
+        message.setBcc(removeRecipients(message.getBcc(), encrypted));
         return message;
     }
 
