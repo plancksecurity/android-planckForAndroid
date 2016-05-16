@@ -3651,6 +3651,27 @@ public class MessagingController {
 
     }
 
+    @SuppressLint("NewApi") // used for debugging only
+    public void debugClearMessagesLocally(final List<LocalMessage> messages) {
+        if (!BuildConfig.DEBUG) {
+            throw new AssertionError("method must only be used in debug build!");
+        }
+
+        putBackground("debugClearLocalMessages", null, new Runnable() {
+            @Override
+            public void run() {
+                for (LocalMessage message : messages) {
+                    try {
+                        message.debugClearLocalData();
+                    } catch (MessagingException e) {
+                        throw new AssertionError("clearing local message content failed!", e);
+                    }
+                }
+            }
+        });
+
+    }
+
     private void deleteMessagesSynchronous(final Account account, final String folder, final List<? extends Message> messages,
                                            MessagingListener listener) {
         Folder localFolder = null;

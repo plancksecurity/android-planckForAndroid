@@ -1,6 +1,5 @@
 package com.fsck.k9.fragment;
 
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
