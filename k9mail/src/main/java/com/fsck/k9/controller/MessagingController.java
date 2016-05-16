@@ -1,5 +1,34 @@
 package com.fsck.k9.controller;
 
+
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +50,7 @@ import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.cache.EmailProviderCache;
 import com.fsck.k9.mail.*;
 import com.fsck.k9.mail.Folder.FolderType;
+import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mail.internet.*;
 import com.fsck.k9.mail.power.TracingPowerManager;
@@ -29,6 +59,8 @@ import com.fsck.k9.mail.store.pop3.Pop3Store;
 import com.fsck.k9.mailstore.*;
 import com.fsck.k9.mailstore.LocalFolder.MoreMessages;
 import com.fsck.k9.mailstore.LocalStore.PendingCommand;
+import com.fsck.k9.mailstore.MessageRemovalListener;
+import com.fsck.k9.mailstore.UnavailableStorageException;
 import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
@@ -2673,14 +2705,13 @@ public class MessagingController implements Runnable {
         put("loadMessageForViewRemote", listener, new Runnable() {
             @Override
             public void run() {
-                loadMessageForViewRemoteSynchronous(account, folder, uid, listener, false, false);
+                loadMessageForViewRemoteSynchronous(account, folder, uid, listener, false);
             }
         });
     }
 
     public boolean loadMessageForViewRemoteSynchronous(final Account account, final String folder,
-            final String uid, final MessagingListener listener, final boolean force,
-            final boolean loadPartialFromSearch) {
+            final String uid, final MessagingListener listener, final boolean loadPartialFromSearch) {
         Folder remoteFolder = null;
         LocalFolder localFolder = null;
         try {
@@ -2811,9 +2842,7 @@ public class MessagingController implements Runnable {
                     // TODO: limit by account.getMaximumAutoDownloadMessageSize().
                     if (!message.isSet(Flag.X_DOWNLOADED_FULL) &&
                             !message.isSet(Flag.X_DOWNLOADED_PARTIAL)) {
-                        if (loadMessageForViewRemoteSynchronous(account, folder, uid, listener,
-                                false, true)) {
-
+                        if (loadMessageForViewRemoteSynchronous(account, folder, uid, listener, true)) {
                             markMessageAsReadOnView(account, message);
                         }
                         return;
