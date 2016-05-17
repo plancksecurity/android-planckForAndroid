@@ -819,6 +819,11 @@ public class RecipientPresenter implements PermissionPingCallback {
         recipientMvpView.onPepIndicator();
     }
 
+    public boolean isForwardedMessageWeakestThanOriginal(Color originalMessageColor) {
+        Color currentColor = recipientMvpView.getpEpColor();
+        return currentColor.value < Color.pEpRatingReliable.value && currentColor.value < originalMessageColor.value;
+    }
+
     public enum CryptoProviderState {
         UNCONFIGURED,
         UNINITIALIZED,

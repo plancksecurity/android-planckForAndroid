@@ -46,6 +46,7 @@ import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.ui.messageview.OnCryptoClickListener;
 
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpStatus;
 import org.pEp.jniadapter.Color;
@@ -277,11 +278,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     }
 
     public void populate(final Message message, final Account account) throws MessagingException {
-        String[] pEpColor = message.getHeader(MimeHeader.HEADER_PEPCOLOR);
-        if(pEpColor != null && pEpColor.length > 0)
-            mPEpColor = Color.valueOf(pEpColor[0]);
-        else
-            mPEpColor = Color.pEpRatingUndefined;
+        mPEpColor = PEpUtils.extractpEpColor(message);
 
         Log.i("pEp", "got color " + mPEpColor + " " + mPEpColor.value);
         //mPEpIndicator.setImageDrawable(pePUIArtefactCache.getIcon(mPEpColor));

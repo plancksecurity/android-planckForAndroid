@@ -29,7 +29,7 @@ import java.util.HashMap;
 public class PePUIArtefactCache
 {
     private final Context context;
-    private HashMap<Color,Integer> colorIndexMapping = new HashMap<Color,Integer>();
+    private HashMap<Color,Integer> colorIndexMapping = new HashMap<>();
     private String[] title;
     private String[] description;
     private int[] color;
@@ -84,13 +84,13 @@ public class PePUIArtefactCache
     }
 
     public int getColor(Color pepColor) {
-        return PEpUtils.getColorColor(pepColor, resources);
+        return PEpUtils.getColorColor(pepColor, context);
     }
 
 
     public ArrayList<Identity> getRecipients() {
         if (recipients == null) {
-            return new ArrayList<Identity>();
+            return new ArrayList<>();
         }
         return recipients;
     }

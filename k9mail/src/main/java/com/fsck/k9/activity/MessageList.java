@@ -41,6 +41,8 @@ import com.fsck.k9.activity.setup.FolderSettings;
 import com.fsck.k9.activity.setup.Prefs;
 import com.fsck.k9.fragment.MessageListFragment;
 import com.fsck.k9.fragment.MessageListFragment.MessageListFragmentListener;
+import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.mailstore.LocalMessage;
@@ -59,6 +61,7 @@ import com.fsck.k9.view.MessageTitleView;
 import com.fsck.k9.view.ViewSwitcher;
 import com.fsck.k9.view.ViewSwitcher.OnSwitchCompleteListener;
 import de.cketti.library.changelog.ChangeLog;
+import org.pEp.jniadapter.Color;
 
 import java.util.Collection;
 import java.util.List;
@@ -1238,8 +1241,12 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     @Override
-    public void onForward(MessageReference messageReference) {
-        onForward(messageReference, null);
+    public void onForward(LocalMessage message) {
+        try {
+            MessageActions.actionForward(this, message, null, PEpUtils.extractpEpColor(message));
+        } catch (MessagingException e) {
+            Log.e(K9.LOG_TAG, "onForward: ", e);
+        }
     }
 
     @Override

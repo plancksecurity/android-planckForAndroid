@@ -8,6 +8,7 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mailstore.LocalMessage;
+import org.pEp.jniadapter.Color;
 
 public class MessageActions {
     /**
@@ -71,14 +72,17 @@ public class MessageActions {
     /**
      * Compose a new message as a forward of the given message.
      * @param messageBody optional, for decrypted messages, null if it should be grabbed from the given message
+     * @param mPEpColor
      */
     public static void actionForward(
             Context context,
             LocalMessage message,
-            String messageBody) {
+            String messageBody,
+            Color mPEpColor) {
         Intent i = new Intent(context, MessageCompose.class);
         i.putExtra(MessageCompose.EXTRA_MESSAGE_BODY, messageBody);
         i.putExtra(MessageCompose.EXTRA_MESSAGE_REFERENCE, message.makeMessageReference());
+        i.putExtra(MessageCompose.EXTRA_PEP_COLOR, mPEpColor);
         i.setAction(MessageCompose.ACTION_FORWARD);
         context.startActivity(i);
     }

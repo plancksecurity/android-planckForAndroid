@@ -112,6 +112,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private static final int DIALOG_CONFIRM_DISCARD_ON_BACK = 2;
     private static final int DIALOG_CHOOSE_IDENTITY = 3;
     private static final int DIALOG_CONFIRM_DISCARD = 4;
+    private static final int DIALOG_FORWARD_WEAKER_TRUST_LEVEL = 5;
 
     private static final long INVALID_DRAFT_ID = MessagingController.INVALID_MESSAGE_ID;
 
@@ -123,6 +124,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
     public static final String EXTRA_ACCOUNT = "account";
     public static final String EXTRA_MESSAGE_REFERENCE = "message_reference";
+    public static final String EXTRA_PEP_COLOR = "pEpColor";
     public static final String EXTRA_MESSAGE_DECRYPTION_RESULT  = "message_decryption_result";
 
     private static final String STATE_KEY_SOURCE_MESSAGE_PROCED =
@@ -199,6 +201,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private MessageBuilder currentMessageBuilder;
     private boolean mFinishAfterDraftSaved;
     private boolean alreadyNotifiedUserOfEmptySubject = false;
+    private Color originalMessageColor = null;
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
@@ -349,6 +352,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         final Intent intent = getIntent();
 
         mMessageReference = intent.getParcelableExtra(EXTRA_MESSAGE_REFERENCE);
+        originalMessageColor = ((Color) intent.getSerializableExtra(EXTRA_PEP_COLOR));
+
 
         final String accountUuid = (mMessageReference != null) ?
                                    mMessageReference.getAccountUuid() :
@@ -803,6 +808,12 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             return;
         }
 
+        if (isForwardedpEpMessage()
+                && recipientPresenter.isForwardedMessageWeakestThanOriginal(originalMessageColor)) {
+            showDialog(DIALOG_FORWARD_WEAKER_TRUST_LEVEL);
+            return;
+        }
+
         performSendAfterChecks();
     }
 
@@ -1185,6 +1196,25 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                                 })
                         .create();
             }
+            case DIALOG_FORWARD_WEAKER_TRUST_LEVEL: {
+                return new AlertDialog.Builder(this)
+                        .setTitle(R.string.dialog_confirm_forward_title)
+                        .setMessage(R.string.dialog_weaker_forward_warning_message)
+                        .setPositiveButton(R.string.dialog_confirm_delete_confirm_button,
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        performSendAfterChecks();
+                                    }
+                                })
+                        .setNegativeButton(R.string.dialog_confirm_delete_cancel_button,
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                        .create();
+            }
+
         }
         return super.onCreateDialog(id);
     }
@@ -1800,4 +1830,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
     };
 
+
+    private boolean isForwardedpEpMessage() {
+        return originalMessageColor != null;
+    }
 }

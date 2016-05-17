@@ -46,7 +46,6 @@ import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
@@ -344,7 +343,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void onForward() {
         if (mMessage != null) {
-            mFragmentListener.onForward(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply());
+            mFragmentListener.onForward(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), mPEpColor);
         }
     }
 
@@ -715,7 +714,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public void onPepStatus() {
-        ArrayList<Identity> adresses = new ArrayList<Identity>();
+        ArrayList<Identity> adresses = new ArrayList<>();
         adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getFrom()), getApplicationContext()));
         try {
             adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), getApplicationContext()));
@@ -738,7 +737,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public interface MessageViewFragmentListener {
-        void onForward(MessageReference messageReference, Parcelable decryptionResultForReply);
+        void onForward(MessageReference messageReference, Parcelable decryptionResultForReply, Color mPEpColor);
         void disableDeleteAction();
         void onReplyAll(MessageReference messageReference, Parcelable decryptionResultForReply);
         void onReply(MessageReference messageReference, Parcelable decryptionResultForReply);
@@ -760,13 +759,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         public void onMessageDataLoadFinished(LocalMessage message) {
             mMessage = message;
 
-            String[] pEpColor = new String[0];
+
             try {
-                pEpColor = message.getHeader(MimeHeader.HEADER_PEPCOLOR);
-                if(pEpColor != null && pEpColor.length > 0)
-                    mPEpColor = Color.valueOf(pEpColor[0]);
-                else
-                    mPEpColor = Color.pEpRatingUndefined;
+                mPEpColor = PEpUtils.extractpEpColor(message);
 
                 PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), mPEpColor);
                 if (pePUIArtefactCache.getColor(mPEpColor) == getResources().getColor(R.color.pep_gray)) {

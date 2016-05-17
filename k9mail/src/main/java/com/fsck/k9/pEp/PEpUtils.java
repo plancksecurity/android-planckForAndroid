@@ -2,19 +2,13 @@ package com.fsck.k9.pEp;
 
 import android.app.ActionBar;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import com.fsck.k9.R;
 import com.fsck.k9.helper.Contacts;
-import com.fsck.k9.mail.Address;
-import com.fsck.k9.mail.Body;
-import com.fsck.k9.mail.BodyPart;
-import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.internet.MimeMessage;
-import com.fsck.k9.mail.internet.MimeMultipart;
-import com.fsck.k9.mail.internet.MimeUtility;
-import com.fsck.k9.mail.internet.TextBody;
+import com.fsck.k9.mail.*;
+import com.fsck.k9.mail.internet.*;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
 import org.apache.commons.io.IOUtils;
 import org.pEp.jniadapter.Color;
@@ -36,7 +30,7 @@ public class PEpUtils {
     private static final String TRUSTWORDS_SEPARATOR = " ";
 
     public static Vector<Identity> createIdentities(List <Address> addressList, Context context) {
-        Vector<Identity> rv = new Vector<Identity>(addressList.size());
+        Vector<Identity> rv = new Vector<>(addressList.size());
         for (Address adr : addressList)
             rv.add(createIdentity(adr, context));
         return rv;
@@ -172,15 +166,15 @@ public class PEpUtils {
     }
 
 
-    public static int getColorColor(Color pepColor, Resources resources) {
+    public static int getColorColor(Color pepColor, Context context) {
         if (pepColor.value <= Color.pEpRatingRed.value) {
-            return resources.getColor(R.color.pep_red);
+            return ContextCompat.getColor(context, R.color.pep_red);
         } else if (pepColor.value < Color.pEpRatingYellow.value) {
-            return resources.getColor(R.color.pep_gray);
+            return  ContextCompat.getColor(context, R.color.pep_gray);
         } else if (pepColor.value < Color.pEpRatingGreen.value) {
-            return resources.getColor(R.color.pep_yellow);
+            return  ContextCompat.getColor(context, R.color.pep_yellow);
         } else {
-            return resources.getColor(R.color.pep_green);
+            return  ContextCompat.getColor(context, R.color.pep_green);
         }
     }
 
@@ -189,6 +183,15 @@ public class PEpUtils {
             ColorDrawable colorDrawable = new ColorDrawable(pEpUiCache.getColor(mPEpColor));
             actionBar.setBackgroundDrawable(colorDrawable);
         }
+    }
+
+    public static Color extractpEpColor(Message message) throws MessagingException {
+        String[] pEpColor;
+        pEpColor = message.getHeader(MimeHeader.HEADER_PEPCOLOR);
+        if(pEpColor != null && pEpColor.length > 0)
+            return Color.valueOf(pEpColor[0]);
+        else
+            return Color.pEpRatingUndefined;
     }
 }
 

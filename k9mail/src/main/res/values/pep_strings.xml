@@ -5,6 +5,13 @@
     <string name="handshake">Handshake</string>
     <string name="account_setup_genereting_keys">Making your privacy easy </string>
     <string name="reset_trust">Reset trust</string>
+
+    <string name="dialog_weaker_forward_warning_message">You\'re about to forward an encrypted message as unencrypted. If you choose to proceed, confidential information might be leaked, putting you and your recipients at risk. </string>
+
+    <string name="dialog_confirm_forward_weaker_trust_level_confirm_button">Proceed</string>
+    <string name="dialog_confirm_forward_weaker_trust_level_cancel_button">Cancel</string>
+    <string name="dialog_confirm_forward_title">Confirm forward</string>
+
     <string-array name="pep_states">
         <item>pEpRatingUndefined</item>
         <item>pEpRatingCannotDecrypt</item>
