@@ -10,9 +10,16 @@ import com.fsck.k9.mail.internet.MimeMessage;
 import org.pEp.jniadapter.AndroidHelper;
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Engine;
+import org.pEp.jniadapter.Identity;
+import org.pEp.jniadapter.Message;
 import org.pEp.jniadapter.pEpException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * pep provider implementation. Dietz is the culprit.

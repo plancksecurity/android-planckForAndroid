@@ -416,7 +416,9 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     public void setpEpColor(Color pEpColor) {
         this.pEpColor = pEpColor;
     }
-
+    public Color getpEpColor() {
+        return pEpColor;
+    }
     public void handlepEpState(boolean... withToast) {
         boolean reallyWithToast = true;
         if(withToast.length>0) reallyWithToast = withToast[0];
@@ -448,7 +450,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     }
 
     public void onPepIndicator() {
-        ArrayList<Identity> recipients = new ArrayList<org.pEp.jniadapter.Identity>();
+        ArrayList<Identity> recipients = new ArrayList<>();
         // update color, just to be sure...
         recipients.addAll(PEpUtils.createIdentities(getToAddresses(), activity.getApplicationContext()));
         recipients.addAll(PEpUtils.createIdentities(getCcAddresses(), activity.getApplicationContext()));

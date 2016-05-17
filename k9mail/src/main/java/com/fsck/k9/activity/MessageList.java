@@ -40,6 +40,7 @@ import com.fsck.k9.activity.setup.FolderSettings;
 import com.fsck.k9.activity.setup.Prefs;
 import com.fsck.k9.fragment.MessageListFragment;
 import com.fsck.k9.fragment.MessageListFragment.MessageListFragmentListener;
+import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.PEpUtils;
@@ -58,6 +59,7 @@ import com.fsck.k9.view.MessageTitleView;
 import com.fsck.k9.view.ViewSwitcher;
 import com.fsck.k9.view.ViewSwitcher.OnSwitchCompleteListener;
 import de.cketti.library.changelog.ChangeLog;
+import org.pEp.jniadapter.Color;
 
 import java.util.Collection;
 import java.util.List;
@@ -1223,12 +1225,11 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     @Override
     public void onForward(LocalMessage message) {
-        onForward(message, null);
-    }
-
-    @Override
-    public void onForward(LocalMessage message, Parcelable decryptionResultForReply) {
-        MessageActions.actionForward(this, message, decryptionResultForReply);
+        try {
+            MessageActions.actionForward(this, message, null, PEpUtils.extractpEpColor(message));
+        } catch (MessagingException e) {
+            Log.e(K9.LOG_TAG, "onForward: ", e);
+        }
     }
 
     @Override
@@ -1529,6 +1530,11 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         invalidateOptionsMenu();
     }
 
+
+    @Override
+    public void onForward(LocalMessage mMessage, Parcelable decryptionResultForReply, Color mPEpColor) {
+        
+    }
 
     @Override
     public void disableDeleteAction() {

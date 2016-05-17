@@ -1,10 +1,5 @@
 package com.fsck.k9.ui.messageview;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Locale;
-
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.DownloadManager;
@@ -20,7 +15,10 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.*;
+import android.view.ContextThemeWrapper;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -41,6 +39,7 @@ import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
+import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
@@ -53,6 +52,11 @@ import com.fsck.k9.view.MessageCryptoDisplayStatus;
 import com.fsck.k9.view.MessageHeader;
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Locale;
 
 
 public class MessageViewFragment extends Fragment implements ConfirmationDialogFragmentListener,
@@ -341,7 +345,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void onForward() {
         if (mMessage != null) {
-            mFragmentListener.onForward(mMessage, messageCryptoPresenter.getDecryptionResultForReply());
+            mFragmentListener.onForward(mMessage, messageCryptoPresenter.getDecryptionResultForReply(), mPEpColor);
         }
     }
 
@@ -716,7 +720,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public interface MessageViewFragmentListener {
-        void onForward(LocalMessage mMessage, Parcelable decryptionResultForReply);
+        void onForward(LocalMessage mMessage, Parcelable decryptionResultForReply, Color mPEpColor);
         void disableDeleteAction();
         void onReplyAll(LocalMessage mMessage, Parcelable decryptionResultForReply);
         void onReply(LocalMessage mMessage, Parcelable decryptionResultForReply);

@@ -1,9 +1,7 @@
 package com.fsck.k9.view;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.SpannableString;
@@ -285,14 +283,8 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     }
 
-    private Drawable makePePStatusIcon() {
-        Drawable statusIcon = c.getIcon(mPEpColor);
-        statusIcon.setColorFilter(c.getColor(mPEpColor), PorterDuff.Mode.MULTIPLY);        // FIXME: pEp do it the old way(tm)
-        return statusIcon;
-    }
-
     public void populate(final Message message, final Account account) {
-        String[] pEpColor = message.getHeader(MimeHeader.HEADER_PEPCOLOR);
+        String[] pEpColor = message.getHeader(  MimeHeader.HEADER_PEPCOLOR);
         if(pEpColor != null && pEpColor.length > 0)
             mPEpColor = Color.valueOf(pEpColor[0]);
         else
