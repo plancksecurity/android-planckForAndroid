@@ -31,7 +31,6 @@ import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
@@ -387,7 +386,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void onForward() {
         if (mMessage != null) {
-            mFragmentListener.onForward(mMessage, mPgpData);
+            mFragmentListener.onForward(mMessage, mPgpData, mPEpColor);
         }
     }
 
@@ -726,7 +725,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public void onPepStatus() {
-        ArrayList<Identity> adresses = new ArrayList<Identity>();
+        ArrayList<Identity> adresses = new ArrayList<>();
         adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getFrom()), getApplicationContext()));
         try {
             adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), getApplicationContext()));
@@ -749,7 +748,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public interface MessageViewFragmentListener {
-        public void onForward(LocalMessage mMessage, PgpData mPgpData);
+        public void onForward(LocalMessage mMessage, PgpData mPgpData, Color mPEpColor);
         public void disableDeleteAction();
         public void onReplyAll(LocalMessage mMessage, PgpData mPgpData);
         public void onReply(LocalMessage mMessage, PgpData mPgpData);
@@ -778,13 +777,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
             mMessage = message;
 
-            String[] pEpColor = new String[0];
+
             try {
-                pEpColor = message.getHeader(MimeHeader.HEADER_PEPCOLOR);
-                if(pEpColor != null && pEpColor.length > 0)
-                    mPEpColor = Color.valueOf(pEpColor[0]);
-                else
-                    mPEpColor = Color.pEpRatingUndefined;
+                mPEpColor = PEpUtils.extractpEpColor(message);
 
                 PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), mPEpColor);
                 if (pePUIArtefactCache.getColor(mPEpColor) == getResources().getColor(R.color.pep_gray)) {

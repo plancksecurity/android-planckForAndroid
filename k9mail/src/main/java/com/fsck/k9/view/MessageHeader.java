@@ -18,17 +18,13 @@ import android.view.View.OnLongClickListener;
 import android.widget.*;
 import com.fsck.k9.*;
 import com.fsck.k9.activity.misc.ContactPictureLoader;
-import com.fsck.k9.helper.ClipboardManager;
-import com.fsck.k9.helper.ContactPicture;
-import com.fsck.k9.helper.Contacts;
-import com.fsck.k9.helper.MessageHelper;
-import com.fsck.k9.helper.Utility;
+import com.fsck.k9.helper.*;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeUtility;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import org.pEp.jniadapter.Color;
 
@@ -253,11 +249,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     }
 
     public void populate(final Message message, final Account account) throws MessagingException {
-        String[] pEpColor = message.getHeader(MimeHeader.HEADER_PEPCOLOR);
-        if(pEpColor != null && pEpColor.length > 0)
-            mPEpColor = Color.valueOf(pEpColor[0]);
-        else
-            mPEpColor = Color.pEpRatingUndefined;
+        mPEpColor = PEpUtils.extractpEpColor(message);
 
         Log.i("pEp", "got color " + mPEpColor + " " + mPEpColor.value);
         //mPEpIndicator.setImageDrawable(pePUIArtefactCache.getIcon(mPEpColor));
