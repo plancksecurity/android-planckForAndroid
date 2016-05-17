@@ -41,6 +41,7 @@ import com.fsck.k9.fragment.ProgressDialogFragment.CancelListener;
 import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.helper.IdentityHelper;
 import com.fsck.k9.helper.MailTo;
+import com.fsck.k9.helper.ReplyToParser;
 import com.fsck.k9.helper.SimpleTextWatcher;
 import com.fsck.k9.mail.*;
 import com.fsck.k9.mail.Message;
@@ -365,7 +366,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
         RecipientMvpView recipientMvpView = new RecipientMvpView(this);
         ComposePgpInlineDecider composePgpInlineDecider = new ComposePgpInlineDecider();
-        recipientPresenter = new RecipientPresenter(this, recipientMvpView, mAccount, composePgpInlineDecider);
+        recipientPresenter = new RecipientPresenter(this, recipientMvpView, mAccount,
+                composePgpInlineDecider, new ReplyToParser());
 
         mSubjectView = (EditText) findViewById(R.id.subject);
         mSubjectView.getInputExtras(true).putBoolean("allowEmoji", true);
