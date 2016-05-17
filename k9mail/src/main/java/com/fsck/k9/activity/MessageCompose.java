@@ -100,7 +100,20 @@ import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
-import com.fsck.k9.provider.AttachmentProvider;
+import org.pEp.jniadapter.Color;
+import com.fsck.k9.view.MessageWebView;
+import org.htmlcleaner.CleanerProperties;
+import org.htmlcleaner.HtmlCleaner;
+import org.htmlcleaner.SimpleHtmlSerializer;
+import org.htmlcleaner.TagNode;
+import org.openintents.openpgp.util.OpenPgpApi;
+import org.pEp.jniadapter.Color;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 
 @SuppressWarnings("deprecation")
@@ -268,8 +281,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private String mInReplyTo;
 
 
-    private boolean mSourceProcessed = false;
-
     /**
      * The currently used message format.
      *
@@ -355,7 +366,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
         mMessageReference = intent.getParcelableExtra(EXTRA_MESSAGE_REFERENCE);
         originalMessageColor = ((Color) intent.getSerializableExtra(EXTRA_PEP_COLOR));
-
 
         final String accountUuid = (mMessageReference != null) ?
                                    mMessageReference.getAccountUuid() :

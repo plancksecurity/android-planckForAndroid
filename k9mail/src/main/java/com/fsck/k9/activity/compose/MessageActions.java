@@ -77,12 +77,13 @@ public class MessageActions {
     public static void actionForward(
             Context context,
             LocalMessage message,
-            String messageBody,
+            Parcelable decryptionResult,
             Color mPEpColor) {
         Intent i = new Intent(context, MessageCompose.class);
         i.putExtra(MessageCompose.EXTRA_MESSAGE_BODY, messageBody);
         i.putExtra(MessageCompose.EXTRA_MESSAGE_REFERENCE, message.makeMessageReference());
         i.putExtra(MessageCompose.EXTRA_PEP_COLOR, mPEpColor);
+        i.putExtra(MessageCompose.EXTRA_MESSAGE_DECRYPTION_RESULT, decryptionResult);
         i.setAction(MessageCompose.ACTION_FORWARD);
         context.startActivity(i);
     }
