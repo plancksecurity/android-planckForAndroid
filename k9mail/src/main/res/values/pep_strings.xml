@@ -12,6 +12,15 @@
     <string name="dialog_confirm_forward_weaker_trust_level_cancel_button">Cancel</string>
     <string name="dialog_confirm_forward_title">Confirm forward</string>
 
+    <string name="title_activity_pep_status">Privacy status</string>
+    <string name="pep_extra_addresses">Extra key ids:</string>
+    <string name="pep_use_keyserver">Use keyserver</string>
+    <string name="pep_passive_mode">Passive mode</string>
+
+    <string name="title_activity_pep_trustwords">Trustwords</string>
+    <string name="confirm_trustwords">Yes - Confirm</string>
+    <string name="wrong_trustwords">Wrong Trustwords</string>
+
     <string-array name="pep_states">
         <item>pEpRatingUndefined</item>
         <item>pEpRatingCannotDecrypt</item>
