@@ -28,7 +28,7 @@ public class PEpProviderImpl implements PEpProvider {
 
         context = c;
         try {
-            engine = new Engine();
+            createEngineSession();
         } catch (pEpException e) {
             Log.e("pEpProvider", "setup: ", e);
         }
@@ -53,13 +53,17 @@ public class PEpProviderImpl implements PEpProvider {
     public Color getPrivacyState(Message message) {
         try {
             if (engine == null) {
-                engine = new Engine();
+                createEngineSession();
             }
             return engine.outgoing_message_color(message);
         } catch (pEpException e) {
             Log.e(TAG, "during getPrivacyState:", e);
         }
         return Color.pEpRatingB0rken;
+    }
+
+    private void createEngineSession() throws pEpException {
+        engine = new Engine();
     }
 
     //Don't instantiate a new engine
@@ -72,7 +76,7 @@ public class PEpProviderImpl implements PEpProvider {
         Message testee = null;
         try {
             if (engine == null) {
-                engine = new Engine();
+                createEngineSession();
 
             }
             testee = new Message();
@@ -126,7 +130,7 @@ public class PEpProviderImpl implements PEpProvider {
         Message srcMsg = null;
         Engine.decrypt_message_Return decReturn = null;
         try {
-            if (engine == null) engine = new Engine();
+            if (engine == null) createEngineSession();
 
             srcMsg = new PEpMessageBuilder(source).createMessage(context);
             srcMsg.setDir(Message.Direction.Incoming);
@@ -154,7 +158,7 @@ public class PEpProviderImpl implements PEpProvider {
         List <MimeMessage> resultMessages = new ArrayList<>();
 
         try {
-            if (engine == null) engine = new Engine();
+            if (engine == null) createEngineSession();
             resultMessages.addAll(getEncryptedCopies(source, extraKeys));
             resultMessages.addAll(getUnencryptedCopies(source, extraKeys));
             return resultMessages;
@@ -349,7 +353,7 @@ public class PEpProviderImpl implements PEpProvider {
     private void createEngineInstanceIfNeeded() {
         if (engine == null) {
             try {
-                engine = new Engine();
+                createEngineSession();
             } catch (pEpException e) {
                 Log.e(TAG, "createEngineInstanceIfNeeded", e);
             }

@@ -46,6 +46,7 @@ public class K9 extends Application {
     private PEpProvider pEpProvider;
 
 
+
     public PEpProvider getpEpProvider() { return pEpProvider;}
     public static void setPEpExtraAccounts(String text) {
         pEpExtraAccounts = text;
@@ -65,6 +66,14 @@ public class K9 extends Application {
 
     public Identity updateIdentity(Identity id) {
         return pEpProvider.updateIdentity(id);
+    }
+
+    public static boolean getPEpPassiveMode() {
+        return pEpPassiveMode;
+    }
+
+    public static void setPEpPassiveMode(boolean PEpPassiveMode) {
+        K9.pEpPassiveMode = PEpPassiveMode;
     }
 
     /**
@@ -278,6 +287,8 @@ public class K9 extends Application {
     private static boolean sMessageViewSpamActionVisible = false;
     private static String pEpExtraAccounts = "";
     private static boolean pEpUseKeyserver = false;
+    private static boolean pEpPassiveMode = false;
+
 
     private static int sPgpInlineDialogCounter;
     private static int sPgpSignOnlyDialogCounter;
@@ -524,6 +535,7 @@ public class K9 extends Application {
 
         editor.putString("pEpExtraAccounts", pEpExtraAccounts);
         editor.putBoolean("pEpUseKeyserver", pEpUseKeyserver);
+        editor.putBoolean("pEpPassiveMode", pEpPassiveMode);
 
         fontSizes.save(editor);
     }
@@ -756,6 +768,8 @@ public class K9 extends Application {
         }
         pEpExtraAccounts = storage.getString("pEpExtraAccounts", null);
         pEpUseKeyserver = storage.getBoolean("pEpUseKeyserver", false);
+        pEpPassiveMode = storage.getBoolean("pEpPassiveMode", false);
+
         mAttachmentDefaultPath = storage.getString("attachmentdefaultpath",
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString());
         sUseBackgroundAsUnreadIndicator = storage.getBoolean("useBackgroundAsUnreadIndicator", true);
