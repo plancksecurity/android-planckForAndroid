@@ -406,6 +406,10 @@
             android:persistent="false"
             android:key="pep_use_keyserver"
             android:title="@string/pep_use_keyserver"/>
+        <CheckBoxPreference
+            android:persistent="false"
+            android:key="pep_passive_mode"
+            android:title="@string/pep_passive_mode"/>
     </PreferenceScreen>
 
 

@@ -1,18 +1,8 @@
 package com.fsck.k9.preferences;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
 import android.os.Environment;
-
 import com.fsck.k9.Account;
+import com.fsck.k9.Account.SortType;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
 import com.fsck.k9.K9.NotificationHideSubject;
@@ -20,8 +10,10 @@ import com.fsck.k9.K9.NotificationQuickDelete;
 import com.fsck.k9.K9.SplitViewMode;
 import com.fsck.k9.K9.Theme;
 import com.fsck.k9.R;
-import com.fsck.k9.Account.SortType;
 import com.fsck.k9.preferences.Settings.*;
+
+import java.io.File;
+import java.util.*;
 
 import static com.fsck.k9.K9.LockScreenNotificationVisibility;
 
@@ -278,7 +270,10 @@ public class GlobalSettings {
         ));
         s.put("pep_use_keyserver", Settings.versions(
                 new V(39, new BooleanSetting(true))
-            ));
+        ));
+        s.put("pep_passive_mode", Settings.versions(
+                new V(43, new BooleanSetting(true))
+        ));
 
         SETTINGS = Collections.unmodifiableMap(s);
 

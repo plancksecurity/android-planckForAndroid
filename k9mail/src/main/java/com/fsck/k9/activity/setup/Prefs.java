@@ -1,26 +1,13 @@
 package com.fsck.k9.activity.setup;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
-import android.preference.EditTextPreference;
-import android.preference.ListPreference;
-import android.preference.Preference;
+import android.preference.*;
 import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceScreen;
 import android.text.TextUtils;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import com.fsck.k9.K9;
 import com.fsck.k9.K9.NotificationHideSubject;
 import com.fsck.k9.K9.NotificationQuickDelete;
@@ -36,8 +23,10 @@ import com.fsck.k9.preferences.CheckBoxListPreference;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.preferences.TimePickerPreference;
-
 import com.fsck.k9.service.MailService;
+
+import java.io.File;
+import java.util.*;
 
 
 public class Prefs extends K9PreferenceActivity {
@@ -102,6 +91,7 @@ public class Prefs extends K9PreferenceActivity {
     private static final String PREFERENCE_SPLITVIEW_MODE = "splitview_mode";
     private static final String PEP_EXTRA_ACCOUNTS = "pep_extra_accounts";
     private static final String PEP_USE_KEYSERVER = "pep_use_keyserver";
+    private static final String PEP_PASSIVE_MODE = "pep_passive_mode";
 
     private static final int ACTIVITY_CHOOSE_FOLDER = 1;
 
@@ -160,6 +150,7 @@ public class Prefs extends K9PreferenceActivity {
     private ListPreference mSplitViewMode;
     private EditTextPreference mPEpExtraAccounts;
     private CheckBoxPreference mPEpUseKeyserver;
+    private CheckBoxPreference mPEpPassiveMode;
 
 
     public static void actionPrefs(Context context) {
@@ -431,6 +422,8 @@ public class Prefs extends K9PreferenceActivity {
         mPEpUseKeyserver =(CheckBoxPreference) findPreference(PEP_USE_KEYSERVER);
         mPEpUseKeyserver.setChecked(K9.getPEpUseKeyserver());
 
+        mPEpPassiveMode =(CheckBoxPreference) findPreference(PEP_PASSIVE_MODE);
+        mPEpPassiveMode.setChecked(K9.getPEpPassiveMode());
 
         mSplitViewMode = (ListPreference) findPreference(PREFERENCE_SPLITVIEW_MODE);
         initListPreference(mSplitViewMode, K9.getSplitViewMode().name(),
@@ -537,6 +530,7 @@ public class Prefs extends K9PreferenceActivity {
         K9.setHideTimeZone(mHideTimeZone.isChecked());
         K9.setPEpExtraAccounts(mPEpExtraAccounts.getText());
         K9.setPEpUseKeyserver(mPEpUseKeyserver.isChecked());
+        K9.setPEpPassiveMode(mPEpPassiveMode.isChecked());
 
         StorageEditor editor = storage.edit();
         K9.save(editor);
