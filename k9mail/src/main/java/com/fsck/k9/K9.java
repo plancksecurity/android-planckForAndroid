@@ -72,8 +72,11 @@ public class K9 extends Application {
         return pEpPassiveMode;
     }
 
-    public static void setPEpPassiveMode(boolean PEpPassiveMode) {
-        K9.pEpPassiveMode = PEpPassiveMode;
+    public void setPEpPassiveMode(boolean enabled) {
+        K9.pEpPassiveMode = enabled;
+        pEpProvider.setPassiveModeEnabled(enabled);
+        MessagingController.getInstance(this).setPassiveModeEnabled(enabled);
+
     }
 
     /**
