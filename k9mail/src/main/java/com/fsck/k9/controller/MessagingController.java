@@ -4365,6 +4365,11 @@ public class MessagingController implements Runnable {
     }
 
     static AtomicInteger sequencing = new AtomicInteger(0);
+
+    public void setPassiveModeEnabled(boolean enable) {
+        pEpProvider.setPassiveModeEnabled(enable);
+    }
+
     static class Command implements Comparable<Command> {
         public Runnable runnable;
 

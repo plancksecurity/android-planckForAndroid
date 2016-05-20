@@ -3,6 +3,7 @@ package com.fsck.k9.pEp;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import com.fsck.k9.K9;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
@@ -26,6 +27,7 @@ import java.util.Vector;
  */
 public class PEpProviderImpl implements PEpProvider {
     private static final String TAG = "pEp";
+    public static final String PEP_OWN_USER_ID = "pEp_own_userId";
     private static boolean pEpInitialized = false;
     private Context context;
     private Engine engine;
@@ -69,6 +71,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     private void createEngineSession() throws pEpException {
         engine = new Engine();
+        engine.config_passive_mode(K9.getPEpPassiveMode());
     }
 
     //Don't instantiate a new engine
@@ -88,7 +91,7 @@ public class PEpProviderImpl implements PEpProvider {
 
             Identity idFrom = PEpUtils.createIdentity(from, context);
             idFrom.me = true;
-            engine.myself(idFrom);              // not sure wether that call is necessary. But it should do no harm. If necessary, add below too. Now called in right context if only one account.
+            myself(idFrom);            // not sure wether that call is necessary. But it should do no harm. If necessary, add below too. Now called in right context if only one account.
             testee.setFrom(idFrom);
             testee.setTo(PEpUtils.createIdentities(toAddresses, context));
             testee.setCc(PEpUtils.createIdentities(ccAddresses, context));
@@ -254,6 +257,9 @@ public class PEpProviderImpl implements PEpProvider {
     MimeMessage getEncryptedCopy(Message message, String[] extraKeys) throws pEpException, MessagingException {
         message.setDir(Message.Direction.Outgoing);
         Log.d(TAG, "encryptMessage() before encrypt");
+        Identity from = message.getFrom();
+        from.user_id = PEP_OWN_USER_ID;
+        message.setFrom(from);
         Message currentEnc = engine.encrypt_message(message, convertExtraKeys(extraKeys));
         if (currentEnc == null) currentEnc = message;
         Log.d(TAG, "encryptMessage() after encrypt");
@@ -352,7 +358,14 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public void myself(Identity myId) {
         createEngineInstanceIfNeeded();
+        myId.user_id = PEP_OWN_USER_ID;
         engine.myself(myId);
+    }
+
+    @Override
+    public void setPassiveModeEnabled(boolean enable) {
+        createEngineInstanceIfNeeded();
+        engine.config_passive_mode(enable);
     }
 
     private void createEngineInstanceIfNeeded() {
