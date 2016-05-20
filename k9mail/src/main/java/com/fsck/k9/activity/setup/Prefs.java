@@ -530,7 +530,7 @@ public class Prefs extends K9PreferenceActivity {
         K9.setHideTimeZone(mHideTimeZone.isChecked());
         K9.setPEpExtraAccounts(mPEpExtraAccounts.getText());
         K9.setPEpUseKeyserver(mPEpUseKeyserver.isChecked());
-        K9.setPEpPassiveMode(mPEpPassiveMode.isChecked());
+        ((K9) getApplicationContext()).setPEpPassiveMode(mPEpPassiveMode.isChecked());
 
         StorageEditor editor = storage.edit();
         K9.save(editor);

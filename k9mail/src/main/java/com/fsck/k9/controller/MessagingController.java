@@ -4333,8 +4333,13 @@ public class MessagingController {
         }
     }
 
-    private static AtomicInteger sequencing = new AtomicInteger(0);
-    private static class Command implements Comparable<Command> {
+    static AtomicInteger sequencing = new AtomicInteger(0);
+
+    public void setPassiveModeEnabled(boolean enable) {
+        pEpProvider.setPassiveModeEnabled(enable);
+    }
+
+    static class Command implements Comparable<Command> {
         public Runnable runnable;
         public MessagingListener listener;
         public String description;

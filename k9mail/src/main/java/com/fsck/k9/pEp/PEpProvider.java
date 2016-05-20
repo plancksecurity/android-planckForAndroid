@@ -125,6 +125,8 @@ public interface PEpProvider {
 
     void myself(Identity myId);
 
+    void setPassiveModeEnabled(boolean enable);
+
     class DecryptResult {
         DecryptResult(MimeMessage msg, Color col) {
             this.msg = msg;
