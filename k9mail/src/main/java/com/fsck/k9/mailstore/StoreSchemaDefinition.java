@@ -123,6 +123,7 @@ class StoreSchemaDefinition implements LockableDatabase.SchemaDefinition {
                 "pep_color TEXT" +
                 ")");
 
+        db.execSQL("DROP TABLE IF EXISTS message_parts");
         db.execSQL("CREATE TABLE message_parts (" +
                 "id INTEGER PRIMARY KEY, " +
                 "type INTEGER NOT NULL, " +
