@@ -928,7 +928,7 @@ public class MessagingController implements Runnable {
             /*
              * Now we download the actual content of messages.
              */
-            int newMessages = downloadMessages(account, remoteFolder, localFolder, remoteMessages, false);
+            int newMessages = downloadMessages(account, remoteFolder, localFolder, remoteMessages, false, true);
 
             int unreadMessageCount = localFolder.getUnreadMessageCount();
             for (MessagingListener l : getListeners()) {
@@ -1065,14 +1065,16 @@ public class MessagingController implements Runnable {
      *            A list of messages objects that store the UIDs of which messages to download.
      * @param flagSyncOnly
      *            Only flags will be fetched from the remote store if this is {@code true}.
+     * @param purgeToVisibleLimit
+     *            If true, local messages will be purged down to the limit of visible messages.
      *
      * @return The number of downloaded messages that are not flagged as {@link Flag#SEEN}.
      *
      * @throws MessagingException
      */
     private int downloadMessages(final Account account, final Folder remoteFolder,
-                                 final LocalFolder localFolder, List<Message> inputMessages,
-                                 boolean flagSyncOnly) throws MessagingException {
+            final LocalFolder localFolder, List<Message> inputMessages,
+            boolean flagSyncOnly, boolean purgeToVisibleLimit) throws MessagingException {
 
         final Date earliestDate = account.getEarliestPollDate();
         Date downloadStarted = new Date(); // now
@@ -1190,15 +1192,17 @@ public class MessagingController implements Runnable {
         if (K9.DEBUG)
             Log.d(K9.LOG_TAG, "SYNC: Synced remote messages for folder " + folder + ", " + newMessages.get() + " new messages");
 
-        localFolder.purgeToVisibleLimit(new MessageRemovalListener() {
-            @Override
-            public void messageRemoved(Message message) {
-                for (MessagingListener l : getListeners()) {
-                    l.synchronizeMailboxRemovedMessage(account, folder, message);
+        if (purgeToVisibleLimit) {
+            localFolder.purgeToVisibleLimit(new MessageRemovalListener() {
+                @Override
+                public void messageRemoved(Message message) {
+                    for (MessagingListener l : getListeners()) {
+                        l.synchronizeMailboxRemovedMessage(account, folder, message);
+                    }
                 }
-            }
 
-        });
+            });
+        }
 
         // If the oldest message seen on this sync is newer than
         // the oldest message seen on the previous sync, then
@@ -2775,7 +2779,7 @@ public class MessagingController implements Runnable {
 
                 if (loadPartialFromSearch) {
                     downloadMessages(account, remoteFolder, localFolder,
-                            Collections.singletonList(remoteMessage), false);
+                            Collections.singletonList(remoteMessage), false, false);
                 } else {
                     FetchProfile fp = new FetchProfile();
                     fp.add(FetchProfile.Item.BODY);
@@ -4616,7 +4620,7 @@ public class MessagingController implements Runnable {
                     localFolder.open(Folder.OPEN_MODE_RW);
 
                     account.setRingNotified(false);
-                    int newCount = downloadMessages(account, remoteFolder, localFolder, messages, flagSyncOnly);
+                    int newCount = downloadMessages(account, remoteFolder, localFolder, messages, flagSyncOnly, true);
 
                     int unreadMessageCount = localFolder.getUnreadMessageCount();
 
