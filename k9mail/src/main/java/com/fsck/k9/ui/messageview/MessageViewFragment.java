@@ -39,6 +39,7 @@ import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
+import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
@@ -751,6 +752,15 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
             displayHeaderForLoadingMessage(message);
             mMessageView.setToLoadingState();
+
+            try {
+                mPEpColor = PEpUtils.extractpEpColor(message);
+
+                PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), mPEpColor);
+
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
