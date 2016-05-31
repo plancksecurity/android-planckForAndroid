@@ -30,35 +30,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import android.annotation.SuppressLint;
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -165,7 +136,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
 
 /**
  * Starts a long running (application) Thread that will run through commands
@@ -636,7 +606,7 @@ public class MessagingController {
     }
 
     public Future<?> searchRemoteMessages(final String acctUuid, final String folderName, final String query,
-            final Set<Flag> requiredFlags, final Set<Flag> forbiddenFlags, final MessagingListener listener) {
+                                          final Set<Flag> requiredFlags, final Set<Flag> forbiddenFlags, final MessagingListener listener) {
         if (K9.DEBUG) {
             String msg = "searchRemoteMessages ("
                          + "acct=" + acctUuid
@@ -2214,7 +2184,7 @@ public class MessagingController {
              * upto speed with the remote UIDs of remote destination folder.
              */
             if (!localUidMap.isEmpty() && remoteUidMap != null && !remoteUidMap.isEmpty()) {
-                for (Map.Entry<String, String> entry : remoteUidMap.entrySet()) {
+                for (Entry<String, String> entry : remoteUidMap.entrySet()) {
                     String remoteSrcUid = entry.getKey();
                     String localDestUid = localUidMap.get(remoteSrcUid);
                     String newUid = entry.getValue();
@@ -2632,7 +2602,7 @@ public class MessagingController {
         }
 
         // Loop over all folders
-        for (Entry<String, List<String>> entry : folderMap.entrySet()) {
+        for (Map.Entry<String, List<String>> entry : folderMap.entrySet()) {
             String folderName = entry.getKey();
 
             // Notify listeners of changed folder status
