@@ -67,4 +67,5 @@ android {
         exclude 'META-INF/NOTICE.txt'
         exclude 'LICENSE.txt'
     }
+    buildToolsVersion '23.0.3'
 }
