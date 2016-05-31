@@ -45,6 +45,7 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
 
             String trust;
             pEp.myself(myId);
+            myId = pEp.updateIdentity(myId);
             String myTrust = PEpUtils.getShortTrustWords(pEp, myId);
             String theirTrust = PEpUtils.getShortTrustWords(pEp, id);
             if (myId.fpr.compareTo(id.fpr) > 0) {
@@ -81,6 +82,7 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
             Log.i("RecipientsAdapter", "onResetClick " + id.address);
             pEp.resetTrust(id);
             notifyDataSetChanged();
+            listener.colorChanged(Color.pEpRatingReliable);
 
         }
     };

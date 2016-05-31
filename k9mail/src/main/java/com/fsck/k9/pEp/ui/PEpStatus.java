@@ -76,6 +76,14 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
             ActionBar actionBar = getActionBar();
             actionBar.setTitle(getString(R.string.title_activity_pep_status));
             colorActionBar();
+            colorActionBar();
+        }
+    }
+
+    private void colorActionBar() {
+        ActionBar actionBar = getActionBar() ;
+        if (actionBar != null) {
+            PEpUtils.colorActionBar(ui, actionBar, m_pEpColor);
         }
     }
 
