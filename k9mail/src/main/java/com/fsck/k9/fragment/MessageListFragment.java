@@ -102,8 +102,7 @@ import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.DatabasePreviewType;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalStore;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.MessageColumns;
@@ -143,6 +142,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         ThreadColumns.ROOT,
         SpecialColumns.ACCOUNT_UUID,
         SpecialColumns.FOLDER_NAME,
+        MessageColumns.PEP_COLOR,
 
         SpecialColumns.THREAD_COUNT,
     };
@@ -166,7 +166,8 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
     private static final int THREAD_ROOT_COLUMN = 16;
     private static final int ACCOUNT_UUID_COLUMN = 17;
     private static final int FOLDER_NAME_COLUMN = 18;
-    private static final int THREAD_COUNT_COLUMN = 19;
+    private static final int PEP_COLOR_COLUMN = 19;
+    private static final int THREAD_COUNT_COLUMN = 20;
 
     private static final String[] PROJECTION = Arrays.copyOf(THREADED_PROJECTION,
             THREAD_COUNT_COLUMN);
@@ -1712,8 +1713,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
 
             }
 
-            QuickContactBadge contactBadge =
-                    (QuickContactBadge) view.findViewById(R.id.contact_badge);
+            PEpContactBadge contactBadge = (PEpContactBadge) view.findViewById(R.id.contact_badge);
             if (mContactsPictureLoader != null) {
                 holder.contactBadge = contactBadge;
             } else {
@@ -1765,6 +1765,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
             Address[] fromAddrs = Address.unpack(fromList);
             Address[] toAddrs = Address.unpack(toList);
             Address[] ccAddrs = Address.unpack(ccList);
+            org.pEp.jniadapter.Color pEpColor = org.pEp.jniadapter.Color.valueOf(cursor.getString(PEP_COLOR_COLUMN));
 
             boolean fromMe = mMessageHelper.toMe(account, fromAddrs);
             boolean toMe = mMessageHelper.toMe(account, toAddrs);
@@ -1823,17 +1824,24 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
             if (holder.contactBadge != null) {
                 if (counterpartyAddress != null) {
                     Utility.setContactForBadge(holder.contactBadge, counterpartyAddress);
+//                    Address from = fromAddrs[0];                            // FIXME: From is an array?!
+//                    List<Address> to = Arrays.asList(toAddrs);
+//                    List<Address> cc = Arrays.asList(ccAddrs);j
+//                    List<Address> bcc = Arrays.asList(new Address[0]);
+//                    holder.contactBadge.setpEpColor(((K9) context.getApplicationContext()).getpEpProvider().getPrivacyState(from, to, cc, bcc));
                     /*
                      * At least in Android 2.2 a different background + padding is used when no
                      * email address is available. ListView reuses the views but QuickContactBadge
                      * doesn't reset the padding, so we do it ourselves.
                      */
+
                     holder.contactBadge.setPadding(0, 0, 0, 0);
                     mContactsPictureLoader.loadContactPicture(counterpartyAddress, holder.contactBadge);
                 } else {
                     holder.contactBadge.assignContactUri(null);
                     holder.contactBadge.setImageResource(R.drawable.ic_contact_picture);
                 }
+                holder.contactBadge.setpEpColor(pEpColor);
             }
 
             // Background color
@@ -1985,7 +1993,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         public CheckBox flagged;
         public CheckBox selected;
         public int position = -1;
-        public QuickContactBadge contactBadge;
+        public PEpContactBadge contactBadge;
         public View attachment;
         @Override
         public void onClick(View view) {

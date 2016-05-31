@@ -18,6 +18,7 @@ public interface PEpProvider {
      * if not, all copies will be unencrypted.
      */
     int ENCRYPTED_MESSAGE_POSITION = 0;
+    public static final String PEP_OWN_USER_ID = "pEp_own_userId";
 
     /**
      * checks the privacy level of the adresses supplied. This method creates a pEp message and

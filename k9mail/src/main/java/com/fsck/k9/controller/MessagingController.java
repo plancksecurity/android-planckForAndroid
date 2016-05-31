@@ -198,7 +198,7 @@ public class MessagingController {
 
     private void runInBackground() {
         Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-        pEpProvider = PEpProviderFactory.createProvider();
+        pEpProvider = PEpProviderFactory.createProvider(context);
         while (!stopped) {
             String commandDescription = null;
             try {
