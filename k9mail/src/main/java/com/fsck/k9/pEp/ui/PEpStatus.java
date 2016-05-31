@@ -23,7 +23,7 @@ import com.fsck.k9.pEp.PePUIArtefactCache;
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
 
-public class PEpStatus extends K9Activity {
+public class PEpStatus extends K9Activity implements ChangeColorListener{
 
     private static final String ACTION_SHOW_PEP_STATUS = "com.fsck.k9.intent.action.SHOW_PEP_STATUS";
     private static final String CURRENT_COLOR = "current_color";
@@ -84,6 +84,13 @@ public class PEpStatus extends K9Activity {
         if (getActionBar() != null) {
             ActionBar actionBar = getActionBar();
             actionBar.setTitle(getString(R.string.title_activity_pep_status));
+            colorActionBar();
+        }
+    }
+
+    private void colorActionBar() {
+        ActionBar actionBar = getActionBar() ;
+        if (actionBar != null) {
             PEpUtils.colorActionBar(ui, actionBar, m_pEpColor);
         }
     }
@@ -105,10 +112,16 @@ public class PEpStatus extends K9Activity {
         ((LinearLayoutManager) recipientsLayoutManager).setOrientation(LinearLayoutManager.VERTICAL);
         recipientsView.setLayoutManager(recipientsLayoutManager);
         recipientsView.setVisibility(View.VISIBLE);
-        recipientsAdapter = new RecipientsAdapter(this, ui.getRecipients(), pEp, myself);
+        recipientsAdapter = new RecipientsAdapter(this, ui.getRecipients(), pEp, myself, this);
         recipientsView.setAdapter(recipientsAdapter);
         recipientsView.addItemDecoration(new SimpleDividerItemDecoration(this));
 
+    }
+
+    @Override
+    public void colorChanged(Color pEpColor) {
+        m_pEpColor = pEpColor;
+        colorActionBar();
     }
 
     public class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
@@ -145,12 +158,19 @@ public class PEpStatus extends K9Activity {
             if (resultCode == RESULT_OK) {
                int position = data.getIntExtra(PEpTrustwords.PARTNER_POSITION, PEpTrustwords.DEFAULT_POSITION);
                 Identity partner = ui.getRecipients().get(position);
-                Log.i("PEpStatus", "onActivityResult " + pEp.identityColor(partner));
+                m_pEpColor = pEp.identityColor(partner);
+                Log.i("PEpStatus", "onActivityResult " + m_pEpColor);
                 recipientsAdapter.notifyDataSetChanged();
-                PEpUtils.colorActionBar(ui, getActionBar(), pEp.identityColor(partner));
+                colorActionBar();
 
 
             }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        colorActionBar();
     }
 }
