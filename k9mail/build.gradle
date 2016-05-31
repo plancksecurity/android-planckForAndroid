@@ -56,9 +56,9 @@ android {
 //        versionCode 23080
 //        versionName '5.108'
 
-        applicationId "com.pep.k9"
-        versionCode 23060020
-        versionName '0.5.8 p≡p'
+        applicationId "pep.android.k9"
+        versionCode 1
+        versionName '0.5.8'
         minSdkVersion 18
         targetSdkVersion 22
 
@@ -113,6 +113,7 @@ android {
             universalApk false
         }
     }
+    buildToolsVersion '23.0.3'
 }
 
 if (project.hasProperty('keyAlias')) {
