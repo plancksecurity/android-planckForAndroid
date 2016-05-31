@@ -259,7 +259,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 mMessageView, mAccount, messageViewInfo);
         if (!handledByCryptoPresenter) {
             mMessageView.showMessage(mAccount, messageViewInfo);
-            mMessageView.getMessageHeaderView().setCryptoStatusDisabled();
+//            mMessageView.getMessageHeaderView().setCryptoStatusDisabled();
         }
     }
 

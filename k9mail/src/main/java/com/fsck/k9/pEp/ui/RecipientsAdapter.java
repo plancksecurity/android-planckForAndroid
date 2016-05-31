@@ -29,6 +29,7 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
 
     private final Activity context;
     private final List<Identity> identities;
+    private final ChangeColorListener listener;
     private ViewHolder viewHolder;
 
     private final String myself;
@@ -44,6 +45,7 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
 
             String trust;
             pEp.myself(myId);
+            myId = pEp.updateIdentity(myId);
             String myTrust = PEpUtils.getShortTrustWords(pEp, myId);
             String theirTrust = PEpUtils.getShortTrustWords(pEp, id);if (myId.fpr.compareTo(id.fpr) > 0) {
                 trust = theirTrust + myTrust;
@@ -65,6 +67,7 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
             Log.i("RecipientsAdapter", "onResetClick " + id.address);
             pEp.resetTrust(id);
             notifyDataSetChanged();
+            listener.colorChanged(Color.pEpRatingReliable);
 
         }
     };
@@ -72,11 +75,13 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
     public RecipientsAdapter(Activity context,
                              List<Identity> identities,
                              PEpProvider pEp,
-                             String myself) {
+                             String myself,
+                             ChangeColorListener listener) {
         this.pEp = pEp;
         this.identities = identities;
         this.context = context;
         this.myself = myself;
+        this.listener = listener;
     }
 
     @Override
