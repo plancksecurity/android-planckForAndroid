@@ -1,17 +1,10 @@
 package com.fsck.k9.mailstore;
 
 
-import java.io.IOException;
-import java.io.OutputStream;
-
-import java.io.ByteArrayInputStream;
-import java.util.Date;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-
 import com.fsck.k9.Account;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
@@ -25,6 +18,9 @@ import com.fsck.k9.mail.message.MessageHeaderParser;
 import com.fsck.k9.mailstore.LockableDatabase.DbCallback;
 import com.fsck.k9.mailstore.LockableDatabase.WrappedException;
 import com.fsck.k9.message.extractors.PreviewResult.PreviewType;
+
+import java.io.ByteArrayInputStream;
+import java.util.Date;
 
 
 public class LocalMessage extends MimeMessage {
@@ -300,39 +296,6 @@ public class LocalMessage extends MimeMessage {
                     } catch (MessagingException e) {
                         throw new WrappedException(e);
                     }
-
-                    return null;
-                }
-            });
-        } catch (WrappedException e) {
-            throw (MessagingException) e.getCause();
-        }
-
-        localStore.notifyChange();
-    }
-
-    public void debugClearLocalData() throws MessagingException {
-        if (!BuildConfig.DEBUG) {
-            throw new AssertionError("method must only be used in debug build!");
-        }
-
-        try {
-            localStore.database.execute(true, new DbCallback<Void>() {
-                @Override
-                public Void doDbWork(final SQLiteDatabase db) throws WrappedException, MessagingException {
-                    ContentValues cv = new ContentValues();
-                    cv.putNull("message_part_id");
-
-                    db.update("messages", cv, "id = ?", new String[] { Long.toString(mId) });
-
-                    try {
-                        ((LocalFolder) mFolder).deleteMessagePartsAndDataFromDisk(messagePartId);
-                    } catch (MessagingException e) {
-                        throw new WrappedException(e);
-                    }
-
-                    setFlag(Flag.X_DOWNLOADED_FULL, false);
-                    setFlag(Flag.X_DOWNLOADED_PARTIAL, false);
 
                     return null;
                 }

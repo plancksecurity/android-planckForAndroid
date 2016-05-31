@@ -5,6 +5,8 @@ import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import com.fsck.k9.Account;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.mail.*;
@@ -18,6 +20,7 @@ import org.pEp.jniadapter.Identity;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
@@ -44,6 +47,12 @@ public class PEpUtils {
 //        if (adr.getPersonal() != null) {
 //            id.username = adr.getPersonal();
 //        } else id.us
+
+
+        if (isMyself(context, adr)) {
+            id.user_id = PEpProvider.PEP_OWN_USER_ID;
+            return id;
+        }
         try {
             id.user_id = Contacts.getInstance(context).getContactId(adr.getAddress());
         } catch (Exception e) {
@@ -57,6 +66,20 @@ public class PEpUtils {
 
         // TODO: do I have any kind of unique id for user_id? (no, I don't, see hack from above)
         return id;
+    }
+
+    private static boolean isMyself(Context context, Address adr) {
+        Preferences prefs = Preferences.getPreferences(context.getApplicationContext());
+        Collection<Account> accounts = prefs.getAvailableAccounts();
+        for (Account account : accounts) {
+            List<com.fsck.k9.Identity> identities = account.getIdentities();
+            for (com.fsck.k9.Identity identity : identities) {
+                if (identity.getEmail().equals(adr.getAddress())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     static Address[] createAddresses(Vector<Identity> ids) {

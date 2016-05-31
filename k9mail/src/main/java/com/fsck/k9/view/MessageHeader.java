@@ -41,6 +41,7 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpStatus;
 import com.fsck.k9.ui.messageview.OnCryptoClickListener;
+import com.fsck.k9.pEp.ui.PEpContactBadge;
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
 
@@ -77,7 +78,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     private MessageHelper mMessageHelper;
     private ContactPictureLoader mContactsPictureLoader;
-    private QuickContactBadge mContactBadge;
+    private PEpContactBadge mContactBadge;
 
     private OnLayoutChangedListener mOnLayoutChangedListener;
     private OnCryptoClickListener onCryptoClickListener;
@@ -119,7 +120,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         mCcView = (TextView) findViewById(R.id.cc);
         mCcLabel = (TextView) findViewById(R.id.cc_label);
 
-        mContactBadge = (QuickContactBadge) findViewById(R.id.contact_badge);
+        mContactBadge = (PEpContactBadge) findViewById(R.id.contact_badge);
 
         mSubjectView = (TextView) findViewById(R.id.subject);
         mAdditionalHeadersView = (TextView) findViewById(R.id.additional_headers_view);
@@ -293,6 +294,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
         Log.i("pEp", "got color " + mPEpColor + " " + mPEpColor.value);
         Toast.makeText(mContext, PePUIArtefactCache.getInstance(mContext).getTitle(mPEpColor), Toast.LENGTH_LONG).show();
+        mContactBadge.setpEpColor(mPEpColor);
         //mPEpIndicator.setImageDrawable(pePUIArtefactCache.getIcon(mPEpColor));
 
         //mPEpIndicator.setOnClickListener(this);

@@ -27,10 +27,13 @@ import java.util.Vector;
  */
 public class PEpProviderImpl implements PEpProvider {
     private static final String TAG = "pEp";
-    public static final String PEP_OWN_USER_ID = "pEp_own_userId";
     private static boolean pEpInitialized = false;
     private Context context;
     private Engine engine;
+
+    public PEpProviderImpl(Context context) {
+        this.context = context;
+    }
 
     public synchronized void setup(Context c) {
         if (!pEpInitialized) {
