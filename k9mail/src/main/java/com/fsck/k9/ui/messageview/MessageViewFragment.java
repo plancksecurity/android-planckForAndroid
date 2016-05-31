@@ -34,6 +34,7 @@ import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.mailstore.MessageViewInfo.MessageViewContainer;
+import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpStatus;
@@ -713,6 +714,14 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), getApplicationContext()));
         adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.CC)), getApplicationContext()));
 
+        String myAddress = "";
+        for (int position = adresses.size() - 1; position >= 0; position--) {
+            Identity identity = adresses.get(position);
+            if (identity.user_id.equals(PEpProvider.PEP_OWN_USER_ID)) {
+                myAddress = identity.address;
+                adresses.remove(position);
+            }
+        }
         pePUIArtefactCache.setRecipients(adresses);
         try {
             for (String s : mMessage.getHeaderNames()) {
@@ -723,7 +732,10 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-        PEpStatus.actionShowStatus(getActivity(), mPEpColor, Preferences.getPreferences(mContext).getDefaultAccount().getIdentity(0).getEmail());
+
+        //FIXME: What happens if, I have more than one own identities. probably mantain, the current account when we
+        // select one on the folder list
+        PEpStatus.actionShowStatus(getActivity(), mPEpColor, myAddress);
     }
 
     public interface MessageViewFragmentListener {

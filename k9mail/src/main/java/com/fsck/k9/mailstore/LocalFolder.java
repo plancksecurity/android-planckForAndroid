@@ -1,55 +1,18 @@
 package com.fsck.k9.mailstore;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-import java.util.UUID;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.activity.Search;
 import com.fsck.k9.helper.Utility;
-import com.fsck.k9.mail.Address;
-import com.fsck.k9.mail.Body;
-import com.fsck.k9.mail.BodyPart;
-import com.fsck.k9.mail.FetchProfile;
-import com.fsck.k9.mail.Flag;
-import com.fsck.k9.mail.Folder;
-import com.fsck.k9.mail.Message;
+import com.fsck.k9.mail.*;
 import com.fsck.k9.mail.Message.RecipientType;
-import com.fsck.k9.mail.MessageRetrievalListener;
-import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.Multipart;
-import com.fsck.k9.mail.Part;
 import com.fsck.k9.mail.filter.CountingOutputStream;
-import com.fsck.k9.mail.internet.BinaryTempFileBody;
-import com.fsck.k9.mail.internet.MimeHeader;
-import com.fsck.k9.mail.internet.MimeMessage;
-import com.fsck.k9.mail.internet.MimeMultipart;
-import com.fsck.k9.mail.internet.MimeUtility;
-import com.fsck.k9.mail.internet.SizeAware;
+import com.fsck.k9.mail.internet.*;
 import com.fsck.k9.mail.message.MessageHeaderParser;
 import com.fsck.k9.mailstore.LockableDatabase.DbCallback;
 import com.fsck.k9.mailstore.LockableDatabase.WrappedException;
@@ -62,6 +25,10 @@ import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import org.apache.commons.io.IOUtils;
 import org.apache.james.mime4j.util.MimeUtil;
+import org.pEp.jniadapter.Color;
+
+import java.io.*;
+import java.util.*;
 
 
 public class LocalFolder extends Folder<LocalMessage> implements Serializable {
@@ -1272,7 +1239,8 @@ public class LocalFolder extends Folder<LocalMessage> implements Serializable {
                     ? System.currentTimeMillis() : message.getInternalDate().getTime());
             cv.put("mime_type", message.getMimeType());
             cv.put("empty", 0);
-
+            if (message.getHeader(MimeHeader.HEADER_PEPCOLOR).length > 0) cv.put("pEp_color", message.getHeader(MimeHeader.HEADER_PEPCOLOR)[0]);
+            else cv.put("pEp_color", Color.pEpRatingUndefined.toString());
             cv.put("preview_type", databasePreviewType.getDatabaseValue());
             if (previewResult.isPreviewTextAvailable()) {
                 cv.put("preview", previewResult.getPreviewText());

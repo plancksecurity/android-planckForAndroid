@@ -1,32 +1,13 @@
 package com.fsck.k9.fragment;
 
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.Future;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.CursorLoader;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.Loader;
+import android.content.*;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -45,34 +26,14 @@ import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.ActionMode;
-import android.view.ContextMenu;
+import android.view.*;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.CheckBox;
-import android.widget.CursorAdapter;
-import android.widget.ListView;
-import android.widget.QuickContactBadge;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.fsck.k9.Account;
+import com.fsck.k9.*;
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.BuildConfig;
-import com.fsck.k9.FontSizes;
-import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
-import com.fsck.k9.R;
 import com.fsck.k9.activity.ActivityListener;
 import com.fsck.k9.activity.ChooseFolder;
 import com.fsck.k9.activity.FolderInfoHolder;
@@ -81,31 +42,17 @@ import com.fsck.k9.activity.misc.ContactPictureLoader;
 import com.fsck.k9.cache.EmailProviderCache;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmentListener;
-import com.fsck.k9.fragment.MessageListFragmentComparators.ArrivalComparator;
-import com.fsck.k9.fragment.MessageListFragmentComparators.AttachmentComparator;
-import com.fsck.k9.fragment.MessageListFragmentComparators.ComparatorChain;
-import com.fsck.k9.fragment.MessageListFragmentComparators.DateComparator;
-import com.fsck.k9.fragment.MessageListFragmentComparators.FlaggedComparator;
-import com.fsck.k9.fragment.MessageListFragmentComparators.ReverseComparator;
-import com.fsck.k9.fragment.MessageListFragmentComparators.ReverseIdComparator;
-import com.fsck.k9.fragment.MessageListFragmentComparators.SenderComparator;
-import com.fsck.k9.fragment.MessageListFragmentComparators.SubjectComparator;
-import com.fsck.k9.fragment.MessageListFragmentComparators.UnreadComparator;
+import com.fsck.k9.fragment.MessageListFragmentComparators.*;
 import com.fsck.k9.helper.ContactPicture;
 import com.fsck.k9.helper.MergeCursorWithUniqueId;
 import com.fsck.k9.helper.MessageHelper;
 import com.fsck.k9.helper.Utility;
-import com.fsck.k9.mail.Address;
-import com.fsck.k9.mail.Flag;
-import com.fsck.k9.mail.Folder;
-import com.fsck.k9.mail.Message;
-import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.*;
 import com.fsck.k9.mailstore.DatabasePreviewType;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalStore;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.MessageColumns;
@@ -120,6 +67,11 @@ import com.fsck.k9.search.SqlQueryBuilder;
 import com.handmark.pulltorefresh.library.ILoadingLayout;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+
+import java.lang.ref.WeakReference;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.Future;
 
 
 public class MessageListFragment extends Fragment implements OnItemClickListener,
@@ -145,6 +97,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         ThreadColumns.ROOT,
         SpecialColumns.ACCOUNT_UUID,
         SpecialColumns.FOLDER_NAME,
+        MessageColumns.PEP_COLOR,
 
         SpecialColumns.THREAD_COUNT,
     };
@@ -168,7 +121,8 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
     private static final int THREAD_ROOT_COLUMN = 16;
     private static final int ACCOUNT_UUID_COLUMN = 17;
     private static final int FOLDER_NAME_COLUMN = 18;
-    private static final int THREAD_COUNT_COLUMN = 19;
+    private static final int PEP_COLOR_COLUMN = 19;
+    private static final int THREAD_COUNT_COLUMN = 20;
 
     private static final String[] PROJECTION = Arrays.copyOf(THREADED_PROJECTION,
             THREAD_COUNT_COLUMN);
@@ -1717,8 +1671,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
 
             }
 
-            QuickContactBadge contactBadge =
-                    (QuickContactBadge) view.findViewById(R.id.contact_badge);
+            PEpContactBadge contactBadge = (PEpContactBadge) view.findViewById(R.id.contact_badge);
             if (mContactsPictureLoader != null) {
                 holder.contactBadge = contactBadge;
             } else {
@@ -1770,6 +1723,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
             Address[] fromAddrs = Address.unpack(fromList);
             Address[] toAddrs = Address.unpack(toList);
             Address[] ccAddrs = Address.unpack(ccList);
+            org.pEp.jniadapter.Color pEpColor = org.pEp.jniadapter.Color.valueOf(cursor.getString(PEP_COLOR_COLUMN));
 
             boolean fromMe = mMessageHelper.toMe(account, fromAddrs);
             boolean toMe = mMessageHelper.toMe(account, toAddrs);
@@ -1828,17 +1782,24 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
             if (holder.contactBadge != null) {
                 if (counterpartyAddress != null) {
                     Utility.setContactForBadge(holder.contactBadge, counterpartyAddress);
+//                    Address from = fromAddrs[0];                            // FIXME: From is an array?!
+//                    List<Address> to = Arrays.asList(toAddrs);
+//                    List<Address> cc = Arrays.asList(ccAddrs);j
+//                    List<Address> bcc = Arrays.asList(new Address[0]);
+//                    holder.contactBadge.setpEpColor(((K9) context.getApplicationContext()).getpEpProvider().getPrivacyState(from, to, cc, bcc));
                     /*
                      * At least in Android 2.2 a different background + padding is used when no
                      * email address is available. ListView reuses the views but QuickContactBadge
                      * doesn't reset the padding, so we do it ourselves.
                      */
+
                     holder.contactBadge.setPadding(0, 0, 0, 0);
                     mContactsPictureLoader.loadContactPicture(counterpartyAddress, holder.contactBadge);
                 } else {
                     holder.contactBadge.assignContactUri(null);
                     holder.contactBadge.setImageResource(R.drawable.ic_contact_picture);
                 }
+                holder.contactBadge.setpEpColor(pEpColor);
             }
 
             // Background color
@@ -1989,7 +1950,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         public CheckBox flagged;
         public CheckBox selected;
         public int position = -1;
-        public QuickContactBadge contactBadge;
+        public PEpContactBadge contactBadge;
         public View attachment;
         @Override
         public void onClick(View view) {

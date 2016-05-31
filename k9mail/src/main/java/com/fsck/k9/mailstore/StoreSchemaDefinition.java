@@ -1,13 +1,9 @@
 package com.fsck.k9.mailstore;
 
 
-import java.util.List;
-import java.util.Locale;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-
 import com.fsck.k9.Account;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
@@ -15,6 +11,9 @@ import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mailstore.migrations.Migrations;
 import com.fsck.k9.mailstore.migrations.MigrationsHelper;
 import com.fsck.k9.preferences.Storage;
+
+import java.util.List;
+import java.util.Locale;
 
 
 class StoreSchemaDefinition implements LockableDatabase.SchemaDefinition {
@@ -120,7 +119,8 @@ class StoreSchemaDefinition implements LockableDatabase.SchemaDefinition {
                 "flagged INTEGER default 0, " +
                 "answered INTEGER default 0, " +
                 "forwarded INTEGER default 0, " +
-                "message_part_id INTEGER" +
+                "message_part_id INTEGER, " +
+                "pep_color TEXT" +
                 ")");
 
         db.execSQL("CREATE TABLE message_parts (" +

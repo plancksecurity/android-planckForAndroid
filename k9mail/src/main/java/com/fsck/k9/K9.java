@@ -19,14 +19,13 @@ import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.K9MailLib;
 import com.fsck.k9.mail.Message;
-import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.BinaryTempFileBody;
 import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
-import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.provider.UnreadWidgetProvider;
 import com.fsck.k9.service.BootReceiver;
 import com.fsck.k9.service.MailService;
@@ -43,6 +42,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
 public class K9 extends Application {
+    private static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     private PEpProvider pEpProvider;
 
 
@@ -281,7 +281,7 @@ public class K9 extends Application {
     private static boolean sUseBackgroundAsUnreadIndicator = true;
     private static boolean sThreadedViewEnabled = true;
     private static SplitViewMode sSplitViewMode = SplitViewMode.NEVER;
-    private static boolean sColorizeMissingContactPictures = true;
+    private static boolean sColorizeMissingContactPictures = DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE;
 
     private static boolean sMessageViewArchiveActionVisible = false;
     private static boolean sMessageViewDeleteActionVisible = true;
@@ -780,7 +780,7 @@ public class K9 extends Application {
             setBackgroundOps(BACKGROUND_OPS.WHEN_CHECKED_AUTO_SYNC);
         }
 
-        sColorizeMissingContactPictures = storage.getBoolean("colorizeMissingContactPictures", true);
+        sColorizeMissingContactPictures = storage.getBoolean("colorizeMissingContactPictures", DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE);
 
         sMessageViewArchiveActionVisible = storage.getBoolean("messageViewArchiveActionVisible", false);
         sMessageViewDeleteActionVisible = storage.getBoolean("messageViewDeleteActionVisible", true);

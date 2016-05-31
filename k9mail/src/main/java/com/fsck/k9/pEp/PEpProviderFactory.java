@@ -10,12 +10,12 @@ public class PEpProviderFactory {
     // (I cache the context, but am not complely sure, wether it becomes invalid once...)
 
     static public PEpProvider createAndSetupProvider(Context ctx) {
-        PEpProvider rv = createProvider();
+        PEpProvider rv = createProvider(ctx);
         rv.setup(ctx);
         return rv;
     }
 
-    static public PEpProvider createProvider() {
-        return new PEpProviderImpl();
+    static public PEpProvider createProvider(Context context) {
+        return new PEpProviderImpl(context);
     }
 }
