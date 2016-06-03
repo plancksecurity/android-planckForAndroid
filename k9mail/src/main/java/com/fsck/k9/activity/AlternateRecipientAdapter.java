@@ -26,6 +26,8 @@ import com.fsck.k9.view.ThemeUtils;
 
 import java.util.List;
 
+import java.util.List;
+
 
 public class AlternateRecipientAdapter extends BaseAdapter {
     private static final int NUMBER_OF_FIXED_LIST_ITEMS = 2;
