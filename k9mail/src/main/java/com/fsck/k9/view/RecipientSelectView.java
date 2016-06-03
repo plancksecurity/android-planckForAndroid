@@ -1,12 +1,6 @@
 package com.fsck.k9.view;
 
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -27,11 +21,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
 import android.widget.ListPopupWindow;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.AlternateRecipientAdapter;
@@ -39,8 +31,16 @@ import com.fsck.k9.activity.AlternateRecipientAdapter.AlternateRecipientListener
 import com.fsck.k9.activity.compose.RecipientAdapter;
 import com.fsck.k9.activity.compose.RecipientLoader;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.tokenautocomplete.TokenCompleteTextView;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.List;
 
 
 public class RecipientSelectView extends TokenCompleteTextView<Recipient> implements LoaderCallbacks<List<Recipient>>,
@@ -64,6 +64,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private AlternateRecipientAdapter alternatesAdapter;
     private Recipient alternatesPopupRecipient;
     private TokenListener<Recipient> listener;
+    private PEpProvider pEp;
 
 
     public RecipientSelectView(Context context) {
@@ -97,6 +98,8 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
         adapter = new RecipientAdapter(context);
         setAdapter(adapter);
+        pEp = ((K9) context.getApplicationContext()).getpEpProvider();
+
 
         setLongClickable(true);
     }
@@ -125,6 +128,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         holder.vName.setText(recipient.getDisplayNameOrAddress());
 
         RecipientAdapter.setContactPhotoOrPlaceholder(getContext(), holder.vContactPhoto, recipient);
+        holder.vContactPhoto.setpEpColor(pEp.identityColor(recipient.address));
 
         boolean hasCryptoProvider = cryptoProvider != null;
         if (!hasCryptoProvider) {
@@ -475,7 +479,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     private static class RecipientTokenViewHolder {
         public final TextView vName;
-        public final ImageView vContactPhoto;
+        public final PEpContactBadge vContactPhoto;
         public final View cryptoStatusRed;
         public final View cryptoStatusOrange;
         public final View cryptoStatusGreen;
@@ -483,7 +487,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
         RecipientTokenViewHolder(View view) {
             vName = (TextView) view.findViewById(android.R.id.text1);
-            vContactPhoto = (ImageView) view.findViewById(R.id.contact_photo);
+            vContactPhoto = (PEpContactBadge) view.findViewById(R.id.contact_photo);
             cryptoStatusRed = view.findViewById(R.id.contact_crypto_status_red);
             cryptoStatusOrange = view.findViewById(R.id.contact_crypto_status_orange);
             cryptoStatusGreen = view.findViewById(R.id.contact_crypto_status_green);
