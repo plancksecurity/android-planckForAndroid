@@ -4,14 +4,17 @@
     android:orientation="horizontal"
     android:layout_width="wrap_content"
     android:layout_height="32dp"
-    android:background="?attr/contactTokenBackgroundColor">
+    android:background="?attr/contactTokenBackgroundColor"
+    android:padding="4dp">
 
-    <ImageView
+    <com.fsck.k9.pEp.ui.PEpContactBadge
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:gravity="center_vertical"
         android:id="@+id/contact_photo"
         tools:src="@drawable/ic_contact_picture"
+        android:clickable="false"
+        android:layout_marginLeft="3dp"
         />
 
     <TextView

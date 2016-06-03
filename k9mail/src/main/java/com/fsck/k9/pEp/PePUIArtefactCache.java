@@ -3,7 +3,6 @@ package com.fsck.k9.pEp;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import com.fsck.k9.R;
@@ -79,7 +78,7 @@ public class PePUIArtefactCache
 
     public Drawable getIcon(Color pEpColor) {
         Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_action_pep_indicator);
-        icon.setColorFilter(getColor(pEpColor), PorterDuff.Mode.MULTIPLY);
+//        icon.setColorFilter(getColor(pEpColor), PorterDuff.Mode.MULTIPLY);
         return icon;
     }
 

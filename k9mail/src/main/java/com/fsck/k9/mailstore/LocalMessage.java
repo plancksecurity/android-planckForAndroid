@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
-
 import com.fsck.k9.Account;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
@@ -23,6 +22,12 @@ import com.fsck.k9.mail.message.MessageHeaderParser;
 import com.fsck.k9.mailstore.LockableDatabase.DbCallback;
 import com.fsck.k9.mailstore.LockableDatabase.WrappedException;
 import com.fsck.k9.message.extractors.PreviewResult.PreviewType;
+import org.pEp.jniadapter.Color;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.Set;
 
 
 public class LocalMessage extends MimeMessage {
@@ -583,4 +588,30 @@ public class LocalMessage extends MimeMessage {
     public boolean isBodyMissing() {
         return getBody() == null;
     }
+
+    public void setpEpColor(final Color pEpColor) {
+        try {
+            this.localStore.database.execute(true, new DbCallback<Void>() {
+                @Override
+                public Void doDbWork(final SQLiteDatabase db) throws WrappedException, UnavailableStorageException {
+
+                    /*
+                     * Set the new color on the message.
+                     */
+                    ContentValues cv = new ContentValues();
+                    cv.put("pep_color", pEpColor.toString());
+                    db.update("messages", cv, "id = ?", new String[] { Long.toString(mId) });
+
+                    return null;
+                }
+            });
+        } catch (WrappedException e) {
+//            throw(MessagingException) e.getCause();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+
+        this.localStore.notifyChange();
+    }
+
 }

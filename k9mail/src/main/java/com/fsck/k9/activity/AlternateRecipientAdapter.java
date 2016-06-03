@@ -1,8 +1,6 @@
 package com.fsck.k9.activity;
 
 
-import java.util.List;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff.Mode;
@@ -17,13 +15,16 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.QuickContactBadge;
 import android.widget.TextView;
-
+import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.RecipientAdapter;
+import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.ThemeUtils;
+
+import java.util.List;
 
 
 public class AlternateRecipientAdapter extends BaseAdapter {
@@ -36,12 +37,14 @@ public class AlternateRecipientAdapter extends BaseAdapter {
     private final AlternateRecipientListener listener;
     private List<Recipient> recipients;
     private Recipient currentRecipient;
+    private final PEpProvider pEp;
 
 
     public AlternateRecipientAdapter(Context context, AlternateRecipientListener listener) {
         super();
         this.context = context;
         this.listener = listener;
+        pEp = ((K9) context.getApplicationContext()).getpEpProvider();
     }
 
     public void setCurrentRecipient(Recipient currentRecipient) {
@@ -130,6 +133,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
 
         RecipientAdapter.setContactPhotoOrPlaceholder(context, holder.headerPhoto, recipient);
         holder.headerPhoto.assignContactUri(recipient.getContactLookupUri());
+        holder.headerPhoto.setpEpColor(pEp.identityColor(recipient.address));
 
         holder.headerRemove.setOnClickListener(new OnClickListener() {
             @Override
@@ -207,7 +211,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
         public final View layoutHeader, layoutItem;
         public final TextView headerName;
         public final TextView headerAddressLabel;
-        public final QuickContactBadge headerPhoto;
+        public final PEpContactBadge headerPhoto;
         public final View headerRemove;
         public final TextView itemAddress;
         public final TextView itemAddressLabel;
@@ -220,7 +224,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
 
             headerName = (TextView) view.findViewById(R.id.alternate_header_name);
             headerAddressLabel = (TextView) view.findViewById(R.id.alternate_header_label);
-            headerPhoto = (QuickContactBadge) view.findViewById(R.id.alternate_contact_photo);
+            headerPhoto = (PEpContactBadge) view.findViewById(R.id.alternate_contact_photo);
             headerRemove = view.findViewById(R.id.alternate_remove);
 
             itemAddress = (TextView) view.findViewById(R.id.alternate_address);

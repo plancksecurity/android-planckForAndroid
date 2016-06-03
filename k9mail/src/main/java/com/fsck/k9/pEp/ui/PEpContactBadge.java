@@ -74,8 +74,8 @@ public class PEpContactBadge extends QuickContactBadge {
     protected void onDraw(Canvas canvas) {
         if (super.getDrawable() != null) {
             super.getDrawable().setBounds(contactBoundsBadgeRect);
+            super.getDrawable().draw(canvas);
         }
-        super.getDrawable().draw(canvas);
         if (paint.getAlpha() != 0 && currentStatus != null) {
             currentStatus.setBounds(pEpBadgeRect);
             currentStatus.draw(canvas);
