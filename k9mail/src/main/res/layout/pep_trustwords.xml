@@ -1,44 +1,60 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/activity_vertical_margin"
-                android:paddingBottom="@dimen/activity_vertical_margin"
-                tools:context=".pEp.ui.PEpTrustwords">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:paddingLeft="@dimen/activity_horizontal_margin"
+              android:paddingRight="@dimen/activity_horizontal_margin"
+              android:paddingTop="@dimen/activity_vertical_margin"
+              android:paddingBottom="@dimen/activity_vertical_margin"
+              tools:context=".pEp.ui.PEpTrustwords"
+              android:orientation="vertical">
 
-    <TextView
-            android:id="@+id/trustwords"
-            android:layout_width="wrap_content"
+    <ViewSwitcher
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            tools:text = "la la la "
-            android:textSize="28sp"/>
+            android:id="@+id/flipper"
+            android:inAnimation="@android:anim/slide_in_left"
+            android:outAnimation="@android:anim/slide_out_right">
+
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            <include
+                    android:id="@+id/trustwordsView"
+                    layout="@layout/pep_trustwords_view"/>
+        </LinearLayout>
+
+
+            <include
+                    android:id="@+id/fingerprintView"
+                    layout="@layout/pep_fingerprints_view"/>
+    </ViewSwitcher>
 
     <Button
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:text="@string/confirm_trustwords"
             android:id="@+id/confirmTrustWords"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
             android:background="@color/pep_green"
-            android:layout_margin="8dp"
             android:textColor="@android:color/white"
-            android:elevation="4dp"/>
+            android:elevation="4dp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            />
 
     <Button
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:text="@string/wrong_trustwords"
             android:id="@+id/wrongTrustwords"
-            android:layout_below="@+id/confirmTrustWords"
-            android:layout_centerHorizontal="true"
             android:background="@color/pep_red"
-            android:layout_margin="8dp"
             android:textColor="@android:color/white"
-            android:elevation="4dp"/>
+            android:elevation="4dp"
+            android:layout_margin="8dp"
+            android:layout_gravity="center"
 
-</RelativeLayout>
+            />
+
+</LinearLayout>
