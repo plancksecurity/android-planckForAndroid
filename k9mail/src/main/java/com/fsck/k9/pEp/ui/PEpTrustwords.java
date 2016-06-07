@@ -1,18 +1,23 @@
 package com.fsck.k9.pEp.ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
+import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import org.pEp.jniadapter.Identity;
 
@@ -23,20 +28,34 @@ public class PEpTrustwords extends K9Activity {
     public static final String PARTNER_POSITION = "partnerPositionKey";
     public static final int DEFAULT_POSITION = -1;
     public static final int HANDSHAKE_REQUEST = 1;
+    private static final String MYSELF = "myselfKey";
+    private static final String PARTNER_PREFIX = "Partner: ";
 
-    private Identity partner;
+    private Identity partner, myself;
     private int partnerPosition;
-
+    Context context;
     @Bind(R.id.trustwords)
     TextView tvTrustwords;
+    @Bind(R.id.tvPartner)
+    TextView partnerView;
+    @Bind(R.id.flipper)
+    ViewSwitcher flipper;
+
+    @Bind(R.id.partnerLabel) TextView partnerLabel;
+    @Bind(R.id.partnerFpr) TextView partnerFpr;
+    @Bind(R.id.myselfLabel) TextView myselfLabel;
+    @Bind(R.id.myselfFpr) TextView myselfFpr;
+    @Bind(R.id.wrongTrustwords)
+    Button wrongTrustWords;
     private PEpProvider pEp;
     private PePUIArtefactCache uiCache;
 
-    public static void actionRequestHandshake(Activity context, String trust, int partnerPosition) {
+    public static void actionRequestHandshake(Activity context, String trust, String myself, int partnerPosition) {
         Intent i = new Intent(context, PEpTrustwords.class);
         i.setAction(ACTION_SHOW_PEP_TRUSTWORDS);
         i.putExtra(TRUSTWORDS, trust);
         i.putExtra(PARTNER_POSITION, partnerPosition);
+        i.putExtra(MYSELF, myself);
         context.startActivityForResult(i, HANDSHAKE_REQUEST);
     }
 
@@ -47,6 +66,7 @@ public class PEpTrustwords extends K9Activity {
 
         setContentView(R.layout.pep_trustwords);
         ButterKnife.bind(this);
+        context = getApplicationContext();
         if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
         pEp = ((K9) getApplication()).getpEpProvider();
         uiCache = PePUIArtefactCache.getInstance(getApplicationContext());
@@ -59,6 +79,29 @@ public class PEpTrustwords extends K9Activity {
             if (intent.hasExtra(PARTNER_POSITION)) {
                 partnerPosition = intent.getIntExtra(PARTNER_POSITION, DEFAULT_POSITION);
                 partner = uiCache.getRecipients().get(partnerPosition);
+                partner = pEp.updateIdentity(partner);
+                if (!partner.username.equals(partner.address)) {
+                    partnerView.setText(String.format(getString(R.string.complete_partner_format), partner.username, partner.address));
+                    partnerLabel.setText(String.format(getString(R.string.complete_partner_format), partner.username, partner.address));
+                } else {
+                    partnerView.setText(String.format(getString(R.string.partner_format),partner.address));
+                    partnerLabel.setText(String.format(getString(R.string.partner_format),partner.address));
+                }
+
+                partnerFpr.setText(PEpUtils.formatFpr(partner.fpr));
+
+            }
+
+            if (intent.hasExtra(MYSELF)) {
+                myself = PEpUtils.createIdentity(new Address(intent.getStringExtra(MYSELF)), context);
+                myself = pEp.myself(myself);
+                if (!myself.username.equals(myself.address)) {
+                    myselfLabel.setText(String.format(getString(R.string.complete_myself_format), partner.username, partner.address));
+                } else {
+                    myselfLabel.setText(String.format(getString(R.string.myself_format),partner.address));
+                }
+                myselfFpr.setText(PEpUtils.formatFpr(myself.fpr));
+
             }
 
         }
@@ -84,6 +127,17 @@ public class PEpTrustwords extends K9Activity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            case R.id.action_pgp_fingerprint:
+                if (item.getTitle().equals(getString(R.string.pgp_fingerprint))){
+                    item.setTitle(R.string.pEp_trustwords);
+                    wrongTrustWords.setText(R.string.wrong_fingerprint);
+                }
+                else{
+                    item.setTitle(getString(R.string.pgp_fingerprint));
+                    wrongTrustWords.setText(R.string.wrong_trustwords);
+                }
+                flipper.showNext();
+                return true;
         }
         //noinspection SimplifiableIfStatement
 
@@ -91,7 +145,8 @@ public class PEpTrustwords extends K9Activity {
     }
 
 
-    @OnClick(R.id.confirmTrustWords) public void confirmTrustwords() {
+    @OnClick(R.id.confirmTrustWords)
+    public void confirmTrustwords() {
         pEp.trustPersonaKey(partner);
         Intent returnIntent = new Intent();
         returnIntent.putExtra(PARTNER_POSITION, partnerPosition);

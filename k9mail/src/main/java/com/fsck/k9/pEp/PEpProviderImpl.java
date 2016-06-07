@@ -96,7 +96,7 @@ public class PEpProviderImpl implements PEpProvider {
 
             Identity idFrom = PEpUtils.createIdentity(from, context);
             idFrom.me = true;
-            myself(idFrom);            // not sure wether that call is necessary. But it should do no harm. If necessary, add below too. Now called in right context if only one account.
+            idFrom = myself(idFrom);            // not sure wether that call is necessary. But it should do no harm. If necessary, add below too. Now called in right context if only one account.
             testee.setFrom(idFrom);
             testee.setTo(PEpUtils.createIdentities(toAddresses, context));
             testee.setCc(PEpUtils.createIdentities(ccAddresses, context));
@@ -327,7 +327,7 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public String trustwords(Identity id) {
         createEngineInstanceIfNeeded();
-        engine.updateIdentity(id);
+        id = engine.updateIdentity(id);
         return engine.trustwords(id);
     }
 
@@ -361,10 +361,10 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void myself(Identity myId) {
+    public Identity myself(Identity myId) {
         createEngineInstanceIfNeeded();
         myId.user_id = PEP_OWN_USER_ID;
-        engine.myself(myId);
+        return engine.myself(myId);
     }
 
     @Override
