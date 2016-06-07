@@ -124,7 +124,7 @@ public interface PEpProvider {
      */
     void resetTrust(Identity id);
 
-    void myself(Identity myId);
+    Identity myself(Identity myId);
 
     void setPassiveModeEnabled(boolean enable);
 

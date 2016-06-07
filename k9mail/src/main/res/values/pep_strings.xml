@@ -5,6 +5,7 @@
     <string name="handshake">Handshake</string>
     <string name="account_setup_genereting_keys">Making your privacy easy </string>
     <string name="reset_trust">Reset trust</string>
+    <string name="pgp_fingerprint">PGP Fingerprint</string>
 
     <string name="dialog_weaker_forward_warning_message">You\'re about to forward an encrypted message as unencrypted. If you choose to proceed, confidential information might be leaked, putting you and your recipients at risk. </string>
 
@@ -20,6 +21,13 @@
     <string name="title_activity_pep_trustwords">Trustwords</string>
     <string name="confirm_trustwords">Yes - Confirm</string>
     <string name="wrong_trustwords">Wrong Trustwords</string>
+    <string name="wrong_fingerprint">Wrong fingerprint</string>
+    <string name="ask_trustwords">Ask your partner: What are your trustwords? The only correct answer is shown below.</string>
+    <string name="complete_partner_format">Partner: %1$s &lt; %2$s &gt;</string>
+    <string name="partner_format">Partner: %1$s</string>
+    <string name="complete_myself_format">Myself: %1$s &lt; %2$s &gt;</string>
+    <string name="myself_format">Myself: %1$s</string>
+    <string name="pEp_trustwords">pEp Trustwords</string>
 
     <string-array name="pep_states">
         <item>pEpRatingUndefined</item>

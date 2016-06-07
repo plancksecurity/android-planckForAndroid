@@ -31,6 +31,7 @@ import java.util.Vector;
 
 public class PEpUtils {
     private static final String TRUSTWORDS_SEPARATOR = " ";
+    private static final int CHUNK_SIZE = 4;
 
     public static Vector<Identity> createIdentities(List <Address> addressList, Context context) {
         Vector<Identity> rv = new Vector<>(addressList.size());
@@ -215,6 +216,25 @@ public class PEpUtils {
             return Color.valueOf(pEpColor[0]);
         else
             return Color.pEpRatingUndefined;
+    }
+
+    public static String formatFpr(String fpr) {
+        char[] fprChars = new char[fpr.length() + (fpr.length() / CHUNK_SIZE)];
+        int sourcePosition = 0;
+        for (int destPosition = 0; destPosition < fprChars.length; destPosition++) {
+            if (sourcePosition % CHUNK_SIZE == 0
+                    && destPosition > 0
+                    && fprChars[destPosition-1] != TRUSTWORDS_SEPARATOR.charAt(0)) {
+                if (destPosition != sourcePosition/2) fprChars[destPosition] = TRUSTWORDS_SEPARATOR.charAt(0);
+                else fprChars[destPosition] = '\n';
+            }
+            else {
+                fprChars[destPosition] = fpr.charAt(sourcePosition);
+                ++sourcePosition;
+            }
+
+        }
+        return new String(fprChars);
     }
 }
 

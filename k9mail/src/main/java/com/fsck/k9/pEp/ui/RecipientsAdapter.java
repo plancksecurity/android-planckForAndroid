@@ -37,24 +37,23 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
     private View.OnClickListener onHandshakeClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            int position = ((Integer) v.getTag());
-            Identity id = identities.get(position);
+            int partnerPosition = ((Integer) v.getTag());
+            Identity id = identities.get(partnerPosition);
             Identity myId = PEpUtils.createIdentity(new Address(myself), context);
             id = pEp.updateIdentity(id);
-            myId = pEp.updateIdentity(myId);
+            myId = pEp.myself(myId);
 
             String trust;
-            pEp.myself(myId);
-            myId = pEp.updateIdentity(myId);
             String myTrust = PEpUtils.getShortTrustWords(pEp, myId);
-            String theirTrust = PEpUtils.getShortTrustWords(pEp, id);if (myId.fpr.compareTo(id.fpr) > 0) {
+            String theirTrust = PEpUtils.getShortTrustWords(pEp, id);
+            if (myId.fpr.compareTo(id.fpr) > 0) {
                 trust = theirTrust + myTrust;
             } else {
                 trust = myTrust + theirTrust;
             }
             Log.i("RecipientsAdapter", "onClick " + trust);
 
-            PEpTrustwords.actionRequestHandshake(context, trust, position);
+            PEpTrustwords.actionRequestHandshake(context, trust, myself, partnerPosition);
         }
     };
 
