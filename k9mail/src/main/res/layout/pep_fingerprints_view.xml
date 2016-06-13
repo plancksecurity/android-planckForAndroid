@@ -21,7 +21,7 @@
                 android:id="@+id/partnerLabel"/>
 
         <TextView
-                android:layout_width="320dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 tools:text="A629 F620 F9C4 9310 39B2 7356 FACC 6EF3 3BD4 771D"
@@ -29,6 +29,7 @@
                 android:textSize="24sp"
                 android:gravity="center"
                 android:layout_gravity="center"
+                fontPath="fonts/CourierNew.ttf"
                 />
     </LinearLayout>
 
@@ -49,13 +50,14 @@
                 android:id="@+id/myselfLabel"/>
 
         <TextView
-                android:layout_width="320dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 tools:text="A629 F620 F9C4 9310 39B2 7356 FACC 6EF3 3BD4 771D "
                 android:id="@+id/myselfFpr"
                 android:textSize="24sp"
                 android:gravity="center"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                fontPath="fonts/CourierNew.ttf"/>
     </LinearLayout>
 </LinearLayout>

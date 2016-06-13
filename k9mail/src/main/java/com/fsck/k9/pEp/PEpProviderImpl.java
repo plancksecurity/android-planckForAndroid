@@ -154,7 +154,7 @@ public class PEpProviderImpl implements PEpProvider {
             MimeMessage decMsg = new MimeMessageBuilder(this, decReturn.dst).createMessage(true);
 
             decMsg.addHeader(MimeHeader.HEADER_PEPCOLOR, decReturn.color.name());
-            return new DecryptResult(decMsg, decReturn.color);
+            return new DecryptResult(decMsg, decReturn.color, null);
         } catch (Throwable t) {
             Log.e(TAG, "while decrypting message:", t);
             throw new RuntimeException("Could not decrypt", t);
@@ -339,7 +339,10 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public Identity updateIdentity(Identity id) {
         createEngineInstanceIfNeeded();
-        return engine.updateIdentity(id);
+//        engine.startKeyserverLookup();
+        Identity result = engine.updateIdentity(id);
+//        engine.stopKeyserverLookup();
+        return result;
     }
 
     @Override
@@ -371,6 +374,18 @@ public class PEpProviderImpl implements PEpProvider {
     public void setPassiveModeEnabled(boolean enable) {
         createEngineInstanceIfNeeded();
         engine.config_passive_mode(enable);
+    }
+
+    @Override
+    public void startKeyserverLookup() {
+        createEngineInstanceIfNeeded();
+        engine.startKeyserverLookup();
+    }
+
+    @Override
+    public void stoptKeyserverLookup() {
+        createEngineInstanceIfNeeded();
+        engine.stopKeyserverLookup();
     }
 
     private void createEngineInstanceIfNeeded() {
