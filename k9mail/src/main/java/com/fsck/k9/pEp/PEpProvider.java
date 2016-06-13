@@ -4,6 +4,7 @@ import android.content.Context;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.internet.MimeMessage;
 import org.pEp.jniadapter.Color;
+import org.pEp.jniadapter.DecryptFlags;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
 
@@ -132,7 +133,7 @@ public interface PEpProvider {
     void stoptKeyserverLookup();
 
     class DecryptResult {
-        DecryptResult(MimeMessage msg, Color col, Object flags) {
+        DecryptResult(MimeMessage msg, Color col, DecryptFlags flags) {
             this.msg = msg;
             this.col = col;
             this.flags = flags;
@@ -140,6 +141,6 @@ public interface PEpProvider {
 
         final public MimeMessage msg;
         final public Color col;
-        final public Object flags;
+        final public DecryptFlags flags;
     }
 }
