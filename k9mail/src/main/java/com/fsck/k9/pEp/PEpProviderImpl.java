@@ -144,7 +144,7 @@ public class PEpProviderImpl implements PEpProvider {
             MimeMessage decMsg = new MimeMessageBuilder(this, decReturn.dst).createMessage(true);
 
             decMsg.addHeader(MimeHeader.HEADER_PEPCOLOR, decReturn.color.name());
-            return new DecryptResult(decMsg, decReturn.color, null);
+            return new DecryptResult(decMsg, decReturn.color, decReturn.flags);
         } catch (Throwable t) {
             Log.e(TAG, "while decrypting message:", t);
             throw new RuntimeException("Could not decrypt", t);
