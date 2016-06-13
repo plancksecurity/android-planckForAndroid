@@ -151,7 +151,7 @@ public class PEpProviderImpl implements PEpProvider {
             Log.d(TAG, "decryptMessage() before decrypt");
             decReturn = engine.decrypt_message(srcMsg);
             Log.d(TAG, "decryptMessage() after decrypt");
-            MimeMessage decMsg = new MimeMessageBuilder(this, decReturn.dst).createMessage(true);
+            MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
 
             decMsg.addHeader(MimeHeader.HEADER_PEPCOLOR, decReturn.color.name());
             return new DecryptResult(decMsg, decReturn.color, decReturn.flags);
@@ -201,7 +201,7 @@ public class PEpProviderImpl implements PEpProvider {
         Message message = stripEncryptedRecipients(source);
         message.setTo(null);
         message.setCc(null);
-        MimeMessage result = new MimeMessageBuilder(this, message).createMessage(false);
+        MimeMessage result = new MimeMessageBuilder(message).createMessage();
         message.close();
         return result;
     }
@@ -268,7 +268,7 @@ public class PEpProviderImpl implements PEpProvider {
         Message currentEnc = engine.encrypt_message(message, convertExtraKeys(extraKeys));
         if (currentEnc == null) currentEnc = message;
         Log.d(TAG, "encryptMessage() after encrypt");
-        return new MimeMessageBuilder(this, currentEnc).createMessage(false);
+        return new MimeMessageBuilder(currentEnc).createMessage();
     }
 
     private Message stripRecipients(MimeMessage src, boolean encrypted) {
