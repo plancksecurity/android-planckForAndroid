@@ -102,8 +102,7 @@ public class PEpProviderImpl implements PEpProvider {
             else {
                 if (isUnencryptedForSome(toAddresses, ccAddresses, bccAddresses)) {
                     return Color.pEpRatingUnencryptedForSome;
-                }
-                else return result;
+                } else return result;
             }
         } catch (Throwable e) {
             Log.e(TAG, "during color test:", e);
@@ -158,7 +157,7 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public List<MimeMessage> encryptMessage(MimeMessage source, String[] extraKeys) {
         Log.d(TAG, "encryptMessage() enter");
-        List <MimeMessage> resultMessages = new ArrayList<>();
+        List<MimeMessage> resultMessages = new ArrayList<>();
 
         try {
             if (engine == null) createEngineSession();
@@ -205,7 +204,7 @@ public class PEpProviderImpl implements PEpProvider {
         return messages;
     }
 
-    private List <MimeMessage> getEncryptedCopies(MimeMessage source, String[] extraKeys) throws pEpException, MessagingException {
+    private List<MimeMessage> getEncryptedCopies(MimeMessage source, String[] extraKeys) throws pEpException, MessagingException {
         List<MimeMessage> result = new ArrayList<>();
         List<Message> messagesToEncrypt = new ArrayList<>();
         Message toEncryptMessage = stripUnencryptedRecipients(source);
@@ -242,7 +241,7 @@ public class PEpProviderImpl implements PEpProvider {
             outgoingMessageList.add(message);
         }
         pEpMessage.setBcc(null);
-        if(pEpMessage.getTo() == null
+        if (pEpMessage.getTo() == null
                 && pEpMessage.getCc() == null
                 && pEpMessage.getBcc() == null) {
             outgoingMessageList.remove(ENCRYPTED_MESSAGE_POSITION);
@@ -270,13 +269,12 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
 
-
-    private Vector<Identity>  removeRecipients(Vector<Identity> recipientList, boolean deletingEncrypted) {
+    private Vector<Identity> removeRecipients(Vector<Identity> recipientList, boolean deletingEncrypted) {
         if (recipientList != null) {
             for (Iterator<Identity> iterator = recipientList.iterator(); iterator.hasNext(); ) {
                 Identity identity = iterator.next();
-                if(deletingEncrypted && isEncrypted(identity)
-                        || !deletingEncrypted && !isEncrypted(identity)){
+                if (deletingEncrypted && isEncrypted(identity)
+                        || !deletingEncrypted && !isEncrypted(identity)) {
                     iterator.remove();
                 }
             }
