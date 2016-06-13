@@ -451,5 +451,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".pEp.ui.PEpStatus" />
         </activity>
+
+        <receiver android:name=".activity.K9Activity$PrivateKeyReceiver">
+            <intent-filter>
+                <action android:name="PRIVATE_KEY">
+                </action>
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

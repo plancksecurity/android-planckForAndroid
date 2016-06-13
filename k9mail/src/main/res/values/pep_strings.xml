@@ -28,6 +28,7 @@
     <string name="complete_myself_format">Myself: %1$s &lt; %2$s &gt;</string>
     <string name="myself_format">Myself: %1$s</string>
     <string name="pEp_trustwords">pEp Trustwords</string>
+    <string name="force_unprotected">Force Unprotected</string>
 
     <string-array name="pep_states">
         <item>pEpRatingUndefined</item>

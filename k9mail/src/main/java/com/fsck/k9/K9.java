@@ -58,15 +58,13 @@ public class K9 extends Application {
 
     public static void setPEpUseKeyserver(boolean use) {
         pEpUseKeyserver = use;
+
     }
 
     public static boolean getPEpUseKeyserver() {
         return pEpUseKeyserver;
     }
 
-    public Identity updateIdentity(Identity id) {
-        return pEpProvider.updateIdentity(id);
-    }
 
     public static boolean getPEpPassiveMode() {
         return pEpPassiveMode;

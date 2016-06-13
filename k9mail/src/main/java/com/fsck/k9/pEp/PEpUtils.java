@@ -221,7 +221,7 @@ public class PEpUtils {
     public static String formatFpr(String fpr) {
         char[] fprChars = new char[fpr.length() + (fpr.length() / CHUNK_SIZE)];
         int sourcePosition = 0;
-        for (int destPosition = 0; destPosition < fprChars.length; destPosition++) {
+        for (int destPosition = 0; destPosition < fprChars.length-1; destPosition++) {
             if (sourcePosition % CHUNK_SIZE == 0
                     && destPosition > 0
                     && fprChars[destPosition-1] != TRUSTWORDS_SEPARATOR.charAt(0)) {
