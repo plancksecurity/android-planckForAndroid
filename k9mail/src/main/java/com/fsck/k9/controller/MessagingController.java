@@ -8,12 +8,11 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
-import android.os.PowerManager;
+import android.os.*;
 import android.os.Process;
-import android.os.SystemClock;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
+import android.widget.Toast;
 import com.fsck.k9.*;
 import com.fsck.k9.Account.DeletePolicy;
 import com.fsck.k9.Account.Expunge;
@@ -24,6 +23,7 @@ import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.cache.EmailProviderCache;
 import com.fsck.k9.mail.*;
 import com.fsck.k9.mail.Folder.FolderType;
+import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mail.internet.*;
 import com.fsck.k9.mail.power.TracingPowerManager;
@@ -39,6 +39,8 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
 import com.fsck.k9.search.*;
+import org.pEp.jniadapter.Color;
+import org.pEp.jniadapter.DecryptFlags;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;
@@ -1386,7 +1388,26 @@ public class MessagingController implements Runnable {
                     PEpUtils.dumpMimeMessage("downloadSmallMessages", (MimeMessage) message);
                     PEpProvider.DecryptResult result = pEpProvider.decryptMessage((MimeMessage) message);
                     PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
-                    MimeMessage decryptedMessage = result.msg;
+
+                    if (isUsablePrivateKey(result)) {
+                        Handler handler = new Handler(Looper.getMainLooper());
+
+                        handler.post(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                //Your UI code here
+//                                context.getApplicationContext().sendOrderedBroadcast();
+                                context.getApplicationContext().sendOrderedBroadcast(new Intent("PRIVATE_KEY"), null);
+                                Toast.makeText(context.getApplicationContext(), "Private key", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                        queueSetFlag(account, folder, Boolean.toString(true), Flag.DELETED.toString(), new String[]{message.getUid()});
+
+                    }
+                    else {
+                        MimeMessage decryptedMessage = (MimeMessage) result.msg;
+
                     decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
 
                     // Store the updated message locally
@@ -1428,7 +1449,7 @@ public class MessagingController implements Runnable {
                         // Notify with the localMessage so that we don't have to recalculate the content preview.
                         notificationController.addNewMailNotification(account, localMessage, unreadBeforeStart);
                     }
-
+                    }
                 } catch (MessagingException | RuntimeException me) {
                     addErrorMessage(account, null, me);
                     Log.e(K9.LOG_TAG, "SYNC: fetch small messages", me);
@@ -1446,6 +1467,23 @@ public class MessagingController implements Runnable {
             Log.d(K9.LOG_TAG, "SYNC: Done fetching small messages for folder " + folder);
     }
 
+    private boolean isUsablePrivateKey(PEpProvider.DecryptResult result) throws MessagingException {
+        // TODO: 13/06/16 Check if is necesary check own id
+        return result.col.value >= Color.pEpRatingGreen.value
+                && result.flags != null
+                && result.flags == DecryptFlags.pEpDecryptFlagOwnPrivateKey;
+
+//        StringWriter writer = new StringWriter();
+//        try {
+//            IOUtils.copy(((MimeMultipart) result.msg.getBody()).getBodyPart(0).getBody().getInputStream(), writer);
+//            String body = writer.toString();
+//            return result.col.value >= Color.pEpRatingGreen.value && body.contains("Import me");
+//        } catch (IOException e) {
+//            Log.e(K9.LOG_TAG, "isUsablePrivateKey: ", e);
+//            return false;
+//        }
+
+    }
 
 
     private <T extends Message> void downloadLargeMessages(final Account account, final Folder<T> remoteFolder,

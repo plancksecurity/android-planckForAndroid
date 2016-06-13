@@ -128,13 +128,18 @@ public interface PEpProvider {
 
     void setPassiveModeEnabled(boolean enable);
 
+    void startKeyserverLookup();
+    void stoptKeyserverLookup();
+
     class DecryptResult {
-        DecryptResult(MimeMessage msg, Color col) {
+        DecryptResult(MimeMessage msg, Color col, Object flags) {
             this.msg = msg;
             this.col = col;
+            this.flags = flags;
         }
 
         final public MimeMessage msg;
         final public Color col;
+        final public Object flags;
     }
 }
