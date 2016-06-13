@@ -29,21 +29,18 @@ import java.util.Vector;
 
 
 class MimeMessageBuilder {
-    private static final String DEFAULT_KEY_NAME = "pEpkey.asc";
-    private final PEpProvider pEp;
     private SimpleMessageFormat messageFormat = SimpleMessageFormat.TEXT;
 
     private Message pEpMessage;
 
-    public MimeMessageBuilder(PEpProvider pEp, Message m) {
+    public MimeMessageBuilder(Message m) {
         this.pEpMessage = m;
-        this.pEp = pEp;
     }
 
-    List <MimeMessage> createMessages(boolean shrinkPepKey) {
+    List <MimeMessage> createMessages() {
         List<MimeMessage> messages = new ArrayList<>();
         try {
-            MimeMessage mimeMsg = createMessage(shrinkPepKey);
+            MimeMessage mimeMsg = createMessage();
             messages.add(mimeMsg);
 
             return messages;
@@ -55,11 +52,11 @@ class MimeMessageBuilder {
     }
 
     @NonNull
-    public MimeMessage createMessage(boolean shrinkPepKey) throws MessagingException {
+    public MimeMessage createMessage() throws MessagingException {
         MimeMessage mimeMsg = new MimeMessage();
         evaluateMessageFormat();
         buildHeader(mimeMsg);
-        buildBody(mimeMsg, shrinkPepKey);
+        buildBody(mimeMsg);
         return mimeMsg;
     }
 
@@ -89,12 +86,12 @@ class MimeMessageBuilder {
         //TODO: other header fields. See Message.getOpt<something>
     }
 
-    private void buildBody(MimeMessage mimeMsg, boolean shrinkPepKey) throws MessagingException {
+    private void buildBody(MimeMessage mimeMsg) throws MessagingException {
         if (pEpMessage.getEncFormat() != Message.EncFormat.None) {   // we have an encrypted msg. Therefore, just attachments...
             // FIXME: how do I add some text ("this mail encrypted by pEp") before the first mime part?
             MimeMultipart mp = new MimeMultipart();
             mp.setSubType("encrypted; protocol=\"application/pgp-encrypted\"");     // FIXME: what if other enc types?
-            addAttachmentsToMessage(mp, shrinkPepKey);
+            addAttachmentsToMessage(mp);
             MimeMessageHelper.setBody(mimeMsg, mp);
 
             return;
@@ -126,7 +123,7 @@ class MimeMessageBuilder {
                 // the attachments.
                 MimeMultipart mp = new MimeMultipart();
                 mp.addBodyPart(new MimeBodyPart(composedMimeMessage));
-                addAttachmentsToMessage(mp, shrinkPepKey);
+                addAttachmentsToMessage(mp);
                 MimeMessageHelper.setBody(mimeMsg, mp);
             } else {
                 // If no attachments, our multipart/alternative part is the only one we need.
@@ -138,7 +135,7 @@ class MimeMessageBuilder {
             if (hasAttachments) {
                 MimeMultipart mp = new MimeMultipart();
                 mp.addBodyPart(new MimeBodyPart(body, "text/plain"));
-                addAttachmentsToMessage(mp, shrinkPepKey);
+                addAttachmentsToMessage(mp);
                 MimeMessageHelper.setBody(mimeMsg, mp);
             } else {
                 // No attachments to include, just stick the text body in the message and call it good.
@@ -156,10 +153,9 @@ class MimeMessageBuilder {
      * Add attachments as parts into a MimeMultipart container.
      *
      * @param mp MimeMultipart container in which to insert parts.
-     * @param shrinkPepKey
      * @throws MessagingException
      */
-    private void addAttachmentsToMessage(final MimeMultipart mp, boolean shrinkPepKey) throws MessagingException {
+    private void addAttachmentsToMessage(final MimeMultipart mp) throws MessagingException {
         Body body;
         Vector<Blob> attachments = pEpMessage.getAttachments();
         if(attachments == null) return;
@@ -168,12 +164,11 @@ class MimeMessageBuilder {
             Blob attachment = attachments.get(i);
             String contentType = attachment.mime_type;
             String filename = attachment.filename;
-            if (!(shrinkPepKey && filename != null && filename.equals(DEFAULT_KEY_NAME))) {
                 Log.d("pep", "MimeMessageBuilder: BLOB #" + i + ":" + contentType + ":" + filename);
                 Log.d("pep", ">" + new String(attachment.data) + "<");
 
-                if (filename != null)
-                    filename = EncoderUtil.encodeIfNecessary(filename, EncoderUtil.Usage.WORD_ENTITY, 7);
+            if (filename != null)
+                filename = EncoderUtil.encodeIfNecessary(filename, EncoderUtil.Usage.WORD_ENTITY, 7);
 
                 body = new BinaryMemoryBody(attachment.data, MimeUtil.ENC_8BIT);  // FIXME: encoding right?
 
@@ -216,7 +211,6 @@ class MimeMessageBuilder {
                 mp.addBodyPart(bp);
             }
         }
-    }
 
     /**
      * Build the {@link Body} that will contain the text of the message.
