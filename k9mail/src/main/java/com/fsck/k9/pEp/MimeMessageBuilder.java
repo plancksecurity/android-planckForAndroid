@@ -24,7 +24,6 @@ import java.util.Vector;
 /**
  * ripped from MessageBuilder and adopted:
  * - keep attachments in Memory
- *
  */
 
 
@@ -37,17 +36,17 @@ class MimeMessageBuilder {
         this.pEpMessage = m;
     }
 
-    List <MimeMessage> createMessages() {
+    List<MimeMessage> createMessages() {
         List<MimeMessage> messages = new ArrayList<>();
         try {
             MimeMessage mimeMsg = createMessage();
             messages.add(mimeMsg);
 
             return messages;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e("pepdump", "Could not create MimeMessage: ", e);
-        };
+        }
+        ;
         return null;
     }
 
@@ -61,14 +60,14 @@ class MimeMessageBuilder {
     }
 
     private void evaluateMessageFormat() {
-        if(!TextUtils.isEmpty(pEpMessage.getLongmsgFormatted()))
+        if (!TextUtils.isEmpty(pEpMessage.getLongmsgFormatted()))
             messageFormat = SimpleMessageFormat.HTML;
         else
             messageFormat = SimpleMessageFormat.TEXT;
     }
 
     private void buildHeader(MimeMessage mimeMsg) throws MessagingException {
-        if(pEpMessage.getSent() != null) mimeMsg.addSentDate(pEpMessage.getSent(), K9.hideTimeZone());
+        if (pEpMessage.getSent() != null) mimeMsg.addSentDate(pEpMessage.getSent(), K9.hideTimeZone());
         else Log.e("pep", "sent daten == null from engine.");       // FIXME: this should never happen
         mimeMsg.setFrom(PEpUtils.createAddress(pEpMessage.getFrom()));
         mimeMsg.setRecipients(RecipientType.TO, PEpUtils.createAddresses(pEpMessage.getTo()));
@@ -158,59 +157,59 @@ class MimeMessageBuilder {
     private void addAttachmentsToMessage(final MimeMultipart mp) throws MessagingException {
         Body body;
         Vector<Blob> attachments = pEpMessage.getAttachments();
-        if(attachments == null) return;
+        if (attachments == null) return;
 
         for (int i = 0; i < attachments.size(); i++) {
             Blob attachment = attachments.get(i);
             String contentType = attachment.mime_type;
             String filename = attachment.filename;
-                Log.d("pep", "MimeMessageBuilder: BLOB #" + i + ":" + contentType + ":" + filename);
-                Log.d("pep", ">" + new String(attachment.data) + "<");
+            Log.d("pep", "MimeMessageBuilder: BLOB #" + i + ":" + contentType + ":" + filename);
+            Log.d("pep", ">" + new String(attachment.data) + "<");
 
             if (filename != null)
                 filename = EncoderUtil.encodeIfNecessary(filename, EncoderUtil.Usage.WORD_ENTITY, 7);
 
-                body = new BinaryMemoryBody(attachment.data, MimeUtil.ENC_8BIT);  // FIXME: encoding right?
+            body = new BinaryMemoryBody(attachment.data, MimeUtil.ENC_8BIT);  // FIXME: encoding right?
 
-                MimeBodyPart bp = new MimeBodyPart(body);
+            MimeBodyPart bp = new MimeBodyPart(body);
 
             /*
              * Correctly encode the filename here. Otherwise the whole
              * header value (all parameters at once) will be encoded by
              * MimeHeader.writeTo().
              */
-                if (filename != null)
-                    bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, String.format("%s;\r\n name=\"%s\"", contentType, filename));
-                else
-                    bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, contentType);
+            if (filename != null)
+                bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, String.format("%s;\r\n name=\"%s\"", contentType, filename));
+            else
+                bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, contentType);
 
-                // FIXME: the following lines lack clearness of flow...
+            // FIXME: the following lines lack clearness of flow...
             /* if msg is plain text or if it's one of the non-special pgp attachments (Attachment #1 and #2 have special meaning,
                see "else" branch then dont't treat special (means, use attachment disposition) */
-                if (pEpMessage.getEncFormat() == Message.EncFormat.None || i > 1) {
-                    bp.setEncoding(MimeUtil.ENC_8BIT);
+            if (pEpMessage.getEncFormat() == Message.EncFormat.None || i > 1) {
+                bp.setEncoding(MimeUtil.ENC_8BIT);
 
-                    if (filename != null)
-                        bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
-                                "attachment;\r\n filename=\"%s\";\r\n size=%d",
-                                filename, attachment.data.length));
-                    else
-                        bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
-                                "attachment;\r\n size=%d",
-                                attachment.data.length));
-                } else {                // we all live in pgp...
-                    if (i == 0) {        // 1st. attachment is pgp version if encrypted.
-                        bp.addHeader(MimeHeader.HEADER_CONTENT_DESCRIPTION, "PGP/MIME version identification");
-                    } else if (i == 1) {
-                        bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,    // 2nd field is enc'd content.
-                                "inline;\r\n filename=\"%s\";\r\n size=%d",
-                                filename, attachment.data.length));
-                    }
+                if (filename != null)
+                    bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
+                            "attachment;\r\n filename=\"%s\";\r\n size=%d",
+                            filename, attachment.data.length));
+                else
+                    bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
+                            "attachment;\r\n size=%d",
+                            attachment.data.length));
+            } else {                // we all live in pgp...
+                if (i == 0) {        // 1st. attachment is pgp version if encrypted.
+                    bp.addHeader(MimeHeader.HEADER_CONTENT_DESCRIPTION, "PGP/MIME version identification");
+                } else if (i == 1) {
+                    bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,    // 2nd field is enc'd content.
+                            "inline;\r\n filename=\"%s\";\r\n size=%d",
+                            filename, attachment.data.length));
                 }
-
-                mp.addBodyPart(bp);
             }
+
+            mp.addBodyPart(bp);
         }
+    }
 
     /**
      * Build the {@link Body} that will contain the text of the message.
@@ -228,14 +227,14 @@ class MimeMessageBuilder {
     /* FIXME: the following logic needs some intense testing. Not completely sure whether I broke threading and quoting badly somewhere... */
     private TextBody buildText(SimpleMessageFormat simpleMessageFormat) {
         String messageText = null;
-        if(simpleMessageFormat == SimpleMessageFormat.HTML)
+        if (simpleMessageFormat == SimpleMessageFormat.HTML)
             messageText = pEpMessage.getLongmsgFormatted();
         else
             messageText = pEpMessage.getLongmsg();
 
-        if(messageText==null) {       // FIXME: This must (should?) never happen!
-            messageText="Got null msg text (This Is A Bug, please report!)";                // FIXME: Other text for production?
-            Log.e("pep", "got null msg txt longmsg="+pEpMessage.getLongmsg()+" format=" + pEpMessage.getLongmsgFormatted());
+        if (messageText == null) {       // FIXME: This must (should?) never happen!
+            messageText = "Got null msg text (This Is A Bug, please report!)";                // FIXME: Other text for production?
+            Log.e("pep", "got null msg txt longmsg=" + pEpMessage.getLongmsg() + " format=" + pEpMessage.getLongmsgFormatted());
         }
 
         MimeTextBodyBuilder mimeTextBodyBuilder = new MimeTextBodyBuilder(messageText);
@@ -258,8 +257,8 @@ class MimeMessageBuilder {
     // move to peputils somewhen soon
     private String clobberVector(Vector<String> sv) {   // FIXME: how do revs come out of array? "<...>" or "...."?
         String rt = "";
-        if(sv != null)
-            for( String cur : sv)
+        if (sv != null)
+            for (String cur : sv)
                 rt += cur + "; ";
         return rt;
     }
