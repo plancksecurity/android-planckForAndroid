@@ -99,5 +99,13 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <style name="TextViewCustomFont" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:textViewStyle">@style/AppTheme.Widget.TextView</item>
+    </style>
+
+    <style name="AppTheme.Widget.TextView" parent="android:Widget.Holo.Light.TextView">
+        <item name="fontPath">fonts/CourierNew.ttf</item>
+    </style>
+
 </resources>
 
