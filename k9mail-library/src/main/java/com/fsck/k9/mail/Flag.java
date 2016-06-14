@@ -62,4 +62,9 @@ public enum Flag {
      * This flag is used for drafts where the message should be sent as PGP/INLINE.
      */
     X_DRAFT_OPENPGP_INLINE,
+
+    /**
+     * This flag is used for force unencrypted.
+     */
+    X_FORCE_UNENCRYPTED,
 }

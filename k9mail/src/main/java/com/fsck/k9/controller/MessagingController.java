@@ -3151,11 +3151,13 @@ public class MessagingController implements Runnable {
                             Log.i(K9.LOG_TAG, "Sending message with UID " + message.getUid());
 
                         // pEp the message to send...
-                        List <MimeMessage> encryptedMessages = pEpProvider.encryptMessage(message, null); // TODO: Extra keys
-                        Message encryptedMessageToSave = encryptedMessages.get(PEpProvider.ENCRYPTED_MESSAGE_POSITION); //
-
-                        for (Message encryptedMessage : encryptedMessages) {
-                            sendMessage(transport, encryptedMessage);
+                        Message encryptedMessageToSave;
+                        if (!message.isSet(Flag.X_FORCE_UNENCRYPTED)) {
+                            encryptedMessageToSave = processWithpEpAndSend(transport, message);
+                        }
+                        else {
+                            sendMessage(transport, message);
+                            encryptedMessageToSave = message;
                         }
 
                         progress++;
@@ -3264,11 +3266,21 @@ public class MessagingController implements Runnable {
         }
     }
 
-    private void sendMessage(Transport transport, Message encryptedMessage) throws MessagingException {
-        encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, true);
-        transport.sendMessage(encryptedMessage);
-        encryptedMessage.setFlag(Flag.X_SEND_IN_PROGRESS, false);
-        encryptedMessage.setFlag(Flag.SEEN, true);
+    private Message processWithpEpAndSend(Transport transport, LocalMessage message) throws MessagingException {
+        List<MimeMessage> encryptedMessages = pEpProvider.encryptMessage(message, null); // TODO: Extra keys
+        Message encryptedMessageToSave = encryptedMessages.get(PEpProvider.ENCRYPTED_MESSAGE_POSITION); //
+
+        for (Message encryptedMessage : encryptedMessages) {
+            sendMessage(transport, encryptedMessage);
+        }
+        return encryptedMessageToSave;
+    }
+
+    private void sendMessage(Transport transport, Message message) throws MessagingException {
+        message.setFlag(Flag.X_SEND_IN_PROGRESS, true);
+        transport.sendMessage(message);
+        message.setFlag(Flag.X_SEND_IN_PROGRESS, false);
+        message.setFlag(Flag.SEEN, true);
     }
 
     private void handleSendFailure(Account account, Store localStore, Folder localFolder, Message message,

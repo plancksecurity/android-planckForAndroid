@@ -77,7 +77,7 @@ public class RecipientPresenter implements PermissionPingCallback {
     // TODO initialize cryptoMode to other values under some circumstances, e.g. if we reply to an encrypted e-mail
     private CryptoMode currentCryptoMode = CryptoMode.OPPORTUNISTIC;
     private boolean cryptoEnablePgpInline = false;
-
+    private boolean forceUnEncrypted = false;
 
     public RecipientPresenter(Context context, RecipientMvpView recipientMvpView, Account account,
             ComposePgpInlineDecider composePgpInlineDecider, ReplyToParser replyToParser) {
@@ -703,14 +703,20 @@ public class RecipientPresenter implements PermissionPingCallback {
     }
 
     public void updatepEpState() {
-        Address fromAddress = recipientMvpView.getFromAddress();
-        List<Address> toAdresses = recipientMvpView.getToAddresses();
-        List<Address> ccAdresses = recipientMvpView.getCcAddresses();
-        List<Address> bccAdresses = recipientMvpView.getBccAddresses();
-        Color pEpColor = pEp.getPrivacyState(fromAddress, toAdresses, ccAdresses, bccAdresses);
+        Color pEpColor;
+        if (forceUnEncrypted) {
+            pEpColor = Color.pEpRatingUnencrypted;
+        } else {
+            Address fromAddress = recipientMvpView.getFromAddress();
+            List<Address> toAdresses = recipientMvpView.getToAddresses();
+            List<Address> ccAdresses = recipientMvpView.getCcAddresses();
+            List<Address> bccAdresses = recipientMvpView.getBccAddresses();
+            pEpColor = pEp.getPrivacyState(fromAddress, toAdresses, ccAdresses, bccAdresses);
+        }
         recipientMvpView.setpEpColor(pEpColor);
 
     }
+
 
     public void handlepEpState(boolean... withToast) {
         recipientMvpView.handlepEpState(withToast);
@@ -739,6 +745,11 @@ public class RecipientPresenter implements PermissionPingCallback {
 
     public void onClickPgpInlineIndicator() {
         recipientMvpView.showOpenPgpInlineDialog(false);
+    }
+
+    public void setForceUnencrypted(boolean forceUnencrypted) {
+        this.forceUnEncrypted = forceUnencrypted;
+        handlepEpState();
     }
 
     public enum CryptoProviderState {
