@@ -1,17 +1,12 @@
 package com.fsck.k9.message;
 
 
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
-
 import com.fsck.k9.Account.QuoteStyle;
 import com.fsck.k9.Identity;
 import com.fsck.k9.K9;
@@ -23,17 +18,15 @@ import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.internet.MimeBodyPart;
-import com.fsck.k9.mail.internet.MimeHeader;
-import com.fsck.k9.mail.internet.MimeMessage;
-import com.fsck.k9.mail.internet.MimeMessageHelper;
-import com.fsck.k9.mail.internet.MimeMultipart;
-import com.fsck.k9.mail.internet.MimeUtility;
-import com.fsck.k9.mail.internet.TextBody;
+import com.fsck.k9.mail.internet.*;
 import com.fsck.k9.mailstore.TempFileBody;
 import com.fsck.k9.mailstore.TempFileMessageBody;
 import org.apache.james.mime4j.codec.EncoderUtil;
 import org.apache.james.mime4j.util.MimeUtil;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 
 public abstract class MessageBuilder {
@@ -63,6 +56,7 @@ public abstract class MessageBuilder {
     private MessageReference messageReference;
     private boolean isDraft;
     private boolean isPgpInlineEnabled;
+    private boolean isForcedUnencrypted;
 
     public MessageBuilder(Context context) {
         this.context = context;
@@ -120,6 +114,7 @@ public abstract class MessageBuilder {
         if (isDraft && isPgpInlineEnabled) {
             message.setFlag(Flag.X_DRAFT_OPENPGP_INLINE, true);
         }
+        if (isForcedUnencrypted) message.setFlag(Flag.X_FORCE_UNENCRYPTED, true);
     }
 
     private void buildBody(MimeMessage message) throws MessagingException {
@@ -446,6 +441,10 @@ public abstract class MessageBuilder {
         return this;
     }
 
+    public MessageBuilder setForcedUnencrypted(boolean forcedUnencrypted) {
+        isForcedUnencrypted = forcedUnencrypted;
+        return this;
+    }
     public boolean isDraft() {
         return isDraft;
     }
