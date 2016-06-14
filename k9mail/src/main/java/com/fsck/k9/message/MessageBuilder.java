@@ -1,17 +1,12 @@
 package com.fsck.k9.message;
 
 
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
-
 import com.fsck.k9.Account.QuoteStyle;
 import com.fsck.k9.Identity;
 import com.fsck.k9.K9;
@@ -35,6 +30,10 @@ import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.TempFileBody;
 import org.apache.james.mime4j.codec.EncoderUtil;
 import org.apache.james.mime4j.util.MimeUtil;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 
 public abstract class MessageBuilder {
@@ -69,6 +68,7 @@ public abstract class MessageBuilder {
     private MessageReference messageReference;
     private boolean isDraft;
     private boolean isPgpInlineEnabled;
+    private boolean isForcedUnencrypted;
 
     protected MessageBuilder(Context context, MessageIdGenerator messageIdGenerator, BoundaryGenerator boundaryGenerator) {
         this.context = context;
@@ -129,6 +129,7 @@ public abstract class MessageBuilder {
         if (isDraft && isPgpInlineEnabled) {
             message.setFlag(Flag.X_DRAFT_OPENPGP_INLINE, true);
         }
+        if (isForcedUnencrypted) message.setFlag(Flag.X_FORCE_UNENCRYPTED, true);
     }
 
     protected MimeMultipart createMimeMultipart() {
@@ -472,6 +473,10 @@ public abstract class MessageBuilder {
         return this;
     }
 
+    public MessageBuilder setForcedUnencrypted(boolean forcedUnencrypted) {
+        isForcedUnencrypted = forcedUnencrypted;
+        return this;
+    }
     public boolean isDraft() {
         return isDraft;
     }

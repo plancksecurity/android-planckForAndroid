@@ -202,6 +202,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private boolean mFinishAfterDraftSaved;
     private boolean alreadyNotifiedUserOfEmptySubject = false;
     private Color originalMessageColor = null;
+    private boolean forceUnencrypted = false;
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
@@ -786,7 +787,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 .setCursorPosition(mMessageContentView.getSelectionStart())
                 .setMessageReference(mMessageReference)
                 .setDraft(isDraft)
-                .setIsPgpInlineEnabled(cryptoStatus.isPgpInlineModeEnabled());
+                .setIsPgpInlineEnabled(cryptoStatus.isPgpInlineModeEnabled())
+                .setForcedUnencrypted(forceUnencrypted);
 
         quotedMessagePresenter.builderSetProperties(builder);
 
@@ -1055,10 +1057,17 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             case R.id.read_receipt:
                 onReadReceipt();
                 break;
+            case R.id.force_unencrypted:
+                forceUnencrypted();
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    private void forceUnencrypted() {
+        forceUnencrypted = !forceUnencrypted;
+        recipientPresenter.setForceUnencrypted(forceUnencrypted);
     }
 
     private void handlePEpState(boolean... withToast) {
