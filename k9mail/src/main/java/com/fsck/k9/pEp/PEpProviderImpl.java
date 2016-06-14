@@ -106,7 +106,6 @@ public class PEpProviderImpl implements PEpProvider {
             testee.setDir(Message.Direction.Outgoing);
 
             Color result = engine.outgoing_message_color(testee);   // stupid way to be able to patch the value in debugger
-            idFrom = engine.updateIdentity(idFrom);
             Log.i(TAG, "getPrivacyState " + idFrom.fpr);
             if (result.value != Color.pEpRatingUnencrypted.value) return result;
             else {
