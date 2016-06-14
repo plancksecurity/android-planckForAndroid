@@ -6,14 +6,14 @@
         android:alphabeticShortcut="n"
         android:title="@string/add_attachment_action"
         android:icon="?attr/iconActionAddAttachment"
-        app:showAsAction="always"
+        android:showAsAction="always"
     />
     <item
         android:id="@+id/send"
         android:alphabeticShortcut="s"
         android:title="@string/send_action"
         android:icon="?attr/iconActionSend"
-        app:showAsAction="always"
+        android:showAsAction="always"
     />
     <item
         android:id="@+id/add_from_contacts"
@@ -25,7 +25,7 @@
         android:alphabeticShortcut="s"
         android:title="@string/pep_action"
         android:icon="@drawable/ic_action_pep_indicator"
-        app:showAsAction="always"
+        android:showAsAction="always"
         />
 
     <item
