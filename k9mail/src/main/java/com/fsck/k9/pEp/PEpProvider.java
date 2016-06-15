@@ -132,6 +132,8 @@ public interface PEpProvider {
     void startKeyserverLookup();
     void stoptKeyserverLookup();
 
+    String getOwnKeyDetails(MimeMessage message);
+
     class DecryptResult {
         DecryptResult(MimeMessage msg, Color col, DecryptFlags flags) {
             this.msg = msg;
