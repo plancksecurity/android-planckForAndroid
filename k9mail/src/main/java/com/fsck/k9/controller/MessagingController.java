@@ -1429,7 +1429,7 @@ public class MessagingController {
 
                     if (isUsablePrivateKey(result)) {
                         Handler handler = new Handler(Looper.getMainLooper());
-
+                        Log.i("MessagingController", "messageFinished " + pEpProvider.getOwnKeyDetails((MimeMessage) message));
                         handler.post(new Runnable() {
 
                             @Override

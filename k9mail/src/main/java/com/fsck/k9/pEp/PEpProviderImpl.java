@@ -375,6 +375,19 @@ public class PEpProviderImpl implements PEpProvider {
         engine.stopKeyserverLookup();
     }
 
+    @Override
+    public String getOwnKeyDetails(MimeMessage message) {
+        createEngineInstanceIfNeeded();
+        Identity id;
+        try {
+            id = engine.own_message_private_key_details( new PEpMessageBuilder(message).createMessage(context));
+            return  id.fpr;
+        } catch (pEpException e) {
+            Log.e(TAG, "getOwnKeyDetails: ", e);
+        }
+        return null;
+    }
+
     private void createEngineInstanceIfNeeded() {
         if (engine == null) {
             try {
