@@ -96,9 +96,9 @@ public class PEpTrustwords extends K9Activity {
                 myself = PEpUtils.createIdentity(new Address(intent.getStringExtra(MYSELF)), context);
                 myself = pEp.myself(myself);
                 if (!myself.username.equals(myself.address)) {
-                    myselfLabel.setText(String.format(getString(R.string.complete_myself_format), partner.username, partner.address));
+                    myselfLabel.setText(String.format(getString(R.string.complete_myself_format), myself.username, myself.address));
                 } else {
-                    myselfLabel.setText(String.format(getString(R.string.myself_format),partner.address));
+                    myselfLabel.setText(String.format(getString(R.string.myself_format),myself.address));
                 }
                 myselfFpr.setText(PEpUtils.formatFpr(myself.fpr));
 
