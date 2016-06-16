@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import com.fsck.k9.K9;
+import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
@@ -23,6 +24,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     public PEpProviderImpl(Context context) {
         this.context = context;
+        createEngineInstanceIfNeeded();
     }
 
     public synchronized void setup(Context c) {
@@ -32,11 +34,7 @@ public class PEpProviderImpl implements PEpProvider {
         }
 
         context = c;
-        try {
-            createEngineSession();
-        } catch (pEpException e) {
-            Log.e("pEpProvider", "setup: ", e);
-        }
+        createEngineInstanceIfNeeded();
 
     }
 
@@ -142,7 +140,10 @@ public class PEpProviderImpl implements PEpProvider {
             MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
 
             decMsg.addHeader(MimeHeader.HEADER_PEPCOLOR, decReturn.color.name());
-            return new DecryptResult(decMsg, decReturn.color, decReturn.flags);
+            if (isUsablePrivateKey(decReturn)) {
+                return new DecryptResult(decMsg, decReturn.color, getOwnKeyDetails(srcMsg));
+            }
+            else return new DecryptResult(decMsg, decReturn.color, null);
         } catch (Throwable t) {
             Log.e(TAG, "while decrypting message:", t);
             throw new RuntimeException("Could not decrypt", t);
@@ -151,6 +152,12 @@ public class PEpProviderImpl implements PEpProvider {
             if (decReturn != null && decReturn.dst != srcMsg) decReturn.dst.close();
             Log.d(TAG, "decryptMessage() exit");
         }
+    }
+    private boolean isUsablePrivateKey(Engine.decrypt_message_Return result) throws MessagingException {
+        // TODO: 13/06/16 Check if is necesary check own id
+        return result.color.value >= Color.pEpRatingGreen.value
+                && result.flags != null
+                && result.flags == DecryptFlags.pEpDecryptFlagOwnPrivateKey;
     }
 
     @Override
@@ -376,13 +383,13 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public String getOwnKeyDetails(MimeMessage message) {
-        createEngineInstanceIfNeeded();
+    public KeyDetail getOwnKeyDetails(Message message) {
+//        createEngineInstanceIfNeeded();
         Identity id;
         try {
-            id = engine.own_message_private_key_details( new PEpMessageBuilder(message).createMessage(context));
-            return  id.fpr;
-        } catch (pEpException e) {
+            id = engine.own_message_private_key_details(message);
+            return  new KeyDetail(buildImportDialogText(context, id, message.getFrom().address), id.fpr, new Address(id.address, id.username));
+        } catch (Exception e) {
             Log.e(TAG, "getOwnKeyDetails: ", e);
         }
         return null;
@@ -396,5 +403,25 @@ public class PEpProviderImpl implements PEpProvider {
                 Log.e(TAG, "createEngineInstanceIfNeeded", e);
             }
         }
+    }
+
+    private String buildImportDialogText(Context context, Identity id, String fromAddress) {
+        StringBuilder stringBuilder = new StringBuilder();
+        String formatedFpr = PEpUtils.formatFpr(id.fpr);
+        stringBuilder.append(context.getString(R.string.receivedSecretKey))
+                .append("\n")
+                .append(context.getString(R.string.username)).append(": ")
+                .append(id.username).append("\n")
+                .append(context.getString(R.string.userAddress)).append(": ")
+                .append(id.address).append("\n")
+                .append("\n")
+                .append(formatedFpr.substring(0, formatedFpr.length()/2))
+                .append("\n")
+                .append(formatedFpr.substring(formatedFpr.length()/2))
+                .append("\n").append("\n")
+                .append(context.getString(R.string.recipient_from)).append(": ")
+                .append(fromAddress);
+
+        return stringBuilder.toString();
     }
 }
