@@ -1424,27 +1424,34 @@ public class MessagingController {
 
                     Log.d("pep", "in download loop (nr="+number+") pre pep");
                     PEpUtils.dumpMimeMessage("downloadSmallMessages", (MimeMessage) message);
-                    PEpProvider.DecryptResult result = pEpProvider.decryptMessage((MimeMessage) message);
+                    final PEpProvider.DecryptResult result = pEpProvider.decryptMessage((MimeMessage) message);
                     PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
 
-                    if (isUsablePrivateKey(result)) {
+                    if (result.keyDetails != null) {
                         Handler handler = new Handler(Looper.getMainLooper());
-                        Log.i("MessagingController", "messageFinished " + pEpProvider.getOwnKeyDetails((MimeMessage) message));
-                        handler.post(new Runnable() {
+                        if (!message.getFrom()[0].equals(result.keyDetails.getAddress().getAddress())) {
+                            handler.post(new Runnable() {
 
-                            @Override
-                            public void run() {
-                                //Your UI code here
-//                                context.getApplicationContext().sendOrderedBroadcast();
-                                context.getApplicationContext().sendOrderedBroadcast(new Intent("PRIVATE_KEY"), null);
-                                Toast.makeText(context.getApplicationContext(), "Private key", Toast.LENGTH_LONG).show();
-                            }
-                        });
-                        queueSetFlag(account, folder, Boolean.toString(true), Flag.DELETED.toString(), new String[]{message.getUid()});
-
+                                @Override
+                                public void run() {
+                                    //Your UI code here
+                                    Intent broadcastIntent = new Intent("PRIVATE_KEY");
+                                    broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_DETAIL, result.keyDetails.getDetailMessage());
+                                    broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_FPR, result.keyDetails.getFpr());
+                                    broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_ADDRESS, result.keyDetails.getAddress().getAddress());
+                                    broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_USERNAME, result.keyDetails.getAddress().getPersonal());
+                                    context.getApplicationContext().sendOrderedBroadcast(broadcastIntent, null);
+                                    Toast.makeText(context.getApplicationContext(), "Private key", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                            queueSetFlag(account, folder, Boolean.toString(true), Flag.DELETED.toString(), new String[]{message.getUid()});
+                        }
                     }
                     else {
                         MimeMessage decryptedMessage = (MimeMessage) result.msg;
+                        if (message.getFolder().getName().equals(account.getSentFolderName())) {
+                            result.msg.setHeader(MimeHeader.HEADER_PEPCOLOR, pEpProvider.getPrivacyState(message).name());
+                        }
 
                     decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
 
@@ -1504,25 +1511,6 @@ public class MessagingController {
         if (K9.DEBUG)
             Log.d(K9.LOG_TAG, "SYNC: Done fetching small messages for folder " + folder);
     }
-
-    private boolean isUsablePrivateKey(PEpProvider.DecryptResult result) throws MessagingException {
-        // TODO: 13/06/16 Check if is necesary check own id
-        return result.col.value >= Color.pEpRatingGreen.value
-                && result.flags != null
-                && result.flags == DecryptFlags.pEpDecryptFlagOwnPrivateKey;
-
-//        StringWriter writer = new StringWriter();
-//        try {
-//            IOUtils.copy(((MimeMultipart) result.msg.getBody()).getBodyPart(0).getBody().getInputStream(), writer);
-//            String body = writer.toString();
-//            return result.col.value >= Color.pEpRatingGreen.value && body.contains("Import me");
-//        } catch (IOException e) {
-//            Log.e(K9.LOG_TAG, "isUsablePrivateKey: ", e);
-//            return false;
-//        }
-
-    }
-
 
     private <T extends Message> void downloadLargeMessages(final Account account, final Folder<T> remoteFolder,
                                        final LocalFolder localFolder,

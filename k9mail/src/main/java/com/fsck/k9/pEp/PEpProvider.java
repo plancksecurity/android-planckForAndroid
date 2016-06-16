@@ -4,7 +4,6 @@ import android.content.Context;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.internet.MimeMessage;
 import org.pEp.jniadapter.Color;
-import org.pEp.jniadapter.DecryptFlags;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
 
@@ -20,6 +19,10 @@ public interface PEpProvider {
      */
     int ENCRYPTED_MESSAGE_POSITION = 0;
     public static final String PEP_OWN_USER_ID = "pEp_own_userId";
+    String PEP_PRIVATE_KEY_DETAIL = "pEpDetails";
+    String PEP_PRIVATE_KEY_FPR = "pEpDetailsFpr";
+    String PEP_PRIVATE_KEY_ADDRESS = "pEpDetailsAdress";
+    String PEP_PRIVATE_KEY_USERNAME = "pEpDetailsUsername";
 
     /**
      * checks the privacy level of the adresses supplied. This method creates a pEp message and
@@ -132,17 +135,41 @@ public interface PEpProvider {
     void startKeyserverLookup();
     void stoptKeyserverLookup();
 
-    String getOwnKeyDetails(MimeMessage message);
+    KeyDetail getOwnKeyDetails(Message message);
+    public class KeyDetail {
+        private final Address address;
+        private final String detailMessage;
+        private final String fpr;
+
+        public KeyDetail(String detailMessage, String fpr, Address address) {
+            this.detailMessage = detailMessage;
+            this.fpr = fpr;
+            this.address = address;
+        }
+
+        public String getDetailMessage() {
+            return detailMessage;
+        }
+
+        public String getFpr() {
+            return fpr;
+        }
+
+        public Address getAddress() {
+            return address;
+        }
+    }
 
     class DecryptResult {
-        DecryptResult(MimeMessage msg, Color col, DecryptFlags flags) {
+        public final KeyDetail keyDetails;
+
+        DecryptResult(MimeMessage msg, Color col, KeyDetail keyDetails) {
             this.msg = msg;
             this.col = col;
-            this.flags = flags;
+            this.keyDetails = keyDetails;
         }
 
         final public MimeMessage msg;
         final public Color col;
-        final public DecryptFlags flags;
     }
 }

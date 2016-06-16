@@ -8,9 +8,14 @@ import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.MotionEvent;
 import android.widget.Toast;
+import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
+import com.fsck.k9.mail.Address;
+import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpUtils;
+import org.pEp.jniadapter.Identity;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
@@ -53,22 +58,25 @@ public class K9Activity extends Activity implements K9ActivityMagic {
         super.onDestroy();
     }
 
-    private void displayAlert()
+    private void displayKeyImportAlert(String detail, final String fpr, final String address, final String username)
     {
         ContextThemeWrapper ctw = new ContextThemeWrapper(this, R.style.TextViewCustomFont);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctw);
-        alertDialogBuilder.setTitle("Tit§le")
-                .setMessage("Hola soy un mensaje and yout fpr is> AAAA AAAA AAAA AAAA AAAA BBBB BBBB BBBB BBBB BBBB < john@doe.com")
+        alertDialogBuilder.setTitle("Secret key replace")
+                .setMessage(detail)
                 .setCancelable(false)
                 .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getApplicationContext(), "Accept", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Key replaced", Toast.LENGTH_LONG).show();
+                        Identity id = PEpUtils.createIdentity(new Address(address, username), getApplicationContext());
+                        id.fpr = fpr;
+                        ((K9) getApplication()).getpEpProvider().myself(id);
                     }
                 }).setNegativeButton("Reject", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getApplicationContext(), "Reject", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Key rejected", Toast.LENGTH_LONG).show();
             }
         });
         AlertDialog dialog = alertDialogBuilder.create();
@@ -87,7 +95,11 @@ public class K9Activity extends Activity implements K9ActivityMagic {
         public void onReceive(final Context context, Intent intent) {
             Log.w("dec", "onReceive: ");
             abortBroadcast();
-            displayAlert();
+            displayKeyImportAlert(
+                    intent.getExtras().getString(PEpProvider.PEP_PRIVATE_KEY_DETAIL),
+                    intent.getExtras().getString(PEpProvider.PEP_PRIVATE_KEY_FPR),
+                    intent.getExtras().getString(PEpProvider.PEP_PRIVATE_KEY_ADDRESS),
+                    intent.getExtras().getString(PEpProvider.PEP_PRIVATE_KEY_USERNAME));
         }
     }
 }
