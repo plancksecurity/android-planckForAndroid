@@ -410,6 +410,25 @@
             android:persistent="false"
             android:key="pep_passive_mode"
             android:title="@string/pep_passive_mode"/>
+        <!--<EditTextPreference-->
+            <!--android:persistent="false"-->
+            <!--android:key="pep_add_key_to_blacklist"-->
+            <!--android:singleLine="false"-->
+            <!--android:title="@string/pep_add_key_to_blacklist"-->
+            <!--android:summary=""-->
+            <!--android:dialogTitle="@string/pep_add_key_to_blacklist"-->
+            <!--android:digits="0123456789ABCDEF "-->
+            <!--android:inputType="textCapCharacters"-->
+            <!--android:maxLength="49"-->
+            <!--/>-->
+        <!--<EditTextPreference-->
+            <!--android:persistent="false"-->
+            <!--android:key="pep_remove_key_from_blacklist"-->
+            <!--android:singleLine="true"-->
+            <!--android:title="@string/pep_remove_key_from_blacklist"-->
+            <!--android:summary=""-->
+            <!--android:dialogTitle="@string/pep_remove_key_from_blacklist"-->
+            <!--/>-->
     </PreferenceScreen>
 
 
