@@ -58,9 +58,9 @@ public class K9Activity extends Activity implements K9ActivityMagic {
         super.onDestroy();
     }
 
-    private void displayKeyImportAlert(String detail, final String fpr, final String address, final String username)
+    private static void displayKeyImportAlert(final Context context, String detail, final String fpr, final String address, final String username)
     {
-        ContextThemeWrapper ctw = new ContextThemeWrapper(this, R.style.TextViewCustomFont);
+        ContextThemeWrapper ctw = new ContextThemeWrapper(context, R.style.TextViewCustomFont);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctw);
         alertDialogBuilder.setTitle("Secret key replace")
                 .setMessage(detail)
@@ -68,15 +68,15 @@ public class K9Activity extends Activity implements K9ActivityMagic {
                 .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getApplicationContext(), "Key replaced", Toast.LENGTH_LONG).show();
-                        Identity id = PEpUtils.createIdentity(new Address(address, username), getApplicationContext());
+                        Toast.makeText(context, "Key replaced", Toast.LENGTH_LONG).show();
+                        Identity id = PEpUtils.createIdentity(new Address(address, username), context);
                         id.fpr = fpr;
-                        ((K9) getApplication()).getpEpProvider().myself(id);
+                        ((K9) context.getApplicationContext()).getpEpProvider().myself(id);
                     }
                 }).setNegativeButton("Reject", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getApplicationContext(), "Key rejected", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "Key rejected", Toast.LENGTH_LONG).show();
             }
         });
         AlertDialog dialog = alertDialogBuilder.create();
@@ -87,7 +87,7 @@ public class K9Activity extends Activity implements K9ActivityMagic {
         dialog.show();
     }
 
-    public class PrivateKeyReceiver extends BroadcastReceiver {
+    public static class PrivateKeyReceiver extends BroadcastReceiver {
         public PrivateKeyReceiver() {
         }
 
@@ -96,6 +96,7 @@ public class K9Activity extends Activity implements K9ActivityMagic {
             Log.w("dec", "onReceive: ");
             abortBroadcast();
             displayKeyImportAlert(
+                    context,
                     intent.getExtras().getString(PEpProvider.PEP_PRIVATE_KEY_DETAIL),
                     intent.getExtras().getString(PEpProvider.PEP_PRIVATE_KEY_FPR),
                     intent.getExtras().getString(PEpProvider.PEP_PRIVATE_KEY_ADDRESS),
