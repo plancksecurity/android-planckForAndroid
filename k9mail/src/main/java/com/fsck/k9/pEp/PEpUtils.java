@@ -45,9 +45,11 @@ public class PEpUtils {
         Identity id = new Identity();
         id.address = adr.getAddress();
         id.username = adr.getAddress();
-//        if (adr.getPersonal() != null) {
-//            id.username = adr.getPersonal();
-//        } else id.us
+        if (adr.getPersonal() != null) {
+            id.username = adr.getPersonal();
+        } else {
+            id.username = adr.getAddress();
+        }
 
 
         if (isMyself(context, adr)) {
