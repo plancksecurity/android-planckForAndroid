@@ -55,7 +55,7 @@ Please submit bug reports, contribute new features and ask questions at
 
 
     <!-- Default signature -->
-    <string name="default_signature">-- \nSent from my Android device with K-9 Mail/p≡p. Please excuse my brevity.</string>
+    <string name="default_signature">-- \nSent from my K-9 Mail/p≡p on Android.\n</string>
 
 
     <!-- General strings that include the app name -->
