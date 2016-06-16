@@ -11,6 +11,7 @@ import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
 import org.pEp.jniadapter.AndroidHelper;
 import org.pEp.jniadapter.Color;
+import org.pEp.jniadapter.DecryptFlags;
 import org.pEp.jniadapter.Engine;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
