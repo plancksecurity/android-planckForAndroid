@@ -1450,7 +1450,7 @@ public class MessagingController {
                     else {
                         MimeMessage decryptedMessage = (MimeMessage) result.msg;
                         if (message.getFolder().getName().equals(account.getSentFolderName())) {
-                            result.msg.setHeader(MimeHeader.HEADER_PEPCOLOR, pEpProvider.getPrivacyState(message).name());
+                            decryptedMessage.setHeader(MimeHeader.HEADER_PEPCOLOR, pEpProvider.getPrivacyState(message).name());
                         }
 
                     decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...

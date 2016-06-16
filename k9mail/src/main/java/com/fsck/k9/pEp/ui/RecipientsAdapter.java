@@ -158,13 +158,16 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
         private void renderIdentity(Identity identity, Color color) {
             if (identity.username != null && !identity.address.equals(identity.username)) {
                 identityUserName.setText(identity.username);
+                if (identity.address != null) identityAdress.setText(identity.address);
+
             } else {
-                identityUserName.setVisibility(View.INVISIBLE);
+                identityAdress.setVisibility(View.GONE);
+                if (identity.address != null) identityUserName.setText(identity.address);
+
             }
-            if (identity.address != null) identityAdress.setText(identity.address);
-            if (color.value >= Color.pEpRatingGreen.value) {
-                identityUserName.setTextColor(android.graphics.Color.WHITE);
-            }
+//            if (color.value >= Color.pEpRatingGreen.value) {
+//                identityUserName.setTextColor(android.graphics.Color.WHITE);
+//            }
         }
     }
 
