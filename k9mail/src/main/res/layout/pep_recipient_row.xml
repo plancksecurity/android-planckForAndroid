@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="72dp"
@@ -9,24 +10,33 @@
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:id="@+id/recipientContainer">
 
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_toStartOf="@+id/buttonHandshake"
+            android:layout_centerVertical="true">
 
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Medium Text"
-            android:id="@+id/tvUsername"
-            android:layout_gravity="center"
-    />
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Medium Text"
-            android:id="@+id/tvAddress"
-            android:layout_gravity="center"
-            android:layout_below="@id/tvUsername"
-    />
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                tools:text="Medium Text"
+                android:id="@+id/tvUsername"
+                android:layout_gravity="center_vertical"
+                />
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                tools:text="Medium Text"
+                android:id="@+id/tvAddress"
+                android:layout_gravity="center_vertical"
+                tools:visibility="gone"
+                android:layout_below="@id/tvUsername"
+                />
+    </LinearLayout>
 
     <Button
             android:layout_width="150dp"
