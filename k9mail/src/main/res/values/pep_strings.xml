@@ -29,6 +29,9 @@
     <string name="myself_format">Myself: %1$s</string>
     <string name="pEp_trustwords">pEp Trustwords</string>
     <string name="force_unprotected">Force Unprotected</string>
+    <string name="receivedSecretKey">Received this Secret Key:</string>
+    <string name="username">User Name</string>
+    <string name="userAddress">User Address</string>
 
     <string-array name="pep_states">
         <item>pEpRatingUndefined</item>
@@ -109,12 +112,10 @@
                     <!--pEpRatingReliable--></item>
         <item>p≡p – This communication is private and authentic.<!--pEpRatingGreen--></item>
         <item>p≡p – This communication is private and authentic.<!--pEpRatingTrusted--></item>
-        <item>A handshake with the communication partner was done already.
-                The results make sure that each communication with this partner is secure.<!--pEpRatingTrustedAndAnonymized--></item>
+        <item>A handshake with the communication partner was done already.The results make sure that each communication with this partner is secure.<!--pEpRatingTrustedAndAnonymized--></item>
         <item>p≡p – This communication is private and authentic and anonymous.<!--pEpRatingFullyAnonymous--></item>
-        <item>"The sender is not Trusted.
-                Do not trust this message! It probably is not from the communication partner indicated.<!--pEpRatingMissTrust--></item>
-                <item>"The encryption data is not matching. This probably is a forged message.
+        <item>"The sender is not Trusted.\nDo not trust this message! It probably is not from the communication partner indicated.<!--pEpRatingMissTrust--></item>
+        <item>"The encryption data is not matching. This probably is a forged message.
                 Do not trust this message! It probably is not from the communication partner indicated.<!--pEpRatingRed--></item>
         <item>*poff*. No Ponies<!--pEpRatingB0rken--></item>
                 <item>"The encryption data is not matching. This probably is a forged message.
