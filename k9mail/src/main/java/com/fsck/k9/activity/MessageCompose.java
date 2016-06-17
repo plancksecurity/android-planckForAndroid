@@ -101,7 +101,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private static final String STATE_KEY_NUM_ATTACHMENTS_LOADING = "numAttachmentsLoading";
     private static final String STATE_KEY_WAITING_FOR_ATTACHMENTS = "waitingForAttachments";
     private static final String STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT = "alreadyNotifiedUserOfEmptySubject";
-    private static final String STATE_FORCE_UNENCRYPTED = "forceUnencrypted";
 
     private static final String LOADER_ARG_ATTACHMENT = "attachment";
 
@@ -166,7 +165,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private boolean mFinishAfterDraftSaved;
     private boolean alreadyNotifiedUserOfEmptySubject = false;
     private Color originalMessageColor = null;
-    private boolean forceUnencrypted = false;
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
@@ -691,7 +689,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         outState.putBoolean(STATE_KEY_READ_RECEIPT, mReadReceipt);
         outState.putBoolean(STATE_KEY_DRAFT_NEEDS_SAVING, draftNeedsSaving);
         outState.putBoolean(STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT, alreadyNotifiedUserOfEmptySubject);
-        outState.putBoolean(STATE_FORCE_UNENCRYPTED, forceUnencrypted);
 
         recipientPresenter.onSaveInstanceState(outState);
         quotedMessagePresenter.onSaveInstanceState(outState);
@@ -749,7 +746,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         mReferences = savedInstanceState.getString(STATE_REFERENCES);
         draftNeedsSaving = savedInstanceState.getBoolean(STATE_KEY_DRAFT_NEEDS_SAVING);
         alreadyNotifiedUserOfEmptySubject = savedInstanceState.getBoolean(STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT);
-        forceUnencrypted = savedInstanceState.getBoolean(STATE_FORCE_UNENCRYPTED);
         updateFrom();
 
         updateMessageFormat();
@@ -799,7 +795,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 .setMessageReference(mMessageReference)
                 .setDraft(isDraft)
                 .setIsPgpInlineEnabled(cryptoStatus.isPgpInlineModeEnabled())
-                .setForcedUnencrypted(forceUnencrypted);
+                .setForcedUnencrypted(recipientPresenter.isForceUnencrypted());
 
         quotedMessagePresenter.builderSetProperties(builder);
 
@@ -1314,8 +1310,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     }
 
     private void forceUnencrypted() {
-        forceUnencrypted = !forceUnencrypted;
-        recipientPresenter.setForceUnencrypted(forceUnencrypted);
+        recipientPresenter.switchMessageEncryption();
     }
 
     private void handlePEpState(boolean... withToast) {
