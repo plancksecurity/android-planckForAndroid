@@ -82,7 +82,7 @@ public class RecipientPresenter implements PermissionPingCallback {
     // TODO initialize cryptoMode to other values under some circumstances, e.g. if we reply to an encrypted e-mail
     private CryptoMode currentCryptoMode = CryptoMode.OPPORTUNISTIC;
     private boolean cryptoEnablePgpInline = false;
-    private boolean forceUnEncrypted = false;
+    private boolean forceUnencrypted = false;
 
     public RecipientPresenter(Context context, LoaderManager loaderManager, RecipientMvpView recipientMvpView,
             Account account, ComposePgpInlineDecider composePgpInlineDecider, ReplyToParser replyToParser) {
@@ -194,7 +194,7 @@ public class RecipientPresenter implements PermissionPingCallback {
         lastFocusedType = RecipientType.valueOf(savedInstanceState.getString(STATE_KEY_LAST_FOCUSED_TYPE));
         currentCryptoMode = CryptoMode.valueOf(savedInstanceState.getString(STATE_KEY_CURRENT_CRYPTO_MODE));
         cryptoEnablePgpInline = savedInstanceState.getBoolean(STATE_KEY_CRYPTO_ENABLE_PGP_INLINE);
-        forceUnEncrypted = savedInstanceState.getBoolean(STATE_FORCE_UNENCRYPTED);
+        forceUnencrypted = savedInstanceState.getBoolean(STATE_FORCE_UNENCRYPTED);
         updateRecipientExpanderVisibility();
     }
 
@@ -204,7 +204,7 @@ public class RecipientPresenter implements PermissionPingCallback {
         outState.putString(STATE_KEY_LAST_FOCUSED_TYPE, lastFocusedType.toString());
         outState.putString(STATE_KEY_CURRENT_CRYPTO_MODE, currentCryptoMode.toString());
         outState.putBoolean(STATE_KEY_CRYPTO_ENABLE_PGP_INLINE, cryptoEnablePgpInline);
-        outState.putBoolean(STATE_FORCE_UNENCRYPTED, forceUnEncrypted);
+        outState.putBoolean(STATE_FORCE_UNENCRYPTED, forceUnencrypted);
     }
 
     public void initFromDraftMessage(Message message) {
@@ -802,7 +802,7 @@ public class RecipientPresenter implements PermissionPingCallback {
 
     public void updatepEpState() {
         Color pEpColor;
-        if (forceUnEncrypted) {
+        if (forceUnencrypted) {
             pEpColor = Color.pEpRatingUnencrypted;
         } else {
             Address fromAddress = recipientMvpView.getFromAddress();
@@ -834,9 +834,13 @@ public class RecipientPresenter implements PermissionPingCallback {
     }
 
 
-    public void setForceUnencrypted(boolean forceUnencrypted) {
-        this.forceUnEncrypted = forceUnencrypted;
+    public void switchMessageEncryption() {
+        this.forceUnencrypted = !this.forceUnencrypted;
         handlepEpState();
+    }
+
+    public boolean isForceUnencrypted() {
+        return forceUnencrypted;
     }
 
     public enum CryptoProviderState {
