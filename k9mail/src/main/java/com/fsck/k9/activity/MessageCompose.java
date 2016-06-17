@@ -133,6 +133,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private static final String STATE_KEY_READ_RECEIPT = "com.fsck.k9.activity.MessageCompose.messageReadReceipt";
     private static final String STATE_KEY_DRAFT_NEEDS_SAVING = "com.fsck.k9.activity.MessageCompose.draftNeedsSaving";
     private static final String STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT = "alreadyNotifiedUserOfEmptySubject";
+    private static final String STATE_FORCE_UNENCRYPTED = "forceUnencrypted";
 
     private static final String FRAGMENT_WAITING_FOR_ATTACHMENT = "waitingForAttachment";
 
@@ -680,6 +681,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         outState.putBoolean(STATE_KEY_READ_RECEIPT, mReadReceipt);
         outState.putBoolean(STATE_KEY_DRAFT_NEEDS_SAVING, draftNeedsSaving);
         outState.putBoolean(STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT, alreadyNotifiedUserOfEmptySubject);
+        outState.putBoolean(STATE_FORCE_UNENCRYPTED, forceUnencrypted);
 
         recipientPresenter.onSaveInstanceState(outState);
         quotedMessagePresenter.onSaveInstanceState(outState);
@@ -715,7 +717,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         mReferences = savedInstanceState.getString(STATE_REFERENCES);
         draftNeedsSaving = savedInstanceState.getBoolean(STATE_KEY_DRAFT_NEEDS_SAVING);
         alreadyNotifiedUserOfEmptySubject = savedInstanceState.getBoolean(STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT);
-
+        forceUnencrypted = savedInstanceState.getBoolean(STATE_FORCE_UNENCRYPTED);
         updateFrom();
 
         updateMessageFormat();

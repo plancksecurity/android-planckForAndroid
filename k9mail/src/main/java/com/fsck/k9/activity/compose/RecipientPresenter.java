@@ -51,6 +51,7 @@ public class RecipientPresenter implements PermissionPingCallback {
     private static final String STATE_KEY_LAST_FOCUSED_TYPE = "state:lastFocusedType";
     private static final String STATE_KEY_CURRENT_CRYPTO_MODE = "state:currentCryptoMode";
     private static final String STATE_KEY_CRYPTO_ENABLE_PGP_INLINE = "state:cryptoEnablePgpInline";
+    private static final String STATE_FORCE_UNENCRYPTED = "forceUnencrypted";
 
     private static final int CONTACT_PICKER_TO = 1;
     private static final int CONTACT_PICKER_CC = 2;
@@ -183,6 +184,7 @@ public class RecipientPresenter implements PermissionPingCallback {
         lastFocusedType = RecipientType.valueOf(savedInstanceState.getString(STATE_KEY_LAST_FOCUSED_TYPE));
         currentCryptoMode = CryptoMode.valueOf(savedInstanceState.getString(STATE_KEY_CURRENT_CRYPTO_MODE));
         cryptoEnablePgpInline = savedInstanceState.getBoolean(STATE_KEY_CRYPTO_ENABLE_PGP_INLINE);
+        forceUnEncrypted = savedInstanceState.getBoolean(STATE_FORCE_UNENCRYPTED);
         updateRecipientExpanderVisibility();
     }
 
@@ -192,6 +194,7 @@ public class RecipientPresenter implements PermissionPingCallback {
         outState.putString(STATE_KEY_LAST_FOCUSED_TYPE, lastFocusedType.toString());
         outState.putString(STATE_KEY_CURRENT_CRYPTO_MODE, currentCryptoMode.toString());
         outState.putBoolean(STATE_KEY_CRYPTO_ENABLE_PGP_INLINE, cryptoEnablePgpInline);
+        outState.putBoolean(STATE_FORCE_UNENCRYPTED, forceUnEncrypted);
     }
 
     public void initFromDraftMessage(Message message) {
