@@ -34,6 +34,12 @@
     <string name="receivedSecretKey">Received this Secret Key:</string>
     <string name="username">User Name</string>
     <string name="userAddress">User Address</string>
+    <string name="secret_key_detected">Secret key detected</string>
+    <string name="received_this_secret_key">The following secret key was received</string>
+    <string name="user_address_format">&lt;%1$s&gt;</string>
+    <string name="user_name_format">%1$s</string>
+    <string name="from_format">from sender %1$s</string>
+
 
     <string-array name="pep_states">
         <item>pEpRatingUndefined</item>
