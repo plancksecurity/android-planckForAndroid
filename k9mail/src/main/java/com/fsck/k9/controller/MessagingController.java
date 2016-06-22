@@ -1447,14 +1447,16 @@ public class MessagingController implements Runnable {
 
                     if (result.keyDetails != null) {
                         Handler handler = new Handler(Looper.getMainLooper());
-                        if (!message.getFrom()[0].equals(result.keyDetails.getAddress().getAddress())) {
+                        String currentFpr = pEpProvider.myself(PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), context)).fpr;
+//                        if (!message.getFrom()[0].getAddress().equals(result.keyDetails.getAddress().getAddress())) {
+                        if (!result.keyDetails.getFpr().equals(currentFpr)) {
                             handler.post(new Runnable() {
 
                                 @Override
                                 public void run() {
                                     //Your UI code here
                                     Intent broadcastIntent = new Intent("PRIVATE_KEY");
-                                    broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_DETAIL, result.keyDetails.getDetailMessage());
+                                    broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_FROM,message.getFrom()[0].getAddress());
                                     broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_FPR, result.keyDetails.getFpr());
                                     broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_ADDRESS, result.keyDetails.getAddress().getAddress());
                                     broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_USERNAME, result.keyDetails.getAddress().getPersonal());
@@ -1462,8 +1464,9 @@ public class MessagingController implements Runnable {
                                     Toast.makeText(context.getApplicationContext(), "Private key", Toast.LENGTH_LONG).show();
                                 }
                             });
-                            queueSetFlag(account, folder, Boolean.toString(true), Flag.DELETED.toString(), new String[]{message.getUid()});
                         }
+                        queueSetFlag(account, folder, Boolean.toString(true), Flag.DELETED.toString(), new String[]{message.getUid()});
+                        localFolder.setFlags(Collections.singletonList(message), Collections.singleton(Flag.DELETED), true);
                     }
                     else {
                         MimeMessage decryptedMessage = (MimeMessage) result.msg;

@@ -30,6 +30,7 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 fontPath="fonts/CourierNew.ttf"
+                android:textIsSelectable="true"
                 />
     </LinearLayout>
 
@@ -58,6 +59,7 @@
                 android:textSize="24sp"
                 android:gravity="center"
                 android:layout_gravity="center"
+                android:textIsSelectable="true"
                 fontPath="fonts/CourierNew.ttf"/>
     </LinearLayout>
 </LinearLayout>

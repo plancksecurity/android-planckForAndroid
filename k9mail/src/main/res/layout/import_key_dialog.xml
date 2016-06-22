@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:padding="24dp"
+              >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/secret_key_detected"
+        android:textStyle="bold"
+        android:id="@+id/title"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/received_this_secret_key"
+        android:id="@+id/textView"
+        android:paddingBottom="16dp"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        tools:text="User Name: Hussein Kasem"
+        fontPath="fonts/CourierNew.ttf"
+        android:id="@+id/tvUsername"
+        android:paddingLeft="16dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_marginTop="-12dp"
+        tools:text="User Address: tosync@miau.xyz"
+        fontPath="fonts/CourierNew.ttf"
+        android:id="@+id/tvAddress"
+        android:paddingLeft="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        tools:text="AAAA AAAA AAAA AAAA AAAA\nAAAA AAAA AAAA AAAA AAAA"
+        android:id="@+id/tvFpr"
+        android:padding="16dp"
+        android:gravity="left"
+        android:layout_gravity="left"
+        fontPath="fonts/CourierNew.ttf"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        tools:text="From: tosync@miau.xyz"
+        android:id="@+id/tvFrom"/>
+</LinearLayout>

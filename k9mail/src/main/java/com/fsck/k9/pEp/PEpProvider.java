@@ -19,10 +19,12 @@ public interface PEpProvider {
      */
     int ENCRYPTED_MESSAGE_POSITION = 0;
     public static final String PEP_OWN_USER_ID = "pEp_own_userId";
-    String PEP_PRIVATE_KEY_DETAIL = "pEpDetails";
+    int HALF_FINGERPRINT_LENGTH = 24;
+
     String PEP_PRIVATE_KEY_FPR = "pEpDetailsFpr";
     String PEP_PRIVATE_KEY_ADDRESS = "pEpDetailsAdress";
     String PEP_PRIVATE_KEY_USERNAME = "pEpDetailsUsername";
+    String PEP_PRIVATE_KEY_FROM = "pEpDetailsFrom";
 
     /**
      * checks the privacy level of the adresses supplied. This method creates a pEp message and
