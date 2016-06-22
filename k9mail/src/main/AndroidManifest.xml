@@ -29,7 +29,7 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <permission
         android:name="${applicationId}.permission.READ_ATTACHMENT"
         android:description="@string/read_attachment_desc"
@@ -452,7 +452,7 @@
                 android:value=".pEp.ui.PEpStatus" />
         </activity>
 
-        <receiver android:name=".activity.K9Activity$PrivateKeyReceiver">
+        <receiver android:name=".activity.K9ActivityCommon$PrivateKeyReceiver">
             <intent-filter>
                 <action android:name="PRIVATE_KEY">
                 </action>

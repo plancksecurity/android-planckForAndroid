@@ -1,6 +1,7 @@
 package com.fsck.k9.activity;
 
 import android.app.ListActivity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -10,6 +11,7 @@ import android.widget.ListView;
 import com.fsck.k9.K9;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
 public class K9ListActivity extends ListActivity implements K9ActivityMagic {
@@ -75,5 +77,17 @@ public class K9ListActivity extends ListActivity implements K9ActivityMagic {
         }
 
         return super.onKeyUp(keyCode, event);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mBase.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+
     }
 }
