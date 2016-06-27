@@ -10,7 +10,10 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.Spinner;
-import com.fsck.k9.*;
+import com.fsck.k9.Account;
+import com.fsck.k9.K9;
+import com.fsck.k9.Preferences;
+import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.mail.Store;
 
@@ -27,6 +30,7 @@ public class AccountSetupOptions extends K9Activity implements OnClickListener {
     private CheckBox mNotifyView;
     private CheckBox mNotifySyncView;
     private CheckBox mPushEnable;
+    private CheckBox mUntrustedServer;
 
     private Account mAccount;
 
@@ -48,6 +52,7 @@ public class AccountSetupOptions extends K9Activity implements OnClickListener {
         mNotifySyncView = (CheckBox)findViewById(R.id.account_notify_sync);
         mPushEnable = (CheckBox)findViewById(R.id.account_enable_push);
 
+        mUntrustedServer = (CheckBox) findViewById(R.id.account_trust_server);
         findViewById(R.id.next).setOnClickListener(this);
 
         SpinnerOption checkFrequencies[] = {
@@ -142,6 +147,8 @@ public class AccountSetupOptions extends K9Activity implements OnClickListener {
         } else {
             mAccount.setFolderPushMode(Account.FolderMode.NONE);
         }
+
+        mAccount.setPEpStoreEncryptedOnServer(!mUntrustedServer.isChecked());
 
         mAccount.save(Preferences.getPreferences(this));
         if (mAccount.equals(Preferences.getPreferences(this).getDefaultAccount()) ||
