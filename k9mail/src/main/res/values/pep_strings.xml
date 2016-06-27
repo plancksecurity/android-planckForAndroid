@@ -4,7 +4,7 @@
     <string name="pep">p≡p</string>
     <string name="handshake">Handshake</string>
     <string name="account_setup_genereting_keys">Setting your Privacy by Default </string>
-    <string name="reset_trust">Reset trust</string>
+    <string name="reset_trust">Stop trust</string>
     <string name="pgp_fingerprint">PGP Fingerprint</string>
 
     <string name="dialog_weaker_forward_warning_message">You\'re about to forward an encrypted message as unencrypted. If you choose to proceed, confidential information might be leaked, putting you and your recipients at risk. </string>
@@ -21,10 +21,10 @@
     <string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>
 
     <string name="title_activity_pep_trustwords">Trustwords</string>
-    <string name="confirm_trustwords">Yes - Confirm</string>
+    <string name="confirm_trustwords">Confirm Trustwords</string>
     <string name="wrong_trustwords">Wrong Trustwords</string>
     <string name="wrong_fingerprint">Wrong fingerprint</string>
-    <string name="ask_trustwords">Ask your partner: What are your trustwords? The only correct answer is shown below.</string>
+    <string name="ask_trustwords">Ask your partner: What are your Trustwords? Then compare to the correct answer shown below.</string>
     <string name="complete_partner_format">Partner: %1$s &lt; %2$s &gt;</string>
     <string name="partner_format">Partner: %1$s</string>
     <string name="complete_myself_format">Myself: %1$s &lt; %2$s &gt;</string>
@@ -108,8 +108,7 @@
         <item>This communication is not secure.
                 You should be aware that there may be eavesdroppers and the message could be forged. It could be OK just as well.
             <!--pEpRatingUnencrypted--></item>
-        <item>This communication is not secure for all communication partners.
-                Please be aware this message is not secure for all communication partners.
+        <item>This message is unsecure for some communication partners.
             <!--pEpRatingUnencryptedForSome--></item>
         <item>The message was encrypted but not in a feasible way or it wasn\'t signed.
                 There is no credible encryption for this message, so you should be aware that there may be eavesdroppers and the message could be forged. It could be OK just as well.
