@@ -111,13 +111,13 @@ public class PEpUtils {
      * @param mm mesage to dump
      */
     static public void dumpMimeMessage(String tag, MimeMessage mm) {
-        Log.e("pepdump", "Root:");
+        Log.i("pepdump", "Root:");
         try {
             for (String header:mm.getHeaderNames())
-                Log.e("pepdump", tag + " " + header + ": " + mm.getHeader(header)[0]);
+                Log.i("pepdump", tag + " " + header + ": " + mm.getHeader(header)[0]);
 
             // Log.e("pepdump",  "Message-Id: " + mm.getMessageId().hashCode() );
-            Log.e("pepdump", tag + " hasAttachments:" + mm.hasAttachments());
+            Log.i("pepdump", tag + " hasAttachments:" + mm.hasAttachments());
 
              dumpBody(tag, mm.getBody(), 5);
 
@@ -129,29 +129,29 @@ public class PEpUtils {
     static private void dumpBody(String tag, Body body, int idx) throws Exception {
         String prev = tag + "                                                                                                                                                        ".substring(0, idx);
         if(body==null) {
-            Log.e("pepdump", "null body");
+            Log.i("pepdump", "null body");
             return;
         }
         if (!(body instanceof MimeMultipart)) {
-            Log.e("pepdump", prev + "body: "+ body.toString());
+            Log.i("pepdump", prev + "body: "+ body.toString());
             if(body instanceof BinaryMemoryBody) {
                 byte[] arr = extractBodyContent(body);
-                Log.e("pepdump", prev + "Blob content: >" + startOf(new String(arr), 100)  + "<");
+                Log.i("pepdump", prev + "Blob content: >" + startOf(new String(arr), 100)  + "<");
             }
             if(body instanceof TextBody) {
                 TextBody tb = (TextBody) body;
-                Log.e("pepdump", prev+ "Textbody content >" + startOf(tb.getText(),100)+"<");
+                Log.i("pepdump", prev+ "Textbody content >" + startOf(tb.getText(),100)+"<");
             }
             return;
         }
         try {
             MimeMultipart mmp = (MimeMultipart) body;
 
-            Log.e("pepdump", prev + "MimeMultipart:");
+            Log.i("pepdump", prev + "MimeMultipart:");
             int nr = mmp.getBodyParts().size();
             for (int i = 0; i < nr; i++) {
                 BodyPart p = mmp.getBodyPart(i);
-                Log.e("pepdump",prev + "Bodypart: " + p.toString());
+                Log.i("pepdump",prev + "Bodypart: " + p.toString());
                 dumpBody(tag, p.getBody(), idx + 5);
 
             }
