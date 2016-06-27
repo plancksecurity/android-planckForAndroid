@@ -38,6 +38,8 @@ public class PEpTrustwords extends K9Activity {
     TextView tvTrustwords;
     @Bind(R.id.tvPartner)
     TextView partnerView;
+    @Bind(R.id.tvMyself)
+    TextView myselfView;
     @Bind(R.id.flipper)
     ViewSwitcher flipper;
 
@@ -96,8 +98,10 @@ public class PEpTrustwords extends K9Activity {
                 myself = PEpUtils.createIdentity(new Address(intent.getStringExtra(MYSELF)), context);
                 myself = pEp.myself(myself);
                 if (!myself.username.equals(myself.address)) {
+                    myselfView.setText(String.format(getString(R.string.complete_myself_format), myself.username, myself.address));
                     myselfLabel.setText(String.format(getString(R.string.complete_myself_format), myself.username, myself.address));
                 } else {
+                    myselfView.setText(String.format(getString(R.string.myself_format),myself.address));
                     myselfLabel.setText(String.format(getString(R.string.myself_format),myself.address));
                 }
                 myselfFpr.setText(PEpUtils.formatFpr(myself.fpr));
