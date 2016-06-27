@@ -65,6 +65,12 @@ public class PEpProviderImpl implements PEpProvider {
     private void createEngineSession() throws pEpException {
         engine = new Engine();
         engine.config_passive_mode(K9.getPEpPassiveMode());
+        configKeyServerLockup(K9.getPEpUseKeyserver());
+    }
+
+    private void configKeyServerLockup(boolean pEpUseKeyserver) {
+        if (pEpUseKeyserver) startKeyserverLookup();
+        else stoptKeyserverLookup();
     }
 
     //Don't instantiate a new engine
@@ -321,7 +327,7 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public String trustwords(Identity id) {
         createEngineInstanceIfNeeded();
-        id = engine.updateIdentity(id);
+        id = updateIdentity(id);
         return engine.trustwords(id);
     }
 
