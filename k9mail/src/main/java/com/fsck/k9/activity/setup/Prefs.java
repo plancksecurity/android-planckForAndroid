@@ -148,7 +148,7 @@ public class Prefs extends K9PreferenceActivity {
     private CheckBoxPreference mBackgroundAsUnreadIndicator;
     private CheckBoxPreference mThreadedView;
     private ListPreference mSplitViewMode;
-    private EditTextPreference mPEpExtraAccounts;
+//    private EditTextPreference mPEpExtraAccounts;
     private CheckBoxPreference mPEpUseKeyserver;
     private CheckBoxPreference mPEpPassiveMode;
 
@@ -416,8 +416,8 @@ public class Prefs extends K9PreferenceActivity {
         mVisibleRefileActions.setCheckedItems(visibleRefileActionsValues);
 
         // TODO: pEp: add format checker, we want <keyid>,<keyid>,<keyid>...
-        mPEpExtraAccounts = (EditTextPreference) findPreference(PEP_EXTRA_ACCOUNTS);
-        mPEpExtraAccounts.setText(K9.getPEpExtraAccounts());
+//        mPEpExtraAccounts = (EditTextPreference) findPreference(PEP_EXTRA_ACCOUNTS);
+//        mPEpExtraAccounts.setText(K9.getPEpExtraAccounts());
 
         mPEpUseKeyserver =(CheckBoxPreference) findPreference(PEP_USE_KEYSERVER);
         mPEpUseKeyserver.setChecked(K9.getPEpUseKeyserver());
@@ -528,7 +528,7 @@ public class Prefs extends K9PreferenceActivity {
         K9.DEBUG_SENSITIVE = mSensitiveLogging.isChecked();
         K9.setHideUserAgent(mHideUserAgent.isChecked());
         K9.setHideTimeZone(mHideTimeZone.isChecked());
-        K9.setPEpExtraAccounts(mPEpExtraAccounts.getText());
+//        K9.setPEpExtraAccounts(mPEpExtraAccounts.getText());
         K9 app = ((K9) getApplicationContext());
         app.setPEpUseKeyserver(mPEpUseKeyserver.isChecked());
         app.setPEpPassiveMode(mPEpPassiveMode.isChecked());
