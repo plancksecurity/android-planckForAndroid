@@ -56,8 +56,13 @@ public class K9 extends Application {
         return pEpExtraAccounts;
     }
 
-    public static void setPEpUseKeyserver(boolean use) {
+    public void setPEpUseKeyserver(boolean use) {
         pEpUseKeyserver = use;
+        if (use) {
+            pEpProvider.startKeyserverLookup();
+        } else{
+            pEpProvider.stoptKeyserverLookup();
+        }
 
     }
 
