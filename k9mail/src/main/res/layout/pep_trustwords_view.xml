@@ -4,49 +4,62 @@
        tools:showIn="@layout/pep_trustwords">
 
     <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:minHeight="48dp">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp">
 
         <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                tools:text="Partner:"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:padding="8dp"
-                android:gravity="center_vertical"
-                android:layout_toLeftOf="@+id/call"
-                android:layout_alignParentStart="true"
-                android:id="@+id/tvPartner"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Partner:"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:padding="8dp"
+            android:gravity="center_vertical"
+            android:layout_toLeftOf="@+id/call"
+            android:layout_alignParentStart="true"
+            android:id="@+id/tvPartner"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Myself:"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:padding="8dp"
+            android:gravity="center_vertical"
+            android:layout_below="@+id/tvPartner"
+            android:layout_alignParentStart="true"
+            android:id="@+id/tvMyself"
+            android:layout_toStartOf="@+id/call"/>
 
         <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_call_black_24dp"
-                android:layout_gravity="right"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:id="@+id/call"
-                android:padding="8dp"
-                android:visibility="invisible"/>
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_call_black_24dp"
+            android:layout_gravity="right"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/call"
+            android:padding="8dp"
+            android:visibility="invisible"/>
     </RelativeLayout>
 
     <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ask_trustwords"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:padding="8dp"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ask_trustwords"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:padding="8dp"/>
 
 
     <TextView
-            android:id="@+id/trustwords"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="IMPORTUNER METAPHOR ARNO DIABETES SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET"
-            android:textSize="24sp"
-            android:ellipsize="none"
-            android:padding="8dp"/>
+        android:id="@+id/trustwords"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="IMPORTUNER METAPHOR ARNO DIABETES SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET"
+        android:textSize="24sp"
+        android:ellipsize="none"
+        android:padding="8dp"/>
 </merge>
