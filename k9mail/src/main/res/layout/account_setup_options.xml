@@ -66,8 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_width="fill_parent"
             android:textColor="?android:attr/textColorPrimary"
-            android:enabled="false"
-            android:text="p≡p - Trust server and store mails unprotected" />
+            android:text="@string/trust_server_and_store_mails_unprotected" />
         <View
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

@@ -500,8 +500,8 @@
         <CheckBoxPreference
             android:persistent="false"
             android:key="pep_save_encrypted"
-            android:title="Mails on server are encrypted"
+            android:title="@string/mistrust_server_and_store_mails_encrypted"
             android:defaultValue="true"
-            android:summary="Store serverside mails in encrypted form." />
+            android:summary="Store serverside mails in a safe form." />
     </PreferenceScreen>
 </PreferenceScreen>
