@@ -14,7 +14,7 @@
         android:textSize="18sp"
         android:textStyle="bold"
         android:text="Large Text"
-        android:id="@+id/pEpShortDesc"
+        android:id="@+id/pEpTitle"
         android:paddingBottom="8dp"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
@@ -24,10 +24,41 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textStyle="bold"
+        android:text="@string/pep_explanation"
+
+        android:paddingTop="16dp"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="New Text"
-        android:id="@+id/pEpLongText"
+        android:id="@+id/pEpExplanation"
         android:layout_gravity="left"
-        android:layout_marginBottom="25dp"
+        android:gravity="left"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textStyle="bold"
+        android:text="@string/pep_suggestion"
+
+        android:paddingTop="16dp"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:id="@+id/pEpSuggestionLabel"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/pEpSuggestion"
+        android:layout_gravity="left"
+        android:layout_marginBottom="32dp"
         android:gravity="left"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"/>

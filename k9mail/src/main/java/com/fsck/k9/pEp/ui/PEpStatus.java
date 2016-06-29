@@ -31,10 +31,14 @@ public class PEpStatus extends K9Activity implements ChangeColorListener{
     private Color m_pEpColor = Color.pEpRatingB0rken;
     PePUIArtefactCache ui;
 
-    @Bind(R.id.pEpShortDesc)
-    TextView pEpShortDesc;
-    @Bind(R.id.pEpLongText)
-    TextView pEpLongText;
+    @Bind(R.id.pEpTitle)
+    TextView pEpTitle;
+    @Bind(R.id.pEpExplanation)
+    TextView pEpExplanation;
+    @Bind(R.id.pEpSuggestion)
+    TextView pEpSuggestion;
+    @Bind(R.id.pEpSuggestionLabel)
+    View suggestionLabel;
     @Bind(R.id.my_recycler_view)
     RecyclerView recipientsView;
 
@@ -76,8 +80,10 @@ public class PEpStatus extends K9Activity implements ChangeColorListener{
     }
 
     private void loadPepTexts() {
-        pEpShortDesc.setText(ui.getTitle(m_pEpColor));
-        pEpLongText.setText(ui.getDescription(m_pEpColor));
+        pEpTitle.setText(ui.getTitle(m_pEpColor));
+        pEpExplanation.setText(ui.getExplanation(m_pEpColor));
+        if (ui.getSuggestion(m_pEpColor).isEmpty()) suggestionLabel.setVisibility(View.INVISIBLE);
+        pEpSuggestion.setText(ui.getSuggestion(m_pEpColor));
     }
 
     private void setUpActionBar() {

@@ -25,10 +25,10 @@
     <string name="wrong_trustwords">Wrong Trustwords</string>
     <string name="wrong_fingerprint">Wrong fingerprint</string>
     <string name="ask_trustwords">Ask your partner: What are your Trustwords? Then compare to the correct answer shown below.</string>
-    <string name="complete_partner_format">Partner: %1$s &lt; %2$s &gt;</string>
-    <string name="partner_format">Partner: %1$s</string>
-    <string name="complete_myself_format">Myself: %1$s &lt; %2$s &gt;</string>
-    <string name="myself_format">Myself: %1$s</string>
+    <string name="complete_partner_format">Partner\n%1$s &lt;%2$s&gt;</string>
+    <string name="partner_format">Partner\n%1$s</string>
+    <string name="complete_myself_format">Myself\n%1$s &lt;%2$s&gt;</string>
+    <string name="myself_format">Myself\n%1$s</string>
     <string name="pEp_trustwords">pEp Trustwords</string>
     <string name="force_unprotected">Force Unprotected</string>
     <string name="receivedSecretKey">Received this Secret Key:</string>
@@ -41,6 +41,8 @@
     <string name="from_format">from sender %1$s</string>
     <string name="trust_server_and_store_mails_unprotected">p≡p - Trust server and store mails unprotected</string>
     <string name="mistrust_server_and_store_mails_encrypted">E-Mails on server are protected</string>
+    <string name="pep_explanation">Explanation</string>
+    <string name="pep_suggestion">Suggestion</string>
 
 
     <string-array name="pep_states">
@@ -82,53 +84,60 @@
     </array>
 
     <string-array name="pep_title">
-        <item>p≡p - Undefined.<!--pEpRatingUndefined--></item>
-        <item>p≡p – Cannot decrypt message.<!--pEpRatingCannotDecrypt--></item>
-        <item>p≡p – No private key.<!--pEpRatingHaveNoKey--></item>
-        <item>p≡p – This communication is unprotected.<!--pEpRatingUnencrypted--></item>
-        <item>p≡p – This communication is unprotected for some.<!--pEpRatingUnencryptedForSome--></item>
-        <item>p≡p – This communication is unreliable.<!--pEpRatingUnreliable--></item>
-        <item>p≡p – This communication could be secure.<!--pEpRatingYellow--></item>
-        <item>p≡p – This communication could be secure.<!--pEpRatingReliable--></item>
-        <item>p≡p – This communication is secure and trusted.<!--pEpRatingGreen--></item>
-        <item>p≡p – This communication is secure and trusted.<!--pEpRatingTrusted--></item>
-        <item>p≡p – This communication is secure and trusted.<!--pEpRatingTrustedAndAnonymized--></item>
-        <item>p≡p – This communication is secure and trusted and anonymous.<!--pEpRatingFullyAnonymous--></item>
-        <item>p≡p – This communication is mistrusted!<!--pEpRatingMissTrust--></item>
-        <item>p≡p – This communication is mistrusted!<!--pEpRatingRed--></item>
-        <item>p≡p – Internal problem.<!--pEpRatingB0rken--></item>
-        <item>p≡p – This communication is forged!<!--pEpRatingUnderAttack--></item>
+        <item>p≡p - Unknown.<!--pEpRatingUndefined--></item>
+        <item>p≡p – Cannot Decrypt.<!--pEpRatingCannotDecrypt--></item>
+        <item>p≡p – Cannot Decrypt.<!--pEpRatingHaveNoKey--></item>
+        <item>p≡p – Unsecure.<!--pEpRatingUnencrypted--></item>
+        <item>p≡p – Unsecure for some.<!--pEpRatingUnencryptedForSome--></item>
+        <item>p≡p – Unreliable Security.<!--pEpRatingUnreliable--></item>
+        <item>p≡p – Secure…<!--pEpRatingYellow--></item>
+        <item>p≡p – Secure…<!--pEpRatingReliable--></item>
+        <item>p≡p – Secure &amp; Trusted<!--pEpRatingGreen--></item>
+        <item>p≡p – Secure &amp; Trusted<!--pEpRatingTrusted--></item>
+        <item>p≡p – Secure &amp; Trusted<!--pEpRatingTrustedAndAnonymized--></item>
+        <item>p≡p – Secure &amp; Trusted.<!--pEpRatingFullyAnonymous--></item>
+        <item>p≡p – Mistrusted.<!--pEpRatingMissTrust--></item>
+        <item>p≡p – Mistrusted.<!--pEpRatingRed--></item>
+        <item>p≡p – Ooops: Internal problem.<!--pEpRatingB0rken--></item>
+        <item>p≡p – Under Attack<!--pEpRatingUnderAttack--></item>
     </string-array>
 
-    <string-array name="pep_description">
-        <item>No information available.<!--pEpRatingUndefined--></item>
-        <item>The key to decrypt this message is not available.
-                If this message was addressed to you, please inform the sender that you don\'t have the key.<!--pEpRatingCannotDecrypt--></item>
-        <item>p≡p – No private key.<!--pEpRatingHaveNoKey--></item>
-        <item>This communication is not secure.
-                You should be aware that there may be eavesdroppers and the message could be forged. It could be OK just as well.
-            <!--pEpRatingUnencrypted--></item>
-        <item>This message is unsecure for some communication partners.
-            <!--pEpRatingUnencryptedForSome--></item>
-        <item>The message was encrypted but not in a feasible way or it wasn\'t signed.
-                There is no credible encryption for this message, so you should be aware that there may be eavesdroppers and the message could be forged. It could be OK just as well.
-            <!--pEpRatingUnreliable--></item>
-        <item> This message is encrypted but you can upgrade the privacy and authentication level with your communication partner.
-               Complete a handshake with your communication partner. A handshake is needed only once per partner and will ensure private and reliable communication.
-            <!--pEpRatingYellow--></item>
-                <item>To ensure a private and authentic communication please do a handshake with the communication partner.
-               A handshake is needed only once per communication partner. After successfully doing a handshake each communication with that partner will be private and reliable for sure.
-                    <!--pEpRatingReliable--></item>
-        <item>p≡p – This communication is private and authentic.<!--pEpRatingGreen--></item>
-        <item>p≡p – This communication is private and authentic.<!--pEpRatingTrusted--></item>
-        <item>A handshake with the communication partner was done already.The results make sure that each communication with this partner is secure.<!--pEpRatingTrustedAndAnonymized--></item>
-        <item>p≡p – This communication is private and authentic and anonymous.<!--pEpRatingFullyAnonymous--></item>
-        <item>"The sender is not Trusted.\nDo not trust this message! It probably is not from the communication partner indicated.<!--pEpRatingMissTrust--></item>
-        <item>"The encryption data is not matching. This probably is a forged message.
-                Do not trust this message! It probably is not from the communication partner indicated.<!--pEpRatingRed--></item>
-        <item>*poff*. No Ponies<!--pEpRatingB0rken--></item>
-                <item>"The encryption data is not matching. This probably is a forged message.
-                Do not trust this message! It probably is not from the communication partner indicated.<!--pEpRatingUnderAttack--></item>
+    <string-array name="pep_explanation">
+        <item>This message does not contain enough information to determine if it is secure.<!--pEpRatingUndefined--></item>
+        <item>This message cannot be decrypted.<!--pEpRatingCannotDecrypt--></item>
+        <item>This message cannot be decrypted because the key is not available.<!--pEpRatingHaveNoKey--></item>
+        <item>This message is unsecure.<!--pEpRatingUnencrypted--></item>
+        <item>This message is unsecure for some communication partners.<!--pEpRatingUnencryptedForSome--></item>
+        <item>This message has unreliable protection.<!--pEpRatingUnreliable--></item>
+        <item><!--pEpRatingYellow--></item>
+        <item>This message is secure but you still need to verify the identity of your communication partner.<!--pEpRatingReliable--></item>
+        <item><!--pEpRatingGreen--></item>
+        <item>This message is secure and trusted.<!--pEpRatingTrusted--></item>
+        <item>This message is secure and trusted.<!--pEpRatingTrustedAndAnonymized--></item>
+        <item>This message is secure and trusted.<!--pEpRatingFullyAnonymous--></item>
+        <item>This message has a communication partner that has previously been marked as mistrusted.<!--pEpRatingMissTrust--></item>
+        <item><!--pEpRatingRed--></item>
+        <item><!--pEpRatingB0rken--></item>
+        <item>This message is not secure and has been tampered with.<!--pEpRatingUnderAttack--></item>
+    </string-array>
+
+    <string-array name="pep_suggestion">
+        <item><!--pEpRatingUndefined--></item>
+        <item><!--pEpRatingCannotDecrypt--></item>
+        <item>If this message was addressed to you, please inform the sender that you don\'t have the key.<!--pEpRatingHaveNoKey--></item>
+        <item>Please ask your communication partner to use an encryption solution or install p≡p.<!--pEpRatingUnencrypted--></item>
+        <item>Make sure the privacy status for each communication partner listed is at least secure.<!--pEpRatingUnencryptedForSome--></item>
+        <item>This message has no reliable encryption or no signature. Ask your communication partner to upgrade their encryption solution or install p≡p.<!--pEpRatingUnreliable--></item>
+        <item><!--pEpRatingYellow--></item>
+        <item>Complete a handshake with your communication partner. A handshake is needed only once per partner and will ensure secure and trusted communication.<!--pEpRatingReliable--></item>
+        <item><!--pEpRatingGreen--></item>
+        <item>No action needed!<!--pEpRatingTrusted--></item>
+        <item>No action needed!<!--pEpRatingTrustedAndAnonymized--></item>
+        <item>No action needed!<!--pEpRatingFullyAnonymous--></item>
+        <item>Re-establish the connection with your communication partner and try to complete another handshake.<!--pEpRatingMissTrust--></item>
+        <item><!--pEpRatingRed--></item>
+        <item><!--pEpRatingB0rken--></item>
+        <item>Separately verify the content of this message with your communication partner.<!--pEpRatingUnderAttack--></item>
     </string-array>
 
 

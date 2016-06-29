@@ -29,8 +29,9 @@ public class PePUIArtefactCache
 {
     private final Context context;
     private HashMap<Color,Integer> colorIndexMapping = new HashMap<>();
-    private String[] title;
-    private String[] description;
+    private String[] titles;
+    private String[] explanations;
+    private String[] suggestions;
     private int[] color;
     private Drawable icon;
     private static PePUIArtefactCache instance = null;
@@ -50,8 +51,9 @@ public class PePUIArtefactCache
 
         fillIndexMapping(resources);
 
-        title = resources.getStringArray(R.array.pep_title);
-        description = resources.getStringArray(R.array.pep_description);
+        titles = resources.getStringArray(R.array.pep_title);
+        explanations = resources.getStringArray(R.array.pep_explanation);
+        suggestions = resources.getStringArray(R.array.pep_suggestion);
 
         TypedArray colors = resources.obtainTypedArray(R.array.pep_color);
         color = new int[colors.length()];
@@ -69,11 +71,14 @@ public class PePUIArtefactCache
     }
 
     public String getTitle(Color c) {
-        return title[colorIndexMapping.get(c)];
+        return titles[colorIndexMapping.get(c)];
     }
 
-    public String getDescription(Color c) {
-        return description[colorIndexMapping.get(c)];
+    public String getExplanation(Color c) {
+        return explanations[colorIndexMapping.get(c)];
+    }
+    public String getSuggestion(Color c) {
+        return suggestions[colorIndexMapping.get(c)];
     }
 
     public Drawable getIcon(Color pEpColor) {
