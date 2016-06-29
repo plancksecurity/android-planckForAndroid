@@ -30,6 +30,7 @@ public class PEpTrustwords extends K9Activity {
     public static final int HANDSHAKE_REQUEST = 1;
     private static final String MYSELF = "myselfKey";
     private static final String PARTNER_PREFIX = "Partner: ";
+    private static final String SHOWING_PGP_FINGERPRINT = "showingPgpKey";
 
     private Identity partner, myself;
     private int partnerPosition;
@@ -51,6 +52,8 @@ public class PEpTrustwords extends K9Activity {
     Button wrongTrustWords;
     private PEpProvider pEp;
     private PePUIArtefactCache uiCache;
+
+    boolean showingPgpFingerprint = false;
 
     public static void actionRequestHandshake(Activity context, String trust, String myself, int partnerPosition) {
         Intent i = new Intent(context, PEpTrustwords.class);
@@ -141,6 +144,7 @@ public class PEpTrustwords extends K9Activity {
                     wrongTrustWords.setText(R.string.wrong_trustwords);
                 }
                 flipper.showNext();
+                showingPgpFingerprint = !showingPgpFingerprint;
                 return true;
         }
         //noinspection SimplifiableIfStatement
@@ -168,5 +172,18 @@ public class PEpTrustwords extends K9Activity {
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
 
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        showingPgpFingerprint = savedInstanceState.getBoolean(SHOWING_PGP_FINGERPRINT);
+        if (showingPgpFingerprint) flipper.showNext();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(SHOWING_PGP_FINGERPRINT, showingPgpFingerprint);
     }
 }
