@@ -7,7 +7,7 @@
     <string name="reset_trust">Stop trust</string>
     <string name="pgp_fingerprint">PGP Fingerprint</string>
 
-    <string name="dialog_weaker_forward_warning_message">You\'re about to forward an encrypted message as unencrypted. If you choose to proceed, confidential information might be leaked, putting you and your recipients at risk. </string>
+    <string name="dialog_weaker_forward_warning_message">You\'re about to forward a secure message as unsecure. If you choose to proceed, confidential information might be leaked putting you and your communication partners at risk. Are you sure you want to continue? </string>
 
     <string name="dialog_confirm_forward_weaker_trust_level_confirm_button">Proceed</string>
     <string name="dialog_confirm_forward_weaker_trust_level_cancel_button">Cancel</string>
@@ -30,7 +30,7 @@
     <string name="complete_myself_format">Myself\n%1$s &lt;%2$s&gt;</string>
     <string name="myself_format">Myself\n%1$s</string>
     <string name="pEp_trustwords">pEp Trustwords</string>
-    <string name="force_unprotected">Force Unprotected</string>
+    <string name="force_unprotected">Disable protection</string>
     <string name="receivedSecretKey">Received this Secret Key:</string>
     <string name="username">User Name</string>
     <string name="userAddress">User Address</string>
@@ -43,6 +43,7 @@
     <string name="mistrust_server_and_store_mails_encrypted">E-Mails on server are protected</string>
     <string name="pep_explanation">Explanation</string>
     <string name="pep_suggestion">Suggestion</string>
+    <string name="app_license_pep">Licensed under the GNU General Public License v3</string>
 
 
     <string-array name="pep_states">
@@ -84,22 +85,22 @@
     </array>
 
     <string-array name="pep_title">
-        <item>p≡p - Unknown.<!--pEpRatingUndefined--></item>
-        <item>p≡p – Cannot Decrypt.<!--pEpRatingCannotDecrypt--></item>
-        <item>p≡p – Cannot Decrypt.<!--pEpRatingHaveNoKey--></item>
-        <item>p≡p – Unsecure.<!--pEpRatingUnencrypted--></item>
-        <item>p≡p – Unsecure for some.<!--pEpRatingUnencryptedForSome--></item>
-        <item>p≡p – Unreliable Security.<!--pEpRatingUnreliable--></item>
-        <item>p≡p – Secure…<!--pEpRatingYellow--></item>
-        <item>p≡p – Secure…<!--pEpRatingReliable--></item>
-        <item>p≡p – Secure &amp; Trusted<!--pEpRatingGreen--></item>
-        <item>p≡p – Secure &amp; Trusted<!--pEpRatingTrusted--></item>
-        <item>p≡p – Secure &amp; Trusted<!--pEpRatingTrustedAndAnonymized--></item>
-        <item>p≡p – Secure &amp; Trusted.<!--pEpRatingFullyAnonymous--></item>
-        <item>p≡p – Mistrusted.<!--pEpRatingMissTrust--></item>
-        <item>p≡p – Mistrusted.<!--pEpRatingRed--></item>
-        <item>p≡p – Ooops: Internal problem.<!--pEpRatingB0rken--></item>
-        <item>p≡p – Under Attack<!--pEpRatingUnderAttack--></item>
+        <item>Unknown<!--pEpRatingUndefined--></item>
+        <item>Cannot Decrypt<!--pEpRatingCannotDecrypt--></item>
+        <item>Cannot Decrypt<!--pEpRatingHaveNoKey--></item>
+        <item>Unsecure<!--pEpRatingUnencrypted--></item>
+        <item>Unsecure for some<!--pEpRatingUnencryptedForSome--></item>
+        <item>Unreliable Security<!--pEpRatingUnreliable--></item>
+        <item>Secure<!--pEpRatingYellow--></item>
+        <item>Secure<!--pEpRatingReliable--></item>
+        <item>Secure &amp; Trusted<!--pEpRatingGreen--></item>
+        <item>Secure &amp; Trusted<!--pEpRatingTrusted--></item>
+        <item>Secure &amp; Trusted<!--pEpRatingTrustedAndAnonymized--></item>
+        <item>Secure &amp; Trusted<!--pEpRatingFullyAnonymous--></item>
+        <item>Mistrusted<!--pEpRatingMissTrust--></item>
+        <item>Mistrusted<!--pEpRatingRed--></item>
+        <item>Ooops: Internal problem<!--pEpRatingB0rken--></item>
+        <item>Under Attack<!--pEpRatingUnderAttack--></item>
     </string-array>
 
     <string-array name="pep_explanation">
@@ -122,8 +123,8 @@
     </string-array>
 
     <string-array name="pep_suggestion">
-        <item><!--pEpRatingUndefined--></item>
-        <item><!--pEpRatingCannotDecrypt--></item>
+        <item>Please add the necessary information.<!--pEpRatingUndefined--></item>
+        <item>If this message was addressed to you, please inform the sender that you don\'t have the key.<!--pEpRatingCannotDecrypt--></item>
         <item>If this message was addressed to you, please inform the sender that you don\'t have the key.<!--pEpRatingHaveNoKey--></item>
         <item>Please ask your communication partner to use an encryption solution or install p≡p.<!--pEpRatingUnencrypted--></item>
         <item>Make sure the privacy status for each communication partner listed is at least secure.<!--pEpRatingUnencryptedForSome--></item>
