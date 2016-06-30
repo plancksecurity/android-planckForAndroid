@@ -1274,14 +1274,14 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         .append(String.format(getString(R.string.app_authors_fmt),
                               getString(R.string.app_authors)))
         .append("</p><p>")
-        .append(String.format(getString(R.string.app_revision_fmt),
-                              "<a href=\"" + getString(R.string.app_revision_url) + "\">" +
-                              getString(R.string.app_revision_url) +
-                              "</a>"))
+//        .append(String.format(getString(R.string.app_revision_fmt),
+//                              "<a href=\"" + getString(R.string.app_revision_url) + "\">" +
+//                              getString(R.string.app_revision_url) +
+//                              "</a>"))
         .append("</p><hr/><p>")
         .append(String.format(getString(R.string.app_copyright_fmt), year, year))
         .append("</p><hr/><p>")
-        .append(getString(R.string.app_license))
+        .append(getString(R.string.app_license_pep))
         .append("</p><hr/><p>");
 
         StringBuilder libs = new StringBuilder().append("<ul>");
