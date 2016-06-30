@@ -1,7 +1,9 @@
 package com.fsck.k9.pEp.ui;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -10,6 +12,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import butterknife.Bind;
@@ -33,12 +37,8 @@ public class PEpStatus extends K9Activity implements ChangeColorListener{
 
     @Bind(R.id.pEpTitle)
     TextView pEpTitle;
-    @Bind(R.id.pEpExplanation)
-    TextView pEpExplanation;
     @Bind(R.id.pEpSuggestion)
     TextView pEpSuggestion;
-    @Bind(R.id.pEpSuggestionLabel)
-    View suggestionLabel;
     @Bind(R.id.my_recycler_view)
     RecyclerView recipientsView;
 
@@ -81,9 +81,7 @@ public class PEpStatus extends K9Activity implements ChangeColorListener{
 
     private void loadPepTexts() {
         pEpTitle.setText(ui.getTitle(m_pEpColor));
-        pEpExplanation.setText(ui.getExplanation(m_pEpColor));
-        if (ui.getSuggestion(m_pEpColor).isEmpty()) suggestionLabel.setVisibility(View.INVISIBLE);
-        pEpSuggestion.setText(ui.getSuggestion(m_pEpColor));
+        pEpSuggestion.setText(ui.getExplanation(m_pEpColor));
     }
 
     private void setUpActionBar() {
@@ -174,9 +172,55 @@ public class PEpStatus extends K9Activity implements ChangeColorListener{
         }
     }
 
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_pep_status, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        switch (id) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            case R.id.action_explanation:
+                showExplanationDialog();
+                return true;
+        }
+        //noinspection SimplifiableIfStatement
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showExplanationDialog() {
+         new AlertDialog.Builder(this)
+                .setTitle(R.string.pep_explanation)
+                .setMessage(ui.getExplanation(m_pEpColor))
+                .setPositiveButton(R.string.okay_action,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                .create()
+                 .show();
+
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         colorActionBar();
     }
+
+
 }
