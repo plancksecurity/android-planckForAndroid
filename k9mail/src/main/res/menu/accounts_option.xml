@@ -27,19 +27,19 @@
         android:id="@+id/about"
         android:icon="?attr/iconActionAbout"
         android:title="@string/about_action"/>
-    <item
-        android:id="@+id/import_export"
-        android:icon="?attr/iconActionImportExport"
-        android:title="@string/import_export_action">
-        <menu>
-            <item
-                android:id="@+id/export_all"
-                android:title="@string/settings_export_all"/>
-            <item
-                android:id="@+id/import_settings"
-                android:title="@string/settings_import"/>
-        </menu>
-    </item>
+    <!--<item-->
+        <!--android:id="@+id/import_export"-->
+        <!--android:icon="?attr/iconActionImportExport"-->
+        <!--android:title="@string/import_export_action">-->
+        <!--<menu>-->
+            <!--<item-->
+                <!--android:id="@+id/export_all"-->
+                <!--android:title="@string/settings_export_all"/>-->
+            <!--<item-->
+                <!--android:id="@+id/import_settings"-->
+                <!--android:title="@string/settings_import"/>-->
+        <!--</menu>-->
+    <!--</item>-->
     <item
         android:id="@+id/edit_prefs"
         android:icon="?attr/iconActionSettings"
