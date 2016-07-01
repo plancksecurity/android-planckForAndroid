@@ -1,4 +1,3 @@
-
 package com.fsck.k9.activity;
 
 import android.app.*;
@@ -1228,6 +1227,15 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         new String[] {"TokenAutoComplete", "https://github.com/splitwise/TokenAutoComplete/"},
         new String[] {"ButterKnife", "https://github.com/JakeWharton/butterknife"},
         new String[] {"Calligraphy", "https://github.com/chrisjenx/Calligraphy"},
+        new String[] {"GPGME", “https://www.gnupg.org/(en)/related_software/gpgme/index.html”},
+        new String[] {"LibGPG-error", “https://www.gnupg.org/(en)/related_software/libgpg-error/index.html”},
+        new String[] {"Libcrypt", “https://directory.fsf.org/wiki/Libgcrypt”},
+        new String[] {"Libassuan", “https://www.gnupg.org/(en)/related_software/libassuan/index.html”},
+        new String[] {"Libksba", “https://www.gnupg.org/(en)/related_software/libksba/index.html”},
+        new String[] {"GNUPG", “https://www.gnupg.org/”},
+        new String[] {"Libcurl", “https://curl.haxx.se/libcurl/”},
+        new String[] {"Libiconv", “https://www.gnu.org/software/libiconv/”},
+        new String[] {"LibEtPan", “https://www.etpan.org/libetpan.html”},
 
     };
 
