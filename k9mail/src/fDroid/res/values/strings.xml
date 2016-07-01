@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">K-9/p≡p</string>
+    <string name="unread_widget_label">K-9/p≡p Unread</string>
+    <string name="shortcuts_title">K-9/p≡p Accounts</string>
+
     <string name="remote_control_label">K-9/p≡p remote control</string>
     <string name="remote_control_desc">Allows this application to control K-9/p≡p activities and settings.</string>
     <string name="welcome_message_title">Welcome to K-9/p≡p</string>

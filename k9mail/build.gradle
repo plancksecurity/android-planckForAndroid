@@ -76,11 +76,9 @@ android {
 
     productFlavors {
         playStore {
-            resValue "string", "app_name", "p≡p"
         }
 
         fDroid {
-            resValue "string", "app_name", "K-9/p≡p"
         }
     }
         signingConfigs {
