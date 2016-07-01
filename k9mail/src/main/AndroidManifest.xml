@@ -441,12 +441,14 @@
 
         <activity
             android:name=".pEp.ui.PEpStatus"
-            android:label="@string/title_activity_pep_status" >
+            android:label="@string/title_activity_pep_status"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".pEp.ui.PEpTrustwords"
             android:label="@string/title_activity_pep_trustwords"
-            android:parentActivityName=".pEp.ui.PEpStatus" >
+            android:parentActivityName=".pEp.ui.PEpStatus"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".pEp.ui.PEpStatus" />
