@@ -4,49 +4,49 @@
   <!--This should make it easier for forks to change the branding-->
   <!--Used in AndroidManifest.xml-->
   <!--<string name="app_name">K-9 Mail/pEp</string>-->
-  <string name="shortcuts_title">K-9-tilit</string>
-  <string name="unread_widget_label">K-9-lukematon</string>
-  <string name="remote_control_label">K-9 Mailin etäkäyttö</string>
-  <string name="remote_control_desc">Antaa sovellukselle luvan käyttää K-9 Mailin toimintoja ja asetuksia.</string>
-  <!--Used in the about dialog-->
-  <string name="app_authors">Google, The K-9 Dog Walkers.</string>
-  <string name="app_copyright_fmt">Tekijänoikeudet 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Osittaiset tekijänoikeudet -<xliff:g>%s</xliff:g> Androidin avoimen lähdekoodin hanke.</string>
-  <string name="app_license">Lisensoitu Apache-lisenssin 2.0-versiolla.</string>
-  <!--Welcome message-->
-  <string name="welcome_message_title">Tervetuloa K-9 Mailiin</string>
-  <string name="accounts_welcome"><![CDATA[
-<p>
-K-9 Mail on monipuolinen ja vapaa sähköpostisovellus Androidille.
-</p><p>
-Sen moniin ominaisuuksiin kuuluu muun muassa:
-</p>
-<ul>
-  <li>Push-viestit käyttäen IMAP IDLE -toteutusta</li>
-  <li>Aiempaa parempi suorituskyky</li>
-  <li>Viestien arkistointi</li>
-  <li>Sähköpostin allekirjoitukset</li>
-  <li>Piilokopioiden lähetys itselle</li>
-  <li>Kansiotilaukset</li>
-  <li>Kaikkien kansioiden synkronointi</li>
-  <li>Vastausosoitteen määritys</li>
-  <li>Pikanäppäimet</li>
-  <li>Aiempaa parempi IMAP-tuki</li>
-  <li>Liitteiden tallennus muistikortille</li>
-  <li>Roskakorin tyhjennys</li>
-  <li>Viestien järjestely</li>
-  <li>…ja paljon muuta</li>
-</ul>
-<p>
-Huomioitan ettei K-9 tue useimpia ilmaisia Hotmail-tilejä, ja kuten monet muut sovellukset, saattaa kärsiä pienistä ongelmista Microsoft Exchange -ympäristössä.
-</p><p>
-Ilmoita virheistä, ota osaa sovelluskehitykseen ja esitä kysymyksiä osoitteessa
-<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>.
-</p>
-    ]]></string>
-  <!--Default signature-->
-  <string name="default_signature">-- \nLähetetty Android-laitteestani K-9 Maililla. Pahoittelut vähäsanaisuudestani.</string>
-  <!--General strings that include the app name-->
-  <string name="account_delete_dlg_instructions_fmt">Tili \"<xliff:g id="account">%s</xliff:g>\" poistetaan K-9 Mailista.</string>
+  <!--<string name="shortcuts_title">K-9-tilit</string>-->
+  <!--<string name="unread_widget_label">K-9-lukematon</string>-->
+  <!--<string name="remote_control_label">K-9 Mailin etäkäyttö</string>-->
+  <!--<string name="remote_control_desc">Antaa sovellukselle luvan käyttää K-9 Mailin toimintoja ja asetuksia.</string>-->
+  <!--&lt;!&ndash;Used in the about dialog&ndash;&gt;-->
+  <!--<string name="app_authors">Google, The K-9 Dog Walkers.</string>-->
+  <!--<string name="app_copyright_fmt">Tekijänoikeudet 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Osittaiset tekijänoikeudet -<xliff:g>%s</xliff:g> Androidin avoimen lähdekoodin hanke.</string>-->
+  <!--<string name="app_license">Lisensoitu Apache-lisenssin 2.0-versiolla.</string>-->
+  <!--&lt;!&ndash;Welcome message&ndash;&gt;-->
+  <!--<string name="welcome_message_title">Tervetuloa K-9 Mailiin</string>-->
+  <!--<string name="accounts_welcome"><![CDATA[-->
+<!--<p>-->
+<!--K-9 Mail on monipuolinen ja vapaa sähköpostisovellus Androidille.-->
+<!--</p><p>-->
+<!--Sen moniin ominaisuuksiin kuuluu muun muassa:-->
+<!--</p>-->
+<!--<ul>-->
+  <!--<li>Push-viestit käyttäen IMAP IDLE -toteutusta</li>-->
+  <!--<li>Aiempaa parempi suorituskyky</li>-->
+  <!--<li>Viestien arkistointi</li>-->
+  <!--<li>Sähköpostin allekirjoitukset</li>-->
+  <!--<li>Piilokopioiden lähetys itselle</li>-->
+  <!--<li>Kansiotilaukset</li>-->
+  <!--<li>Kaikkien kansioiden synkronointi</li>-->
+  <!--<li>Vastausosoitteen määritys</li>-->
+  <!--<li>Pikanäppäimet</li>-->
+  <!--<li>Aiempaa parempi IMAP-tuki</li>-->
+  <!--<li>Liitteiden tallennus muistikortille</li>-->
+  <!--<li>Roskakorin tyhjennys</li>-->
+  <!--<li>Viestien järjestely</li>-->
+  <!--<li>…ja paljon muuta</li>-->
+<!--</ul>-->
+<!--<p>-->
+<!--Huomioitan ettei K-9 tue useimpia ilmaisia Hotmail-tilejä, ja kuten monet muut sovellukset, saattaa kärsiä pienistä ongelmista Microsoft Exchange -ympäristössä.-->
+<!--</p><p>-->
+<!--Ilmoita virheistä, ota osaa sovelluskehitykseen ja esitä kysymyksiä osoitteessa-->
+<!--<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>.-->
+<!--</p>-->
+    <!--]]></string>-->
+  <!--&lt;!&ndash;Default signature&ndash;&gt;-->
+  <!--<string name="default_signature">&#45;&#45; \nLähetetty Android-laitteestani K-9 Maililla. Pahoittelut vähäsanaisuudestani.</string>-->
+  <!--&lt;!&ndash;General strings that include the app name&ndash;&gt;-->
+  <!--<string name="account_delete_dlg_instructions_fmt">Tili \"<xliff:g id="account">%s</xliff:g>\" poistetaan K-9 Mailista.</string>-->
   <string name="account_recreate_dlg_instructions_fmt">Kaikki tilin \"<xliff:g id="account">%s</xliff:g>\" paikalliset tiedot poistetaan, mutta tilin asetukset säilyvät.</string>
   <string name="account_clear_dlg_instructions_fmt">Kaikki tilin \"<xliff:g id="account">%s</xliff:g>\" paikalliset viestit poistetaan, mutta tilin asetukset säilyvät.</string>
   <!--=== App Store-specific strings =======================================================-->

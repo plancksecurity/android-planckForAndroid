@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="remote_control_label">p≡p remote control</string>
+    <string name="remote_control_desc">Allows this application to control p≡p activities and settings.</string>
+    <string name="welcome_message_title">Welcome to p≡p</string>
+    <!-- Welcome message -->
+    <string name="accounts_welcome"><![CDATA[
+<p>
+p≡p is a powerful free email client for Android with pretty Easy privacy.
+</p><p>
+Its improved features include:
+</p>
+<ul>
+  <li>Push mail using IMAP IDLE</li>
+  <li>Better performance</li>
+  <li>Email signatures</li>
+  <li>Bcc-to-self</li>
+  <li>Folder subscriptions</li>
+  <li>All folder synchronization</li>
+  <li>Return-address configuration</li>
+  <li>Keyboard shortcuts</li>
+  <li>Encrypt/decrypt emails by default</li>
+  <li>Untrusted server (save emails encrypted on the server)</li>
+  <li>Trusted server (save decrypted emails on the server)</li>
+  <li>Encrypted BCC support</li>
+  <li>Compatibility with OpenPGP (key server lookup)</li>
+  <li>Manual private key import</li>
+  <li>Automated public key import</li>
+  <li>…and more</li>
+</ul>
+<br />
+This software is in beta phase. Please just use with test accounts and for testing purposes.
+</p><p>
+Please submit bug reports, contribute new features and ask questions at
+<a href="https://cacert.pep-security.lu/gitlab/android/k9-pep/issues">https://cacert.pep-security.lu/gitlab/android/k9-pep/issues</a>.
+</p>
+    ]]></string>
+
+
+    <!-- Default signature -->
+    <string name="default_signature">-- \nSent from my p≡p on Android.\n</string>
+
+    <!-- General strings that include the app name -->
+    <string name="account_delete_dlg_instructions_fmt">The account \"<xliff:g id="account">%s</xliff:g>\" will be removed from p≡p.</string>
+
+</resources>

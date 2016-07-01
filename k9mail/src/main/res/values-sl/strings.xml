@@ -4,50 +4,50 @@
   <!--This should make it easier for forks to change the branding-->
   <!--Used in AndroidManifest.xml-->
   <!--<string name="app_name">K-9 Mail</string>-->
-  <string name="shortcuts_title">K-9 računi</string>
-  <string name="unread_widget_label">K-9 neprebrana</string>
-  <string name="remote_control_label">K-9 Mail daljinsko upravljanje</string>
-  <string name="remote_control_desc">Programu omogoča nadzor K-9 Mail dejavnosti in nastavitve.</string>
-  <!--Used in the about dialog-->
-  <string name="app_authors">Google, The K-9 Dog Walkers.</string>
-  <string name="app_copyright_fmt">Avtorske pravice 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Deli avtorskih pravic  2006-<xliff:g>%s</xliff:g> Android Open Source Project.</string>
-  <string name="app_license">Licencirano na podlagi licence Apache, različica 2.0.</string>
-  <!--Welcome message-->
-  <string name="welcome_message_title">Dobrodošli v K-9 Mail</string>
-  <string name="accounts_welcome"><![CDATA[
-<p>
-K-9 Mail je napreden brezplačen epoštni odjemalec za naprave Android.
-</p><p>
-Njegove izboljšane storitve vsebujejo:
-</p>
-<ul>
-<li>Push mail z uporabo IMAP IDLE</li>
-<li>Izboljšano delovanje</li>
-<li>Message refiling</li>
-<li>Podpisi v epošti</li>
-<li>BCC-samemu-sebi</li>
-<li>Naročnine na mape</li>
-<li>Sinhronizacija vseh map</li>
-<li>Nastavljanje povratnega naslova</li>
-<li>Bližnjice za tipkovnico</li>
-<li>Boljša podpora IMAP</li>
-<li>Shranjevanje priponk na SD kartico</li>
-<li>Praznjenje smeti</li>
-<li>Razvrščanje sporočil</li>
-<li>… in še več</li>
-</ul>
-<p>
-Prosimo bodite pozorni, da K-9 ne podpira brezplačnih hotmail računov in ima tako kot veliko drugih odjemalcev
-nekaj težavic s pogoori preko Microsoft Exchange.
-</p><p>
-Prosimo pošljite poročila o napakah, predloge za nove funkcije in vprašanja na
-<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>.
-</p>
-]]></string>
-  <!--Default signature-->
-  <string name="default_signature">-- \nPoslano iz moje Android naprave s K-9 Mail. Oprostite mi, če se ne razpišem.</string>
-  <!--General strings that include the app name-->
-  <string name="account_delete_dlg_instructions_fmt">Račun \"<xliff:g id="account">%s</xliff:g>\" bo odstranjen iz K-9 Mail-a.</string>
+  <!--<string name="shortcuts_title">K-9 računi</string>-->
+  <!--<string name="unread_widget_label">K-9 neprebrana</string>-->
+  <!--<string name="remote_control_label">K-9 Mail daljinsko upravljanje</string>-->
+  <!--<string name="remote_control_desc">Programu omogoča nadzor K-9 Mail dejavnosti in nastavitve.</string>-->
+  <!--&lt;!&ndash;Used in the about dialog&ndash;&gt;-->
+  <!--<string name="app_authors">Google, The K-9 Dog Walkers.</string>-->
+  <!--<string name="app_copyright_fmt">Avtorske pravice 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Deli avtorskih pravic  2006-<xliff:g>%s</xliff:g> Android Open Source Project.</string>-->
+  <!--<string name="app_license">Licencirano na podlagi licence Apache, različica 2.0.</string>-->
+  <!--&lt;!&ndash;Welcome message&ndash;&gt;-->
+  <!--<string name="welcome_message_title">Dobrodošli v K-9 Mail</string>-->
+  <!--<string name="accounts_welcome"><![CDATA[-->
+<!--<p>-->
+<!--K-9 Mail je napreden brezplačen epoštni odjemalec za naprave Android.-->
+<!--</p><p>-->
+<!--Njegove izboljšane storitve vsebujejo:-->
+<!--</p>-->
+<!--<ul>-->
+<!--<li>Push mail z uporabo IMAP IDLE</li>-->
+<!--<li>Izboljšano delovanje</li>-->
+<!--<li>Message refiling</li>-->
+<!--<li>Podpisi v epošti</li>-->
+<!--<li>BCC-samemu-sebi</li>-->
+<!--<li>Naročnine na mape</li>-->
+<!--<li>Sinhronizacija vseh map</li>-->
+<!--<li>Nastavljanje povratnega naslova</li>-->
+<!--<li>Bližnjice za tipkovnico</li>-->
+<!--<li>Boljša podpora IMAP</li>-->
+<!--<li>Shranjevanje priponk na SD kartico</li>-->
+<!--<li>Praznjenje smeti</li>-->
+<!--<li>Razvrščanje sporočil</li>-->
+<!--<li>… in še več</li>-->
+<!--</ul>-->
+<!--<p>-->
+<!--Prosimo bodite pozorni, da K-9 ne podpira brezplačnih hotmail računov in ima tako kot veliko drugih odjemalcev-->
+<!--nekaj težavic s pogoori preko Microsoft Exchange.-->
+<!--</p><p>-->
+<!--Prosimo pošljite poročila o napakah, predloge za nove funkcije in vprašanja na-->
+<!--<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>.-->
+<!--</p>-->
+<!--]]></string>-->
+  <!--&lt;!&ndash;Default signature&ndash;&gt;-->
+  <!--<string name="default_signature">&#45;&#45; \nPoslano iz moje Android naprave s K-9 Mail. Oprostite mi, če se ne razpišem.</string>-->
+  <!--&lt;!&ndash;General strings that include the app name&ndash;&gt;-->
+  <!--<string name="account_delete_dlg_instructions_fmt">Račun \"<xliff:g id="account">%s</xliff:g>\" bo odstranjen iz K-9 Mail-a.</string>-->
   <string name="account_recreate_dlg_instructions_fmt">Vsi lokalni podatki za \"<xliff:g id="account">%s</xliff:g>\" bodo odstranjeni. Nastavitve računa pa bodo ohranjene.</string>
   <string name="account_clear_dlg_instructions_fmt">Lokalne kopije sporočil v \"<xliff:g id="account">%s</xliff:g>\" bodo odstranjene. Nastavitve računa pa bodo ohranjene.</string>
   <!--=== App Store-specific strings =======================================================-->

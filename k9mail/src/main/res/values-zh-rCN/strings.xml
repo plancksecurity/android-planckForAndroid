@@ -4,22 +4,22 @@
   <!--This should make it easier for forks to change the branding-->
   <!--Used in AndroidManifest.xml-->
   <!--<string name="app_name">K-9 邮箱/pEp</string>-->
-  <string name="shortcuts_title">K-9 账户</string>
-  <string name="unread_widget_label">K-9 未读</string>
-  <string name="remote_control_label">K-9 Mail 远程控制</string>
-  <string name="remote_control_desc">允许这个程序控制 K-9 Mai l的行为和设置。</string>
-  <!--Used in the about dialog-->
-  <string name="app_authors">Google, The K-9 Dog Walkers.</string>
-  <string name="app_copyright_fmt">Copyright 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%s</xliff:g> the Android Open Source Project.</string>
-  <string name="app_license">根据Apache License 2.0 协议授权。</string>
-  <!--Welcome message-->
-  <string name="welcome_message_title">欢迎来到 K-9 Mail</string>
-  <!--Default signature-->
-  <string name="default_signature">-- \n使用 K-9 Mail 发送自我的Android设备。</string>
-  <!--General strings that include the app name-->
-  <string name="account_delete_dlg_instructions_fmt">账户“<xliff:g id="account">%s</xliff:g>”将从K-9 Mail中删除。</string>
-  <string name="account_recreate_dlg_instructions_fmt">账户“<xliff:g id="account">%s</xliff:g>”的全部数据将从K-9 Mail中删除，但是账户设置将保留。</string>
-  <string name="account_clear_dlg_instructions_fmt">账户“<xliff:g id="account">%s</xliff:g>”中的全部邮件将从K-9 Mail中删除，但是账户设置将保留。</string>
+  <!--<string name="shortcuts_title">K-9 账户</string>-->
+  <!--<string name="unread_widget_label">K-9 未读</string>-->
+  <!--<string name="remote_control_label">K-9 Mail 远程控制</string>-->
+  <!--<string name="remote_control_desc">允许这个程序控制 K-9 Mai l的行为和设置。</string>-->
+  <!--&lt;!&ndash;Used in the about dialog&ndash;&gt;-->
+  <!--<string name="app_authors">Google, The K-9 Dog Walkers.</string>-->
+  <!--<string name="app_copyright_fmt">Copyright 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%s</xliff:g> the Android Open Source Project.</string>-->
+  <!--<string name="app_license">根据Apache License 2.0 协议授权。</string>-->
+  <!--&lt;!&ndash;Welcome message&ndash;&gt;-->
+  <!--<string name="welcome_message_title">欢迎来到 K-9 Mail</string>-->
+  <!--&lt;!&ndash;Default signature&ndash;&gt;-->
+  <!--<string name="default_signature">&#45;&#45; \n使用 K-9 Mail 发送自我的Android设备。</string>-->
+  <!--&lt;!&ndash;General strings that include the app name&ndash;&gt;-->
+  <!--<string name="account_delete_dlg_instructions_fmt">账户“<xliff:g id="account">%s</xliff:g>”将从K-9 Mail中删除。</string>-->
+  <!--<string name="account_recreate_dlg_instructions_fmt">账户“<xliff:g id="account">%s</xliff:g>”的全部数据将从K-9 Mail中删除，但是账户设置将保留。</string>-->
+  <!--<string name="account_clear_dlg_instructions_fmt">账户“<xliff:g id="account">%s</xliff:g>”中的全部邮件将从K-9 Mail中删除，但是账户设置将保留。</string>-->
   <!--=== App Store-specific strings =======================================================-->
   <string name="import_dialog_error_message">要继续导入，请先安装一款文件管理器。</string>
   <string name="open_market">打开 Play Store</string>

@@ -4,22 +4,22 @@
   <!--This should make it easier for forks to change the branding-->
   <!--Used in AndroidManifest.xml-->
   <!--<string name="app_name">K-9 메일</string>-->
-  <string name="shortcuts_title">K-9 계정</string>
-  <string name="unread_widget_label">K-9 읽지 않은 메일</string>
-  <string name="remote_control_label">K-9 메일 리모콘</string>
-  <string name="remote_control_desc">이 애플리케이션이 K-9 메일을 제어하고 설정하도록 함.</string>
-  <!--Used in the about dialog-->
-  <string name="app_authors">Google, The K-9 Dog Walkers.</string>
-  <string name="app_copyright_fmt">Copyright 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%s</xliff:g> the Android Open Source Project.</string>
-  <string name="app_license">Licensed under the Apache License, Version 2.0.</string>
-  <!--Welcome message-->
-  <string name="welcome_message_title">K-9 메일을 사용하시게 된 것을 환영합니다</string>
-  <!--Default signature-->
-  <string name="default_signature">-- \n안드로이드 기기에서 K-9 메일을 사용해 보낸 메일입니다.</string>
-  <!--General strings that include the app name-->
-  <string name="account_delete_dlg_instructions_fmt">\"<xliff:g id="account">%s</xliff:g>\" 계정이 K-9에서 삭제됩니다.</string>
-  <string name="account_recreate_dlg_instructions_fmt">\"<xliff:g id="account">%s</xliff:g>\"의 모든 데이터가 K-9에서 삭제됩니다. 하지만 계정 설정은 보존됩니다.</string>
-  <string name="account_clear_dlg_instructions_fmt">\"<xliff:g id="account">%s</xliff:g>\"의 모든 메일이 K-9에서 삭제됩니다. 하지만 계정 설정은 보존됩니다.</string>
+  <!--<string name="shortcuts_title">K-9 계정</string>-->
+  <!--<string name="unread_widget_label">K-9 읽지 않은 메일</string>-->
+  <!--<string name="remote_control_label">K-9 메일 리모콘</string>-->
+  <!--<string name="remote_control_desc">이 애플리케이션이 K-9 메일을 제어하고 설정하도록 함.</string>-->
+  <!--&lt;!&ndash;Used in the about dialog&ndash;&gt;-->
+  <!--<string name="app_authors">Google, The K-9 Dog Walkers.</string>-->
+  <!--<string name="app_copyright_fmt">Copyright 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%s</xliff:g> the Android Open Source Project.</string>-->
+  <!--<string name="app_license">Licensed under the Apache License, Version 2.0.</string>-->
+  <!--&lt;!&ndash;Welcome message&ndash;&gt;-->
+  <!--<string name="welcome_message_title">K-9 메일을 사용하시게 된 것을 환영합니다</string>-->
+  <!--&lt;!&ndash;Default signature&ndash;&gt;-->
+  <!--<string name="default_signature">&#45;&#45; \n안드로이드 기기에서 K-9 메일을 사용해 보낸 메일입니다.</string>-->
+  <!--&lt;!&ndash;General strings that include the app name&ndash;&gt;-->
+  <!--<string name="account_delete_dlg_instructions_fmt">\"<xliff:g id="account">%s</xliff:g>\" 계정이 K-9에서 삭제됩니다.</string>-->
+  <!--<string name="account_recreate_dlg_instructions_fmt">\"<xliff:g id="account">%s</xliff:g>\"의 모든 데이터가 K-9에서 삭제됩니다. 하지만 계정 설정은 보존됩니다.</string>-->
+  <!--<string name="account_clear_dlg_instructions_fmt">\"<xliff:g id="account">%s</xliff:g>\"의 모든 메일이 K-9에서 삭제됩니다. 하지만 계정 설정은 보존됩니다.</string>-->
   <!--=== App Store-specific strings =======================================================-->
   <string name="import_dialog_error_message">가져오기에 적합한 애플리케이션이 없습니다. 구글 플레이 스토어에서 파일 관리자를 설치하십시오.</string>
   <string name="open_market">플레이 스토어 열기</string>

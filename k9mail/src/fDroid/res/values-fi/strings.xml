@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <!--=== App-specific strings =============================================================-->
+  <!--This should make it easier for forks to change the branding-->
+  <!--Used in AndroidManifest.xml-->
+  <!--<string name="app_name">K-9 Mail/pEp</string>-->
+  <string name="shortcuts_title">K-9/p≡p-tilit</string>
+  <string name="unread_widget_label">K-9/p≡p-lukematon</string>
+  <string name="remote_control_label">K-9/p≡p Mailin etäkäyttö</string>
+  <string name="remote_control_desc">Antaa sovellukselle luvan käyttää K-9/p≡p Mailin toimintoja ja asetuksia.</string>
+
+  <!--Welcome message-->
+  <string name="welcome_message_title">Tervetuloa K-9/p≡p Mailiin</string>
+
+  <!--Default signature-->
+  <string name="default_signature">-- \nLähetetty Android-laitteestani K-9/p≡p Maililla. Pahoittelut vähäsanaisuudestani.</string>
+  <!--General strings that include the app name-->
+  <string name="account_delete_dlg_instructions_fmt">Tili \"<xliff:g id="account">%s</xliff:g>\" poistetaan K-9/p≡p Mailista.</string>
+
+</resources>
