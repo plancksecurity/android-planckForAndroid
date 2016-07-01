@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <!--=== App-specific strings =============================================================-->
+  <!--This should make it easier for forks to change the branding-->
+  <!--Used in AndroidManifest.xml-->
+  <!--<string name="app_name">K-9 Mail/pEp</string>-->
+  <string name="shortcuts_title">Cuentas K-9/p≡p</string>
+  <string name="unread_widget_label">Mensaje K-9/p≡p no leído</string>
+  <string name="remote_control_label">Control remoto K-9/p≡p</string>
+  <string name="remote_control_desc">Permite a esta aplicación controlar las actividades y configuración de K-9/p≡p</string>
+
+  <!--Welcome message-->
+  <string name="welcome_message_title">Bienvenido a K-9/p≡p</string>
+  <!--Default signature-->
+  <string name="default_signature">-- \nEnviado desde mi dispositivo Android con K-9 Mail/p≡p. Por favor disculpa mi brevedad.</string>
+  <!--General strings that include the app name-->
+  <string name="account_delete_dlg_instructions_fmt">La cuenta \"<xliff:g id="account">%s</xliff:g>\" será eliminada de K-9/p≡p.</string>
+  <string name="account_recreate_dlg_instructions_fmt">Los datos de \"<xliff:g id="account">%s</xliff:g>\" serán eliminados de K-9/p≡p, pero se mantendrá su configuración.</string>
+  <string name="account_clear_dlg_instructions_fmt">Todos los mensajes en \"<xliff:g id="account">%s</xliff:g>\" serán eliminados de K-9/p≡p, pero la configuración de la cuenta se mantendrá.</string>
+
+
+</resources>

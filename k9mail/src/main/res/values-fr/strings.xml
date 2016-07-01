@@ -4,50 +4,50 @@
   <!--This should make it easier for forks to change the branding-->
   <!--Used in AndroidManifest.xml-->
   <!--<string name="app_name">K-9 Mail/pEp</string>-->
-  <string name="shortcuts_title">Comptes K-9</string>
-  <string name="unread_widget_label">K-9 non lus</string>
-  <string name="remote_control_label">Contrôle à distance de Courriel K-9 Mail</string>
-  <string name="remote_control_desc">Permet à cette application de contrôler les activités et les paramètres de Courriel K-9 Mail</string>
-  <!--Used in the about dialog-->
-  <string name="app_authors">Google, The K-9 Dog Walkers.</string>
-  <string name="app_copyright_fmt">Tous droits réservés 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Parties protégées par droits d\'auteur 2006-<xliff:g>%s</xliff:g> le projet libre Android.</string>
-  <string name="app_license">Sous licence Apache, version 2.0.</string>
-  <!--Welcome message-->
-  <string name="welcome_message_title">Bienvenue sur Courriel K-9 Mail</string>
-  <string name="accounts_welcome"><![CDATA[
-<p>
-Courriel K-9 Mail est un client de courriel puissant et ouvert pour Android.
-</p><p>
-Ses fonctions améliorées incluent :
-</p>
-<ul>
-  <li>Courriel poussé utilisant IMAP IDLE</li>
-  <li>Meilleures performances</li>
-  <li>Réarchivage des messages</li>
-  <li>Signatures des courriels</li>
-  <li>Cci-à-soi</li>
-  <li>Abonnement aux dossiers</li>
-  <li>Synchronisation de tous les dossiers </li>
-  <li>Configuration de l\'adresse de retour</li>
-  <li>Raccourcis clavier</li>
-  <li>Meilleure prise en charge IMAP</li>
-  <li>Enregistrements des pièces jointes sur la carte SD</li>
-  <li>Vidage de la corbeille</li>
-  <li>Tri des messages</li>
-  <li>et plus…</li>
-</ul>
-<p>
-Veuillez noter que K-9 ne prend pas en charge la plupart des comptes
-Hotmail gratuits et que, comme pour beaucoup de clients de courriel, la communication avec Microsoft Exchange est capricieuse.
-</p><p>
-Veuillez rapporter les bogues, recommander de nouvelles fonctions et poser vos questions sur
-<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>.
-</p>
-]]></string>
-  <!--Default signature-->
-  <string name="default_signature">-- \nEnvoyé de mon appareil Android avec Courriel K-9 Mail. Veuillez excuser ma brièveté.</string>
-  <!--General strings that include the app name-->
-  <string name="account_delete_dlg_instructions_fmt">Le compte «\u00A0<xliff:g id="account">%s</xliff:g>\u00A0» sera enlevé de Courriel K-9 Mail.</string>
+  <!--<string name="shortcuts_title">Comptes K-9</string>-->
+  <!--<string name="unread_widget_label">K-9 non lus</string>-->
+  <!--<string name="remote_control_label">Contrôle à distance de Courriel K-9 Mail</string>-->
+  <!--<string name="remote_control_desc">Permet à cette application de contrôler les activités et les paramètres de Courriel K-9 Mail</string>-->
+  <!--&lt;!&ndash;Used in the about dialog&ndash;&gt;-->
+  <!--<string name="app_authors">Google, The K-9 Dog Walkers.</string>-->
+  <!--<string name="app_copyright_fmt">Tous droits réservés 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Parties protégées par droits d\'auteur 2006-<xliff:g>%s</xliff:g> le projet libre Android.</string>-->
+  <!--<string name="app_license">Sous licence Apache, version 2.0.</string>-->
+  <!--&lt;!&ndash;Welcome message&ndash;&gt;-->
+  <!--<string name="welcome_message_title">Bienvenue sur Courriel K-9 Mail</string>-->
+  <!--<string name="accounts_welcome"><![CDATA[-->
+<!--<p>-->
+<!--Courriel K-9 Mail est un client de courriel puissant et ouvert pour Android.-->
+<!--</p><p>-->
+<!--Ses fonctions améliorées incluent :-->
+<!--</p>-->
+<!--<ul>-->
+  <!--<li>Courriel poussé utilisant IMAP IDLE</li>-->
+  <!--<li>Meilleures performances</li>-->
+  <!--<li>Réarchivage des messages</li>-->
+  <!--<li>Signatures des courriels</li>-->
+  <!--<li>Cci-à-soi</li>-->
+  <!--<li>Abonnement aux dossiers</li>-->
+  <!--<li>Synchronisation de tous les dossiers </li>-->
+  <!--<li>Configuration de l\'adresse de retour</li>-->
+  <!--<li>Raccourcis clavier</li>-->
+  <!--<li>Meilleure prise en charge IMAP</li>-->
+  <!--<li>Enregistrements des pièces jointes sur la carte SD</li>-->
+  <!--<li>Vidage de la corbeille</li>-->
+  <!--<li>Tri des messages</li>-->
+  <!--<li>et plus…</li>-->
+<!--</ul>-->
+<!--<p>-->
+<!--Veuillez noter que K-9 ne prend pas en charge la plupart des comptes-->
+<!--Hotmail gratuits et que, comme pour beaucoup de clients de courriel, la communication avec Microsoft Exchange est capricieuse.-->
+<!--</p><p>-->
+<!--Veuillez rapporter les bogues, recommander de nouvelles fonctions et poser vos questions sur-->
+<!--<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>.-->
+<!--</p>-->
+<!--]]></string>-->
+  <!--&lt;!&ndash;Default signature&ndash;&gt;-->
+  <!--<string name="default_signature">&#45;&#45; \nEnvoyé de mon appareil Android avec Courriel K-9 Mail. Veuillez excuser ma brièveté.</string>-->
+  <!--&lt;!&ndash;General strings that include the app name&ndash;&gt;-->
+  <!--<string name="account_delete_dlg_instructions_fmt">Le compte «\u00A0<xliff:g id="account">%s</xliff:g>\u00A0» sera enlevé de Courriel K-9 Mail.</string>-->
   <string name="account_recreate_dlg_instructions_fmt">Toutes les données de  «\u00A0<xliff:g id="account">%s</xliff:g>\u00A0» seront enlevées. Les paramètres du compte seront conservés.</string>
   <string name="account_clear_dlg_instructions_fmt">Les copies locales des messages de «\u00A0<xliff:g id="account">%s</xliff:g>\u00A0» seront enlevées. Les paramètres du compte seront conservés.</string>
   <!--=== App Store-specific strings =======================================================-->

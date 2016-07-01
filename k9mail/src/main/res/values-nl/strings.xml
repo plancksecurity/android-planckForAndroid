@@ -5,46 +5,46 @@
   <!--Used in AndroidManifest.xml-->
   <!--<string name="app_name">K-9 Mail/pEp</string>-->
   <string name="shortcuts_title">K-9 Accounts</string>
-  <string name="unread_widget_label">K-9 Ongelezen</string>
-  <string name="remote_control_label">K-9 Mail bediening op afstand</string>
-  <string name="remote_control_desc">Sta deze applicatie toe om activiteiten en instellingen van K-9 Mail aan te passen.</string>
-  <!--Used in the about dialog-->
-  <string name="app_authors">Google, The K-9 Dog Walkers.</string>
-  <string name="app_copyright_fmt">Copyright 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%s</xliff:g> the Android Open Source Project.</string>
-  <string name="app_license">Licensed under the Apache License, Version 2.0.</string>
-  <!--Welcome message-->
-  <string name="welcome_message_title">Welkom bij K-9 Mail</string>
-  <string name="accounts_welcome"><![CDATA[ <p> K-9 Mail is een krachtige e-mail cliënt voor Android. </p><p> De verbeterde mogelijkheden bestaan uit ondermeer:
-</p>
-<ul>
-<li>Push mail ddormiddel van IMAP IDLE</li> 
-<li>Betere prestaties</li> 
-<li>Bericht herclassificatie</li> 
-<li>E-mail handtekeningen</li> 
-<li>Bcc naar jezelf</li> 
-<li>Map abonnementen</li> 
-<li>Synchronisatie van alle mappen</li> 
-<li>Antwoord adres instellen</li> 
-<li>Toetsenbord snelkoppelingen</li> 
-<li>Betere IMAP ondersteuning</li> 
-<li>Bijlage opslaan naar SD</li> 
-<li>Prullenbak legen</li> 
-<li>Berichten sorteren</li> 
-<li>…en meer</li> 
-</ul> 
-<p> 
-Houd er rekening mee dat K-9 de meeste gratis Hotmail-accounts niet ondersteund, en net als veel e-mailclients, problemen kan hebben om te verbinden met Microsoft Exchange. 
-</p><p> 
-Graag foutrapporten sturen, bijdragen voor nieuwe functies en vragen stellen op 
-<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>. 
-</p> 
-]]></string>
-  <!--Default signature-->
-  <string name="default_signature">-- \nVerstuurd vanaf mijn Android apparaat met K-9 Mail. Excuseer mijn beknoptheid.</string>
-  <!--General strings that include the app name-->
-  <string name="account_delete_dlg_instructions_fmt">De account \"<xliff:g id="account">%s</xliff:g>\" wordt verwijderd van K-9 Mail.</string>
-  <string name="account_recreate_dlg_instructions_fmt">Alle data voor \"<xliff:g id="account">%s</xliff:g>\" wordt verwijderd van K-9 Mail, maar account instellingen blijven behouden.</string>
-  <string name="account_clear_dlg_instructions_fmt">Alle berichten in \"<xliff:g id="account">%s</xliff:g>\" wordt verwijderd van  K-9 Mail, maar account instellingen blijven behouden.</string>
+  <!--<string name="unread_widget_label">K-9 Ongelezen</string>-->
+  <!--<string name="remote_control_label">K-9 Mail bediening op afstand</string>-->
+  <!--<string name="remote_control_desc">Sta deze applicatie toe om activiteiten en instellingen van K-9 Mail aan te passen.</string>-->
+  <!--&lt;!&ndash;Used in the about dialog&ndash;&gt;-->
+  <!--<string name="app_authors">Google, The K-9 Dog Walkers.</string>-->
+  <!--<string name="app_copyright_fmt">Copyright 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%s</xliff:g> the Android Open Source Project.</string>-->
+  <!--<string name="app_license">Licensed under the Apache License, Version 2.0.</string>-->
+  <!--&lt;!&ndash;Welcome message&ndash;&gt;-->
+  <!--<string name="welcome_message_title">Welkom bij K-9 Mail</string>-->
+  <!--<string name="accounts_welcome"><![CDATA[ <p> K-9 Mail is een krachtige e-mail cliënt voor Android. </p><p> De verbeterde mogelijkheden bestaan uit ondermeer:-->
+<!--</p>-->
+<!--<ul>-->
+<!--<li>Push mail ddormiddel van IMAP IDLE</li> -->
+<!--<li>Betere prestaties</li> -->
+<!--<li>Bericht herclassificatie</li> -->
+<!--<li>E-mail handtekeningen</li> -->
+<!--<li>Bcc naar jezelf</li> -->
+<!--<li>Map abonnementen</li> -->
+<!--<li>Synchronisatie van alle mappen</li> -->
+<!--<li>Antwoord adres instellen</li> -->
+<!--<li>Toetsenbord snelkoppelingen</li> -->
+<!--<li>Betere IMAP ondersteuning</li> -->
+<!--<li>Bijlage opslaan naar SD</li> -->
+<!--<li>Prullenbak legen</li> -->
+<!--<li>Berichten sorteren</li> -->
+<!--<li>…en meer</li> -->
+<!--</ul> -->
+<!--<p> -->
+<!--Houd er rekening mee dat K-9 de meeste gratis Hotmail-accounts niet ondersteund, en net als veel e-mailclients, problemen kan hebben om te verbinden met Microsoft Exchange. -->
+<!--</p><p> -->
+<!--Graag foutrapporten sturen, bijdragen voor nieuwe functies en vragen stellen op -->
+<!--<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>. -->
+<!--</p> -->
+<!--]]></string>-->
+  <!--&lt;!&ndash;Default signature&ndash;&gt;-->
+  <!--<string name="default_signature">&#45;&#45; \nVerstuurd vanaf mijn Android apparaat met K-9 Mail. Excuseer mijn beknoptheid.</string>-->
+  <!--&lt;!&ndash;General strings that include the app name&ndash;&gt;-->
+  <!--<string name="account_delete_dlg_instructions_fmt">De account \"<xliff:g id="account">%s</xliff:g>\" wordt verwijderd van K-9 Mail.</string>-->
+  <!--<string name="account_recreate_dlg_instructions_fmt">Alle data voor \"<xliff:g id="account">%s</xliff:g>\" wordt verwijderd van K-9 Mail, maar account instellingen blijven behouden.</string>-->
+  <!--<string name="account_clear_dlg_instructions_fmt">Alle berichten in \"<xliff:g id="account">%s</xliff:g>\" wordt verwijderd van  K-9 Mail, maar account instellingen blijven behouden.</string>-->
   <!--=== App Store-specific strings =======================================================-->
   <string name="import_dialog_error_message">Installeer een bestandsbeheer-app om verder te gaan met deze import.</string>
   <string name="open_market">Open Play Store</string>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="remote_control_label">Dálkové ovládání pošty K-9/p≡p</string>
+    <string name="remote_control_desc">Povolit této aplikaci ovládat aktivity a nastavení pošty K-9/p≡p.</string>
+    <string name="welcome_message_title">Vítejte v K-9/p≡p</string>
+    <string name="default_signature">-- \nOdesláno aplikací K-9/p≡p ze systému Android. Omluvte prosím moji stručnost.</string>
+    <string name="account_delete_dlg_instructions_fmt">Účet \"<xliff:g id="account">%s</xliff:g>\" bude odstraněn z K-9/p≡p.</string>
+    <string name="account_recreate_dlg_instructions_fmt">Všechna místní data účtu \"<xliff:g id="account">%s</xliff:g>\" budou z K-9/p≡p odstraněna, ale nastavení účtu bude zachováno.</string>
+    <string name="account_clear_dlg_instructions_fmt">Místní zprávy v účtu \"<xliff:g id="account">%s</xliff:g>\" budou z K-9/p≡p odstraněny, ale nastavení účtu bude zachováno.</string>
+
+</resources>

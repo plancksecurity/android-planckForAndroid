@@ -4,47 +4,47 @@
   <!--This should make it easier for forks to change the branding-->
   <!--Used in AndroidManifest.xml-->
   <!--<string name="app_name">Почта</string>-->
-  <string name="shortcuts_title">Почтовые ящики K-9</string>
-  <string name="unread_widget_label">Не прочитано</string>
-  <string name="remote_control_label">Удалённое управление</string>
-  <string name="remote_control_desc">Разрешить удалённое управление настройками и действиями K-9 Mail</string>
-  <!--Used in the about dialog-->
-  <string name="app_authors">Google, The K-9 Dog Walkers.</string>
-  <string name="app_copyright_fmt">Copyright 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%s</xliff:g> the Android Open Source Project.</string>
-  <string name="app_license">Под лицензией Apache 2.0.</string>
-  <!--Welcome message-->
-  <string name="welcome_message_title">Добро пожаловать!</string>
-  <string name="accounts_welcome"><![CDATA[
-<p>
-K-9 Mail — почтовый клиент для Android.
-</p><p>
-Возможности:
-</p>
-<ul>
-  <li>push-уведомления,</li>
-  <li>быстрая работа,</li>
-  <li>перемещение сообщений,</li>
-  <li>несколько подписей,</li>
-  <li>скрытая копия себе,</li>
-  <li>подписка на папки,</li>
-  <li>синхронизация всех папок,</li>
-  <li>адрес для ответа,</li>
-  <li>горячие клавиши,</li>
-  <li>улучшенная поддержка IMAP,</li>
-  <li>сохранение вложений,</li>
-  <li>очистка корзины,</li>
-  <li>сортировка сообщений,</li>
-  <li>…и многое другое!</li>
-</ul>
-<p>
-Отметим, что K-9 Mail не полностью совместим с MS Exchange и не поддерживает бесплатные ящики Hotmail.
-</p><p>
-Вопросы, сообщения об ошибках и участие в разработке:
-<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>.
-</p>
-    ]]></string>
-  <!--Default signature-->
-  <string name="default_signature">-- \nПростите за краткость, создано в K-9 Mail.</string>
+  <!--<string name="shortcuts_title">Почтовые ящики K-9</string>-->
+  <!--<string name="unread_widget_label">Не прочитано</string>-->
+  <!--<string name="remote_control_label">Удалённое управление</string>-->
+  <!--<string name="remote_control_desc">Разрешить удалённое управление настройками и действиями K-9 Mail</string>-->
+  <!--&lt;!&ndash;Used in the about dialog&ndash;&gt;-->
+  <!--<string name="app_authors">Google, The K-9 Dog Walkers.</string>-->
+  <!--<string name="app_copyright_fmt">Copyright 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%s</xliff:g> the Android Open Source Project.</string>-->
+  <!--<string name="app_license">Под лицензией Apache 2.0.</string>-->
+  <!--&lt;!&ndash;Welcome message&ndash;&gt;-->
+  <!--<string name="welcome_message_title">Добро пожаловать!</string>-->
+  <!--<string name="accounts_welcome"><![CDATA[-->
+<!--<p>-->
+<!--K-9 Mail — почтовый клиент для Android.-->
+<!--</p><p>-->
+<!--Возможности:-->
+<!--</p>-->
+<!--<ul>-->
+  <!--<li>push-уведомления,</li>-->
+  <!--<li>быстрая работа,</li>-->
+  <!--<li>перемещение сообщений,</li>-->
+  <!--<li>несколько подписей,</li>-->
+  <!--<li>скрытая копия себе,</li>-->
+  <!--<li>подписка на папки,</li>-->
+  <!--<li>синхронизация всех папок,</li>-->
+  <!--<li>адрес для ответа,</li>-->
+  <!--<li>горячие клавиши,</li>-->
+  <!--<li>улучшенная поддержка IMAP,</li>-->
+  <!--<li>сохранение вложений,</li>-->
+  <!--<li>очистка корзины,</li>-->
+  <!--<li>сортировка сообщений,</li>-->
+  <!--<li>…и многое другое!</li>-->
+<!--</ul>-->
+<!--<p>-->
+<!--Отметим, что K-9 Mail не полностью совместим с MS Exchange и не поддерживает бесплатные ящики Hotmail.-->
+<!--</p><p>-->
+<!--Вопросы, сообщения об ошибках и участие в разработке:-->
+<!--<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>.-->
+<!--</p>-->
+    <!--]]></string>-->
+  <!--&lt;!&ndash;Default signature&ndash;&gt;-->
+  <!--<string name="default_signature">&#45;&#45; \nПростите за краткость, создано в K-9 Mail.</string>-->
   <!--General strings that include the app name-->
   <string name="account_delete_dlg_instructions_fmt">Ящик \"<xliff:g id="account">%s</xliff:g>\" будет удалён из приложения</string>
   <string name="account_recreate_dlg_instructions_fmt">Все данные ящика \"<xliff:g id="account">%s</xliff:g>\" будут удалены, настройки сохранятся</string>

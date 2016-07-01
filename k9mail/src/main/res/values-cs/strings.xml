@@ -6,49 +6,49 @@
   <!--<string name="app_name">K-9 Mail/pEp</string>-->
   <string name="shortcuts_title">Účty K-9</string>
   <string name="unread_widget_label">K-9 Nepřečtená</string>
-  <string name="remote_control_label">Dálkové ovládání pošty K-9 Mail</string>
-  <string name="remote_control_desc">Povolit této aplikaci ovládat aktivity a nastavení pošty K-9 Mail.</string>
+  <!--<string name="remote_control_label">Dálkové ovládání pošty K-9 Mail</string>-->
+  <!--<string name="remote_control_desc">Povolit této aplikaci ovládat aktivity a nastavení pošty K-9 Mail.</string>-->
   <!--Used in the about dialog-->
-  <string name="app_authors">Google, The K-9 Dog Walkers.</string>
-  <string name="app_copyright_fmt">Copyright 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%s</xliff:g> the Android Open Source Project.</string>
-  <string name="app_license">Licencované pod Apache Licencí, Version 2.0.</string>
+  <!--<string name="app_authors">Google, The K-9 Dog Walkers.</string>-->
+  <!--<string name="app_copyright_fmt">Copyright 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%s</xliff:g> the Android Open Source Project.</string>-->
+  <!--<string name="app_license">Licencované pod Apache Licencí, Version 2.0.</string>-->
   <!--Welcome message-->
-  <string name="welcome_message_title">Vítejte v K-9 Mail</string>
-  <string name="accounts_welcome"><![CDATA[
-<p>
-K-9 Mail je výkonný emailový klient pro Android.
-</p><p>
-Jeho vylepšené funkce obsahují:
-</p>
-<ul>
-  <li>Push mail při použití IMAP IDLE</li>
-  <li>Lepší výkon</li>
-  <li>Doplňování zpráv</li>
-  <li>Podpisy zpráv</li>
-  <li>Skryté kopie sobě</li>
-  <li>Odebírané složky</li>
-  <li>Synchronizace všech složek</li>
-  <li>Konfigurace zpáteční adresy</li>
-  <li>Klávesové zkratky</li>
-  <li>Lepší podpora IMAP</li>
-  <li>Ukládání příloh na SD</li>
-  <li>Vysypání koše</li>
-  <li>Třídění zpráv</li>
-  <li>… a další</li>
-</ul>
-<p>
-K-9 nepodporuje většinu bezplatných účtů Hotmail a jako mnoho poštovních klientů vykazuje zvláštnosti při komunikaci s Microsoft Exchange.
-</p><p>
-Chybová hlášení prosím posílejte, přispívejte novými funkcemi a ptejte se na
-<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>.
-</p>
-    ]]></string>
+  <!--<string name="welcome_message_title">Vítejte v K-9 Mail</string>-->
+  <!--<string name="accounts_welcome"><![CDATA[-->
+<!--<p>-->
+<!--K-9 Mail je výkonný emailový klient pro Android.-->
+<!--</p><p>-->
+<!--Jeho vylepšené funkce obsahují:-->
+<!--</p>-->
+<!--<ul>-->
+  <!--<li>Push mail při použití IMAP IDLE</li>-->
+  <!--<li>Lepší výkon</li>-->
+  <!--<li>Doplňování zpráv</li>-->
+  <!--<li>Podpisy zpráv</li>-->
+  <!--<li>Skryté kopie sobě</li>-->
+  <!--<li>Odebírané složky</li>-->
+  <!--<li>Synchronizace všech složek</li>-->
+  <!--<li>Konfigurace zpáteční adresy</li>-->
+  <!--<li>Klávesové zkratky</li>-->
+  <!--<li>Lepší podpora IMAP</li>-->
+  <!--<li>Ukládání příloh na SD</li>-->
+  <!--<li>Vysypání koše</li>-->
+  <!--<li>Třídění zpráv</li>-->
+  <!--<li>… a další</li>-->
+<!--</ul>-->
+<!--<p>-->
+<!--K-9 nepodporuje většinu bezplatných účtů Hotmail a jako mnoho poštovních klientů vykazuje zvláštnosti při komunikaci s Microsoft Exchange.-->
+<!--</p><p>-->
+<!--Chybová hlášení prosím posílejte, přispívejte novými funkcemi a ptejte se na-->
+<!--<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>.-->
+<!--</p>-->
+    <!--]]></string>-->
   <!--Default signature-->
-  <string name="default_signature">-- \nOdesláno aplikací K-9 Mail ze systému Android. Omluvte prosím moji stručnost.</string>
+  <!--<string name="default_signature">&#45;&#45; \nOdesláno aplikací K-9 Mail ze systému Android. Omluvte prosím moji stručnost.</string>-->
   <!--General strings that include the app name-->
-  <string name="account_delete_dlg_instructions_fmt">Účet \"<xliff:g id="account">%s</xliff:g>\" bude odstraněn z K-9 Mail.</string>
-  <string name="account_recreate_dlg_instructions_fmt">Všechna místní data účtu \"<xliff:g id="account">%s</xliff:g>\" budou z K-9 Mail odstraněna, ale nastavení účtu bude zachováno.</string>
-  <string name="account_clear_dlg_instructions_fmt">Místní zprávy v účtu \"<xliff:g id="account">%s</xliff:g>\" budou z K-9 Mail odstraněny, ale nastavení účtu bude zachováno.</string>
+  <!--<string name="account_delete_dlg_instructions_fmt">Účet \"<xliff:g id="account">%s</xliff:g>\" bude odstraněn z K-9 Mail.</string>-->
+  <!--<string name="account_recreate_dlg_instructions_fmt">Všechna místní data účtu \"<xliff:g id="account">%s</xliff:g>\" budou z K-9 Mail odstraněna, ale nastavení účtu bude zachováno.</string>-->
+  <!--<string name="account_clear_dlg_instructions_fmt">Místní zprávy v účtu \"<xliff:g id="account">%s</xliff:g>\" budou z K-9 Mail odstraněny, ale nastavení účtu bude zachováno.</string>-->
   <!--=== App Store-specific strings =======================================================-->
   <string name="import_dialog_error_message">Prosím nainstalujte nějaký file manager pro pokračování v importu.</string>
   <string name="open_market">Otevřít obchod Google Play</string>

@@ -4,50 +4,50 @@
   <!--This should make it easier for forks to change the branding-->
   <!--Used in AndroidManifest.xml-->
   <!--<string name="app_name">K-9 E-post</string>-->
-  <string name="shortcuts_title">K-9 Konti</string>
-  <string name="unread_widget_label">K-9 Ulest</string>
-  <string name="remote_control_label">K-9 E-post fjernkontroll</string>
-  <string name="remote_control_desc">Tillater denne applikasjonen å kontrollere aktiviteter og innstillinger for K-9 Epost.</string>
-  <!--Used in the about dialog-->
-  <string name="app_authors">Google, The K-9 Dog Walkers.</string>
-  <string name="app_copyright_fmt">Opphavsrett 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Noen deler er opphavsrett 2006-<xliff:g>%s</xliff:g> the Android Open Source Project.</string>
-  <string name="app_license">Lisensiert under Apache-lisensen, versjon 2.0.</string>
-  <!--Welcome message-->
-  <string name="welcome_message_title">Velkommen til K-9 E-post</string>
-  <string name="accounts_welcome"><![CDATA[
-<p>
-K-9 E-post er en kraftig og fri e-postklient for Android.
-</p><p>
-Dets forbedrede funksjoner inkluderer:
-</p>
-<ul>
-  <li>Push mail ved bruk av IMAP IDLE</li>
-  <li>Bedre ytelse</li>
-  <li>Rearkivering av meldinger</li>
-  <li>E-postsignaturer</li>
-  <li>Blindkopi ti deg selv</li>
-  <li>Mappeabonnement</li>
-  <li>Synkronisering av alle mapper</li>
-  <li>Returadressekonfigurasjon</li>
-  <li>Tastatursnarveier</li>
-  <li>Bedre IMAP-støtte</li>
-  <li>Lagre vedlegg til SD-kort</li>
-  <li>Tøm søppel</li>
-  <li>Meldingssortering</li>
-  <li>…med mer</li>
-</ul>
-<p>
-Vennligst noter at K-9 ikke støtter de fleste gratis Hotmail-kontoer, og har, som mange andre
-e-postklienter, noen problemer med å snakke med Microsoft Exchange.
-</p><p>
-Vennligst send feilmeldinger, bidra med nye funksjoner og still spørsmål her:
-<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>.
-</p>
-    ]]></string>
-  <!--Default signature-->
-  <string name="default_signature">-- \nSendt fra min Android-enhet med K-9 E-post. Vennligst unnskyld min kortfattethet.</string>
-  <!--General strings that include the app name-->
-  <string name="account_delete_dlg_instructions_fmt">Kontoen \"<xliff:g id="account">%s</xliff:g>\" vil bli fjernet fra K-9 E-post</string>
+  <!--<string name="shortcuts_title">K-9 Konti</string>-->
+  <!--<string name="unread_widget_label">K-9 Ulest</string>-->
+  <!--<string name="remote_control_label">K-9 E-post fjernkontroll</string>-->
+  <!--<string name="remote_control_desc">Tillater denne applikasjonen å kontrollere aktiviteter og innstillinger for K-9 Epost.</string>-->
+  <!--&lt;!&ndash;Used in the about dialog&ndash;&gt;-->
+  <!--<string name="app_authors">Google, The K-9 Dog Walkers.</string>-->
+  <!--<string name="app_copyright_fmt">Opphavsrett 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Noen deler er opphavsrett 2006-<xliff:g>%s</xliff:g> the Android Open Source Project.</string>-->
+  <!--<string name="app_license">Lisensiert under Apache-lisensen, versjon 2.0.</string>-->
+  <!--&lt;!&ndash;Welcome message&ndash;&gt;-->
+  <!--<string name="welcome_message_title">Velkommen til K-9 E-post</string>-->
+  <!--<string name="accounts_welcome"><![CDATA[-->
+<!--<p>-->
+<!--K-9 E-post er en kraftig og fri e-postklient for Android.-->
+<!--</p><p>-->
+<!--Dets forbedrede funksjoner inkluderer:-->
+<!--</p>-->
+<!--<ul>-->
+  <!--<li>Push mail ved bruk av IMAP IDLE</li>-->
+  <!--<li>Bedre ytelse</li>-->
+  <!--<li>Rearkivering av meldinger</li>-->
+  <!--<li>E-postsignaturer</li>-->
+  <!--<li>Blindkopi ti deg selv</li>-->
+  <!--<li>Mappeabonnement</li>-->
+  <!--<li>Synkronisering av alle mapper</li>-->
+  <!--<li>Returadressekonfigurasjon</li>-->
+  <!--<li>Tastatursnarveier</li>-->
+  <!--<li>Bedre IMAP-støtte</li>-->
+  <!--<li>Lagre vedlegg til SD-kort</li>-->
+  <!--<li>Tøm søppel</li>-->
+  <!--<li>Meldingssortering</li>-->
+  <!--<li>…med mer</li>-->
+<!--</ul>-->
+<!--<p>-->
+<!--Vennligst noter at K-9 ikke støtter de fleste gratis Hotmail-kontoer, og har, som mange andre-->
+<!--e-postklienter, noen problemer med å snakke med Microsoft Exchange.-->
+<!--</p><p>-->
+<!--Vennligst send feilmeldinger, bidra med nye funksjoner og still spørsmål her:-->
+<!--<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>.-->
+<!--</p>-->
+    <!--]]></string>-->
+  <!--&lt;!&ndash;Default signature&ndash;&gt;-->
+  <!--<string name="default_signature">&#45;&#45; \nSendt fra min Android-enhet med K-9 E-post. Vennligst unnskyld min kortfattethet.</string>-->
+  <!--&lt;!&ndash;General strings that include the app name&ndash;&gt;-->
+  <!--<string name="account_delete_dlg_instructions_fmt">Kontoen \"<xliff:g id="account">%s</xliff:g>\" vil bli fjernet fra K-9 E-post</string>-->
   <string name="account_recreate_dlg_instructions_fmt">Alle lokale data for «<xliff:g id="account">%s</xliff:g>» vil bli fjernet. Kontoinnstillinger vil beholdes.</string>
   <string name="account_clear_dlg_instructions_fmt">Lokale kopier av meldinger i «<xliff:g id="account">%s</xliff:g>» vil bli fjernet. Kontoinnstillinger vil beholdes.</string>
   <!--=== App Store-specific strings =======================================================-->

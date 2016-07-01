@@ -64,8 +64,8 @@ android {
 //        versionName '5.200-RC2'
 
         applicationId "pep.android.k9"
-        versionCode 7
-        versionName '0.7.2'
+        versionCode 8
+        versionName '0.7.3'
         minSdkVersion 18
         targetSdkVersion 22
 
@@ -80,7 +80,7 @@ android {
         }
 
         fDroid {
-            resValue "string", "app_name", "K-9/pEp"
+            resValue "string", "app_name", "K-9/p≡p"
         }
     }
         signingConfigs {

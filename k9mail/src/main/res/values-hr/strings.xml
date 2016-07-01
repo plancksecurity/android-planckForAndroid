@@ -4,20 +4,20 @@
   <!--This should make it easier for forks to change the branding-->
   <!--Used in AndroidManifest.xml-->
   <!--<string name="app_name">K-9 Mail/pEp</string>-->
-  <string name="shortcuts_title">K-9 Računi</string>
-  <string name="unread_widget_label">K-9 Nepročitano</string>
-  <string name="remote_control_label">K-9 Mail daljinski upravljač</string>
-  <string name="remote_control_desc">Dozvoljava  ovoj aplikaciji kontrolu K-9 aktivnosti i podešenja.</string>
-  <!--Used in the about dialog-->
-  <string name="app_authors">Google, The K-9 Dog Walkers.</string>
-  <string name="app_copyright_fmt">Copyright 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%s</xliff:g> the Android Open Source Project.</string>
-  <string name="app_license">Licencirano pod Apache License, Version 2.0.</string>
-  <!--Welcome message-->
-  <string name="welcome_message_title">Dobrodošli u K-9 Mail</string>
-  <!--Default signature-->
-  <string name="default_signature">-- \nPoslano sa mog Android uređaja sa K-9 Mail. Molim vas oprostite na mojoj sažetosti.</string>
-  <!--General strings that include the app name-->
-  <string name="account_delete_dlg_instructions_fmt">Račun \"<xliff:g id="account">%s</xliff:g>\" će biti maknut iz K-9 Maila.</string>
+  <!--<string name="shortcuts_title">K-9 Računi</string>-->
+  <!--<string name="unread_widget_label">K-9 Nepročitano</string>-->
+  <!--<string name="remote_control_label">K-9 Mail daljinski upravljač</string>-->
+  <!--<string name="remote_control_desc">Dozvoljava  ovoj aplikaciji kontrolu K-9 aktivnosti i podešenja.</string>-->
+  <!--&lt;!&ndash;Used in the about dialog&ndash;&gt;-->
+  <!--<string name="app_authors">Google, The K-9 Dog Walkers.</string>-->
+  <!--<string name="app_copyright_fmt">Copyright 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%s</xliff:g> the Android Open Source Project.</string>-->
+  <!--<string name="app_license">Licencirano pod Apache License, Version 2.0.</string>-->
+  <!--&lt;!&ndash;Welcome message&ndash;&gt;-->
+  <!--<string name="welcome_message_title">Dobrodošli u K-9 Mail</string>-->
+  <!--&lt;!&ndash;Default signature&ndash;&gt;-->
+  <!--<string name="default_signature">&#45;&#45; \nPoslano sa mog Android uređaja sa K-9 Mail. Molim vas oprostite na mojoj sažetosti.</string>-->
+  <!--&lt;!&ndash;General strings that include the app name&ndash;&gt;-->
+  <!--<string name="account_delete_dlg_instructions_fmt">Račun \"<xliff:g id="account">%s</xliff:g>\" će biti maknut iz K-9 Maila.</string>-->
   <string name="account_recreate_dlg_instructions_fmt">Svi lokalni podaci za \"<xliff:g id="account">%s</xliff:g>\" biti će obrisani. Postavke računa će biti zadržane.</string>
   <string name="account_clear_dlg_instructions_fmt">Lokalne kopije \"<xliff:g id="account">%s</xliff:g>\" biti će izbrisane. Postavke računa biti će sačuvane.</string>
   <!--=== App Store-specific strings =======================================================-->

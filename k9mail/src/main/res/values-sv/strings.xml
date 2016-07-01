@@ -4,49 +4,49 @@
   <!--This should make it easier for forks to change the branding-->
   <!--Used in AndroidManifest.xml-->
   <!--<string name="app_name">K-9 E-post</string>-->
-  <string name="shortcuts_title">K-9-konton</string>
-  <string name="unread_widget_label">K-9 Olästa</string>
-  <string name="remote_control_label">K-9 Mail fjärrkontroll</string>
-  <string name="remote_control_desc">Tillåter denna applikation att kontrollera K-9 Mail aktiviteter och inställningar.</string>
-  <!--Used in the about dialog-->
-  <string name="app_authors">Google, The K-9 Dog Walkers.</string>
-  <string name="app_copyright_fmt">Copyright 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Vissa delar Copyright 2006-<xliff:g>%s</xliff:g> Android Open Source Project.</string>
-  <string name="app_license">Licensierat under Apache-licensen, version 2.0.</string>
-  <!--Welcome message-->
-  <string name="welcome_message_title">Välkommen till K-9 Mail</string>
-  <string name="accounts_welcome"><![CDATA[
-<p>
-K-9 Mail är en kraftfull fri epostklient för Android.
-</p><p>
-Några av funktionerna som förbättrats är:
-</p>
-<ul>
-  <li>Push med IMAP IDLE</li>
-  <li>Bättre prestanda</li>
-  <li>Meddelandelagring</li>
-  <li>Epostsignaturer</li>
-  <li>Bcc-to-self</li>
-  <li>Mapprenumerationer</li>
-  <li>Synkronisera alla mappar</li>
-  <li>Inställning av svarsadress</li>
-  <li>Tangentbordsgenvägar</li>
-  <li>Bättre stöd för IMAP</li>
-  <li>Spara bilagor till minneskort</li>
-  <li>Tömma papperskorgen</li>
-  <li>Meddelandesortering</li>
-  <li>…och mycket annat</li>
-</ul>
-<p>
-Observera att K-9 inte stödjer gratiskonton på Hotmail och har, som så många andra epostklienter, svårt att prata med Microsoft Exchange.
-</p><p>
-Skicka gärna in rapporter om buggar, eller bidra med nya funktioner eller ställ frågor på 
-<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>.
-</p>
-    ]]></string>
-  <!--Default signature-->
-  <string name="default_signature">-- \nSkickat från min Android-enhet med K-9 Mail. Ursäkta min fåordighet.</string>
-  <!--General strings that include the app name-->
-  <string name="account_delete_dlg_instructions_fmt">Kontot \"<xliff:g id="account">%s</xliff:g>\" kommer att tas bort från K-9 Mail.</string>
+  <!--<string name="shortcuts_title">K-9-konton</string>-->
+  <!--<string name="unread_widget_label">K-9 Olästa</string>-->
+  <!--<string name="remote_control_label">K-9 Mail fjärrkontroll</string>-->
+  <!--<string name="remote_control_desc">Tillåter denna applikation att kontrollera K-9 Mail aktiviteter och inställningar.</string>-->
+  <!--&lt;!&ndash;Used in the about dialog&ndash;&gt;-->
+  <!--<string name="app_authors">Google, The K-9 Dog Walkers.</string>-->
+  <!--<string name="app_copyright_fmt">Copyright 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Vissa delar Copyright 2006-<xliff:g>%s</xliff:g> Android Open Source Project.</string>-->
+  <!--<string name="app_license">Licensierat under Apache-licensen, version 2.0.</string>-->
+  <!--&lt;!&ndash;Welcome message&ndash;&gt;-->
+  <!--<string name="welcome_message_title">Välkommen till K-9 Mail</string>-->
+  <!--<string name="accounts_welcome"><![CDATA[-->
+<!--<p>-->
+<!--K-9 Mail är en kraftfull fri epostklient för Android.-->
+<!--</p><p>-->
+<!--Några av funktionerna som förbättrats är:-->
+<!--</p>-->
+<!--<ul>-->
+  <!--<li>Push med IMAP IDLE</li>-->
+  <!--<li>Bättre prestanda</li>-->
+  <!--<li>Meddelandelagring</li>-->
+  <!--<li>Epostsignaturer</li>-->
+  <!--<li>Bcc-to-self</li>-->
+  <!--<li>Mapprenumerationer</li>-->
+  <!--<li>Synkronisera alla mappar</li>-->
+  <!--<li>Inställning av svarsadress</li>-->
+  <!--<li>Tangentbordsgenvägar</li>-->
+  <!--<li>Bättre stöd för IMAP</li>-->
+  <!--<li>Spara bilagor till minneskort</li>-->
+  <!--<li>Tömma papperskorgen</li>-->
+  <!--<li>Meddelandesortering</li>-->
+  <!--<li>…och mycket annat</li>-->
+<!--</ul>-->
+<!--<p>-->
+<!--Observera att K-9 inte stödjer gratiskonton på Hotmail och har, som så många andra epostklienter, svårt att prata med Microsoft Exchange.-->
+<!--</p><p>-->
+<!--Skicka gärna in rapporter om buggar, eller bidra med nya funktioner eller ställ frågor på -->
+<!--<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>.-->
+<!--</p>-->
+    <!--]]></string>-->
+  <!--&lt;!&ndash;Default signature&ndash;&gt;-->
+  <!--<string name="default_signature">&#45;&#45; \nSkickat från min Android-enhet med K-9 Mail. Ursäkta min fåordighet.</string>-->
+  <!--&lt;!&ndash;General strings that include the app name&ndash;&gt;-->
+  <!--<string name="account_delete_dlg_instructions_fmt">Kontot \"<xliff:g id="account">%s</xliff:g>\" kommer att tas bort från K-9 Mail.</string>-->
   <string name="account_recreate_dlg_instructions_fmt">Alla lokala data för \"<xliff:g id="account">%s</xliff:g>\" kommer att raderas. Kontoinställningar behålls.</string>
   <string name="account_clear_dlg_instructions_fmt">Alla lokalt lagrade meddelanden i \"<xliff:g id="account">%s</xliff:g>\" kommer att raderas. Kontoinställningar behålls.</string>
   <!--=== App Store-specific strings =======================================================-->
