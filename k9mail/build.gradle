@@ -76,11 +76,11 @@ android {
 
     productFlavors {
         playStore {
-            resValue "string", "app_name", "p≡p 0.9"
+            resValue "string", "app_name", "p≡p"
         }
 
         fDroid {
-            resValue "string", "app_name", "K-9 Mail/pEp"
+            resValue "string", "app_name", "K-9/pEp"
         }
     }
         signingConfigs {
