@@ -60,8 +60,6 @@ import com.fsck.k9.view.MessageHeader;
 import com.fsck.k9.view.MessageTitleView;
 import com.fsck.k9.view.ViewSwitcher;
 import com.fsck.k9.view.ViewSwitcher.OnSwitchCompleteListener;
-import de.cketti.library.changelog.ChangeLog;
-import org.pEp.jniadapter.Color;
 
 import java.util.Collection;
 import java.util.List;
@@ -236,11 +234,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         initializeLayout();
         initializeFragments();
         displayViews();
-
-        ChangeLog cl = new ChangeLog(this);
-        if (cl.isFirstRun()) {
-            cl.getLogDialog().show();
-        }
     }
 
     @Override

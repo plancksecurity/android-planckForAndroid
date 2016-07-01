@@ -52,7 +52,6 @@ import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.view.ColorChip;
-import de.cketti.library.changelog.ChangeLog;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -396,10 +395,6 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
             mNonConfigurationInstance.restore(this);
         }
 
-        ChangeLog cl = new ChangeLog(this);
-        if (cl.isFirstRun()) {
-            cl.getLogDialog().show();
-        }
     }
 
     private void initializeActionBar() {
@@ -1227,7 +1222,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         new String[] {"Mime4j", "http://james.apache.org/mime4j/"},
         new String[] {"HtmlCleaner", "http://htmlcleaner.sourceforge.net/"},
         new String[] {"Android-PullToRefresh", "https://github.com/chrisbanes/Android-PullToRefresh"},
-        new String[] {"ckChangeLog", "https://github.com/cketti/ckChangeLog"},
+//        new String[] {"ckChangeLog", "https://github.com/cketti/ckChangeLog"},
         new String[] {"HoloColorPicker", "https://github.com/LarsWerkman/HoloColorPicker"},
         new String[] {"Glide", "https://github.com/bumptech/glide"},
         new String[] {"TokenAutoComplete", "https://github.com/splitwise/TokenAutoComplete/"},
@@ -1291,11 +1286,11 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
                 d.dismiss();
             }
         })
-        .setNeutralButton(R.string.changelog_full_title, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface d, int c) {
-                new ChangeLog(Accounts.this).getFullLogDialog().show();
-            }
-        })
+//        .setNeutralButton(R.string.changelog_full_title, new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface d, int c) {
+//                new ChangeLog(Accounts.this).getFullLogDialog().show();
+//            }
+//        })
         .show();
     }
 
