@@ -38,7 +38,7 @@ Please submit bug reports, contribute new features and ask questions at
 
 
     <!-- Default signature -->
-    <string name="default_signature">-- \nSent from my p≡p on Android.\n</string>
+    <string name="default_signature">-- \nSent from my p≡p for Android.\n</string>
 
     <!-- General strings that include the app name -->
     <string name="account_delete_dlg_instructions_fmt">The account \"<xliff:g id="account">%s</xliff:g>\" will be removed from p≡p.</string>
