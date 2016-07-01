@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="remote_control_label">Control remot del Correu K-9/p≡p</string>
+    <string name="remote_control_desc">Permet a aquesta aplicació controlar les activitats i la configuració de K-9/p≡p.</string>
+    <string name="welcome_message_title">Us donem la benvinguda a K-9/p≡p</string>
+    <string name="account_delete_dlg_instructions_fmt">El compte \"<xliff:g id="account">%s</xliff:g>\" serà esborrat de K-9/p≡p.</string>
+    <string name="account_recreate_dlg_instructions_fmt">Totes les dades de \"<xliff:g id="account">%s</xliff:g>\" seran esborrades de K-9/p≡p, però la configuració del compte romandrà.</string>
+    <string name="account_clear_dlg_instructions_fmt">Tots els missatges a \"<xliff:g id="account">%s</xliff:g>\" seran esborrats de K-9/p≡p, però la configuració del compte romandrà.</string>
+
+</resources>

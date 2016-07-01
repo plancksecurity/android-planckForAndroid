@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="shortcuts_title">K-9/p≡p Konti</string>
+  <string name="remote_control_label">K-9/p≡p fjernkontrol</string>
+  <string name="remote_control_desc">Tillad dette program at kontrollere K-9/p≡p aktiviteter og indstillinger.</string>
+  <string name="account_delete_dlg_instructions_fmt">Kontoen  \"<xliff:g id="account">%s</xliff:g>\" vil blive fjernet fra K-9 Mail.</string>
+  <string name="account_recreate_dlg_instructions_fmt">Alle mails, vedhæftede filer, mapper og mappe-indstillinger for \"<xliff:g id="account">%s</xliff:g>\" vil blive fjernet fra K-9/p≡p, men kontoindstillinger vil blive husket.</string>
+</resources>

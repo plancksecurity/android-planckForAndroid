@@ -4,50 +4,50 @@
   <!--This should make it easier for forks to change the branding-->
   <!--Used in AndroidManifest.xml-->
   <!--<string name="app_name">K-9 Mail/pEp</string>-->
-  <string name="shortcuts_title">Λογαριασμοί K-9</string>
-  <string name="unread_widget_label">Μη αναγνωσμένα K-9</string>
-  <string name="remote_control_label">Τηλεχειριστήριο K-9 Mail</string>
-  <string name="remote_control_desc">Επιτρέπει σε αυτή την εφαρμογή να ελέγχει τη δραστηριότητα και τις ρυθμίσεις του K-9 Mail.</string>
+  <!--<string name="shortcuts_title">Λογαριασμοί K-9</string>-->
+  <!--<string name="unread_widget_label">Μη αναγνωσμένα K-9</string>-->
+  <!--<string name="remote_control_label">Τηλεχειριστήριο K-9 Mail</string>-->
+  <!--<string name="remote_control_desc">Επιτρέπει σε αυτή την εφαρμογή να ελέγχει τη δραστηριότητα και τις ρυθμίσεις του K-9 Mail.</string>-->
   <!--Used in the about dialog-->
-  <string name="app_authors">Google, The K-9 Dog Walkers.</string>
-  <string name="app_copyright_fmt">Πνευματικά δικαιώματα 2008-<xliff:g>%s</xliff:g> από The K-9 Dog Walkers. Τμηματικά πνευματικά δικαιώματα 2006-<xliff:g>%s</xliff:g> από το Android Open Source Project.</string>
-  <string name="app_license">Διέπεται από την άδεια χρήσης Apache, έκδοση 2.0.</string>
+  <!--<string name="app_authors">Google, The K-9 Dog Walkers.</string>-->
+  <!--<string name="app_copyright_fmt">Πνευματικά δικαιώματα 2008-<xliff:g>%s</xliff:g> από The K-9 Dog Walkers. Τμηματικά πνευματικά δικαιώματα 2006-<xliff:g>%s</xliff:g> από το Android Open Source Project.</string>-->
+  <!--<string name="app_license">Διέπεται από την άδεια χρήσης Apache, έκδοση 2.0.</string>-->
   <!--Welcome message-->
-  <string name="welcome_message_title">Καλώς ήλθατε στο K-9 Mail</string>
-  <string name="accounts_welcome"><![CDATA[
-<p>
-Το K-9 Mail είναι μία ισχυρή δωρεάν εφαρμογή ηλεκτρονικού ταχυδρομείου για το Android.
-</p><p>
-Τα βελτιωμένα χαρακτηριστικά του περιλαμβάνουν:
-</p>
-<ul>
-  <li>Ταχυδρομείο με σπρώξιμο (push mail) με χρήση IMAP IDLE</li>
-  <li>Καλύτερες επιδόσεις</li>
-  <li>Επαναταξινόμηση μηνύματος</li>
-  <li>Υπογραφές ηλεκτρονικού ταχυδρομείου</li>
-  <li>Ιδιωτική κοινοποίηση (bcc) προς εαυτό</li>
-  <li>Συνδρομές σε φακέλους</li>
-  <li>Συγχρονισμός όλων των φακέλων</li>
-  <li>Ρύθμιση διεύθυνσης επιστροφής</li>
-  <li>Συντομεύσεις πληκτρολογίου</li>
-  <li>Καλύτερη υποστήριξη IMAP</li>
-  <li>Αποθήκευση συνημμένων στην κάρτα αποθήκευσης</li>
-  <li>Άδειασμα απορριμάτων</li>
-  <li>Ταξινόμηση μηνυμάτων</li>
-  <li>…και άλλα</li>
-</ul>
-<p>
-Να σημειωθεί ότι το K-9 δεν υποστηρίζει τους περισσότερους δωρεάν λογαριασμούς Hotmail και,
-όπως οι περισσότερες εφαρμογές ηλεκτρονικού ταχυδρομείου, έχει θεματάκια με το Microsoft Exchange.
-</p><p>
-Παρακαλώ υποβάλετε αναφορές σφαλμάτων, συμβάλλετε νέα χαρακτηριστικά και θέστε ερωτήσεις στο
-<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>.
-</p>
-    ]]></string>
+  <!--<string name="welcome_message_title">Καλώς ήλθατε στο K-9 Mail</string>-->
+  <!--<string name="accounts_welcome"><![CDATA[-->
+<!--<p>-->
+<!--Το K-9 Mail είναι μία ισχυρή δωρεάν εφαρμογή ηλεκτρονικού ταχυδρομείου για το Android.-->
+<!--</p><p>-->
+<!--Τα βελτιωμένα χαρακτηριστικά του περιλαμβάνουν:-->
+<!--</p>-->
+<!--<ul>-->
+  <!--<li>Ταχυδρομείο με σπρώξιμο (push mail) με χρήση IMAP IDLE</li>-->
+  <!--<li>Καλύτερες επιδόσεις</li>-->
+  <!--<li>Επαναταξινόμηση μηνύματος</li>-->
+  <!--<li>Υπογραφές ηλεκτρονικού ταχυδρομείου</li>-->
+  <!--<li>Ιδιωτική κοινοποίηση (bcc) προς εαυτό</li>-->
+  <!--<li>Συνδρομές σε φακέλους</li>-->
+  <!--<li>Συγχρονισμός όλων των φακέλων</li>-->
+  <!--<li>Ρύθμιση διεύθυνσης επιστροφής</li>-->
+  <!--<li>Συντομεύσεις πληκτρολογίου</li>-->
+  <!--<li>Καλύτερη υποστήριξη IMAP</li>-->
+  <!--<li>Αποθήκευση συνημμένων στην κάρτα αποθήκευσης</li>-->
+  <!--<li>Άδειασμα απορριμάτων</li>-->
+  <!--<li>Ταξινόμηση μηνυμάτων</li>-->
+  <!--<li>…και άλλα</li>-->
+<!--</ul>-->
+<!--<p>-->
+<!--Να σημειωθεί ότι το K-9 δεν υποστηρίζει τους περισσότερους δωρεάν λογαριασμούς Hotmail και,-->
+<!--όπως οι περισσότερες εφαρμογές ηλεκτρονικού ταχυδρομείου, έχει θεματάκια με το Microsoft Exchange.-->
+<!--</p><p>-->
+<!--Παρακαλώ υποβάλετε αναφορές σφαλμάτων, συμβάλλετε νέα χαρακτηριστικά και θέστε ερωτήσεις στο-->
+<!--<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>.-->
+<!--</p>-->
+    <!--]]></string>-->
   <!--Default signature-->
-  <string name="default_signature">-- \nΣταλμένο από τη συσκευή μου Android με το K-9 Mail. Παρακαλώ συγχωρήστε την ολιγολογία μου.</string>
+  <!--<string name="default_signature">&#45;&#45; \nΣταλμένο από τη συσκευή μου Android με το K-9 Mail. Παρακαλώ συγχωρήστε την ολιγολογία μου.</string>-->
   <!--General strings that include the app name-->
-  <string name="account_delete_dlg_instructions_fmt">Ο λογαριασμός \'<xliff:g id="account">%s</xliff:g>\' θα διαγραφεί από το K-9 Mail.</string>
+  <!--<string name="account_delete_dlg_instructions_fmt">Ο λογαριασμός \'<xliff:g id="account">%s</xliff:g>\' θα διαγραφεί από το K-9 Mail.</string>-->
   <string name="account_recreate_dlg_instructions_fmt">Όλα τα δεδομένα για το λογαριασμό \'<xliff:g id="account">%s</xliff:g>\' θα διαγραφούν από το K-9 Mail, αλλά οι ρυθμίσεις του λογαριασμού θα διατηρηθούν.</string>
   <string name="account_clear_dlg_instructions_fmt">Όλα τα μηνύματα του λογαριασμού \'<xliff:g id="account">%s</xliff:g>\' θα διαγραφούν από το K-9 Mail, αλλά οι ρυθμίσεις του λογαριασμού θα διατηρηθούν.</string>
   <!--=== App Store-specific strings =======================================================-->

@@ -4,49 +4,49 @@
   <!--This should make it easier for forks to change the branding-->
   <!--Used in AndroidManifest.xml-->
   <!--<string name="app_name">К-9 Пошта</string>-->
-  <string name="shortcuts_title">К-9 налози</string>
-  <string name="unread_widget_label">К-9 непрочитане</string>
-  <string name="remote_control_label">К-9 даљинско управљање</string>
-  <string name="remote_control_desc">Дозвољава овој апликацији да управља активностима и поставкама К-9 Поште.</string>
-  <!--Used in the about dialog-->
-  <string name="app_authors">Гугл, K-9 Dog Walkers.</string>
-  <string name="app_copyright_fmt">Ауторска права 2008-<xliff:g>%s</xliff:g> „K-9 Dog Walkers“. Део ауторских права 2006-<xliff:g>%s</xliff:g> Андроид пројекат отвореног ко̂да.</string>
-  <string name="app_license">Лиценцирано под Апачи лиценцом, издање 2.0.</string>
-  <!--Welcome message-->
-  <string name="welcome_message_title">Добро дошли у К-9 Пошту</string>
-  <string name="accounts_welcome"><![CDATA[
-<p>
-К-9 Пошта је моћан слободни клијент е-поште за Андроид.
-</p><p>
-Побољшане могућности укључују:
-</p>
-<ul>
-  <li>Прослеђивање поште користећи IMAP IDLE</li>
-  <li>Боље преформансе</li>
-  <li>Реархивисање порука</li>
-  <li>Потписи е-порука</li>
-  <li>Бцц себи</li>
-  <li>Претплате на фасцикле</li>
-  <li>Синхронизација свих фасцикли</li>
-  <li>Подешавање повратне адресе</li>
-  <li>Пречице тастатуре</li>
-  <li>Боља подршка за IMAP</li>
-  <li>Упис прилога на СД картицу</li>
-  <li>Пражњење отпада</li>
-  <li>Ређање порука</li>
-  <li>…и још тога</li>
-</ul>
-<p>
-Имајте на уму да К-9 не подржава већину бесплатних Хотмејл налога и, као и многи клијенти, има мушица при контакту са Мајкрософтовом Разменом.
-</p><p>
-Пријављујте грешке, доприносите нове могућности и постављајте питања на
-<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>.
-</p>
-]]></string>
-  <!--Default signature-->
-  <string name="default_signature">-- \nПослато К-9 Поштом са мог Андроид уређаја.</string>
-  <!--General strings that include the app name-->
-  <string name="account_delete_dlg_instructions_fmt">Налог „<xliff:g id="account">%s</xliff:g>“ ће бити уклоњен из К-9 Поште.</string>
+  <!--<string name="shortcuts_title">К-9 налози</string>-->
+  <!--<string name="unread_widget_label">К-9 непрочитане</string>-->
+  <!--<string name="remote_control_label">К-9 даљинско управљање</string>-->
+  <!--<string name="remote_control_desc">Дозвољава овој апликацији да управља активностима и поставкама К-9 Поште.</string>-->
+  <!--&lt;!&ndash;Used in the about dialog&ndash;&gt;-->
+  <!--<string name="app_authors">Гугл, K-9 Dog Walkers.</string>-->
+  <!--<string name="app_copyright_fmt">Ауторска права 2008-<xliff:g>%s</xliff:g> „K-9 Dog Walkers“. Део ауторских права 2006-<xliff:g>%s</xliff:g> Андроид пројекат отвореног ко̂да.</string>-->
+  <!--<string name="app_license">Лиценцирано под Апачи лиценцом, издање 2.0.</string>-->
+  <!--&lt;!&ndash;Welcome message&ndash;&gt;-->
+  <!--<string name="welcome_message_title">Добро дошли у К-9 Пошту</string>-->
+  <!--<string name="accounts_welcome"><![CDATA[-->
+<!--<p>-->
+<!--К-9 Пошта је моћан слободни клијент е-поште за Андроид.-->
+<!--</p><p>-->
+<!--Побољшане могућности укључују:-->
+<!--</p>-->
+<!--<ul>-->
+  <!--<li>Прослеђивање поште користећи IMAP IDLE</li>-->
+  <!--<li>Боље преформансе</li>-->
+  <!--<li>Реархивисање порука</li>-->
+  <!--<li>Потписи е-порука</li>-->
+  <!--<li>Бцц себи</li>-->
+  <!--<li>Претплате на фасцикле</li>-->
+  <!--<li>Синхронизација свих фасцикли</li>-->
+  <!--<li>Подешавање повратне адресе</li>-->
+  <!--<li>Пречице тастатуре</li>-->
+  <!--<li>Боља подршка за IMAP</li>-->
+  <!--<li>Упис прилога на СД картицу</li>-->
+  <!--<li>Пражњење отпада</li>-->
+  <!--<li>Ређање порука</li>-->
+  <!--<li>…и још тога</li>-->
+<!--</ul>-->
+<!--<p>-->
+<!--Имајте на уму да К-9 не подржава већину бесплатних Хотмејл налога и, као и многи клијенти, има мушица при контакту са Мајкрософтовом Разменом.-->
+<!--</p><p>-->
+<!--Пријављујте грешке, доприносите нове могућности и постављајте питања на-->
+<!--<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>.-->
+<!--</p>-->
+<!--]]></string>-->
+  <!--&lt;!&ndash;Default signature&ndash;&gt;-->
+  <!--<string name="default_signature">&#45;&#45; \nПослато К-9 Поштом са мог Андроид уређаја.</string>-->
+  <!--&lt;!&ndash;General strings that include the app name&ndash;&gt;-->
+  <!--<string name="account_delete_dlg_instructions_fmt">Налог „<xliff:g id="account">%s</xliff:g>“ ће бити уклоњен из К-9 Поште.</string>-->
   <string name="account_recreate_dlg_instructions_fmt">Сви локални подаци за „<xliff:g id="account">%s</xliff:g>“ ће бити уклоњени. Поставке налога ће остати.</string>
   <string name="account_clear_dlg_instructions_fmt">Локалне копије порука у „<xliff:g id="account">%s</xliff:g>“ ће бити уклоњене. Поставке налога ће остати.</string>
   <!--=== App Store-specific strings =======================================================-->
