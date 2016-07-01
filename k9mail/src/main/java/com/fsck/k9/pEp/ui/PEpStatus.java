@@ -11,29 +11,21 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import com.fsck.k9.K9;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.PePUIArtefactCache;
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
 
-public class PEpStatus extends K9Activity implements ChangeColorListener{
+public class PEpStatus extends PepColoredActivity implements ChangeColorListener{
 
     private static final String ACTION_SHOW_PEP_STATUS = "com.fsck.k9.intent.action.SHOW_PEP_STATUS";
-    private static final String CURRENT_COLOR = "current_color";
     private static final String MYSELF = "isComposedKey";
-    private Color m_pEpColor = Color.pEpRatingB0rken;
-    PePUIArtefactCache ui;
 
     @Bind(R.id.pEpTitle)
     TextView pEpTitle;
@@ -47,7 +39,6 @@ public class PEpStatus extends K9Activity implements ChangeColorListener{
     RecyclerView.LayoutManager recipientsLayoutManager;
 
     String myself = "";
-    private PEpProvider pEp;
 
 
     public static void actionShowStatus(Context context, Color currentColor, String myself) {
@@ -69,19 +60,15 @@ public class PEpStatus extends K9Activity implements ChangeColorListener{
         }
         initPep();
         setUpActionBar();
-        setUpContactList(myself, pEp);
+        setUpContactList(myself, getpEp());
         loadPepTexts();
 
     }
 
-    private void initPep() {
-        ui = PePUIArtefactCache.getInstance(getApplicationContext());
-        pEp = ((K9) getApplication()).getpEpProvider();
-    }
 
     private void loadPepTexts() {
-        pEpTitle.setText(ui.getTitle(m_pEpColor));
-        pEpSuggestion.setText(ui.getExplanation(m_pEpColor));
+        pEpTitle.setText(uiCache.getTitle(getpEpColor()));
+        pEpSuggestion.setText(uiCache.getExplanation(getpEpColor()));
     }
 
     private void setUpActionBar() {
@@ -92,31 +79,13 @@ public class PEpStatus extends K9Activity implements ChangeColorListener{
         }
     }
 
-    private void colorActionBar() {
-        ActionBar actionBar = getActionBar() ;
-        if (actionBar != null) {
-            PEpUtils.colorActionBar(ui, actionBar, m_pEpColor);
-        }
-    }
-
-    private void loadPepColor() {
-        final Intent intent = getIntent();
-        String colorString;
-        if (intent.getExtras() != null) {
-            colorString = intent.getStringExtra(CURRENT_COLOR);
-            Log.d(K9.LOG_TAG, "Got color:" + colorString);
-            m_pEpColor = Color.valueOf(colorString);
-        } else {
-            throw new RuntimeException("Cannot retrieve pEpColor");
-        }
-    }
 
     private void setUpContactList(String myself, PEpProvider pEp) {
         recipientsLayoutManager = new LinearLayoutManager(this);
         ((LinearLayoutManager) recipientsLayoutManager).setOrientation(LinearLayoutManager.VERTICAL);
         recipientsView.setLayoutManager(recipientsLayoutManager);
         recipientsView.setVisibility(View.VISIBLE);
-        recipientsAdapter = new RecipientsAdapter(this, ui.getRecipients(), pEp, myself, this);
+        recipientsAdapter = new RecipientsAdapter(this, uiCache.getRecipients(), pEp, myself, this);
         recipientsView.setAdapter(recipientsAdapter);
         recipientsView.addItemDecoration(new SimpleDividerItemDecoration(this));
 
@@ -124,7 +93,7 @@ public class PEpStatus extends K9Activity implements ChangeColorListener{
 
     @Override
     public void colorChanged(Color pEpColor) {
-        m_pEpColor = pEpColor;
+        setpEpColor(pEpColor);
         colorActionBar();
     }
 
@@ -161,9 +130,8 @@ public class PEpStatus extends K9Activity implements ChangeColorListener{
         if (requestCode == PEpTrustwords.HANDSHAKE_REQUEST) {
             if (resultCode == RESULT_OK) {
                int position = data.getIntExtra(PEpTrustwords.PARTNER_POSITION, PEpTrustwords.DEFAULT_POSITION);
-                Identity partner = ui.getRecipients().get(position);
-                m_pEpColor = pEp.identityColor(partner);
-                Log.i("PEpStatus", "onActivityResult " + m_pEpColor);
+                Identity partner = uiCache.getRecipients().get(position);
+                setpEpColor(getpEp().identityColor(partner));
                 recipientsAdapter.notifyDataSetChanged();
                 colorActionBar();
 
@@ -204,7 +172,7 @@ public class PEpStatus extends K9Activity implements ChangeColorListener{
     private void showExplanationDialog() {
          new AlertDialog.Builder(this)
                 .setTitle(R.string.pep_explanation)
-                .setMessage(ui.getExplanation(m_pEpColor))
+                .setMessage(uiCache.getExplanation(getpEpColor()))
                 .setPositiveButton(R.string.okay_action,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {

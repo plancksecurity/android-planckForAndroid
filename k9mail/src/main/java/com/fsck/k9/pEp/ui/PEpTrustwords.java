@@ -12,16 +12,12 @@ import android.widget.ViewSwitcher;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.fsck.k9.K9;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.mail.Address;
-import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.PePUIArtefactCache;
 import org.pEp.jniadapter.Identity;
 
-public class PEpTrustwords extends K9Activity {
+public class PEpTrustwords extends PepColoredActivity {
 
     private static final String ACTION_SHOW_PEP_TRUSTWORDS = "com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS";
     private static final String TRUSTWORDS = "trustwordsKey";
@@ -50,8 +46,6 @@ public class PEpTrustwords extends K9Activity {
     @Bind(R.id.myselfFpr) TextView myselfFpr;
     @Bind(R.id.wrongTrustwords)
     Button wrongTrustWords;
-    private PEpProvider pEp;
-    private PePUIArtefactCache uiCache;
 
     boolean showingPgpFingerprint = false;
 
@@ -62,6 +56,7 @@ public class PEpTrustwords extends K9Activity {
         i.putExtra(PARTNER_POSITION, partnerPosition);
         i.putExtra(MYSELF, myself);
         context.startActivityForResult(i, HANDSHAKE_REQUEST);
+
     }
 
     @Override
@@ -73,8 +68,7 @@ public class PEpTrustwords extends K9Activity {
         ButterKnife.bind(this);
         context = getApplicationContext();
         if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
-        pEp = ((K9) getApplication()).getpEpProvider();
-        uiCache = PePUIArtefactCache.getInstance(getApplicationContext());
+        initPep();
 
         if (getIntent() != null) {
             if (intent.hasExtra(TRUSTWORDS)) {
@@ -83,8 +77,8 @@ public class PEpTrustwords extends K9Activity {
 
             if (intent.hasExtra(PARTNER_POSITION)) {
                 partnerPosition = intent.getIntExtra(PARTNER_POSITION, DEFAULT_POSITION);
-                partner = uiCache.getRecipients().get(partnerPosition);
-                partner = pEp.updateIdentity(partner);
+                partner = getUiCache().getRecipients().get(partnerPosition);
+                partner = getpEp().updateIdentity(partner);
                 if (!partner.username.equals(partner.address)) {
                     partnerView.setText(String.format(getString(R.string.complete_partner_format), partner.username, partner.address));
                     partnerLabel.setText(String.format(getString(R.string.complete_partner_format), partner.username, partner.address));
@@ -94,12 +88,14 @@ public class PEpTrustwords extends K9Activity {
                 }
 
                 partnerFpr.setText(PEpUtils.formatFpr(partner.fpr));
+                setpEpColor(getpEp().identityColor(partner));
+                colorActionBar();
 
             }
 
             if (intent.hasExtra(MYSELF)) {
                 myself = PEpUtils.createIdentity(new Address(intent.getStringExtra(MYSELF)), context);
-                myself = pEp.myself(myself);
+                myself = getpEp().myself(myself);
                 if (!myself.username.equals(myself.address)) {
                     myselfView.setText(String.format(getString(R.string.complete_myself_format), myself.username, myself.address));
                     myselfLabel.setText(String.format(getString(R.string.complete_myself_format), myself.username, myself.address));
@@ -155,7 +151,7 @@ public class PEpTrustwords extends K9Activity {
 
     @OnClick(R.id.confirmTrustWords)
     public void confirmTrustwords() {
-        pEp.trustPersonaKey(partner);
+        getpEp().trustPersonaKey(partner);
         Intent returnIntent = new Intent();
         returnIntent.putExtra(PARTNER_POSITION, partnerPosition);
         setResult(Activity.RESULT_OK, returnIntent);
@@ -165,8 +161,8 @@ public class PEpTrustwords extends K9Activity {
 
     @OnClick(R.id.wrongTrustwords)
     public void wrongTrustwords() {
-        pEp.keyCompromised(partner);
-        pEp.identityColor(partner);
+        getpEp().keyCompromised(partner);
+        getpEp().identityColor(partner);
         Intent returnIntent = new Intent();
         returnIntent.putExtra(PARTNER_POSITION, partnerPosition);
         setResult(Activity.RESULT_OK, returnIntent);
