@@ -3078,7 +3078,8 @@ public class MessagingController {
 
                         // pEp the message to send...
                         Message encryptedMessageToSave;
-                        if (!message.isSet(Flag.X_FORCE_UNENCRYPTED)) {
+                        if (!message.isSet(Flag.X_FORCE_UNENCRYPTED)
+                                && !(pEpProvider.getPrivacyState(message).value == Color.pEpRatingB0rken.value)) {
                             encryptedMessageToSave = processWithpEpAndSend(transport, message);
                         }
                         else {
