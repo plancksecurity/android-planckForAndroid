@@ -65,7 +65,6 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
 import org.pEp.jniadapter.Color;
-import org.pEp.jniadapter.DecryptFlags;
 import com.fsck.k9.search.ConditionsTreeNode;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
@@ -3119,7 +3118,8 @@ public class MessagingController implements Runnable {
 
                         // pEp the message to send...
                         Message encryptedMessageToSave;
-                        if (!message.isSet(Flag.X_FORCE_UNENCRYPTED)) {
+                        if (!message.isSet(Flag.X_FORCE_UNENCRYPTED)
+                                && !(pEpProvider.getPrivacyState(message).value == Color.pEpRatingB0rken.value)) {
                             encryptedMessageToSave = processWithpEpAndSend(transport, message);
                         }
                         else {

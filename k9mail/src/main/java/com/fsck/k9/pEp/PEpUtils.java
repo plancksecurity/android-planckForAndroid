@@ -201,7 +201,7 @@ public class PEpUtils {
         } else if (pepColor.value < Color.pEpRatingGreen.value) {
             return  ContextCompat.getColor(context, R.color.pep_yellow);
         } else {
-            return  ContextCompat.getColor(context, R.color.pep_green);
+            return ContextCompat.getColor(context, R.color.pep_green);
         }
     }
 
