@@ -3,7 +3,7 @@
     <string name="pep_action">p≡p state</string>
     <string name="pep">p≡p</string>
     <string name="handshake">Handshake</string>
-    <string name="account_setup_genereting_keys">Setting your Privacy by Default </string>
+    <string name="account_setup_generating_keys">Setting your Privacy by Default </string>
     <string name="reset_trust">Stop trust</string>
     <string name="pgp_fingerprint">PGP Fingerprint</string>
 

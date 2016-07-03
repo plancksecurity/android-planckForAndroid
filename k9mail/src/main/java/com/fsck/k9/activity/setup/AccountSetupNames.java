@@ -1,8 +1,10 @@
 
 package com.fsck.k9.activity.setup;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -12,10 +14,17 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import com.fsck.k9.*;
+import com.fsck.k9.Account;
+import com.fsck.k9.Preferences;
+import com.fsck.k9.R;
 import com.fsck.k9.activity.Accounts;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.helper.Utility;
+import com.fsck.k9.mail.Address;
+import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpProviderFactory;
+import com.fsck.k9.pEp.PEpUtils;
+import org.pEp.jniadapter.Identity;
 
 public class AccountSetupNames extends K9Activity implements OnClickListener {
     private static final String EXTRA_ACCOUNT = "account";
@@ -86,8 +95,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
         }
         mAccount.setName(mName.getText().toString());
         mAccount.save(Preferences.getPreferences(this));
-        Accounts.listAccounts(this);
-        finish();
+        new pEpGenerateAccountKeysTask().execute();
     }
 
     public void onClick(View v) {
@@ -95,6 +103,40 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
         case R.id.done:
             onNext();
             break;
+        }
+    }
+
+    private void pEpGenerateAccountKeys() {
+        PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
+        Identity myIdentity = PEpUtils.createIdentity(new Address(mAccount.getEmail(), mAccount.getName()), getApplicationContext());
+        pEp.myself(myIdentity);
+        pEp.close();
+    }
+
+    private class pEpGenerateAccountKeysTask extends AsyncTask <Void, Void, Void> {
+        ProgressDialog dialog;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog = new ProgressDialog(AccountSetupNames.this);
+            dialog.setIndeterminate(true);
+            dialog.setCancelable(false);
+            dialog.setMessage(getString(R.string.account_setup_generating_keys));
+            dialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            dialog.dismiss();
+            Accounts.listAccounts(AccountSetupNames.this);
+            AccountSetupNames.this.finish();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            pEpGenerateAccountKeys();
+            return null;
         }
     }
 }
