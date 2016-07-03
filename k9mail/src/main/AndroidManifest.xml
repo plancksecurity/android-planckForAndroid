@@ -146,6 +146,7 @@
         <activity
             android:name=".activity.setup.AccountSetupNames"
             android:configChanges="locale"
+            android:screenOrientation="portrait"
             android:label="@string/account_setup_names_title"/>
 
         <activity

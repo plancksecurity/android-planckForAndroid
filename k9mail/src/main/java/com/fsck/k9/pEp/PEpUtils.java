@@ -46,8 +46,6 @@ public class PEpUtils {
         id.username = adr.getAddress();
         if (adr.getPersonal() != null) {
             id.username = adr.getPersonal();
-        } else {
-            id.username = adr.getAddress();
         }
 
 
