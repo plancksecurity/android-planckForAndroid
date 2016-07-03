@@ -49,12 +49,6 @@ android {
     buildToolsVersion rootProject.buildToolsVersion
 
     defaultConfig {
-        //Original config
-//        applicationId "com.fsck.k9"
-//        testApplicationId "com.fsck.k9.tests"
-//        versionCode 23080
-//        versionName '5.108'
-
         applicationId "pep.android.k9"
         versionCode 9
         versionName '0.9'
