@@ -1526,7 +1526,11 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     @Override
     public void onForward(LocalMessage mMessage, Parcelable decryptionResultForReply) {
-
+        try {
+            MessageActions.actionForward(this, mMessage, decryptionResultForReply, PEpUtils.extractpEpColor(mMessage));
+        } catch (MessagingException e) {
+            Log.e(K9.LOG_TAG, "onForward: ", e);
+        }
     }
 
     @Override
