@@ -65,7 +65,7 @@ android {
 
         applicationId "pep.android.k9"
         versionCode 9
-        versionName '0.7.4'
+        versionName '0.9'
         minSdkVersion 18
         targetSdkVersion 22
 
