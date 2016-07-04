@@ -576,7 +576,7 @@
     <string name="account_settings_sync">Fetching mail</string>
     <string name="account_settings_folders">Folders</string>
     <string name="account_settings_quote_prefix_label">Quoted text prefix</string>
-    <string name="account_settings_crypto">Cryptography</string>
+    <string name="account_settings_crypto">Advanced cryptography</string>
     <string name="account_settings_crypto_app">OpenPGP app</string>
     <string name="account_settings_crypto_key">My Key</string>
     <string name="account_settings_no_openpgp_provider_installed">No OpenPGP app installed</string>
