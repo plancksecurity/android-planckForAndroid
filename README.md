@@ -27,13 +27,12 @@ Please fork this repository and contribute back using [merge requests](https://c
 
 Any contributions, large or small, major features, bug fixes, unit/integration tests are welcomed and appreciated
 but will be thoroughly reviewed and discussed.
-Please make sure you read the [Code Style Guidelines](https://github.com/k9mail/k-9/wiki/CodeStyle).
 
 
 ## Communication
 
 Aside from discussing changes in [merge requests](https://cacert.pep-security.lu/gitlab/android/k9-pep/merge_requests) and
-[issues](https://github.com/k9mail/k-9/issues) we use the following communication services:
+[issues](https://cacert.pep-security.lu/gitlab/android/k9-pep/issues) we use the following communication services:
 
 - IRC chat, [#prettyeasyprivacy on the Freenode network]
 - [Developer mailing list]
