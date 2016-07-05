@@ -7,7 +7,7 @@
   <string name="shortcuts_title">K-9/p≡p Konten</string>
   <string name="unread_widget_label">K-9/p≡p Ungelesen</string>
   <string name="remote_control_label">K-9/p≡p Fernsteuerung</string>
-  <string name="remote_control_desc">Erlaubt dieser Anwendung den Ablauf und die Einstellungen von K-9/p≡pl zu kontrollieren.</string>
+  <string name="remote_control_desc">Erlaubt dieser Anwendung den Ablauf und die Einstellungen von K-9/p≡p zu kontrollieren.</string>
   <!--Welcome message-->
   <string name="welcome_message_title">Willkommen bei K-9/p≡p</string>
   <string name="default_signature">-- \nDiese Nachricht wurde von meinem Android-Gerät mit K-9/p≡p gesendet.</string>
