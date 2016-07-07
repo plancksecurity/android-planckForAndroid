@@ -1,11 +1,6 @@
 
 package com.fsck.k9.activity.setup;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -13,42 +8,24 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.preference.CheckBoxPreference;
-import android.preference.EditTextPreference;
-import android.preference.ListPreference;
-import android.preference.Preference;
+import android.preference.*;
 import android.preference.Preference.OnPreferenceChangeListener;
-import android.preference.PreferenceScreen;
-import android.preference.RingtonePreference;
 import android.util.Log;
-
-import com.fsck.k9.Account;
-import com.fsck.k9.Account.DeletePolicy;
-import com.fsck.k9.Account.Expunge;
-import com.fsck.k9.Account.FolderMode;
-import com.fsck.k9.Account.MessageFormat;
-import com.fsck.k9.Account.QuoteStyle;
-import com.fsck.k9.Account.Searchable;
-import com.fsck.k9.Account.ShowPictures;
-import com.fsck.k9.K9;
-import com.fsck.k9.NotificationSetting;
-import com.fsck.k9.Preferences;
-import com.fsck.k9.R;
-import com.fsck.k9.activity.ChooseFolder;
-import com.fsck.k9.activity.ChooseIdentity;
-import com.fsck.k9.activity.ColorPickerDialog;
-import com.fsck.k9.activity.K9PreferenceActivity;
-import com.fsck.k9.activity.ManageIdentities;
-import com.fsck.k9.crypto.OpenPgpApiHelper;
+import com.fsck.k9.*;
+import com.fsck.k9.Account.*;
+import com.fsck.k9.activity.*;
 import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.service.MailService;
-
 import org.openintents.openpgp.util.OpenPgpAppPreference;
 import org.openintents.openpgp.util.OpenPgpKeyPreference;
-import org.openintents.openpgp.util.OpenPgpUtils;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 
 public class AccountSettings extends K9PreferenceActivity {
@@ -179,7 +156,7 @@ public class AccountSettings extends K9PreferenceActivity {
     private CheckBoxPreference mPushPollOnConnect;
     private ListPreference mIdleRefreshPeriod;
     private ListPreference mMaxPushFolders;
-    private boolean mHasCrypto = false;
+//    private boolean mHasCrypto = false;
     private OpenPgpAppPreference mCryptoApp;
     private OpenPgpKeyPreference mCryptoKey;
 
@@ -698,38 +675,38 @@ public class AccountSettings extends K9PreferenceActivity {
             }
         });
 
-        mHasCrypto = OpenPgpUtils.isAvailable(this);
-        if (mHasCrypto) {
-            mCryptoApp = (OpenPgpAppPreference) findPreference(PREFERENCE_CRYPTO_APP);
-            mCryptoKey = (OpenPgpKeyPreference) findPreference(PREFERENCE_CRYPTO_KEY);
-
-            mCryptoApp.setValue(String.valueOf(mAccount.getCryptoApp()));
-            mCryptoApp.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    String value = newValue.toString();
-                    mCryptoApp.setValue(value);
-
-                    mCryptoKey.setOpenPgpProvider(value);
-                    return false;
-                }
-            });
-
-            mCryptoKey.setValue(mAccount.getCryptoKey());
-            mCryptoKey.setOpenPgpProvider(mCryptoApp.getValue());
-            // TODO: other identities?
-            mCryptoKey.setDefaultUserId(OpenPgpApiHelper.buildUserId(mAccount.getIdentity(0)));
-            mCryptoKey.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    long value = (Long) newValue;
-                    mCryptoKey.setValue(value);
-                    return false;
-                }
-            });
-        } else {
-            final Preference mCryptoMenu = findPreference(PREFERENCE_CRYPTO);
-            mCryptoMenu.setEnabled(false);
-            mCryptoMenu.setSummary(R.string.account_settings_no_openpgp_provider_installed);
-        }
+//        mHasCrypto = false;
+//        if (mHasCrypto) {
+//            mCryptoApp = (OpenPgpAppPreference) findPreference(PREFERENCE_CRYPTO_APP);
+//            mCryptoKey = (OpenPgpKeyPreference) findPreference(PREFERENCE_CRYPTO_KEY);
+//
+//            mCryptoApp.setValue(String.valueOf(mAccount.getCryptoApp()));
+//            mCryptoApp.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+//                public boolean onPreferenceChange(Preference preference, Object newValue) {
+//                    String value = newValue.toString();
+//                    mCryptoApp.setValue(value);
+//
+//                    mCryptoKey.setOpenPgpProvider(value);
+//                    return false;
+//                }
+//            });
+//
+//            mCryptoKey.setValue(mAccount.getCryptoKey());
+//            mCryptoKey.setOpenPgpProvider(mCryptoApp.getValue());
+//            // TODO: other identities?
+//            mCryptoKey.setDefaultUserId(OpenPgpApiHelper.buildUserId(mAccount.getIdentity(0)));
+//            mCryptoKey.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+//                public boolean onPreferenceChange(Preference preference, Object newValue) {
+//                    long value = (Long) newValue;
+//                    mCryptoKey.setValue(value);
+//                    return false;
+//                }
+//            });
+//        } else {
+//            final Preference mCryptoMenu = findPreference(PREFERENCE_CRYPTO);
+//            mCryptoMenu.setEnabled(false);
+//            mCryptoMenu.setSummary(R.string.account_settings_no_openpgp_provider_installed);
+//        }
 
         mPEpSaveEncrypted = (CheckBoxPreference) findPreference(PREFERENCE_PEP_SAVE_ENCRYPTED_ON_SERVER);
         mPEpSaveEncrypted.setChecked(mAccount.isPEpStoreEncryptedOnServer());
@@ -793,13 +770,13 @@ public class AccountSettings extends K9PreferenceActivity {
         mAccount.setReplyAfterQuote(mReplyAfterQuote.isChecked());
         mAccount.setStripSignature(mStripSignature.isChecked());
         mAccount.setLocalStorageProviderId(mLocalStorageProvider.getValue());
-        if (mHasCrypto) {
-            mAccount.setCryptoApp(mCryptoApp.getValue());
-            mAccount.setCryptoKey(mCryptoKey.getValue());
-        } else {
-            mAccount.setCryptoApp(Account.NO_OPENPGP_PROVIDER);
-            mAccount.setCryptoKey(Account.NO_OPENPGP_KEY);
-        }
+//        if (mHasCrypto) {
+//            mAccount.setCryptoApp(mCryptoApp.getValue());
+//            mAccount.setCryptoKey(mCryptoKey.getValue());
+//        } else {
+//            mAccount.setCryptoApp(Account.NO_OPENPGP_PROVIDER);
+//            mAccount.setCryptoKey(Account.NO_OPENPGP_KEY);
+//        }
 
         // In webdav account we use the exact folder name also for inbox,
         // since it varies because of internationalization
