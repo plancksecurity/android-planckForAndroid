@@ -33,7 +33,6 @@ public class PePUIArtefactCache
     private String[] explanations;
     private String[] suggestions;
     private int[] color;
-    private Drawable icon;
     private static PePUIArtefactCache instance = null;
     private ArrayList<Identity> recipients;
     private Resources resources;
@@ -81,10 +80,8 @@ public class PePUIArtefactCache
         return suggestions[colorIndexMapping.get(c)];
     }
 
-    public Drawable getIcon(Color pEpColor) {
-        Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_action_pep_indicator);
-//        icon.setColorFilter(getColor(pEpColor), PorterDuff.Mode.MULTIPLY);
-        return icon;
+    public Drawable getIcon() {
+        return ContextCompat.getDrawable(context, R.drawable.ic_action_pep_indicator);
     }
 
     public int getColor(Color pepColor) {

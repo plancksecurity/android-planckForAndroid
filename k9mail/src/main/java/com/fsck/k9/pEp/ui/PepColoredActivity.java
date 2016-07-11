@@ -18,6 +18,7 @@ import org.pEp.jniadapter.Color;
 
 public class PepColoredActivity extends K9Activity {
     public static final String CURRENT_COLOR = "current_color";
+    public static final String PEP_COLOR_ERR0R_DETAIL_MESSAGE = "Cannot retrieve pEpColor";
     private Color m_pEpColor = Color.pEpRatingB0rken;
     PePUIArtefactCache uiCache;
     private PEpProvider pEp;
@@ -42,7 +43,7 @@ public class PepColoredActivity extends K9Activity {
             Log.d(K9.LOG_TAG, "Got color:" + colorString);
             m_pEpColor = Color.valueOf(colorString);
         } else {
-            throw new RuntimeException("Cannot retrieve pEpColor");
+            throw new RuntimeException(PEP_COLOR_ERR0R_DETAIL_MESSAGE);
         }
     }
 
