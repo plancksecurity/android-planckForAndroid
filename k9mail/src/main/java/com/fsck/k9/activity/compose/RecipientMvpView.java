@@ -6,13 +6,11 @@ import java.util.List;
 
 import android.app.LoaderManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
@@ -428,18 +426,8 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         PEpUtils.colorActionBar(pEpUiCache, activity.getActionBar(), pEpColor);
 
         if(pEpIndicator!=null) {
-            pEpIndicator.setIcon(pEpUiCache.getIcon(pEpColor));
+            pEpIndicator.setIcon(pEpUiCache.getIcon());
             String msg = pEpUiCache.getTitle(pEpColor);
-            if(reallyWithToast && !"".equals(msg)) {
-
-//                Snackbar snack = Snackbar.make(parentLayout, msg, Snackbar.LENGTH_LONG);
-//                View view = snack.getView();
-//                FrameLayout.LayoutParams params =(FrameLayout.LayoutParams)view.getLayoutParams();
-//                params.gravity = Gravity.TOP;
-//                view.setLayoutParams(params);
-//                snack.show();
-//                Toast toast = Toast.makeText(this, msg, Toast.LENGTH_LONG);
-            }
         }
     }
 

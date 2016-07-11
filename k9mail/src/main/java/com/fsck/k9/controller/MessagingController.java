@@ -1453,7 +1453,6 @@ public class MessagingController implements Runnable {
 
                                 @Override
                                 public void run() {
-                                    //Your UI code here
                                     Intent broadcastIntent = new Intent("PRIVATE_KEY");
                                     broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_FROM,message.getFrom()[0].getAddress());
                                     broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_FPR, result.keyDetails.getFpr());

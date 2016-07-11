@@ -165,9 +165,6 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
                 if (identity.address != null) identityUserName.setText(identity.address);
 
             }
-//            if (color.value >= Color.pEpRatingGreen.value) {
-//                identityUserName.setTextColor(android.graphics.Color.WHITE);
-//            }
         }
     }
 
