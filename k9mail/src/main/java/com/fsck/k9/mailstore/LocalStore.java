@@ -2,23 +2,6 @@
 package com.fsck.k9.mailstore;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -28,7 +11,6 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -57,6 +39,23 @@ import com.fsck.k9.search.SqlQueryBuilder;
 import org.apache.james.mime4j.codec.Base64InputStream;
 import org.apache.james.mime4j.codec.QuotedPrintableInputStream;
 import org.apache.james.mime4j.util.MimeUtil;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * <pre>
@@ -570,7 +569,7 @@ public class LocalStore extends Store implements Serializable {
         String where = SqlQueryBuilder.addPrefixToSelection(new String[] { "id" },
                 "messages.", query.toString());
 
-        String[] selectionArgs = queryArgs.toArray(EMPTY_STRING_ARRAY);
+        String[] selectionArgs = queryArgs.toArray(new String[queryArgs.size()]);
 
         String sqlQuery = "SELECT " + GET_MESSAGES_COLS + "FROM messages " +
                 "LEFT JOIN threads ON (threads.message_id = messages.id) " +
@@ -911,7 +910,7 @@ public class LocalStore extends Store implements Serializable {
                             UnavailableStorageException {
 
                         selectionCallback.doDbWork(db, selection.toString(),
-                                selectionArgs.toArray(EMPTY_STRING_ARRAY));
+                                selectionArgs.toArray(new String[selectionArgs.size()]));
 
                         return null;
                     }
