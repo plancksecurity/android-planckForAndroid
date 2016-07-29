@@ -2,6 +2,7 @@ package com.fsck.k9.activity.compose;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;

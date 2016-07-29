@@ -61,6 +61,7 @@ import com.fsck.k9.view.MessageHeader;
 import com.fsck.k9.view.MessageTitleView;
 import com.fsck.k9.view.ViewSwitcher;
 import com.fsck.k9.view.ViewSwitcher.OnSwitchCompleteListener;
+import org.pEp.jniadapter.Color;
 
 import java.util.Collection;
 import java.util.List;

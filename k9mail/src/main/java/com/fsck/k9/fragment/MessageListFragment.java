@@ -104,6 +104,8 @@ import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.MessageColumns;
@@ -1027,8 +1029,8 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         mFragmentListener.onReplyAll(messageReference);
     }
 
-    public void onForward(MessageReference messageReference) {
-        mFragmentListener.onForward(messageReference);
+    public void onForward(MessageReference messageReference, org.pEp.jniadapter.Color colorRating) {
+        mFragmentListener.onForward(messageReference, colorRating);
     }
 
     public void onResendMessage(MessageReference messageReference) {
@@ -1364,7 +1366,8 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
                 break;
             }
             case R.id.forward: {
-                onForward(getMessageAtPosition(adapterPosition));
+                //TODO: Check how to avoid to retrive the whole message
+                onForward(getMessageAtPosition(adapterPosition), PEpUtils.extractpEpColor(getLocalMessageAtPosition(adapterPosition)));
                 break;
             }
             case R.id.send_again: {
@@ -2972,7 +2975,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         void showThread(Account account, String folderName, long rootId);
         void showMoreFromSameSender(String senderAddress);
         void onResendMessage(MessageReference message);
-        void onForward(MessageReference message);
+        void onForward(MessageReference message, org.pEp.jniadapter.Color colorRating);
         void onReply(MessageReference message);
         void onReplyAll(MessageReference message);
         void openMessage(MessageReference messageReference);
@@ -3014,6 +3017,21 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
     }
 
     private MessageReference getMessageAtPosition(int adapterPosition) {
+        if (adapterPosition == AdapterView.INVALID_POSITION) {
+            return null;
+        }
+
+        Cursor cursor = (Cursor) mAdapter.getItem(adapterPosition);
+
+        String accountUuid = cursor.getString(ACCOUNT_UUID_COLUMN);
+        String folderName = cursor.getString(FOLDER_NAME_COLUMN);
+        String messageUid = cursor.getString(UID_COLUMN);
+
+        return new MessageReference(accountUuid, folderName, messageUid, null);
+    }
+
+
+    private LocalMessage getLocalMessageAtPosition(int adapterPosition) {
         if (adapterPosition == AdapterView.INVALID_POSITION) {
             return null;
         }
