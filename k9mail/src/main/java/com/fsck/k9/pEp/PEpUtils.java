@@ -9,10 +9,17 @@ import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.helper.Contacts;
-import com.fsck.k9.mail.*;
-import com.fsck.k9.mail.internet.*;
+import com.fsck.k9.mail.Address;
+import com.fsck.k9.mail.Body;
+import com.fsck.k9.mail.BodyPart;
+import com.fsck.k9.mail.Message;
+import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.internet.MimeHeader;
+import com.fsck.k9.mail.internet.MimeMessage;
+import com.fsck.k9.mail.internet.MimeMultipart;
+import com.fsck.k9.mail.internet.MimeUtility;
+import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
-import com.fsck.k9.mailstore.LocalBodyPart;
 import org.apache.commons.io.IOUtils;
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
@@ -210,7 +217,7 @@ public class PEpUtils {
         }
     }
 
-    public static Color extractpEpColor(Message message) throws MessagingException {
+    public static Color extractpEpColor(Message message) {
         String[] pEpColor;
         pEpColor = message.getHeader(MimeHeader.HEADER_PEPCOLOR);
         if(pEpColor != null && pEpColor.length > 0)

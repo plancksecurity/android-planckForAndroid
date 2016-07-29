@@ -3,12 +3,10 @@ package com.fsck.k9.activity.compose;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
-
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.MessageReference;
-import com.fsck.k9.mailstore.LocalMessage;
 import org.pEp.jniadapter.Color;
 
 public class MessageActions {
@@ -32,10 +30,10 @@ public class MessageActions {
      * the function is reply all instead of simply reply.
      */
     public static Intent getActionReplyIntent(
-            Context context, LocalMessage message, boolean replyAll, Parcelable decryptionResult) {
+            Context context, MessageReference messageReference, boolean replyAll, Parcelable decryptionResult) {
         Intent i = new Intent(context, MessageCompose.class);
         i.putExtra(MessageCompose.EXTRA_MESSAGE_DECRYPTION_RESULT, decryptionResult);
-        i.putExtra(MessageCompose.EXTRA_MESSAGE_REFERENCE, message.makeMessageReference());
+        i.putExtra(MessageCompose.EXTRA_MESSAGE_REFERENCE, messageReference);
         if (replyAll) {
             i.setAction(MessageCompose.ACTION_REPLY_ALL);
         } else {
@@ -58,8 +56,8 @@ public class MessageActions {
      * is reply all instead of simply reply.
      */
     public static void actionReply(
-            Context context, LocalMessage message, boolean replyAll, Parcelable decryptionResult) {
-        context.startActivity(getActionReplyIntent(context, message, replyAll, decryptionResult));
+            Context context, MessageReference messageReference, boolean replyAll, Parcelable decryptionResult) {
+        context.startActivity(getActionReplyIntent(context, messageReference, replyAll, decryptionResult));
     }
 
     /**
@@ -67,11 +65,11 @@ public class MessageActions {
      */
     public static void actionForward(
             Context context,
-            LocalMessage message,
+            MessageReference messageReference,
             Parcelable decryptionResult,
             Color mPEpColor) {
         Intent i = new Intent(context, MessageCompose.class);
-        i.putExtra(MessageCompose.EXTRA_MESSAGE_REFERENCE, message.makeMessageReference());
+        i.putExtra(MessageCompose.EXTRA_MESSAGE_REFERENCE, messageReference);
         i.putExtra(MessageCompose.EXTRA_PEP_COLOR, mPEpColor);
         i.putExtra(MessageCompose.EXTRA_MESSAGE_DECRYPTION_RESULT, decryptionResult);
         i.setAction(MessageCompose.ACTION_FORWARD);

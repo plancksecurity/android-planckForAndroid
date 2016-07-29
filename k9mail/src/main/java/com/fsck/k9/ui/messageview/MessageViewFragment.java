@@ -39,7 +39,6 @@ import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
-import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
@@ -299,7 +298,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             mFragmentListener.disableDeleteAction();
             LocalMessage messageToDelete = mMessage;
             mFragmentListener.showNextMessageOrReturn();
-            mController.deleteMessages(Collections.singletonList(messageToDelete), null);
+            mController.deleteMessage(mMessageReference, null);
         }
     }
 
@@ -307,7 +306,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         if (!mController.isMoveCapable(mAccount)) {
             return;
         }
-        if (!mController.isMoveCapable(mMessage)) {
+        if (!mController.isMoveCapable(mMessageReference)) {
             Toast toast = Toast.makeText(getActivity(), R.string.move_copy_cannot_copy_unsynced_message, Toast.LENGTH_LONG);
             toast.show();
             return;
@@ -327,26 +326,26 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private void refileMessage(String dstFolder) {
         String srcFolder = mMessageReference.getFolderName();
-        LocalMessage messageToMove = mMessage;
+        MessageReference messageToMove = mMessageReference;
         mFragmentListener.showNextMessageOrReturn();
-        mController.moveMessage(mAccount, srcFolder, messageToMove, dstFolder, null);
+        mController.moveMessage(mAccount, srcFolder, messageToMove, dstFolder);
     }
 
     public void onReply() {
         if (mMessage != null) {
-            mFragmentListener.onReply(mMessage, messageCryptoPresenter.getDecryptionResultForReply());
+            mFragmentListener.onReply(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply());
         }
     }
 
     public void onReplyAll() {
         if (mMessage != null) {
-            mFragmentListener.onReplyAll(mMessage, messageCryptoPresenter.getDecryptionResultForReply());
+            mFragmentListener.onReplyAll(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply());
         }
     }
 
     public void onForward() {
         if (mMessage != null) {
-            mFragmentListener.onForward(mMessage, messageCryptoPresenter.getDecryptionResultForReply());
+            mFragmentListener.onForward(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PEpUtils.extractpEpColor(mMessage));
         }
     }
 
@@ -364,7 +363,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 || (mMessage == null)) {
             return;
         }
-        if (!mController.isMoveCapable(mMessage)) {
+        if (!mController.isMoveCapable(mMessageReference)) {
             Toast toast = Toast.makeText(getActivity(), R.string.move_copy_cannot_copy_unsynced_message, Toast.LENGTH_LONG);
             toast.show();
             return;
@@ -379,7 +378,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 || (mMessage == null)) {
             return;
         }
-        if (!mController.isCopyCapable(mMessage)) {
+        if (!mController.isCopyCapable(mMessageReference)) {
             Toast toast = Toast.makeText(getActivity(), R.string.move_copy_cannot_copy_unsynced_message, Toast.LENGTH_LONG);
             toast.show();
             return;
@@ -498,13 +497,11 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public void moveMessage(MessageReference reference, String destFolderName) {
-        mController.moveMessage(mAccount, mMessageReference.getFolderName(), mMessage,
-                destFolderName, null);
+        mController.moveMessage(mAccount, mMessageReference.getFolderName(), reference, destFolderName);
     }
 
     public void copyMessage(MessageReference reference, String destFolderName) {
-        mController.copyMessage(mAccount, mMessageReference.getFolderName(), mMessage,
-                destFolderName, null);
+        mController.copyMessage(mAccount, mMessageReference.getFolderName(), reference, destFolderName);
     }
 
     private void showDialog(int dialogId) {
@@ -729,10 +726,10 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public interface MessageViewFragmentListener {
-        void onForward(LocalMessage mMessage, Parcelable decryptionResultForReply);
+        void onForward(MessageReference messageReference, Parcelable decryptionResultForReply, Color colorRating);
         void disableDeleteAction();
-        void onReplyAll(LocalMessage mMessage, Parcelable decryptionResultForReply);
-        void onReply(LocalMessage mMessage, Parcelable decryptionResultForReply);
+        void onReplyAll(MessageReference messageReference, Parcelable decryptionResultForReply);
+        void onReply(MessageReference messageReference, Parcelable decryptionResultForReply);
         void displayMessageSubject(String title);
         void setProgress(boolean b);
         void showNextMessageOrReturn();
@@ -753,14 +750,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             displayHeaderForLoadingMessage(message);
             mMessageView.setToLoadingState();
 
-            try {
-                mPEpColor = PEpUtils.extractpEpColor(message);
+            mPEpColor = PEpUtils.extractpEpColor(message);
 
-                PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), mPEpColor);
-
-            } catch (MessagingException e) {
-                e.printStackTrace();
-            }
+            PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), mPEpColor);
         }
 
         @Override

@@ -58,6 +58,7 @@ import com.fsck.k9.view.MessageHeader;
 import com.fsck.k9.view.MessageTitleView;
 import com.fsck.k9.view.ViewSwitcher;
 import com.fsck.k9.view.ViewSwitcher.OnSwitchCompleteListener;
+import org.pEp.jniadapter.Color;
 
 import java.util.Collection;
 import java.util.List;
@@ -1212,37 +1213,38 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     @Override
-    public void onResendMessage(LocalMessage message) {
-        com.fsck.k9.activity.compose.MessageActions.actionEditDraft(this, message.makeMessageReference());
+    public void onResendMessage(MessageReference messageReference) {
+        MessageActions.actionEditDraft(this, messageReference);
     }
 
     @Override
-    public void onForward(LocalMessage message) {
-        try {
-            MessageActions.actionForward(this, message, null, PEpUtils.extractpEpColor(message));
-        } catch (MessagingException e) {
-            Log.e(K9.LOG_TAG, "onForward: ", e);
-        }
+    public void onForward(MessageReference messageReference, Color colorRating) {
+        onForward(messageReference, null, colorRating);
     }
 
     @Override
-    public void onReply(LocalMessage message) {
-        onReply(message, null);
+    public void onForward(MessageReference messageReference, Parcelable decryptionResultForReply, Color colorRating) {
+        MessageActions.actionForward(this, messageReference, decryptionResultForReply, colorRating);
     }
 
     @Override
-    public void onReply(LocalMessage message, Parcelable decryptionResultForReply) {
-        MessageActions.actionReply(this, message, false, decryptionResultForReply);
+    public void onReply(MessageReference messageReference) {
+        onReply(messageReference, null);
     }
 
     @Override
-    public void onReplyAll(LocalMessage message) {
-        onReplyAll(message, null);
+    public void onReply(MessageReference messageReference, Parcelable decryptionResultForReply) {
+        MessageActions.actionReply(this, messageReference, false, decryptionResultForReply);
     }
 
     @Override
-    public void onReplyAll(LocalMessage message, Parcelable decryptionResultForReply) {
-        MessageActions.actionReply(this, message, true, decryptionResultForReply);
+    public void onReplyAll(MessageReference messageReference) {
+        onReplyAll(messageReference, null);
+    }
+
+    @Override
+    public void onReplyAll(MessageReference messageReference, Parcelable decryptionResultForReply) {
+        MessageActions.actionReply(this, messageReference, true, decryptionResultForReply);
     }
 
     @Override
@@ -1524,14 +1526,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
 
-    @Override
-    public void onForward(LocalMessage mMessage, Parcelable decryptionResultForReply) {
-        try {
-            MessageActions.actionForward(this, mMessage, decryptionResultForReply, PEpUtils.extractpEpColor(mMessage));
-        } catch (MessagingException e) {
-            Log.e(K9.LOG_TAG, "onForward: ", e);
-        }
-    }
 
     @Override
     public void disableDeleteAction() {
