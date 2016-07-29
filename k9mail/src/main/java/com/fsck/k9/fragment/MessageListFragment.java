@@ -877,13 +877,6 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         return localFolder;
     }
 
-    private String getFolderNameById(Account account, long folderId) {
-        Folder folder = getFolderById(account, folderId);
-        if (folder != null) {
-            return folder.getName();
-        }
-        return null;
-    }
 
     private LocalFolder getFolderById(Account account, long folderId) {
         try {
