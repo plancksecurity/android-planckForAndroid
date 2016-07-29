@@ -879,6 +879,25 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         return localFolder;
     }
 
+    private String getFolderNameById(Account account, long folderId) {
+        Folder folder = getFolderById(account, folderId);
+        if (folder != null) {
+            return folder.getName();
+        }
+        return null;
+    }
+
+    private LocalFolder getFolderById(Account account, long folderId) {
+        try {
+            LocalStore localStore = account.getLocalStore();
+            LocalFolder localFolder = localStore.getFolderById(folderId);
+            localFolder.open(Folder.OPEN_MODE_RO);
+            return localFolder;
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void onPause() {
         super.onPause();
