@@ -35,6 +35,7 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.tokenautocomplete.TokenCompleteTextView;
+import org.apache.james.mime4j.util.CharsetUtil;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -173,7 +174,12 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     @Override
     protected Recipient defaultObject(String completionText) {
         Address[] parsedAddresses = Address.parse(completionText);
+        if (!CharsetUtil.isASCII(completionText)) {
+            setError(getContext().getString(R.string.recipient_error_non_ascii));
+            return null;
+        }
         if (parsedAddresses.length == 0 || parsedAddresses[0].getAddress() == null) {
+            setError(getContext().getString(R.string.recipient_error_parse_failed));
             return null;
         }
 
