@@ -117,7 +117,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * removed from the queue once the activity is no longer active.
  */
 @SuppressWarnings("unchecked") // TODO change architecture to actually work with generics
-public class MessagingController implements Runnable {
+public class MessagingController {
     public static final long INVALID_MESSAGE_ID = -1;
 
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
@@ -176,7 +176,12 @@ public class MessagingController implements Runnable {
         this.notificationController = notificationController;
         this.contacts = contacts;
 
-        controllerThread = new Thread(this);
+        controllerThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                runInBackground();
+            }
+        });
         controllerThread.setName("MessagingController");
         controllerThread.start();
         addListener(memorizingMessagingListener);
@@ -189,8 +194,7 @@ public class MessagingController implements Runnable {
         controllerThread.join(1000L);
     }
 
-    @Override
-    public void run() {
+    private void runInBackground() {
         Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
         pEpProvider = PEpProviderFactory.createProvider(context);
         while (!stopped) {
