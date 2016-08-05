@@ -4379,13 +4379,9 @@ public class MessagingController {
         }
     }
 
-    static AtomicInteger sequencing = new AtomicInteger(0);
+    private static AtomicInteger sequencing = new AtomicInteger(0);
 
-    public void setPassiveModeEnabled(boolean enable) {
-        pEpProvider.setPassiveModeEnabled(enable);
-    }
-
-    static class Command implements Comparable<Command> {
+    private static class Command implements Comparable<Command> {
         public Runnable runnable;
         public MessagingListener listener;
         public String description;
@@ -4629,6 +4625,10 @@ public class MessagingController {
         }
 
         notificationController.showCertificateErrorNotification(account, incoming);
+    }
+
+    public void setPassiveModeEnabled(boolean enable) {
+        pEpProvider.setPassiveModeEnabled(enable);
     }
 
     private void actOnMessagesGroupedByAccountAndFolder(List<MessageReference> messages, MessageActor actor) {
