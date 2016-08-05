@@ -512,7 +512,8 @@ public class MessagingController {
         });
     }
 
-    public void searchLocalMessagesSynchronous(final LocalSearch search, final MessagingListener listener) {
+    @VisibleForTesting
+    void searchLocalMessagesSynchronous(final LocalSearch search, final MessagingListener listener) {
         final AccountStats stats = new AccountStats();
         final Set<String> uuidSet = new HashSet<>(Arrays.asList(search.getAccountUuids()));
         List<Account> accounts = Preferences.getPreferences(context).getAccounts();
@@ -573,8 +574,6 @@ public class MessagingController {
         }
     }
 
-
-
     public Future<?> searchRemoteMessages(final String acctUuid, final String folderName, final String query,
                                           final Set<Flag> requiredFlags, final Set<Flag> forbiddenFlags, final MessagingListener listener) {
         if (K9.DEBUG) {
@@ -593,7 +592,9 @@ public class MessagingController {
             }
         });
     }
-    public void searchRemoteMessagesSynchronous(final String acctUuid, final String folderName, final String query,
+
+    @VisibleForTesting
+    void searchRemoteMessagesSynchronous(final String acctUuid, final String folderName, final String query,
             final Set<Flag> requiredFlags, final Set<Flag> forbiddenFlags, final MessagingListener listener) {
         final Account acct = Preferences.getPreferences(context).getAccount(acctUuid);
 
@@ -659,7 +660,8 @@ public class MessagingController {
 
     }
 
-    public void loadSearchResults(final Account account, final String folderName, final List<Message> messages, final MessagingListener listener) {
+    public void loadSearchResults(final Account account, final String folderName, final List<Message> messages,
+            final MessagingListener listener) {
         threadPool.execute(new Runnable() {
             @Override
             public void run() {
@@ -693,7 +695,8 @@ public class MessagingController {
         });
     }
 
-    public void loadSearchResultsSynchronous(List<Message> messages, LocalFolder localFolder, Folder remoteFolder, MessagingListener listener) throws MessagingException {
+    private void loadSearchResultsSynchronous(List<Message> messages, LocalFolder localFolder, Folder remoteFolder,
+            MessagingListener listener) throws MessagingException {
         final FetchProfile header = new FetchProfile();
         header.add(FetchProfile.Item.FLAGS);
         header.add(FetchProfile.Item.ENVELOPE);
@@ -737,9 +740,9 @@ public class MessagingController {
 
     /**
      * Start background synchronization of the specified folder.
-     * @param providedRemoteFolder TODO
      */
-    public void synchronizeMailbox(final Account account, final String folder, final MessagingListener listener, final Folder providedRemoteFolder) {
+    public void synchronizeMailbox(final Account account, final String folder, final MessagingListener listener,
+            final Folder providedRemoteFolder) {
         putBackground("synchronizeMailbox", listener, new Runnable() {
             @Override
             public void run() {
@@ -1046,13 +1049,11 @@ public class MessagingController {
         }
     }
 
-
-    private void closeFolder(Folder f) {
+    private static void closeFolder(Folder f) {
         if (f != null) {
             f.close();
         }
     }
-
 
     /*
      * If the folder is a "special" folder we need to see if it exists
@@ -1061,7 +1062,8 @@ public class MessagingController {
      * designed and on Imap folders during error conditions. This allows us
      * to treat Pop3 and Imap the same in this code.
      */
-    private boolean verifyOrCreateRemoteSpecialFolder(final Account account, final String folder, final Folder remoteFolder, final MessagingListener listener) throws MessagingException {
+    private boolean verifyOrCreateRemoteSpecialFolder(Account account, String folder, Folder remoteFolder,
+            MessagingListener listener) throws MessagingException {
         if (folder.equals(account.getTrashFolderName()) ||
                 folder.equals(account.getSentFolderName()) ||
                 folder.equals(account.getDraftsFolderName())) {
@@ -1252,6 +1254,7 @@ public class MessagingController {
         }
         return newMessages.get();
     }
+
     private void evaluateMessageForDownload(final Message message, final String folder,
                                             final LocalFolder localFolder,
                                             final Folder remoteFolder,
@@ -1854,8 +1857,7 @@ public class MessagingController {
      * created.
      * TODO update the local message UID instead of deleteing it
      */
-    private void processPendingAppend(PendingCommand command, Account account)
-    throws MessagingException {
+    private void processPendingAppend(PendingCommand command, Account account) throws MessagingException {
         Folder remoteFolder = null;
         LocalFolder localFolder = null;
         try {
@@ -1994,7 +1996,8 @@ public class MessagingController {
         queuePendingCommand(account, command);
     }
 
-    private void queueMoveOrCopy(Account account, String srcFolder, String destFolder, boolean isCopy, String uids[], Map<String, String> uidMap) {
+    private void queueMoveOrCopy(Account account, String srcFolder, String destFolder,
+            boolean isCopy, String uids[], Map<String, String> uidMap) {
         if (uidMap == null || uidMap.isEmpty()) {
             queueMoveOrCopy(account, srcFolder, destFolder, isCopy, uids);
         } else {
@@ -2033,8 +2036,7 @@ public class MessagingController {
      * @throws MessagingException
      *         In case of an error.
      */
-    private void processPendingMoveOrCopyOld2(PendingCommand command, Account account)
-            throws MessagingException {
+    private void processPendingMoveOrCopyOld2(PendingCommand command, Account account) throws MessagingException {
         PendingCommand newCommand = new PendingCommand();
         int len = command.arguments.length;
         newCommand.command = PENDING_COMMAND_MOVE_OR_COPY_BULK_NEW;
@@ -2051,8 +2053,7 @@ public class MessagingController {
     /**
      * Process a pending trash message command.
      */
-    private void processPendingMoveOrCopy(PendingCommand command, Account account)
-    throws MessagingException {
+    private void processPendingMoveOrCopy(PendingCommand command, Account account) throws MessagingException {
         Folder remoteSrcFolder = null;
         Folder remoteDestFolder = null;
         LocalFolder localDestFolder;
@@ -2172,7 +2173,8 @@ public class MessagingController {
         }
     }
 
-    private void queueSetFlag(final Account account, final String folderName, final String newState, final String flag, final String[] uids) {
+    private void queueSetFlag(final Account account, final String folderName,
+            final String newState, final String flag, final String[] uids) {
         putBackground("queueSetFlag " + account.getDescription() + ":" + folderName, null, new Runnable() {
             @Override
             public void run() {
@@ -2192,8 +2194,7 @@ public class MessagingController {
     /**
      * Processes a pending mark read or unread command.
      */
-    private void processPendingSetFlag(PendingCommand command, Account account)
-    throws MessagingException {
+    private void processPendingSetFlag(PendingCommand command, Account account) throws MessagingException {
         String folder = command.arguments[0];
 
         if (account.getErrorFolderName().equals(folder)) {
@@ -2234,8 +2235,7 @@ public class MessagingController {
 
     // TODO: This method is obsolete and is only for transition from K-9 2.0 to K-9 2.1
     // Eventually, it should be removed
-    private void processPendingSetFlagOld(PendingCommand command, Account account)
-    throws MessagingException {
+    private void processPendingSetFlagOld(PendingCommand command, Account account) throws MessagingException {
         String folder = command.arguments[0];
         String uid = command.arguments[1];
 
@@ -2286,8 +2286,7 @@ public class MessagingController {
             }
         });
     }
-    private void processPendingExpunge(PendingCommand command, Account account)
-    throws MessagingException {
+    private void processPendingExpunge(PendingCommand command, Account account) throws MessagingException {
         String folder = command.arguments[0];
 
         if (account.getErrorFolderName().equals(folder)) {
@@ -2317,8 +2316,7 @@ public class MessagingController {
 
     // TODO: This method is obsolete and is only for transition from K-9 2.0 to K-9 2.1
     // Eventually, it should be removed
-    private void processPendingMoveOrCopyOld(PendingCommand command, Account account)
-    throws MessagingException {
+    private void processPendingMoveOrCopyOld(PendingCommand command, Account account) throws MessagingException {
         String srcFolder = command.arguments[0];
         String uid = command.arguments[1];
         String destFolder = command.arguments[2];
@@ -2428,8 +2426,7 @@ public class MessagingController {
         }
     }
 
-    static AtomicBoolean loopCatch = new AtomicBoolean();
-    public void addErrorMessage(Account account, String subject, Throwable t) {
+    void addErrorMessage(Account account, String subject, Throwable t) {
         try {
             if (t == null) {
                 return;
@@ -2460,7 +2457,8 @@ public class MessagingController {
         }
     }
 
-    public void addErrorMessage(Account account, String subject, String body) {
+    private static AtomicBoolean loopCatch = new AtomicBoolean();
+    private void addErrorMessage(Account account, String subject, String body) {
         if (!K9.DEBUG) {
             return;
         }
@@ -2739,7 +2737,7 @@ public class MessagingController {
         });
     }
 
-    public boolean loadMessageRemoteSynchronous(final Account account, final String folder,
+    private boolean loadMessageRemoteSynchronous(final Account account, final String folder,
             final String uid, final MessagingListener listener, final boolean loadPartialFromSearch) {
         Folder remoteFolder = null;
         LocalFolder localFolder = null;
@@ -2978,7 +2976,7 @@ public class MessagingController {
         }
     }
 
-    public boolean messagesPendingSend(final Account account) {
+    private boolean messagesPendingSend(final Account account) {
         Folder localFolder = null;
         try {
             localFolder = account.getLocalStore().getFolder(
@@ -3003,7 +3001,7 @@ public class MessagingController {
     /**
      * Attempt to send any messages that are sitting in the Outbox.
      */
-    public void sendPendingMessagesSynchronous(final Account account) {
+    private void sendPendingMessagesSynchronous(final Account account) {
         LocalFolder localFolder = null;
         Exception lastFailure = null;
         boolean wasPermanentFailure = false;
@@ -3609,7 +3607,7 @@ public class MessagingController {
         });
     }
 
-    public void deleteThreadsSynchronous(Account account, String folderName, List<? extends Message> messages) {
+    private void deleteThreadsSynchronous(Account account, String folderName, List<? extends Message> messages) {
         try {
             List<Message> messagesToDelete = collectMessagesInThreads(account, messages);
 
@@ -3620,7 +3618,7 @@ public class MessagingController {
         }
     }
 
-    public List<Message> collectMessagesInThreads(Account account, List<? extends Message> messages)
+    private static List<Message> collectMessagesInThreads(Account account, List<? extends Message> messages)
             throws MessagingException {
 
         LocalStore localStore = account.getLocalStore();
@@ -3778,7 +3776,7 @@ public class MessagingController {
         }
     }
 
-    private String[] getUidsFromMessages(List <? extends Message> messages) {
+    private static String[] getUidsFromMessages(List <? extends Message> messages) {
         String[] uids = new String[messages.size()];
         for (int i = 0; i < messages.size(); i++) {
             uids[i] = messages.get(i).getUid();
@@ -4357,7 +4355,7 @@ public class MessagingController {
         return id;
     }
 
-    public boolean modeMismatch(Account.FolderMode aMode, Folder.FolderClass fMode) {
+    private boolean modeMismatch(Account.FolderMode aMode, Folder.FolderClass fMode) {
         if (aMode == Account.FolderMode.NONE
                 || (aMode == Account.FolderMode.FIRST_CLASS &&
                     fMode != Folder.FolderClass.FIRST_CLASS)
@@ -4680,7 +4678,7 @@ public class MessagingController {
 
     }
 
-    interface MessageActor {
+    private interface MessageActor {
         void act(Account account, LocalFolder messageFolder, List<LocalMessage> messages);
     }
 }
