@@ -149,7 +149,7 @@ public class MessagingController implements Runnable {
 
     private MessagingListener checkMailListener = null;
 
-    private MemorizingMessagingListener memorizingMessagingListener = new MemorizingMessagingListener();
+    private final MemorizingMessagingListener memorizingMessagingListener = new MemorizingMessagingListener();
 
     private boolean mBusy;
 
@@ -224,9 +224,7 @@ public class MessagingController implements Runnable {
         mThread = new Thread(this);
         mThread.setName("MessagingController");
         mThread.start();
-        if (memorizingMessagingListener != null) {
-            addListener(memorizingMessagingListener);
-        }
+        addListener(memorizingMessagingListener);
     }
 
     @VisibleForTesting
@@ -328,7 +326,7 @@ public class MessagingController implements Runnable {
     }
 
     public void refreshListener(MessagingListener listener) {
-        if (memorizingMessagingListener != null && listener != null) {
+        if (listener != null) {
             memorizingMessagingListener.refreshOther(listener);
         }
     }
