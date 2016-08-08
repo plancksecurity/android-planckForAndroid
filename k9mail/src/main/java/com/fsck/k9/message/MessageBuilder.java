@@ -18,7 +18,14 @@ import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.internet.*;
+import com.fsck.k9.mail.UUIDGenerator;
+import com.fsck.k9.mail.internet.MimeBodyPart;
+import com.fsck.k9.mail.internet.MimeHeader;
+import com.fsck.k9.mail.internet.MimeMessage;
+import com.fsck.k9.mail.internet.MimeMessageHelper;
+import com.fsck.k9.mail.internet.MimeMultipart;
+import com.fsck.k9.mail.internet.MimeUtility;
+import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.TempFileBody;
 import com.fsck.k9.mailstore.TempFileMessageBody;
 import org.apache.james.mime4j.codec.EncoderUtil;
@@ -31,6 +38,8 @@ import java.util.Locale;
 
 public abstract class MessageBuilder {
     private final Context context;
+    private final UUIDGenerator uuidGenerator;
+
 
     private String subject;
     private Address[] to;
@@ -58,8 +67,9 @@ public abstract class MessageBuilder {
     private boolean isPgpInlineEnabled;
     private boolean isForcedUnencrypted;
 
-    public MessageBuilder(Context context) {
+    public MessageBuilder(Context context, UUIDGenerator uuidGenerator) {
         this.context = context;
+        this.uuidGenerator = uuidGenerator;
     }
 
     /**
@@ -109,7 +119,7 @@ public abstract class MessageBuilder {
             message.setReferences(references);
         }
 
-        message.generateMessageId();
+        message.generateMessageId(uuidGenerator);
 
         if (isDraft && isPgpInlineEnabled) {
             message.setFlag(Flag.X_DRAFT_OPENPGP_INLINE, true);
