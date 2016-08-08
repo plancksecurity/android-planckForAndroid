@@ -48,8 +48,26 @@ import org.apache.commons.io.IOUtils;
 import org.apache.james.mime4j.util.MimeUtil;
 import org.pEp.jniadapter.Color;
 
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+import java.util.UUID;
 
 import org.pEp.jniadapter.Color;
 

@@ -102,6 +102,7 @@ import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
 import org.pEp.jniadapter.Color;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
