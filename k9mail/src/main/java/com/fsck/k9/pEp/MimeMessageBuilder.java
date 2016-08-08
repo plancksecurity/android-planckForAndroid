@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.fsck.k9.K9;
 import com.fsck.k9.mail.Body;
-import com.fsck.k9.mail.BoundaryGenerator;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.filter.Base64;
@@ -28,14 +27,12 @@ import java.util.Vector;
 
 
 class MimeMessageBuilder {
-    private final BoundaryGenerator boundaryGenerator;
     private SimpleMessageFormat messageFormat = SimpleMessageFormat.TEXT;
 
     private Message pEpMessage;
 
-    MimeMessageBuilder(Message m, BoundaryGenerator boundaryGenerator) {
+    MimeMessageBuilder(Message m) {
         this.pEpMessage = m;
-        this.boundaryGenerator = boundaryGenerator;
     }
 
     @NonNull
@@ -76,7 +73,7 @@ class MimeMessageBuilder {
     private void buildBody(MimeMessage mimeMsg) throws MessagingException {
         if (pEpMessage.getEncFormat() != Message.EncFormat.None) {   // we have an encrypted msg. Therefore, just attachments...
             // FIXME: how do I add some text ("this mail encrypted by pEp") before the first mime part?
-            MimeMultipart mp = new MimeMultipart(boundaryGenerator.generateBoundary());
+            MimeMultipart mp = MimeMultipart.newInstance();
             mp.setSubType("encrypted; protocol=\"application/pgp-encrypted\"");     // FIXME: what if other enc types?
             addAttachmentsToMessage(mp);
             MimeMessageHelper.setBody(mimeMsg, mp);
@@ -97,7 +94,7 @@ class MimeMessageBuilder {
             // HTML message (with alternative text part)
 
             // This is the compiled MIME part for an HTML message.
-            MimeMultipart composedMimeMessage = new MimeMultipart(boundaryGenerator.generateBoundary());
+            MimeMultipart composedMimeMessage = MimeMultipart.newInstance();
             composedMimeMessage.setSubType("alternative");   // Let the receiver select either the text or the HTML part.
             composedMimeMessage.addBodyPart(new MimeBodyPart(body, "text/html"));
             bodyPlain = buildText(SimpleMessageFormat.TEXT);
@@ -108,7 +105,7 @@ class MimeMessageBuilder {
                 // whole message (mp here), of which one part is a MimeMultipart container
                 // (composedMimeMessage) with the user's composed messages, and subsequent parts for
                 // the attachments.
-                MimeMultipart mp = new MimeMultipart(boundaryGenerator.generateBoundary());
+                MimeMultipart mp = MimeMultipart.newInstance();
                 mp.addBodyPart(new MimeBodyPart(composedMimeMessage));
                 addAttachmentsToMessage(mp);
                 MimeMessageHelper.setBody(mimeMsg, mp);
@@ -120,7 +117,7 @@ class MimeMessageBuilder {
         } else if (messageFormat == SimpleMessageFormat.TEXT) {
             // Text-only message.
             if (hasAttachments) {
-                MimeMultipart mp = new MimeMultipart(boundaryGenerator.generateBoundary());
+                MimeMultipart mp = MimeMultipart.newInstance();
                 mp.addBodyPart(new MimeBodyPart(body, "text/plain"));
                 addAttachmentsToMessage(mp);
                 MimeMessageHelper.setBody(mimeMsg, mp);
