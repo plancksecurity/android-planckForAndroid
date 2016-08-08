@@ -11,7 +11,14 @@ import com.fsck.k9.K9;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.Search;
 import com.fsck.k9.helper.Utility;
-import com.fsck.k9.mail.*;
+import com.fsck.k9.mail.Address;
+import com.fsck.k9.mail.Body;
+import com.fsck.k9.mail.BodyPart;
+import com.fsck.k9.mail.BoundaryGenerator;
+import com.fsck.k9.mail.FetchProfile;
+import com.fsck.k9.mail.Flag;
+import com.fsck.k9.mail.Folder;
+import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mail.filter.CountingOutputStream;
 import com.fsck.k9.mail.internet.*;
@@ -1384,7 +1391,7 @@ public class LocalFolder extends Folder<LocalMessage> implements Serializable {
         cv.put("decoded_body_size", attachment.size);
 
         if (MimeUtility.isMultipart(part.getMimeType())) {
-            cv.put("boundary", MimeMultipart.generateBoundary());
+            cv.put("boundary", BoundaryGenerator.getInstance().generateBoundary());
         }
     }
 
