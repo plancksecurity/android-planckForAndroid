@@ -1,7 +1,6 @@
 package com.fsck.k9.pEp;
 
 import android.content.Context;
-import com.fsck.k9.mail.BoundaryGenerator;
 
 /**
  * Factory for real providers
@@ -17,6 +16,6 @@ public class PEpProviderFactory {
     }
 
     static public PEpProvider createProvider(Context context) {
-        return new PEpProviderImpl(context, BoundaryGenerator.getInstance());
+        return new PEpProviderImpl(context);
     }
 }

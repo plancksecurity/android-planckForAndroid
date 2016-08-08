@@ -6,7 +6,6 @@ import android.util.Log;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
-import com.fsck.k9.mail.BoundaryGenerator;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
@@ -31,14 +30,12 @@ import java.util.Vector;
 public class PEpProviderImpl implements PEpProvider {
     private static final String TAG = "pEp";
     private static boolean pEpInitialized = false;
-    private final BoundaryGenerator boundaryGenerator;
     private Context context;
     private Engine engine;
 
-    public PEpProviderImpl(Context context, BoundaryGenerator boundaryGenerator) {
+    public PEpProviderImpl(Context context) {
         this.context = context;
         createEngineInstanceIfNeeded();
-        this.boundaryGenerator = boundaryGenerator;
     }
 
     public synchronized void setup(Context c) {
@@ -157,7 +154,7 @@ public class PEpProviderImpl implements PEpProvider {
             Log.d(TAG, "decryptMessage() before decrypt");
             decReturn = engine.decrypt_message(srcMsg);
             Log.d(TAG, "decryptMessage() after decrypt");
-            MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst, boundaryGenerator).createMessage();
+            MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
 
             decMsg.addHeader(MimeHeader.HEADER_PEPCOLOR, decReturn.color.name());
             if (isUsablePrivateKey(decReturn)) {
@@ -216,7 +213,7 @@ public class PEpProviderImpl implements PEpProvider {
         Message message = stripEncryptedRecipients(source);
         message.setTo(null);
         message.setCc(null);
-        MimeMessage result = new MimeMessageBuilder(message, boundaryGenerator).createMessage();
+        MimeMessage result = new MimeMessageBuilder(message).createMessage();
         message.close();
         return result;
     }
@@ -283,7 +280,7 @@ public class PEpProviderImpl implements PEpProvider {
         Message currentEnc = engine.encrypt_message(message, convertExtraKeys(extraKeys));
         if (currentEnc == null) currentEnc = message;
         Log.d(TAG, "encryptMessage() after encrypt");
-        return new MimeMessageBuilder(currentEnc, boundaryGenerator).createMessage();
+        return new MimeMessageBuilder(currentEnc).createMessage();
     }
 
     private Message stripRecipients(MimeMessage src, boolean encrypted) {
