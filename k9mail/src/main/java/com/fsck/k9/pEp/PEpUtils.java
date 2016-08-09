@@ -227,7 +227,8 @@ public class PEpUtils {
     }
 
     public static String formatFpr(String fpr) {
-        char[] fprChars = new char[fpr.length() + (fpr.length() / CHUNK_SIZE)];
+        int requiredSeparators = fpr.length() / CHUNK_SIZE;
+        char[] fprChars = new char[fpr.length() + requiredSeparators];
         int sourcePosition = 0;
         for (int destPosition = 0; destPosition < fprChars.length-1; destPosition++) {
             if (sourcePosition % CHUNK_SIZE == 0
@@ -242,7 +243,7 @@ public class PEpUtils {
             }
 
         }
-        return new String(fprChars);
+        return String.valueOf(fprChars);
     }
 }
 
