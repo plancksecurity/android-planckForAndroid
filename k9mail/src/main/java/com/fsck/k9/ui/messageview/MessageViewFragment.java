@@ -722,7 +722,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 }
             }
 
-        PEpStatus.actionShowStatus(getActivity(), mPEpColor, Preferences.getPreferences(mContext).getDefaultAccount().getIdentity(0).getEmail());
+        PEpStatus.actionShowStatus(getActivity(), mPEpColor, myAddress);
     }
 
     public interface MessageViewFragmentListener {

@@ -385,15 +385,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         mAttachments = (LinearLayout)findViewById(R.id.attachments);
 
 
-        recipientMvpView.addpEpOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    handlePEpState();
-                }
-            }
-        });
-
         TextWatcher draftNeedsChangingTextWatcher = new SimpleTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
