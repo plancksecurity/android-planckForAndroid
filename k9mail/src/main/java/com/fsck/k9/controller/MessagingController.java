@@ -3120,7 +3120,7 @@ public class MessagingController implements Runnable {
                         // pEp the message to send...
                         Message encryptedMessageToSave;
                         if (!message.isSet(Flag.X_FORCE_UNENCRYPTED)
-                                && !(pEpProvider.getPrivacyState(message).value == Color.pEpRatingB0rken.value)) {
+                                && !(pEpProvider.getPrivacyState(message).value == Color.pEpRatingUndefined.value)) {
                             encryptedMessageToSave = processWithpEpAndSend(transport, message);
                         }
                         else {

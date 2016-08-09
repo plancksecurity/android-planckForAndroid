@@ -70,7 +70,7 @@ public class PEpProviderImpl implements PEpProvider {
         } catch (pEpException e) {
             Log.e(TAG, "during getPrivacyState:", e);
         }
-        return Color.pEpRatingB0rken;
+        return Color.pEpRatingUndefined;
     }
 
     private void createEngineSession() throws pEpException {
@@ -124,7 +124,7 @@ public class PEpProviderImpl implements PEpProvider {
             if (testee != null) testee.close();
         }
 
-        return Color.pEpRatingB0rken;
+        return Color.pEpRatingUndefined;
     }
 
     private boolean isUnencryptedForSome(List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses) {
@@ -331,7 +331,7 @@ public class PEpProviderImpl implements PEpProvider {
             return engine.identity_color(ident);
         } catch (pEpException e) {
             Log.e(TAG, "identityColor: ", e);
-            return Color.pEpRatingB0rken;
+            return Color.pEpRatingUndefined;
         }
     }
 
