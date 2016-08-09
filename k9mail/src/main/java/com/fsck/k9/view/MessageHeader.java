@@ -17,7 +17,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
-import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.fsck.k9.Account;
@@ -35,13 +34,12 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.pEp.ui.PEpStatus;
 import com.fsck.k9.ui.messageview.OnCryptoClickListener;
-import com.fsck.k9.pEp.ui.PEpContactBadge;
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
 
@@ -86,7 +84,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     //private ImageView mPEpIndicator;
     private Color mPEpColor;
-    private PePUIArtefactCache c;
 
     /**
      * Pair class is only available since API Level 5, so we need
@@ -106,7 +103,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         super(context, attrs);
         mContext = context;
         mContacts = Contacts.getInstance(mContext);
-        c = PePUIArtefactCache.getInstance(mContext);
     }
 
     @Override
@@ -287,14 +283,9 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     }
 
     public void populate(final Message message, final Account account) {
-        String[] pEpColor = message.getHeader(  MimeHeader.HEADER_PEPCOLOR);
-        if(pEpColor != null && pEpColor.length > 0)
-            mPEpColor = Color.valueOf(pEpColor[0]);
-        else
-            mPEpColor = Color.pEpRatingUndefined;
+        mPEpColor = PEpUtils.extractpEpColor(message);
 
         Log.i("pEp", "got color " + mPEpColor + " " + mPEpColor.value);
-        Toast.makeText(mContext, PePUIArtefactCache.getInstance(mContext).getTitle(mPEpColor), Toast.LENGTH_LONG).show();
         mContactBadge.setpEpColor(mPEpColor);
         //mPEpIndicator.setImageDrawable(pePUIArtefactCache.getIcon(mPEpColor));
 

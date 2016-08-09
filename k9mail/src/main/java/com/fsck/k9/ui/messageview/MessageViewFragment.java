@@ -716,11 +716,11 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             }
         }
         pePUIArtefactCache.setRecipients(adresses);
-            for (String s : mMessage.getHeaderNames()) {
-                for (String s1 : mMessage.getHeader(s)) {
-                    Log.i("MessageHeader", "onClick " + s + " " + s1);
-                }
+        for (String s : mMessage.getHeaderNames()) {
+            for (String s1 : mMessage.getHeader(s)) {
+                Log.i("MessageHeader", "onClick " + s + " " + s1);
             }
+        }
 
         PEpStatus.actionShowStatus(getActivity(), mPEpColor, myAddress);
     }

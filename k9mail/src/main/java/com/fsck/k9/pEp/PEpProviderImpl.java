@@ -189,7 +189,7 @@ public class PEpProviderImpl implements PEpProvider {
             return resultMessages;
         } catch (Throwable t) {
             Log.e(TAG, "while encrypting message:", t);
-            throw new RuntimeException("Could not encrypt");
+            throw new RuntimeException("Could not encrypt", t);
         } finally {
             Log.d(TAG, "encryptMessage() exit");
         }

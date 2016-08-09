@@ -1,12 +1,5 @@
 package com.fsck.k9.preferences;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.DeletePolicy;
 import com.fsck.k9.Account.Expunge;
@@ -19,7 +12,23 @@ import com.fsck.k9.Account.SortType;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.mailstore.StorageManager;
-import com.fsck.k9.preferences.Settings.*;
+import com.fsck.k9.preferences.Settings.BooleanSetting;
+import com.fsck.k9.preferences.Settings.ColorSetting;
+import com.fsck.k9.preferences.Settings.EnumSetting;
+import com.fsck.k9.preferences.Settings.IntegerRangeSetting;
+import com.fsck.k9.preferences.Settings.InvalidSettingValueException;
+import com.fsck.k9.preferences.Settings.PseudoEnumSetting;
+import com.fsck.k9.preferences.Settings.SettingsDescription;
+import com.fsck.k9.preferences.Settings.SettingsUpgrader;
+import com.fsck.k9.preferences.Settings.StringSetting;
+import com.fsck.k9.preferences.Settings.V;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 //TODO: pEp: do I need my keys here, too?
 
@@ -227,7 +236,7 @@ public class AccountSettings {
                 new V(18, new BooleanSetting(false))
             ));
         s.put("notifyContactsMailOnly", Settings.versions(
-                new V(42, new BooleanSetting(false))
+                new V(44, new BooleanSetting(false))
             ));
 
         SETTINGS = Collections.unmodifiableMap(s);
