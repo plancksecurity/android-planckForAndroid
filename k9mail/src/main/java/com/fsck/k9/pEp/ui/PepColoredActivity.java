@@ -19,7 +19,7 @@ import org.pEp.jniadapter.Color;
 public class PepColoredActivity extends K9Activity {
     public static final String CURRENT_COLOR = "current_color";
     public static final String PEP_COLOR_ERR0R_DETAIL_MESSAGE = "Cannot retrieve pEpColor";
-    private Color m_pEpColor = Color.pEpRatingB0rken;
+    private Color m_pEpColor = Color.pEpRatingUndefined;
     PePUIArtefactCache uiCache;
     private PEpProvider pEp;
 
