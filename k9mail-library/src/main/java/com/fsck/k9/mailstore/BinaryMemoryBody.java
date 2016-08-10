@@ -14,7 +14,7 @@ import java.io.OutputStream;
 
 public class BinaryMemoryBody implements Body, RawDataBody, SizeAware {
     private final byte[] data;
-    private final String encoding;
+    private String encoding;
 
     public BinaryMemoryBody(byte[] data, String encoding) {
         this.data = data;
@@ -33,7 +33,9 @@ public class BinaryMemoryBody implements Body, RawDataBody, SizeAware {
 
     @Override
     public void setEncoding(String encoding) throws MessagingException {
-        throw new RuntimeException("nope"); //FIXME
+        // TODO: 10/08/16 check the implications of making encoding not final
+        this.encoding = encoding;
+    //    throw new RuntimeException("nope"); //FIXME
     }
 
     @Override
