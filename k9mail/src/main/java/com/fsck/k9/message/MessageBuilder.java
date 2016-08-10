@@ -19,7 +19,7 @@ import com.fsck.k9.mail.BoundaryGenerator;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.UUIDGenerator;
+import com.fsck.k9.mail.UuidGenerator;
 import com.fsck.k9.mail.internet.MimeBodyPart;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
@@ -39,7 +39,7 @@ import java.util.Locale;
 
 public abstract class MessageBuilder {
     private final Context context;
-    private final UUIDGenerator uuidGenerator;
+    private final UuidGenerator uuidGenerator;
     private final BoundaryGenerator boundaryGenerator;
 
 
@@ -71,7 +71,7 @@ public abstract class MessageBuilder {
     private boolean isPgpInlineEnabled;
     private boolean isForcedUnencrypted;
 
-    public MessageBuilder(Context context, UUIDGenerator uuidGenerator, BoundaryGenerator boundaryGenerator) {
+    public MessageBuilder(Context context, UuidGenerator uuidGenerator, BoundaryGenerator boundaryGenerator) {
         this.context = context;
         this.uuidGenerator = uuidGenerator;
         this.boundaryGenerator = boundaryGenerator;
