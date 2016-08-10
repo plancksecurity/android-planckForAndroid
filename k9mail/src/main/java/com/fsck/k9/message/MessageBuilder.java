@@ -132,7 +132,7 @@ public abstract class MessageBuilder {
         }
         if (isForcedUnencrypted) message.setFlag(Flag.X_FORCE_UNENCRYPTED, true);
     }
-    
+
     protected MimeMultipart createMimeMultipart() {
         String boundary = boundaryGenerator.generateBoundary();
         return new MimeMultipart(boundary);
