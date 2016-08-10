@@ -31,6 +31,13 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.cache.EmailProviderCache;
+import com.fsck.k9.controller.MessagingControllerCommands.PendingAppend;
+import com.fsck.k9.controller.MessagingControllerCommands.PendingCommand;
+import com.fsck.k9.controller.MessagingControllerCommands.PendingEmptyTrash;
+import com.fsck.k9.controller.MessagingControllerCommands.PendingExpunge;
+import com.fsck.k9.controller.MessagingControllerCommands.PendingMarkAllAsRead;
+import com.fsck.k9.controller.MessagingControllerCommands.PendingMoveOrCopy;
+import com.fsck.k9.controller.MessagingControllerCommands.PendingSetFlag;
 import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.AuthenticationFailedException;
@@ -62,7 +69,6 @@ import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalFolder.MoreMessages;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalStore;
-import com.fsck.k9.mailstore.LocalStore.PendingCommand;
 import com.fsck.k9.mailstore.MessageRemovalListener;
 import com.fsck.k9.mailstore.UnavailableStorageException;
 import com.fsck.k9.notification.NotificationController;
@@ -126,18 +132,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MessagingController implements Sync.MessageToSendCallback {
     public static final long INVALID_MESSAGE_ID = -1;
 
-    private static final String[] EMPTY_STRING_ARRAY = new String[0];
     private static final Set<Flag> SYNC_FLAGS = EnumSet.of(Flag.SEEN, Flag.FLAGGED, Flag.ANSWERED, Flag.FORWARDED);
-
-    private static final String PENDING_COMMAND_MOVE_OR_COPY = "com.fsck.k9.MessagingController.moveOrCopy";
-    private static final String PENDING_COMMAND_MOVE_OR_COPY_BULK = "com.fsck.k9.MessagingController.moveOrCopyBulk";
-    private static final String PENDING_COMMAND_MOVE_OR_COPY_BULK_NEW = "com.fsck.k9.MessagingController.moveOrCopyBulkNew";
-    private static final String PENDING_COMMAND_EMPTY_TRASH = "com.fsck.k9.MessagingController.emptyTrash";
-    private static final String PENDING_COMMAND_SET_FLAG_BULK = "com.fsck.k9.MessagingController.setFlagBulk";
-    private static final String PENDING_COMMAND_SET_FLAG = "com.fsck.k9.MessagingController.setFlag";
-    private static final String PENDING_COMMAND_APPEND = "com.fsck.k9.MessagingController.append";
-    private static final String PENDING_COMMAND_MARK_ALL_AS_READ = "com.fsck.k9.MessagingController.markAllAsRead";
-    private static final String PENDING_COMMAND_EXPUNGE = "com.fsck.k9.MessagingController.expunge";
 
 
     private static MessagingController inst = null;
@@ -1838,7 +1833,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private <T extends Message> void deleteMessage(T message, Account account, String folder, LocalFolder localFolder) throws MessagingException {
-        queueSetFlag(account, folder, Boolean.toString(true), Flag.DELETED.toString(), new String[]{message.getUid()});
+        queueSetFlag(account, folder,true, Flag.DELETED, new String[]{message.getUid()});
         localFolder.setFlags(Collections.singletonList(message), Collections.singleton(Flag.DELETED), true);
     }
 
@@ -2136,13 +2131,11 @@ public class MessagingController implements Sync.MessageToSendCallback {
         try {
             for (PendingCommand command : commands) {
                 processingCommand = command;
-                if (K9.DEBUG)
+                if (K9.DEBUG) {
                     Log.d(K9.LOG_TAG, "Processing pending command '" + command + "'");
-
-                String[] components = command.command.split("\\.");
-                String commandTitle = components[components.length - 1];
+                }
                 for (MessagingListener l : getListeners()) {
-                    l.pendingCommandStarted(account, commandTitle);
+                    l.pendingCommandStarted(account, command.getCommandName());
                 }
                 /*
                  * We specifically do not catch any exceptions here. If a command fails it is
@@ -2150,28 +2143,23 @@ public class MessagingController implements Sync.MessageToSendCallback {
                  * other command processes. This maintains the order of the commands.
                  */
                 try {
-                    if (PENDING_COMMAND_APPEND.equals(command.command)) {
-                        processPendingAppend(command, account);
-                    } else if (PENDING_COMMAND_SET_FLAG_BULK.equals(command.command)) {
-                        processPendingSetFlag(command, account);
-                    } else if (PENDING_COMMAND_SET_FLAG.equals(command.command)) {
-                        processPendingSetFlagOld(command, account);
-                    } else if (PENDING_COMMAND_MARK_ALL_AS_READ.equals(command.command)) {
-                        processPendingMarkAllAsRead(command, account);
-                    } else if (PENDING_COMMAND_MOVE_OR_COPY_BULK.equals(command.command)) {
-                        processPendingMoveOrCopyOld2(command, account);
-                    } else if (PENDING_COMMAND_MOVE_OR_COPY_BULK_NEW.equals(command.command)) {
-                        processPendingMoveOrCopy(command, account);
-                    } else if (PENDING_COMMAND_MOVE_OR_COPY.equals(command.command)) {
-                        processPendingMoveOrCopyOld(command, account);
-                    } else if (PENDING_COMMAND_EMPTY_TRASH.equals(command.command)) {
-                        processPendingEmptyTrash(command, account);
-                    } else if (PENDING_COMMAND_EXPUNGE.equals(command.command)) {
-                        processPendingExpunge(command, account);
+                    if (command instanceof PendingAppend) {
+                        processPendingAppend((PendingAppend) command, account);
+                    } else if (command instanceof PendingSetFlag) {
+                        processPendingSetFlag((PendingSetFlag) command, account);
+                    } else if (command instanceof PendingMarkAllAsRead) {
+                        processPendingMarkAllAsRead((PendingMarkAllAsRead) command, account);
+                    } else if (command instanceof PendingMoveOrCopy) {
+                        processPendingMoveOrCopy((PendingMoveOrCopy) command, account);
+                    } else if (command instanceof PendingEmptyTrash) {
+                        processPendingEmptyTrash((PendingEmptyTrash) command, account);
+                    } else if (command instanceof PendingExpunge) {
+                        processPendingExpunge((PendingExpunge) command, account);
                     }
                     localStore.removePendingCommand(command);
-                    if (K9.DEBUG)
+                    if (K9.DEBUG) {
                         Log.d(K9.LOG_TAG, "Done processing pending command '" + command + "'");
+                    }
                 } catch (MessagingException me) {
                     if (me.isPermanentFailure()) {
                         addErrorMessage(account, null, me);
@@ -2184,7 +2172,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     progress++;
                     for (MessagingListener l : getListeners()) {
                         l.synchronizeMailboxProgress(account, null, progress, todo);
-                        l.pendingCommandCompleted(account, commandTitle);
+                        l.pendingCommandCompleted(account, command.getCommandName());
                     }
                 }
             }
@@ -2208,13 +2196,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
      * created.
      * TODO update the local message UID instead of deleteing it
      */
-    private void processPendingAppend(PendingCommand command, Account account) throws MessagingException {
+    private void processPendingAppend(PendingAppend command, Account account) throws MessagingException {
         Folder remoteFolder = null;
         LocalFolder localFolder = null;
         try {
 
-            String folder = command.arguments[0];
-            String uid = command.arguments[1];
+            String folder = command.folder;
+            String uid = command.uid;
 
             if (account.getErrorFolderName().equals(folder)) {
                 return;
@@ -2388,16 +2376,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         if (account.getErrorFolderName().equals(srcFolder)) {
             return;
         }
-        PendingCommand command = new PendingCommand();
-        command.command = PENDING_COMMAND_MOVE_OR_COPY_BULK_NEW;
-
-        int length = 4 + uids.length;
-        command.arguments = new String[length];
-        command.arguments[0] = srcFolder;
-        command.arguments[1] = destFolder;
-        command.arguments[2] = Boolean.toString(isCopy);
-        command.arguments[3] = Boolean.toString(false);
-        System.arraycopy(uids, 0, command.arguments, 4, uids.length);
+        PendingCommand command = MessagingControllerCommands.createMoveOrCopyBulk(srcFolder, destFolder, isCopy, uids);
         queuePendingCommand(account, command);
     }
 
@@ -2409,72 +2388,22 @@ public class MessagingController implements Sync.MessageToSendCallback {
             if (account.getErrorFolderName().equals(srcFolder)) {
                 return;
             }
-            PendingCommand command = new PendingCommand();
-            command.command = PENDING_COMMAND_MOVE_OR_COPY_BULK_NEW;
-
-            int length = 4 + uidMap.keySet().size() + uidMap.values().size();
-            command.arguments = new String[length];
-            command.arguments[0] = srcFolder;
-            command.arguments[1] = destFolder;
-            command.arguments[2] = Boolean.toString(isCopy);
-            command.arguments[3] = Boolean.toString(true);
-            System.arraycopy(uidMap.keySet().toArray(EMPTY_STRING_ARRAY), 0, command.arguments, 4, uidMap.keySet().size());
-            System.arraycopy(uidMap.values().toArray(EMPTY_STRING_ARRAY), 0, command.arguments, 4 + uidMap.keySet().size(), uidMap.values().size());
+            PendingCommand command = MessagingControllerCommands.createMoveOrCopyBulk(srcFolder, destFolder, isCopy, uidMap);
             queuePendingCommand(account, command);
         }
     }
 
-    /**
-     * Convert pending command to new format and call
-     * {@link #processPendingMoveOrCopy(PendingCommand, Account)}.
-     *
-     * <p>
-     * TODO: This method is obsolete and is only for transition from K-9 4.0 to K-9 4.2
-     * Eventually, it should be removed.
-     * </p>
-     *
-     * @param command
-     *         Pending move/copy command in old format.
-     * @param account
-     *         The account the pending command belongs to.
-     *
-     * @throws MessagingException
-     *         In case of an error.
-     */
-    private void processPendingMoveOrCopyOld2(PendingCommand command, Account account) throws MessagingException {
-        PendingCommand newCommand = new PendingCommand();
-        int len = command.arguments.length;
-        newCommand.command = PENDING_COMMAND_MOVE_OR_COPY_BULK_NEW;
-        newCommand.arguments = new String[len + 1];
-        newCommand.arguments[0] = command.arguments[0];
-        newCommand.arguments[1] = command.arguments[1];
-        newCommand.arguments[2] = command.arguments[2];
-        newCommand.arguments[3] = Boolean.toString(false);
-        System.arraycopy(command.arguments, 3, newCommand.arguments, 4, len - 3);
-
-        processPendingMoveOrCopy(newCommand, account);
-    }
-
-    /**
-     * Process a pending trash message command.
-     */
-    private void processPendingMoveOrCopy(PendingCommand command, Account account) throws MessagingException {
+    private void processPendingMoveOrCopy(PendingMoveOrCopy command, Account account) throws MessagingException {
         Folder remoteSrcFolder = null;
         Folder remoteDestFolder = null;
         LocalFolder localDestFolder;
         try {
-            String srcFolder = command.arguments[0];
+            String srcFolder = command.srcFolder;
             if (account.getErrorFolderName().equals(srcFolder)) {
                 return;
             }
-            String destFolder = command.arguments[1];
-            String isCopyS = command.arguments[2];
-            String hasNewUidsS = command.arguments[3];
-
-            boolean hasNewUids = false;
-            if (hasNewUidsS != null) {
-                hasNewUids = Boolean.parseBoolean(hasNewUidsS);
-            }
+            String destFolder = command.destFolder;
+            boolean isCopy = command.isCopy;
 
             Store remoteStore = account.getRemoteStore();
             remoteSrcFolder = remoteStore.getFolder(srcFolder);
@@ -2483,34 +2412,11 @@ public class MessagingController implements Sync.MessageToSendCallback {
             localDestFolder = (LocalFolder) localStore.getFolder(destFolder);
             List<Message> messages = new ArrayList<>();
 
-            /*
-             * We split up the localUidMap into two parts while sending the command, here we assemble it back.
-             */
-            Map<String, String> localUidMap = new HashMap<>();
-            if (hasNewUids) {
-                int offset = (command.arguments.length - 4) / 2;
-
-                for (int i = 4; i < 4 + offset; i++) {
-                    localUidMap.put(command.arguments[i], command.arguments[i + offset]);
-
-                    String uid = command.arguments[i];
-                    if (!uid.startsWith(K9.LOCAL_UID_PREFIX)) {
-                        messages.add(remoteSrcFolder.getMessage(uid));
-                    }
+            Collection<String> uids = command.newUidMap != null ? command.newUidMap.keySet() : Arrays.asList(command.uids);
+            for (String uid : uids) {
+                if (!uid.startsWith(K9.LOCAL_UID_PREFIX)) {
+                    messages.add(remoteSrcFolder.getMessage(uid));
                 }
-
-            } else {
-                for (int i = 4; i < command.arguments.length; i++) {
-                    String uid = command.arguments[i];
-                    if (!uid.startsWith(K9.LOCAL_UID_PREFIX)) {
-                        messages.add(remoteSrcFolder.getMessage(uid));
-                    }
-                }
-            }
-
-            boolean isCopy = false;
-            if (isCopyS != null) {
-                isCopy = Boolean.parseBoolean(isCopyS);
             }
 
             if (!remoteSrcFolder.exists()) {
@@ -2556,11 +2462,14 @@ public class MessagingController implements Sync.MessageToSendCallback {
              * This next part is used to bring the local UIDs of the local destination folder
              * upto speed with the remote UIDs of remote destination folder.
              */
-            if (!localUidMap.isEmpty() && remoteUidMap != null && !remoteUidMap.isEmpty()) {
+            if (command.newUidMap != null && remoteUidMap != null && !remoteUidMap.isEmpty()) {
                 for (Entry<String, String> entry : remoteUidMap.entrySet()) {
                     String remoteSrcUid = entry.getKey();
-                    String localDestUid = localUidMap.get(remoteSrcUid);
                     String newUid = entry.getValue();
+                    String localDestUid = command.newUidMap.get(remoteSrcUid);
+                    if (localDestUid == null) {
+                        continue;
+                    }
 
                     Message localDestMessage = localDestFolder.getMessage(localDestUid);
                     if (localDestMessage != null) {
@@ -2579,18 +2488,11 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void queueSetFlag(final Account account, final String folderName,
-                              final String newState, final String flag, final String[] uids) {
+                              final boolean newState, final Flag flag, final String[] uids) {
         putBackground("queueSetFlag " + account.getDescription() + ":" + folderName, null, new Runnable() {
             @Override
             public void run() {
-                PendingCommand command = new PendingCommand();
-                command.command = PENDING_COMMAND_SET_FLAG_BULK;
-                int length = 3 + uids.length;
-                command.arguments = new String[length];
-                command.arguments[0] = folderName;
-                command.arguments[1] = newState;
-                command.arguments[2] = flag;
-                System.arraycopy(uids, 0, command.arguments, 3, uids.length);
+                PendingCommand command = MessagingControllerCommands.createSetFlag(folderName, newState, flag, uids);
                 queuePendingCommand(account, command);
                 processPendingCommands(account);
             }
@@ -2599,16 +2501,15 @@ public class MessagingController implements Sync.MessageToSendCallback {
     /**
      * Processes a pending mark read or unread command.
      */
-    private void processPendingSetFlag(PendingCommand command, Account account) throws MessagingException {
-        String folder = command.arguments[0];
+    private void processPendingSetFlag(PendingSetFlag command, Account account) throws MessagingException {
+        String folder = command.folder;
 
         if (account.getErrorFolderName().equals(folder) || account.getOutboxFolderName().equals(folder)) {
             return;
         }
 
-        boolean newState = Boolean.parseBoolean(command.arguments[1]);
-
-        Flag flag = Flag.valueOf(command.arguments[2]);
+        boolean newState = command.newState;
+        Flag flag = command.flag;
 
         Store remoteStore = account.getRemoteStore();
         Folder remoteFolder = remoteStore.getFolder(folder);
@@ -2622,8 +2523,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 return;
             }
             List<Message> messages = new ArrayList<>();
-            for (int i = 3; i < command.arguments.length; i++) {
-                String uid = command.arguments[i];
+            for (String uid : command.uids) {
                 if (!uid.startsWith(K9.LOCAL_UID_PREFIX)) {
                     messages.add(remoteFolder.getMessage(uid));
                 }
@@ -2638,61 +2538,18 @@ public class MessagingController implements Sync.MessageToSendCallback {
         }
     }
 
-    // TODO: This method is obsolete and is only for transition from K-9 2.0 to K-9 2.1
-    // Eventually, it should be removed
-    private void processPendingSetFlagOld(PendingCommand command, Account account) throws MessagingException {
-        String folder = command.arguments[0];
-        String uid = command.arguments[1];
-
-        if (account.getErrorFolderName().equals(folder) || account.getOutboxFolderName().equals(folder)) {
-            return;
-        }
-        if (K9.DEBUG)
-            Log.d(K9.LOG_TAG, "processPendingSetFlagOld: folder = " + folder + ", uid = " + uid);
-
-        boolean newState = Boolean.parseBoolean(command.arguments[2]);
-
-        Flag flag = Flag.valueOf(command.arguments[3]);
-        Folder remoteFolder = null;
-        try {
-            Store remoteStore = account.getRemoteStore();
-            remoteFolder = remoteStore.getFolder(folder);
-            if (!remoteFolder.exists()) {
-                return;
-            }
-            remoteFolder.open(Folder.OPEN_MODE_RW);
-            if (remoteFolder.getMode() != Folder.OPEN_MODE_RW) {
-                return;
-            }
-            Message remoteMessage = null;
-            if (!uid.startsWith(K9.LOCAL_UID_PREFIX)) {
-                remoteMessage = remoteFolder.getMessage(uid);
-            }
-            if (remoteMessage == null) {
-                return;
-            }
-            remoteMessage.setFlag(flag, newState);
-        } finally {
-            closeFolder(remoteFolder);
-        }
-    }
     private void queueExpunge(final Account account, final String folderName) {
         putBackground("queueExpunge " + account.getDescription() + ":" + folderName, null, new Runnable() {
             @Override
             public void run() {
-                PendingCommand command = new PendingCommand();
-                command.command = PENDING_COMMAND_EXPUNGE;
-
-                command.arguments = new String[1];
-
-                command.arguments[0] = folderName;
+                PendingCommand command = MessagingControllerCommands.createExpunge(folderName);
                 queuePendingCommand(account, command);
                 processPendingCommands(account);
             }
         });
     }
-    private void processPendingExpunge(PendingCommand command, Account account) throws MessagingException {
-        String folder = command.arguments[0];
+    private void processPendingExpunge(PendingExpunge command, Account account) throws MessagingException {
+        String folder = command.folder;
 
         if (account.getErrorFolderName().equals(folder)) {
             return;
@@ -2718,73 +2575,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
         }
     }
 
-
-    // TODO: This method is obsolete and is only for transition from K-9 2.0 to K-9 2.1
-    // Eventually, it should be removed
-    private void processPendingMoveOrCopyOld(PendingCommand command, Account account) throws MessagingException {
-        String srcFolder = command.arguments[0];
-        String uid = command.arguments[1];
-        String destFolder = command.arguments[2];
-        String isCopyS = command.arguments[3];
-
-        boolean isCopy = false;
-        if (isCopyS != null) {
-            isCopy = Boolean.parseBoolean(isCopyS);
-        }
-
-        if (account.getErrorFolderName().equals(srcFolder)) {
-            return;
-        }
-
-        Store remoteStore = account.getRemoteStore();
-        Folder remoteSrcFolder = remoteStore.getFolder(srcFolder);
-        Folder remoteDestFolder = remoteStore.getFolder(destFolder);
-
-        if (!remoteSrcFolder.exists()) {
-            throw new MessagingException("processPendingMoveOrCopyOld: remoteFolder " + srcFolder + " does not exist", true);
-        }
-        remoteSrcFolder.open(Folder.OPEN_MODE_RW);
-        if (remoteSrcFolder.getMode() != Folder.OPEN_MODE_RW) {
-            throw new MessagingException("processPendingMoveOrCopyOld: could not open remoteSrcFolder " + srcFolder + " read/write", true);
-        }
-
-        Message remoteMessage = null;
-        if (!uid.startsWith(K9.LOCAL_UID_PREFIX)) {
-            remoteMessage = remoteSrcFolder.getMessage(uid);
-        }
-        if (remoteMessage == null) {
-            throw new MessagingException("processPendingMoveOrCopyOld: remoteMessage " + uid + " does not exist", true);
-        }
-
-        if (K9.DEBUG)
-            Log.d(K9.LOG_TAG, "processPendingMoveOrCopyOld: source folder = " + srcFolder
-                    + ", uid = " + uid + ", destination folder = " + destFolder + ", isCopy = " + isCopy);
-
-        if (!isCopy && destFolder.equals(account.getTrashFolderName())) {
-            if (K9.DEBUG)
-                Log.d(K9.LOG_TAG, "processPendingMoveOrCopyOld doing special case for deleting message");
-
-            remoteMessage.delete(account.getTrashFolderName());
-            remoteSrcFolder.close();
-            return;
-        }
-
-        remoteDestFolder.open(Folder.OPEN_MODE_RW);
-        if (remoteDestFolder.getMode() != Folder.OPEN_MODE_RW) {
-            throw new MessagingException("processPendingMoveOrCopyOld: could not open remoteDestFolder " + srcFolder + " read/write", true);
-        }
-
-        if (isCopy) {
-            remoteSrcFolder.copyMessages(Collections.singletonList(remoteMessage), remoteDestFolder);
-        } else {
-            remoteSrcFolder.moveMessages(Collections.singletonList(remoteMessage), remoteDestFolder);
-        }
-        remoteSrcFolder.close();
-        remoteDestFolder.close();
-    }
-
-    private void processPendingMarkAllAsRead(PendingCommand command, Account account) throws MessagingException {
-        String folder = command.arguments[0];
+    private void processPendingMarkAllAsRead(PendingMarkAllAsRead command, Account account) throws MessagingException {
+        String folder = command.folder;
         Folder remoteFolder = null;
         LocalFolder localFolder = null;
         try {
@@ -2907,15 +2699,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
         if (K9.DEBUG) {
             Log.i(K9.LOG_TAG, "Marking all messages in " + account.getDescription() + ":" + folder + " as read");
         }
-        PendingCommand command = new PendingCommand();
-        command.command = PENDING_COMMAND_MARK_ALL_AS_READ;
-        command.arguments = new String[] { folder };
+        PendingCommand command = MessagingControllerCommands.createMarkAllAsRead(folder);
         queuePendingCommand(account, command);
         processPendingCommands(account);
     }
 
     public void setFlag(final Account account, final List<Long> messageIds, final Flag flag,
-                        final boolean newState) {
+            final boolean newState) {
 
         setFlagInCache(account, messageIds, flag, newState);
 
@@ -2928,7 +2718,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void setFlagForThreads(final Account account, final List<Long> threadRootIds,
-                                  final Flag flag, final boolean newState) {
+            final Flag flag, final boolean newState) {
 
         setFlagForThreadsInCache(account, threadRootIds, flag, newState);
 
@@ -2941,7 +2731,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void setFlagSynchronous(final Account account, final List<Long> ids,
-                                    final Flag flag, final boolean newState, final boolean threadedList) {
+            final Flag flag, final boolean newState, final boolean threadedList) {
 
         LocalStore localStore;
         try {
@@ -2998,7 +2788,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             // Send flag change to server
             List<String> value = entry.getValue();
             String[] uids = value.toArray(new String[value.size()]);
-            queueSetFlag(account, folderName, Boolean.toString(newState), flag.toString(), uids);
+            queueSetFlag(account, folderName, newState, flag, uids);
             processPendingCommands(account);
         }
     }
@@ -3066,7 +2856,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 uids[i] = messages.get(i).getUid();
             }
 
-            queueSetFlag(account, folderName, Boolean.toString(newState), flag.toString(), uids);
+            queueSetFlag(account, folderName, newState, flag, uids);
             processPendingCommands(account);
         } catch (MessagingException me) {
             addErrorMessage(account, null, me);
@@ -3527,6 +3317,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moved sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
+
                             Rating rating = PEpUtils.extractRating(message);
                             if(!(!account.isUntrustedSever() && rating.equals(Rating.pEpRatingUndefined))) {
                                 appendMessageCommand(account, message, localSentFolder);
@@ -3604,11 +3395,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void appendMessageCommand(Account account, LocalMessage localMessage, LocalFolder localFolder) {
-        PendingCommand command = new PendingCommand();
-        command.command = PENDING_COMMAND_APPEND;
-        command.arguments = new String[] { localFolder.getName(), localMessage.getUid() };
-        queuePendingCommand(account, command);              // FIXME: do I really have to fiddle around with localsentfolder or is msg found anywhere by its id?
-
+        PendingCommand command = MessagingControllerCommands.createAppend(localFolder.getName(), localMessage.getUid());
+        queuePendingCommand(account, command);
         processPendingCommands(account);
     }
 
@@ -4167,25 +3955,19 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 for (Message message : messages) {
                     // If the message was in the Outbox, then it has been copied to local Trash, and has
                     // to be copied to remote trash
-                    PendingCommand command = new PendingCommand();
-                    command.command = PENDING_COMMAND_APPEND;
-                    command.arguments =
-                            new String[] {
-                                    account.getTrashFolderName(),
-                                    message.getUid()
-                            };
+                    PendingCommand command = MessagingControllerCommands.createAppend(account.getTrashFolderName(), message.getUid());
                     queuePendingCommand(account, command);
                 }
                 processPendingCommands(account);
             } else if (account.getDeletePolicy() == DeletePolicy.ON_DELETE) {
                 if (folder.equals(account.getTrashFolderName())) {
-                    queueSetFlag(account, folder, Boolean.toString(true), Flag.DELETED.toString(), uids);
+                    queueSetFlag(account, folder, true, Flag.DELETED, uids);
                 } else {
                     queueMoveOrCopy(account, folder, account.getTrashFolderName(), false, uids, uidMap);
                 }
                 processPendingCommands(account);
             } else if (account.getDeletePolicy() == DeletePolicy.MARK_AS_READ) {
-                queueSetFlag(account, folder, Boolean.toString(true), Flag.SEEN.toString(), uids);
+                queueSetFlag(account, folder, true, Flag.SEEN, uids);
                 processPendingCommands(account);
             } else {
                 if (K9.DEBUG)
@@ -4215,7 +3997,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     @SuppressWarnings("UnusedParameters") // for consistency with other PendingCommand methods
-    private void processPendingEmptyTrash(PendingCommand command, Account account) throws MessagingException {
+    private void processPendingEmptyTrash(PendingEmptyTrash command, Account account) throws MessagingException {
         Store remoteStore = account.getRemoteStore();
 
         Folder remoteFolder = remoteStore.getFolder(account.getTrashFolderName());
@@ -4261,9 +4043,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     }
 
                     if (!isTrashLocalOnly) {
-                        PendingCommand command = new PendingCommand();
-                        command.command = PENDING_COMMAND_EMPTY_TRASH;
-                        command.arguments = EMPTY_STRING_ARRAY;
+                        PendingCommand command = MessagingControllerCommands.createEmptyTrash();
                         queuePendingCommand(account, command);
                         processPendingCommands(account);
                     }
@@ -4961,12 +4741,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             localMessage.setFlag(Flag.X_DOWNLOADED_FULL, true);
 
             if (saveRemotely) {
-                PendingCommand command = new PendingCommand();
-                command.command = PENDING_COMMAND_APPEND;
-                command.arguments = new String[] {
-                        localFolder.getName(),
-                        localMessage.getUid()
-                };
+                PendingCommand command = MessagingControllerCommands.createAppend(localFolder.getName(), localMessage.getUid());
                 queuePendingCommand(account, command);
                 processPendingCommands(account);
             }
