@@ -13,6 +13,7 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.UuidGenerator;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.message.MessageHeaderParser;
 import com.fsck.k9.mailstore.LockableDatabase.DbCallback;
@@ -45,15 +46,24 @@ public class LocalMessage extends MimeMessage {
     private String mimeType;
     private PreviewType previewType;
 
-    private LocalMessage(LocalStore localStore) {
+
+    static LocalMessage createLocalMessage(LocalStore localStore, String uid, Folder folder) {
+        UuidGenerator uuidGenerator = UuidGenerator.getInstance();
+        return new LocalMessage(uuidGenerator, localStore, uid, folder);
+    }
+
+    private LocalMessage(UuidGenerator uuidGenerator, LocalStore localStore) {
+        super(uuidGenerator);
         this.localStore = localStore;
     }
 
-    LocalMessage(LocalStore localStore, String uid, Folder folder) {
+    private LocalMessage(UuidGenerator uuidGenerator, LocalStore localStore, String uid, Folder folder) {
+        super(uuidGenerator);
         this.localStore = localStore;
         this.mUid = uid;
         this.mFolder = folder;
     }
+
 
     void populateFromGetMessageCursor(Cursor cursor) throws MessagingException {
         final String subject = cursor.getString(0);
@@ -501,7 +511,7 @@ public class LocalMessage extends MimeMessage {
 
     @Override
     public LocalMessage clone() {
-        LocalMessage message = new LocalMessage(this.localStore);
+        LocalMessage message = new LocalMessage(uuidGenerator, localStore);
         super.copy(message);
 
         message.mId = mId;

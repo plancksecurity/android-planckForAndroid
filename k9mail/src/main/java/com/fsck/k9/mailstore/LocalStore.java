@@ -605,7 +605,7 @@ public class LocalStore extends Store implements Serializable {
                     cursor = db.rawQuery(queryString + " LIMIT 10", placeHolders);
 
                     while (cursor.moveToNext()) {
-                        LocalMessage message = new LocalMessage(LocalStore.this, null, folder);
+                        LocalMessage message = LocalMessage.createLocalMessage(LocalStore.this, null, folder);
                         message.populateFromGetMessageCursor(cursor);
 
                         messages.add(message);
@@ -618,7 +618,7 @@ public class LocalStore extends Store implements Serializable {
                     cursor = db.rawQuery(queryString + " LIMIT -1 OFFSET 10", placeHolders);
 
                     while (cursor.moveToNext()) {
-                        LocalMessage message = new LocalMessage(LocalStore.this, null, folder);
+                        LocalMessage message = LocalMessage.createLocalMessage(LocalStore.this, null, folder);
                         message.populateFromGetMessageCursor(cursor);
 
                         messages.add(message);
