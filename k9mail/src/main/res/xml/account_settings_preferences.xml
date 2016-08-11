@@ -502,6 +502,12 @@
             android:key="pep_save_encrypted"
             android:title="@string/mistrust_server_and_store_mails_encrypted"
             android:defaultValue="true"
-            android:summary="Store serverside mails in a safe form." />
+            android:summary="@string/trust_server_description" />
+        <CheckBoxPreference
+            android:persistent="false"
+            android:key="pep_disable_privacy_protection"
+            android:title="@string/pep_disable_privacy_protection"
+            android:defaultValue="false"
+            android:summary="@string/disable_protection_to_account" />
     </PreferenceScreen>
 </PreferenceScreen>

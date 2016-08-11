@@ -3105,13 +3105,11 @@ public class MessagingController {
 
                         // pEp the message to send...
                         Message encryptedMessageToSave;
-                        if (!message.isSet(Flag.X_FORCE_UNENCRYPTED)
-                                && !(pEpProvider.getPrivacyState(message).value == Color.pEpRatingUndefined.value)) {
+                        if (PEpUtils.ispEpDisabled(account, message, pEpProvider.getPrivacyState(message))) {
+                                    sendMessage(transport, message);
+                                    encryptedMessageToSave = message;
+                                } else {
                             encryptedMessageToSave = processWithpEpAndSend(transport, message);
-                        }
-                        else {
-                            sendMessage(transport, message);
-                            encryptedMessageToSave = message;
                         }
 
                         progress++;

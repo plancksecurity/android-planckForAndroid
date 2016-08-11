@@ -12,6 +12,7 @@ import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.BodyPart;
+import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
@@ -20,6 +21,7 @@ import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
+import com.fsck.k9.mailstore.LocalMessage;
 import org.apache.commons.io.IOUtils;
 import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
@@ -244,6 +246,16 @@ public class PEpUtils {
 
         }
         return String.valueOf(fprChars);
+    }
+
+    public static boolean ispEpDisabled(Account account, LocalMessage message, Color messageRating) {
+        return message.isSet(Flag.X_FORCE_UNENCRYPTED)
+                || messageRating == Color.pEpRatingUndefined
+                || account.ispEpPrivacyProtectionDisabled();
+    }
+
+    public static boolean ispEpDisabled(Account account) {
+        return account.ispEpPrivacyProtectionDisabled();
     }
 }
 

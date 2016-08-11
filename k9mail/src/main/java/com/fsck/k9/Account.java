@@ -7,8 +7,6 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.util.Log;
-
-import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.Address;
@@ -38,7 +36,15 @@ import com.larswerkman.colorpicker.ColorPicker;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.fsck.k9.Preferences.getEnumStringPref;
@@ -57,6 +63,15 @@ public class Account implements BaseAccount, StoreConfig {
      * This local folder is used to store messages to be sent.
      */
     public static final String OUTBOX = "K9MAIL_INTERNAL_OUTBOX";
+
+    public boolean ispEpPrivacyProtectionDisabled() {
+        return mPEpDisablePrivacyProtection;
+    }
+
+
+    public void setpEpPrivacyProtectionDisabled(boolean privacyProtection) {
+         this.mPEpDisablePrivacyProtection = privacyProtection;
+    }
 
     public enum Expunge {
         EXPUNGE_IMMEDIATELY,
@@ -109,6 +124,7 @@ public class Account implements BaseAccount, StoreConfig {
     public static final String IDENTITY_DESCRIPTION_KEY = "description";
 
     public static final boolean DEFAULT_PEP_ENC_ON_SERVER = true;
+    public static final boolean DEFAULT_PEP_DISABLE_PRIVACY_PROTECTION = false;
     /*
      * http://developer.android.com/design/style/color.html
      * Note: Order does matter, it's the order in which they will be picked.
@@ -230,6 +246,7 @@ public class Account implements BaseAccount, StoreConfig {
     private ColorChip mFlaggedReadColorChip;
 
     private boolean mPEpStoreEncryptedOnServer;
+    private boolean mPEpDisablePrivacyProtection;
 
     /**
      * Indicates whether this account is enabled, i.e. ready for use, or not.
@@ -341,6 +358,7 @@ public class Account implements BaseAccount, StoreConfig {
         mNotificationSetting.setLedColor(mChipColor);
 
         mPEpStoreEncryptedOnServer = DEFAULT_PEP_ENC_ON_SERVER;
+        mPEpDisablePrivacyProtection = DEFAULT_PEP_DISABLE_PRIVACY_PROTECTION;
         cacheChips();
     }
 
@@ -475,6 +493,7 @@ public class Account implements BaseAccount, StoreConfig {
         mMarkMessageAsReadOnView = storage.getBoolean(mUuid + ".markMessageAsReadOnView", true);
         mAlwaysShowCcBcc = storage.getBoolean(mUuid + ".alwaysShowCcBcc", false);
         mPEpStoreEncryptedOnServer = storage.getBoolean(mUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
+        mPEpDisablePrivacyProtection = storage.getBoolean(mUuid + ".disablepEpPrivacyProtection",  DEFAULT_PEP_DISABLE_PRIVACY_PROTECTION);
         cacheChips();
 
         // Use email address as account description if necessary
@@ -575,6 +594,8 @@ public class Account implements BaseAccount, StoreConfig {
         editor.remove(mUuid + ".messageReadReceipt");
         editor.remove(mUuid + ".notifyMailCheck");
         editor.remove(mUuid + ".pEpStoreEncryptedOnServer");
+        editor.remove(mUuid + "disablepEpPrivacyProtection");
+
         for (NetworkType type : NetworkType.values()) {
             editor.remove(mUuid + ".useCompression." + type.name());
         }
@@ -751,6 +772,7 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putBoolean(mUuid + ".led", mNotificationSetting.isLed());
         editor.putInt(mUuid + ".ledColor", mNotificationSetting.getLedColor());
         editor.putBoolean(mUuid + ".pEpStoreEncryptedOnServer", mPEpStoreEncryptedOnServer);
+        editor.putBoolean(mUuid + ".disablepEpPrivacyProtection", mPEpDisablePrivacyProtection);
 
         for (NetworkType type : NetworkType.values()) {
             Boolean useCompression = compressionMap.get(type);

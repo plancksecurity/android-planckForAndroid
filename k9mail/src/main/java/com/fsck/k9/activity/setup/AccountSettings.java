@@ -129,6 +129,7 @@ public class AccountSettings extends K9PreferenceActivity {
     private static final String PREFERENCE_ALWAYS_SHOW_CC_BCC = "always_show_cc_bcc";
 
     private static final String PREFERENCE_PEP_SAVE_ENCRYPTED_ON_SERVER = "pep_save_encrypted";
+    private static final String PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION = "pep_disable_privacy_protection";
 
     private Account mAccount;
     private boolean mIsMoveCapable = false;
@@ -190,6 +191,7 @@ public class AccountSettings extends K9PreferenceActivity {
 
     // flag: save mails only encrypted on server side
     private CheckBoxPreference mPEpSaveEncrypted;
+    private CheckBoxPreference mPEpDisablePrivacyProtection;
 
     private PreferenceScreen mSearchScreen;
     private CheckBoxPreference mCloudSearchEnabled;
@@ -741,6 +743,9 @@ public class AccountSettings extends K9PreferenceActivity {
 
         mPEpSaveEncrypted = (CheckBoxPreference) findPreference(PREFERENCE_PEP_SAVE_ENCRYPTED_ON_SERVER);
         mPEpSaveEncrypted.setChecked(mAccount.isPEpStoreEncryptedOnServer());
+
+        mPEpDisablePrivacyProtection = (CheckBoxPreference) findPreference(PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION);
+        mPEpDisablePrivacyProtection.setChecked(mAccount.ispEpPrivacyProtectionDisabled());
     }
 
     private void removeListEntry(ListPreference listPreference, String remove) {
@@ -873,6 +878,7 @@ public class AccountSettings extends K9PreferenceActivity {
 
         // pEp:
         mAccount.setPEpStoreEncryptedOnServer(mPEpSaveEncrypted.isChecked());
+        mAccount.setpEpPrivacyProtectionDisabled(mPEpDisablePrivacyProtection.isChecked());
 
         // TODO: refresh folder list here
         mAccount.save(Preferences.getPreferences(this));
