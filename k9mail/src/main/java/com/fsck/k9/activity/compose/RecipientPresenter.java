@@ -258,6 +258,10 @@ public class RecipientPresenter implements PermissionPingCallback {
         if (noContactPickerAvailable) {
             menu.findItem(R.id.add_from_contacts).setVisible(false);
         }
+        if (account.ispEpPrivacyProtectionDisabled()){
+            menu.findItem(R.id.pEp_indicator).setVisible(false);
+            menu.findItem(R.id.force_unencrypted).setVisible(false);
+        }
     }
 
     public void onSwitchAccount(Account account) {
@@ -761,6 +765,11 @@ public class RecipientPresenter implements PermissionPingCallback {
 
     public void switchMessageEncryption() {
         this.forceUnencrypted = !this.forceUnencrypted;
+        handlepEpState();
+    }
+
+    public void setMessagePrivacyProtection(boolean privacyProtection) {
+        this.forceUnencrypted = privacyProtection;
         handlepEpState();
     }
 

@@ -8,7 +8,10 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.*;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.PowerManager;
 import android.os.Process;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
@@ -66,7 +69,6 @@ import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
-import org.pEp.jniadapter.Color;
 import com.fsck.k9.search.ConditionsTreeNode;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
@@ -3119,13 +3121,11 @@ public class MessagingController implements Runnable {
 
                         // pEp the message to send...
                         Message encryptedMessageToSave;
-                        if (!message.isSet(Flag.X_FORCE_UNENCRYPTED)
-                                && !(pEpProvider.getPrivacyState(message).value == Color.pEpRatingUndefined.value)) {
+                        if (PEpUtils.ispEpDisabled(account, message, pEpProvider.getPrivacyState(message))) {
+                                    sendMessage(transport, message);
+                                    encryptedMessageToSave = message;
+                                } else {
                             encryptedMessageToSave = processWithpEpAndSend(transport, message);
-                        }
-                        else {
-                            sendMessage(transport, message);
-                            encryptedMessageToSave = message;
                         }
 
                         progress++;

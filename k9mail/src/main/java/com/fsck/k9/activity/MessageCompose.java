@@ -82,8 +82,6 @@ import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.message.QuotedTextMode;
 import com.fsck.k9.message.SimpleMessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
@@ -188,8 +186,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
      * have already been added from the restore of the view state.
      */
     private boolean mSourceMessageProcessed = false;
-    private PePUIArtefactCache pEpUiCache;
-    private PEpProvider pEp;
+
 
     private RecipientPresenter recipientPresenter;
     private MessageBuilder currentMessageBuilder;
@@ -525,6 +522,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             setProgressBarIndeterminateVisibility(true);
             currentMessageBuilder.reattachCallback(this);
         }
+
+        recipientPresenter.setMessagePrivacyProtection(mAccount.ispEpPrivacyProtectionDisabled());
     }
 
     @Override
