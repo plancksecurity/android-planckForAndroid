@@ -132,6 +132,11 @@ public abstract class MessageBuilder {
         }
         if (isForcedUnencrypted) message.setFlag(Flag.X_FORCE_UNENCRYPTED, true);
     }
+    
+    protected MimeMultipart createMimeMultipart() {
+        String boundary = boundaryGenerator.generateBoundary();
+        return new MimeMultipart(boundary);
+    }
 
     private void buildBody(MimeMessage message) throws MessagingException {
         // Build the body.
@@ -148,7 +153,7 @@ public abstract class MessageBuilder {
             // HTML message (with alternative text part)
 
             // This is the compiled MIME part for an HTML message.
-            MimeMultipart composedMimeMessage = new MimeMultipart(boundaryGenerator);
+            MimeMultipart composedMimeMessage = createMimeMultipart();
             composedMimeMessage.setSubType("alternative");   // Let the receiver select either the text or the HTML part.
             composedMimeMessage.addBodyPart(new MimeBodyPart(body, "text/html"));
             bodyPlain = buildText(isDraft, SimpleMessageFormat.TEXT);
@@ -159,7 +164,7 @@ public abstract class MessageBuilder {
                 // whole message (mp here), of which one part is a MimeMultipart container
                 // (composedMimeMessage) with the user's composed messages, and subsequent parts for
                 // the attachments.
-                MimeMultipart mp = new MimeMultipart(boundaryGenerator);
+                MimeMultipart mp = createMimeMultipart();
                 mp.addBodyPart(new MimeBodyPart(composedMimeMessage));
                 addAttachmentsToMessage(mp);
                 MimeMessageHelper.setBody(message, mp);
@@ -170,7 +175,7 @@ public abstract class MessageBuilder {
         } else if (messageFormat == SimpleMessageFormat.TEXT) {
             // Text-only message.
             if (hasAttachments) {
-                MimeMultipart mp = new MimeMultipart(boundaryGenerator);
+                MimeMultipart mp = createMimeMultipart();
                 mp.addBodyPart(new MimeBodyPart(body, "text/plain"));
                 addAttachmentsToMessage(mp);
                 MimeMessageHelper.setBody(message, mp);
