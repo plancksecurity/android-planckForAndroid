@@ -17,8 +17,6 @@ import org.apache.james.mime4j.util.MimeUtil;
 import org.pEp.jniadapter.Blob;
 import org.pEp.jniadapter.Message;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -34,27 +32,13 @@ class MimeMessageBuilder {
 
     private Message pEpMessage;
 
-    public MimeMessageBuilder(Message m, BoundaryGenerator boundaryGenerator) {
+    MimeMessageBuilder(Message m, BoundaryGenerator boundaryGenerator) {
         this.pEpMessage = m;
         this.boundaryGenerator = boundaryGenerator;
     }
 
-    List<MimeMessage> createMessages() {
-        List<MimeMessage> messages = new ArrayList<>();
-        try {
-            MimeMessage mimeMsg = createMessage();
-            messages.add(mimeMsg);
-
-            return messages;
-        } catch (Exception e) {
-            Log.e("pepdump", "Could not create MimeMessage: ", e);
-        }
-        ;
-        return null;
-    }
-
     @NonNull
-    public MimeMessage createMessage() throws MessagingException {
+    MimeMessage createMessage() throws MessagingException {
         MimeMessage mimeMsg = new MimeMessage();
         evaluateMessageFormat();
         buildHeader(mimeMsg);
@@ -104,7 +88,7 @@ class MimeMessageBuilder {
         TextBody body = buildText();        // builds eitehr plain or html
 
         // text/plain part when messageFormat == MessageFormat.HTML
-        TextBody bodyPlain = null;
+        TextBody bodyPlain;
         boolean hasAttachments = pEpMessage.getAttachments() != null;
         // FIXME: the following is for sure not correct, at least with respect to mime types
 
@@ -147,7 +131,7 @@ class MimeMessageBuilder {
         }
     }
 
-    public TextBody buildText() {
+    private TextBody buildText() {
         return buildText(messageFormat);
     }
 
@@ -229,7 +213,7 @@ class MimeMessageBuilder {
 
     /* FIXME: the following logic needs some intense testing. Not completely sure whether I broke threading and quoting badly somewhere... */
     private TextBody buildText(SimpleMessageFormat simpleMessageFormat) {
-        String messageText = null;
+        String messageText;
         if (simpleMessageFormat == SimpleMessageFormat.HTML)
             messageText = pEpMessage.getLongmsgFormatted();
         else
