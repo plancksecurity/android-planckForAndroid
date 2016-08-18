@@ -35,6 +35,8 @@ public class SmtpTransport extends Transport {
     private TrustedSocketFactory mTrustedSocketFactory;
     private OAuth2TokenProvider oauthTokenProvider;
 
+    public static final String PEP_FQDN = "pretty.Easy.privacy";
+
     /**
      * Decodes a SmtpTransport URI.
      *
@@ -246,7 +248,7 @@ public class SmtpTransport extends Transport {
             executeSimpleCommand(null);
 
             InetAddress localAddress = mSocket.getLocalAddress();
-            String localHost = localAddress.getCanonicalHostName();
+            String localHost = PEP_FQDN;
             String ipAddr = localAddress.getHostAddress();
 
             if (localHost.equals("") || localHost.equals(ipAddr) || localHost.contains("_")) {
