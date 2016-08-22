@@ -1456,29 +1456,11 @@ public class MessagingController {
                     PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
 
                     if (result.keyDetails != null) {
-                        Handler handler = new Handler(Looper.getMainLooper());
-                        String currentFpr = pEpProvider.myself(PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), context)).fpr;
-//                        if (!message.getFrom()[0].getAddress().equals(result.keyDetails.getAddress().getAddress())) {
-                        if (!result.keyDetails.getFpr().equals(currentFpr)) {
-                            handler.post(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    Intent broadcastIntent = new Intent("PRIVATE_KEY");
-                                    broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_FROM,message.getFrom()[0].getAddress());
-                                    broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_FPR, result.keyDetails.getFpr());
-                                    broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_ADDRESS, result.keyDetails.getAddress().getAddress());
-                                    broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_USERNAME, result.keyDetails.getAddress().getPersonal());
-                                    context.getApplicationContext().sendOrderedBroadcast(broadcastIntent, null);
-                                    Toast.makeText(context.getApplicationContext(), "Private key", Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
-                        queueSetFlag(account, folder, Boolean.toString(true), Flag.DELETED.toString(), new String[]{message.getUid()});
-                        localFolder.setFlags(Collections.singletonList(message), Collections.singleton(Flag.DELETED), true);
+                        showImportKeyDialogIfNeeded(message, result, account);
+                        deleteImportMessage(message, account, folder, localFolder);
                     }
                     else {
-                        MimeMessage decryptedMessage = (MimeMessage) result.msg;
+                        MimeMessage decryptedMessage =  result.msg;
                         if (message.getFolder().getName().equals(account.getSentFolderName())) {
                             decryptedMessage.setHeader(MimeHeader.HEADER_PEPCOLOR, pEpProvider.getPrivacyState(message).name());
                         }
@@ -1540,6 +1522,32 @@ public class MessagingController {
 
         if (K9.DEBUG)
             Log.d(K9.LOG_TAG, "SYNC: Done fetching small messages for folder " + folder);
+    }
+
+    private <T extends Message> void deleteImportMessage(T message, Account account, String folder, LocalFolder localFolder) throws MessagingException {
+        queueSetFlag(account, folder, Boolean.toString(true), Flag.DELETED.toString(), new String[]{message.getUid()});
+        localFolder.setFlags(Collections.singletonList(message), Collections.singleton(Flag.DELETED), true);
+    }
+
+    private <T extends Message> void showImportKeyDialogIfNeeded(final T message, final PEpProvider.DecryptResult result, Account account) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        String currentFpr = pEpProvider.myself(PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), context)).fpr;
+//                        if (!message.getFrom()[0].getAddress().equals(result.keyDetails.getAddress().getAddress())) {
+        if (!result.keyDetails.getFpr().equals(currentFpr)) {
+            handler.post(new Runnable() {
+
+                @Override
+                public void run() {
+                    Intent broadcastIntent = new Intent("PRIVATE_KEY");
+                    broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_FROM,message.getFrom()[0].getAddress());
+                    broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_FPR, result.keyDetails.getFpr());
+                    broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_ADDRESS, result.keyDetails.getAddress().getAddress());
+                    broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_USERNAME, result.keyDetails.getAddress().getPersonal());
+                    context.getApplicationContext().sendOrderedBroadcast(broadcastIntent, null);
+                    Toast.makeText(context.getApplicationContext(), "Private key", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
     }
 
     private <T extends Message> void downloadLargeMessages(final Account account, final Folder<T> remoteFolder,
@@ -3105,6 +3113,7 @@ public class MessagingController {
 
                         // pEp the message to send...
                         Message encryptedMessageToSave;
+                        PEpUtils.dumpMimeMessage("beforeEncrypt", (MimeMessage) message);
                         if (PEpUtils.ispEpDisabled(account, message, pEpProvider.getPrivacyState(message))) {
                                     sendMessage(transport, message);
                                     encryptedMessageToSave = message;
