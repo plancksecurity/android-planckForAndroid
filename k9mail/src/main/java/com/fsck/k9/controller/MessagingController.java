@@ -1452,7 +1452,9 @@ public class MessagingController {
 
                     Log.d("pep", "in download loop (nr="+number+") pre pep");
                     PEpUtils.dumpMimeMessage("downloadSmallMessages", (MimeMessage) message);
-                    final PEpProvider.DecryptResult result = pEpProvider.decryptMessage((MimeMessage) message);
+                    final PEpProvider.DecryptResult result;
+                    if (!PEpUtils.ispEpDisabled(account)) result = pEpProvider.decryptMessage((MimeMessage) message);
+                    else result = new PEpProvider.DecryptResult((MimeMessage) message, Color.pEpRatingUndefined, null);
                     PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
 
                     if (result.keyDetails != null) {

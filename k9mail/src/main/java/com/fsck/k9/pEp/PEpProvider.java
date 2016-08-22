@@ -167,7 +167,7 @@ public interface PEpProvider {
     class DecryptResult {
         public final KeyDetail keyDetails;
 
-        DecryptResult(MimeMessage msg, Color col, KeyDetail keyDetails) {
+        public DecryptResult(MimeMessage msg, Color col, KeyDetail keyDetails) {
             this.msg = msg;
             this.col = col;
             this.keyDetails = keyDetails;
