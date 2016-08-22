@@ -147,7 +147,7 @@ public class PEpUtils {
             }
             if(body instanceof TextBody) {
                 TextBody tb = (TextBody) body;
-                Log.i("pepdump", prev+ "Textbody content >" + startOf(tb.getText(),100)+"<");
+                Log.i("pepdump", prev+ "Textbody content >" + startOf(tb.getRawText(),100)+"<");
             }
             return;
         }
