@@ -9,6 +9,7 @@ import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.BoundaryGenerator;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.filter.Base64;
 import com.fsck.k9.mail.internet.*;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
 import com.fsck.k9.message.SimpleMessageFormat;
@@ -156,7 +157,8 @@ class MimeMessageBuilder {
             if (filename != null)
                 filename = EncoderUtil.encodeIfNecessary(filename, EncoderUtil.Usage.WORD_ENTITY, 7);
 
-            body = new BinaryMemoryBody(attachment.data, MimeUtil.ENC_8BIT);  // FIXME: encoding right?
+            if (pEpMessage.getEncFormat() != Message.EncFormat.None) body = new BinaryMemoryBody(attachment.data, MimeUtil.ENC_8BIT);
+            else body = new BinaryMemoryBody(Base64.encodeBase64Chunked(attachment.data), MimeUtil.ENC_BASE64);
 
             MimeBodyPart bp = new MimeBodyPart(body);
 
@@ -174,7 +176,11 @@ class MimeMessageBuilder {
             /* if msg is plain text or if it's one of the non-special pgp attachments (Attachment #1 and #2 have special meaning,
                see "else" branch then dont't treat special (means, use attachment disposition) */
             if (pEpMessage.getEncFormat() == Message.EncFormat.None || i > 1) {
-                bp.setEncoding(MimeUtil.ENC_8BIT);
+
+                if (pEpMessage.getEncFormat() == Message.EncFormat.None) {
+                    bp.setEncoding(MimeUtil.ENC_BASE64);
+                }
+                else bp.setEncoding(MimeUtil.ENC_8BIT);
 
                 if (filename != null)
                     bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
