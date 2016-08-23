@@ -447,4 +447,10 @@ public class PEpProviderImpl implements PEpProvider {
 
         return stringBuilder.toString();
     }
+
+    @Override
+    public void setSubjectEncryption(boolean enabled) {
+        createEngineInstanceIfNeeded();
+        engine.config_unencrypted_subject(!enabled);
+    }
 }
