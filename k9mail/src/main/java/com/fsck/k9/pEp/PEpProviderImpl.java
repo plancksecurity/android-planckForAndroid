@@ -81,7 +81,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     private void configKeyServerLockup(boolean pEpUseKeyserver) {
         if (pEpUseKeyserver) startKeyserverLookup();
-        else stoptKeyserverLookup();
+        else stopKeyserverLookup();
     }
 
     //Don't instantiate a new engine
@@ -170,7 +170,7 @@ public class PEpProviderImpl implements PEpProvider {
             Log.d(TAG, "decryptMessage() exit");
         }
     }
-    private boolean isUsablePrivateKey(Engine.decrypt_message_Return result) throws MessagingException {
+    private boolean isUsablePrivateKey(Engine.decrypt_message_Return result) {
         // TODO: 13/06/16 Check if is necesary check own id
         return result.color.value >= Color.pEpRatingGreen.value
                 && result.flags != null
@@ -203,7 +203,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     }
 
-    private Message getUnencryptedCopyWithoutBCC(MimeMessage source) throws MessagingException {
+    private Message getUnencryptedCopyWithoutBCC(MimeMessage source) {
         Message message = stripEncryptedRecipients(source);
         message.setBcc(null);
         return message;
@@ -271,7 +271,7 @@ public class PEpProviderImpl implements PEpProvider {
         }
     }
 
-    MimeMessage getEncryptedCopy(Message message, String[] extraKeys) throws pEpException, MessagingException {
+    private MimeMessage getEncryptedCopy(Message message, String[] extraKeys) throws pEpException, MessagingException {
         message.setDir(Message.Direction.Outgoing);
         Log.d(TAG, "encryptMessage() before encrypt");
         Identity from = message.getFrom();
@@ -312,7 +312,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     private Vector<String> convertExtraKeys(String[] extraKeys) {
         if (extraKeys == null || extraKeys.length == 0) return null;
-        Vector<String> rv = new Vector<String>();
+        Vector<String> rv = new Vector<>();
         Collections.addAll(rv, extraKeys);
         return rv;
     }
@@ -350,10 +350,7 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public Identity updateIdentity(Identity id) {
         createEngineInstanceIfNeeded();
-//        engine.startKeyserverLookup();
-        Identity result = engine.updateIdentity(id);
-//        engine.stopKeyserverLookup();
-        return result;
+        return engine.updateIdentity(id);
     }
 
     @Override
@@ -394,7 +391,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void stoptKeyserverLookup() {
+    public void stopKeyserverLookup() {
         createEngineInstanceIfNeeded();
         engine.stopKeyserverLookup();
     }
@@ -424,7 +421,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     private String buildImportDialogText(Context context, Identity id, String fromAddress) {
         StringBuilder stringBuilder = new StringBuilder();
-        String formatedFpr = PEpUtils.formatFpr(id.fpr);
+        String formattedFpr = PEpUtils.formatFpr(id.fpr);
         stringBuilder.append(context.getString(R.string.receivedSecretKey))
                 .append("\n")
                 .append(context.getString(R.string.username)).append(": ")
@@ -432,9 +429,9 @@ public class PEpProviderImpl implements PEpProvider {
                 .append(context.getString(R.string.userAddress)).append(": ")
                 .append(id.address).append("\n")
                 .append("\n")
-                .append(formatedFpr.substring(0, formatedFpr.length()/2))
+                .append(formattedFpr.substring(0, formattedFpr.length()/2))
                 .append("\n")
-                .append(formatedFpr.substring(formatedFpr.length()/2))
+                .append(formattedFpr.substring(formattedFpr.length()/2))
                 .append("\n").append("\n")
                 .append(context.getString(R.string.recipient_from)).append(": ")
                 .append(fromAddress);

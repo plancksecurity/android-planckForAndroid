@@ -31,7 +31,6 @@ import com.fsck.k9.service.BootReceiver;
 import com.fsck.k9.service.MailService;
 import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
-import org.pEp.jniadapter.Identity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -61,7 +60,7 @@ public class K9 extends Application {
         if (use) {
             pEpProvider.startKeyserverLookup();
         } else{
-            pEpProvider.stoptKeyserverLookup();
+            pEpProvider.stopKeyserverLookup();
         }
 
     }
