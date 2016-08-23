@@ -90,7 +90,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     private OnLayoutChangedListener mOnLayoutChangedListener;
     private OnCryptoClickListener onCryptoClickListener;
 
-    //private ImageView mPEpIndicator;
     private Color mPEpColor;
     private PePUIArtefactCache pePUIArtefactCache;
 
@@ -161,7 +160,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
         mSubjectView.setVisibility(VISIBLE);
 
-        //mPEpIndicator = (ImageView) findViewById(R.id.pEp_indicator);
 
         hideAdditionalHeaders();
     }
@@ -286,9 +284,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
         Log.i("pEp", "got color " + mPEpColor + " " + mPEpColor.value);
         mContactBadge.setpEpColor(mPEpColor);
-        //mPEpIndicator.setImageDrawable(pePUIArtefactCache.getIcon(mPEpColor));
-
-        //mPEpIndicator.setOnClickListener(this);
 
         final Contacts contacts = K9.showContactName() ? mContacts : null;
         final CharSequence from = MessageHelper.toFriendly(message.getFrom(), contacts);
