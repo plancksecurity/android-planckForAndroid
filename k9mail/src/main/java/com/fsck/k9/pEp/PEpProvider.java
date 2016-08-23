@@ -14,30 +14,30 @@ import java.util.List;
  */
 public interface PEpProvider {
     /**
-     * If is outgoing any copy of the message encrypted (yellow, green, and unsecure for some) it will be putted in this position,
+     * If is outgoing any copy of the message encrypted (yellow, green, and un secure for some) it will be putted in this position,
      * if not, all copies will be unencrypted.
      */
     int ENCRYPTED_MESSAGE_POSITION = 0;
-    public static final String PEP_OWN_USER_ID = "pEp_own_userId";
+    String PEP_OWN_USER_ID = "pEp_own_userId";
     int HALF_FINGERPRINT_LENGTH = 24;
 
     String PEP_PRIVATE_KEY_FPR = "pEpDetailsFpr";
-    String PEP_PRIVATE_KEY_ADDRESS = "pEpDetailsAdress";
+    String PEP_PRIVATE_KEY_ADDRESS = "pEpDetailsAddress";
     String PEP_PRIVATE_KEY_USERNAME = "pEpDetailsUsername";
     String PEP_PRIVATE_KEY_FROM = "pEpDetailsFrom";
 
     /**
-     * checks the privacy level of the adresses supplied. This method creates a pEp message and
+     * checks the privacy level of the addresses supplied. This method creates a pEp message and
      * calls the jni adapter to obtain the info. According to fdik, this check returns fast (all
-     * time consuming stuff (network i/o etc.) is done asynchronousely.
+     * time consuming stuff (network i/o etc.) is done asynchronously.
      *
-     * @param from        from email adress
-     * @param toAdresses  to adresses
-     * @param ccAdresses  cc adresses
-     * @param bccAdresses bcc adresses
+     * @param from        from email address
+     * @param toAddresses  to addresses
+     * @param ccAddresses  cc addresses
+     * @param bccAddresses bcc addresses
      * @return the privacy level of a mail sent to the set of recipients
      */
-    Color getPrivacyState(Address from, List<Address> toAdresses, List<Address> ccAdresses, List<Address> bccAdresses);
+    Color getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses);
     Color getPrivacyState(com.fsck.k9.mail.Message message);
     Color getPrivacyState(Message message);
 
@@ -46,7 +46,7 @@ public interface PEpProvider {
      * Decrypts one k9 MimeMessage. Hides all the black magic associated with the real
      * pEp library interaction.
      * <p/>
-     * Implications from feeding LocalMessages into decryptMessage are currently not complety understood...
+     * Implications from feeding LocalMessages into decryptMessage are currently not completely understood...
      *
      * @param source the (fully qualified) message to be decrypted.
      * @return the decrypted message
@@ -59,7 +59,7 @@ public interface PEpProvider {
      * Encrypts one k9 message. This one hides all the black magic associated with the real
      * pEp library interaction.
      * <p/>
-     * Implications from feeding LocalMessages into decryptMessage are currently not complety understood...
+     * Implications from feeding LocalMessages into decryptMessage are currently not completely understood...
      * <p/>
      * FIXME: where do I handle Bcc: corner case?
      * FIXME: where do I handle split for different privacy levels (To1 is green, To2 is yellow?) Is this really necessary?
@@ -89,7 +89,7 @@ public interface PEpProvider {
     Color identityColor(Address address);
 
     /**
-     * Retrive long trustwords for a given identity
+     * Retrieve long trustwords for a given identity
      *
      * @param id
      * @return trustwords string
@@ -135,13 +135,13 @@ public interface PEpProvider {
     void setPassiveModeEnabled(boolean enable);
 
     void startKeyserverLookup();
-    void stoptKeyserverLookup();
+    void stopKeyserverLookup();
 
     KeyDetail getOwnKeyDetails(Message message);
 
     void setSubjectEncryption(boolean enabled);
 
-    public class KeyDetail {
+     class KeyDetail {
         private final Address address;
         private final String detailMessage;
         private final String fpr;
