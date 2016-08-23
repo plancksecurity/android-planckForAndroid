@@ -41,12 +41,12 @@
     <string name="from_format">from sender %1$s</string>
     <string name="trust_server_and_store_mails_unprotected">p≡p - Trust server and store mails unprotected</string>
     <string name="mistrust_server_and_store_mails_encrypted">E-Mails on server are protected</string>
-    <string name="pep_disable_privacy_protection">Disable privacy protection</string>
+    <string name="pep_enable_privacy_protection">Enable privacy protection</string>
     <string name="pep_explanation">Explanation</string>
     <string name="pep_suggestion">Suggestion</string>
     <string name="app_license_pep">Licensed under the GNU General Public License v3</string>
     <string name="trust_server_description">Store serverside mails in a safe form.</string>
-    <string name="disable_protection_to_account">TODO: Disable privacy protection for this account </string>
+    <string name="account_privacy_protection_explanation">TODO: Enable privacy protection for this account </string>
 
 
     <string-array name="pep_states">

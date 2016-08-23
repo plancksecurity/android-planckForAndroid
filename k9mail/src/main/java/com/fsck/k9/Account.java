@@ -64,13 +64,13 @@ public class Account implements BaseAccount, StoreConfig {
      */
     public static final String OUTBOX = "K9MAIL_INTERNAL_OUTBOX";
 
-    public boolean ispEpPrivacyProtectionDisabled() {
-        return mPEpDisablePrivacyProtection;
+    public boolean ispEpPrivacyProtected() {
+        return pEpPrivacyProtectected;
     }
 
 
-    public void setpEpPrivacyProtectionDisabled(boolean privacyProtection) {
-         this.mPEpDisablePrivacyProtection = privacyProtection;
+    public void setpEpPrivacyProtection(boolean privacyProtection) {
+         this.pEpPrivacyProtectected = privacyProtection;
     }
 
     public enum Expunge {
@@ -124,7 +124,7 @@ public class Account implements BaseAccount, StoreConfig {
     public static final String IDENTITY_DESCRIPTION_KEY = "description";
 
     public static final boolean DEFAULT_PEP_ENC_ON_SERVER = true;
-    public static final boolean DEFAULT_PEP_DISABLE_PRIVACY_PROTECTION = false;
+    public static final boolean DEFAULT_PEP_PRIVACY_PROTECTED = true;
     /*
      * http://developer.android.com/design/style/color.html
      * Note: Order does matter, it's the order in which they will be picked.
@@ -246,7 +246,7 @@ public class Account implements BaseAccount, StoreConfig {
     private ColorChip mFlaggedReadColorChip;
 
     private boolean mPEpStoreEncryptedOnServer;
-    private boolean mPEpDisablePrivacyProtection;
+    private boolean pEpPrivacyProtectected;
 
     /**
      * Indicates whether this account is enabled, i.e. ready for use, or not.
@@ -357,7 +357,7 @@ public class Account implements BaseAccount, StoreConfig {
         mNotificationSetting.setLedColor(mChipColor);
 
         mPEpStoreEncryptedOnServer = DEFAULT_PEP_ENC_ON_SERVER;
-        mPEpDisablePrivacyProtection = DEFAULT_PEP_DISABLE_PRIVACY_PROTECTION;
+        pEpPrivacyProtectected = DEFAULT_PEP_PRIVACY_PROTECTED;
         cacheChips();
     }
 
@@ -492,7 +492,7 @@ public class Account implements BaseAccount, StoreConfig {
         mMarkMessageAsReadOnView = storage.getBoolean(mUuid + ".markMessageAsReadOnView", true);
         mAlwaysShowCcBcc = storage.getBoolean(mUuid + ".alwaysShowCcBcc", false);
         mPEpStoreEncryptedOnServer = storage.getBoolean(mUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
-        mPEpDisablePrivacyProtection = storage.getBoolean(mUuid + ".disablepEpPrivacyProtection",  DEFAULT_PEP_DISABLE_PRIVACY_PROTECTION);
+        pEpPrivacyProtectected = storage.getBoolean(mUuid + ".pEpPrivacyProtected", DEFAULT_PEP_PRIVACY_PROTECTED);
         cacheChips();
 
         // Use email address as account description if necessary
@@ -588,7 +588,7 @@ public class Account implements BaseAccount, StoreConfig {
         editor.remove(mUuid + ".messageReadReceipt");
         editor.remove(mUuid + ".notifyMailCheck");
         editor.remove(mUuid + ".pEpStoreEncryptedOnServer");
-        editor.remove(mUuid + "disablepEpPrivacyProtection");
+        editor.remove(mUuid + ".pEpPrivacyProtected");
 
         for (NetworkType type : NetworkType.values()) {
             editor.remove(mUuid + ".useCompression." + type.name());
@@ -766,7 +766,7 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putBoolean(mUuid + ".led", mNotificationSetting.isLed());
         editor.putInt(mUuid + ".ledColor", mNotificationSetting.getLedColor());
         editor.putBoolean(mUuid + ".pEpStoreEncryptedOnServer", mPEpStoreEncryptedOnServer);
-        editor.putBoolean(mUuid + ".disablepEpPrivacyProtection", mPEpDisablePrivacyProtection);
+        editor.putBoolean(mUuid + ".pEpPrivacyProtected", pEpPrivacyProtectected);
 
         for (NetworkType type : NetworkType.values()) {
             Boolean useCompression = compressionMap.get(type);

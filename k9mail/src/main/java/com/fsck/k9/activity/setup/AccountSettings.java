@@ -714,7 +714,7 @@ public class AccountSettings extends K9PreferenceActivity {
         mPEpSaveEncrypted.setChecked(mAccount.isPEpStoreEncryptedOnServer());
 
         mPEpDisablePrivacyProtection = (CheckBoxPreference) findPreference(PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION);
-        mPEpDisablePrivacyProtection.setChecked(mAccount.ispEpPrivacyProtectionDisabled());
+        mPEpDisablePrivacyProtection.setChecked(mAccount.ispEpPrivacyProtected());
     }
 
     private void removeListEntry(ListPreference listPreference, String remove) {
@@ -845,7 +845,7 @@ public class AccountSettings extends K9PreferenceActivity {
 
         // pEp:
         mAccount.setPEpStoreEncryptedOnServer(mPEpSaveEncrypted.isChecked());
-        mAccount.setpEpPrivacyProtectionDisabled(mPEpDisablePrivacyProtection.isChecked());
+        mAccount.setpEpPrivacyProtection(mPEpDisablePrivacyProtection.isChecked());
 
         // TODO: refresh folder list here
         mAccount.save(Preferences.getPreferences(this));

@@ -258,10 +258,10 @@ public class RecipientPresenter implements PermissionPingCallback {
         if (noContactPickerAvailable) {
             menu.findItem(R.id.add_from_contacts).setVisible(false);
         }
-        if (account.ispEpPrivacyProtectionDisabled()){
-            menu.findItem(R.id.pEp_indicator).setVisible(false);
-            menu.findItem(R.id.force_unencrypted).setVisible(false);
-        }
+
+        menu.findItem(R.id.pEp_indicator).setVisible(account.ispEpPrivacyProtected());
+        menu.findItem(R.id.force_unencrypted).setVisible(account.ispEpPrivacyProtected());
+
     }
 
     public void onSwitchAccount(Account account) {
@@ -763,15 +763,15 @@ public class RecipientPresenter implements PermissionPingCallback {
     }
 
 
-    public void switchPrivacyProtection(PEpProvider.ProtectionScope scope, boolean... enable) {
+    public void switchPrivacyProtection(PEpProvider.ProtectionScope scope, boolean... protection) {
         switch (scope) {
             case MESSAGE:
-                if (enable.length > 0) throw new RuntimeException("On message only switch allowed");
+                if (protection.length > 0) throw new RuntimeException("On message only switch allowed");
                 forceUnencrypted = !forceUnencrypted;
                 break;
             case ACCOUNT:
-                if (enable.length < 1) throw new RuntimeException("On account only explicit boolean allowed");
-                forceUnencrypted = enable[0];
+                if (protection.length < 1) throw new RuntimeException("On account only explicit boolean allowed");
+                forceUnencrypted = !protection[0];
                 break;
         }
         handlepEpState();

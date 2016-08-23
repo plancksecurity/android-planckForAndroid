@@ -251,7 +251,7 @@ public class PEpUtils {
     public static boolean ispEpDisabled(Account account, LocalMessage message, Color messageRating) {
         return message.isSet(Flag.X_FORCE_UNENCRYPTED)
                 || messageRating == Color.pEpRatingUndefined
-                || account.ispEpPrivacyProtectionDisabled();
+                || !account.ispEpPrivacyProtected();
     }
 }
 

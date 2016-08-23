@@ -238,8 +238,8 @@ public class AccountSettings {
         s.put("notifyContactsMailOnly", Settings.versions(
                 new V(44, new BooleanSetting(false))
             ));
-        s.put("disablepEpPrivacyProtection", Settings.versions(
-                new V(45, new BooleanSetting(false))
+        s.put("pEpPrivacyProtected", Settings.versions(
+                new V(45, new BooleanSetting(true))
             ));
 
         SETTINGS = Collections.unmodifiableMap(s);
