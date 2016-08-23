@@ -82,7 +82,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     private OnLayoutChangedListener mOnLayoutChangedListener;
     private OnCryptoClickListener onCryptoClickListener;
 
-    //private ImageView mPEpIndicator;
     private Color mPEpColor;
 
     /**
@@ -148,7 +147,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
         mSubjectView.setVisibility(VISIBLE);
 
-        //mPEpIndicator = (ImageView) findViewById(R.id.pEp_indicator);
 
         hideAdditionalHeaders();
     }
@@ -169,21 +167,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
             case R.id.crypto_status_icon: {
                 onCryptoClickListener.onCryptoClick();
                 break;
-            }
-            case R.id.pEp_indicator: {
-                ArrayList<Identity> adresses = new ArrayList<Identity>();
-                adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getFrom()), getContext()));
-                adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), getContext()));
-                adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.CC)), getContext()));
-
-                PePUIArtefactCache.getInstance(mContext).setRecipients(adresses);
-
-                for (String s : mMessage.getHeaderNames()) {
-                    for (String s1 : mMessage.getHeader(s)) {
-                        Log.i("MessageHeader", "onClick " + s + " " + s1);
-                    }
-                }
-                PEpStatus.actionShowStatus(mContext, mPEpColor, Preferences.getPreferences(mContext).getDefaultAccount().getIdentity(0).getEmail());
             }
         }
     }
@@ -287,9 +270,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
         Log.i("pEp", "got color " + mPEpColor + " " + mPEpColor.value);
         mContactBadge.setpEpColor(mPEpColor);
-        //mPEpIndicator.setImageDrawable(pePUIArtefactCache.getIcon(mPEpColor));
-
-        //mPEpIndicator.setOnClickListener(this);
 
         final Contacts contacts = K9.showContactName() ? mContacts : null;
         final CharSequence from = MessageHelper.toFriendly(message.getFrom(), contacts);
