@@ -138,6 +138,9 @@ public interface PEpProvider {
     void stoptKeyserverLookup();
 
     KeyDetail getOwnKeyDetails(Message message);
+
+    void setSubjectEncryption(boolean enabled);
+
     public class KeyDetail {
         private final Address address;
         private final String detailMessage;
