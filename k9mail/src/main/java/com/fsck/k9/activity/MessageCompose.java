@@ -560,7 +560,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             currentMessageBuilder.reattachCallback(this);
         }
 
-        recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.ACCOUNT, mAccount.ispEpPrivacyProtectionDisabled());
+        recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.ACCOUNT, mAccount.ispEpPrivacyProtected());
     }
 
     @Override

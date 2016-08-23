@@ -234,6 +234,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             return;
         }
 
+        if (mAccount.ispEpPrivacyProtected()) initializePepStatus();
         findFragments();
         initializeDisplayMode(savedInstanceState);
         initializeLayout();
@@ -543,7 +544,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         mActionBarTitle = (TextView) customView.findViewById(R.id.actionbar_title_first);
         mActionBarSubTitle = (TextView) customView.findViewById(R.id.actionbar_title_sub);
         mActionBarUnread = (TextView) customView.findViewById(R.id.actionbar_unread_count);
-        if (!mAccount.ispEpPrivacyProtectionDisabled()) initializePepStatus();
         mActionBarProgress = (ProgressBar) customView.findViewById(R.id.actionbar_progress);
         mActionButtonIndeterminateProgress = getActionButtonIndeterminateProgress();
 

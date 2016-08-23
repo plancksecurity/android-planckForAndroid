@@ -506,8 +506,8 @@
         <CheckBoxPreference
             android:persistent="false"
             android:key="pep_disable_privacy_protection"
-            android:title="@string/pep_disable_privacy_protection"
+            android:title="@string/pep_enable_privacy_protection"
             android:defaultValue="false"
-            android:summary="@string/disable_protection_to_account" />
+            android:summary="@string/account_privacy_protection_explanation" />
     </PreferenceScreen>
 </PreferenceScreen>
