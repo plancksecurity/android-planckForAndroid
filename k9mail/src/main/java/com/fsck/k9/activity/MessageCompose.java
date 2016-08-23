@@ -82,6 +82,7 @@ import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.message.QuotedTextMode;
 import com.fsck.k9.message.SimpleMessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
+import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
@@ -524,7 +525,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             currentMessageBuilder.reattachCallback(this);
         }
 
-        recipientPresenter.setMessagePrivacyProtection(mAccount.ispEpPrivacyProtectionDisabled());
+        recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.ACCOUNT, mAccount.ispEpPrivacyProtectionDisabled());
     }
 
     @Override
@@ -1027,7 +1028,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     }
 
     private void forceUnencrypted() {
-        recipientPresenter.switchMessageEncryption();
+        recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.MESSAGE);
     }
 
     private void handlePEpState(boolean... withToast) {

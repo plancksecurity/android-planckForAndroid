@@ -174,4 +174,9 @@ public interface PEpProvider {
         final public MimeMessage msg;
         final public Color col;
     }
+
+     enum ProtectionScope {
+        ACCOUNT,
+        MESSAGE
+    }
 }
