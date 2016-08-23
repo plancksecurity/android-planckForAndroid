@@ -253,9 +253,5 @@ public class PEpUtils {
                 || messageRating == Color.pEpRatingUndefined
                 || account.ispEpPrivacyProtectionDisabled();
     }
-
-    public static boolean ispEpDisabled(Account account) {
-        return account.ispEpPrivacyProtectionDisabled();
-    }
 }
 

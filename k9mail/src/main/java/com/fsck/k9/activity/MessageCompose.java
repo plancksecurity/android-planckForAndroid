@@ -559,6 +559,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             setProgressBarIndeterminateVisibility(true);
             currentMessageBuilder.reattachCallback(this);
         }
+
+        recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.ACCOUNT, mAccount.ispEpPrivacyProtectionDisabled());
     }
 
     @Override
@@ -1072,7 +1074,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     }
 
     private void forceUnencrypted() {
-        recipientPresenter.switchMessageEncryption();
+        recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.MESSAGE);
     }
 
     private void handlePEpState(boolean... withToast) {

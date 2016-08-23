@@ -543,8 +543,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         mActionBarTitle = (TextView) customView.findViewById(R.id.actionbar_title_first);
         mActionBarSubTitle = (TextView) customView.findViewById(R.id.actionbar_title_sub);
         mActionBarUnread = (TextView) customView.findViewById(R.id.actionbar_unread_count);
-        mActionBarPepStatus = (TextView) findViewById(R.id.tvPep);
-        initializePepStatus();
+        if (!mAccount.ispEpPrivacyProtectionDisabled()) initializePepStatus();
         mActionBarProgress = (ProgressBar) customView.findViewById(R.id.actionbar_progress);
         mActionButtonIndeterminateProgress = getActionButtonIndeterminateProgress();
 
@@ -552,6 +551,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     private void initializePepStatus() {
+        mActionBarPepStatus = (TextView) findViewById(R.id.tvPep);
         mActionBarPepStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

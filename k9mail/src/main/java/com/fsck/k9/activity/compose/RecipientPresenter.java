@@ -836,13 +836,17 @@ public class RecipientPresenter implements PermissionPingCallback {
     }
 
 
-    public void switchMessageEncryption() {
-        this.forceUnencrypted = !this.forceUnencrypted;
-        handlepEpState();
-    }
-
-    public void setMessagePrivacyProtection(boolean privacyProtection) {
-        this.forceUnencrypted = privacyProtection;
+    public void switchPrivacyProtection(PEpProvider.ProtectionScope scope, boolean... enable) {
+        switch (scope) {
+            case MESSAGE:
+                if (enable.length > 0) throw new RuntimeException("On message only switch allowed");
+                forceUnencrypted = !forceUnencrypted;
+                break;
+            case ACCOUNT:
+                if (enable.length < 1) throw new RuntimeException("On account only explicit boolean allowed");
+                forceUnencrypted = enable[0];
+                break;
+        }
         handlepEpState();
     }
 
