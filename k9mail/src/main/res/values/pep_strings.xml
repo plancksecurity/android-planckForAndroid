@@ -46,7 +46,7 @@
     <string name="pep_suggestion">Suggestion</string>
     <string name="app_license_pep">Licensed under the GNU General Public License v3</string>
     <string name="trust_server_description">Store serverside mails in a safe form.</string>
-    <string name="account_privacy_protection_explanation">TODO: Enable privacy protection for this account </string>
+    <string name="account_privacy_protection_explanation">Enable privacy protection for this account </string>
 
 
     <string-array name="pep_states">
