@@ -77,6 +77,7 @@ public class PEpProviderImpl implements PEpProvider {
         engine = new Engine();
         engine.config_passive_mode(K9.getPEpPassiveMode());
         configKeyServerLockup(K9.getPEpUseKeyserver());
+//        engine.config_unencrypted_subject(K9.getpEpSubjectProtection());
     }
 
     private void configKeyServerLockup(boolean pEpUseKeyserver) {
@@ -446,8 +447,8 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void setSubjectEncryption(boolean enabled) {
+    public void setSubjectUnprotected (boolean isUnprotected) {
         createEngineInstanceIfNeeded();
-        engine.config_unencrypted_subject(!enabled);
+        engine.config_unencrypted_subject(isUnprotected);
     }
 }
