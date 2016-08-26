@@ -139,7 +139,7 @@ public interface PEpProvider {
 
     KeyDetail getOwnKeyDetails(Message message);
 
-    void setSubjectEncryption(boolean enabled);
+    void setSubjectUnprotected(boolean enabled);
 
      class KeyDetail {
         private final Address address;
