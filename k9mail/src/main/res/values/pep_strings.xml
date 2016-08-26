@@ -15,7 +15,7 @@
 
     <string name="title_activity_pep_status">Privacy status</string>
     <string name="pep_extra_addresses">Extra key ids:</string>
-    <string name="pep_use_keyserver">Use keyserver</string>
+    <string name="pep_use_keyserver">Look up keys on key server</string>
     <string name="pep_passive_mode">Passive mode</string>
     <string name="pep_add_key_to_blacklist">Add a key to blacklist</string>
     <string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>
@@ -144,18 +144,4 @@
         <item>Separately verify the content of this message with your communication partner.<!--pEpRatingUnderAttack--></item>
     </string-array>
 
-
-    <array name="pep_icon">
-        <item>@drawable/ic_action_pep_indicator<!--pEpRatingUndefined--></item>
-        <item>@drawable/ic_action_pep_indicator<!--pEpRatingCannotDecrypt--></item>
-        <item>@drawable/ic_action_pep_indicator<!--pEpRatingHaveNoKey--></item>
-        <item>@drawable/ic_action_pep_indicator<!--pEpRatingUnencrypted--></item>
-        <item>@drawable/ic_action_pep_indicator<!--pEpRatingUnreliable--></item>
-        <item>@drawable/ic_action_pep_indicator<!--pEpRatingReliable--></item>
-        <item>@drawable/ic_action_pep_indicator<!--pEpRatingTrusted--></item>
-        <item>@drawable/ic_action_pep_indicator<!--pEpRatingTrustedAndAnonymized--></item>
-        <item>@drawable/ic_action_pep_indicator<!--pEpRatingFullyAnonymous--></item>
-        <item>@drawable/ic_action_pep_indicator<!--pEpRatingUnderAttack--></item>
-        <item>@drawable/ic_action_pep_indicator<!--pEpRatingB0rken--></item>
-    </array>
 </resources>
