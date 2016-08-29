@@ -393,7 +393,7 @@
     </PreferenceScreen>
 
     <PreferenceScreen
-        android:title="p≡p"
+        android:title="@string/pep"
         android:key="pep_global">
         <!--<EditTextPreference-->
             <!--android:persistent="false"-->
@@ -403,18 +403,26 @@
             <!--android:summary=""-->
             <!--android:dialogTitle="@string/pep_extra_addresses"-->
             <!--android:visibility="gone"/>-->
-        <CheckBoxPreference
-            android:persistent="false"
-            android:key="pep_use_keyserver"
-            android:title="@string/pep_use_keyserver"/>
-        <CheckBoxPreference
-            android:persistent="false"
-            android:key="pep_passive_mode"
-            android:title="@string/pep_passive_mode"/>
-        <CheckBoxPreference
-            android:persistent="false"
-            android:key="pep_subject_unprotected"
-            android:title="@string/pep_subject_unprotected"/>
+        <PreferenceCategory
+            android:key="pEp_global_preferences"
+            android:title="@string/global_preferences">
+            <CheckBoxPreference
+                android:key="pep_passive_mode"
+                android:persistent="false"
+                android:title="@string/pep_passive_mode" />
+            <CheckBoxPreference
+                android:key="pep_subject_unprotected"
+                android:persistent="false"
+                android:title="@string/pep_subject_unprotected" />
+        </PreferenceCategory>
+        <PreferenceCategory
+            android:title="GPG Compatibility"
+            android:key="pep_gpg_compatibility"
+            />
+            <CheckBoxPreference
+                android:persistent="false"
+                android:key="pep_use_keyserver"
+                android:title="@string/pep_use_keyserver"/>
         <!--<EditTextPreference-->
             <!--android:persistent="false"-->
             <!--android:key="pep_add_key_to_blacklist"-->
