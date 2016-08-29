@@ -4635,9 +4635,6 @@ public class MessagingController {
         notificationController.showCertificateErrorNotification(account, incoming);
     }
 
-    public void setPassiveModeEnabled(boolean enable) {
-        pEpProvider.setPassiveModeEnabled(enable);
-    }
 
     private void actOnMessagesGroupedByAccountAndFolder(List<MessageReference> messages, MessageActor actor) {
         Map<String, Map<String, List<MessageReference>>> accountMap = groupMessagesByAccountAndFolder(messages);
@@ -4697,5 +4694,13 @@ public class MessagingController {
 
     private interface MessageActor {
         void act(Account account, LocalFolder messageFolder, List<LocalMessage> messages);
+    }
+
+    public void setPassiveModeEnabled(boolean enable) {
+        pEpProvider.setPassiveModeEnabled(enable);
+    }
+
+    public void setSubjectUnprotected(boolean subjectUnprotected) {
+        pEpProvider.setSubjectUnprotected(subjectUnprotected);
     }
 }

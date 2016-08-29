@@ -77,7 +77,7 @@ public class PEpProviderImpl implements PEpProvider {
         engine = new Engine();
         engine.config_passive_mode(K9.getPEpPassiveMode());
         configKeyServerLockup(K9.getPEpUseKeyserver());
-//        engine.config_unencrypted_subject(K9.getpEpSubjectProtection());
+        engine.config_unencrypted_subject(K9.ispEpSubjectUnprotected());
     }
 
     private void configKeyServerLockup(boolean pEpUseKeyserver) {

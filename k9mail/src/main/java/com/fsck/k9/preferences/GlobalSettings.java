@@ -274,6 +274,9 @@ public class GlobalSettings {
         s.put("pep_passive_mode", Settings.versions(
                 new V(43, new BooleanSetting(true))
         ));
+        s.put("pep_subject_unprotected", Settings.versions(
+                new V(46, new BooleanSetting(true))
+        ));
 
         SETTINGS = Collections.unmodifiableMap(s);
 

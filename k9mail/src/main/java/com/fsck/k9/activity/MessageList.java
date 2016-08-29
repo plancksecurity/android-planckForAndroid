@@ -227,12 +227,12 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             return;
         }
 
-        if (mAccount.ispEpPrivacyProtected()) initializePepStatus();
         findFragments();
         initializeDisplayMode(savedInstanceState);
         initializeLayout();
         initializeFragments();
         displayViews();
+        if (mAccount.ispEpPrivacyProtected()) initializePepStatus();
     }
 
     @Override
