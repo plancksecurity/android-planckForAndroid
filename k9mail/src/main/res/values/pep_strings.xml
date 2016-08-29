@@ -17,7 +17,7 @@
     <string name="pep_extra_addresses">Extra key ids:</string>
     <string name="pep_use_keyserver">Look up keys on key server</string>
     <string name="pep_passive_mode">Passive mode</string>
-    <string name="pep_subject_unprotected">Enable unprotected message subjects</string>
+    <string name="pep_subject_unprotected">Unprotected message subjects</string>
     <string name="pep_add_key_to_blacklist">Add a key to blacklist</string>
     <string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>
 
@@ -42,7 +42,7 @@
     <string name="from_format">from sender %1$s</string>
     <string name="trust_server_and_store_mails_unprotected">p≡p - Trust server and store mails unprotected</string>
     <string name="mistrust_server_and_store_mails_encrypted">E-Mails on server are protected</string>
-    <string name="pep_enable_privacy_protection">Enable privacy protection</string>
+    <string name="pep_enable_privacy_protection">Privacy protection</string>
     <string name="pep_explanation">Explanation</string>
     <string name="pep_suggestion">Suggestion</string>
     <string name="app_license_pep">Licensed under the GNU General Public License v3</string>
