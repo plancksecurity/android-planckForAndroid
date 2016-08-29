@@ -96,6 +96,7 @@ public class Prefs extends K9PreferenceActivity {
     private static final String PEP_EXTRA_ACCOUNTS = "pep_extra_accounts";
     private static final String PEP_USE_KEYSERVER = "pep_use_keyserver";
     private static final String PEP_PASSIVE_MODE = "pep_passive_mode";
+    private static final String PEP_SUBJECT_UNPROTECTED = "pep_subject_unprotected";
 
     private static final int ACTIVITY_CHOOSE_FOLDER = 1;
 
@@ -155,6 +156,7 @@ public class Prefs extends K9PreferenceActivity {
 //    private EditTextPreference mPEpExtraAccounts;
     private CheckBoxPreference mPEpUseKeyserver;
     private CheckBoxPreference mPEpPassiveMode;
+    private CheckBoxPreference mPEpSubjectUnprotected;
 
 
     public static void actionPrefs(Context context) {
@@ -429,6 +431,9 @@ public class Prefs extends K9PreferenceActivity {
         mPEpPassiveMode =(CheckBoxPreference) findPreference(PEP_PASSIVE_MODE);
         mPEpPassiveMode.setChecked(K9.getPEpPassiveMode());
 
+        mPEpSubjectUnprotected =(CheckBoxPreference) findPreference(PEP_SUBJECT_UNPROTECTED);
+        mPEpSubjectUnprotected.setChecked(K9.ispEpSubjectUnprotected());
+
         mSplitViewMode = (ListPreference) findPreference(PREFERENCE_SPLITVIEW_MODE);
         initListPreference(mSplitViewMode, K9.getSplitViewMode().name(),
                 mSplitViewMode.getEntries(), mSplitViewMode.getEntryValues());
@@ -536,6 +541,7 @@ public class Prefs extends K9PreferenceActivity {
         K9 app = ((K9) getApplicationContext());
         app.setPEpUseKeyserver(mPEpUseKeyserver.isChecked());
         app.setPEpPassiveMode(mPEpPassiveMode.isChecked());
+        app.setpEpSubjectUnprotected(mPEpSubjectUnprotected.isChecked());
 
         StorageEditor editor = storage.edit();
         K9.save(editor);

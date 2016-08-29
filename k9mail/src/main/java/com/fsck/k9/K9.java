@@ -45,42 +45,6 @@ public class K9 extends Application {
     private PEpProvider pEpProvider;
 
 
-
-    public PEpProvider getpEpProvider() { return pEpProvider;}
-    public static void setPEpExtraAccounts(String text) {
-        pEpExtraAccounts = text;
-    }
-
-    public static String getPEpExtraAccounts() {
-        return pEpExtraAccounts;
-    }
-
-    public void setPEpUseKeyserver(boolean use) {
-        pEpUseKeyserver = use;
-        if (use) {
-            pEpProvider.startKeyserverLookup();
-        } else{
-            pEpProvider.stopKeyserverLookup();
-        }
-
-    }
-
-    public static boolean getPEpUseKeyserver() {
-        return pEpUseKeyserver;
-    }
-
-
-    public static boolean getPEpPassiveMode() {
-        return pEpPassiveMode;
-    }
-
-    public void setPEpPassiveMode(boolean enabled) {
-        K9.pEpPassiveMode = enabled;
-        pEpProvider.setPassiveModeEnabled(enabled);
-        MessagingController.getInstance(this).setPassiveModeEnabled(enabled);
-
-    }
-
     /**
      * Components that are interested in knowing when the K9 instance is
      * available and ready (Android invokes Application.onCreate() after other
@@ -293,6 +257,7 @@ public class K9 extends Application {
     private static String pEpExtraAccounts = "";
     private static boolean pEpUseKeyserver = false;
     private static boolean pEpPassiveMode = false;
+    private static boolean pEpSubjectUnprotected = false;
 
 
     private static int sPgpInlineDialogCounter;
@@ -541,6 +506,7 @@ public class K9 extends Application {
         editor.putString("pEpExtraAccounts", pEpExtraAccounts);
         editor.putBoolean("pEpUseKeyserver", pEpUseKeyserver);
         editor.putBoolean("pEpPassiveMode", pEpPassiveMode);
+        editor.putBoolean("pEpSubjectUnprotected", pEpSubjectUnprotected);
 
         fontSizes.save(editor);
     }
@@ -776,6 +742,7 @@ public class K9 extends Application {
         pEpExtraAccounts = storage.getString("pEpExtraAccounts", null);
         pEpUseKeyserver = storage.getBoolean("pEpUseKeyserver", false);
         pEpPassiveMode = storage.getBoolean("pEpPassiveMode", false);
+        pEpSubjectUnprotected = storage.getBoolean("pEpSubjectUnprotected", false);
 
         mAttachmentDefaultPath = storage.getString("attachmentdefaultpath",
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString());
@@ -1475,6 +1442,51 @@ public class K9 extends Application {
             }
         }
     };
+
+    public PEpProvider getpEpProvider() { return pEpProvider;}
+    public static void setPEpExtraAccounts(String text) {
+        pEpExtraAccounts = text;
+    }
+
+    public static String getPEpExtraAccounts() {
+        return pEpExtraAccounts;
+    }
+
+    public void setPEpUseKeyserver(boolean use) {
+        pEpUseKeyserver = use;
+        if (use) {
+            pEpProvider.startKeyserverLookup();
+        } else{
+            pEpProvider.stopKeyserverLookup();
+        }
+
+    }
+
+    public static boolean getPEpUseKeyserver() {
+        return pEpUseKeyserver;
+    }
+
+
+    public static boolean getPEpPassiveMode() {
+        return pEpPassiveMode;
+    }
+
+    public void setPEpPassiveMode(boolean enabled) {
+        K9.pEpPassiveMode = enabled;
+        pEpProvider.setPassiveModeEnabled(enabled);
+        MessagingController.getInstance(this).setPassiveModeEnabled(enabled);
+
+    }
+
+    public static boolean ispEpSubjectUnprotected() {
+        return pEpSubjectUnprotected;
+    }
+
+    public void setpEpSubjectUnprotected(boolean pEpSubjectUnprotected) {
+        K9.pEpSubjectUnprotected = pEpSubjectUnprotected;
+        pEpProvider.setSubjectUnprotected(pEpSubjectUnprotected);
+        MessagingController.getInstance(this).setSubjectUnprotected(pEpSubjectUnprotected);
+    }
 
 
 }

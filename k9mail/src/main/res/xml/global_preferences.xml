@@ -411,6 +411,10 @@
             android:persistent="false"
             android:key="pep_passive_mode"
             android:title="@string/pep_passive_mode"/>
+        <CheckBoxPreference
+            android:persistent="false"
+            android:key="pep_subject_unprotected"
+            android:title="@string/pep_subject_unprotected"/>
         <!--<EditTextPreference-->
             <!--android:persistent="false"-->
             <!--android:key="pep_add_key_to_blacklist"-->
