@@ -232,7 +232,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         initializeLayout();
         initializeFragments();
         displayViews();
-        if (mAccount.ispEpPrivacyProtected()) initializePepStatus();
+        if (mAccount != null && mAccount.ispEpPrivacyProtected()) initializePepStatus();
     }
 
     @Override
