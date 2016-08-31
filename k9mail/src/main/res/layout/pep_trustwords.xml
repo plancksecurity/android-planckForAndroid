@@ -35,7 +35,7 @@
     <Button
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:text="@string/confirm_trustwords"
+            android:text="@string/pep_confirm_trustwords"
             android:id="@+id/confirmTrustWords"
             android:background="@color/pep_green"
             android:textColor="@android:color/white"
@@ -47,7 +47,7 @@
     <Button
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:text="@string/wrong_trustwords"
+            android:text="@string/pep_wrong_trustwords"
             android:id="@+id/wrongTrustwords"
             android:background="@color/pep_red"
             android:textColor="@android:color/white"

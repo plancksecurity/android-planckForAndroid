@@ -1168,8 +1168,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             }
             case DIALOG_FORWARD_WEAKER_TRUST_LEVEL: {
                 return new AlertDialog.Builder(this)
-                        .setTitle(R.string.dialog_confirm_forward_title)
-                        .setMessage(R.string.dialog_weaker_forward_warning_message)
+                        .setTitle(R.string.pep_dialog_confirm_forward_title)
+                        .setMessage(R.string.pep_dialog_weaker_forward_warning_message)
                         .setPositiveButton(R.string.dialog_confirm_delete_confirm_button,
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {

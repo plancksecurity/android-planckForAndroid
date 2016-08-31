@@ -1,53 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="pep_action">p≡p state</string>
-    <string name="pep">p≡p</string>
-    <string name="handshake">Handshake</string>
-    <string name="account_setup_generating_keys">Setting your Privacy by Default </string>
-    <string name="reset_trust">Stop trust</string>
-    <string name="pgp_fingerprint">PGP Fingerprint</string>
 
-    <string name="dialog_weaker_forward_warning_message">You\'re about to forward a secure message as unsecure. If you choose to proceed, confidential information might be leaked putting you and your communication partners at risk. Are you sure you want to continue? </string>
-
-    <string name="dialog_confirm_forward_weaker_trust_level_confirm_button">Proceed</string>
-    <string name="dialog_confirm_forward_weaker_trust_level_cancel_button">Cancel</string>
-    <string name="dialog_confirm_forward_title">Confirm forward</string>
-
-    <string name="title_activity_pep_status">Privacy status</string>
-    <string name="pep_extra_addresses">Extra key ids:</string>
-    <string name="pep_use_keyserver">Look up keys on key server</string>
-    <string name="pep_passive_mode">Passive mode</string>
-    <string name="pep_subject_unprotected">Unprotected message subjects</string>
-    <string name="pep_add_key_to_blacklist">Add a key to blacklist</string>
-    <string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>
-
-    <string name="title_activity_pep_trustwords">Trustwords</string>
-    <string name="confirm_trustwords">Confirm Trustwords</string>
-    <string name="wrong_trustwords">Wrong Trustwords</string>
-    <string name="wrong_fingerprint">Wrong fingerprint</string>
-    <string name="ask_trustwords">Ask your partner: What are your Trustwords? Then compare to the correct answer shown below.</string>
-    <string name="complete_partner_format">Partner\n%1$s &lt;%2$s&gt;</string>
-    <string name="partner_format">Partner\n%1$s</string>
-    <string name="complete_myself_format">Myself\n%1$s &lt;%2$s&gt;</string>
-    <string name="myself_format">Myself\n%1$s</string>
+    <!-- Unstranslatable strings -->
+    <string name="pep" translatable="false">p≡p</string>
+    <string name="pep_handshake" translatable="false">Handshake</string>
+    <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pEp_trustwords">pEp Trustwords</string>
-    <string name="force_unprotected">Disable protection</string>
-    <string name="receivedSecretKey">Received this Secret Key:</string>
-    <string name="username">User Name</string>
-    <string name="userAddress">User Address</string>
-    <string name="secret_key_detected">Secret key detected</string>
-    <string name="received_this_secret_key">The following secret key was received</string>
-    <string name="user_address_format">&lt;%1$s&gt;</string>
-    <string name="user_name_format">%1$s</string>
-    <string name="from_format">from sender %1$s</string>
-    <string name="trust_server_and_store_mails_unprotected">p≡p - Trust server and store mails unprotected</string>
-    <string name="mistrust_server_and_store_mails_encrypted">E-Mails on server are protected</string>
-    <string name="pep_enable_privacy_protection">Privacy protection</string>
-    <string name="pep_explanation">Explanation</string>
-    <string name="pep_suggestion">Suggestion</string>
-    <string name="app_license_pep">Licensed under the GNU General Public License v3</string>
-    <string name="trust_server_description">Store serverside mails in a safe form.</string>
-    <string name="account_privacy_protection_explanation">Enable privacy protection for this account </string>
+    <string name="pep_user_address_format" translatable="false">&lt;%1$s&gt;</string>
+    <string name="pep_user_name_format" translatable="false">%1$s</string>
 
 
     <string-array name="pep_states">
@@ -87,6 +47,51 @@
         <item>@color/pep_red<!--pEpRatingB0rken--></item>
         <item>@color/pep_red<!--pEpRatingUnderAttack--></item>
     </array>
+
+    <!-- Translatable strings -->
+
+    <string name="pep_action">p≡p state</string>
+    <string name="pep_account_setup_generating_keys">Setting your Privacy by Default </string>
+    <string name="pep_reset_trust">Stop trust</string>
+    <string name="pep_pgp_fingerprint">PGP Fingerprint</string>
+
+    <string name="pep_dialog_weaker_forward_warning_message">You\'re about to forward a secure message as unsecure. If you choose to proceed, confidential information might be leaked putting you and your communication partners at risk. Are you sure you want to continue? </string>
+
+    <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Proceed</string>
+    <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancel</string>
+    <string name="pep_dialog_confirm_forward_title">Confirm forward</string>
+
+    <string name="pep_title_activity_privacy_status">Privacy status</string>
+    <string name="pep_extra_addresses">Extra key ids:</string>
+    <string name="pep_use_keyserver">Look up keys on key server</string>
+    <string name="pep_passive_mode">Passive mode</string>
+    <string name="pep_subject_unprotected">Unprotected message subjects</string>
+    <string name="pep_add_key_to_blacklist">Add a key to blacklist</string>
+    <string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>
+
+    <string name="pep_confirm_trustwords">Confirm Trustwords</string>
+    <string name="pep_wrong_trustwords">Wrong Trustwords</string>
+    <string name="pep_wrong_fingerprint">Wrong fingerprint</string>
+    <string name="pep_ask_trustwords">Ask your partner: What are your Trustwords? Then compare to the correct answer shown below.</string>
+    <string name="pep_complete_partner_format">Partner\n%1$s &lt;%2$s&gt;</string>
+    <string name="pep_partner_format">Partner\n%1$s</string>
+    <string name="pep_complete_myself_format">Myself\n%1$s &lt;%2$s&gt;</string>
+    <string name="pep_myself_format">Myself\n%1$s</string>
+    <string name="pep_force_unprotected">Disable protection</string>
+    <string name="pep_receivedSecretKey">Received this Secret Key:</string>
+    <string name="pep_username">User Name</string>
+    <string name="pep_userAddress">User Address</string>
+    <string name="pep_secret_key_detected">Secret key detected</string>
+    <string name="pep_received_this_secret_key" translatable="false">The following secret key was received</string>
+    <string name="pep_from_format">from sender %1$s</string>
+    <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Trust server and store mails unprotected</string>
+    <string name="pep_mistrust_server_and_store_mails_encrypted">E-Mails on server are protected</string>
+    <string name="pep_enable_privacy_protection">Privacy protection</string>
+    <string name="pep_explanation">Explanation</string>
+    <string name="pep_suggestion">Suggestion</string>
+    <string name="pep_app_license">Licensed under the GNU General Public License v3</string>
+    <string name="pep_trust_server_description">Store serverside mails in a safe form.</string>
+    <string name="pep_account_privacy_protection_explanation">Enable privacy protection for this account </string>
 
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>
@@ -144,5 +149,7 @@
         <item><!--pEpRatingB0rken--></item>
         <item>Separately verify the content of this message with your communication partner.<!--pEpRatingUnderAttack--></item>
     </string-array>
+
+
 
 </resources>

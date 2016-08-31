@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/secret_key_detected"
+        android:text="@string/pep_secret_key_detected"
         android:textStyle="bold"
         android:id="@+id/title"
         />
@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/received_this_secret_key"
+        android:text="@string/pep_received_this_secret_key"
         android:id="@+id/textView"
         android:paddingBottom="16dp"
         />

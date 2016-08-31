@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pep_action">Estat de p≡p</string>
+    <string name="pep_reset_trust">Desconfiar</string>
+    <string name="pep_pgp_fingerprint">Emprempta PGP</string>
+
+    <string name="pep_dialog_weaker_forward_warning_message">Està a punt de re-enviar un missatge segur com a no segur. Si decideix continuar, informació confidencial podria ser filtrada  posant-lo a vostè i les persones involucrades en aquesta comunicació en peril. Segur que desitja continuar?</string>
+
+    <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Continuar</string>
+    <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancel·lar</string>
+    <string name="pep_dialog_confirm_forward_title">Confirmar reenviament</string>
+
+    <string name="pep_title_activity_privacy_status">Grau de privacitat</string>
+    <string name="pep_extra_addresses">Extra key ids:</string>
+    <string name="pep_use_keyserver">Consultar les claus al servidor de claus</string>
+    <string name="pep_passive_mode">Mode passiu</string>
+    <string name="pep_subject_unprotected">Deshabilitar protecció del assumpte</string>
+    <string name="pep_add_key_to_blacklist">Add a key to blacklist</string>
+    <string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>
+
+    <string name="pep_confirm_trustwords">Confirmar Trustwords</string>
+    <string name="pep_wrong_trustwords">Trustwords incorrectes</string>
+    <string name="pep_wrong_fingerprint">Empremta incorrecte</string>
+    <string name="pep_ask_trustwords">Pregunti a l’altre interlocutor: quines són les seves paraules de confiança? La resposta  correcta es mostra a continuació</string>
+    <string name="pep_complete_partner_format">Partner\n%1$s &lt;%2$s&gt;</string>
+    <string name="pep_partner_format">Partner\n%1$s</string>
+    <string name="pep_complete_myself_format">Myself\n%1$s &lt;%2$s&gt;</string>
+    <string name="pep_myself_format">Myself\n%1$s</string>
+    <string name="pep_force_unprotected">Deshabilitar protecció</string>
+    <string name="pep_receivedSecretKey">S\'ha rebut aquesta clau privada:</string>
+    <string name="pep_username">Usuari</string>
+    <string name="pep_userAddress">Adreça</string>
+    <string name="pep_secret_key_detected">Detectada clau privada</string>
+    <string name="pep_received_this_secret_key">The following secret key was received</string>
+    <string name="pep_from_format">Rebut de %1$s</string>
+    <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Confiar en el servidor i desar els missatges desprotegits</string>
+    <string name="pep_mistrust_server_and_store_mails_encrypted">Els correus que es troben al servidor estan protegits</string>
+    <string name="pep_enable_privacy_protection">Protecció de la privacitat</string>
+    <string name="pep_explanation">Explicació</string>
+    <string name="pep_suggestion">Sugerencia</string>
+    <string name="pep_app_license">Llicenciat sota GNU General Public License v3</string>
+    <string name="pep_trust_server_description">Desa els correus al servidor de forma segura.</string>
+    <string name="pep_account_privacy_protection_explanation">Protegeix la privacitat d\'aquest compte</string>
+    <string name="pep_account_setup_generating_keys">Configurant la seva privacitat</string>
+    <string name="pEp_trustwords">Trustwords pEp</string>
+    <!--<string-array name="pep_title">-->
+        <!--<item>Unknown&lt;!&ndash;pEpRatingUndefined&ndash;&gt;</item>-->
+        <!--<item>Cannot Decrypt&lt;!&ndash;pEpRatingCannotDecrypt&ndash;&gt;</item>-->
+        <!--<item>Cannot Decrypt&lt;!&ndash;pEpRatingHaveNoKey&ndash;&gt;</item>-->
+        <!--<item>Unsecure&lt;!&ndash;pEpRatingUnencrypted&ndash;&gt;</item>-->
+        <!--<item>Unsecure for some&lt;!&ndash;pEpRatingUnencryptedForSome&ndash;&gt;</item>-->
+        <!--<item>Unreliable Security&lt;!&ndash;pEpRatingUnreliable&ndash;&gt;</item>-->
+        <!--<item>Secure&lt;!&ndash;pEpRatingYellow&ndash;&gt;</item>-->
+        <!--<item>Secure&lt;!&ndash;pEpRatingReliable&ndash;&gt;</item>-->
+        <!--<item>Secure &amp; Trusted&lt;!&ndash;pEpRatingGreen&ndash;&gt;</item>-->
+        <!--<item>Secure &amp; Trusted&lt;!&ndash;pEpRatingTrusted&ndash;&gt;</item>-->
+        <!--<item>Secure &amp; Trusted&lt;!&ndash;pEpRatingTrustedAndAnonymized&ndash;&gt;</item>-->
+        <!--<item>Secure &amp; Trusted&lt;!&ndash;pEpRatingFullyAnonymous&ndash;&gt;</item>-->
+        <!--<item>Mistrusted&lt;!&ndash;pEpRatingMissTrust&ndash;&gt;</item>-->
+        <!--<item>Mistrusted&lt;!&ndash;pEpRatingRed&ndash;&gt;</item>-->
+        <!--<item>Ooops: Internal problem&lt;!&ndash;pEpRatingB0rken&ndash;&gt;</item>-->
+        <!--<item>Under Attack&lt;!&ndash;pEpRatingUnderAttack&ndash;&gt;</item>-->
+    <!--</string-array>-->
+
+    <!--<string-array name="pep_explanation">-->
+        <!--<item>This message does not contain enough information to determine if it is secure.&lt;!&ndash;pEpRatingUndefined&ndash;&gt;</item>-->
+        <!--<item>This message cannot be decrypted.&lt;!&ndash;pEpRatingCannotDecrypt&ndash;&gt;</item>-->
+        <!--<item>This message cannot be decrypted because the key is not available.&lt;!&ndash;pEpRatingHaveNoKey&ndash;&gt;</item>-->
+        <!--<item>This message is unsecure.&lt;!&ndash;pEpRatingUnencrypted&ndash;&gt;</item>-->
+        <!--<item>This message is unsecure for some communication partners.&lt;!&ndash;pEpRatingUnencryptedForSome&ndash;&gt;</item>-->
+        <!--<item>This message has unreliable protection.&lt;!&ndash;pEpRatingUnreliable&ndash;&gt;</item>-->
+        <!--<item>&lt;!&ndash;pEpRatingYellow&ndash;&gt;</item>-->
+        <!--<item>This message is secure but you still need to verify the identity of your communication partner.&lt;!&ndash;pEpRatingReliable&ndash;&gt;</item>-->
+        <!--<item>&lt;!&ndash;pEpRatingGreen&ndash;&gt;</item>-->
+        <!--<item>This message is secure and trusted.&lt;!&ndash;pEpRatingTrusted&ndash;&gt;</item>-->
+        <!--<item>This message is secure and trusted.&lt;!&ndash;pEpRatingTrustedAndAnonymized&ndash;&gt;</item>-->
+        <!--<item>This message is secure and trusted.&lt;!&ndash;pEpRatingFullyAnonymous&ndash;&gt;</item>-->
+        <!--<item>This message has a communication partner that has previously been marked as mistrusted.&lt;!&ndash;pEpRatingMissTrust&ndash;&gt;</item>-->
+        <!--<item>&lt;!&ndash;pEpRatingRed&ndash;&gt;</item>-->
+        <!--<item>&lt;!&ndash;pEpRatingB0rken&ndash;&gt;</item>-->
+        <!--<item>This message is not secure and has been tampered with.&lt;!&ndash;pEpRatingUnderAttack&ndash;&gt;</item>-->
+    <!--</string-array>-->
+
+    <!--<string-array name="pep_suggestion">-->
+        <!--<item>Please add the necessary information.&lt;!&ndash;pEpRatingUndefined&ndash;&gt;</item>-->
+        <!--<item>If this message was addressed to you, please inform the sender that you don\'t have the key.&lt;!&ndash;pEpRatingCannotDecrypt&ndash;&gt;</item>-->
+        <!--<item>If this message was addressed to you, please inform the sender that you don\'t have the key.&lt;!&ndash;pEpRatingHaveNoKey&ndash;&gt;</item>-->
+        <!--<item>Please ask your communication partner to use an encryption solution or install p≡p.&lt;!&ndash;pEpRatingUnencrypted&ndash;&gt;</item>-->
+        <!--<item>Make sure the privacy status for each communication partner listed is at least secure.&lt;!&ndash;pEpRatingUnencryptedForSome&ndash;&gt;</item>-->
+        <!--<item>This message has no reliable encryption or no signature. Ask your communication partner to upgrade their encryption solution or install p≡p.&lt;!&ndash;pEpRatingUnreliable&ndash;&gt;</item>-->
+        <!--<item>&lt;!&ndash;pEpRatingYellow&ndash;&gt;</item>-->
+        <!--<item>Complete a handshake with your communication partner. A handshake is needed only once per partner and will ensure secure and trusted communication.&lt;!&ndash;pEpRatingReliable&ndash;&gt;</item>-->
+        <!--<item>&lt;!&ndash;pEpRatingGreen&ndash;&gt;</item>-->
+        <!--<item>No action needed!&lt;!&ndash;pEpRatingTrusted&ndash;&gt;</item>-->
+        <!--<item>No action needed!&lt;!&ndash;pEpRatingTrustedAndAnonymized&ndash;&gt;</item>-->
+        <!--<item>No action needed!&lt;!&ndash;pEpRatingFullyAnonymous&ndash;&gt;</item>-->
+        <!--<item>Re-establish the connection with your communication partner and try to complete another handshake.&lt;!&ndash;pEpRatingMissTrust&ndash;&gt;</item>-->
+        <!--<item>&lt;!&ndash;pEpRatingRed&ndash;&gt;</item>-->
+        <!--<item>&lt;!&ndash;pEpRatingB0rken&ndash;&gt;</item>-->
+        <!--<item>Separately verify the content of this message with your communication partner.&lt;!&ndash;pEpRatingUnderAttack&ndash;&gt;</item>-->
+    <!--</string-array>-->
+
+</resources>

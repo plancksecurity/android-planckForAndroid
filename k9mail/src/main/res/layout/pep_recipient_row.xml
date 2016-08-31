@@ -42,7 +42,7 @@
     <Button
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:text="@string/handshake"
+            android:text="@string/pep_handshake"
             android:id="@+id/buttonHandshake"
             android:layout_gravity="center"
             android:layout_centerVertical="true"

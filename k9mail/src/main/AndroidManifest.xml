@@ -432,12 +432,12 @@
 
         <activity
             android:name=".pEp.ui.PEpStatus"
-            android:label="@string/title_activity_pep_status"
+            android:label="@string/pep_title_activity_privacy_status"
             android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".pEp.ui.PEpTrustwords"
-            android:label="@string/title_activity_pep_trustwords"
+            android:label="@string/pep_title_activity_trustwords"
             android:parentActivityName=".pEp.ui.PEpStatus"
             android:screenOrientation="portrait">
             <meta-data

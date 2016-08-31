@@ -48,7 +48,7 @@
     />
     <item
             android:id="@+id/force_unencrypted"
-            android:title="@string/force_unprotected"
+            android:title="@string/pep_force_unprotected"
             app:showAsAction="never"/>
 
     <item
