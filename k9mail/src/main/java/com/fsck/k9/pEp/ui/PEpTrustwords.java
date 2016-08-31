@@ -80,11 +80,11 @@ public class PEpTrustwords extends PepColoredActivity {
                 partner = getUiCache().getRecipients().get(partnerPosition);
                 partner = getpEp().updateIdentity(partner);
                 if (!partner.username.equals(partner.address)) {
-                    partnerView.setText(String.format(getString(R.string.complete_partner_format), partner.username, partner.address));
-                    partnerLabel.setText(String.format(getString(R.string.complete_partner_format), partner.username, partner.address));
+                    partnerView.setText(String.format(getString(R.string.pep_complete_partner_format), partner.username, partner.address));
+                    partnerLabel.setText(String.format(getString(R.string.pep_complete_partner_format), partner.username, partner.address));
                 } else {
-                    partnerView.setText(String.format(getString(R.string.partner_format),partner.address));
-                    partnerLabel.setText(String.format(getString(R.string.partner_format),partner.address));
+                    partnerView.setText(String.format(getString(R.string.pep_partner_format),partner.address));
+                    partnerLabel.setText(String.format(getString(R.string.pep_partner_format),partner.address));
                 }
 
                 partnerFpr.setText(PEpUtils.formatFpr(partner.fpr));
@@ -97,11 +97,11 @@ public class PEpTrustwords extends PepColoredActivity {
                 myself = PEpUtils.createIdentity(new Address(intent.getStringExtra(MYSELF)), context);
                 myself = getpEp().myself(myself);
                 if (!myself.username.equals(myself.address)) {
-                    myselfView.setText(String.format(getString(R.string.complete_myself_format), myself.username, myself.address));
-                    myselfLabel.setText(String.format(getString(R.string.complete_myself_format), myself.username, myself.address));
+                    myselfView.setText(String.format(getString(R.string.pep_complete_myself_format), myself.username, myself.address));
+                    myselfLabel.setText(String.format(getString(R.string.pep_complete_myself_format), myself.username, myself.address));
                 } else {
-                    myselfView.setText(String.format(getString(R.string.myself_format),myself.address));
-                    myselfLabel.setText(String.format(getString(R.string.myself_format),myself.address));
+                    myselfView.setText(String.format(getString(R.string.pep_myself_format),myself.address));
+                    myselfLabel.setText(String.format(getString(R.string.pep_myself_format),myself.address));
                 }
                 myselfFpr.setText(PEpUtils.formatFpr(myself.fpr));
 
@@ -131,13 +131,13 @@ public class PEpTrustwords extends PepColoredActivity {
                 onBackPressed();
                 return true;
             case R.id.action_pgp_fingerprint:
-                if (item.getTitle().equals(getString(R.string.pgp_fingerprint))){
+                if (item.getTitle().equals(getString(R.string.pep_pgp_fingerprint))){
                     item.setTitle(R.string.pEp_trustwords);
-                    wrongTrustWords.setText(R.string.wrong_fingerprint);
+                    wrongTrustWords.setText(R.string.pep_wrong_fingerprint);
                 }
                 else{
-                    item.setTitle(getString(R.string.pgp_fingerprint));
-                    wrongTrustWords.setText(R.string.wrong_trustwords);
+                    item.setTitle(getString(R.string.pep_pgp_fingerprint));
+                    wrongTrustWords.setText(R.string.pep_wrong_trustwords);
                 }
                 flipper.showNext();
                 showingPgpFingerprint = !showingPgpFingerprint;

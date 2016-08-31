@@ -429,11 +429,11 @@ public class PEpProviderImpl implements PEpProvider {
     private String buildImportDialogText(Context context, Identity id, String fromAddress) {
         StringBuilder stringBuilder = new StringBuilder();
         String formattedFpr = PEpUtils.formatFpr(id.fpr);
-        stringBuilder.append(context.getString(R.string.receivedSecretKey))
+        stringBuilder.append(context.getString(R.string.pep_receivedSecretKey))
                 .append("\n")
-                .append(context.getString(R.string.username)).append(": ")
+                .append(context.getString(R.string.pep_username)).append(": ")
                 .append(id.username).append("\n")
-                .append(context.getString(R.string.userAddress)).append(": ")
+                .append(context.getString(R.string.pep_userAddress)).append(": ")
                 .append(id.address).append("\n")
                 .append("\n")
                 .append(formattedFpr.substring(0, formattedFpr.length()/2))

@@ -138,9 +138,9 @@ public class K9ActivityCommon {
                 .append("\n")
                 .append(formatedFpr.substring(formatedFpr.length()/2, formatedFpr.length()/2+ PEpProvider.HALF_FINGERPRINT_LENGTH));
         ((TextView) dialogView.findViewById(R.id.tvFpr)).setText(stringBuilder.toString());
-        ((TextView) dialogView.findViewById(R.id.tvAddress)).setText(String.format(context.getString(R.string.user_address_format), address));
-        ((TextView) dialogView.findViewById(R.id.tvUsername)).setText(String.format(context.getString(R.string.user_name_format), username));
-        ((TextView) dialogView.findViewById(R.id.tvFrom)).setText(String.format(context.getString(R.string.from_format), from));
+        ((TextView) dialogView.findViewById(R.id.tvAddress)).setText(String.format(context.getString(R.string.pep_user_address_format), address));
+        ((TextView) dialogView.findViewById(R.id.tvUsername)).setText(String.format(context.getString(R.string.pep_user_name_format), username));
+        ((TextView) dialogView.findViewById(R.id.tvFrom)).setText(String.format(context.getString(R.string.pep_from_format), from));
 
         alertDialogBuilder.setView(dialogView)
 //                .setTitle("Secret key replace")

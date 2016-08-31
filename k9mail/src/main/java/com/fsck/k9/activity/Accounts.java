@@ -1266,7 +1266,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         .append("</p><hr/><p>")
         .append(String.format(getString(R.string.app_copyright_fmt), year, year))
         .append("</p><hr/><p>")
-        .append(getString(R.string.app_license_pep))
+        .append(getString(R.string.pep_app_license))
         .append("</p><hr/><p>")
 // Credits
         .append("p≡p Team in alphabetical order:<br /><br />")

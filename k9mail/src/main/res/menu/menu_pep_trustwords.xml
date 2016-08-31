@@ -4,7 +4,7 @@
       tools:context=".pEp.ui.PEpTrustwords">
     <item
             android:id="@+id/action_pgp_fingerprint"
-            android:title="@string/pgp_fingerprint"
+            android:title="@string/pep_pgp_fingerprint"
             android:orderInCategory="100"
             app:showAsAction="never"/>
 

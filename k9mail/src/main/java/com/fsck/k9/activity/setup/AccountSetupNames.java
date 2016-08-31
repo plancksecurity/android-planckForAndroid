@@ -121,7 +121,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
             dialog = new ProgressDialog(AccountSetupNames.this);
             dialog.setIndeterminate(true);
             dialog.setCancelable(false);
-            dialog.setMessage(getString(R.string.account_setup_generating_keys));
+            dialog.setMessage(getString(R.string.pep_account_setup_generating_keys));
             dialog.show();
         }
 

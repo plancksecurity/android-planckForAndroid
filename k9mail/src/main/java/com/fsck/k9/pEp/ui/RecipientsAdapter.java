@@ -145,10 +145,10 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
                 handshakeButton.setVisibility(View.GONE);
             } else if (color.value == Color.pEpRatingRed.value
                     || color.value >= Color.pEpRatingGreen.value){
-                handshakeButton.setText(context.getString(R.string.reset_trust));
+                handshakeButton.setText(context.getString(R.string.pep_reset_trust));
                 handshakeButton.setOnClickListener(onResetClick);
             } else if (color.value == Color.pEpRatingYellow.value){
-                handshakeButton.setText(context.getString(R.string.handshake));
+                handshakeButton.setText(context.getString(R.string.pep_handshake));
                 handshakeButton.setOnClickListener(onHandshakeClick);
             }
         }
