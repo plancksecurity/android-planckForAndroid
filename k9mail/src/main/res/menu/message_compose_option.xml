@@ -23,7 +23,7 @@
     <item
         android:id="@+id/pEp_indicator"
         android:alphabeticShortcut="s"
-        android:title="@string/pep_action"
+        android:title="@string/pep_title_activity_privacy_status"
         android:icon="@drawable/ic_action_pep_indicator"
         android:showAsAction="always"
         />

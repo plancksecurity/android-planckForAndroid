@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="pep_action">Estat de p≡p</string>
     <string name="pep_reset_trust">Desconfiar</string>
     <string name="pep_pgp_fingerprint">Emprempta PGP</string>
 
@@ -43,61 +42,61 @@
     <string name="pep_account_privacy_protection_explanation">Protegeix la privacitat d\'aquest compte</string>
     <string name="pep_account_setup_generating_keys">Configurant la seva privacitat</string>
     <string name="pEp_trustwords">Trustwords pEp</string>
-    <!--<string-array name="pep_title">-->
-        <!--<item>Unknown&lt;!&ndash;pEpRatingUndefined&ndash;&gt;</item>-->
-        <!--<item>Cannot Decrypt&lt;!&ndash;pEpRatingCannotDecrypt&ndash;&gt;</item>-->
-        <!--<item>Cannot Decrypt&lt;!&ndash;pEpRatingHaveNoKey&ndash;&gt;</item>-->
-        <!--<item>Unsecure&lt;!&ndash;pEpRatingUnencrypted&ndash;&gt;</item>-->
-        <!--<item>Unsecure for some&lt;!&ndash;pEpRatingUnencryptedForSome&ndash;&gt;</item>-->
-        <!--<item>Unreliable Security&lt;!&ndash;pEpRatingUnreliable&ndash;&gt;</item>-->
-        <!--<item>Secure&lt;!&ndash;pEpRatingYellow&ndash;&gt;</item>-->
-        <!--<item>Secure&lt;!&ndash;pEpRatingReliable&ndash;&gt;</item>-->
-        <!--<item>Secure &amp; Trusted&lt;!&ndash;pEpRatingGreen&ndash;&gt;</item>-->
-        <!--<item>Secure &amp; Trusted&lt;!&ndash;pEpRatingTrusted&ndash;&gt;</item>-->
-        <!--<item>Secure &amp; Trusted&lt;!&ndash;pEpRatingTrustedAndAnonymized&ndash;&gt;</item>-->
-        <!--<item>Secure &amp; Trusted&lt;!&ndash;pEpRatingFullyAnonymous&ndash;&gt;</item>-->
-        <!--<item>Mistrusted&lt;!&ndash;pEpRatingMissTrust&ndash;&gt;</item>-->
-        <!--<item>Mistrusted&lt;!&ndash;pEpRatingRed&ndash;&gt;</item>-->
-        <!--<item>Ooops: Internal problem&lt;!&ndash;pEpRatingB0rken&ndash;&gt;</item>-->
-        <!--<item>Under Attack&lt;!&ndash;pEpRatingUnderAttack&ndash;&gt;</item>-->
-    <!--</string-array>-->
+    <string-array name="pep_title">
+        <item>Desconegut<!--pEpRatingUndefined--></item>
+        <item>No es pot desxifrar<!--pEpRatingCannotDecrypt--></item>
+        <item>No es pot desxifrar<!--pEpRatingHaveNoKey--></item>
+        <item>No segur<!--pEpRatingUnencrypted--></item>
+        <item>Insegur per a alguns<!--pEpRatingUnencryptedForSome--></item>
+        <item>Seguretat no confiable<!--pEpRatingUnreliable--></item>
+        <item>Segur<!--pEpRatingYellow--></item>
+        <item>Segur<!--pEpRatingReliable--></item>
+        <item>Segur &amp; de confiança<!--pEpRatingGreen--></item>
+        <item>Segur &amp; de confiança<!--pEpRatingTrusted--></item>
+        <item>Segur &amp; de confiança<!--pEpRatingTrustedAndAnonymized--></item>
+        <item>Segur &amp; de confiança<!--pEpRatingFullyAnonymous--></item>
+        <item>Sospitós<!--pEpRatingMissTrust--></item>
+        <item>Sospitós<!--pEpRatingRed--></item>
+        <item>Ooops: Problema intern<!--pEpRatingB0rken--></item>
+        <item>Falsificat<!--pEpRatingUnderAttack--></item>
+    </string-array>
 
-    <!--<string-array name="pep_explanation">-->
-        <!--<item>This message does not contain enough information to determine if it is secure.&lt;!&ndash;pEpRatingUndefined&ndash;&gt;</item>-->
-        <!--<item>This message cannot be decrypted.&lt;!&ndash;pEpRatingCannotDecrypt&ndash;&gt;</item>-->
-        <!--<item>This message cannot be decrypted because the key is not available.&lt;!&ndash;pEpRatingHaveNoKey&ndash;&gt;</item>-->
-        <!--<item>This message is unsecure.&lt;!&ndash;pEpRatingUnencrypted&ndash;&gt;</item>-->
-        <!--<item>This message is unsecure for some communication partners.&lt;!&ndash;pEpRatingUnencryptedForSome&ndash;&gt;</item>-->
-        <!--<item>This message has unreliable protection.&lt;!&ndash;pEpRatingUnreliable&ndash;&gt;</item>-->
-        <!--<item>&lt;!&ndash;pEpRatingYellow&ndash;&gt;</item>-->
-        <!--<item>This message is secure but you still need to verify the identity of your communication partner.&lt;!&ndash;pEpRatingReliable&ndash;&gt;</item>-->
-        <!--<item>&lt;!&ndash;pEpRatingGreen&ndash;&gt;</item>-->
-        <!--<item>This message is secure and trusted.&lt;!&ndash;pEpRatingTrusted&ndash;&gt;</item>-->
-        <!--<item>This message is secure and trusted.&lt;!&ndash;pEpRatingTrustedAndAnonymized&ndash;&gt;</item>-->
-        <!--<item>This message is secure and trusted.&lt;!&ndash;pEpRatingFullyAnonymous&ndash;&gt;</item>-->
-        <!--<item>This message has a communication partner that has previously been marked as mistrusted.&lt;!&ndash;pEpRatingMissTrust&ndash;&gt;</item>-->
-        <!--<item>&lt;!&ndash;pEpRatingRed&ndash;&gt;</item>-->
-        <!--<item>&lt;!&ndash;pEpRatingB0rken&ndash;&gt;</item>-->
-        <!--<item>This message is not secure and has been tampered with.&lt;!&ndash;pEpRatingUnderAttack&ndash;&gt;</item>-->
-    <!--</string-array>-->
+    <string-array name="pep_explanation">
+        <item>No es disposa d\’informació suficient per determinar si la comunicació és segura.<!--pEpRatingUndefined--></item>
+        <item>No s\’ha pogut desxifrar el missatge.<!--pEpRatingCannotDecrypt--></item>
+        <item>No s\’ha pogut desxifrar el missatge perquè la clau no està disponible.<!--pEpRatingHaveNoKey--></item>
+        <item>Aquest missatge no és segura.<!--pEpRatingUnencrypted--></item>
+        <item>Aquest missatge no és segur per algun dels interlocutors.<!--pEpRatingUnencryptedForSome--></item>
+        <item>El missatge té una protecció no confiable.<!--pEpRatingUnreliable--></item>
+        <item><!--pEpRatingYellow--></item>
+        <item>El missatge és segur però encara és necessari verificar la identitat del contacte.<!--pEpRatingReliable--></item>
+        <item><!--pEpRatingGreen--></item>
+        <item>El missatge és segur i s\'hi pot confiar.<!--pEpRatingTrusted--></item>
+        <item>El missatge és segur i s\'hi pot confiar.<!--pEpRatingTrustedAndAnonymized--></item>
+        <item>El missatge és segur i s\'hi pot confiar.<!--pEpRatingFullyAnonymous--></item>
+        <item>En aquest missatge hi ha un company de comunicació marcat com a no segur amb anterioritat.<!--pEpRatingMissTrust--></item>
+        <item><!--pEpRatingRed--></item>
+        <item><!--pEpRatingB0rken--></item>
+        <item>Aquest missatge no és segur i ha sigut manipulat.<!--pEpRatingUnderAttack--></item>
+    </string-array>
 
-    <!--<string-array name="pep_suggestion">-->
-        <!--<item>Please add the necessary information.&lt;!&ndash;pEpRatingUndefined&ndash;&gt;</item>-->
-        <!--<item>If this message was addressed to you, please inform the sender that you don\'t have the key.&lt;!&ndash;pEpRatingCannotDecrypt&ndash;&gt;</item>-->
-        <!--<item>If this message was addressed to you, please inform the sender that you don\'t have the key.&lt;!&ndash;pEpRatingHaveNoKey&ndash;&gt;</item>-->
-        <!--<item>Please ask your communication partner to use an encryption solution or install p≡p.&lt;!&ndash;pEpRatingUnencrypted&ndash;&gt;</item>-->
-        <!--<item>Make sure the privacy status for each communication partner listed is at least secure.&lt;!&ndash;pEpRatingUnencryptedForSome&ndash;&gt;</item>-->
-        <!--<item>This message has no reliable encryption or no signature. Ask your communication partner to upgrade their encryption solution or install p≡p.&lt;!&ndash;pEpRatingUnreliable&ndash;&gt;</item>-->
-        <!--<item>&lt;!&ndash;pEpRatingYellow&ndash;&gt;</item>-->
-        <!--<item>Complete a handshake with your communication partner. A handshake is needed only once per partner and will ensure secure and trusted communication.&lt;!&ndash;pEpRatingReliable&ndash;&gt;</item>-->
-        <!--<item>&lt;!&ndash;pEpRatingGreen&ndash;&gt;</item>-->
-        <!--<item>No action needed!&lt;!&ndash;pEpRatingTrusted&ndash;&gt;</item>-->
-        <!--<item>No action needed!&lt;!&ndash;pEpRatingTrustedAndAnonymized&ndash;&gt;</item>-->
-        <!--<item>No action needed!&lt;!&ndash;pEpRatingFullyAnonymous&ndash;&gt;</item>-->
-        <!--<item>Re-establish the connection with your communication partner and try to complete another handshake.&lt;!&ndash;pEpRatingMissTrust&ndash;&gt;</item>-->
-        <!--<item>&lt;!&ndash;pEpRatingRed&ndash;&gt;</item>-->
-        <!--<item>&lt;!&ndash;pEpRatingB0rken&ndash;&gt;</item>-->
-        <!--<item>Separately verify the content of this message with your communication partner.&lt;!&ndash;pEpRatingUnderAttack&ndash;&gt;</item>-->
-    <!--</string-array>-->
+    <string-array name="pep_suggestion">
+        <item>Si us plau, introdueixi la informació necessària.<!--pEpRatingUndefined--></item>
+        <item>Si ets el destinatari d\'aquest missatge, si us plau informa a la persona que envia el missatge que no disposes de la seva clau.<!--pEpRatingCannotDecrypt--></item>
+        <item>Si ets el destinatari d\'aquest missatge, si us plau informa al usuari de que no disposes de la seva clau.<!--pEpRatingHaveNoKey--></item>
+        <item>Si us plau, pregunti al seu company per la possibilitat d’utilitzar una solució de xifrat o instal·lar p≡p.<!--pEpRatingUnencrypted--></item>
+        <item>Verifiqui que l\’estat de privacitat amb els seus interlocutor és com a mínim segur.<!--pEpRatingUnencryptedForSome--></item>
+        <item>El missatge no té una seguretat confiable ni signatura.Si us plau, pregunti al seu company per la possibilitat de fer servir una solució de xifrat o instal·lar p≡p.<!--pEpRatingUnreliable--></item>
+        <item><!--pEpRatingYellow--></item>
+        <item>Completi l\'intercanvi de paraules de confiança amb el seu interlocutor. Només cal realitzar aquest intercanvi una vegada per contacte per assegurar una comunicació privada i confiable.<!--pEpRatingReliable--></item>
+        <item><!--pEpRatingGreen--></item>
+        <item>No cal realitzar més accions!<!--pEpRatingTrusted--></item>
+        <item>No cal realitzar més accions!<!--pEpRatingTrustedAndAnonymized--></item>
+        <item>No cal realitzar més accions!<!--pEpRatingFullyAnonymous--></item>
+        <item>Restablir la connexió amb l\’interlocutor i tornar a fer un intercanvi de paraules de confiança.<!--pEpRatingMissTrust--></item>
+        <item><!--pEpRatingRed--></item>
+        <item><!--pEpRatingB0rken--></item>
+        <item>Verifiqui tant vostè com el seu company de comunicació el contingut del missatge.<!--pEpRatingUnderAttack--></item>
+    </string-array>
 
 </resources>
