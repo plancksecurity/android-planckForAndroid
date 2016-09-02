@@ -277,6 +277,9 @@ public class GlobalSettings {
         s.put("pep_subject_unprotected", Settings.versions(
                 new V(46, new BooleanSetting(true))
         ));
+        s.put("pep_forward_warning", Settings.versions(
+                new V(47, new BooleanSetting(false))
+        ));
 
         SETTINGS = Collections.unmodifiableMap(s);
 

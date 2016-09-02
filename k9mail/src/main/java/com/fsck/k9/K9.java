@@ -45,6 +45,8 @@ public class K9 extends Application {
     private PEpProvider pEpProvider;
 
 
+
+
     /**
      * Components that are interested in knowing when the K9 instance is
      * available and ready (Android invokes Application.onCreate() after other
@@ -258,6 +260,8 @@ public class K9 extends Application {
     private static boolean pEpUseKeyserver = false;
     private static boolean pEpPassiveMode = false;
     private static boolean pEpSubjectUnprotected = false;
+    private static boolean pEpForwardWarningEnabled = false;
+
 
 
 
@@ -501,6 +505,7 @@ public class K9 extends Application {
         editor.putBoolean("pEpUseKeyserver", pEpUseKeyserver);
         editor.putBoolean("pEpPassiveMode", pEpPassiveMode);
         editor.putBoolean("pEpSubjectUnprotected", pEpSubjectUnprotected);
+        editor.putBoolean("pEpForwardWarningEnabled", pEpForwardWarningEnabled);
 
         fontSizes.save(editor);
     }
@@ -735,6 +740,7 @@ public class K9 extends Application {
         pEpUseKeyserver = storage.getBoolean("pEpUseKeyserver", false);
         pEpPassiveMode = storage.getBoolean("pEpPassiveMode", false);
         pEpSubjectUnprotected = storage.getBoolean("pEpSubjectUnprotected", false);
+        pEpForwardWarningEnabled = storage.getBoolean("pEpForwardWarningEnabled", false);
 
         mAttachmentDefaultPath = storage.getString("attachmentdefaultpath",
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString());
@@ -1460,6 +1466,14 @@ public class K9 extends Application {
         K9.pEpSubjectUnprotected = pEpSubjectUnprotected;
         pEpProvider.setSubjectUnprotected(pEpSubjectUnprotected);
         MessagingController.getInstance(this).setSubjectUnprotected(pEpSubjectUnprotected);
+    }
+
+
+    public static boolean ispEpForwardWarningEnabled() {
+        return pEpForwardWarningEnabled;
+    }
+    public void setpEpForwardWarningEnabled(boolean pEpForwardWarningEnabled) {
+        K9.pEpForwardWarningEnabled = pEpForwardWarningEnabled;
     }
 
 

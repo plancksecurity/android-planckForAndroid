@@ -93,6 +93,7 @@ public class Prefs extends K9PreferenceActivity {
     private static final String PEP_USE_KEYSERVER = "pep_use_keyserver";
     private static final String PEP_PASSIVE_MODE = "pep_passive_mode";
     private static final String PEP_SUBJECT_UNPROTECTED = "pep_subject_unprotected";
+    private static final String PEP_FORWARD_WARNING = "pep_forward_warning";
 
     private static final int ACTIVITY_CHOOSE_FOLDER = 1;
 
@@ -153,6 +154,7 @@ public class Prefs extends K9PreferenceActivity {
     private CheckBoxPreference mPEpUseKeyserver;
     private CheckBoxPreference mPEpPassiveMode;
     private CheckBoxPreference mPEpSubjectUnprotected;
+    private CheckBoxPreference mPepForwardWarning;
 
 
     public static void actionPrefs(Context context) {
@@ -430,6 +432,10 @@ public class Prefs extends K9PreferenceActivity {
         mPEpSubjectUnprotected =(CheckBoxPreference) findPreference(PEP_SUBJECT_UNPROTECTED);
         mPEpSubjectUnprotected.setChecked(K9.ispEpSubjectUnprotected());
 
+        mPepForwardWarning = (CheckBoxPreference) findPreference(PEP_FORWARD_WARNING);
+        mPepForwardWarning.setChecked(K9.ispEpForwardWarningEnabled());
+
+
         mSplitViewMode = (ListPreference) findPreference(PREFERENCE_SPLITVIEW_MODE);
         initListPreference(mSplitViewMode, K9.getSplitViewMode().name(),
                 mSplitViewMode.getEntries(), mSplitViewMode.getEntryValues());
@@ -538,6 +544,7 @@ public class Prefs extends K9PreferenceActivity {
         app.setPEpUseKeyserver(mPEpUseKeyserver.isChecked());
         app.setPEpPassiveMode(mPEpPassiveMode.isChecked());
         app.setpEpSubjectUnprotected(mPEpSubjectUnprotected.isChecked());
+        app.setpEpForwardWarningEnabled(mPepForwardWarning.isChecked());
 
         StorageEditor editor = storage.edit();
         K9.save(editor);

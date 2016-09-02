@@ -414,6 +414,10 @@
                 android:key="pep_subject_unprotected"
                 android:persistent="false"
                 android:title="@string/pep_subject_unprotected" />
+            <CheckBoxPreference
+                android:key="pep_forward_warning"
+                android:persistent="false"
+                android:title="@string/pep_forward_warning" />
         </PreferenceCategory>
         <PreferenceCategory
             android:title="GPG Compatibility"
