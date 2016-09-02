@@ -21,8 +21,8 @@
     <string name="pep_wrong_trustwords">Trustwords incorrectes</string>
     <string name="pep_wrong_fingerprint">Empremta incorrecte</string>
     <string name="pep_ask_trustwords">Pregunti a l’altre interlocutor: quines són les seves paraules de confiança? La resposta  correcta es mostra a continuació</string>
-    <string name="pep_complete_partner_format">Partner\n%1$s &lt;%2$s&gt;</string>
-    <string name="pep_partner_format">Partner\n%1$s</string>
+    <string name="pep_complete_partner_format">Company\n%1$s &lt;%2$s&gt;</string>
+    <string name="pep_partner_format">Company\n%1$s</string>
     <string name="pep_complete_myself_format">Myself\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_myself_format">Myself\n%1$s</string>
     <string name="pep_force_unprotected">Deshabilitar protecció</string>
@@ -30,11 +30,11 @@
     <string name="pep_username">Usuari</string>
     <string name="pep_userAddress">Adreça</string>
     <string name="pep_secret_key_detected">Detectada clau privada</string>
-    <string name="pep_received_this_secret_key">The following secret key was received</string>
+    <string name="pep_received_this_secret_key">S\'ha rebut la següent clau</string>
     <string name="pep_from_format">Rebut de %1$s</string>
     <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Confiar en el servidor i desar els missatges desprotegits</string>
     <string name="pep_mistrust_server_and_store_mails_encrypted">Els correus que es troben al servidor estan protegits</string>
-    <string name="pep_enable_privacy_protection">Protecció de la privacitat</string>
+    <string name="pep_enable_privacy_protection">Protegir privacitat</string>
     <string name="pep_explanation">Explicació</string>
     <string name="pep_suggestion">Sugerencia</string>
     <string name="pep_app_license">Llicenciat sota GNU General Public License v3</string>
@@ -49,14 +49,11 @@
         <item>No segur<!--pEpRatingUnencrypted--></item>
         <item>Insegur per a alguns<!--pEpRatingUnencryptedForSome--></item>
         <item>Seguretat no confiable<!--pEpRatingUnreliable--></item>
-        <item>Segur<!--pEpRatingYellow--></item>
         <item>Segur<!--pEpRatingReliable--></item>
-        <item>Segur &amp; de confiança<!--pEpRatingGreen--></item>
         <item>Segur &amp; de confiança<!--pEpRatingTrusted--></item>
         <item>Segur &amp; de confiança<!--pEpRatingTrustedAndAnonymized--></item>
         <item>Segur &amp; de confiança<!--pEpRatingFullyAnonymous--></item>
         <item>Sospitós<!--pEpRatingMissTrust--></item>
-        <item>Sospitós<!--pEpRatingRed--></item>
         <item>Ooops: Problema intern<!--pEpRatingB0rken--></item>
         <item>Falsificat<!--pEpRatingUnderAttack--></item>
     </string-array>
@@ -68,14 +65,11 @@
         <item>Aquest missatge no és segura.<!--pEpRatingUnencrypted--></item>
         <item>Aquest missatge no és segur per algun dels interlocutors.<!--pEpRatingUnencryptedForSome--></item>
         <item>El missatge té una protecció no confiable.<!--pEpRatingUnreliable--></item>
-        <item><!--pEpRatingYellow--></item>
         <item>El missatge és segur però encara és necessari verificar la identitat del contacte.<!--pEpRatingReliable--></item>
-        <item><!--pEpRatingGreen--></item>
         <item>El missatge és segur i s\'hi pot confiar.<!--pEpRatingTrusted--></item>
         <item>El missatge és segur i s\'hi pot confiar.<!--pEpRatingTrustedAndAnonymized--></item>
         <item>El missatge és segur i s\'hi pot confiar.<!--pEpRatingFullyAnonymous--></item>
         <item>En aquest missatge hi ha un company de comunicació marcat com a no segur amb anterioritat.<!--pEpRatingMissTrust--></item>
-        <item><!--pEpRatingRed--></item>
         <item><!--pEpRatingB0rken--></item>
         <item>Aquest missatge no és segur i ha sigut manipulat.<!--pEpRatingUnderAttack--></item>
     </string-array>
@@ -87,14 +81,11 @@
         <item>Si us plau, pregunti al seu company per la possibilitat d’utilitzar una solució de xifrat o instal·lar p≡p.<!--pEpRatingUnencrypted--></item>
         <item>Verifiqui que l\’estat de privacitat amb els seus interlocutor és com a mínim segur.<!--pEpRatingUnencryptedForSome--></item>
         <item>El missatge no té una seguretat confiable ni signatura.Si us plau, pregunti al seu company per la possibilitat de fer servir una solució de xifrat o instal·lar p≡p.<!--pEpRatingUnreliable--></item>
-        <item><!--pEpRatingYellow--></item>
         <item>Completi l\'intercanvi de paraules de confiança amb el seu interlocutor. Només cal realitzar aquest intercanvi una vegada per contacte per assegurar una comunicació privada i confiable.<!--pEpRatingReliable--></item>
-        <item><!--pEpRatingGreen--></item>
         <item>No cal realitzar més accions!<!--pEpRatingTrusted--></item>
         <item>No cal realitzar més accions!<!--pEpRatingTrustedAndAnonymized--></item>
         <item>No cal realitzar més accions!<!--pEpRatingFullyAnonymous--></item>
         <item>Restablir la connexió amb l\’interlocutor i tornar a fer un intercanvi de paraules de confiança.<!--pEpRatingMissTrust--></item>
-        <item><!--pEpRatingRed--></item>
         <item><!--pEpRatingB0rken--></item>
         <item>Verifiqui tant vostè com el seu company de comunicació el contingut del missatge.<!--pEpRatingUnderAttack--></item>
     </string-array>
