@@ -85,6 +85,7 @@
     <string name="pep_app_license">Licensed under the GNU General Public License v3</string>
     <string name="pep_trust_server_description">Store serverside mails in a safe form.</string>
     <string name="pep_account_privacy_protection_explanation">Enable privacy protection for this account </string>
+    <string name="pep_forward_warning">Weaker forward warning</string>
 
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>
