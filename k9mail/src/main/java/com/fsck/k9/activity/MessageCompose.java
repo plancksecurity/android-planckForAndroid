@@ -782,7 +782,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
         if (isForwardedpEpMessage()
                 && recipientPresenter.isForwardedMessageWeakestThanOriginal(originalMessageRating)) {
-            showDialog(DIALOG_FORWARD_WEAKER_TRUST_LEVEL);
+            if (K9.ispEpForwardWarningEnabled()) showDialog(DIALOG_FORWARD_WEAKER_TRUST_LEVEL);
+            else performSendAfterChecks();
             return;
         }
 
