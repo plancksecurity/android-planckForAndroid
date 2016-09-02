@@ -3,9 +3,9 @@ package com.fsck.k9.pEp;
 import android.content.Context;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.internet.MimeMessage;
-import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
+import org.pEp.jniadapter.Rating;
 
 import java.util.List;
 
@@ -37,9 +37,9 @@ public interface PEpProvider {
      * @param bccAddresses bcc addresses
      * @return the privacy level of a mail sent to the set of recipients
      */
-    Color getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses);
-    Color getPrivacyState(com.fsck.k9.mail.Message message);
-    Color getPrivacyState(Message message);
+    Rating getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses);
+    Rating getPrivacyState(com.fsck.k9.mail.Message message);
+    Rating getPrivacyState(Message message);
 
 
     /**
@@ -84,9 +84,9 @@ public interface PEpProvider {
      * @param identity
      * @return identity trust status color
      */
-    Color identityColor(Identity identity);
+    Rating identityRating(Identity identity);
 
-    Color identityColor(Address address);
+    Rating identityRating(Address address);
 
     /**
      * Retrieve long trustwords for a given identity
@@ -170,14 +170,14 @@ public interface PEpProvider {
     class DecryptResult {
         public final KeyDetail keyDetails;
 
-        public DecryptResult(MimeMessage msg, Color col, KeyDetail keyDetails) {
+        public DecryptResult(MimeMessage msg, Rating rating, KeyDetail keyDetails) {
             this.msg = msg;
-            this.col = col;
+            this.rating = rating;
             this.keyDetails = keyDetails;
         }
 
         final public MimeMessage msg;
-        final public Color col;
+        final public Rating rating;
     }
 
      enum ProtectionScope {

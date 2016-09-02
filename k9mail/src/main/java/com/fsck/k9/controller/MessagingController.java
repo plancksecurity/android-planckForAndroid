@@ -107,7 +107,7 @@ import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification;
 import com.fsck.k9.search.SqlQueryBuilder;
 
-import org.pEp.jniadapter.Color;
+import org.pEp.jniadapter.Rating;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;
@@ -1457,7 +1457,7 @@ public class MessagingController {
                         result = pEpProvider.decryptMessage((MimeMessage) message);
                     }
                     else {
-                        result = new PEpProvider.DecryptResult((MimeMessage) message, Color.pEpRatingUndefined, null);
+                        result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null);
                     }
                     PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
 
@@ -1468,7 +1468,7 @@ public class MessagingController {
                     else {
                         MimeMessage decryptedMessage =  result.msg;
                         if (message.getFolder().getName().equals(account.getSentFolderName())) {
-                            decryptedMessage.setHeader(MimeHeader.HEADER_PEPCOLOR, pEpProvider.getPrivacyState(message).name());
+                            decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpProvider.getPrivacyState(message).name());
                         }
 
                     decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
@@ -3147,7 +3147,7 @@ public class MessagingController {
                                 localSentFolder.appendMessages(Collections.singletonList(encryptedMessageToSave));    // if insecure server, push enc'd msg to sent folder
                             else {
                                 // if secure server, add color indicator and move plaintext to server
-                                message.addHeader(MimeHeader.HEADER_PEPCOLOR, pEpProvider.getPrivacyState(message).name());     // FIXME: this sucks. I should get the "real" color from encryptMessage()!
+                                message.addHeader(MimeHeader.HEADER_PEP_RATING, pEpProvider.getPrivacyState(message).name());     // FIXME: this sucks. I should get the "real" color from encryptMessage()!
                                 localFolder.moveMessages(Collections.singletonList(message), localSentFolder);
                             }
 

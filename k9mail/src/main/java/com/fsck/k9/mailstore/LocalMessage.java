@@ -19,15 +19,11 @@ import com.fsck.k9.mail.message.MessageHeaderParser;
 import com.fsck.k9.mailstore.LockableDatabase.DbCallback;
 import com.fsck.k9.mailstore.LockableDatabase.WrappedException;
 import com.fsck.k9.message.extractors.PreviewResult.PreviewType;
-import org.pEp.jniadapter.Color;
+import org.pEp.jniadapter.Rating;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Date;
-import java.util.Set;
 
 import java.io.ByteArrayInputStream;
-import java.util.Date;
 
 
 public class LocalMessage extends MimeMessage {
@@ -589,7 +585,7 @@ public class LocalMessage extends MimeMessage {
         return getBody() == null;
     }
 
-    public void setpEpColor(final Color pEpColor) {
+    public void setpEpRating(final Rating pEpRating) {
         try {
             this.localStore.database.execute(true, new DbCallback<Void>() {
                 @Override
@@ -599,7 +595,7 @@ public class LocalMessage extends MimeMessage {
                      * Set the new color on the message.
                      */
                     ContentValues cv = new ContentValues();
-                    cv.put("pep_color", pEpColor.toString());
+                    cv.put("pep_rating", pEpRating.toString());
                     db.update("messages", cv, "id = ?", new String[] { Long.toString(mId) });
 
                     return null;

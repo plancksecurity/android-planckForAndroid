@@ -40,8 +40,6 @@ import com.fsck.k9.activity.setup.FolderSettings;
 import com.fsck.k9.activity.setup.Prefs;
 import com.fsck.k9.fragment.MessageListFragment;
 import com.fsck.k9.fragment.MessageListFragment.MessageListFragmentListener;
-import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
@@ -61,7 +59,8 @@ import com.fsck.k9.view.MessageHeader;
 import com.fsck.k9.view.MessageTitleView;
 import com.fsck.k9.view.ViewSwitcher;
 import com.fsck.k9.view.ViewSwitcher.OnSwitchCompleteListener;
-import org.pEp.jniadapter.Color;
+
+import org.pEp.jniadapter.Rating;
 
 import java.util.Collection;
 import java.util.List;
@@ -1244,17 +1243,13 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     @Override
-    public void onForward(LocalMessage message) {
-        try {
-            MessageActions.actionForward(this, message, null, PEpUtils.extractpEpColor(message));
-        } catch (MessagingException e) {
-            Log.e(K9.LOG_TAG, "onForward: ", e);
-        }
+    public void onForward(MessageReference messageReference, Rating colorRating) {
+        onForward(messageReference, null, colorRating);
     }
 
     @Override
-    public void onForward(MessageReference messageReference, Parcelable decryptionResultForReply) {
-        MessageActions.actionForward(this, messageReference, decryptionResultForReply);
+    public void onForward(MessageReference messageReference, Parcelable decryptionResultForReply, Rating rating) {
+        MessageActions.actionForward(this, messageReference, decryptionResultForReply, rating);
     }
 
     @Override
@@ -1527,7 +1522,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     private void showMessageList() {
-        PEpUtils.colorActionBar(PePUIArtefactCache.getInstance(getApplicationContext()), getActionBar(), org.pEp.jniadapter.Color.pEpRatingUnencrypted);
+        PEpUtils.colorActionBar(PePUIArtefactCache.getInstance(getApplicationContext()), getActionBar(), Rating.pEpRatingUnencrypted);
         mMessageListWasDisplayed = true;
         mDisplayMode = DisplayMode.MESSAGE_LIST;
         mViewSwitcher.showFirstView();

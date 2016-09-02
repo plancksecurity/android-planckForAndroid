@@ -14,12 +14,13 @@ import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
-import org.pEp.jniadapter.Color;
+
+import org.pEp.jniadapter.Rating;
 
 public class PepColoredActivity extends K9Activity {
-    public static final String CURRENT_COLOR = "current_color";
-    public static final String PEP_COLOR_ERR0R_DETAIL_MESSAGE = "Cannot retrieve pEpColor";
-    private Color m_pEpColor = Color.pEpRatingUndefined;
+    public static final String CURRENT_RATING = "current_color";
+    public static final String PEP_COLOR_RATING_DETAIL_MESSAGE = "Cannot retrieve pEpRating";
+    private Rating pEpRating = Rating.pEpRatingUndefined;
     PePUIArtefactCache uiCache;
     private PEpProvider pEp;
 
@@ -31,27 +32,27 @@ public class PepColoredActivity extends K9Activity {
     protected void colorActionBar() {
         ActionBar actionBar = getActionBar() ;
         if (actionBar != null) {
-            PEpUtils.colorActionBar(uiCache, actionBar, m_pEpColor);
+            PEpUtils.colorActionBar(uiCache, actionBar, pEpRating);
         }
     }
 
-    protected void loadPepColor() {
+    protected void loadPepRating() {
         final Intent intent = getIntent();
-        String colorString;
-        if (intent.hasExtra(CURRENT_COLOR)) {
-            colorString = intent.getStringExtra(CURRENT_COLOR);
-            Log.d(K9.LOG_TAG, "Got color:" + colorString);
-            m_pEpColor = Color.valueOf(colorString);
+        String ratingString;
+        if (intent.hasExtra(CURRENT_RATING)) {
+            ratingString = intent.getStringExtra(CURRENT_RATING);
+            Log.d(K9.LOG_TAG, "Got color:" + ratingString);
+            pEpRating = Rating.valueOf(ratingString);
         } else {
-            throw new RuntimeException(PEP_COLOR_ERR0R_DETAIL_MESSAGE);
+            throw new RuntimeException(PEP_COLOR_RATING_DETAIL_MESSAGE);
         }
     }
 
-    public void setpEpColor(Color pEpColor) {
-        this.m_pEpColor = pEpColor;
+    public void setpEpRating(Rating pEpRating) {
+        this.pEpRating = pEpRating;
     }
-    public Color getpEpColor() {
-        return m_pEpColor;
+    public Rating getpEpRating() {
+        return pEpRating;
     }
 
     protected void initPep() {

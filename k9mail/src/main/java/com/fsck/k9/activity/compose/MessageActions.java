@@ -8,8 +8,8 @@ import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.MessageReference;
-import com.fsck.k9.mailstore.LocalMessage;
-import org.pEp.jniadapter.Color;
+
+import org.pEp.jniadapter.Rating;
 
 public class MessageActions {
     /**
@@ -79,11 +79,10 @@ public class MessageActions {
             Context context,
             LocalMessage message,
             Parcelable decryptionResult,
-            Color mPEpColor) {
+            Rating pEpRating) {
         Intent i = new Intent(context, MessageCompose.class);
-        i.putExtra(MessageCompose.EXTRA_MESSAGE_BODY, messageBody);
-        i.putExtra(MessageCompose.EXTRA_MESSAGE_REFERENCE, message.makeMessageReference());
-        i.putExtra(MessageCompose.EXTRA_PEP_COLOR, mPEpColor);
+        i.putExtra(MessageCompose.EXTRA_MESSAGE_REFERENCE, messageReference);
+        i.putExtra(MessageCompose.EXTRA_PEP_RATING, pEpRating);
         i.putExtra(MessageCompose.EXTRA_MESSAGE_DECRYPTION_RESULT, decryptionResult);
         i.setAction(MessageCompose.ACTION_FORWARD);
         context.startActivity(i);

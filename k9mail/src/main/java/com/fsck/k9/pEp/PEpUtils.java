@@ -23,8 +23,8 @@ import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
 import com.fsck.k9.mailstore.LocalMessage;
 import org.apache.commons.io.IOUtils;
-import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
+import org.pEp.jniadapter.Rating;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -200,32 +200,42 @@ public class PEpUtils {
     }
 
 
-    public static int getColorColor(Color pepColor, Context context) {
-        if (pepColor.value <= Color.pEpRatingRed.value) {
-            return ContextCompat.getColor(context, R.color.pep_red);
-        } else if (pepColor.value < Color.pEpRatingYellow.value) {
-            return  ContextCompat.getColor(context, R.color.pep_gray);
-        } else if (pepColor.value < Color.pEpRatingGreen.value) {
-            return  ContextCompat.getColor(context, R.color.pep_yellow);
-        } else {
-            return ContextCompat.getColor(context, R.color.pep_green);
+    public static int getRatingColor(Rating rating, Context context) {
+        // TODO: 02/09/16 PEP_color color_from_rating(PEP_rating rating) from pEpEngine;
+
+        if (rating.equals(Rating.pEpRatingB0rken)
+                || rating.value < Rating.pEpRatingReliable.value) {
+            return ContextCompat.getColor(context, R.color.pep_no_color);
         }
+
+        if (rating.value < Rating.pEpRatingUndefined.value) {
+            return ContextCompat.getColor(context, R.color.pep_red);
+        }
+
+        if (rating.value <= Rating.pEpRatingTrusted.value) {
+            return  ContextCompat.getColor(context, R.color.pep_yellow);
+        }
+
+        if (rating.value >= Rating.pEpRatingTrusted.value) {
+            return  ContextCompat.getColor(context, R.color.pep_green);
+        }
+        throw new RuntimeException("Invalid rating");
     }
 
-    public static void colorActionBar(PePUIArtefactCache pEpUiCache, ActionBar actionBar, Color mPEpColor) {
+    public static void colorActionBar(PePUIArtefactCache pEpUiCache, ActionBar actionBar, Rating rating) {
         if (actionBar != null) {
-            ColorDrawable colorDrawable = new ColorDrawable(pEpUiCache.getColor(mPEpColor));
+            ColorDrawable colorDrawable = new ColorDrawable(pEpUiCache.getColor(rating));
             actionBar.setBackgroundDrawable(colorDrawable);
         }
     }
 
-    public static Color extractpEpColor(Message message) {
-        String[] pEpColor;
-        pEpColor = message.getHeader(MimeHeader.HEADER_PEPCOLOR);
-        if(pEpColor != null && pEpColor.length > 0)
-            return Color.valueOf(pEpColor[0]);
+    public static Rating extractRating(Message message) {
+        String[] pEpRating;
+        pEpRating = message.getHeader(MimeHeader.HEADER_PEP_RATING);
+        if(pEpRating != null && pEpRating.length > 0)
+            return Rating.valueOf(pEpRating[0]);
         else
-            return Color.pEpRatingUndefined;
+            return Rating.pEpRatingUndefined;
     }
 
     public static String formatFpr(String fpr) {
@@ -248,9 +258,9 @@ public class PEpUtils {
         return String.valueOf(fprChars);
     }
 
-    public static boolean ispEpDisabled(Account account, LocalMessage message, Color messageRating) {
+    public static boolean ispEpDisabled(Account account, LocalMessage message, Rating messageRating) {
         return message.isSet(Flag.X_FORCE_UNENCRYPTED)
-                || messageRating == Color.pEpRatingUndefined
+                || messageRating == Rating.pEpRatingUndefined
                 || !account.ispEpPrivacyProtected();
     }
 }

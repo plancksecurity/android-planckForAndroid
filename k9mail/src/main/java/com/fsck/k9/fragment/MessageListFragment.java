@@ -121,6 +121,9 @@ import com.handmark.pulltorefresh.library.ILoadingLayout;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
+import org.pEp.jniadapter.Rating;
+
+
 
 public class MessageListFragment extends Fragment implements OnItemClickListener,
         ConfirmationDialogFragmentListener, LoaderCallbacks<Cursor> {
@@ -145,7 +148,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         ThreadColumns.ROOT,
         SpecialColumns.ACCOUNT_UUID,
         SpecialColumns.FOLDER_NAME,
-        MessageColumns.PEP_COLOR,
+        MessageColumns.PEP_RATING,
 
         SpecialColumns.THREAD_COUNT,
     };
@@ -169,7 +172,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
     private static final int THREAD_ROOT_COLUMN = 16;
     private static final int ACCOUNT_UUID_COLUMN = 17;
     private static final int FOLDER_NAME_COLUMN = 18;
-    private static final int PEP_COLOR_COLUMN = 19;
+    private static final int PEP_RATING_COLUMN = 19;
     private static final int THREAD_COUNT_COLUMN = 20;
 
     private static final String[] PROJECTION = Arrays.copyOf(THREADED_PROJECTION,
@@ -1048,8 +1051,8 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         mFragmentListener.onReplyAll(messageReference);
     }
 
-    public void onForward(MessageReference messageReference, org.pEp.jniadapter.Color colorRating) {
-        mFragmentListener.onForward(messageReference, colorRating);
+    public void onForward(MessageReference messageReference, Rating pEpRating) {
+        mFragmentListener.onForward(messageReference, pEpRating);
     }
 
     public void onResendMessage(MessageReference messageReference) {
@@ -1386,7 +1389,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
             }
             case R.id.forward: {
                 //TODO: Check how to avoid to retrive the whole message
-                onForward(getMessageAtPosition(adapterPosition), PEpUtils.extractpEpColor(getLocalMessageAtPosition(adapterPosition)));
+                onForward(getMessageAtPosition(adapterPosition), PEpUtils.extractRating(getLocalMessageAtPosition(adapterPosition)));
                 break;
             }
             case R.id.send_again: {
@@ -1788,7 +1791,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
             Address[] fromAddrs = Address.unpack(fromList);
             Address[] toAddrs = Address.unpack(toList);
             Address[] ccAddrs = Address.unpack(ccList);
-            org.pEp.jniadapter.Color pEpColor = org.pEp.jniadapter.Color.valueOf(cursor.getString(PEP_COLOR_COLUMN));
+            Rating pEpRating = Rating.valueOf(cursor.getString(PEP_RATING_COLUMN));
 
             boolean fromMe = mMessageHelper.toMe(account, fromAddrs);
             boolean toMe = mMessageHelper.toMe(account, toAddrs);
@@ -1851,7 +1854,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
 //                    List<Address> to = Arrays.asList(toAddrs);
 //                    List<Address> cc = Arrays.asList(ccAddrs);j
 //                    List<Address> bcc = Arrays.asList(new Address[0]);
-//                    holder.contactBadge.setpEpColor(((K9) context.getApplicationContext()).getpEpProvider().getPrivacyState(from, to, cc, bcc));
+//                    holder.contactBadge.setpEpRating(((K9) context.getApplicationContext()).getpEpProvider().getPrivacyState(from, to, cc, bcc));
                     /*
                      * At least in Android 2.2 a different background + padding is used when no
                      * email address is available. ListView reuses the views but QuickContactBadge
@@ -1864,7 +1867,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
                     holder.contactBadge.assignContactUri(null);
                     holder.contactBadge.setImageResource(R.drawable.ic_contact_picture);
                 }
-                holder.contactBadge.setpEpColor(pEpColor);
+                holder.contactBadge.setPepRating(pEpRating);
             }
 
             // Background color
@@ -2994,7 +2997,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         void showThread(Account account, String folderName, long rootId);
         void showMoreFromSameSender(String senderAddress);
         void onResendMessage(MessageReference message);
-        void onForward(MessageReference message, org.pEp.jniadapter.Color colorRating);
+        void onForward(MessageReference message, Rating colorRating);
         void onReply(MessageReference message);
         void onReplyAll(MessageReference message);
         void openMessage(MessageReference messageReference);

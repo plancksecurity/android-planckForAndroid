@@ -100,7 +100,7 @@ import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
-import org.pEp.jniadapter.Color;
+import org.pEp.jniadapter.Rating;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -132,7 +132,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     public static final String EXTRA_ACCOUNT = "account";
     public static final String EXTRA_MESSAGE_REFERENCE = "message_reference";
 
-    public static final String EXTRA_PEP_COLOR = "pEpColor";
+    public static final String EXTRA_PEP_RATING = "pEpRating";
     public static final String EXTRA_MESSAGE_DECRYPTION_RESULT  = "message_decryption_result";
     public static final String EXTRA_MESSAGE_BODY  = "messageBody";
 
@@ -210,7 +210,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private MessageBuilder currentMessageBuilder;
     private boolean mFinishAfterDraftSaved;
     private boolean alreadyNotifiedUserOfEmptySubject = false;
-    private Color originalMessageColor = null;
+    private Rating originalMessageRating = null;
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
@@ -359,7 +359,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         final Intent intent = getIntent();
 
         mMessageReference = intent.getParcelableExtra(EXTRA_MESSAGE_REFERENCE);
-        originalMessageColor = ((Color) intent.getSerializableExtra(EXTRA_PEP_COLOR));
+        originalMessageRating = ((Rating) intent.getSerializableExtra(EXTRA_PEP_RATING));
 
         final String accountUuid = (mMessageReference != null) ?
                                    mMessageReference.getAccountUuid() :
@@ -819,7 +819,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
 
         if (isForwardedpEpMessage()
-                && recipientPresenter.isForwardedMessageWeakestThanOriginal(originalMessageColor)) {
+                && recipientPresenter.isForwardedMessageWeakestThanOriginal(originalMessageRating)) {
             showDialog(DIALOG_FORWARD_WEAKER_TRUST_LEVEL);
             return;
         }
@@ -1848,6 +1848,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
 
     private boolean isForwardedpEpMessage() {
-        return originalMessageColor != null;
+        return originalMessageRating != null;
     }
 }

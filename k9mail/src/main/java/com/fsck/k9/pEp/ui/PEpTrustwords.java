@@ -88,7 +88,7 @@ public class PEpTrustwords extends PepColoredActivity {
                 }
 
                 partnerFpr.setText(PEpUtils.formatFpr(partner.fpr));
-                setpEpColor(getpEp().identityColor(partner));
+                setpEpRating(getpEp().identityRating(partner));
                 colorActionBar();
 
             }
@@ -162,7 +162,7 @@ public class PEpTrustwords extends PepColoredActivity {
     @OnClick(R.id.wrongTrustwords)
     public void wrongTrustwords() {
         getpEp().keyCompromised(partner);
-        getpEp().identityColor(partner);
+        getpEp().identityRating(partner);
         Intent returnIntent = new Intent();
         returnIntent.putExtra(PARTNER_POSITION, partnerPosition);
         setResult(Activity.RESULT_OK, returnIntent);

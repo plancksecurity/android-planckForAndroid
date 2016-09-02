@@ -19,8 +19,8 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
-import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
+import org.pEp.jniadapter.Rating;
 
 import java.util.List;
 
@@ -68,7 +68,7 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
             Log.i("RecipientsAdapter", "onResetClick " + id.address);
             pEp.resetTrust(id);
             notifyDataSetChanged();
-            listener.colorChanged(Color.pEpRatingReliable);
+            listener.onRatingChanged(Rating.pEpRatingReliable);
 
         }
     };
@@ -139,22 +139,22 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
             container = view.findViewById(R.id.recipientContainer);
         }
 
-        private void renderButton(Color color) {
-            if (color.value != Color.pEpRatingRed.value
-                    && color.value < Color.pEpRatingYellow.value) {
+        private void renderButton(Rating rating) {
+            if (rating.value != Rating.pEpRatingMistrust.value
+                    && rating.value < Rating.pEpRatingReliable.value) {
                 handshakeButton.setVisibility(View.GONE);
-            } else if (color.value == Color.pEpRatingRed.value
-                    || color.value >= Color.pEpRatingGreen.value){
+            } else if (rating.value == Rating.pEpRatingMistrust.value
+                    || rating.value >= Rating.pEpRatingTrusted.value){
                 handshakeButton.setText(context.getString(R.string.pep_reset_trust));
                 handshakeButton.setOnClickListener(onResetClick);
-            } else if (color.value == Color.pEpRatingYellow.value){
+            } else if (rating.value == Rating.pEpRatingReliable.value){
                 handshakeButton.setText(context.getString(R.string.pep_handshake));
                 handshakeButton.setOnClickListener(onHandshakeClick);
             }
         }
 
-        private void renderColor(Color color) {
-            int colorCode = PePUIArtefactCache.getInstance(context).getColor(color);
+        private void renderColor(Rating rating) {
+            int colorCode = PePUIArtefactCache.getInstance(context).getColor(rating);
             container.setBackgroundColor(colorCode);
         }
 
@@ -164,14 +164,14 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
         }
 
         public void render(int position, Identity identity) {
-            Color color = pEp.identityColor(identity);
+            Rating color = pEp.identityRating(identity);
             renderColor(color);
             renderButton(color);
             setPosition(position);
-            renderIdentity(identity, color);
+            renderIdentity(identity);
         }
 
-        private void renderIdentity(Identity identity, Color color) {
+        private void renderIdentity(Identity identity) {
             if (identity.username != null && !identity.address.equals(identity.username)) {
                 identityUserName.setText(identity.username);
                 if (identity.address != null) identityAdress.setText(identity.address);

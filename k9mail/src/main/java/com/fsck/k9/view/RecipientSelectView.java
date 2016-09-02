@@ -135,7 +135,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         holder.vName.setText(recipient.getDisplayNameOrAddress());
 
         RecipientAdapter.setContactPhotoOrPlaceholder(getContext(), holder.vContactPhoto, recipient);
-        holder.vContactPhoto.setpEpColor(pEp.identityColor(recipient.address));
+        holder.vContactPhoto.setPepRating(pEp.identityRating(recipient.address));
 
         boolean hasCryptoProvider = cryptoProvider != null;
         if (!hasCryptoProvider) {

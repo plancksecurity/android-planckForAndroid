@@ -10,11 +10,11 @@ import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
 import org.pEp.jniadapter.AndroidHelper;
-import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.DecryptFlags;
 import org.pEp.jniadapter.Engine;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
+import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.pEpException;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public Color getPrivacyState(com.fsck.k9.mail.Message message) {
+    public Rating getPrivacyState(com.fsck.k9.mail.Message message) {
 
         Address from = message.getFrom()[0];                            // FIXME: From is an array?!
         List<Address> to = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO));
@@ -61,16 +61,16 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public Color getPrivacyState(Message message) {
+    public Rating getPrivacyState(Message message) {
         try {
             if (engine == null) {
                 createEngineSession();
             }
-            return engine.outgoing_message_color(message);
+            return engine.outgoing_message_rating(message);
         } catch (pEpException e) {
             Log.e(TAG, "during getPrivacyState:", e);
         }
-        return Color.pEpRatingUndefined;
+        return Rating.pEpRatingUndefined;
     }
 
     private void createEngineSession() throws pEpException {
@@ -87,10 +87,10 @@ public class PEpProviderImpl implements PEpProvider {
 
     //Don't instantiate a new engine
     @Override
-    public Color getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses) {
+    public Rating getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses) {
         int recipientsSize = toAddresses.size() + ccAddresses.size() + bccAddresses.size();
         if (from == null || recipientsSize == 0)
-            return Color.pEpRatingUndefined;
+            return Rating.pEpRatingUndefined;
 
         Message testee = null;
         try {
@@ -111,12 +111,12 @@ public class PEpProviderImpl implements PEpProvider {
             testee.setLongmsg("Lorem ipsum");
             testee.setDir(Message.Direction.Outgoing);
 
-            Color result = engine.outgoing_message_color(testee);   // stupid way to be able to patch the value in debugger
+            Rating result = engine.outgoing_message_rating(testee);   // stupid way to be able to patch the value in debugger
             Log.i(TAG, "getPrivacyState " + idFrom.fpr);
-            if (result.value != Color.pEpRatingUnencrypted.value) return result;
+            if (result.value != Rating.pEpRatingUnencrypted.value) return result;
             else {
                 if (isUnencryptedForSome(toAddresses, ccAddresses, bccAddresses)) {
-                    return Color.pEpRatingUnencryptedForSome;
+                    return Rating.pEpRatingUnencryptedForSome;
                 } else return result;
             }
         } catch (Throwable e) {
@@ -125,18 +125,18 @@ public class PEpProviderImpl implements PEpProvider {
             if (testee != null) testee.close();
         }
 
-        return Color.pEpRatingUndefined;
+        return Rating.pEpRatingUndefined;
     }
 
     private boolean isUnencryptedForSome(List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses) {
         for (Address toAddress : toAddresses) {
-            if (identityColor(toAddress).value > Color.pEpRatingUnencrypted.value) return true;
+            if (identityRating(toAddress).value > Rating.pEpRatingUnencrypted.value) return true;
         }
         for (Address ccAddress : ccAddresses) {
-            if (identityColor(ccAddress).value > Color.pEpRatingUnencrypted.value) return true;
+            if (identityRating(ccAddress).value > Rating.pEpRatingUnencrypted.value) return true;
         }
         for (Address bccAddress : bccAddresses) {
-            if (identityColor(bccAddress).value > Color.pEpRatingUnencrypted.value) return true;
+            if (identityRating(bccAddress).value > Rating.pEpRatingUnencrypted.value) return true;
         }
         return false;
     }
@@ -157,11 +157,11 @@ public class PEpProviderImpl implements PEpProvider {
             Log.d(TAG, "decryptMessage() after decrypt");
             MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
 
-            decMsg.addHeader(MimeHeader.HEADER_PEPCOLOR, decReturn.color.name());
+            decMsg.addHeader(MimeHeader.HEADER_PEP_RATING, decReturn.rating.name());
             if (isUsablePrivateKey(decReturn)) {
-                return new DecryptResult(decMsg, decReturn.color, getOwnKeyDetails(srcMsg));
+                return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg));
             }
-            else return new DecryptResult(decMsg, decReturn.color, null);
+            else return new DecryptResult(decMsg, decReturn.rating, null);
         } catch (Throwable t) {
             Log.e(TAG, "while decrypting message:", t);
             throw new RuntimeException("Could not decrypt", t);
@@ -173,7 +173,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
     private boolean isUsablePrivateKey(Engine.decrypt_message_Return result) {
         // TODO: 13/06/16 Check if is necesary check own id
-        return result.color.value >= Color.pEpRatingGreen.value
+        return result.rating.value >= Rating.pEpRatingTrusted.value
                 && result.flags != null
                 && result.flags == DecryptFlags.pEpDecryptFlagOwnPrivateKey;
     }
@@ -308,7 +308,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     private boolean isEncrypted(Identity identity) {
-        return identityColor(identity).value > Color.pEpRatingUnencrypted.value;
+        return identityRating(identity).value > Rating.pEpRatingUnencrypted.value;
     }
 
     private Vector<String> convertExtraKeys(String[] extraKeys) {
@@ -320,19 +320,19 @@ public class PEpProviderImpl implements PEpProvider {
 
 
     @Override
-    public Color identityColor(Address address) {
+    public Rating identityRating(Address address) {
         Identity ident = PEpUtils.createIdentity(address, context);
-        return identityColor(ident);
+        return identityRating(ident);
     }
 
     @Override
-    public Color identityColor(Identity ident) {
+    public Rating identityRating(Identity ident) {
         createEngineInstanceIfNeeded();
         try {
-            return engine.identity_color(ident);
+            return engine.identity_rating(ident);
         } catch (pEpException e) {
-            Log.e(TAG, "identityColor: ", e);
-            return Color.pEpRatingUndefined;
+            Log.e(TAG, "identityRating: ", e);
+            return Rating.pEpRatingUndefined;
         }
     }
 

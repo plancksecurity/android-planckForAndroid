@@ -19,8 +19,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpProvider;
-import org.pEp.jniadapter.Color;
+
 import org.pEp.jniadapter.Identity;
+import org.pEp.jniadapter.Rating;
 
 public class PEpStatus extends PepColoredActivity implements ChangeColorListener{
 
@@ -41,10 +42,10 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     String myself = "";
 
 
-    public static void actionShowStatus(Context context, Color currentColor, String myself) {
+    public static void actionShowStatus(Context context, Rating currentRating, String myself) {
         Intent i = new Intent(context, PEpStatus.class);
         i.setAction(ACTION_SHOW_PEP_STATUS);
-        i.putExtra(CURRENT_COLOR, currentColor.toString());
+        i.putExtra(CURRENT_RATING, currentRating.toString());
         i.putExtra(MYSELF, myself);
         context.startActivity(i);
     }
@@ -52,7 +53,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        loadPepColor();
+        loadPepRating();
         setContentView(R.layout.pep_status);
         ButterKnife.bind(PEpStatus.this);
         if (getIntent() != null && getIntent().hasExtra(MYSELF)) {
@@ -67,8 +68,8 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
 
 
     private void loadPepTexts() {
-        pEpTitle.setText(uiCache.getTitle(getpEpColor()));
-        pEpSuggestion.setText(uiCache.getExplanation(getpEpColor()));
+        pEpTitle.setText(uiCache.getTitle(getpEpRating()));
+        pEpSuggestion.setText(uiCache.getExplanation(getpEpRating()));
     }
 
     private void setUpActionBar() {
@@ -100,8 +101,8 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     }
 
     @Override
-    public void colorChanged(Color pEpColor) {
-        setpEpColor(pEpColor);
+    public void onRatingChanged(Rating rating) {
+        setpEpRating(rating);
         colorActionBar();
     }
 
@@ -139,7 +140,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
             if (resultCode == RESULT_OK) {
                int position = data.getIntExtra(PEpTrustwords.PARTNER_POSITION, PEpTrustwords.DEFAULT_POSITION);
                 Identity partner = uiCache.getRecipients().get(position);
-                setpEpColor(getpEp().identityColor(partner));
+                setpEpRating(getpEp().identityRating(partner));
                 recipientsAdapter.notifyDataSetChanged();
                 colorActionBar();
 
@@ -175,7 +176,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     private void showExplanationDialog() {
          new AlertDialog.Builder(this)
                 .setTitle(R.string.pep_explanation)
-                .setMessage(uiCache.getExplanation(getpEpColor()))
+                .setMessage(uiCache.getExplanation(getpEpRating()))
                 .setPositiveButton(R.string.okay_action,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {

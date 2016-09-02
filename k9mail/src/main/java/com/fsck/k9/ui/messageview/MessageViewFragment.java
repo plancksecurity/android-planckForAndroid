@@ -71,8 +71,8 @@ import com.fsck.k9.ui.crypto.MessageCryptoHelper;
 import com.fsck.k9.ui.message.DecodeMessageLoader;
 import com.fsck.k9.ui.message.LocalMessageLoader;
 import com.fsck.k9.view.MessageHeader;
-import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
+import org.pEp.jniadapter.Rating;
 
 
 public class MessageViewFragment extends Fragment implements ConfirmationDialogFragmentListener,
@@ -87,7 +87,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     public static final int REQUEST_MASK_LOADER_HELPER = (1 << 8);
     public static final int REQUEST_MASK_CRYPTO_PRESENTER = (1 << 9);
 
-    private Color mPEpColor;
+
+    private Rating pEpRating;
     private PePUIArtefactCache pePUIArtefactCache;
 
     public static MessageViewFragment newInstance(MessageReference reference) {
@@ -350,7 +351,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void onForward() {
         if (mMessage != null) {
-            mFragmentListener.onForward(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), mPEpColor);
+            mFragmentListener.onForward(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PEpUtils.extractRating(mMessage));
         }
     }
 
@@ -745,13 +746,11 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             e.printStackTrace();
         }
 
-        //FIXME: What happens if, I have more than one own identities. probably mantain, the current account when we
-        // select one on the folder list
-        PEpStatus.actionShowStatus(getActivity(), mPEpColor, myAddress);
+        PEpStatus.actionShowStatus(getActivity(), pEpRating, myAddress);
     }
 
     public interface MessageViewFragmentListener {
-        void onForward(MessageReference messageReference, Parcelable decryptionResultForReply, Color colorRating);
+        void onForward(MessageReference messageReference, Parcelable decryptionResultForReply, Rating rating);
         void disableDeleteAction();
         void onReplyAll(MessageReference messageReference, Parcelable decryptionResultForReply);
         void onReply(MessageReference messageReference, Parcelable decryptionResultForReply);
@@ -774,24 +773,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             mMessage = message;
 
 
-            try {
-                mPEpColor = PEpUtils.extractpEpColor(message);
+            pEpRating = PEpUtils.extractRating(message);
 
-                PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), mPEpColor);
-                if (pePUIArtefactCache.getColor(mPEpColor) == getResources().getColor(R.color.pep_gray)) {
-                    mFragmentListener.setPepStatusEnabled(false);
-                }
-                else {
-                    mFragmentListener.setPepStatusEnabled(true);
-                }
-
-            } catch (MessagingException e) {
-                e.printStackTrace();
-            }
-
-
-            displayHeaderForLoadingMessage(message);
-            mMessageView.setToLoadingState();
+            PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), pEpRating);
         }
 
         @Override

@@ -50,10 +50,12 @@ import org.pEp.jniadapter.Color;
 import com.fsck.k9.ui.messageview.OnCryptoClickListener;
 
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.ui.PEpContactBadge;
+import com.fsck.k9.ui.messageview.OnCryptoClickListener;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpStatus;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
-import org.pEp.jniadapter.Color;
+import org.pEp.jniadapter.Rating;
 
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -90,7 +92,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     private OnLayoutChangedListener mOnLayoutChangedListener;
     private OnCryptoClickListener onCryptoClickListener;
 
-    private Color mPEpColor;
+    private Rating pEpRating;
     private PePUIArtefactCache pePUIArtefactCache;
 
     /**
@@ -279,11 +281,11 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     }
 
-    public void populate(final Message message, final Account account) throws MessagingException {
-        mPEpColor = PEpUtils.extractpEpColor(message);
+    public void populate(final Message message, final Account account) {
+        pEpRating = PEpUtils.extractRating(message);
 
-        Log.i("pEp", "got color " + mPEpColor + " " + mPEpColor.value);
-        mContactBadge.setpEpColor(mPEpColor);
+        Log.i("pEp", "got color " + pEpRating + " " + pEpRating.value);
+        mContactBadge.setPepRating(pEpRating);
 
         final Contacts contacts = K9.showContactName() ? mContacts : null;
         final CharSequence from = MessageHelper.toFriendly(message.getFrom(), contacts);
