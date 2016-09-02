@@ -149,7 +149,7 @@ public class EmailProvider extends ContentProvider {
         public static final String FLAGGED = "flagged";
         public static final String ANSWERED = "answered";
         public static final String FORWARDED = "forwarded";
-        public static final String PEP_COLOR = "pep_color";
+        public static final String PEP_RATING = "pep_rating";
     }
 
     private interface InternalMessageColumns extends MessageColumns {

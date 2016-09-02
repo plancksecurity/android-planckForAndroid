@@ -17,33 +17,27 @@
         <item>pEpRatingUnencrypted</item>
         <item>pEpRatingUnencryptedForSome</item>
         <item>pEpRatingUnreliable</item>
-        <item>pEpRatingYellow</item>
         <item>pEpRatingReliable</item>
-        <item>pEpRatingGreen</item>
         <item>pEpRatingTrusted</item>
         <item>pEpRatingTrustedAndAnonymized</item>
         <item>pEpRatingFullyAnonymous</item>
         <item>pEpRatingMistrust</item>
-        <item>pEpRatingRed</item>
         <item>pEpRatingB0rken</item>
         <item>pEpRatingUnderAttack</item>
     </string-array>
 
     <array name="pep_color">
-        <item>@color/pep_gray<!--pEpRatingUndefined--></item>
-        <item>@color/pep_gray<!--pEpRatingCannotDecrypt--></item>
-        <item>@color/pep_gray<!--pEpRatingHaveNoKey--></item>
-        <item>@color/pep_gray<!--pEpRatingUnencrypted--></item>
-        <item>@color/pep_gray<!--pEpRatingUnencryptedForSome--></item>
-        <item>@color/pep_gray<!--pEpRatingUnreliable--></item>
-        <item>@color/pep_yellow<!--pEpRatingYellow--></item>
+        <item>@color/pep_no_color<!--pEpRatingUndefined--></item>
+        <item>@color/pep_no_color<!--pEpRatingCannotDecrypt--></item>
+        <item>@color/pep_no_color<!--pEpRatingHaveNoKey--></item>
+        <item>@color/pep_no_color<!--pEpRatingUnencrypted--></item>
+        <item>@color/pep_no_color<!--pEpRatingUnencryptedForSome--></item>
+        <item>@color/pep_no_color<!--pEpRatingUnreliable--></item>
         <item>@color/pep_yellow<!--pEpRatingReliable--></item>
-        <item>@color/pep_green<!--pEpRatingGreen--></item>
         <item>@color/pep_green<!--pEpRatingTrusted--></item>
         <item>@color/pep_green<!--pEpRatingTrustedAndAnonymized--></item>
         <item>@color/pep_green<!--pEpRatingFullyAnonymous--></item>
         <item>@color/pep_red<!--pEpRatingMissTrust--></item>
-        <item>@color/pep_red<!--pEpRatingRed--></item>
         <item>@color/pep_red<!--pEpRatingB0rken--></item>
         <item>@color/pep_red<!--pEpRatingUnderAttack--></item>
     </array>
@@ -99,14 +93,11 @@
         <item>Unsecure<!--pEpRatingUnencrypted--></item>
         <item>Unsecure for some<!--pEpRatingUnencryptedForSome--></item>
         <item>Unreliable Security<!--pEpRatingUnreliable--></item>
-        <item>Secure<!--pEpRatingYellow--></item>
         <item>Secure<!--pEpRatingReliable--></item>
-        <item>Secure &amp; Trusted<!--pEpRatingGreen--></item>
         <item>Secure &amp; Trusted<!--pEpRatingTrusted--></item>
         <item>Secure &amp; Trusted<!--pEpRatingTrustedAndAnonymized--></item>
         <item>Secure &amp; Trusted<!--pEpRatingFullyAnonymous--></item>
         <item>Mistrusted<!--pEpRatingMissTrust--></item>
-        <item>Mistrusted<!--pEpRatingRed--></item>
         <item>Ooops: Internal problem<!--pEpRatingB0rken--></item>
         <item>Under Attack<!--pEpRatingUnderAttack--></item>
     </string-array>
@@ -118,14 +109,11 @@
         <item>This message is unsecure.<!--pEpRatingUnencrypted--></item>
         <item>This message is unsecure for some communication partners.<!--pEpRatingUnencryptedForSome--></item>
         <item>This message has unreliable protection.<!--pEpRatingUnreliable--></item>
-        <item><!--pEpRatingYellow--></item>
         <item>This message is secure but you still need to verify the identity of your communication partner.<!--pEpRatingReliable--></item>
-        <item><!--pEpRatingGreen--></item>
         <item>This message is secure and trusted.<!--pEpRatingTrusted--></item>
         <item>This message is secure and trusted.<!--pEpRatingTrustedAndAnonymized--></item>
         <item>This message is secure and trusted.<!--pEpRatingFullyAnonymous--></item>
         <item>This message has a communication partner that has previously been marked as mistrusted.<!--pEpRatingMissTrust--></item>
-        <item><!--pEpRatingRed--></item>
         <item><!--pEpRatingB0rken--></item>
         <item>This message is not secure and has been tampered with.<!--pEpRatingUnderAttack--></item>
     </string-array>
@@ -137,14 +125,11 @@
         <item>Please ask your communication partner to use an encryption solution or install p≡p.<!--pEpRatingUnencrypted--></item>
         <item>Make sure the privacy status for each communication partner listed is at least secure.<!--pEpRatingUnencryptedForSome--></item>
         <item>This message has no reliable encryption or no signature. Ask your communication partner to upgrade their encryption solution or install p≡p.<!--pEpRatingUnreliable--></item>
-        <item><!--pEpRatingYellow--></item>
         <item>Complete a handshake with your communication partner. A handshake is needed only once per partner and will ensure secure and trusted communication.<!--pEpRatingReliable--></item>
-        <item><!--pEpRatingGreen--></item>
         <item>No action needed!<!--pEpRatingTrusted--></item>
         <item>No action needed!<!--pEpRatingTrustedAndAnonymized--></item>
         <item>No action needed!<!--pEpRatingFullyAnonymous--></item>
         <item>Re-establish the connection with your communication partner and try to complete another handshake.<!--pEpRatingMissTrust--></item>
-        <item><!--pEpRatingRed--></item>
         <item><!--pEpRatingB0rken--></item>
         <item>Separately verify the content of this message with your communication partner.<!--pEpRatingUnderAttack--></item>
     </string-array>

@@ -26,12 +26,10 @@ import com.fsck.k9.pEp.ui.PEpStatus;
 import com.fsck.k9.view.RecipientSelectView;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.RecipientSelectView.TokenListener;
-import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
+import org.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 
 public class RecipientMvpView implements OnFocusChangeListener, OnClickListener {
@@ -63,7 +61,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
     // pEp stuff
     private MenuItem pEpIndicator;
-    private Color pEpColor = Color.pEpRatingUndefined;
+    private Rating pEpRating = Rating.pEpRatingUndefined;
 
     PePUIArtefactCache pEpUiCache;
     private RecipientPresenter presenter;
@@ -425,21 +423,21 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         bccView.setOnFocusChangeListener(pEpChangeTracker);
     }
 
-    public void setpEpColor(Color pEpColor) {
-        this.pEpColor = pEpColor;
+    public void setpEpRating(Rating pEpRating) {
+        this.pEpRating = pEpRating;
     }
-    public Color getpEpColor() {
-        return pEpColor;
+    public Rating getpEpRating() {
+        return pEpRating;
     }
     public void handlepEpState(boolean... withToast) {
         boolean reallyWithToast = true;
         if(withToast.length>0) reallyWithToast = withToast[0];
         updatePePState();
-        PEpUtils.colorActionBar(pEpUiCache, activity.getActionBar(), pEpColor);
+        PEpUtils.colorActionBar(pEpUiCache, activity.getActionBar(), pEpRating);
 
         if(pEpIndicator!=null) {
             pEpIndicator.setIcon(pEpUiCache.getIcon());
-            String msg = pEpUiCache.getTitle(pEpColor);
+            String msg = pEpUiCache.getTitle(pEpRating);
         }
     }
 
@@ -460,7 +458,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
 //        mIgnoreOnPause = true;  // do *not* save state
         pEpUiCache.setRecipients(recipients);
-        PEpStatus.actionShowStatus(activity, pEpColor, getFrom());
+        PEpStatus.actionShowStatus(activity, pEpRating, getFrom());
     }
 
     public Address getFromAddress() {

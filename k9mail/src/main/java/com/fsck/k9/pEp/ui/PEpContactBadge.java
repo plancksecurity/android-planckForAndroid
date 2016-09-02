@@ -13,10 +13,10 @@ import android.util.AttributeSet;
 import android.widget.QuickContactBadge;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpUtils;
-import org.pEp.jniadapter.Color;
+import org.pEp.jniadapter.Rating;
 
 public class PEpContactBadge extends QuickContactBadge {
-    Color pEpColor;
+    Rating pEpRating;
     int color = 0x00000000;
     private Context context;
     Paint paint;
@@ -41,9 +41,9 @@ public class PEpContactBadge extends QuickContactBadge {
         init(context);
     }
 
-    public void setpEpColor(Color pEpColor) {
-        this.pEpColor = pEpColor;
-        color = PEpUtils.getColorColor(pEpColor, context);
+    public void setPepRating(Rating pEpRating) {
+        this.pEpRating = pEpRating;
+        color = PEpUtils.getRatingColor(pEpRating, context);
         paint.setColor(color);
         currentStatus = getCurrentStatus();
         invalidate();

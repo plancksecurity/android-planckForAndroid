@@ -13,7 +13,7 @@
     <color name="openpgp_sidebar">#D8D8D8</color>
 
 
-    <color name="pep_gray">#009e9e9e</color>
+    <color name="pep_no_color">#009e9e9e</color>
     <color name="pep_green">#00d13d</color>
     <color name="pep_yellow">#ffec00</color>
     <color name="pep_red">#ef1b1b</color>

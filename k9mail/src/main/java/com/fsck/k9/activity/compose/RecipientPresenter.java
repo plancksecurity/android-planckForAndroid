@@ -37,7 +37,7 @@ import org.openintents.openpgp.util.OpenPgpApi;
 import org.openintents.openpgp.util.OpenPgpApi.PermissionPingCallback;
 import org.openintents.openpgp.util.OpenPgpServiceConnection;
 import org.openintents.openpgp.util.OpenPgpServiceConnection.OnBound;
-import org.pEp.jniadapter.Color;
+import org.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -730,17 +730,17 @@ public class RecipientPresenter implements PermissionPingCallback {
     }
 
     public void updatepEpState() {
-        Color pEpColor;
+        Rating pEpRating;
         if (forceUnencrypted) {
-            pEpColor = Color.pEpRatingUnencrypted;
+            pEpRating = Rating.pEpRatingUnencrypted;
         } else {
             Address fromAddress = recipientMvpView.getFromAddress();
             List<Address> toAdresses = recipientMvpView.getToAddresses();
             List<Address> ccAdresses = recipientMvpView.getCcAddresses();
             List<Address> bccAdresses = recipientMvpView.getBccAddresses();
-            pEpColor = pEp.getPrivacyState(fromAddress, toAdresses, ccAdresses, bccAdresses);
+            pEpRating = pEp.getPrivacyState(fromAddress, toAdresses, ccAdresses, bccAdresses);
         }
-        recipientMvpView.setpEpColor(pEpColor);
+        recipientMvpView.setpEpRating(pEpRating);
 
     }
 
@@ -757,9 +757,9 @@ public class RecipientPresenter implements PermissionPingCallback {
         recipientMvpView.onPepIndicator();
     }
 
-    public boolean isForwardedMessageWeakestThanOriginal(Color originalMessageColor) {
-        Color currentColor = recipientMvpView.getpEpColor();
-        return currentColor.value < Color.pEpRatingReliable.value && currentColor.value < originalMessageColor.value;
+    public boolean isForwardedMessageWeakestThanOriginal(Rating originalMessageRating) {
+        Rating currentRating = recipientMvpView.getpEpRating();
+        return currentRating.value < Rating.pEpRatingReliable.value && currentRating.value < originalMessageRating.value;
     }
 
 

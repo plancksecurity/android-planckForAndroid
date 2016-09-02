@@ -44,7 +44,7 @@ import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import org.apache.commons.io.IOUtils;
 import org.apache.james.mime4j.util.MimeUtil;
-import org.pEp.jniadapter.Color;
+import org.pEp.jniadapter.Rating;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -1282,8 +1282,8 @@ public class LocalFolder extends Folder<LocalMessage> implements Serializable {
                     ? System.currentTimeMillis() : message.getInternalDate().getTime());
             cv.put("mime_type", message.getMimeType());
             cv.put("empty", 0);
-            if (message.getHeader(MimeHeader.HEADER_PEPCOLOR).length > 0) cv.put("pEp_color", message.getHeader(MimeHeader.HEADER_PEPCOLOR)[0]);
-            else cv.put("pEp_color", Color.pEpRatingUndefined.toString());
+            if (message.getHeader(MimeHeader.HEADER_PEP_RATING).length > 0) cv.put("pep_rating", message.getHeader(MimeHeader.HEADER_PEP_RATING)[0]);
+            else cv.put("pep_rating", Rating.pEpRatingUndefined.toString());
             cv.put("preview_type", databasePreviewType.getDatabaseValue());
             if (previewResult.isPreviewTextAvailable()) {
                 cv.put("preview", previewResult.getPreviewText());

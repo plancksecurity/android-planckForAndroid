@@ -132,7 +132,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
 
         RecipientAdapter.setContactPhotoOrPlaceholder(context, holder.headerPhoto, recipient);
         holder.headerPhoto.assignContactUri(recipient.getContactLookupUri());
-        holder.headerPhoto.setpEpColor(pEp.identityColor(recipient.address));
+        holder.headerPhoto.setPepRating(pEp.identityRating(recipient.address));
 
         holder.headerRemove.setOnClickListener(new OnClickListener() {
             @Override

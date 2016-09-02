@@ -6,8 +6,8 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import com.fsck.k9.R;
-import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
+import org.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +28,7 @@ import java.util.HashMap;
 public class PePUIArtefactCache
 {
     private final Context context;
-    private HashMap<Color,Integer> colorIndexMapping = new HashMap<>();
+    private HashMap<Rating,Integer> colorIndexMapping = new HashMap<>();
     private String[] titles;
     private String[] explanations;
     private String[] suggestions;
@@ -65,27 +65,27 @@ public class PePUIArtefactCache
     private void fillIndexMapping(Resources resources) {
         String[] colornames = resources.getStringArray(R.array.pep_states);
         for(int idx=0; idx < colornames.length; idx ++) {
-            colorIndexMapping.put(Color.valueOf(colornames[idx]), idx);
+            colorIndexMapping.put(Rating.valueOf(colornames[idx]), idx);
         }
     }
 
-    public String getTitle(Color c) {
-        return titles[colorIndexMapping.get(c)];
+    public String getTitle(Rating rating) {
+        return titles[colorIndexMapping.get(rating)];
     }
 
-    public String getExplanation(Color c) {
-        return explanations[colorIndexMapping.get(c)];
+    public String getExplanation(Rating rating) {
+        return explanations[colorIndexMapping.get(rating)];
     }
-    public String getSuggestion(Color c) {
-        return suggestions[colorIndexMapping.get(c)];
+    public String getSuggestion(Rating rating) {
+        return suggestions[colorIndexMapping.get(rating)];
     }
 
     public Drawable getIcon() {
         return ContextCompat.getDrawable(context, R.drawable.ic_action_pep_indicator);
     }
 
-    public int getColor(Color pepColor) {
-        return PEpUtils.getColorColor(pepColor, context);
+    public int getColor(Rating pEpRating) {
+        return PEpUtils.getRatingColor(pEpRating, context);
     }
 
 

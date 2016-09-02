@@ -120,7 +120,7 @@ class StoreSchemaDefinition implements LockableDatabase.SchemaDefinition {
                 "answered INTEGER default 0, " +
                 "forwarded INTEGER default 0, " +
                 "message_part_id INTEGER, " +
-                "pep_color TEXT" +
+                "pep_rating TEXT" +
                 ")");
 
         db.execSQL("DROP TABLE IF EXISTS message_parts");

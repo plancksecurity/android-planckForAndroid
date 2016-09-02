@@ -50,8 +50,8 @@ import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
 import com.fsck.k9.view.MessageHeader;
-import org.pEp.jniadapter.Color;
 import org.pEp.jniadapter.Identity;
+import org.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,7 +72,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     public static final int REQUEST_MASK_CRYPTO_PRESENTER = (1 << 9);
     private static final int LOCAL_MESSAGE_LOADER_ID = 1;
     private static final int DECODE_MESSAGE_LOADER_ID = 2;
-    private Color mPEpColor;
+    private Rating pEpRating;
     private PePUIArtefactCache pePUIArtefactCache;
 
     public static MessageViewFragment newInstance(MessageReference reference) {
@@ -345,7 +345,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void onForward() {
         if (mMessage != null) {
-            mFragmentListener.onForward(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PEpUtils.extractpEpColor(mMessage));
+            mFragmentListener.onForward(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PEpUtils.extractRating(mMessage));
         }
     }
 
@@ -722,11 +722,11 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             }
         }
 
-        PEpStatus.actionShowStatus(getActivity(), mPEpColor, myAddress);
+        PEpStatus.actionShowStatus(getActivity(), pEpRating, myAddress);
     }
 
     public interface MessageViewFragmentListener {
-        void onForward(MessageReference messageReference, Parcelable decryptionResultForReply, Color colorRating);
+        void onForward(MessageReference messageReference, Parcelable decryptionResultForReply, Rating rating);
         void disableDeleteAction();
         void onReplyAll(MessageReference messageReference, Parcelable decryptionResultForReply);
         void onReply(MessageReference messageReference, Parcelable decryptionResultForReply);
@@ -750,9 +750,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             displayHeaderForLoadingMessage(message);
             mMessageView.setToLoadingState();
 
-            mPEpColor = PEpUtils.extractpEpColor(message);
+            pEpRating = PEpUtils.extractRating(message);
 
-            PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), mPEpColor);
+            PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), pEpRating);
         }
 
         @Override
