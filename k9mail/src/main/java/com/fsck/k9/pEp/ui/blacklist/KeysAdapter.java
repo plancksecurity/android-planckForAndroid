@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.fsck.k9.K9;
@@ -72,6 +73,8 @@ class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ViewHolder> {
             identityAddress = ((TextView) view.findViewById(R.id.tvAddress));
             isBlacklistedCheckbox = ((CheckBox) view.findViewById(R.id.checkboxIsBlacklisted));
             container = view.findViewById(R.id.recipientContainer);
+
+
         }
 
         public void render(KeyListItem identity) {
@@ -79,12 +82,26 @@ class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ViewHolder> {
             renderIdentity(identity);
         }
 
-        private void renderIdentity(KeyListItem keyItem) {
-            String fpr = keyItem.getFpr();
+        private void renderIdentity(final KeyListItem keyItem) {
+            final String fpr = keyItem.getFpr();
             String username = keyItem.getGpgUid();
             identityUserName.setText(username);
             String formattedFpr = PEpUtils.formatFpr(fpr);
             identityAddress.setText(formattedFpr);
+            isBlacklistedCheckbox.setChecked(keyItem.isSelected());
+            isBlacklistedCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        pEp.addToBlacklist(fpr);
+                        keyItem.setSelected(true);
+                    } else {
+                        pEp.deleteFromBlacklist(fpr);
+                        keyItem.setSelected(false);
+
+                    }
+                }
+            });
 
 
         }

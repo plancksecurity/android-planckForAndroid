@@ -145,6 +145,10 @@ public interface PEpProvider {
 
     List<KeyListItem> getAvailableKey();
 
+    void addToBlacklist(String fpr);
+
+    void deleteFromBlacklist(String fpr);
+
     class KeyDetail {
         private final Address address;
         private final String detailMessage;
