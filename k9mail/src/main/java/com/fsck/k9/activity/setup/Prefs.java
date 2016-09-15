@@ -19,6 +19,7 @@ import com.fsck.k9.activity.K9PreferenceActivity;
 import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.notification.NotificationController;
+import com.fsck.k9.pEp.ui.blacklist.PepBlacklist;
 import com.fsck.k9.preferences.CheckBoxListPreference;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
@@ -154,6 +155,7 @@ public class Prefs extends K9PreferenceActivity {
     private CheckBoxPreference mPEpUseKeyserver;
     private CheckBoxPreference mPEpPassiveMode;
     private CheckBoxPreference mPEpSubjectUnprotected;
+    private Preference mPEpBlacklist;
     private CheckBoxPreference mPepForwardWarning;
 
 
@@ -434,6 +436,15 @@ public class Prefs extends K9PreferenceActivity {
 
         mPepForwardWarning = (CheckBoxPreference) findPreference(PEP_FORWARD_WARNING);
         mPepForwardWarning.setChecked(K9.ispEpForwardWarningEnabled());
+
+        mPEpBlacklist = (Preference) findPreference("pep_gpg_blacklist");
+        mPEpBlacklist.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                PepBlacklist.actionShowBlacklist(Prefs.this);
+                return true;
+            }
+        });
 
 
         mSplitViewMode = (ListPreference) findPreference(PREFERENCE_SPLITVIEW_MODE);

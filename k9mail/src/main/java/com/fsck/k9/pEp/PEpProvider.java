@@ -3,6 +3,8 @@ package com.fsck.k9.pEp;
 import android.content.Context;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.internet.MimeMessage;
+import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
+
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
 import org.pEp.jniadapter.Rating;
@@ -94,7 +96,7 @@ public interface PEpProvider {
      * @param id
      * @return trustwords string
      */
-    String trustwords(Identity id);
+    String trustwords(Identity id, String language);
 
     /**
      * Close the engine/session associated to the provider
@@ -141,7 +143,9 @@ public interface PEpProvider {
 
     void setSubjectUnprotected(boolean enabled);
 
-     class KeyDetail {
+    List<KeyListItem> getAvailableKey();
+
+    class KeyDetail {
         private final Address address;
         private final String detailMessage;
         private final String fpr;

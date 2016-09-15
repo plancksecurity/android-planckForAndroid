@@ -9,11 +9,14 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
+import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
+
 import org.pEp.jniadapter.AndroidHelper;
 import org.pEp.jniadapter.DecryptFlags;
 import org.pEp.jniadapter.Engine;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
+import org.pEp.jniadapter.Pair;
 import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.pEpException;
 
@@ -337,7 +340,8 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public String trustwords(Identity id) {
+    public String trustwords(Identity id, String language) {
+        id.lang = language;
         createEngineInstanceIfNeeded();
         id = updateIdentity(id);
         return engine.trustwords(id);
@@ -444,5 +448,22 @@ public class PEpProviderImpl implements PEpProvider {
     public void setSubjectUnprotected (boolean isUnprotected) {
         createEngineInstanceIfNeeded();
         engine.config_unencrypted_subject(isUnprotected);
+    }
+
+    @Override
+    public List<KeyListItem> getAvailableKey() {
+        try {
+            List<KeyListItem> identites = new ArrayList<>();
+            ArrayList<Pair<String, String>> keys = engine.OpenPGP_list_keyinfo("");
+            for (Pair<String, String> key : keys) {
+                identites.add(new KeyListItem(key.first, key.second));
+            }
+            return identites;
+        } catch (pEpException e) {
+            Log.e(TAG, "getAvailableKey", e);
+        }
+
+        return null;
+
     }
 }

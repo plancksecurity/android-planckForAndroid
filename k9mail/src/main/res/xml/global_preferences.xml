@@ -426,18 +426,46 @@
             <CheckBoxPreference
                 android:persistent="false"
                 android:key="pep_use_keyserver"
-                android:title="@string/pep_use_keyserver"/>
-        <!--<EditTextPreference-->
-            <!--android:persistent="false"-->
-            <!--android:key="pep_add_key_to_blacklist"-->
-            <!--android:singleLine="false"-->
-            <!--android:title="@string/pep_add_key_to_blacklist"-->
-            <!--android:summary=""-->
-            <!--android:dialogTitle="@string/pep_add_key_to_blacklist"-->
-            <!--android:digits="0123456789ABCDEF "-->
-            <!--android:inputType="textCapCharacters"-->
-            <!--android:maxLength="49"-->
-            <!--/>-->
+                android:title="@string/pep_use_keyserver" />
+
+        <Preference
+            android:key="pep_gpg_blacklist"
+            android:persistent="false"
+            android:title="Blacklist">
+
+            <!--<Preference-->
+                <!--android:key="pep_add_key_to_blacklist"-->
+                <!--android:persistent="false"-->
+                <!--android:title="@string/pep_add_key_to_blacklist" />-->
+
+            <!--<PreferenceCategory-->
+                <!--android:key="pep_blacklisted_keys"-->
+                <!--android:persistent="false"-->
+                <!--android:title="Blacklisted keys" >-->
+                <!--<SwitchPreference-->
+                    <!--android:key="1"-->
+                    <!--android:persistent="false"-->
+                    <!--android:title="1" />-->
+                <!--<SwitchPreference-->
+                    <!--android:key="2"-->
+                    <!--android:persistent="false"-->
+                    <!--android:title="2" />-->
+                <!--<SwitchPreference-->
+                    <!--android:key="3"-->
+                    <!--android:persistent="false"-->
+                    <!--android:title="3" />-->
+                <!--<SwitchPreference-->
+                    <!--android:key="4"-->
+                    <!--android:persistent="false"-->
+                    <!--android:title="4" />-->
+                <!--<SwitchPreference-->
+                    <!--android:key="5"-->
+                    <!--android:persistent="false"-->
+                    <!--android:title="5" />-->
+            <!--</PreferenceCategory>-->
+
+        </Preference>
+
         <!--<EditTextPreference-->
             <!--android:persistent="false"-->
             <!--android:key="pep_remove_key_from_blacklist"-->

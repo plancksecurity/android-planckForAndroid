@@ -86,6 +86,7 @@
     <string name="pep_trust_server_description">Store serverside mails in a safe form.</string>
     <string name="pep_account_privacy_protection_explanation">Enable privacy protection for this account </string>
     <string name="pep_forward_warning">Weaker forward warning</string>
+    <string name="key_list_title">Available keys</string>
 
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>
