@@ -446,6 +446,10 @@
             android:screenOrientation="portrait">
         </activity>
         <activity
+            android:name=".pEp.ui.blacklist.PepBlacklist"
+            android:label="Blacklist">
+        </activity>
+        <activity
             android:name=".pEp.ui.PEpTrustwords"
             android:label="@string/pep_title_activity_trustwords"
             android:parentActivityName=".pEp.ui.PEpStatus"
