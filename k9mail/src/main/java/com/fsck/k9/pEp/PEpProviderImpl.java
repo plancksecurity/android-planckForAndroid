@@ -462,7 +462,7 @@ public class PEpProviderImpl implements PEpProvider {
             List<KeyListItem> identites = new ArrayList<>();
             ArrayList<Pair<String, String>> keys = engine.OpenPGP_list_keyinfo("");
             for (Pair<String, String> key : keys) {
-                identites.add(new KeyListItem(key.first, key.second));
+                identites.add(new KeyListItem(key.first, key.second, engine.blacklist_is_listed(key.first)));
             }
             return identites;
         } catch (pEpException e) {
@@ -471,5 +471,15 @@ public class PEpProviderImpl implements PEpProvider {
 
         return null;
 
+    }
+
+    @Override
+    public void addToBlacklist(String fpr) {
+        engine.blacklist_add(fpr);
+    }
+
+    @Override
+    public void deleteFromBlacklist(String fpr) {
+        engine.blacklist_delete(fpr);
     }
 }
