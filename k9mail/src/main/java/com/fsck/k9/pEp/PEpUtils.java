@@ -167,7 +167,7 @@ public class PEpUtils {
         }
     }
 
-    static public String startOf(String s, int length) {
+    static private String startOf(String s, int length) {
         String rv = s.substring(0, (s.length() > length) ? length : s.length());
         return rv.replace("\n", "<nl>").replace("\r", "<cr>");
     }
@@ -182,7 +182,7 @@ public class PEpUtils {
         return new ByteArrayOutputStream().toByteArray();
     }
 
-    public static String getShortTrustwords(String trustwords) {
+    private static String getShortTrustwords(String trustwords) {
         StringBuilder builder = new StringBuilder();
         String[] trustArray = trustwords.split(TRUSTWORDS_SEPARATOR);
 
@@ -196,7 +196,7 @@ public class PEpUtils {
     }
 
     public static String getShortTrustWords(PEpProvider pEp, Identity id) {
-        return getShortTrustwords(pEp.trustwords(id));
+        return getShortTrustwords(pEp.trustwords(id, "es"));
     }
 
 
@@ -232,7 +232,7 @@ public class PEpUtils {
     public static Rating extractRating(Message message) {
         String[] pEpRating;
         pEpRating = message.getHeader(MimeHeader.HEADER_PEP_RATING);
-        if(pEpRating != null && pEpRating.length > 0)
+        if(pEpRating.length > 0)
             return Rating.valueOf(pEpRating[0]);
         else
             return Rating.pEpRatingUndefined;
@@ -246,8 +246,7 @@ public class PEpUtils {
             if (sourcePosition % CHUNK_SIZE == 0
                     && destPosition > 0
                     && fprChars[destPosition-1] != TRUSTWORDS_SEPARATOR.charAt(0)) {
-                if (destPosition != sourcePosition/2) fprChars[destPosition] = TRUSTWORDS_SEPARATOR.charAt(0);
-                else fprChars[destPosition] = '\n';
+                fprChars[destPosition] = TRUSTWORDS_SEPARATOR.charAt(0);
             }
             else {
                 fprChars[destPosition] = fpr.charAt(sourcePosition);
@@ -255,6 +254,7 @@ public class PEpUtils {
             }
 
         }
+        fprChars[fprChars.length/2-1] = '\n';
         return String.valueOf(fprChars);
     }
 
