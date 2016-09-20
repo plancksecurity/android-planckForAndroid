@@ -1365,7 +1365,7 @@ public class K9 extends Application {
      * @param save
      *         Whether or not to write the current database version to the
      *         {@code SharedPreferences} {@link #DATABASE_VERSION_CACHE}.
-     *
+     
      * @see #areDatabasesUpToDate()
      */
     public static synchronized void setDatabasesUpToDate(boolean save) {
