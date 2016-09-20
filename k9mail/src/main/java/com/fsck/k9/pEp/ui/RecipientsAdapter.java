@@ -24,7 +24,7 @@ import org.pEp.jniadapter.Rating;
 
 import java.util.List;
 
-class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolder> {
+public class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolder> {
     private final PEpProvider pEp;
 
     private final Activity context;
@@ -53,7 +53,7 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
             } else {
                 trust = myTrust + theirTrust;
             }
-            Log.i("RecipientsAdapter", "onClick " + trust);
+            Log.i("KeysAdapter", "onClick " + trust);
 
             PEpTrustwords.actionRequestHandshake(context, trust, myself, partnerPosition);
         }
@@ -65,7 +65,7 @@ class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolde
             int position = ((Integer) v.getTag());
             Identity id = identities.get(position);
             id = pEp.updateIdentity(id);
-            Log.i("RecipientsAdapter", "onResetClick " + id.address);
+            Log.i("KeysAdapter", "onResetClick " + id.address);
             pEp.resetTrust(id);
             notifyDataSetChanged();
             listener.onRatingChanged(Rating.pEpRatingReliable);

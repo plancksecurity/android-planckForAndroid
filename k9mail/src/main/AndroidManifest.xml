@@ -447,7 +447,8 @@
         </activity>
         <activity
             android:name=".pEp.ui.blacklist.PepBlacklist"
-            android:label="Blacklist">
+            android:label="Blacklist"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         </activity>
         <activity
             android:name=".pEp.ui.PEpTrustwords"
