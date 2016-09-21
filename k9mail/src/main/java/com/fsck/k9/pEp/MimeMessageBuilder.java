@@ -61,7 +61,7 @@ class MimeMessageBuilder {
         mimeMsg.setSubject(pEpMessage.getShortmsg());
         mimeMsg.setMessageId(pEpMessage.getId());
         if (!K9.hideUserAgent()) {
-            mimeMsg.setHeader("User-Agent", "K9/pEp early beta");       // FIXME: put to ressource (or use predef'd one...)
+            mimeMsg.setHeader("User-Agent", "K-9/p≡p for Android");       // FIXME: put to ressource (or use predef'd one...)
         }
 
         mimeMsg.setReplyTo(PEpUtils.createAddresses(pEpMessage.getReplyTo()));
