@@ -3,6 +3,7 @@ package com.fsck.k9.pEp;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
+
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
@@ -161,6 +162,11 @@ public class PEpProviderImpl implements PEpProvider {
             MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
 
             decMsg.addHeader(MimeHeader.HEADER_PEP_RATING, decReturn.rating.name());
+            String[] userAgentHeader = source.getHeader(MimeHeader.HEADER_USER_AGENT);
+            decMsg.removeHeader(MimeHeader.HEADER_USER_AGENT);
+            if (userAgentHeader.length != 0) {
+                decMsg.addHeader(MimeHeader.HEADER_USER_AGENT, userAgentHeader[0]);
+            }
             if (isUsablePrivateKey(decReturn)) {
                 return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg));
             }
