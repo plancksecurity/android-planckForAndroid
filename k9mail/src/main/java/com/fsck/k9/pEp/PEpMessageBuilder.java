@@ -101,7 +101,13 @@ class PEpMessageBuilder {
 
             boolean plain = mbp.isMimeType("text/plain");
             if (plain || mbp.isMimeType("text/html")) {
-                String text = new String(PEpUtils.extractBodyContent(mbp_body), MimeUtility.getHeaderParameter(mbp.getContentType(), "charset"));
+                String charset = MimeUtility.getHeaderParameter(mbp.getContentType(), "charset");
+                String text;
+                if (charset != null) {
+                    text = new String(PEpUtils.extractBodyContent(mbp_body), charset);
+                } else {
+                    text = new String(PEpUtils.extractBodyContent(mbp_body));
+                }
                 if(plain)
                     pEpMsg.setLongmsg(text);
                 else
