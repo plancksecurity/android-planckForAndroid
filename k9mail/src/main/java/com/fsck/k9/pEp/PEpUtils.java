@@ -203,16 +203,16 @@ public class PEpUtils {
     public static int getRatingColor(Rating rating, Context context) {
         // TODO: 02/09/16 PEP_color color_from_rating(PEP_rating rating) from pEpEngine;
 
+        if (rating.value < Rating.pEpRatingUndefined.value) {
+            return ContextCompat.getColor(context, R.color.pep_red);
+        }
+
         if (rating.equals(Rating.pEpRatingB0rken)
                 || rating.value < Rating.pEpRatingReliable.value) {
             return ContextCompat.getColor(context, R.color.pep_no_color);
         }
 
-        if (rating.value < Rating.pEpRatingUndefined.value) {
-            return ContextCompat.getColor(context, R.color.pep_red);
-        }
-
-        if (rating.value <= Rating.pEpRatingTrusted.value) {
+        if (rating.value < Rating.pEpRatingTrusted.value) {
             return  ContextCompat.getColor(context, R.color.pep_yellow);
         }
 
