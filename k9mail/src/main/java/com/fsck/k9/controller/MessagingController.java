@@ -49,6 +49,7 @@ import com.fsck.k9.Account.DeletePolicy;
 import com.fsck.k9.Account.Expunge;
 import com.fsck.k9.AccountStats;
 import com.fsck.k9.BuildConfig;
+import com.fsck.k9.Identity;
 import com.fsck.k9.K9;
 import com.fsck.k9.K9.Intents;
 import com.fsck.k9.Preferences;
@@ -108,6 +109,7 @@ import com.fsck.k9.search.SearchSpecification;
 import com.fsck.k9.search.SqlQueryBuilder;
 
 import org.pEp.jniadapter.Rating;
+import org.pEp.jniadapter.Sync;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;
@@ -150,7 +152,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * removed from the queue once the activity is no longer active.
  */
 @SuppressWarnings("unchecked") // TODO change architecture to actually work with generics
-public class MessagingController {
+public class MessagingController implements Sync.MessageToSendCallback {
     public static final long INVALID_MESSAGE_ID = -1;
 
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
@@ -4752,5 +4754,28 @@ public class MessagingController {
 
     public void setSubjectUnprotected(boolean subjectUnprotected) {
         pEpProvider.setSubjectUnprotected(subjectUnprotected);
+    }
+
+    @Override
+    public void messageToSend(org.pEp.jniadapter.Message message) {
+        List <Account> accounts = Preferences.getPreferences(context).getAccounts();
+        Account currentAccount = null;
+        for (Account account : accounts) {
+            currentAccount = checkAccount(message, account);
+            if (currentAccount != null) {
+                break;
+            }
+        }
+        if (currentAccount == null) currentAccount = Preferences.getPreferences(context).getDefaultAccount();
+        sendMessage(currentAccount, pEpProvider.getMimeMessage(message), null);
+    }
+
+    private Account checkAccount(org.pEp.jniadapter.Message message, Account account) {
+        for (Identity identity : account.getIdentities()) {
+            if (identity.getEmail().equals(message.getFrom().address)) {
+                return  account;
+            }
+        }
+        return null;
     }
 }

@@ -12,6 +12,7 @@ import android.text.format.Time;
 import android.util.Log;
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
+import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.UpgradeDatabases;
 import com.fsck.k9.controller.MessagingController;
@@ -32,6 +33,8 @@ import com.fsck.k9.service.MailService;
 import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
 
+import org.pEp.jniadapter.Sync;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,7 +45,7 @@ import java.util.concurrent.SynchronousQueue;
 
 public class K9 extends Application {
     private static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
-    private PEpProvider pEpProvider;
+    public PEpProvider pEpProvider, pEpSyncProvider;
 
 
 
@@ -629,6 +632,12 @@ public class K9 extends Application {
         });
 
         notifyObservers();
+        initSync();
+    }
+
+    private void initSync() {
+        pEpSyncProvider = PEpProviderFactory.createAndSetupProvider(this);
+        pEpSyncProvider.setSyncSendMessageCallback(MessagingController.getInstance(this));
     }
 
     private void pEpSetupUiEngineSession() {
@@ -1410,6 +1419,7 @@ public class K9 extends Application {
         public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
             if (activityCount == 0) {
                 pEpProvider = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
+                if (activity instanceof K9Activity) pEpSyncProvider.setSyncHandshakeCallback((Sync.showHandshakeCallback) activity);
             }
             ++activityCount;
         }
