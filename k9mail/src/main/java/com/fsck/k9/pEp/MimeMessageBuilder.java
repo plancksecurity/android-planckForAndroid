@@ -4,14 +4,21 @@ package com.fsck.k9.pEp;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
+
 import com.fsck.k9.K9;
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.filter.Base64;
-import com.fsck.k9.mail.internet.*;
+import com.fsck.k9.mail.internet.MimeBodyPart;
+import com.fsck.k9.mail.internet.MimeHeader;
+import com.fsck.k9.mail.internet.MimeMessage;
+import com.fsck.k9.mail.internet.MimeMessageHelper;
+import com.fsck.k9.mail.internet.MimeMultipart;
+import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
 import com.fsck.k9.message.SimpleMessageFormat;
+
 import org.apache.james.mime4j.codec.EncoderUtil;
 import org.apache.james.mime4j.util.MimeUtil;
 import org.pEp.jniadapter.Blob;
@@ -60,9 +67,6 @@ class MimeMessageBuilder {
         mimeMsg.setRecipients(RecipientType.BCC, PEpUtils.createAddresses(pEpMessage.getBcc()));
         mimeMsg.setSubject(pEpMessage.getShortmsg());
         mimeMsg.setMessageId(pEpMessage.getId());
-        if (!K9.hideUserAgent()) {
-            mimeMsg.setHeader("User-Agent", "K-9/p≡p for Android");       // FIXME: put to ressource (or use predef'd one...)
-        }
 
         mimeMsg.setReplyTo(PEpUtils.createAddresses(pEpMessage.getReplyTo()));
         mimeMsg.setInReplyTo(clobberVector(pEpMessage.getInReplyTo()));

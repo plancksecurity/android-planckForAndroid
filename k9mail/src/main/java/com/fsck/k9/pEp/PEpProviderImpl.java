@@ -162,11 +162,6 @@ public class PEpProviderImpl implements PEpProvider {
             MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
 
             decMsg.addHeader(MimeHeader.HEADER_PEP_RATING, decReturn.rating.name());
-            String[] userAgentHeader = source.getHeader(MimeHeader.HEADER_USER_AGENT);
-            decMsg.removeHeader(MimeHeader.HEADER_USER_AGENT);
-            if (userAgentHeader.length != 0) {
-                decMsg.addHeader(MimeHeader.HEADER_USER_AGENT, userAgentHeader[0]);
-            }
             if (isUsablePrivateKey(decReturn)) {
                 return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg));
             }
