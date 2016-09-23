@@ -1,6 +1,9 @@
 package com.fsck.k9.pEp;
 
+import android.app.Activity;
 import android.content.Context;
+
+import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
@@ -8,6 +11,7 @@ import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
 import org.pEp.jniadapter.Rating;
+import org.pEp.jniadapter.Sync;
 
 import java.util.List;
 
@@ -148,6 +152,12 @@ public interface PEpProvider {
     void addToBlacklist(String fpr);
 
     void deleteFromBlacklist(String fpr);
+
+    com.fsck.k9.mail.Message getMimeMessage(Message message);
+
+    void setSyncSendMessageCallback(Sync.MessageToSendCallback callback);
+
+    void setSyncHandshakeCallback(Sync.showHandshakeCallback activity);
 
     class KeyDetail {
         private final Address address;

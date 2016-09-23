@@ -19,6 +19,7 @@ import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
 import org.pEp.jniadapter.Pair;
 import org.pEp.jniadapter.Rating;
+import org.pEp.jniadapter.Sync;
 import org.pEp.jniadapter.pEpException;
 
 import java.util.ArrayList;
@@ -481,5 +482,50 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public void deleteFromBlacklist(String fpr) {
         engine.blacklist_delete(fpr);
+    }
+
+    @Override
+    public com.fsck.k9.mail.Message getMimeMessage(Message message) {
+        try {
+            return new MimeMessageBuilder(message).createMessage();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    boolean sendMessageSet = false;
+    boolean showHandshakeSet = false;
+    boolean keysyncStarted = false;
+
+
+    @Override
+    public void setSyncSendMessageCallback(Sync.MessageToSendCallback callback) {
+        engine.setMessageToSendCallback(callback);
+        sendMessageSet = true;
+        if (areCallbackSet() && !keysyncStarted) {
+            engine.startSync();
+            keysyncStarted = true;
+            Log.e(TAG, "setstartSync: ");
+        }
+        Log.i(TAG, "setSyncSendMessageCallback: SEND");
+
+    }
+
+    private boolean areCallbackSet() {
+        return sendMessageSet && showHandshakeSet;
+    }
+
+    @Override
+    public void setSyncHandshakeCallback(Sync.showHandshakeCallback activity) {
+        engine.setShowHandshakeCallback(activity);
+        showHandshakeSet = true;
+        if (areCallbackSet() && !keysyncStarted) {
+            engine.startSync();
+            keysyncStarted = true;
+            Log.e(TAG, "setstartSync: ");
+        }
+        Log.i(TAG, "setSyncHandshakeCallback: SEND");
+
+
     }
 }
