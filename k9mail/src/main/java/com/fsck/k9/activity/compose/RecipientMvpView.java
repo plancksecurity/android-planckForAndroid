@@ -14,6 +14,7 @@ import android.widget.ViewAnimator;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageCompose;
+import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message.RecipientType;
@@ -68,6 +69,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     PePUIArtefactCache pEpUiCache;
 
     private RecipientPresenter presenter;
+    private MessageReference messageReference;
 
 
     public RecipientMvpView(MessageCompose activity) {
@@ -483,7 +485,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
 //        mIgnoreOnPause = true;  // do *not* save state
         pEpUiCache.setRecipients(recipients);
-        PEpStatus.actionShowStatus(activity, pEpRating, getFrom());
+        PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), messageReference);
     }
 
     public Address getFromAddress() {
@@ -516,6 +518,10 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
     public String getFrom() {
         return fromView.getText().toString();
+    }
+
+    public void setMessageReference(MessageReference reference) {
+        this.messageReference = reference;
     }
 
     public enum CryptoSpecialModeDisplayType {
