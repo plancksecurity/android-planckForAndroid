@@ -442,8 +442,7 @@
 
         <activity
             android:name=".pEp.ui.PEpStatus"
-            android:label="@string/pep_title_activity_privacy_status"
-            android:screenOrientation="portrait">
+            android:label="@string/pep_title_activity_privacy_status">
         </activity>
         <activity
             android:name=".pEp.ui.blacklist.PepBlacklist"
@@ -453,8 +452,7 @@
         <activity
             android:name=".pEp.ui.PEpTrustwords"
             android:label="@string/pep_title_activity_trustwords"
-            android:parentActivityName=".pEp.ui.PEpStatus"
-            android:screenOrientation="portrait">
+            android:parentActivityName=".pEp.ui.PEpStatus">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".pEp.ui.PEpStatus" />
