@@ -1202,9 +1202,9 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         case R.id.search:
             onSearchRequested();
             break;
-//        case R.id.export_all:
-//            onExport(true, null);
-//            break;
+        case R.id.export_all:
+            onExport(true, null);
+            break;
         case R.id.import_settings:
             onImport();
             break;
