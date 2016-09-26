@@ -1,60 +1,64 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:paddingLeft="@dimen/activity_horizontal_margin"
-              android:paddingRight="@dimen/activity_horizontal_margin"
-              android:paddingTop="@dimen/activity_vertical_margin"
-              android:paddingBottom="@dimen/activity_vertical_margin"
-              tools:context=".pEp.ui.PEpTrustwords"
-              android:orientation="vertical">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:clipToPadding="false"
+    tools:context=".pEp.ui.PEpTrustwords">
 
-    <ViewSwitcher
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ViewSwitcher
+            android:id="@+id/flipper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/flipper"
             android:inAnimation="@android:anim/slide_in_left"
             android:outAnimation="@android:anim/slide_out_right">
 
-        <LinearLayout
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-            <include
+                <include
                     android:id="@+id/trustwordsView"
-                    layout="@layout/pep_trustwords_view"/>
-        </LinearLayout>
+                    layout="@layout/pep_trustwords_view" />
+            </LinearLayout>
 
 
             <include
-                    android:id="@+id/fingerprintView"
-                    layout="@layout/pep_fingerprints_view"/>
-    </ViewSwitcher>
+                android:id="@+id/fingerprintView"
+                layout="@layout/pep_fingerprints_view" />
+        </ViewSwitcher>
 
-    <Button
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:text="@string/pep_confirm_trustwords"
+        <Button
             android:id="@+id/confirmTrustWords"
-            android:background="@color/pep_green"
-            android:textColor="@android:color/white"
-            android:elevation="4dp"
-            android:layout_gravity="center"
-            android:layout_margin="8dp"
-            />
-
-    <Button
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:text="@string/pep_wrong_trustwords"
-            android:id="@+id/wrongTrustwords"
-            android:background="@color/pep_red"
-            android:textColor="@android:color/white"
-            android:elevation="4dp"
-            android:layout_margin="8dp"
             android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:background="@color/pep_green"
+            android:elevation="4dp"
+            android:text="@string/pep_confirm_trustwords"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/wrongTrustwords"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:background="@color/pep_red"
+            android:elevation="4dp"
+            android:text="@string/pep_wrong_trustwords"
+            android:textColor="@android:color/white"
 
             />
-
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>
