@@ -78,14 +78,18 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
             myself = getIntent().getStringExtra(MYSELF);
             loadMessage();
         }
-        if (savedInstanceState != null) {
-            pEpRating = (Rating) savedInstanceState.getSerializable(RATING);
-            setpEpRating(pEpRating);
-        }
+        restorePEpRating(savedInstanceState);
         initPep();
         setUpActionBar();
         setUpContactList(myself, getpEp());
         loadPepTexts();
+    }
+
+    private void restorePEpRating(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            pEpRating = (Rating) savedInstanceState.getSerializable(RATING);
+            setpEpRating(pEpRating);
+        }
     }
 
     private void loadMessage() {
