@@ -66,7 +66,6 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
     PePUIArtefactCache pEpUiCache;
     private RecipientPresenter presenter;
-    private MessageReference messageReference;
 
 
     public RecipientMvpView(MessageCompose activity) {
@@ -460,7 +459,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
 //        mIgnoreOnPause = true;  // do *not* save state
         pEpUiCache.setRecipients(recipients);
-        PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), messageReference);
+        PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), null);
     }
 
     public Address getFromAddress() {
@@ -492,9 +491,5 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
     public String getFrom() {
         return fromView.getText().toString();
-    }
-
-    public void setMessageReference(MessageReference reference) {
-        this.messageReference = reference;
     }
 }
