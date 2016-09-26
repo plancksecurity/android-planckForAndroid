@@ -38,6 +38,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
 
     private static final String ACTION_SHOW_PEP_STATUS = "com.fsck.k9.intent.action.SHOW_PEP_STATUS";
     private static final String MYSELF = "isComposedKey";
+    private static final String RATING = "rating";
     private static final String MESSAGE_REFERENCE = "message_reference";
     public static final int REQUEST_STATUS = 2;
 
@@ -76,6 +77,10 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
                 && getIntent().hasExtra(MESSAGE_REFERENCE)) {
             myself = getIntent().getStringExtra(MYSELF);
             loadMessage();
+        }
+        if (savedInstanceState != null) {
+            pEpRating = (Rating) savedInstanceState.getSerializable(RATING);
+            setpEpRating(pEpRating);
         }
         initPep();
         setUpActionBar();
@@ -261,4 +266,9 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
         colorActionBar();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(RATING, pEpRating);
+    }
 }
