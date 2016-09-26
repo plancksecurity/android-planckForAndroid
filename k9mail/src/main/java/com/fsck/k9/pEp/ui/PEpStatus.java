@@ -51,6 +51,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
 
     String myself = "";
     private MessageReference messageReference;
+    private LocalMessage localMessage;
 
 
     public static void actionShowStatus(Context context, Rating currentRating, String myself, MessageReference messageReference) {
@@ -68,15 +69,21 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
         loadPepRating();
         setContentView(R.layout.pep_status);
         ButterKnife.bind(PEpStatus.this);
-        if (getIntent() != null && getIntent().hasExtra(MYSELF)) {
+        if (getIntent() != null && getIntent().hasExtra(MYSELF)
+                && getIntent().hasExtra(MESSAGE_REFERENCE)) {
             myself = getIntent().getStringExtra(MYSELF);
+            loadMessage();
         }
-        messageReference = (MessageReference) getIntent().getExtras().get(MESSAGE_REFERENCE);
         initPep();
         setUpActionBar();
         setUpContactList(myself, getpEp());
         loadPepTexts();
+    }
 
+    private void loadMessage() {
+        messageReference = (MessageReference) getIntent().getExtras().get(MESSAGE_REFERENCE);
+        MessageLoaderHelper messageLoaderHelper = new MessageLoaderHelper(this, getLoaderManager(), getFragmentManager(), callback());
+        messageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, null);
     }
 
 
@@ -115,6 +122,9 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
 
     @Override
     public void onRatingChanged(Rating rating) {
+        if (localMessage != null) {
+            localMessage.setpEpRating(rating);
+        }
         setpEpRating(rating);
         colorActionBar();
     }
@@ -155,20 +165,18 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
                 Identity partner = uiCache.getRecipients().get(position);
                 Rating pEpRating = getpEp().identityRating(partner);
                 setpEpRating(pEpRating);
-                MessageLoaderHelper messageLoaderHelper = new MessageLoaderHelper(this, getLoaderManager(), getFragmentManager(), callback(pEpRating));
-                messageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, null);
+                onRatingChanged(pEpRating);
                 recipientsAdapter.notifyDataSetChanged();
                 colorActionBar();
             }
         }
     }
 
-    public MessageLoaderHelper.MessageLoaderCallbacks callback(final Rating rating) {
+    public MessageLoaderHelper.MessageLoaderCallbacks callback() {
         return new MessageLoaderHelper.MessageLoaderCallbacks() {
             @Override
             public void onMessageDataLoadFinished(LocalMessage message) {
-                message.setpEpRating(rating);
-                onRatingChanged(rating);
+               localMessage = message;
             }
 
             @Override
@@ -178,33 +186,27 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
 
             @Override
             public void onMessageViewInfoLoadFinished(MessageViewInfo messageViewInfo) {
-                Log.d("mierda", " ");
             }
 
             @Override
             public void onMessageViewInfoLoadFailed(MessageViewInfo messageViewInfo) {
-                Log.d("mierda 2", " ");
             }
 
             @Override
             public void setLoadingProgress(int current, int max) {
-                Log.d("mierda 3", " ");
             }
 
             @Override
             public void onDownloadErrorMessageNotFound() {
-                Log.d("mierda 4", " ");
             }
 
             @Override
             public void onDownloadErrorNetworkError() {
-                Log.d("mierda 5", " ");
             }
 
             @Override
             public void startIntentSenderForMessageLoaderHelper(IntentSender si, int requestCode, Intent fillIntent,
                                                                 int flagsMask, int flagValues, int extraFlags) {
-                Log.d("mierda 6", " ");
             }
         };
     }
