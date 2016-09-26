@@ -219,7 +219,7 @@ public class GlobalSettings {
                 new V(28, new BooleanSetting(true))
             ));
         s.put("colorizeMissingContactPictures", Settings.versions(
-                new V(29, new BooleanSetting(true))
+                new V(29, new BooleanSetting(K9.DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE))
             ));
         s.put("messageViewDeleteActionVisible", Settings.versions(
                 new V(30, new BooleanSetting(true))
