@@ -39,6 +39,7 @@ import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
+import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
@@ -239,6 +240,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         if (resultCode == RESULT_OK && requestCode == PEpStatus.REQUEST_STATUS) {
             pEpRating = (Rating) data.getSerializableExtra(PEpStatus.CURRENT_RATING);
             PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), pEpRating);
+            mMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpRating.name());
+            mMessageView.setHeaders(mMessage, mAccount);
         }
     }
 
