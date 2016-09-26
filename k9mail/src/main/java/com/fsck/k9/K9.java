@@ -65,7 +65,7 @@ import java.util.concurrent.SynchronousQueue;
         mode = ReportingInteractionMode.TOAST,
         resToastText = R.string.crash_toast_text)
 public class K9 extends Application {
-    private static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
+    public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PEpProvider pEpProvider, pEpSyncProvider;
     boolean ispEpSyncEnabled = false;
     private Account currentAccount;
