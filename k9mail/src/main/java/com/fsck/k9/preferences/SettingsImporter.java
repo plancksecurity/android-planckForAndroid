@@ -22,12 +22,16 @@ import com.fsck.k9.Account;
 import com.fsck.k9.Identity;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
+import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.AuthType;
 import com.fsck.k9.mail.ConnectionSecurity;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.filter.Base64;
 import com.fsck.k9.mail.store.RemoteStore;
+import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpProviderFactory;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.preferences.Settings.InvalidSettingValueException;
 
 public class SettingsImporter {
@@ -285,6 +289,9 @@ public class SettingsImporter {
 
                     if (!editor.commit()) {
                         throw new SettingsImportExportException("Failed to set default account");
+                    }
+                    for (Account account : Preferences.getPreferences(context).getAccounts()) {
+                        PEpUtils.pEpGenerateAccountKeys(context, account);
                     }
                 } else {
                     Log.w(K9.LOG_TAG, "Was asked to import at least one account but none found.");
