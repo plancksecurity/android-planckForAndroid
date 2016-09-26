@@ -280,5 +280,12 @@ public class PEpUtils {
                 || messageRating == Rating.pEpRatingUndefined
                 || !account.ispEpPrivacyProtected();
     }
+
+    public static void pEpGenerateAccountKeys(Context context, Account account) {
+        PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(context);
+        org.pEp.jniadapter.Identity myIdentity = PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()),context);
+        pEp.myself(myIdentity);
+        pEp.close();
+    }
 }
 
