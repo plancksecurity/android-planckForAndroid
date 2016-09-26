@@ -1,6 +1,7 @@
 package com.fsck.k9.pEp.ui;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageLoaderHelper;
 import com.fsck.k9.activity.MessageReference;
+import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.pEp.PEpProvider;
@@ -37,6 +39,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     private static final String ACTION_SHOW_PEP_STATUS = "com.fsck.k9.intent.action.SHOW_PEP_STATUS";
     private static final String MYSELF = "isComposedKey";
     private static final String MESSAGE_REFERENCE = "message_reference";
+    public static final int REQUEST_STATUS = 2;
 
     @Bind(R.id.pEpTitle)
     TextView pEpTitle;
@@ -54,13 +57,13 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     private LocalMessage localMessage;
 
 
-    public static void actionShowStatus(Context context, Rating currentRating, String myself, MessageReference messageReference) {
+    public static void actionShowStatus(Activity context, Rating currentRating, String myself, MessageReference messageReference) {
         Intent i = new Intent(context, PEpStatus.class);
         i.setAction(ACTION_SHOW_PEP_STATUS);
         i.putExtra(CURRENT_RATING, currentRating.toString());
         i.putExtra(MYSELF, myself);
         i.putExtra(MESSAGE_REFERENCE, messageReference);
-        context.startActivity(i);
+        context.startActivityForResult(i, REQUEST_STATUS);
     }
 
     @Override
@@ -116,9 +119,14 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     public void onRatingChanged(Rating rating) {
         if (localMessage != null) {
             localMessage.setpEpRating(rating);
+            localMessage.setHeader(MimeHeader.HEADER_PEP_RATING, rating.name());
+            messageReference.saveLocalMessage(getApplicationContext(), localMessage);
         }
         setpEpRating(rating);
         colorActionBar();
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(CURRENT_RATING, rating);
+        setResult(Activity.RESULT_OK, returnIntent);
     }
 
     public class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
@@ -156,7 +164,6 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
                int position = data.getIntExtra(PEpTrustwords.PARTNER_POSITION, PEpTrustwords.DEFAULT_POSITION);
                 Identity partner = uiCache.getRecipients().get(position);
                 Rating pEpRating = getpEp().identityRating(partner);
-                setpEpRating(pEpRating);
                 onRatingChanged(pEpRating);
                 recipientsAdapter.notifyDataSetChanged();
                 colorActionBar();
@@ -173,7 +180,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
 
             @Override
             public void onMessageDataLoadFailed() {
-                Toast.makeText(getContext(), R.string.status_loading_error, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.status_loading_error, Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -244,10 +251,6 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     protected void onResume() {
         super.onResume();
         colorActionBar();
-    }
-
-    public Context getContext() {
-        return this;
     }
 
 }
