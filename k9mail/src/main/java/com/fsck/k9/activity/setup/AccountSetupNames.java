@@ -106,12 +106,6 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
         }
     }
 
-    private void pEpGenerateAccountKeys() {
-        PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
-        Identity myIdentity = PEpUtils.createIdentity(new Address(mAccount.getEmail(), mAccount.getName()), getApplicationContext());
-        pEp.myself(myIdentity);
-        pEp.close();
-    }
 
     private class pEpGenerateAccountKeysTask extends AsyncTask <Void, Void, Void> {
         ProgressDialog dialog;
@@ -135,7 +129,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
 
         @Override
         protected Void doInBackground(Void... params) {
-            pEpGenerateAccountKeys();
+            PEpUtils.pEpGenerateAccountKeys(getApplicationContext(), mAccount);
             return null;
         }
     }
