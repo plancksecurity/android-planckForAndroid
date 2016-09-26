@@ -74,6 +74,13 @@ import com.fsck.k9.view.MessageHeader;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Locale;
+
+import static android.app.Activity.RESULT_OK;
+
 
 public class MessageViewFragment extends Fragment implements ConfirmationDialogFragmentListener,
         AttachmentViewCallback, OnClickShowCryptoKeyListener {
@@ -235,6 +242,24 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         messageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, null);
 
         mFragmentListener.updateMenu();
+    }
+
+    public void onPendingIntentResult(int requestCode, int resultCode, Intent data) {
+        if ((requestCode & REQUEST_MASK_LOADER_HELPER) == REQUEST_MASK_LOADER_HELPER) {
+            requestCode ^= REQUEST_MASK_LOADER_HELPER;
+            messageLoaderHelper.onActivityResult(requestCode, resultCode, data);
+            return;
+        }
+
+        if ((requestCode & REQUEST_MASK_CRYPTO_PRESENTER) == REQUEST_MASK_CRYPTO_PRESENTER) {
+            requestCode ^= REQUEST_MASK_CRYPTO_PRESENTER;
+            messageCryptoPresenter.onActivityResult(requestCode, resultCode, data);
+        }
+
+        if (resultCode == RESULT_OK && requestCode == PEpStatus.REQUEST_STATUS) {
+            pEpRating = (Rating) data.getSerializableExtra(PEpStatus.CURRENT_RATING);
+            PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), pEpRating);
+        }
     }
 
     private void hideKeyboard() {
@@ -430,7 +455,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != Activity.RESULT_OK) {
+        if (resultCode != RESULT_OK) {
             return;
         }
 
