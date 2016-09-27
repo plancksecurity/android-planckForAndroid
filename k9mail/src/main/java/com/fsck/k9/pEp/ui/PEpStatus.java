@@ -27,6 +27,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
 
     private static final String ACTION_SHOW_PEP_STATUS = "com.fsck.k9.intent.action.SHOW_PEP_STATUS";
     private static final String MYSELF = "isComposedKey";
+    private static final String RATING = "rating";
 
     @Bind(R.id.pEpTitle)
     TextView pEpTitle;
@@ -40,6 +41,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     RecyclerView.LayoutManager recipientsLayoutManager;
 
     String myself = "";
+    private Rating pEpRating;
 
 
     public static void actionShowStatus(Context context, Rating currentRating, String myself) {
@@ -59,11 +61,18 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
         if (getIntent() != null && getIntent().hasExtra(MYSELF)) {
             myself = getIntent().getStringExtra(MYSELF);
         }
+        restorePEpRating(savedInstanceState);
         initPep();
         setUpActionBar();
         setUpContactList(myself, getpEp());
         loadPepTexts();
+    }
 
+    private void restorePEpRating(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            pEpRating = (Rating) savedInstanceState.getSerializable(RATING);
+            setpEpRating(pEpRating);
+        }
     }
 
 
@@ -132,11 +141,10 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
             if (resultCode == RESULT_OK) {
                int position = data.getIntExtra(PEpTrustwords.PARTNER_POSITION, PEpTrustwords.DEFAULT_POSITION);
                 Identity partner = uiCache.getRecipients().get(position);
-                setpEpRating(getpEp().identityRating(partner));
+                pEpRating = getpEp().identityRating(partner);
+                setpEpRating(pEpRating);
                 recipientsAdapter.notifyDataSetChanged();
                 colorActionBar();
-
-
             }
         }
     }
@@ -186,5 +194,9 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
         colorActionBar();
     }
 
-
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(RATING, pEpRating);
+    }
 }
