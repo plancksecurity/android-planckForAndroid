@@ -5,11 +5,15 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
+
 import com.fsck.k9.R;
+
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 /**
@@ -97,6 +101,28 @@ public class PePUIArtefactCache
     }
 
     public void setRecipients(ArrayList<Identity> recipients) {
-        this.recipients = recipients;
+        this.recipients = filteredRecipients(recipients);
+    }
+
+    private ArrayList<Identity> filteredRecipients(ArrayList<Identity> recipients) {
+        ArrayList<Identity> identities = new ArrayList<>();
+        Collections.sort(recipients, new Comparator<Identity>() {
+            @Override
+            public int compare(Identity left, Identity right) {
+                return left.address.compareTo(right.address);
+            }
+        });
+        for (int i = 0; i < recipients.size(); i++) {
+            Identity identity = recipients.get(i);
+            if (i == 0) {
+                identities.add(identity);
+            } else {
+                Identity previousIdentity = recipients.get(i - 1);
+                if (!previousIdentity.address.equals(identity.address)) {
+                    identities.add(identity);
+                }
+            }
+        }
+        return identities;
     }
 }
