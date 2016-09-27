@@ -101,10 +101,10 @@ public class PePUIArtefactCache
     }
 
     public void setRecipients(ArrayList<Identity> recipients) {
-        this.recipients = retainRecipients(recipients);
+        this.recipients = filteredRecipients(recipients);
     }
 
-    private ArrayList<Identity> retainRecipients(ArrayList<Identity> recipients) {
+    private ArrayList<Identity> filteredRecipients(ArrayList<Identity> recipients) {
         ArrayList<Identity> identities = new ArrayList<>();
         Collections.sort(recipients, new Comparator<Identity>() {
             @Override
