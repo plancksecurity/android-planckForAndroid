@@ -104,17 +104,18 @@ public class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ViewHolder> {
             String formattedFpr = PEpUtils.formatFpr(fpr);
             identityAddress.setText(formattedFpr);
             isBlacklistedCheckbox.setChecked(keyItem.isSelected());
-            isBlacklistedCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            isBlacklistedCheckbox.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (isChecked) {
+                public void onClick(View v) {
+                    boolean checked = ((CheckBox) v).isChecked();
+                    if (checked) {
                         pEp.addToBlacklist(fpr);
-                        keyItem.setSelected(true);
                     } else {
                         pEp.deleteFromBlacklist(fpr);
-                        keyItem.setSelected(false);
-
                     }
+                    keyItem.setSelected(checked);
+                    int position = dataSet.indexOf(keyItem);
+                    dataSet.get(position).setSelected(checked);
                 }
             });
 
