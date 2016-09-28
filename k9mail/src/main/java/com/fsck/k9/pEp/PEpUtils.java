@@ -1,10 +1,11 @@
 package com.fsck.k9.pEp;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
@@ -22,6 +23,7 @@ import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
 import com.fsck.k9.mailstore.LocalMessage;
+
 import org.apache.commons.io.IOUtils;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;

@@ -5,10 +5,11 @@ Created by Helm  01/07/16.
 
 package com.fsck.k9.pEp.ui;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
+
 import com.fsck.k9.K9;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.pEp.PEpProvider;
@@ -30,7 +31,7 @@ public class PepColoredActivity extends K9Activity {
     }
 
     protected void colorActionBar() {
-        ActionBar actionBar = getActionBar() ;
+        ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             PEpUtils.colorActionBar(uiCache, actionBar, pEpRating);
         }

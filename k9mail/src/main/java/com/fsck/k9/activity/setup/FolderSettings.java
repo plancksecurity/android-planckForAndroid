@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import com.fsck.k9.*;
 import com.fsck.k9.activity.FolderInfoHolder;
@@ -52,6 +53,8 @@ public class FolderSettings extends K9PreferenceActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setupActionBar();
 
         String folderName = (String)getIntent().getSerializableExtra(EXTRA_FOLDER_NAME);
         String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
@@ -171,5 +174,12 @@ public class FolderSettings extends K9PreferenceActivity {
         }
 
         super.onPause();
+    }
+
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 }

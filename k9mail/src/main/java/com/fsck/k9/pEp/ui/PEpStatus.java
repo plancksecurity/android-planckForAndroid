@@ -1,6 +1,5 @@
 package com.fsck.k9.pEp.ui;
 
-import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,19 +8,22 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import butterknife.Bind;
-import butterknife.ButterKnife;
+
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpProvider;
 
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 public class PEpStatus extends PepColoredActivity implements ChangeColorListener{
 
@@ -82,8 +84,8 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     }
 
     private void setUpActionBar() {
-        if (getActionBar() != null) {
-            ActionBar actionBar = getActionBar();
+        if (getSupportActionBar() != null) {
+            ActionBar actionBar = getSupportActionBar();
             actionBar.setTitle(getString(R.string.pep_title_activity_privacy_status));
             colorActionBar();
         }

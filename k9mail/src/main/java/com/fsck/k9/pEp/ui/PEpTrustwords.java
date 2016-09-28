@@ -67,7 +67,7 @@ public class PEpTrustwords extends PepColoredActivity {
         setContentView(R.layout.pep_trustwords);
         ButterKnife.bind(this);
         context = getApplicationContext();
-        if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initPep();
 
         if (getIntent() != null) {

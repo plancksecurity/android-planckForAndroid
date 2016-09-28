@@ -4,11 +4,16 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatDelegate;
 
 import com.fsck.k9.K9;
 
 
 public class K9PreferenceActivity extends PreferenceActivity {
+
+    private AppCompatDelegate mDelegate;
+
     @Override
     public void onCreate(Bundle icicle) {
         K9ActivityCommon.setLanguage(this, K9.getK9Language());
@@ -77,5 +82,16 @@ public class K9PreferenceActivity extends PreferenceActivity {
             mPrefView.setValue(summary);
             return false;
         }
+    }
+
+    public ActionBar getSupportActionBar() {
+        return getDelegate().getSupportActionBar();
+    }
+
+    private AppCompatDelegate getDelegate() {
+        if (mDelegate == null) {
+            mDelegate = AppCompatDelegate.create(this, null);
+        }
+        return mDelegate;
     }
 }

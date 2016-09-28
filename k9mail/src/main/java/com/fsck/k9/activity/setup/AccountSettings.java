@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.*;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import com.fsck.k9.*;
 import com.fsck.k9.Account.*;
@@ -192,6 +193,8 @@ public class AccountSettings extends K9PreferenceActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setupActionBar();
 
         String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
         mAccount = Preferences.getPreferences(this).getAccount(accountUuid);
@@ -1076,6 +1079,13 @@ public class AccountSettings extends K9PreferenceActivity {
                 mSentFolder.setEnabled(true);
                 mTrashFolder.setEnabled(true);
             }
+        }
+    }
+
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
 }

@@ -1,9 +1,6 @@
 package com.fsck.k9.activity.compose;
 
 
-import java.util.Arrays;
-import java.util.List;
-
 import android.app.LoaderManager;
 import android.app.PendingIntent;
 import android.text.TextWatcher;
@@ -14,6 +11,7 @@ import android.view.View.OnFocusChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
+
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageCompose;
@@ -26,10 +24,13 @@ import com.fsck.k9.pEp.ui.PEpStatus;
 import com.fsck.k9.view.RecipientSelectView;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.RecipientSelectView.TokenListener;
+
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class RecipientMvpView implements OnFocusChangeListener, OnClickListener {
@@ -433,7 +434,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         boolean reallyWithToast = true;
         if(withToast.length>0) reallyWithToast = withToast[0];
         updatePePState();
-        PEpUtils.colorActionBar(pEpUiCache, activity.getActionBar(), pEpRating);
+        PEpUtils.colorActionBar(pEpUiCache, activity.getSupportActionBar(), pEpRating);
 
         if(pEpIndicator!=null) {
             pEpIndicator.setIcon(pEpUiCache.getIcon());

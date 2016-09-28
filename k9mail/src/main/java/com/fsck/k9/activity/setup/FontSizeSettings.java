@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.*;
+import android.support.v7.app.ActionBar;
+
 import com.fsck.k9.*;
 import com.fsck.k9.activity.K9PreferenceActivity;
 import com.fsck.k9.preferences.Storage;
@@ -70,6 +72,8 @@ public class FontSizeSettings extends K9PreferenceActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setupActionBar();
 
         FontSizes fontSizes = K9.getFontSizes();
         addPreferencesFromResource(R.xml.font_preferences);
@@ -197,5 +201,12 @@ public class FontSizeSettings extends K9PreferenceActivity {
     public void onBackPressed() {
         saveSettings();
         super.onBackPressed();
+    }
+
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 }
