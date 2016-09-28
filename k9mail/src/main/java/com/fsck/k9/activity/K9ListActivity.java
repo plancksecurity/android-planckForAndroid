@@ -28,7 +28,7 @@ public class K9ListActivity extends AppCompatActivity implements K9ActivityMagic
         mBase = K9ActivityCommon.newInstance(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_activity);
-        mList = (ListView)findViewById(R.id.list);
+        mList = (ListView)findViewById(android.R.id.list);
         if (mList == null) {
             throw new RuntimeException(
                     "Your content must have a ListView whose id attribute is " +
@@ -151,8 +151,13 @@ public class K9ListActivity extends AppCompatActivity implements K9ActivityMagic
     @Override
     public void onContentChanged() {
         super.onContentChanged();
-        View emptyView = findViewById(R.id.empty);
-        mList = (ListView)findViewById(R.id.list);
+        View emptyView = findViewById(android.R.id.empty);
+        mList = (ListView)findViewById(android.R.id.list);
+        if (mList == null) {
+            throw new RuntimeException(
+                    "Your content must have a ListView whose id attribute is " +
+                            "'android.R.id.list'");
+        }
         if (emptyView != null) {
             mList.setEmptyView(emptyView);
         }
