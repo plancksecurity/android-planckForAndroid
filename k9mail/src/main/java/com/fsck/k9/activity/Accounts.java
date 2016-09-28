@@ -370,8 +370,8 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
             finish();
             return;
         }
-
-        requestWindowFeature(Window.FEATURE_PROGRESS);
+// TODO: 28/9/16 is this really needed?
+//        requestWindowFeature(Window.FEATURE_PROGRESS);
         mActionBar = getSupportActionBar();
         initializeActionBar();
         setContentView(R.layout.accounts);
