@@ -1,6 +1,7 @@
 package com.fsck.k9.activity;
 
 import android.app.*;
+import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,6 +13,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.*;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -94,7 +96,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
     private FontSizes mFontSizes = K9.getFontSizes();
 
     private MenuItem mRefreshMenuItem;
-    private ActionBar mActionBar;
+    private android.support.v7.app.ActionBar mActionBar;
 
     private TextView mActionBarTitle;
     private TextView mActionBarSubTitle;
@@ -370,7 +372,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         }
 
         requestWindowFeature(Window.FEATURE_PROGRESS);
-        mActionBar = getActionBar();
+        mActionBar = getSupportActionBar();
         initializeActionBar();
         setContentView(R.layout.accounts);
         ListView listView = getListView();
@@ -471,14 +473,15 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
     /**
      * Save the reference to a currently displayed dialog or a running AsyncTask (if available).
      */
-    @Override
-    public Object onRetainNonConfigurationInstance() {
-        Object retain = null;
-        if (mNonConfigurationInstance != null && mNonConfigurationInstance.retain()) {
-            retain = mNonConfigurationInstance;
-        }
-        return retain;
-    }
+    // TODO: 28/9/16 Fix this
+//    @Override
+//    public Object onRetainNonConfigurationInstance() {
+//        Object retain = null;
+//        if (mNonConfigurationInstance != null && mNonConfigurationInstance.retain()) {
+//            retain = mNonConfigurationInstance;
+//        }
+//        return retain;
+//    }
 
     private List<BaseAccount> accounts = new ArrayList<BaseAccount>();
     private enum ACCOUNT_LOCATION {

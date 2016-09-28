@@ -1,7 +1,6 @@
 package com.fsck.k9.activity;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,14 +9,36 @@ import android.os.PowerManager;
 import android.text.TextUtils.TruncateAt;
 import android.text.format.DateUtils;
 import android.util.Log;
-import android.view.*;
+import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.*;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
-import com.fsck.k9.*;
+import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.SearchView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.fsck.k9.Account;
 import com.fsck.k9.Account.FolderMode;
+import com.fsck.k9.AccountStats;
+import com.fsck.k9.BaseAccount;
+import com.fsck.k9.FontSizes;
+import com.fsck.k9.K9;
+import com.fsck.k9.Preferences;
+import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.MessageActions;
 import com.fsck.k9.activity.setup.AccountSettings;
 import com.fsck.k9.activity.setup.FolderSettings;
@@ -35,7 +56,11 @@ import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.service.MailService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * FolderList is the primary user interface for the program. This
@@ -66,7 +91,7 @@ public class FolderList extends K9ListActivity {
 
     private MenuItem mRefreshMenuItem;
     private View mActionBarProgressView;
-    private ActionBar mActionBar;
+    private android.support.v7.app.ActionBar mActionBar;
 
     private TextView mActionBarTitle;
     private TextView mActionBarSubTitle;
@@ -231,7 +256,7 @@ public class FolderList extends K9ListActivity {
         }
 
         mActionBarProgressView = getActionBarProgressView();
-        mActionBar = getActionBar();
+        mActionBar = getSupportActionBar();
         initializeActionBar();
         setContentView(R.layout.folder_list);
         mListView = getListView();
@@ -326,10 +351,10 @@ public class FolderList extends K9ListActivity {
         }
     }
 
-
-    @Override public Object onRetainNonConfigurationInstance() {
-        return (mAdapter == null) ? null : mAdapter.mFolders;
-    }
+// TODO: 28/9/16 fix this
+//    @Override public Object onRetainNonConfigurationInstance() {
+//        return (mAdapter == null) ? null : mAdapter.mFolders;
+//    }
 
     @Override public void onPause() {
         super.onPause();

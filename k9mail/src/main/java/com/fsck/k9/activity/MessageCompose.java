@@ -679,14 +679,14 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         // TODO: trigger pep?
 
     }
-
-    @Override
-    public Object onRetainNonConfigurationInstance() {
-        if (currentMessageBuilder != null) {
-            currentMessageBuilder.detachCallback();
-        }
-        return currentMessageBuilder;
-    }
+// TODO: 28/9/16 fix this
+//    @Override
+//    public Object onRetainNonConfigurationInstance() {
+//        if (currentMessageBuilder != null) {
+//            currentMessageBuilder.detachCallback();
+//        }
+//        return currentMessageBuilder;
+//    }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
