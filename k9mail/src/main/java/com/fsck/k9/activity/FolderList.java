@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
+import android.support.v7.widget.SearchView;
 import android.text.TextUtils.TruncateAt;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -27,7 +28,6 @@ import android.widget.Filterable;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
