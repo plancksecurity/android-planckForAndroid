@@ -4,10 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.*;
+import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
+import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
+import android.preference.PreferenceScreen;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.widget.Toast;
+
 import com.fsck.k9.K9;
 import com.fsck.k9.K9.NotificationHideSubject;
 import com.fsck.k9.K9.NotificationQuickDelete;
@@ -27,7 +32,11 @@ import com.fsck.k9.preferences.TimePickerPreference;
 import com.fsck.k9.service.MailService;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 public class Prefs extends K9PreferenceActivity {
@@ -167,6 +176,8 @@ public class Prefs extends K9PreferenceActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setupActionBar();
 
         addPreferencesFromResource(R.xml.global_preferences);
 
@@ -604,5 +615,12 @@ public class Prefs extends K9PreferenceActivity {
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 }
