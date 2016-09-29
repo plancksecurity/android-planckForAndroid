@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -27,6 +26,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.K9;
@@ -94,6 +94,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private TextView mActionBarPepStatus;
 
     public static final int REQUEST_MASK_PENDING_INTENT = 1 << 16;
+    private View customView;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
             boolean noThreading, boolean newTask) {
@@ -150,7 +151,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     private StorageManager.StorageListener mStorageListener = new StorageListenerImplementation();
 
-    private ActionBar mActionBar;
     private View mActionBarMessageList;
     private View mActionBarMessageView;
     private MessageTitleView mActionBarSubject;
@@ -479,6 +479,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         }
 
         // now we know if we are in single account mode and need a subtitle
+
         mActionBarSubTitle.setVisibility((!mSingleFolderMode) ? View.GONE : View.VISIBLE);
 
         return true;
@@ -522,12 +523,8 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     private void initializeActionBar() {
-        mActionBar = getSupportActionBar();
-
-        mActionBar.setDisplayShowCustomEnabled(true);
-        mActionBar.setCustomView(R.layout.actionbar_custom);
-
-        View customView = mActionBar.getCustomView();
+        setUpToolbar(true);
+        customView = getToolbar().findViewById(R.id.actionbar_custom);
         mActionBarMessageList = customView.findViewById(R.id.actionbar_message_list);
         mActionBarMessageView = customView.findViewById(R.id.actionbar_message_view);
         mActionBarSubject = (MessageTitleView) customView.findViewById(R.id.message_title_view);
@@ -536,12 +533,10 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         mActionBarUnread = (TextView) customView.findViewById(R.id.actionbar_unread_count);
         mActionBarProgress = (ProgressBar) customView.findViewById(R.id.actionbar_progress);
         mActionButtonIndeterminateProgress = getActionButtonIndeterminateProgress();
-
-        mActionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     private void initializePepStatus() {
-        mActionBarPepStatus = (TextView) findViewById(R.id.tvPep);
+        mActionBarPepStatus = (TextView) customView.findViewById(R.id.tvPep);
         mActionBarPepStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

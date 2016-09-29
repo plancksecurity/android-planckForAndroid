@@ -31,9 +31,8 @@ public class PepColoredActivity extends K9Activity {
     }
 
     protected void colorActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            PEpUtils.colorActionBar(uiCache, actionBar, pEpRating);
+        if (getToolbar() != null) {
+            PEpUtils.colorToolbar(uiCache, getToolbar(), pEpRating);
         }
     }
 

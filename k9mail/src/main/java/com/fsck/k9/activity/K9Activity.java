@@ -66,11 +66,16 @@ public class K9Activity extends AppCompatActivity implements K9ActivityMagic, Sy
     }
 
     public void setUpToolbar(boolean showUpButton) {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(showUpButton);
             }
         }
+    }
+
+    public Toolbar getToolbar() {
+        return toolbar;
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import com.fsck.k9.Account;
@@ -264,6 +265,13 @@ public class PEpUtils {
         return message.isSet(Flag.X_FORCE_UNENCRYPTED)
                 || messageRating == Rating.pEpRatingUndefined
                 || !account.ispEpPrivacyProtected();
+    }
+
+    public static void colorToolbar(PePUIArtefactCache uiCache, Toolbar toolbar, Rating pEpRating) {
+        if (toolbar != null) {
+            ColorDrawable colorDrawable = new ColorDrawable(uiCache.getColor(pEpRating));
+            toolbar.setBackground(colorDrawable);
+        }
     }
 }
 

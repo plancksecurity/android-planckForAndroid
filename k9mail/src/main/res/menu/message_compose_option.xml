@@ -6,14 +6,14 @@
         android:alphabeticShortcut="n"
         android:title="@string/add_attachment_action"
         android:icon="?attr/iconActionAddAttachment"
-        android:showAsAction="always"
+        app:showAsAction="always"
     />
     <item
         android:id="@+id/send"
         android:alphabeticShortcut="s"
         android:title="@string/send_action"
         android:icon="?attr/iconActionSend"
-        android:showAsAction="always"
+        app:showAsAction="always"
     />
     <item
         android:id="@+id/add_from_contacts"
@@ -25,7 +25,7 @@
         android:alphabeticShortcut="s"
         android:title="@string/pep_title_activity_privacy_status"
         android:icon="@drawable/ic_action_pep_indicator"
-        android:showAsAction="always"
+        app:showAsAction="always"
         />
 
     <item
@@ -55,12 +55,12 @@
         android:id="@+id/openpgp_inline_enable"
         android:alphabeticShortcut="i"
         android:title="@string/enable_inline_pgp"
-        android:showAsAction="never"
+        app:showAsAction="never"
         />
     <item
         android:id="@+id/openpgp_inline_disable"
         android:alphabeticShortcut="i"
         android:title="@string/disable_inline_pgp"
-        android:showAsAction="never"
+        app:showAsAction="never"
         />
 </menu>
