@@ -755,7 +755,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
             pEpRating = PEpUtils.extractRating(message);
 
-            PEpUtils.colorActionBar(pePUIArtefactCache,((MessageList)getActivity()).getSupportActionBar(), pEpRating);
+            PEpUtils.colorToolbar(pePUIArtefactCache,((MessageList)getActivity()).getToolbar(), pEpRating);
         }
 
         @Override

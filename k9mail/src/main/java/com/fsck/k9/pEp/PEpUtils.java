@@ -3,7 +3,6 @@ package com.fsck.k9.pEp;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
@@ -223,13 +222,6 @@ public class PEpUtils {
             return  ContextCompat.getColor(context, R.color.pep_green);
         }
         throw new RuntimeException("Invalid rating");
-    }
-
-    public static void colorActionBar(PePUIArtefactCache pEpUiCache, ActionBar actionBar, Rating rating) {
-        if (actionBar != null) {
-            ColorDrawable colorDrawable = new ColorDrawable(pEpUiCache.getColor(rating));
-            actionBar.setBackgroundDrawable(colorDrawable);
-        }
     }
 
     public static Rating extractRating(Message message) {

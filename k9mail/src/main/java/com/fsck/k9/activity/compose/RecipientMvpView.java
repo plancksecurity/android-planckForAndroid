@@ -434,7 +434,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         boolean reallyWithToast = true;
         if(withToast.length>0) reallyWithToast = withToast[0];
         updatePePState();
-        PEpUtils.colorActionBar(pEpUiCache, activity.getSupportActionBar(), pEpRating);
+        PEpUtils.colorToolbar(pEpUiCache, activity.getToolbar(), pEpRating);
 
         if(pEpIndicator!=null) {
             pEpIndicator.setIcon(pEpUiCache.getIcon());
