@@ -91,7 +91,6 @@ public class FolderList extends K9ListActivity {
 
     private MenuItem mRefreshMenuItem;
     private View mActionBarProgressView;
-    private android.support.v7.app.ActionBar mActionBar;
 
     private TextView mActionBarTitle;
     private TextView mActionBarSubTitle;

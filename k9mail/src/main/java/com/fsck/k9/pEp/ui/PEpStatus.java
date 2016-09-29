@@ -8,7 +8,6 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -59,7 +58,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
         super.onCreate(savedInstanceState);
         loadPepRating();
         setContentView(R.layout.pep_status);
-        ButterKnife.bind(PEpStatus.this);
+        ButterKnife.bind(this);
         if (getIntent() != null && getIntent().hasExtra(MYSELF)) {
             myself = getIntent().getStringExtra(MYSELF);
         }
@@ -84,11 +83,9 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     }
 
     private void setUpActionBar() {
-        if (getSupportActionBar() != null) {
-            ActionBar actionBar = getSupportActionBar();
-            actionBar.setTitle(getString(R.string.pep_title_activity_privacy_status));
-            colorActionBar();
-        }
+        setUpToolbar(true);
+        getToolbar().setTitle(getString(R.string.pep_title_activity_privacy_status));
+        colorActionBar();
     }
 
 
