@@ -526,6 +526,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
 
         recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.ACCOUNT, mAccount.ispEpPrivacyProtected());
+
+        setUpToolbar(true);
     }
 
     @Override
