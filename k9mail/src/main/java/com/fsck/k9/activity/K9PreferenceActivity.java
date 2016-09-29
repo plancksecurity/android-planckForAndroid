@@ -6,19 +6,39 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import com.fsck.k9.K9;
+import com.fsck.k9.R;
 
 
 public class K9PreferenceActivity extends PreferenceActivity {
 
     private AppCompatDelegate mDelegate;
+    private Toolbar toolbar;
 
     @Override
     public void onCreate(Bundle icicle) {
         K9ActivityCommon.setLanguage(this, K9.getK9Language());
         setTheme(K9.getK9ThemeResourceId());
         super.onCreate(icicle);
+
+        LinearLayout root = (LinearLayout)findViewById(android.R.id.list).getParent();
+        toolbar = (Toolbar) getLayoutInflater().inflate(R.layout.toolbar, null);
+        root.addView(toolbar, 0);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
     }
 
     /**
@@ -65,8 +85,8 @@ public class K9PreferenceActivity extends PreferenceActivity {
      * This class handles value changes of the {@link ListPreference} objects.
      */
     private static class PreferenceChangeListener implements Preference.OnPreferenceChangeListener {
-        private ListPreference mPrefView;
 
+        private ListPreference mPrefView;
         private PreferenceChangeListener(final ListPreference prefView) {
             this.mPrefView = prefView;
         }
@@ -82,8 +102,8 @@ public class K9PreferenceActivity extends PreferenceActivity {
             mPrefView.setValue(summary);
             return false;
         }
-    }
 
+    }
     public ActionBar getSupportActionBar() {
         return getDelegate().getSupportActionBar();
     }
@@ -93,5 +113,9 @@ public class K9PreferenceActivity extends PreferenceActivity {
             mDelegate = AppCompatDelegate.create(this, null);
         }
         return mDelegate;
+    }
+
+    public Toolbar getToolbar() {
+        return toolbar;
     }
 }

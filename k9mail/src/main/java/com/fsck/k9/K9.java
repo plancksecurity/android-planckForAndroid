@@ -853,7 +853,7 @@ public class K9 extends Application {
     }
 
     public static int getK9ThemeResourceId(Theme themeId) {
-        return (themeId == Theme.LIGHT) ? R.style.Theme_K9_Light : R.style.Theme_K9_Dark;
+        return (themeId == Theme.LIGHT) ? R.style.Theme_K9_Light_NoActionBar : R.style.Theme_K9_Dark;
     }
 
     public static int getK9ThemeResourceId() {

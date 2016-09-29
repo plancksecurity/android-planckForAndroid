@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.*;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 
 import com.fsck.k9.*;
 import com.fsck.k9.activity.K9PreferenceActivity;
@@ -204,9 +205,10 @@ public class FontSizeSettings extends K9PreferenceActivity {
     }
 
     private void setupActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
+        Toolbar toolbar = getToolbar();
+        toolbar.setTitle(R.string.font_size_settings_title);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
 }

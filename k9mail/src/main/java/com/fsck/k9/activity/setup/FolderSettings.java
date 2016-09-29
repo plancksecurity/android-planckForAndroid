@@ -8,6 +8,7 @@ import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import com.fsck.k9.*;
 import com.fsck.k9.activity.FolderInfoHolder;
@@ -177,9 +178,10 @@ public class FolderSettings extends K9PreferenceActivity {
     }
 
     private void setupActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
+        Toolbar toolbar = getToolbar();
+        toolbar.setTitle(R.string.folders_title);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
 }

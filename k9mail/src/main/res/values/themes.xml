@@ -6,10 +6,7 @@
     </style>
 
     <!-- Empty base themes that can be easily replaced by RRO (Runtime Resource Overlay) themes -->
-    <style name="Theme.K9.Light.Base" parent="Theme.AppCompat.Light.NoActionBar" >
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
+    <style name="Theme.K9.Light.Base" parent="Theme.AppCompat.Light.NoActionBar" />
     <style name="Theme.K9.Dark.Base" parent="Base.ThemeOverlay.AppCompat.Dark" />
 
     <style name="Theme.K9.Light" parent="Theme.K9.Light.Base">
@@ -66,6 +63,11 @@
         <item name="composerBackgroundColor">@android:color/background_light</item>
         <item name="tintColorBulletPointPositive">#77aa22</item>
         <item name="tintColorBulletPointNegative">#dd2222</item>
+    </style>
+
+    <style name="Theme.K9.Light.NoActionBar" parent="Theme.K9.Light">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="Theme.K9.Dark" parent="Theme.K9.Dark.Base">
