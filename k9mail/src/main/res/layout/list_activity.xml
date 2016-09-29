@@ -12,10 +12,12 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     >
+    <include layout="@layout/toolbar_layout" />
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
@@ -29,4 +31,4 @@
         android:visibility="gone"
         android:textAppearance="?android:attr/textAppearanceMedium"
         />
-</FrameLayout>
+</LinearLayout>

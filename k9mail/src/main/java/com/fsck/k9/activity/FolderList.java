@@ -256,9 +256,7 @@ public class FolderList extends K9ListActivity {
         }
 
         mActionBarProgressView = getActionBarProgressView();
-        mActionBar = getSupportActionBar();
         initializeActionBar();
-        setContentView(R.layout.folder_list);
         mListView = getListView();
         mListView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
         mListView.setLongClickable(true);
@@ -295,15 +293,12 @@ public class FolderList extends K9ListActivity {
     }
 
     private void initializeActionBar() {
-        mActionBar.setDisplayShowCustomEnabled(true);
-        mActionBar.setCustomView(R.layout.actionbar_custom);
+        setUpToolbar(true);
+        View customView = getToolbar().findViewById(R.id.actionbar_custom);
 
-        View customView = mActionBar.getCustomView();
         mActionBarTitle = (TextView) customView.findViewById(R.id.actionbar_title_first);
         mActionBarSubTitle = (TextView) customView.findViewById(R.id.actionbar_title_sub);
         mActionBarUnread = (TextView) customView.findViewById(R.id.actionbar_unread_count);
-
-        mActionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

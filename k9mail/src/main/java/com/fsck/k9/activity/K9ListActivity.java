@@ -3,7 +3,9 @@ package com.fsck.k9.activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,11 +18,14 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 
+import butterknife.Bind;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
 public class K9ListActivity extends AppCompatActivity implements K9ActivityMagic {
 
+    @Nullable
+    @Bind(R.id.toolbar) Toolbar toolbar;
     private K9ActivityCommon mBase;
 
     @Override
@@ -102,6 +107,20 @@ public class K9ListActivity extends AppCompatActivity implements K9ActivityMagic
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
 
+    }
+
+    public void setUpToolbar(boolean showUpButton) {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(showUpButton);
+            }
+        }
+    }
+
+    public Toolbar getToolbar() {
+        return toolbar;
     }
 
     /**

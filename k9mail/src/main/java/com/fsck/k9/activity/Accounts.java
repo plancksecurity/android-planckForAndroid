@@ -1,7 +1,10 @@
 package com.fsck.k9.activity;
 
-import android.app.*;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Application;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,20 +16,42 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.*;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.SparseBooleanArray;
-import android.view.*;
+import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.webkit.WebView;
-import android.widget.*;
+import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import com.fsck.k9.*;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.fsck.k9.Account;
+import com.fsck.k9.AccountStats;
+import com.fsck.k9.BaseAccount;
+import com.fsck.k9.FontSizes;
+import com.fsck.k9.K9;
+import com.fsck.k9.Preferences;
+import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.MessageActions;
 import com.fsck.k9.activity.misc.ExtendedAsyncTask;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
@@ -57,7 +82,13 @@ import com.fsck.k9.view.ColorChip;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -96,7 +127,6 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
     private FontSizes mFontSizes = K9.getFontSizes();
 
     private MenuItem mRefreshMenuItem;
-    private android.support.v7.app.ActionBar mActionBar;
 
     private TextView mActionBarTitle;
     private TextView mActionBarSubTitle;
@@ -372,9 +402,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         }
 // TODO: 28/9/16 is this really needed?
 //        requestWindowFeature(Window.FEATURE_PROGRESS);
-        mActionBar = getSupportActionBar();
         initializeActionBar();
-        setContentView(R.layout.accounts);
         ListView listView = getListView();
         listView.setOnItemClickListener(this);
         listView.setItemsCanFocus(false);
@@ -399,15 +427,12 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
     }
 
     private void initializeActionBar() {
-        mActionBar.setDisplayShowCustomEnabled(true);
-        mActionBar.setCustomView(R.layout.actionbar_custom);
+        setUpToolbar(false);
+        View customView = getToolbar().findViewById(R.id.actionbar_custom);
 
-        View customView = mActionBar.getCustomView();
         mActionBarTitle = (TextView) customView.findViewById(R.id.actionbar_title_first);
         mActionBarSubTitle = (TextView) customView.findViewById(R.id.actionbar_title_sub);
         mActionBarUnread = (TextView) customView.findViewById(R.id.actionbar_unread_count);
-
-        mActionBar.setDisplayHomeAsUpEnabled(false);
     }
 
     /**
