@@ -23,6 +23,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -31,7 +33,6 @@ import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -50,6 +51,7 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.BuildConfig;
@@ -2600,6 +2602,17 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         private MenuItem mUnflag;
 
         @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.message_list_context, menu);
+
+            // check capabilities
+            setContextCapabilities(mAccount, menu);
+
+            return true;
+        }
+
+        @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
             mSelectAll = menu.findItem(R.id.select_all);
             mMarkAsRead = menu.findItem(R.id.mark_as_read);
@@ -2628,6 +2641,76 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
             return true;
         }
 
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.delete: {
+                    List<MessageReference> messages = getCheckedMessages();
+                    onDelete(messages);
+                    mSelectedCount = 0;
+                    break;
+                }
+                case R.id.mark_as_read: {
+                    setFlagForSelected(Flag.SEEN, true);
+                    break;
+                }
+                case R.id.mark_as_unread: {
+                    setFlagForSelected(Flag.SEEN, false);
+                    break;
+                }
+                case R.id.flag: {
+                    setFlagForSelected(Flag.FLAGGED, true);
+                    break;
+                }
+                case R.id.unflag: {
+                    setFlagForSelected(Flag.FLAGGED, false);
+                    break;
+                }
+                case R.id.select_all: {
+                    selectAll();
+                    break;
+                }
+
+                // only if the account supports this
+                case R.id.archive: {
+                    onArchive(getCheckedMessages());
+                    mSelectedCount = 0;
+                    break;
+                }
+                case R.id.spam: {
+                    onSpam(getCheckedMessages());
+                    mSelectedCount = 0;
+                    break;
+                }
+                case R.id.move: {
+                    onMove(getCheckedMessages());
+                    mSelectedCount = 0;
+                    break;
+                }
+                case R.id.copy: {
+                    onCopy(getCheckedMessages());
+                    mSelectedCount = 0;
+                    break;
+                }
+            }
+            if (mSelectedCount == 0) {
+                mActionMode.finish();
+            }
+
+            return true;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = null;
+            mSelectAll = null;
+            mMarkAsRead = null;
+            mMarkAsUnread = null;
+            mFlag = null;
+            mUnflag = null;
+            setSelectionState(false);
+        }
+
         /**
          * Get the set of account UUIDs for the selected messages.
          */
@@ -2650,28 +2733,6 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
             }
 
             return accountUuids;
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            mActionMode = null;
-            mSelectAll = null;
-            mMarkAsRead = null;
-            mMarkAsUnread = null;
-            mFlag = null;
-            mUnflag = null;
-            setSelectionState(false);
-        }
-
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            MenuInflater inflater = mode.getMenuInflater();
-            inflater.inflate(R.menu.message_list_context, menu);
-
-            // check capabilities
-            setContextCapabilities(mAccount, menu);
-
-            return true;
         }
 
         /**
@@ -2733,72 +2794,6 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
                 mFlag.setVisible(show);
                 mUnflag.setVisible(!show);
             }
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            /*
-             * In the following we assume that we can't move or copy
-             * mails to the same folder. Also that spam isn't available if we are
-             * in the spam folder,same for archive.
-             *
-             * This is the case currently so safe assumption.
-             */
-            switch (item.getItemId()) {
-            case R.id.delete: {
-                List<MessageReference> messages = getCheckedMessages();
-                onDelete(messages);
-                mSelectedCount = 0;
-                break;
-            }
-            case R.id.mark_as_read: {
-                setFlagForSelected(Flag.SEEN, true);
-                break;
-            }
-            case R.id.mark_as_unread: {
-                setFlagForSelected(Flag.SEEN, false);
-                break;
-            }
-            case R.id.flag: {
-                setFlagForSelected(Flag.FLAGGED, true);
-                break;
-            }
-            case R.id.unflag: {
-                setFlagForSelected(Flag.FLAGGED, false);
-                break;
-            }
-            case R.id.select_all: {
-                selectAll();
-                break;
-            }
-
-            // only if the account supports this
-            case R.id.archive: {
-                onArchive(getCheckedMessages());
-                mSelectedCount = 0;
-                break;
-            }
-            case R.id.spam: {
-                onSpam(getCheckedMessages());
-                mSelectedCount = 0;
-                break;
-            }
-            case R.id.move: {
-                onMove(getCheckedMessages());
-                mSelectedCount = 0;
-                break;
-            }
-            case R.id.copy: {
-                onCopy(getCheckedMessages());
-                mSelectedCount = 0;
-                break;
-            }
-            }
-            if (mSelectedCount == 0) {
-                mActionMode.finish();
-            }
-
-            return true;
         }
     }
 
@@ -3443,7 +3438,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
     }
 
     private void startAndPrepareActionMode() {
-        mActionMode = getActivity().startActionMode(mActionModeCallback);
+        mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
         mActionMode.invalidate();
     }
 
