@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -232,6 +233,17 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         initializeFragments();
         displayViews();
         if (mAccount != null && mAccount.ispEpPrivacyProtected()) initializePepStatus();
+        initializeFabButton();
+    }
+
+    private void initializeFabButton() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_button_compose_message);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                goToMessageCompose();
+            }
+        });
     }
 
     @Override
@@ -259,6 +271,11 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         initializeDisplayMode(null);
         initializeFragments();
         displayViews();
+    }
+
+    private void goToMessageCompose() {
+        Intent intent = new Intent(this, MessageCompose.class);
+        startActivity(intent);
     }
 
     /**

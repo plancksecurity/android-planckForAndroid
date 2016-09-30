@@ -43,6 +43,6 @@
         android:src="@drawable/ic_action_add_light"
         app:layout_anchorGravity="bottom|right"
         app:layout_anchor="@+id/linearLayout"
-        android:id="@+id/floatingActionButton" />
+        android:id="@+id/fab_button_compose_message" />
 
 </android.support.design.widget.CoordinatorLayout>
