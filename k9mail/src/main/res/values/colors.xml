@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorPrimary">#00d13d</color>
+    <color name="colorPrimaryDark">#00d13d</color>
+    <color name="colorAccent">#00d13d</color>
+
     <color name="message_list_item_footer_background">#eeeeee</color>
 
     <color name="light_black">#444</color>
@@ -17,5 +21,6 @@
     <color name="pep_green">#00d13d</color>
     <color name="pep_yellow">#ffec00</color>
     <color name="pep_red">#ef1b1b</color>
+
 
 </resources>
