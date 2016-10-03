@@ -72,8 +72,7 @@
             android:gravity="center_vertical"
             android:includeFontPadding="false"
             android:singleLine="true"
-            android:textSize="16sp"
-            tools:text="La la la al ala ala la al ala la alalas la sl afhdsjfh dskjfh sdfhjksd fhjkds fhdskj fhdskj" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/tvPep"

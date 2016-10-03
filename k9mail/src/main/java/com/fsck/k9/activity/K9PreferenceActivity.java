@@ -36,11 +36,6 @@ public class K9PreferenceActivity extends PreferenceActivity {
         });
     }
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-    }
-
     /**
      * Set up the {@link ListPreference} instance identified by {@code key}.
      *
