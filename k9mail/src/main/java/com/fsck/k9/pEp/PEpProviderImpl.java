@@ -369,7 +369,7 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public void keyCompromised(Identity id) {
         createEngineInstanceIfNeeded();
-        engine.keyCompromized(id);
+        engine.keyMistrusted(id);
     }
 
     @Override
