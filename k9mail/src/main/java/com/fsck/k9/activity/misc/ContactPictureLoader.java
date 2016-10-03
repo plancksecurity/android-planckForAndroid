@@ -1,14 +1,5 @@
 package com.fsck.k9.activity.misc;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.ref.WeakReference;
-import java.util.Locale;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import android.app.ActivityManager;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -17,6 +8,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -28,6 +21,15 @@ import android.widget.ImageView;
 
 import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.mail.Address;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.ref.WeakReference;
+import java.util.Locale;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ContactPictureLoader {
     /**
@@ -133,7 +135,7 @@ public class ContactPictureLoader {
         Bitmap bitmap = getBitmapFromCache(address);
         if (bitmap != null) {
             // The picture was found in the bitmap cache
-            imageView.setImageBitmap(bitmap);
+            imageView.setImageBitmap(getCroppedBitmap(bitmap));
         } else if (cancelPotentialWork(address, imageView)) {
             // Query the contacts database in a background thread and try to load the contact
             // picture, if there is one.
@@ -149,6 +151,29 @@ public class ContactPictureLoader {
             }
         }
     }
+
+    private Bitmap getCroppedBitmap(Bitmap bitmap) {
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
+                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final int color = 0xff424242;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        // canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+        canvas.drawCircle(bitmap.getWidth() / 2, bitmap.getHeight() / 2,
+                bitmap.getWidth() / 2, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+        // Bitmap _bmp = Bitmap.createScaledBitmap(output, 60, 60, false);
+        // return _bmp;
+        return output;
+    }
+
 
     private int calcUnknownContactColor(Address address) {
         if (mDefaultBackgroundColor != 0) {
@@ -200,7 +225,7 @@ public class ContactPictureLoader {
                 (mPictureSizeInPx / 2f) - (width / 2f),
                 (mPictureSizeInPx / 2f) + (rect.height() / 2f), paint);
 
-        return result;
+        return getCroppedBitmap(result);
     }
 
     private void addBitmapToCache(Address key, Bitmap bitmap) {
@@ -308,7 +333,7 @@ public class ContactPictureLoader {
             // Save the picture of the contact with that email address in the bitmap cache
             addBitmapToCache(mAddress, bitmap);
 
-            return bitmap;
+            return getCroppedBitmap(bitmap);
         }
 
         @Override

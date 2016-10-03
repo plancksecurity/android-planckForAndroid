@@ -52,7 +52,6 @@
             android:layout_marginLeft="4dp"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_contact_picture"
-            style="?android:attr/quickContactBadgeStyleWindowLarge"
             android:background="@android:color/transparent"/>
 
 
@@ -76,7 +75,7 @@
                 android:bufferType="spannable"
                 android:layout_below="@+id/subject_wrapper"
                 android:singleLine="false"
-                android:textSize="16sp"
+                android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorSecondary"
                 android:longClickable="false"
                 android:layout_alignWithParentIfMissing="false"
@@ -109,9 +108,10 @@
                     android:singleLine="true"
                     android:layout_marginBottom="1dip"
                     android:layout_marginLeft="1dip"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textSize="16sp"
                     android:textColor="?android:attr/textColorPrimary"
-                    android:fontFamily="sans-serif-light"
+                    android:fontFamily="sans-serif-medium"
+                    android:textStyle="bold"
                     tools:text="Sender compact"
 
                     />
@@ -126,8 +126,9 @@
                     android:ellipsize="marquee"
                     android:singleLine="true"
                     android:textSize="16sp"
-                    android:textColor="?android:attr/textColorSecondary"
-                    android:fontFamily="sans-serif-light"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-medium"
                     tools:text="Subject"
 
                     />
@@ -145,7 +146,6 @@
                     android:paddingLeft="4dip"
                     android:focusable="false"
                     tools:text="ThreadCount"
-
                     />
         </LinearLayout>
 
@@ -174,10 +174,11 @@
                 android:paddingLeft="3dip"
                 android:paddingRight="8dip"
                 android:singleLine="true"
-                android:fontFamily="sans-serif-light"
+                android:fontFamily="sans-serif-medium"
+                android:textStyle="bold"
                 android:textSize="12sp"
-                android:textColor="?android:attr/textColorSecondary"
-                tools:text="15:12"/>
+                android:textColor="#4285F4"
+                tools:text="20:00"/>
 
         <LinearLayout
                 android:id="@+id/extra_items_container"

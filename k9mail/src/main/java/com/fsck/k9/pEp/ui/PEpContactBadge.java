@@ -6,13 +6,17 @@ Created by Helm  23/05/16.
 package com.fsck.k9.pEp.ui;
 
 import android.content.Context;
-import android.graphics.*;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.widget.QuickContactBadge;
+
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpUtils;
+
 import org.pEp.jniadapter.Rating;
 
 public class PEpContactBadge extends QuickContactBadge {

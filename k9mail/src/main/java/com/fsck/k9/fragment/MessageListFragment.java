@@ -1666,7 +1666,13 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            View view = mInflater.inflate(R.layout.message_list_item, parent, false);
+            boolean read = (cursor.getInt(READ_COLUMN) == 1);
+            View view;
+            if (read) {
+                view = mInflater.inflate(R.layout.unread_message_list_item, parent, false);
+            } else {
+                view = mInflater.inflate(R.layout.message_list_item, parent, false);
+            }
 
             MessageViewHolder holder = new MessageViewHolder();
             holder.date = (TextView) view.findViewById(R.id.date);
@@ -1819,25 +1825,6 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
                 }
                 holder.contactBadge.setPepRating(pEpRating);
             }
-
-            // Background color
-            if (selected || K9.useBackgroundAsUnreadIndicator()) {
-                int res;
-                if (selected) {
-                    res = R.attr.messageListSelectedBackgroundColor;
-                } else if (read) {
-                    res = R.attr.messageListReadItemBackgroundColor;
-                } else {
-                    res = R.attr.messageListUnreadItemBackgroundColor;
-                }
-
-                TypedValue outValue = new TypedValue();
-                getActivity().getTheme().resolveAttribute(res, outValue, true);
-                view.setBackgroundColor(outValue.data);
-            } else {
-                view.setBackgroundColor(Color.TRANSPARENT);
-            }
-
             if (mActiveMessage != null) {
                 String uid = cursor.getString(UID_COLUMN);
                 String folderName = cursor.getString(FOLDER_NAME_COLUMN);

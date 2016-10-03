@@ -4,4 +4,6 @@
     android:id="@+id/message_list"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:dividerHeight="1px"
+    android:background="#FFFFFF"
     android:layout_weight="5" />
