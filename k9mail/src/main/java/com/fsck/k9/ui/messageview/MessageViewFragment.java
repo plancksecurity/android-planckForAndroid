@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.MessageLoaderHelper;
 import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderCallbacks;
 import com.fsck.k9.activity.MessageReference;
+import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmentListener;
@@ -61,9 +63,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 
-
 public class MessageViewFragment extends Fragment implements ConfirmationDialogFragmentListener,
-        AttachmentViewCallback, OnClickShowCryptoKeyListener {
+        AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener {
 
     private static final String ARG_REFERENCE = "reference";
 
@@ -139,6 +140,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         // This fragments adds options to the action bar
         setHasOptionsMenu(true);
 
+        setupSwipeDetector();
+
         Context context = getActivity().getApplicationContext();
         mController = MessagingController.getInstance(context);
         downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
@@ -146,6 +149,20 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         messageLoaderHelper =
                 new MessageLoaderHelper(context, getLoaderManager(), getFragmentManager(), messageLoaderCallbacks);
         mInitialized = true;
+    }
+
+    private void setupSwipeDetector() {
+        ((MessageList) getActivity()).setupGestureDetector(this);
+    }
+
+    @Override
+    public void onSwipeRightToLeft(MotionEvent e1, MotionEvent e2) {
+        ((MessageList) getActivity()).showNextMessage();
+    }
+
+    @Override
+    public void onSwipeLeftToRight(MotionEvent e1, MotionEvent e2) {
+        ((MessageList) getActivity()).showPreviousMessage();
     }
 
     @Override
@@ -181,7 +198,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         mMessageView.setAttachmentCallback(this);
         mMessageView.setMessageCryptoPresenter(messageCryptoPresenter);
 
-
         mMessageView.setOnToggleFlagClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -197,7 +213,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             }
         });
         // onDownloadRemainder();;
-
         mFragmentListener.messageHeaderViewAvailable(mMessageView.getMessageHeaderView());
         pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
         return view;
