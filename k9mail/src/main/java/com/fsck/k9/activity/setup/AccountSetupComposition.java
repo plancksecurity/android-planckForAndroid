@@ -46,6 +46,7 @@ public class AccountSetupComposition extends K9Activity {
 
         setContentView(R.layout.account_setup_composition);
 
+        initializeToolbar(true, R.string.account_settings_composition_title);
         /*
          * If we're being reloaded we override the original account with the one
          * we saved

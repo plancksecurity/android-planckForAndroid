@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#00d13d</color>
-    <color name="colorPrimaryDark">#00d13d</color>
-    <color name="colorAccent">#00d13d</color>
+    <color name="colorPrimaryDark">#00B837</color>
+    <color name="colorAccent">#00D941</color>
 
     <color name="message_list_item_footer_background">#eeeeee</color>
 

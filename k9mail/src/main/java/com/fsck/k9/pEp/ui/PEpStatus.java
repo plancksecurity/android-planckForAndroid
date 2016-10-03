@@ -83,8 +83,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     }
 
     private void setUpActionBar() {
-        setUpToolbar(true);
-        getToolbar().setTitle(getString(R.string.pep_title_activity_privacy_status));
+        initializeToolbar(true, R.string.pep_title_activity_privacy_status);
         colorActionBar();
     }
 

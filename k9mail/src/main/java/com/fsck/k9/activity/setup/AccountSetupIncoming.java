@@ -13,6 +13,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.*;
@@ -103,6 +104,8 @@ public class AccountSetupIncoming extends K9Activity implements OnClickListener 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.account_setup_incoming);
+
+        initializeToolbar(true, R.string.account_setup_incoming_title);
 
         mUsernameView = (EditText)findViewById(R.id.account_username);
         mPasswordView = (EditText)findViewById(R.id.account_password);
@@ -296,6 +299,17 @@ public class AccountSetupIncoming extends K9Activity implements OnClickListener 
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        switch (itemId) {
+            case android.R.id.home: {
+                finish();
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
     /**
      * Called at the end of either {@code onCreate()} or
      * {@code onRestoreInstanceState()}, after the views have been initialized,

@@ -25,6 +25,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="start"
                 android:singleLine="true"
+                tools:text="actionbar_title_first"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
@@ -34,6 +35,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:textAppearance="?android:attr/textAppearanceSmall"
+                tools:text="actionbar_title_sub"
                 android:textColor="?android:attr/textColorSecondary" />
         </LinearLayout>
 

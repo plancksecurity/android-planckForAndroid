@@ -68,7 +68,7 @@
         android:allowTaskReparenting="false"
         android:icon="@mipmap/icon"
         android:label="@string/app_name"
-        android:theme="@style/Theme.K9.Startup"
+        android:theme="@style/Theme.K9.Light.NoActionBar"
         android:allowBackup="false">
 
         <meta-data

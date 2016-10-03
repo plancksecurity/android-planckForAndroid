@@ -3,6 +3,7 @@ package com.fsck.k9.activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -77,5 +78,13 @@ public class K9Activity extends AppCompatActivity implements K9ActivityMagic, Sy
 
     public Toolbar getToolbar() {
         return toolbar;
+    }
+
+    public void initializeToolbar(Boolean showUpButton, @StringRes int stringResource) {
+        setUpToolbar(showUpButton);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(true);
+            getSupportActionBar().setTitle(getString(stringResource));
+        }
     }
 }

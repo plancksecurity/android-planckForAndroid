@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:id="@+id/pep_status_layout">
 
-    <include layout="@layout/toolbar_layout" />
+    <include layout="@layout/simple_toolbar_layout" />
 
     <TextView
         android:layout_width="match_parent"

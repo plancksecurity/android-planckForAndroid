@@ -10,10 +10,12 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.TextKeyListener;
 import android.text.method.TextKeyListener.Capitalize;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
@@ -24,6 +26,7 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
+
 import org.pEp.jniadapter.Identity;
 
 public class AccountSetupNames extends K9Activity implements OnClickListener {
@@ -47,6 +50,9 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.account_setup_names);
+
+        initializeToolbar(true, R.string.account_setup_names_title);
+
         mDescription = (EditText)findViewById(R.id.account_description);
         mName = (EditText)findViewById(R.id.account_name);
         mDoneButton = (Button)findViewById(R.id.done);
@@ -82,6 +88,18 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
         if (!Utility.requiredFieldValid(mName)) {
             mDoneButton.setEnabled(false);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        switch (itemId) {
+            case android.R.id.home: {
+                finish();
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void validateFields() {

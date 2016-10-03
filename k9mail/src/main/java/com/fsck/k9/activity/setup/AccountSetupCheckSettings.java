@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ProgressBar;
@@ -90,6 +91,7 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.account_setup_check_settings);
+        initializeToolbar(true, R.string.account_setup_check_settings_title);
         mMessageView = (TextView)findViewById(R.id.message);
         mProgressBar = (ProgressBar)findViewById(R.id.progress);
         findViewById(R.id.cancel).setOnClickListener(this);
@@ -126,6 +128,18 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
         super.onDestroy();
         mDestroyed = true;
         mCanceled = true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        switch (itemId) {
+            case android.R.id.home: {
+                finish();
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setMessage(final int resId) {

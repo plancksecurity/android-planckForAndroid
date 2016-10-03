@@ -5,11 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.Spinner;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -45,6 +47,8 @@ public class AccountSetupOptions extends K9Activity implements OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.account_setup_options);
+
+        initializeToolbar(true, R.string.account_settings_title_fmt);
 
         mCheckFrequencyView = (Spinner)findViewById(R.id.account_check_frequency);
         mDisplayCountView = (Spinner)findViewById(R.id.account_display_count);
@@ -131,6 +135,18 @@ public class AccountSetupOptions extends K9Activity implements OnClickListener {
         }
 
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        switch (itemId) {
+            case android.R.id.home: {
+                finish();
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void onDone() {
