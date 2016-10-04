@@ -46,7 +46,7 @@ public class MessageTopView extends LinearLayout {
     private ViewGroup containerView;
     private Button mDownloadRemainder;
     private AttachmentViewCallback attachmentCallback;
-    private Button showPicturesButton;
+    private View showPicturesButton;
     private boolean isShowingProgress;
 
     private MessageCryptoPresenter messageCryptoPresenter;
@@ -71,7 +71,7 @@ public class MessageTopView extends LinearLayout {
         mDownloadRemainder = (Button) findViewById(R.id.download_remainder);
         mDownloadRemainder.setVisibility(View.GONE);
 
-        showPicturesButton = (Button) findViewById(R.id.show_pictures);
+        showPicturesButton = (View) findViewById(R.id.show_pictures);
         setShowPicturesButtonListener();
 
         containerView = (ViewGroup) findViewById(R.id.message_container);
