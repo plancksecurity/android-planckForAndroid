@@ -204,7 +204,7 @@
                     />
             <CheckBox
                     android:id="@+id/flagged_bottom_right"
-                    style="?android:attr/starStyle"
+                    android:button="@xml/read_message_favorite_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
                     android:visibility="visible"

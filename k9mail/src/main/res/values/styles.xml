@@ -83,9 +83,9 @@
     </style>
 
     <style name="ToolbarTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:textColorPrimary">#707070</item>
-        <item name="actionMenuTextColor">#707070</item>
-        <item name="android:textColorSecondary">#707070</item>
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="actionMenuTextColor">#FFFFFF</item>
+        <item name="android:textColorSecondary">#FFFFFF</item>
     </style>
 
 </resources>

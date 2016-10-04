@@ -1666,9 +1666,10 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            Log.d("refresh", "newView");
             boolean read = (cursor.getInt(READ_COLUMN) == 1);
             View view;
-            if (read) {
+            if (!read) {
                 view = mInflater.inflate(R.layout.unread_message_list_item, parent, false);
             } else {
                 view = mInflater.inflate(R.layout.message_list_item, parent, false);
@@ -1916,7 +1917,6 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
                             null, // right
                             null); // bottom
                 }
-
                 holder.subject.setTypeface(Typeface.create(holder.subject.getTypeface(), maybeBoldTypeface));
                 holder.subject.setText(subject);
             }
@@ -1957,6 +1957,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         public int position = -1;
         public PEpContactBadge contactBadge;
         public View attachment;
+
         @Override
         public void onClick(View view) {
             if (position != -1) {

@@ -3,6 +3,7 @@
              android:id="@+id/actionbar_custom"
              android:layout_width="fill_parent"
              android:layout_height="wrap_content"
+             style="@style/ToolbarTheme"
              xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
@@ -26,7 +27,8 @@
                 android:ellipsize="start"
                 android:singleLine="true"
                 tools:text="actionbar_title_first"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/white"/>
 
             <TextView
                 android:id="@+id/actionbar_title_sub"
@@ -36,7 +38,7 @@
                 android:singleLine="true"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 tools:text="actionbar_title_sub"
-                android:textColor="?android:attr/textColorSecondary" />
+                android:textColor="@color/white" />
         </LinearLayout>
 
         <ProgressBar
@@ -53,7 +55,7 @@
             android:layout_height="wrap_content"
             android:paddingLeft="12dip"
             android:paddingRight="12dip"
-            android:textColor="?android:attr/textColorTertiary"
+            android:textColor="@color/white"
             android:textSize="36sp" />
     </LinearLayout>
 
@@ -81,6 +83,7 @@
             android:text="@string/pep"
             fontPath="fonts/UniversLTStd.otf"
             style="@style/pEpIndicatorTVActionBarStyle"
+            android:textColor="@color/white"
             android:layout_alignParentRight="true"/>
     </RelativeLayout>
 

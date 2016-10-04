@@ -3,6 +3,7 @@ package com.fsck.k9.pEp;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
@@ -261,9 +262,13 @@ public class PEpUtils {
 
     public static void colorToolbar(PePUIArtefactCache uiCache, Toolbar toolbar, Rating pEpRating) {
         if (toolbar != null) {
-            ColorDrawable colorDrawable = new ColorDrawable(uiCache.getColor(pEpRating));
-            toolbar.setBackground(colorDrawable);
+            toolbar.setBackgroundColor(uiCache.getColor(pEpRating));
         }
+    }
+
+    public static void colorToolbar(PePUIArtefactCache uiCache, ActionBar supportActionBar, Rating pEpRating) {
+        ColorDrawable colorDrawable = new ColorDrawable(uiCache.getColor(pEpRating));
+        supportActionBar.setBackgroundDrawable(colorDrawable);
     }
 }
 
