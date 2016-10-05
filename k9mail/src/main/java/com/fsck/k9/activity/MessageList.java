@@ -14,12 +14,17 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -37,8 +42,12 @@ import com.fsck.k9.activity.compose.MessageActions;
 import com.fsck.k9.activity.setup.AccountSettings;
 import com.fsck.k9.activity.setup.FolderSettings;
 import com.fsck.k9.activity.setup.Prefs;
+import com.fsck.k9.controller.MessagingController;
+import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.fragment.MessageListFragment;
 import com.fsck.k9.fragment.MessageListFragment.MessageListFragmentListener;
+import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
@@ -68,7 +77,7 @@ import java.util.List;
  * From this Activity the user can perform all standard message operations.
  */
 public class MessageList extends K9Activity implements MessageListFragmentListener,
-        MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener {
+        MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener, NavigationView.OnNavigationItemSelectedListener {
 
     // for this activity
     private static final String EXTRA_SEARCH = "search";
@@ -93,6 +102,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     public static final int REQUEST_MASK_PENDING_INTENT = 1 << 16;
     private View customView;
+    private DrawerLayout drawerLayout;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
             boolean noThreading, boolean newTask) {
@@ -137,6 +147,12 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra(EXTRA_MESSAGE_REFERENCE, messageReference);
         return intent;
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        //TODO implement, you lazy guy!
+        return false;
     }
 
 
@@ -228,6 +244,76 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         displayViews();
         if (mAccount != null && mAccount.ispEpPrivacyProtected()) initializePepStatus();
         initializeFabButton();
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        loadNavigationView();
+    }
+
+    private void loadNavigationView() {
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        Menu menu = navigationView.getMenu();
+        final SubMenu topChannelMenu = menu.addSubMenu(getString(R.string.folders_title));
+        populateDrawerGroup(topChannelMenu);
+    }
+
+    private void populateDrawerGroup(final SubMenu topChannelMenu) {
+        MessagingController instance = MessagingController.getInstance(this);
+        instance.listFolders(mAccount, false, new MessagingListener() {
+            @Override
+            public void listFolders(Account account, List<LocalFolder> folders) {
+                for (final LocalFolder folder : folders) {
+                    final LocalSearch search = getLocalSearch(account, folder);
+                    try {
+                        int unreadMessageCount = folder.getUnreadMessageCount();
+                        if (unreadMessageCount > 0) {
+                            MenuItem menuItem = topChannelMenu.add(folder.getName() + " (" + unreadMessageCount + ")");
+                            menuItem.setTitle(folder.getName() + " (" + unreadMessageCount + ")");
+                            menuItem.setOnMenuItemClickListener(onFolderClickListener(search));
+                        } else {
+                            MenuItem menuItem = topChannelMenu.add(folder.getName());
+                            menuItem.setOnMenuItemClickListener(onFolderClickListener(search));
+                        }
+                    } catch (MessagingException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    @NonNull
+    private MenuItem.OnMenuItemClickListener onFolderClickListener(final LocalSearch search) {
+        return new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                MessageListFragment fragment = MessageListFragment.newInstance(search, false, false);
+                addMessageListFragment(fragment, true);
+                drawerLayout.closeDrawers();
+                return true;
+            }
+        };
+    }
+
+    @NonNull
+    private LocalSearch getLocalSearch(Account account, LocalFolder folder) {
+        String searchTitle = getString(R.string.search_title,
+                getString(R.string.message_list_title, account.getDescription(),
+                        folder.getName()),
+                getString(R.string.flagged_modifier));
+
+        LocalSearch search = new LocalSearch(searchTitle);
+
+        search.addAllowedFolder(folder.getName());
+        search.addAccountUuid(account.getUuid());
+        return search;
     }
 
     private void initializeFabButton() {
@@ -1300,6 +1386,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     private void addMessageListFragment(MessageListFragment fragment, boolean addToBackStack) {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.setCustomAnimations(R.animator.fade_in, R.animator.fade_out);
 
         ft.replace(R.id.message_list_container, fragment);
         if (addToBackStack)
