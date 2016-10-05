@@ -115,65 +115,65 @@ public class PEpUtils {
     }
 
 
-    /**
-     * dumps a k9 msg to log
-     *
-     * @param mm mesage to dump
-     */
-    static public void dumpMimeMessage(String tag, MimeMessage mm) {
-        Log.i("pepdump", "Root:");
-        try {
-            for (String header:mm.getHeaderNames())
-                Log.i("pepdump", tag + " " + header + ": " + mm.getHeader(header)[0]);
+//    /**
+//     * dumps a k9 msg to log
+//     *
+//     * @param mm mesage to dump
+//     */
+//    static public void dumpMimeMessage(String tag, MimeMessage mm) {
+//        Log.i("pepdump", "Root:");
+//        try {
+//            for (String header:mm.getHeaderNames())
+//                Log.i("pepdump", tag + " " + header + ": " + mm.getHeader(header)[0]);
+//
+//            // Log.e("pepdump",  "Message-Id: " + mm.getMessageId().hashCode() );
+//            Log.i("pepdump", tag + " hasAttachments:" + mm.hasAttachments());
+//
+//             dumpBody(tag, mm.getBody(), 5);
+//
+//        } catch (Exception e) {
+//            Log.e("pepdump", tag + " b0rged", e);
+//        }
+//    }
 
-            // Log.e("pepdump",  "Message-Id: " + mm.getMessageId().hashCode() );
-            Log.i("pepdump", tag + " hasAttachments:" + mm.hasAttachments());
+//    static private void dumpBody(String tag, Body body, int idx) throws Exception {
+//        String prev = tag + "                                                                                                                                                        ".substring(0, idx);
+//        if(body==null) {
+//            Log.i("pepdump", "null body");
+//            return;
+//        }
+//        if (!(body instanceof MimeMultipart)) {
+//            Log.i("pepdump", prev + "body: "+ body.toString());
+//            if(body instanceof BinaryMemoryBody) {
+//                byte[] arr = extractBodyContent(body);
+//                Log.i("pepdump", prev + "Blob content: >" + startOf(new String(arr), 100)  + "<");
+//            }
+//            if(body instanceof TextBody) {
+//                TextBody tb = (TextBody) body;
+//                Log.i("pepdump", prev+ "Textbody content >" + startOf(tb.getRawText(),100)+"<");
+//            }
+//            return;
+//        }
+//        try {
+//            MimeMultipart mmp = (MimeMultipart) body;
+//
+//            Log.i("pepdump", prev + "MimeMultipart:");
+//            int nr = mmp.getBodyParts().size();
+//            for (int i = 0; i < nr; i++) {
+//                BodyPart p = mmp.getBodyPart(i);
+//                Log.i("pepdump",prev + "Bodypart: " + p.toString());
+//                dumpBody(tag, p.getBody(), idx + 5);
+//
+//            }
+//        } catch (Exception e) {
+//            Log.e("pepdump", tag + " b0rgd", e);
+//        }
+//    }
 
-             dumpBody(tag, mm.getBody(), 5);
-
-        } catch (Exception e) {
-            Log.e("pepdump", tag + " b0rged", e);
-        }
-    }
-
-    static private void dumpBody(String tag, Body body, int idx) throws Exception {
-        String prev = tag + "                                                                                                                                                        ".substring(0, idx);
-        if(body==null) {
-            Log.i("pepdump", "null body");
-            return;
-        }
-        if (!(body instanceof MimeMultipart)) {
-            Log.i("pepdump", prev + "body: "+ body.toString());
-            if(body instanceof BinaryMemoryBody) {
-                byte[] arr = extractBodyContent(body);
-                Log.i("pepdump", prev + "Blob content: >" + startOf(new String(arr), 100)  + "<");
-            }
-            if(body instanceof TextBody) {
-                TextBody tb = (TextBody) body;
-                Log.i("pepdump", prev+ "Textbody content >" + startOf(tb.getRawText(),100)+"<");
-            }
-            return;
-        }
-        try {
-            MimeMultipart mmp = (MimeMultipart) body;
-
-            Log.i("pepdump", prev + "MimeMultipart:");
-            int nr = mmp.getBodyParts().size();
-            for (int i = 0; i < nr; i++) {
-                BodyPart p = mmp.getBodyPart(i);
-                Log.i("pepdump",prev + "Bodypart: " + p.toString());
-                dumpBody(tag, p.getBody(), idx + 5);
-
-            }
-        } catch (Exception e) {
-            Log.e("pepdump", tag + " b0rgd", e);
-        }
-    }
-
-    static private String startOf(String s, int length) {
-        String rv = s.substring(0, (s.length() > length) ? length : s.length());
-        return rv.replace("\n", "<nl>").replace("\r", "<cr>");
-    }
+//    static private String startOf(String s, int length) {
+//        String rv = s.substring(0, (s.length() > length) ? length : s.length());
+//        return rv.replace("\n", "<nl>").replace("\r", "<cr>");
+//    }
 
     static byte[] extractBodyContent(Body body) throws MessagingException, IOException {
         InputStream is = MimeUtility.decodeBody(body);
@@ -206,7 +206,7 @@ public class PEpUtils {
     public static int getRatingColor(Rating rating, Context context) {
         // TODO: 02/09/16 PEP_color color_from_rating(PEP_rating rating) from pEpEngine;
 
-        if (rating.equals(Rating.pEpRatingB0rken)
+        if (rating == null || rating.equals(Rating.pEpRatingB0rken)
                 || rating.value < Rating.pEpRatingReliable.value) {
             return ContextCompat.getColor(context, R.color.pep_no_color);
         }
@@ -215,7 +215,7 @@ public class PEpUtils {
             return ContextCompat.getColor(context, R.color.pep_red);
         }
 
-        if (rating.value <= Rating.pEpRatingTrusted.value) {
+        if (rating.value < Rating.pEpRatingTrusted.value) {
             return  ContextCompat.getColor(context, R.color.pep_yellow);
         }
 
