@@ -1,4 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/integrated_inbox"
+        android:title="@string/integrated_inbox_title"
+        android:icon="?attr/iconActionPreviousMessage"
+        app:showAsAction="always"
+        />
+    <item
+        android:id="@+id/all_messages"
+        android:title="@string/account_setup_options_mail_display_count_all"
+        android:icon="?attr/iconActionPreviousMessage"
+        app:showAsAction="always"
+        />
 
 </menu>

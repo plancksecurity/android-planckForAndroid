@@ -151,8 +151,25 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        //TODO implement, you lazy guy!
-        return false;
+        int id = item.getItemId();
+
+        if (id == R.id.integrated_inbox) {
+            SearchAccount unifiedInboxAccount = SearchAccount.createUnifiedInboxAccount(this);
+            updateMessagesForSpecificInbox(unifiedInboxAccount);
+            return true;
+        } else if (id == R.id.all_messages) {
+            SearchAccount allMessagesAccount = SearchAccount.createAllMessagesAccount(this);
+            updateMessagesForSpecificInbox(allMessagesAccount);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void updateMessagesForSpecificInbox(SearchAccount searchAccount) {
+        MessageListFragment fragment = MessageListFragment.newInstance(searchAccount.getRelatedSearch(), false, false);
+        addMessageListFragment(fragment, true);
+        drawerLayout.closeDrawers();
     }
 
 
@@ -665,7 +682,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
             showMessageList();
         } else {
-            super.onBackPressed();
+            onAccounts();
         }
     }
 
