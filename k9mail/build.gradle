@@ -65,7 +65,7 @@ android {
         versionCode 13
         versionName '0.9.4'
         minSdkVersion 18
-        targetSdkVersion 22
+        targetSdkVersion 24
 
 
         generatedDensities = ['mdpi', 'hdpi', 'xhdpi']
@@ -127,7 +127,7 @@ android {
             universalApk false
         }
     }
-    buildToolsVersion '23.0.3'
+    buildToolsVersion '24.0.2'
 }
 
 if (project.hasProperty('keyAlias')) {
