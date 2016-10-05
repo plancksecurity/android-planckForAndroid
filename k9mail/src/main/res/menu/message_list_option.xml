@@ -47,7 +47,7 @@
         android:id="@+id/check_mail"
         android:alphabeticShortcut="r"
         android:icon="?attr/iconActionRefresh"
-        app:showAsAction="always"
+        app:showAsAction="never"
         android:title="@string/check_mail_action"/>
 
     <!-- MessageView -->
@@ -62,32 +62,32 @@
     <item
         android:id="@+id/archive"
         android:icon="?attr/iconActionArchive"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         android:title="@string/archive_action"/>
     <!-- MessageView -->
     <item
         android:id="@+id/spam"
         android:icon="?attr/iconActionSpam"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         android:title="@string/spam_action"/>
     <!-- MessageView -->
     <item
         android:id="@+id/move"
         android:icon="?attr/iconActionMove"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         android:title="@string/move_action"/>
     <!-- MessageView -->
     <item
         android:id="@+id/copy"
         android:icon="?attr/iconActionCopy"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         android:title="@string/copy_action"/>
 
     <!-- MessageView -->
     <item
         android:id="@+id/single_message_options"
         android:icon="?attr/iconActionSingleMessageOptions"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         android:title="@string/single_message_options_action">
         <menu>
             <item
@@ -151,7 +151,7 @@
     <item
         android:id="@+id/set_sort"
         android:icon="?attr/iconActionSort"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         android:title="@string/sort_by">
         <menu>
             <item
@@ -183,7 +183,7 @@
         android:id="@+id/compose"
         android:alphabeticShortcut="c"
         android:icon="?attr/iconActionCompose"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         android:title="@string/compose_action"/>
 
     <!-- MessageList -->

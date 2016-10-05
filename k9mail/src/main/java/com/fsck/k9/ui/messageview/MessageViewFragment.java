@@ -759,7 +759,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         return mInitialized ;
     }
 
-
     private MessageLoaderCallbacks messageLoaderCallbacks = new MessageLoaderCallbacks() {
         @Override
         public void onMessageDataLoadFinished(LocalMessage message) {
@@ -771,6 +770,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             pEpRating = PEpUtils.extractRating(message);
 
             PEpUtils.colorToolbar(pePUIArtefactCache,((MessageList)getActivity()).getSupportActionBar(), pEpRating);
+            ((MessageList) getActivity()).setStatusBarPepColor(pEpRating);
         }
 
         @Override

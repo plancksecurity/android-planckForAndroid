@@ -86,7 +86,7 @@
         <item name="android:textColorPrimary">#FFFFFF</item>
         <item name="actionMenuTextColor">#FFFFFF</item>
         <item name="android:textColorSecondary">#FFFFFF</item>
+        <item name="android:actionMenuTextAppearance">@color/white</item>
     </style>
-
 </resources>
 

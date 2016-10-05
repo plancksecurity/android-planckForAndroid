@@ -1490,6 +1490,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private void showMessageList() {
         //I left this here because I don't know nothing about the UI design
         PEpUtils.colorToolbar(PePUIArtefactCache.getInstance(getApplicationContext()), getToolbar(), Rating.pEpRatingTrustedAndAnonymized);
+        setStatusBarPepColor(Rating.pEpRatingTrustedAndAnonymized);
         mMessageListWasDisplayed = true;
         mDisplayMode = DisplayMode.MESSAGE_LIST;
         mViewSwitcher.showFirstView();
