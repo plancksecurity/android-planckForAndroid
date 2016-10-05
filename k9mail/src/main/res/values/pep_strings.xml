@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
     <!-- Unstranslatable strings -->
     <string name="pep" translatable="false">p≡p</string>
     <string name="pep_handshake" translatable="false">Handshake</string>
@@ -135,7 +137,5 @@
         <item><!--pEpRatingB0rken--></item>
         <item>Separately verify the content of this message with your communication partner.<!--pEpRatingUnderAttack--></item>
     </string-array>
-
-
 
 </resources>
