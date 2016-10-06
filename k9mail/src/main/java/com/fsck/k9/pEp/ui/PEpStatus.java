@@ -41,8 +41,6 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     RecyclerView.LayoutManager recipientsLayoutManager;
 
     String myself = "";
-    private Rating pEpRating;
-
 
     public static void actionShowStatus(Context context, Rating currentRating, String myself) {
         Intent i = new Intent(context, PEpStatus.class);
