@@ -24,7 +24,7 @@ import org.pEp.jniadapter.Rating;
 public class PepColoredActivity extends K9Activity {
     public static final String CURRENT_RATING = "current_color";
     public static final String PEP_COLOR_RATING_DETAIL_MESSAGE = "Cannot retrieve pEpRating";
-    private Rating pEpRating = Rating.pEpRatingUndefined;
+    protected Rating pEpRating = Rating.pEpRatingUndefined;
     PePUIArtefactCache uiCache;
     private PEpProvider pEp;
 
