@@ -28,6 +28,7 @@ import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +41,7 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.MessageActions;
 import com.fsck.k9.activity.setup.AccountSettings;
+import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.setup.FolderSettings;
 import com.fsck.k9.activity.setup.Prefs;
 import com.fsck.k9.controller.MessagingController;
@@ -51,6 +53,7 @@ import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.ui.PEpUIUtils;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
@@ -67,6 +70,7 @@ import com.fsck.k9.view.ViewSwitcher.OnSwitchCompleteListener;
 
 import org.pEp.jniadapter.Rating;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -103,6 +107,19 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     public static final int REQUEST_MASK_PENDING_INTENT = 1 << 16;
     private View customView;
     private DrawerLayout drawerLayout;
+    private List<LocalFolder> menuFolders;
+    private TextView firstAccountText;
+    private TextView secondAccountText;
+    private View firstAccountLayout;
+    private View secondAccountLayout;
+    private View mainAccountLayout;
+    private TextView mainAccountText;
+    private ImageView navigationViewFolders;
+    private ImageView navigationViewAccounts;
+    private NavigationView navigationView;
+    private TextView mainAccountName;
+    private TextView mainAccountEmail;
+    private boolean showingAccountsMenu;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
             boolean noThreading, boolean newTask) {
@@ -273,37 +290,214 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     private void loadNavigationView() {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        View headerView =  navigationView.getHeaderView(0);
+        mainAccountName = (TextView)headerView.findViewById(R.id.nav_header_name);
+        mainAccountEmail = (TextView)headerView.findViewById(R.id.nav_header_email);
+
+        mainAccountText = (TextView)headerView.findViewById(R.id.nav_header_contact_text);
+        mainAccountLayout = (View) headerView.findViewById(R.id.nav_header_image_container);
+        firstAccountText = (TextView)headerView.findViewById(R.id.first_account);
+        firstAccountLayout = (View)headerView.findViewById(R.id.first_account_container);
+        secondAccountText = (TextView)headerView.findViewById(R.id.second_account);
+        secondAccountLayout = (View)headerView.findViewById(R.id.second_account_container);
+
+        navigationViewFolders = (ImageView) headerView.findViewById(R.id.nav_header_folders);
+        navigationViewAccounts = (ImageView) headerView.findViewById(R.id.nav_header_accounts);
+        navigationViewAccounts.setVisibility(View.VISIBLE);
+
+        setupHeaderClickListeners();
+
         Menu menu = navigationView.getMenu();
+        createFoldersMenu(menu);
+    }
+
+    private void setupHeaderClickListeners() {
+        mainAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
+        mainAccountName.setText(mAccount.getName());
+        mainAccountEmail.setText(mAccount.getEmail());
+
+        navigationViewAccounts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navigationViewAccounts.setVisibility(View.GONE);
+                navigationViewFolders.setVisibility(View.VISIBLE);
+                Menu menu = navigationView.getMenu();
+                menu.clear();
+                createAccountsMenu(menu);
+            }
+        });
+
+        navigationViewFolders.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navigationViewAccounts.setVisibility(View.VISIBLE);
+                navigationViewFolders.setVisibility(View.GONE);
+                Menu menu = navigationView.getMenu();
+                menu.clear();
+                createFoldersMenu(menu);
+            }
+        });
+
+        //TODO fucking refactor this shit
+        List<Account> accounts = new ArrayList<>(Preferences.getPreferences(this).getAccounts());
+        accounts.remove(mAccount);
+        if (accounts.size() > 1) {
+            final Account firstAccount = accounts.get(accounts.size() - 1);
+            final Account lastAccount = accounts.get(accounts.size() - 2);
+            firstAccountLayout.setVisibility(View.VISIBLE);
+            secondAccountLayout.setVisibility(View.VISIBLE);
+            firstAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
+            secondAccountText.setText(PEpUIUtils.firstLetterOf(lastAccount.getName()));
+            firstAccountLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mainAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
+                    mainAccountEmail.setText(firstAccount.getEmail());
+                    mainAccountName.setText(firstAccount.getName());
+                    firstAccountText.setText(PEpUIUtils.firstLetterOf(lastAccount.getName()));
+                    secondAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
+                    mAccount = firstAccount;
+                    setupHeaderClickListeners();
+                    onOpenFolder(firstAccount.getAutoExpandFolderName());
+                    drawerLayout.closeDrawers();
+                }
+            });
+            secondAccountLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mainAccountText.setText(PEpUIUtils.firstLetterOf(lastAccount.getName()));
+                    mainAccountEmail.setText(lastAccount.getEmail());
+                    mainAccountName.setText(lastAccount.getName());
+                    secondAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
+                    mAccount = lastAccount;
+                    setupHeaderClickListeners();
+                    onOpenFolder(lastAccount.getAutoExpandFolderName());
+                    drawerLayout.closeDrawers();
+                }
+            });
+        } else if (accounts.size() > 0) {
+            final Account firstAccount = accounts.get(accounts.size() - 1);
+            firstAccountLayout.setVisibility(View.VISIBLE);
+            secondAccountLayout.setVisibility(View.GONE);
+            firstAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
+            firstAccountLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mainAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
+                    firstAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
+                    mainAccountEmail.setText(firstAccount.getEmail());
+                    mainAccountName.setText(firstAccount.getName());
+                    mAccount = firstAccount;
+                    setupHeaderClickListeners();
+                    onOpenFolder(firstAccount.getAutoExpandFolderName());
+                    drawerLayout.closeDrawers();
+                }
+            });
+        } else {
+            firstAccountLayout.setVisibility(View.GONE);
+            secondAccountLayout.setVisibility(View.GONE);
+        }
+
+        mainAccountLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!showingAccountsMenu) {
+                    navigationViewAccounts.setVisibility(View.GONE);
+                    navigationViewFolders.setVisibility(View.VISIBLE);
+                    Menu menu = navigationView.getMenu();
+                    menu.clear();
+                    createAccountsMenu(menu);
+                } else {
+                    Menu menu = navigationView.getMenu();
+                    menu.clear();
+                    createFoldersMenu(menu);
+                }
+            }
+        });
+    }
+
+    private void createFoldersMenu(Menu menu) {
+        showingAccountsMenu = false;
         final SubMenu topChannelMenu = menu.addSubMenu(getString(R.string.folders_title));
         populateDrawerGroup(topChannelMenu);
     }
 
-    private void populateDrawerGroup(final SubMenu topChannelMenu) {
-        MessagingController instance = MessagingController.getInstance(this);
-        instance.listFolders(mAccount, false, new MessagingListener() {
-            @Override
-            public void listFolders(Account account, List<LocalFolder> folders) {
-                for (final LocalFolder folder : folders) {
-                    final LocalSearch search = getLocalSearch(account, folder);
-                    try {
-                        int unreadMessageCount = folder.getUnreadMessageCount();
-                        if (unreadMessageCount > 0) {
-                            MenuItem menuItem = topChannelMenu.add(folder.getName() + " (" + unreadMessageCount + ")");
-                            menuItem.setTitle(folder.getName() + " (" + unreadMessageCount + ")");
-                            menuItem.setOnMenuItemClickListener(onFolderClickListener(search));
-                        } else {
-                            MenuItem menuItem = topChannelMenu.add(folder.getName());
-                            menuItem.setOnMenuItemClickListener(onFolderClickListener(search));
-                        }
-                    } catch (MessagingException e) {
-                        e.printStackTrace();
+    private void createAccountsMenu(final Menu menu) {
+        showingAccountsMenu = true;
+        List<Account> accounts = Preferences.getPreferences(this).getAccounts();
+        for (final Account account : accounts) {
+            if (!account.getEmail().equals(mAccount.getEmail())) {
+                MenuItem accountItem = menu.add(0, 0, 0, account.getEmail());
+                accountItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        mAccount = account;
+                        onOpenFolder(account.getAutoExpandFolderName());
+                        setupHeaderClickListeners();
+                        menu.clear();
+                        createFoldersMenu(menu);
+                        navigationViewFolders.setVisibility(View.GONE);
+                        navigationViewAccounts.setVisibility(View.VISIBLE);
+                        drawerLayout.closeDrawers();
+                        return true;
                     }
-                }
+                });
+            }
+        }
+
+        MenuItem addAccountMenuItem = menu.add(0, 0, 0, getString(R.string.add_account_action));
+        addAccountMenuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                drawerLayout.closeDrawers();
+                AccountSetupBasics.actionNewAccount(getBaseContext());
+                return true;
             }
         });
+    }
+
+    private void onOpenFolder(String folder) {
+        LocalSearch search = new LocalSearch(folder);
+        search.addAccountUuid(mAccount.getUuid());
+        search.addAllowedFolder(folder);
+        MessageList.actionDisplaySearch(this, search, false, false);
+    }
+
+    private void populateDrawerGroup(final SubMenu topChannelMenu) {
+        if (menuFolders != null) {
+            populateFolders(mAccount, menuFolders, topChannelMenu);
+        } else {
+            MessagingController instance = MessagingController.getInstance(this);
+            instance.listFolders(mAccount, false, new MessagingListener() {
+                @Override
+                public void listFolders(Account account, List<LocalFolder> folders) {
+                    menuFolders = folders;
+                    populateFolders(account, folders, topChannelMenu);
+                }
+            });
+        }
+    }
+
+    private void populateFolders(Account account, List<LocalFolder> folders, SubMenu topChannelMenu) {
+        for (final LocalFolder folder : folders) {
+            final LocalSearch search = getLocalSearch(account, folder);
+            try {
+                int unreadMessageCount = folder.getUnreadMessageCount();
+                if (unreadMessageCount > 0) {
+                    MenuItem menuItem = topChannelMenu.add(folder.getName() + " (" + unreadMessageCount + ")");
+                    menuItem.setTitle(folder.getName() + " (" + unreadMessageCount + ")");
+                    menuItem.setOnMenuItemClickListener(onFolderClickListener(search));
+                } else {
+                    MenuItem menuItem = topChannelMenu.add(folder.getName());
+                    menuItem.setOnMenuItemClickListener(onFolderClickListener(search));
+                }
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @NonNull
