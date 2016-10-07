@@ -298,27 +298,30 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         mainAccountEmail = (TextView)headerView.findViewById(R.id.nav_header_email);
 
         mainAccountText = (TextView)headerView.findViewById(R.id.nav_header_contact_text);
-        mainAccountLayout = (View) headerView.findViewById(R.id.nav_header_image_container);
+        mainAccountLayout = headerView.findViewById(R.id.nav_header_image_container);
         firstAccountText = (TextView)headerView.findViewById(R.id.first_account);
-        firstAccountLayout = (View)headerView.findViewById(R.id.first_account_container);
+        firstAccountLayout = headerView.findViewById(R.id.first_account_container);
         secondAccountText = (TextView)headerView.findViewById(R.id.second_account);
-        secondAccountLayout = (View)headerView.findViewById(R.id.second_account_container);
+        secondAccountLayout = headerView.findViewById(R.id.second_account_container);
 
         navigationViewFolders = (ImageView) headerView.findViewById(R.id.nav_header_folders);
         navigationViewAccounts = (ImageView) headerView.findViewById(R.id.nav_header_accounts);
         navigationViewAccounts.setVisibility(View.VISIBLE);
 
-        setupHeaderClickListeners();
+        setupNavigationHeader();
 
         Menu menu = navigationView.getMenu();
         createFoldersMenu(menu);
     }
 
-    private void setupHeaderClickListeners() {
+    private void setupNavigationHeader() {
         mainAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
         mainAccountName.setText(mAccount.getName());
         mainAccountEmail.setText(mAccount.getEmail());
+        setupNavigationHeaderListeners();
+    }
 
+    private void setupNavigationHeaderListeners() {
         navigationViewAccounts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -340,67 +343,25 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 createFoldersMenu(menu);
             }
         });
+        setupAccountsListeners();
+    }
 
-        //TODO fucking refactor this shit
+    private void setupAccountsListeners() {
         List<Account> accounts = new ArrayList<>(Preferences.getPreferences(this).getAccounts());
         accounts.remove(mAccount);
         if (accounts.size() > 1) {
-            final Account firstAccount = accounts.get(accounts.size() - 1);
-            final Account lastAccount = accounts.get(accounts.size() - 2);
-            firstAccountLayout.setVisibility(View.VISIBLE);
-            secondAccountLayout.setVisibility(View.VISIBLE);
-            firstAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
-            secondAccountText.setText(PEpUIUtils.firstLetterOf(lastAccount.getName()));
-            firstAccountLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mainAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
-                    mainAccountEmail.setText(firstAccount.getEmail());
-                    mainAccountName.setText(firstAccount.getName());
-                    firstAccountText.setText(PEpUIUtils.firstLetterOf(lastAccount.getName()));
-                    secondAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
-                    mAccount = firstAccount;
-                    setupHeaderClickListeners();
-                    onOpenFolder(firstAccount.getAutoExpandFolderName());
-                    drawerLayout.closeDrawers();
-                }
-            });
-            secondAccountLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mainAccountText.setText(PEpUIUtils.firstLetterOf(lastAccount.getName()));
-                    mainAccountEmail.setText(lastAccount.getEmail());
-                    mainAccountName.setText(lastAccount.getName());
-                    secondAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
-                    mAccount = lastAccount;
-                    setupHeaderClickListeners();
-                    onOpenFolder(lastAccount.getAutoExpandFolderName());
-                    drawerLayout.closeDrawers();
-                }
-            });
+            setupThreeAcountsListeners(accounts);
         } else if (accounts.size() > 0) {
-            final Account firstAccount = accounts.get(accounts.size() - 1);
-            firstAccountLayout.setVisibility(View.VISIBLE);
-            secondAccountLayout.setVisibility(View.GONE);
-            firstAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
-            firstAccountLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mainAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
-                    firstAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
-                    mainAccountEmail.setText(firstAccount.getEmail());
-                    mainAccountName.setText(firstAccount.getName());
-                    mAccount = firstAccount;
-                    setupHeaderClickListeners();
-                    onOpenFolder(firstAccount.getAutoExpandFolderName());
-                    drawerLayout.closeDrawers();
-                }
-            });
+            setupTwoAcountsListeners(accounts);
         } else {
             firstAccountLayout.setVisibility(View.GONE);
             secondAccountLayout.setVisibility(View.GONE);
         }
 
+        setupMainAccountListener();
+    }
+
+    private void setupMainAccountListener() {
         mainAccountLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -415,6 +376,62 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                     menu.clear();
                     createFoldersMenu(menu);
                 }
+            }
+        });
+    }
+
+    private void setupTwoAcountsListeners(List<Account> accounts) {
+        final Account firstAccount = accounts.get(accounts.size() - 1);
+        firstAccountLayout.setVisibility(View.VISIBLE);
+        secondAccountLayout.setVisibility(View.GONE);
+        firstAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
+        firstAccountLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mainAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
+                firstAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
+                mainAccountEmail.setText(firstAccount.getEmail());
+                mainAccountName.setText(firstAccount.getName());
+                mAccount = firstAccount;
+                setupNavigationHeader();
+                onOpenFolder(firstAccount.getAutoExpandFolderName());
+                drawerLayout.closeDrawers();
+            }
+        });
+    }
+
+    private void setupThreeAcountsListeners(List<Account> accounts) {
+        final Account firstAccount = accounts.get(accounts.size() - 1);
+        final Account lastAccount = accounts.get(accounts.size() - 2);
+        firstAccountLayout.setVisibility(View.VISIBLE);
+        secondAccountLayout.setVisibility(View.VISIBLE);
+        firstAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
+        secondAccountText.setText(PEpUIUtils.firstLetterOf(lastAccount.getName()));
+        firstAccountLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mainAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
+                mainAccountEmail.setText(firstAccount.getEmail());
+                mainAccountName.setText(firstAccount.getName());
+                firstAccountText.setText(PEpUIUtils.firstLetterOf(lastAccount.getName()));
+                secondAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
+                mAccount = firstAccount;
+                setupNavigationHeader();
+                onOpenFolder(firstAccount.getAutoExpandFolderName());
+                drawerLayout.closeDrawers();
+            }
+        });
+        secondAccountLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mainAccountText.setText(PEpUIUtils.firstLetterOf(lastAccount.getName()));
+                mainAccountEmail.setText(lastAccount.getEmail());
+                mainAccountName.setText(lastAccount.getName());
+                secondAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
+                mAccount = lastAccount;
+                setupNavigationHeader();
+                onOpenFolder(lastAccount.getAutoExpandFolderName());
+                drawerLayout.closeDrawers();
             }
         });
     }
@@ -436,7 +453,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                     public boolean onMenuItemClick(MenuItem item) {
                         mAccount = account;
                         onOpenFolder(account.getAutoExpandFolderName());
-                        setupHeaderClickListeners();
+                        setupNavigationHeader();
                         menu.clear();
                         createFoldersMenu(menu);
                         navigationViewFolders.setVisibility(View.GONE);
