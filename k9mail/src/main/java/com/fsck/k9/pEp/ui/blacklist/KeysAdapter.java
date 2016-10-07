@@ -23,7 +23,7 @@ import com.fsck.k9.pEp.PEpUtils;
 import java.util.Comparator;
 import java.util.List;
 
-class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ViewHolder> {
+public class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ViewHolder> {
 
     private static final Comparator<KeyListItem> ALPHABETICAL_COMPARATOR = new Comparator<KeyListItem>() {
         @Override

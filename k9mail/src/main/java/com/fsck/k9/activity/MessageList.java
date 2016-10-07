@@ -19,12 +19,13 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -48,12 +49,15 @@ import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.fragment.MessageListFragment;
 import com.fsck.k9.fragment.MessageListFragment.MessageListFragmentListener;
-import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpUIUtils;
+import com.fsck.k9.pEp.ui.listeners.OnAccountClickListener;
+import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
+import com.fsck.k9.pEp.ui.renderers.AccountRenderer;
+import com.fsck.k9.pEp.ui.renderers.FolderRenderer;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
@@ -67,6 +71,9 @@ import com.fsck.k9.view.MessageHeader;
 import com.fsck.k9.view.MessageTitleView;
 import com.fsck.k9.view.ViewSwitcher;
 import com.fsck.k9.view.ViewSwitcher.OnSwitchCompleteListener;
+import com.pedrogomez.renderers.ListAdapteeCollection;
+import com.pedrogomez.renderers.RVRendererAdapter;
+import com.pedrogomez.renderers.RendererBuilder;
 
 import org.pEp.jniadapter.Rating;
 
@@ -120,6 +127,11 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private TextView mainAccountName;
     private TextView mainAccountEmail;
     private boolean showingAccountsMenu;
+    private RecyclerView navigationFolders;
+    private RecyclerView navigationAccounts;
+    private View foldersDrawerLayout;
+    private View accountsDrawerLayout;
+    private View addAccountContainer;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
             boolean noThreading, boolean newTask) {
@@ -243,6 +255,10 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private boolean mMessageListWasDisplayed = false;
     private ViewSwitcher mViewSwitcher;
 
+    private RendererBuilder<LocalFolder> rendererFolderBuilder;
+    private RVRendererAdapter<LocalFolder> folderAdapter;
+    private RendererBuilder<Account> rendererAccountBuilder;
+    private RVRendererAdapter<Account> accountAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -285,6 +301,9 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        foldersDrawerLayout = findViewById(R.id.navigation_bar_folders_layout);
+        accountsDrawerLayout = findViewById(R.id.navigation_bar_accounts_layout);
+
         loadNavigationView();
     }
 
@@ -293,25 +312,25 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        View headerView =  navigationView.getHeaderView(0);
-        mainAccountName = (TextView)headerView.findViewById(R.id.nav_header_name);
-        mainAccountEmail = (TextView)headerView.findViewById(R.id.nav_header_email);
+        mainAccountName = (TextView)findViewById(R.id.nav_header_name);
+        mainAccountEmail = (TextView)findViewById(R.id.nav_header_email);
 
-        mainAccountText = (TextView)headerView.findViewById(R.id.nav_header_contact_text);
-        mainAccountLayout = headerView.findViewById(R.id.nav_header_image_container);
-        firstAccountText = (TextView)headerView.findViewById(R.id.first_account);
-        firstAccountLayout = headerView.findViewById(R.id.first_account_container);
-        secondAccountText = (TextView)headerView.findViewById(R.id.second_account);
-        secondAccountLayout = headerView.findViewById(R.id.second_account_container);
+        mainAccountText = (TextView)findViewById(R.id.nav_header_contact_text);
+        mainAccountLayout = findViewById(R.id.nav_header_image_container);
+        firstAccountText = (TextView)findViewById(R.id.first_account);
+        firstAccountLayout = findViewById(R.id.first_account_container);
+        secondAccountText = (TextView)findViewById(R.id.second_account);
+        secondAccountLayout = findViewById(R.id.second_account_container);
 
-        navigationViewFolders = (ImageView) headerView.findViewById(R.id.nav_header_folders);
-        navigationViewAccounts = (ImageView) headerView.findViewById(R.id.nav_header_accounts);
+        navigationFolders = (RecyclerView) findViewById(R.id.navigation_folders);
+        navigationViewFolders = (ImageView) findViewById(R.id.nav_header_folders);
+        navigationViewAccounts = (ImageView) findViewById(R.id.nav_header_accounts);
         navigationViewAccounts.setVisibility(View.VISIBLE);
 
+        navigationAccounts = (RecyclerView) findViewById(R.id.navigation_accounts);
         setupNavigationHeader();
 
-        Menu menu = navigationView.getMenu();
-        createFoldersMenu(menu);
+        createFoldersMenu();
     }
 
     private void setupNavigationHeader() {
@@ -327,9 +346,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             public void onClick(View v) {
                 navigationViewAccounts.setVisibility(View.GONE);
                 navigationViewFolders.setVisibility(View.VISIBLE);
-                Menu menu = navigationView.getMenu();
-                menu.clear();
-                createAccountsMenu(menu);
+                createAccountsMenu();
             }
         });
 
@@ -338,9 +355,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             public void onClick(View v) {
                 navigationViewAccounts.setVisibility(View.VISIBLE);
                 navigationViewFolders.setVisibility(View.GONE);
-                Menu menu = navigationView.getMenu();
-                menu.clear();
-                createFoldersMenu(menu);
+                createFoldersMenu();
             }
         });
         setupAccountsListeners();
@@ -368,13 +383,9 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 if (!showingAccountsMenu) {
                     navigationViewAccounts.setVisibility(View.GONE);
                     navigationViewFolders.setVisibility(View.VISIBLE);
-                    Menu menu = navigationView.getMenu();
-                    menu.clear();
-                    createAccountsMenu(menu);
+                    createAccountsMenu();
                 } else {
-                    Menu menu = navigationView.getMenu();
-                    menu.clear();
-                    createFoldersMenu(menu);
+                    createFoldersMenu();
                 }
             }
         });
@@ -436,42 +447,70 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         });
     }
 
-    private void createFoldersMenu(Menu menu) {
+    private void createFoldersMenu() {
         showingAccountsMenu = false;
-        final SubMenu topChannelMenu = menu.addSubMenu(getString(R.string.folders_title));
-        populateDrawerGroup(topChannelMenu);
+        foldersDrawerLayout.setVisibility(View.VISIBLE);
+        accountsDrawerLayout.setVisibility(View.GONE);
+        //TODO set unread messages -Arturo
+        TextView unifiedInboxMessages = (TextView) findViewById(R.id.unified_inbox_new_messages);
+        TextView allMessages = (TextView) findViewById(R.id.all_messages_new_messages);
+
+        View unifiedInbox = findViewById(R.id.unified_inbox);
+        View allMessagesContainer = findViewById(R.id.all_messages_container);
+        unifiedInbox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        allMessagesContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        populateDrawerGroup();
     }
 
-    private void createAccountsMenu(final Menu menu) {
+    private void createAccountsMenu() {
         showingAccountsMenu = true;
-        List<Account> accounts = Preferences.getPreferences(this).getAccounts();
-        for (final Account account : accounts) {
-            if (!account.getEmail().equals(mAccount.getEmail())) {
-                MenuItem accountItem = menu.add(0, 0, 0, account.getEmail());
-                accountItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        mAccount = account;
-                        onOpenFolder(account.getAutoExpandFolderName());
-                        setupNavigationHeader();
-                        menu.clear();
-                        createFoldersMenu(menu);
-                        navigationViewFolders.setVisibility(View.GONE);
-                        navigationViewAccounts.setVisibility(View.VISIBLE);
-                        drawerLayout.closeDrawers();
-                        return true;
-                    }
-                });
-            }
-        }
+        foldersDrawerLayout.setVisibility(View.GONE);
+        accountsDrawerLayout.setVisibility(View.VISIBLE);
 
-        MenuItem addAccountMenuItem = menu.add(0, 0, 0, getString(R.string.add_account_action));
-        addAccountMenuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        List<Account> accounts = new ArrayList<>(Preferences.getPreferences(this).getAccounts());
+        accounts.remove(mAccount);
+        AccountRenderer accountRenderer = new AccountRenderer();
+        rendererAccountBuilder = new RendererBuilder<>(accountRenderer);
+
+        accountRenderer.setOnAccountClickListenerListener(new OnAccountClickListener() {
             @Override
-            public boolean onMenuItemClick(MenuItem item) {
+            public void onClick(Account account) {
+                mAccount = account;
+                onOpenFolder(account.getAutoExpandFolderName());
+                setupNavigationHeader();
+                createFoldersMenu();
+                navigationViewFolders.setVisibility(View.GONE);
+                navigationViewAccounts.setVisibility(View.VISIBLE);
+                drawerLayout.closeDrawers();
+            }
+        });
+        ListAdapteeCollection<Account> adapteeCollection = new ListAdapteeCollection<>(accounts);
+
+        accountAdapter = new RVRendererAdapter<>(rendererAccountBuilder, adapteeCollection);
+
+        navigationAccounts.setLayoutManager(new LinearLayoutManager(this));
+        navigationAccounts.setAdapter(accountAdapter);
+
+        setupCreateAccountListener();
+    }
+
+    private void setupCreateAccountListener() {
+        addAccountContainer = findViewById(R.id.add_account_container);
+        addAccountContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 drawerLayout.closeDrawers();
                 AccountSetupBasics.actionNewAccount(getBaseContext());
-                return true;
             }
         });
     }
@@ -483,51 +522,40 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         MessageList.actionDisplaySearch(this, search, false, false);
     }
 
-    private void populateDrawerGroup(final SubMenu topChannelMenu) {
+    private void populateDrawerGroup() {
         if (menuFolders != null) {
-            populateFolders(mAccount, menuFolders, topChannelMenu);
+            populateFolders(menuFolders);
         } else {
             MessagingController instance = MessagingController.getInstance(this);
             instance.listFolders(mAccount, false, new MessagingListener() {
                 @Override
                 public void listFolders(Account account, List<LocalFolder> folders) {
                     menuFolders = folders;
-                    populateFolders(account, folders, topChannelMenu);
+                    populateFolders(folders);
                 }
             });
         }
     }
 
-    private void populateFolders(Account account, List<LocalFolder> folders, SubMenu topChannelMenu) {
-        for (final LocalFolder folder : folders) {
-            final LocalSearch search = getLocalSearch(account, folder);
-            try {
-                int unreadMessageCount = folder.getUnreadMessageCount();
-                if (unreadMessageCount > 0) {
-                    MenuItem menuItem = topChannelMenu.add(folder.getName() + " (" + unreadMessageCount + ")");
-                    menuItem.setTitle(folder.getName() + " (" + unreadMessageCount + ")");
-                    menuItem.setOnMenuItemClickListener(onFolderClickListener(search));
-                } else {
-                    MenuItem menuItem = topChannelMenu.add(folder.getName());
-                    menuItem.setOnMenuItemClickListener(onFolderClickListener(search));
-                }
-            } catch (MessagingException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    private void populateFolders(List<LocalFolder> folders) {
+        FolderRenderer folderRenderer = new FolderRenderer();
+        rendererFolderBuilder = new RendererBuilder<>(folderRenderer);
 
-    @NonNull
-    private MenuItem.OnMenuItemClickListener onFolderClickListener(final LocalSearch search) {
-        return new MenuItem.OnMenuItemClickListener() {
+        folderRenderer.setFolderClickListener(new OnFolderClickListener() {
             @Override
-            public boolean onMenuItemClick(MenuItem item) {
+            public void onClick(LocalFolder folder) {
+                LocalSearch search = getLocalSearch(mAccount, folder);
                 MessageListFragment fragment = MessageListFragment.newInstance(search, false, false);
                 addMessageListFragment(fragment, true);
                 drawerLayout.closeDrawers();
-                return true;
             }
-        };
+        });
+        ListAdapteeCollection<LocalFolder> adapteeCollection = new ListAdapteeCollection<>(folders);
+
+        folderAdapter = new RVRendererAdapter<>(rendererFolderBuilder, adapteeCollection);
+
+        navigationFolders.setLayoutManager(new LinearLayoutManager(this));
+        navigationFolders.setAdapter(folderAdapter);
     }
 
     @NonNull

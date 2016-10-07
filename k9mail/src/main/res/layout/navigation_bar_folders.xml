@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/unified_inbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
+
+        <ImageView
+            android:id="@+id/unified_inbox_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:background="@drawable/ic_content_inbox" />
+
+        <TextView
+            android:id="@+id/unified_inbox_new_messages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_centerVertical="true"
+            android:paddingRight="16dp"
+            android:fontFamily="sans-serif-medium"
+            tools:text="7" />
+
+        <TextView
+            android:id="@+id/unified_inbox_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/unified_inbox_icon"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@android:color/black"
+            android:paddingLeft="32dp"
+            android:text="@string/integrated_inbox_title" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/all_messages_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
+
+        <ImageView
+            android:id="@+id/all_messages_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:background="@drawable/ic_content_inbox" />
+
+        <TextView
+            android:id="@+id/all_messages_new_messages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_centerVertical="true"
+            android:fontFamily="sans-serif-medium"
+            android:paddingRight="16dp"
+            tools:text="7" />
+
+        <TextView
+            android:id="@+id/all_messages_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@android:color/black"
+            android:layout_toEndOf="@+id/all_messages_icon"
+            android:paddingLeft="32dp"
+            android:text="@string/search_all_messages_title" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:paddingLeft="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="@string/folders_title" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/navigation_folders"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

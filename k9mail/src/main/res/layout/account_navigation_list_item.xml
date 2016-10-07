@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/account_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:background="@color/gray"
+    android:paddingBottom="16dp"
+    android:paddingTop="16dp">
+
+    <FrameLayout android:id="@+id/account_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="16dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            android:src="@color/colorPrimary" />
+
+        <TextView
+            android:id="@+id/account_letter"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="24sp"
+            android:textColor="@color/white"
+            tools:text="A" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/account_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:fontFamily="sans-serif-medium"
+        tools:text="account@ema.il"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@+id/account_image"
+        android:textColor="@android:color/black"
+        android:layout_marginStart="32dp" />
+</RelativeLayout>

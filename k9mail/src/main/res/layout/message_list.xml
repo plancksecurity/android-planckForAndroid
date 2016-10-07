@@ -29,7 +29,7 @@
                 <FrameLayout
                     android:id="@+id/message_list_container"
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent" >
+                    android:layout_height="fill_parent">
 
                     <android.support.design.widget.FloatingActionButton
                         android:id="@+id/fab_button_compose_message"
@@ -53,9 +53,22 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:fitsSystemWindows="true"
-            app:headerLayout="@layout/nav_header_main"
-            app:menu="@menu/navigation_drawer_empty_menu" />
+            android:fitsSystemWindows="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <include layout="@layout/nav_header_main" />
+
+                <include layout="@layout/navigation_bar_folders"
+                    android:id="@+id/navigation_bar_folders_layout" />
+
+                <include layout="@layout/navigation_bar_accounts"
+                    android:id="@+id/navigation_bar_accounts_layout" />
+            </LinearLayout>
+        </android.support.design.widget.NavigationView>
     </android.support.v4.widget.DrawerLayout>
 
 </android.support.design.widget.CoordinatorLayout>
