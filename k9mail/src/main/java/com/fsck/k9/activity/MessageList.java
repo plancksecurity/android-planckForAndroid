@@ -49,6 +49,7 @@ import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.fragment.MessageListFragment;
 import com.fsck.k9.fragment.MessageListFragment.MessageListFragmentListener;
+import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.PEpUtils;
@@ -451,25 +452,74 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         showingAccountsMenu = false;
         foldersDrawerLayout.setVisibility(View.VISIBLE);
         accountsDrawerLayout.setVisibility(View.GONE);
-        //TODO set unread messages -Arturo
+        setupMainFolders();
+        populateDrawerGroup();
+    }
+
+    private void setupMainFolders() {
+        final SearchAccount unifiedInboxAccount = SearchAccount.createUnifiedInboxAccount(this);
+        final SearchAccount allMessagesAccount = SearchAccount.createAllMessagesAccount(this);
+
+        setupUnreadMessagesInMainFolders(unifiedInboxAccount, allMessagesAccount);
+
+        setupMainFoldersListeners(unifiedInboxAccount, allMessagesAccount);
+    }
+
+    private void setupUnreadMessagesInMainFolders(SearchAccount unifiedInboxAccount, SearchAccount allMessagesAccount) {
         TextView unifiedInboxMessages = (TextView) findViewById(R.id.unified_inbox_new_messages);
         TextView allMessages = (TextView) findViewById(R.id.all_messages_new_messages);
 
+        LocalFolder unifiedFolder = refreshFolder(mAccount, unifiedInboxAccount.getRelatedSearch().getName());
+        LocalFolder allMessagesFolder = refreshFolder(mAccount, allMessagesAccount.getRelatedSearch().getName());
+
+        try {
+            Integer unifiedMessageCount = unifiedFolder.getUnreadMessageCount();
+            Integer allMessageCount = allMessagesFolder.getUnreadMessageCount();
+            if (unifiedMessageCount != null && allMessageCount != null) {
+                unifiedInboxMessages.setText(String.valueOf(unifiedMessageCount));
+                allMessages.setText(String.valueOf(allMessageCount));
+            }
+        } catch (MessagingException | NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setupMainFoldersListeners(final SearchAccount unifiedInboxAccount, final SearchAccount allMessagesAccount) {
         View unifiedInbox = findViewById(R.id.unified_inbox);
         View allMessagesContainer = findViewById(R.id.all_messages_container);
         unifiedInbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                updateMessagesForSpecificInbox(unifiedInboxAccount);
             }
         });
         allMessagesContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                updateMessagesForSpecificInbox(allMessagesAccount);
             }
         });
-        populateDrawerGroup();
+    }
+
+    private LocalFolder refreshFolder(Account account, String folderName) {
+        // There has to be a cheaper way to get at the localFolder object than this
+        LocalFolder localFolder = null;
+        try {
+            if (account != null && folderName != null) {
+                if (!account.isAvailable(MessageList.this)) {
+                    Log.i(K9.LOG_TAG, "not refreshing folder of unavailable account");
+                    return null;
+                }
+                localFolder = account.getLocalStore().getFolder(folderName);
+            }
+        } catch (Exception e) {
+            Log.e(K9.LOG_TAG, "Exception while populating folder", e);
+        } finally {
+            if (localFolder != null) {
+                localFolder.close();
+            }
+        }
+        return localFolder;
     }
 
     private void createAccountsMenu() {
