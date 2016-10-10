@@ -1041,16 +1041,16 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
 
         mListView.setOnTouchListener(touchListener);
         mListView.setOnScrollListener((AbsListView.OnScrollListener) touchListener.makeScrollListener());
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (touchListener.existPendingDismisses()) {
-                    touchListener.undoPendingDismiss();
-                } else {
-                    FeedbackTools.showLongFeedback(getView(), "Position " + position);
-                }
-            }
-        });
+//        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                if (touchListener.existPendingDismisses()) {
+//                    touchListener.undoPendingDismiss();
+//                } else {
+//                    FeedbackTools.showLongFeedback(getView(), "Position " + position);
+//                }
+//            }
+//        });
     }
 
     public void onCompose() {
