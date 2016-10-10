@@ -2,15 +2,24 @@ package com.fsck.k9.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.*;
+import android.view.ContextThemeWrapper;
+import android.view.GestureDetector;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.misc.SwipeGestureDetector;
@@ -18,6 +27,8 @@ import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+
 import org.pEp.jniadapter.Identity;
 
 import java.util.Locale;
@@ -149,7 +160,7 @@ public class K9ActivityCommon {
                 .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(context, "Key replaced", Toast.LENGTH_LONG).show();
+                        FeedbackTools.showLongFeedback(getRootView((Activity) context), "Key replaced");
                         Identity id = PEpUtils.createIdentity(new Address(address, username), context);
                         id.fpr = fpr;
                         ((K9) context.getApplicationContext()).getpEpProvider().myself(id);
@@ -157,7 +168,7 @@ public class K9ActivityCommon {
                 }).setNegativeButton("Reject", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(context, "Key rejected", Toast.LENGTH_LONG).show();
+                FeedbackTools.showLongFeedback(getRootView((Activity) context), "Key rejected");
             }
         });
         AlertDialog dialog = alertDialogBuilder.create();
@@ -166,6 +177,10 @@ public class K9ActivityCommon {
 //        textView.setTypeface(face);
         dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         dialog.show();
+    }
+
+    private static View getRootView(Activity context) {
+        return context.getWindow().getDecorView().getRootView();
     }
 
     public static class PrivateKeyReceiver extends BroadcastReceiver {

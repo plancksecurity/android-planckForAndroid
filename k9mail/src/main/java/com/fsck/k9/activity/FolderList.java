@@ -29,7 +29,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.FolderMode;
@@ -51,6 +50,7 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.power.TracingPowerManager;
 import com.fsck.k9.mail.power.TracingPowerManager.TracingWakeLock;
 import com.fsck.k9.mailstore.LocalFolder;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
@@ -136,8 +136,7 @@ public class FolderList extends K9ListActivity {
             runOnUiThread(new Runnable() {
                 public void run() {
                     String toastText = getString(res, mAccount.getDescription());
-                    Toast toast = Toast.makeText(getApplication(), toastText, Toast.LENGTH_SHORT);
-                    toast.show();
+                    FeedbackTools.showShortFeedback(getListView(), toastText);
                 }
             });
         }
@@ -147,8 +146,7 @@ public class FolderList extends K9ListActivity {
                 public void run() {
                     String toastText = getString(R.string.account_size_changed, mAccount.getDescription(), SizeFormatter.formatSize(getApplication(), oldSize), SizeFormatter.formatSize(getApplication(), newSize));
 
-                    Toast toast = Toast.makeText(getApplication(), toastText, Toast.LENGTH_LONG);
-                    toast.show();
+                    FeedbackTools.showLongFeedback(getListView(), toastText);
                 }
             });
         }
@@ -400,8 +398,7 @@ public class FolderList extends K9ListActivity {
         }
 
         case KeyEvent.KEYCODE_H: {
-            Toast toast = Toast.makeText(this, R.string.folder_list_help_key, Toast.LENGTH_LONG);
-            toast.show();
+            FeedbackTools.showLongFeedback(getListView(), getString(R.string.folder_list_help_key));
             return true;
         }
 
@@ -1066,8 +1063,7 @@ public class FolderList extends K9ListActivity {
 
             holder.activeIcons.setOnClickListener(new OnClickListener() {
                 public void onClick(View v) {
-                    Toast toast = Toast.makeText(getApplication(), getString(R.string.tap_hint), Toast.LENGTH_SHORT);
-                    toast.show();
+                    FeedbackTools.showShortFeedback(getListView(), getString(R.string.tap_hint));
                 }
             });
 

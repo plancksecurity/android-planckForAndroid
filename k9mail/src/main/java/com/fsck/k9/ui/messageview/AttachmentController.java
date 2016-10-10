@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -18,6 +19,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.fsck.k9.Account;
@@ -34,6 +36,8 @@ import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalPart;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+
 import org.apache.commons.io.IOUtils;
 
 
@@ -273,7 +277,11 @@ public class AttachmentController {
     }
 
     private void displayMessageToUser(String message) {
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+        FeedbackTools.showLongFeedback(getRootView(context), message);
+    }
+
+    private View getRootView(Context context) {
+        return ((Activity) context).getWindow().getDecorView().getRootView();
     }
 
     private static class IntentAndResolvedActivitiesCount {

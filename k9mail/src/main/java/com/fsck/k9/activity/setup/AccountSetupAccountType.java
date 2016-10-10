@@ -17,6 +17,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.helper.EmailHelper;
 import com.fsck.k9.mail.ServerSettings.Type;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.setup.ServerNameSuggester;
 
 import java.net.URI;
@@ -145,7 +146,6 @@ public class AccountSetupAccountType extends K9Activity implements OnClickListen
         Log.e(K9.LOG_TAG, "Failure", use);
         String toastText = getString(R.string.account_setup_bad_uri, use.getMessage());
 
-        Toast toast = Toast.makeText(getApplication(), toastText, Toast.LENGTH_LONG);
-        toast.show();
+        FeedbackTools.showLongFeedback(getRootView(), toastText);
     }
 }

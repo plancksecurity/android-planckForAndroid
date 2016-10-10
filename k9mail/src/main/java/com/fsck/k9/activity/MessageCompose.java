@@ -34,7 +34,7 @@ import android.view.Window;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
 import com.fsck.k9.FontSizes;
@@ -83,9 +83,11 @@ import com.fsck.k9.message.QuotedTextMode;
 import com.fsck.k9.message.SimpleMessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
+
 import org.pEp.jniadapter.Rating;
 
 import java.util.Date;
@@ -286,16 +288,10 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                     break;
                 case MSG_SAVED_DRAFT:
                     mDraftId = (Long) msg.obj;
-                    Toast.makeText(
-                        MessageCompose.this,
-                        getString(R.string.message_saved_toast),
-                        Toast.LENGTH_LONG).show();
+                    FeedbackTools.showLongFeedback(getRootView(), getString(R.string.message_saved_toast));
                     break;
                 case MSG_DISCARDED_DRAFT:
-                    Toast.makeText(
-                        MessageCompose.this,
-                        getString(R.string.message_discarded_toast),
-                        Toast.LENGTH_LONG).show();
+                    FeedbackTools.showLongFeedback(getRootView(), getString(R.string.message_discarded_toast));
                     break;
                 default:
                     super.handleMessage(msg);
@@ -769,7 +765,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
     private void checkToSendMessage() {
         if (mSubjectView.getText().length() == 0 && !alreadyNotifiedUserOfEmptySubject) {
-            Toast.makeText(this, R.string.empty_subject, Toast.LENGTH_LONG).show();
+            FeedbackTools.showLongFeedback(getRootView(), getString(R.string.empty_subject));
             alreadyNotifiedUserOfEmptySubject = true;
             return;
         }
@@ -794,7 +790,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
     private void checkToSaveDraftAndSave() {
         if (!mAccount.hasDraftsFolder()) {
-            Toast.makeText(this, R.string.compose_error_no_draft_folder, Toast.LENGTH_SHORT).show();
+            FeedbackTools.showShortFeedback(getRootView(), getString(R.string.compose_error_no_draft_folder));
             return;
         }
 
@@ -855,9 +851,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             txt = getString(R.string.read_receipt_disabled);
             mReadReceipt = false;
         }
-        Context context = getApplicationContext();
-        Toast toast = Toast.makeText(context, txt, Toast.LENGTH_SHORT);
-        toast.show();
+        FeedbackTools.showShortFeedback(getRootView(), String.valueOf(txt));
     }
 
     public void showContactPicker(int requestCode) {
@@ -1128,9 +1122,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                     @Override
                     public void onClick(DialogInterface dialog, int whichButton) {
                         dismissDialog(DIALOG_CONFIRM_DISCARD_ON_BACK);
-                        Toast.makeText(MessageCompose.this,
-                                       getString(R.string.message_discarded_toast),
-                                       Toast.LENGTH_LONG).show();
+                        FeedbackTools.showLongFeedback(getRootView(), getString(R.string.message_discarded_toast));
                         onDiscard();
                     }
                 })
@@ -1563,8 +1555,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     @Override
     public void onMessageBuildException(MessagingException me) {
         Log.e(K9.LOG_TAG, "Error sending message", me);
-        Toast.makeText(MessageCompose.this,
-                getString(R.string.send_failed_reason, me.getLocalizedMessage()), Toast.LENGTH_LONG).show();
+        FeedbackTools.showLongFeedback(getRootView(), getString(R.string.send_failed_reason, me.getLocalizedMessage()));
         currentMessageBuilder = null;
         setProgressBarIndeterminateVisibility(false);
     }
@@ -1617,7 +1608,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         @Override
         public void onMessageDataLoadFailed() {
             mHandler.sendEmptyMessage(MSG_PROGRESS_OFF);
-            Toast.makeText(MessageCompose.this, R.string.status_invalid_id_error, Toast.LENGTH_LONG).show();
+            FeedbackTools.showLongFeedback(getRootView(), getString(R.string.status_invalid_id_error));
         }
 
         @Override
@@ -1629,7 +1620,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         @Override
         public void onMessageViewInfoLoadFailed(MessageViewInfo messageViewInfo) {
             mHandler.sendEmptyMessage(MSG_PROGRESS_OFF);
-            Toast.makeText(MessageCompose.this, R.string.status_invalid_id_error, Toast.LENGTH_LONG).show();
+            FeedbackTools.showLongFeedback(getRootView(), getString(R.string.status_invalid_id_error));
         }
 
         @Override
@@ -1653,7 +1644,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(MessageCompose.this, R.string.status_invalid_id_error, Toast.LENGTH_LONG).show();
+                    FeedbackTools.showLongFeedback(getRootView(), getString(R.string.status_invalid_id_error));
                 }
             });
         }
@@ -1663,7 +1654,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(MessageCompose.this, R.string.status_network_error, Toast.LENGTH_LONG).show();
+                    FeedbackTools.showLongFeedback(getRootView(), getString(R.string.status_network_error));
                 }
             });
         }
@@ -1798,8 +1789,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
         @Override
         public void showMissingAttachmentsPartialMessageWarning() {
-            Toast.makeText(MessageCompose.this,
-                    getString(R.string.message_compose_attachments_skipped_toast), Toast.LENGTH_LONG).show();
+            FeedbackTools.showLongFeedback(getRootView(), getString(R.string.message_compose_attachments_skipped_toast));
         }
     };
 

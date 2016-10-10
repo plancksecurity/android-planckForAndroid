@@ -37,6 +37,7 @@ import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.messageview.OnCryptoClickListener;
 
 import org.pEp.jniadapter.Rating;
@@ -205,7 +206,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         ClipboardManager clipboardManager = ClipboardManager.getInstance(mContext);
         clipboardManager.setText("addresses", addressList);
 
-        Toast.makeText(mContext, createMessage(addresses.length), Toast.LENGTH_LONG).show();
+        FeedbackTools.showLongFeedback(getRootView(), getContext().getString(R.string.status_network_error));
     }
 
     private void onAddRecipientsToClipboard(Message.RecipientType recipientType) {
@@ -254,9 +255,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         }
         // Show a message to the user, if any
         if (messageToShow != null) {
-            Toast toast = Toast.makeText(mContext, messageToShow, Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL, 0, 0);
-            toast.show();
+            FeedbackTools.showLongFeedback(getRootView(), getContext().getString(messageToShow));
         }
 
     }

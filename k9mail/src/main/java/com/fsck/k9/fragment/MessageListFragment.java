@@ -90,6 +90,7 @@ import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.MessageColumns;
@@ -1122,9 +1123,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
 
     private void reSort() {
         int toastString = mSortType.getToast(mSortAscending);
-
-        Toast toast = Toast.makeText(getActivity(), toastString, Toast.LENGTH_SHORT);
-        toast.show();
+        FeedbackTools.showShortFeedback(getView(), getString(toastString));
 
         LoaderManager loaderManager = getLoaderManager();
         for (int i = 0, len = mAccountUuids.length; i < len; i++) {
@@ -1537,8 +1536,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
                 public void run() {
                     Activity activity = getActivity();
                     if (activity != null) {
-                        Toast.makeText(activity, R.string.remote_search_error,
-                                Toast.LENGTH_LONG).show();
+                        FeedbackTools.showLongFeedback(getView(), getString(R.string.remote_search_error));
                     }
                 }
             });
@@ -2440,9 +2438,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
             // message check
             if ((operation == FolderOperation.MOVE && !mController.isMoveCapable(message)) ||
                     (operation == FolderOperation.COPY && !mController.isCopyCapable(message))) {
-                final Toast toast = Toast.makeText(getActivity(), R.string.move_copy_cannot_copy_unsynced_message,
-                                                   Toast.LENGTH_LONG);
-                toast.show();
+                FeedbackTools.showLongFeedback(getView(), getString(R.string.move_copy_cannot_copy_unsynced_message));
                 return false;
             }
         }
@@ -2493,9 +2489,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         for (MessageReference message : messages) {
             if ((operation == FolderOperation.MOVE && !mController.isMoveCapable(message)) ||
                     (operation == FolderOperation.COPY && !mController.isCopyCapable(message))) {
-
-                Toast.makeText(getActivity(), R.string.move_copy_cannot_copy_unsynced_message,
-                        Toast.LENGTH_LONG).show();
+                FeedbackTools.showLongFeedback(getView(), getString(R.string.move_copy_cannot_copy_unsynced_message));
 
                 // XXX return meaningful error value?
 
@@ -3109,8 +3103,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         if (mHasConnectivity) {
             onRemoteSearchRequested();
         } else {
-            Toast.makeText(getActivity(), getText(R.string.remote_search_unavailable_no_network),
-                    Toast.LENGTH_SHORT).show();
+            FeedbackTools.showShortFeedback(getView(), getString(R.string.remote_search_unavailable_no_network));
         }
     }
 

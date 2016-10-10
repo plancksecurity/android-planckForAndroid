@@ -38,6 +38,7 @@ import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mail.store.imap.ImapStoreSettings;
 import com.fsck.k9.mail.store.webdav.WebDavStoreSettings;
 import com.fsck.k9.account.AccountCreator;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.service.MailService;
 import com.fsck.k9.view.ClientCertificateSpinner;
 import com.fsck.k9.view.ClientCertificateSpinner.OnClientCertificateChangedListener;
@@ -449,7 +450,7 @@ public class AccountSetupIncoming extends K9Activity implements OnClickListener 
                     AuthType.EXTERNAL.toString(),
                     getString(R.string.account_setup_incoming_security_label),
                     ConnectionSecurity.NONE.toString());
-            Toast.makeText(this, toastText, Toast.LENGTH_LONG).show();
+            FeedbackTools.showLongFeedback(getRootView(), toastText);
 
             // Reset the views back to their previous settings without recursing through here again
             OnItemSelectedListener onItemSelectedListener = mAuthTypeView.getOnItemSelectedListener();
@@ -675,9 +676,7 @@ public class AccountSetupIncoming extends K9Activity implements OnClickListener 
     private void failure(Exception use) {
         Log.e(K9.LOG_TAG, "Failure", use);
         String toastText = getString(R.string.account_setup_bad_uri, use.getMessage());
-
-        Toast toast = Toast.makeText(getApplication(), toastText, Toast.LENGTH_LONG);
-        toast.show();
+        FeedbackTools.showLongFeedback(getRootView(), toastText);
     }
 
 

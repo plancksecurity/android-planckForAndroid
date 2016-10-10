@@ -231,4 +231,8 @@ public class K9ListActivity extends AppCompatActivity implements K9ActivityMagic
             onListItemClick((ListView)parent, v, position, id);
         }
     };
+
+    public View getRootView() {
+        return getWindow().getDecorView().getRootView();
+    }
 }

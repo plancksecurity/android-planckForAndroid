@@ -50,6 +50,7 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpStatus;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
@@ -266,8 +267,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void showUnableToDecodeError() {
-        Context context = getActivity().getApplicationContext();
-        Toast.makeText(context, R.string.message_view_toast_unable_to_display_message, Toast.LENGTH_SHORT).show();
+        FeedbackTools.showShortFeedback(getView(), getString(R.string.message_view_toast_unable_to_display_message));
     }
 
     private void showMessage(MessageViewInfo messageViewInfo) {
@@ -325,8 +325,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             return;
         }
         if (!mController.isMoveCapable(mMessageReference)) {
-            Toast toast = Toast.makeText(getActivity(), R.string.move_copy_cannot_copy_unsynced_message, Toast.LENGTH_LONG);
-            toast.show();
+            FeedbackTools.showLongFeedback(getView(), getString(R.string.move_copy_cannot_copy_unsynced_message));
             return;
         }
 
@@ -382,8 +381,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             return;
         }
         if (!mController.isMoveCapable(mMessageReference)) {
-            Toast toast = Toast.makeText(getActivity(), R.string.move_copy_cannot_copy_unsynced_message, Toast.LENGTH_LONG);
-            toast.show();
+            FeedbackTools.showLongFeedback(getView(), getString(R.string.move_copy_cannot_copy_unsynced_message));
             return;
         }
 
@@ -397,8 +395,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             return;
         }
         if (!mController.isCopyCapable(mMessageReference)) {
-            Toast toast = Toast.makeText(getActivity(), R.string.move_copy_cannot_copy_unsynced_message, Toast.LENGTH_LONG);
-            toast.show();
+            FeedbackTools.showLongFeedback(getView(), getString(R.string.move_copy_cannot_copy_unsynced_message));
             return;
         }
 
@@ -775,7 +772,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
         @Override
         public void onMessageDataLoadFailed() {
-            Toast.makeText(getActivity(), R.string.status_loading_error, Toast.LENGTH_LONG).show();
+            FeedbackTools.showLongFeedback(getView(), getString(R.string.status_loading_error));
         }
 
         @Override
@@ -799,7 +796,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(getActivity(), R.string.status_invalid_id_error, Toast.LENGTH_LONG).show();
+                    FeedbackTools.showLongFeedback(getView(), getString(R.string.status_invalid_id_error));
                 }
             });
         }
@@ -810,7 +807,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(getActivity(), R.string.status_network_error, Toast.LENGTH_LONG).show();
+                    FeedbackTools.showLongFeedback(getView(), getString(R.string.status_network_error));
                 }
             });
         }

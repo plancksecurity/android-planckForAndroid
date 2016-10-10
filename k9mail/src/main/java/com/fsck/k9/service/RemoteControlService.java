@@ -1,23 +1,34 @@
 package com.fsck.k9.service;
 
-import com.fsck.k9.Account;
-import com.fsck.k9.K9;
-import com.fsck.k9.preferences.Storage;
-import com.fsck.k9.preferences.StorageEditor;
-import com.fsck.k9.remotecontrol.K9RemoteControl;
-import com.fsck.k9.Preferences;
-import com.fsck.k9.R;
-import com.fsck.k9.Account.FolderMode;
-import com.fsck.k9.K9.BACKGROUND_OPS;
-
-import static com.fsck.k9.remotecontrol.K9RemoteControl.*;
-
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
+import android.view.View;
+
+import com.fsck.k9.Account;
+import com.fsck.k9.Account.FolderMode;
+import com.fsck.k9.K9;
+import com.fsck.k9.K9.BACKGROUND_OPS;
+import com.fsck.k9.Preferences;
+import com.fsck.k9.R;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.preferences.Storage;
+import com.fsck.k9.preferences.StorageEditor;
+import com.fsck.k9.remotecontrol.K9RemoteControl;
 
 import java.util.List;
+
+import static com.fsck.k9.remotecontrol.K9RemoteControl.K9_ACCOUNT_UUID;
+import static com.fsck.k9.remotecontrol.K9RemoteControl.K9_ALL_ACCOUNTS;
+import static com.fsck.k9.remotecontrol.K9RemoteControl.K9_BACKGROUND_OPERATIONS;
+import static com.fsck.k9.remotecontrol.K9RemoteControl.K9_NOTIFICATION_ENABLED;
+import static com.fsck.k9.remotecontrol.K9RemoteControl.K9_POLL_CLASSES;
+import static com.fsck.k9.remotecontrol.K9RemoteControl.K9_POLL_FREQUENCY;
+import static com.fsck.k9.remotecontrol.K9RemoteControl.K9_PUSH_CLASSES;
+import static com.fsck.k9.remotecontrol.K9RemoteControl.K9_RING_ENABLED;
+import static com.fsck.k9.remotecontrol.K9RemoteControl.K9_THEME;
+import static com.fsck.k9.remotecontrol.K9RemoteControl.K9_VIBRATE_ENABLED;
 
 public class RemoteControlService extends CoreService {
     private final static String RESCHEDULE_ACTION = "com.fsck.k9.service.RemoteControlService.RESCHEDULE_ACTION";
@@ -147,8 +158,7 @@ public class RemoteControlService extends CoreService {
                         }
                     } catch (Exception e) {
                         Log.e(K9.LOG_TAG, "Could not handle K9_SET", e);
-                        Toast toast = Toast.makeText(RemoteControlService.this, e.getMessage(), Toast.LENGTH_LONG);
-                        toast.show();
+                        FeedbackTools.showLongFeedback(getRootView(getBaseContext()), e.getMessage());
                     }
                 }
             }
@@ -158,4 +168,7 @@ public class RemoteControlService extends CoreService {
         return START_NOT_STICKY;
     }
 
+    private View getRootView(Context context) {
+        return ((Activity) context).getWindow().getDecorView().getRootView();
+    }
 }

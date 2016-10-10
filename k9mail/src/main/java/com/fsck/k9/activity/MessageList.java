@@ -32,7 +32,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.SortType;
@@ -59,6 +58,7 @@ import com.fsck.k9.pEp.ui.listeners.OnAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
 import com.fsck.k9.pEp.ui.renderers.AccountRenderer;
 import com.fsck.k9.pEp.ui.renderers.FolderRenderer;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
@@ -1127,8 +1127,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 return true;
             }*/
             case KeyEvent.KEYCODE_H: {
-                Toast toast = Toast.makeText(this, R.string.message_list_help_key, Toast.LENGTH_LONG);
-                toast.show();
+                FeedbackTools.showLongFeedback(getRootView(), getString(R.string.message_list_help_key));
                 return true;
             }
 

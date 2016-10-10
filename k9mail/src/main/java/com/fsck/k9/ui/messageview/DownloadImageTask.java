@@ -8,12 +8,14 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.fsck.k9.K9;
@@ -21,6 +23,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.helper.FileHelper;
 import com.fsck.k9.helper.UrlEncodingHelper;
 import com.fsck.k9.mail.internet.MimeUtility;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.provider.AttachmentProvider.AttachmentProviderColumns;
 import org.apache.commons.io.IOUtils;
 
@@ -73,7 +76,11 @@ class DownloadImageTask extends AsyncTask<String, Void, String> {
             text = context.getString(R.string.image_saved_as, fileName);
         }
 
-        Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+        FeedbackTools.showLongFeedback(getRootView(context), text);
+    }
+
+    private View getRootView(Context context) {
+        return ((Activity) context).getWindow().getDecorView().getRootView();
     }
 
     private String downloadAndStoreImage(String urlString) throws IOException {

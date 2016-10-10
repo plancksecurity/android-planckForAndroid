@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.fsck.k9.Identity;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
 public class ManageIdentities extends ChooseIdentity {
     private boolean mIdentitiesChanged = false;
@@ -104,8 +105,7 @@ public class ManageIdentities extends ChooseIdentity {
                 mIdentitiesChanged = true;
                 refreshView();
             } else {
-                Toast.makeText(this, getString(R.string.no_removable_identity),
-                               Toast.LENGTH_LONG).show();
+                FeedbackTools.showLongFeedback(getRootView(), getString(R.string.no_removable_identity));
             }
             break;
         }

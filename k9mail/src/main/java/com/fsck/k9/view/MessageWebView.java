@@ -12,12 +12,12 @@ import android.webkit.WebSettings;
 import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
-import android.widget.Toast;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.K9.Theme;
 import com.fsck.k9.R;
 import com.fsck.k9.mailstore.AttachmentResolver;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
 
 public class MessageWebView extends RigidWebView {
@@ -144,7 +144,7 @@ public class MessageWebView extends RigidWebView {
             KeyEvent shiftPressEvent = new KeyEvent(0, 0, KeyEvent.ACTION_DOWN,
                                                     KeyEvent.KEYCODE_SHIFT_LEFT, 0, 0);
             shiftPressEvent.dispatch(this, null, null);
-            Toast.makeText(getContext() , R.string.select_text_now, Toast.LENGTH_SHORT).show();
+            FeedbackTools.showLongFeedback(getRootView(), getContext().getString(R.string.select_text_now));
         } catch (Exception e) {
             Log.e(K9.LOG_TAG, "Exception in emulateShiftHeld()", e);
         }

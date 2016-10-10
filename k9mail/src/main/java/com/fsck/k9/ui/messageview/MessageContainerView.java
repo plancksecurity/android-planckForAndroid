@@ -1,9 +1,7 @@
 package com.fsck.k9.ui.messageview;
 
 
-import java.util.HashMap;
-import java.util.Map;
-
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -25,7 +23,6 @@ import android.webkit.WebView;
 import android.webkit.WebView.HitTestResult;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fsck.k9.R;
 import com.fsck.k9.helper.ClipboardManager;
@@ -36,9 +33,13 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.mailstore.AttachmentResolver;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.MessageViewInfo;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.view.MessageHeader.OnLayoutChangedListener;
 import com.fsck.k9.view.MessageWebView;
 import com.fsck.k9.view.MessageWebView.OnPageFinishedListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class MessageContainerView extends LinearLayout implements OnLayoutChangedListener, OnCreateContextMenuListener {
@@ -341,8 +342,12 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
         try {
             context.startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(context, R.string.error_activity_not_found, Toast.LENGTH_LONG).show();
+            FeedbackTools.showLongFeedback(getRootView(context), context.getString(R.string.error_activity_not_found));
         }
+    }
+
+    private View getRootView(Context context) {
+        return ((Activity) context).getWindow().getDecorView().getRootView();
     }
 
     public MessageContainerView(Context context, AttributeSet attrs) {

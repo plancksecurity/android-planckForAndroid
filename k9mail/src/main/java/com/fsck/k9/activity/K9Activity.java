@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -19,6 +20,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
@@ -68,7 +70,7 @@ public class K9Activity extends AppCompatActivity implements K9ActivityMagic, Sy
 
     @Override
     public void showHandshake(Identity myself, Identity partner) {
-        Toast.makeText(getApplicationContext(), myself.fpr + "/n" + partner.fpr, Toast.LENGTH_LONG).show();
+        FeedbackTools.showLongFeedback(getRootView(), myself.fpr + "/n" + partner.fpr);
         Log.i("pEp", "showHandshake: " + myself.fpr + "/n" + partner.fpr);
     }
 
@@ -116,5 +118,9 @@ public class K9Activity extends AppCompatActivity implements K9ActivityMagic, Sy
             color = Color.HSVToColor(hsv);
             window.setStatusBarColor(color);
         }
+    }
+
+    public View getRootView() {
+        return getWindow().getDecorView().getRootView();
     }
 }

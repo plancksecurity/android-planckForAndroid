@@ -2,6 +2,7 @@ package com.fsck.k9.controller;
 
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,7 +18,8 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
-import android.widget.Toast;
+import android.view.View;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.DeletePolicy;
 import com.fsck.k9.Account.Expunge;
@@ -69,6 +71,7 @@ import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
 import com.fsck.k9.search.ConditionsTreeNode;
@@ -1523,7 +1526,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_ADDRESS, result.keyDetails.getAddress().getAddress());
                     broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_USERNAME, result.keyDetails.getAddress().getPersonal());
                     context.getApplicationContext().sendOrderedBroadcast(broadcastIntent, null);
-                    Toast.makeText(context.getApplicationContext(), "Private key", Toast.LENGTH_LONG).show();
+                    FeedbackTools.showLongFeedback(getRootView((Activity) context), "Private key");
                 }
             });
         }
@@ -2755,6 +2758,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
         });
     }
 
+    private View getRootView(Activity context) {
+        return context.getWindow().getDecorView().getRootView();
+    }
+
     private boolean loadMessageRemoteSynchronous(final Account account, final String folder,
             final String uid, final MessagingListener listener, final boolean loadPartialFromSearch) {
         Folder remoteFolder = null;
@@ -2769,9 +2776,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             if (uid.startsWith(K9.LOCAL_UID_PREFIX)) {
                 Log.w(K9.LOG_TAG, "Message has local UID so cannot download fully.");
                 // ASH move toast
-                android.widget.Toast.makeText(context,
-                        "Message has local UID so cannot download fully",
-                        android.widget.Toast.LENGTH_LONG).show();
+                FeedbackTools.showLongFeedback(getRootView((Activity) context), "Message has local UID so cannot download fully");
                 // TODO: Using X_DOWNLOADED_FULL is wrong because it's only a partial message. But
                 // one we can't download completely. Maybe add a new flag; X_PARTIAL_MESSAGE ?
                 message.setFlag(Flag.X_DOWNLOADED_FULL, true);

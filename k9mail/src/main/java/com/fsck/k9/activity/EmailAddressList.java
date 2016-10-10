@@ -4,13 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.fsck.k9.R;
 import com.fsck.k9.helper.ContactItem;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
 public class EmailAddressList extends K9ListActivity implements OnItemClickListener {
     public static final String EXTRA_CONTACT_ITEM = "contact";
@@ -43,7 +43,7 @@ public class EmailAddressList extends K9ListActivity implements OnItemClickListe
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String item = (String)parent.getItemAtPosition(position);
 
-        Toast.makeText(EmailAddressList.this, item, Toast.LENGTH_LONG).show();
+        FeedbackTools.showLongFeedback(getListView(), item);
 
         Intent intent = new Intent();
         intent.putExtra(EXTRA_EMAIL_ADDRESS, item);

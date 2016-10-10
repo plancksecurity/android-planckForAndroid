@@ -8,11 +8,13 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.Identity;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+
 import java.util.List;
 
 public class ChooseIdentity extends K9ListActivity {
@@ -80,8 +82,7 @@ public class ChooseIdentity extends K9ListActivity {
                     setResult(RESULT_OK, intent);
                     finish();
                 } else {
-                    Toast.makeText(ChooseIdentity.this, getString(R.string.identity_has_no_email),
-                                   Toast.LENGTH_LONG).show();
+                    FeedbackTools.showLongFeedback(getListView(), getString(R.string.identity_has_no_email));
                 }
             }
         });

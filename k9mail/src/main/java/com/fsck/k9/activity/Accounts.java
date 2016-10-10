@@ -43,7 +43,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.AccountStats;
@@ -66,6 +65,7 @@ import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mailstore.StorageManager;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.SettingsExporter;
 import com.fsck.k9.preferences.SettingsImportExportException;
 import com.fsck.k9.preferences.SettingsImporter;
@@ -184,9 +184,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
             runOnUiThread(new Runnable() {
                 public void run() {
                     String toastText = getString(res, account.getDescription());
-
-                    Toast toast = Toast.makeText(getApplication(), toastText, Toast.LENGTH_SHORT);
-                    toast.show();
+                    FeedbackTools.showShortFeedback(getListView(), toastText);
                 }
             });
         }
@@ -200,9 +198,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
                     }
                     String toastText = getString(R.string.account_size_changed, account.getDescription(),
                                                  SizeFormatter.formatSize(getApplication(), oldSize), SizeFormatter.formatSize(getApplication(), newSize));
-
-                    Toast toast = Toast.makeText(getApplication(), toastText, Toast.LENGTH_LONG);
-                    toast.show();
+                    FeedbackTools.showLongFeedback(getListView(), toastText);
                     if (mAdapter != null) {
                         mAdapter.notifyDataSetChanged();
                     }
@@ -636,9 +632,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
                 return false;
             } else if (!realAccount.isAvailable(this)) {
                 String toastText = getString(R.string.account_unavailable, account.getDescription());
-                Toast toast = Toast.makeText(getApplication(), toastText, Toast.LENGTH_SHORT);
-                toast.show();
-
+                FeedbackTools.showShortFeedback(getListView(), toastText);
                 Log.i(K9.LOG_TAG, "refusing to open account that is not available");
                 return false;
             }
@@ -1785,8 +1779,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 
                 holder.activeIcons.setOnClickListener(new OnClickListener() {
                     public void onClick(View v) {
-                        Toast toast = Toast.makeText(getApplication(), getString(R.string.tap_hint), Toast.LENGTH_SHORT);
-                        toast.show();
+                        FeedbackTools.showShortFeedback(getListView(), getString(R.string.tap_hint));
                     }
                 }
                                                      );

@@ -21,6 +21,7 @@ import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpStatus;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.view.RecipientSelectView;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.RecipientSelectView.TokenListener;
@@ -323,27 +324,27 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     }
 
     public void showErrorContactNoAddress() {
-        Toast.makeText(activity, R.string.error_contact_address_not_found, Toast.LENGTH_LONG).show();
+        FeedbackTools.showLongFeedback(activity.getRootView(), activity.getString(R.string.error_contact_address_not_found));
     }
 
     public void showErrorOpenPgpConnection() {
-        Toast.makeText(activity, R.string.error_crypto_provider_connect, Toast.LENGTH_LONG).show();
+        FeedbackTools.showLongFeedback(activity.getRootView(), activity.getString(R.string.error_crypto_provider_connect));
     }
 
     public void showErrorOpenPgpUserInteractionRequired() {
-        Toast.makeText(activity, R.string.error_crypto_provider_ui_required, Toast.LENGTH_LONG).show();
+        FeedbackTools.showLongFeedback(activity.getRootView(), activity.getString(R.string.error_crypto_provider_ui_required));
     }
 
     public void showErrorMissingSignKey() {
-        Toast.makeText(activity, R.string.compose_error_no_signing_key, Toast.LENGTH_LONG).show();
+        FeedbackTools.showLongFeedback(activity.getRootView(), activity.getString(R.string.compose_error_no_signing_key));
     }
 
     public void showErrorPrivateButMissingKeys() {
-        Toast.makeText(activity, R.string.compose_error_private_missing_keys, Toast.LENGTH_LONG).show();
+        FeedbackTools.showLongFeedback(activity.getRootView(), activity.getString(R.string.compose_error_private_missing_keys));
     }
 
     public void showErrorAttachInline() {
-        Toast.makeText(activity, R.string.error_crypto_inline_attach, Toast.LENGTH_LONG).show();
+        FeedbackTools.showLongFeedback(activity.getRootView(), activity.getString(R.string.error_crypto_inline_attach));
     }
 
     @Override
