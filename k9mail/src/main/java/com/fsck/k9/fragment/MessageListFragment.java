@@ -41,6 +41,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
@@ -48,7 +49,6 @@ import android.widget.CheckBox;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.SortType;
@@ -105,6 +105,8 @@ import com.fsck.k9.search.SqlQueryBuilder;
 import com.handmark.pulltorefresh.library.ILoadingLayout;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.hudomju.swipe.SwipeToDismissTouchListener;
+import com.hudomju.swipe.adapter.ListViewAdapter;
 
 import org.pEp.jniadapter.Rating;
 
@@ -1019,6 +1021,36 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         mListView.setOnItemClickListener(this);
 
         registerForContextMenu(mListView);
+        final SwipeToDismissTouchListener<ListViewAdapter> touchListener =
+                new SwipeToDismissTouchListener<>(
+                        new ListViewAdapter(mListView),
+                        new SwipeToDismissTouchListener.DismissCallbacks<ListViewAdapter>() {
+                            @Override
+                            public boolean canDismiss(int position) {
+                                return true;
+                            }
+
+                            @Override
+                            public void onDismiss(ListViewAdapter view, int position) {
+                                int adapterPosition = listViewToAdapterPosition(position);
+                                MessageReference messageReference = getMessageAtPosition(adapterPosition);
+                                onDelete(messageReference);
+                                mAdapter.notifyDataSetChanged();
+                            }
+                        });
+
+        mListView.setOnTouchListener(touchListener);
+        mListView.setOnScrollListener((AbsListView.OnScrollListener) touchListener.makeScrollListener());
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (touchListener.existPendingDismisses()) {
+                    touchListener.undoPendingDismiss();
+                } else {
+                    FeedbackTools.showLongFeedback(getView(), "Position " + position);
+                }
+            }
+        });
     }
 
     public void onCompose() {

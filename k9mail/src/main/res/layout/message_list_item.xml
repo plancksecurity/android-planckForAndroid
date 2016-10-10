@@ -1,169 +1,170 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="horizontal"
-              android:layout_gravity="center_vertical"
-        >
-
-    <View
-            android:id="@+id/chip"
-            android:adjustViewBounds="false"
-            android:layout_height="match_parent"
-            android:layout_width="8dip"
-            android:layout_marginRight="4dp"
-            android:visibility="invisible"
-            />
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/lyt_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <View
+            android:id="@+id/chip"
+            android:layout_width="8dip"
+            android:layout_height="match_parent"
+            android:layout_marginRight="4dp"
+            android:adjustViewBounds="false"
+            android:visibility="invisible" />
+
+        <LinearLayout
             android:id="@+id/selected_checkbox_wrapper"
             android:layout_width="wrap_content"
 
             android:layout_height="match_parent"
-            android:orientation="vertical"
             android:layout_gravity="center"
-            android:visibility="visible"
+            android:baselineAligned="false"
+            android:orientation="vertical"
             android:textColor="?android:attr/textColorPrimary"
-            android:baselineAligned="false">
+            android:visibility="visible">
 
-        <CheckBox
+            <CheckBox
                 android:id="@+id/selected_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:gravity="center"
-                android:focusable="false"
                 android:clickable="false"
+                android:focusable="false"
+                android:gravity="center"
                 android:paddingLeft="4dp"
                 android:paddingRight="0dp"
-                android:visibility="visible"
-                />
+                android:visibility="visible" />
 
-    </LinearLayout>
+        </LinearLayout>
 
-    <com.fsck.k9.pEp.ui.PEpContactBadge
+        <com.fsck.k9.pEp.ui.PEpContactBadge
             android:id="@+id/contact_badge"
+            style="?android:attr/quickContactBadgeStyleWindowLarge"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="3dip"
+            android:layout_marginLeft="4dp"
             android:layout_marginRight="8dip"
             android:layout_marginTop="4dip"
-            android:layout_marginBottom="3dip"
-            android:layout_height="52dp"
-            android:layout_width="52dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="4dp"
+            android:background="@android:color/transparent"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_contact_picture"
-            style="?android:attr/quickContactBadgeStyleWindowLarge"
-            android:background="@android:color/transparent"/>
+            android:src="@drawable/ic_contact_picture" />
 
 
-    <RelativeLayout
+        <RelativeLayout
             android:id="@+id/list_item_inner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="8dp"
             android:layout_marginTop="8dip"
             android:clickable="false"
             android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:layout_gravity="center_vertical"
-            android:layout_marginBottom="8dp">
+            android:focusableInTouchMode="false">
 
-        <TextView
+            <TextView
                 android:id="@+id/preview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="1dip"
-                android:bufferType="spannable"
-                android:layout_below="@+id/subject_wrapper"
-                android:singleLine="false"
-                android:textSize="16sp"
-                android:textColor="?android:attr/textColorSecondary"
-                android:longClickable="false"
-                android:layout_alignWithParentIfMissing="false"
-                android:gravity="top"
+                android:layout_alignEnd="@+id/subject_wrapper"
                 android:layout_alignParentBottom="false"
-                android:fontFamily="sans-serif-light"
-                tools:text="Preview"
+                android:layout_alignParentLeft="true"
                 android:layout_alignRight="@+id/subject_wrapper"
+                android:layout_alignWithParentIfMissing="false"
+                android:layout_below="@+id/subject_wrapper"
+                android:layout_marginLeft="1dip"
                 android:layout_toLeftOf="@+id/extra_items_container"
                 android:layout_toStartOf="@+id/extra_items_container"
-                android:layout_alignEnd="@+id/subject_wrapper"/>
+                android:bufferType="spannable"
+                android:fontFamily="sans-serif-light"
+                android:gravity="top"
+                android:longClickable="false"
+                android:singleLine="false"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="16sp"
+                tools:text="Preview" />
 
-        <LinearLayout
+            <LinearLayout
                 android:id="@+id/subject_wrapper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
                 android:layout_alignParentBottom="false"
                 android:layout_alignParentLeft="false"
+                android:layout_alignParentTop="true"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@+id/date"
                 android:layout_toStartOf="@+id/date">
 
-            <TextView
+                <TextView
                     android:id="@+id/sender_compact"
-                    android:layout_height="wrap_content"
                     android:layout_width="0dp"
-                    android:layout_weight="0.3"
-                    android:ellipsize="end"
-                    android:singleLine="true"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="1dip"
                     android:layout_marginLeft="1dip"
+                    android:layout_weight="0.3"
+                    android:ellipsize="end"
+                    android:fontFamily="sans-serif-light"
+                    android:singleLine="true"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?android:attr/textColorPrimary"
-                    android:fontFamily="sans-serif-light"
                     tools:text="Sender compact"
 
                     />
 
-            <TextView
+                <TextView
                     android:id="@+id/subject"
                     android:layout_width="0dp"
-                    android:layout_weight="0.7"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dip"
                     android:layout_marginLeft="1dip"
+                    android:layout_weight="0.7"
                     android:ellipsize="marquee"
-                    android:singleLine="true"
-                    android:textSize="16sp"
-                    android:textColor="?android:attr/textColorSecondary"
                     android:fontFamily="sans-serif-light"
+                    android:singleLine="true"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="16sp"
                     tools:text="Subject"
 
                     />
 
-            <TextView
+                <TextView
                     android:id="@+id/thread_count"
-                    android:textColor="?attr/messageListThreadCountForegroundColor"
-                    android:background="?attr/messageListThreadCountBackground"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dip"
                     android:layout_marginRight="4dip"
-                    android:paddingRight="4dip"
+                    android:background="?attr/messageListThreadCountBackground"
+                    android:focusable="false"
                     android:paddingBottom="1dip"
                     android:paddingLeft="4dip"
-                    android:focusable="false"
+                    android:paddingRight="4dip"
+                    android:textColor="?attr/messageListThreadCountForegroundColor"
                     tools:text="ThreadCount"
 
                     />
-        </LinearLayout>
+            </LinearLayout>
 
-        <CheckBox
+            <CheckBox
                 android:id="@+id/flagged_center_right"
                 style="?android:attr/starStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:paddingTop="3dip"
+                android:focusable="false"
                 android:paddingLeft="2dip"
                 android:paddingRight="4dip"
-                android:focusable="false"
-                android:visibility="gone"
-                />
+                android:paddingTop="3dip"
+                android:visibility="gone" />
 
-        <TextView
+            <TextView
                 android:id="@+id/date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -171,50 +172,83 @@
                 android:layout_alignWithParentIfMissing="true"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@+id/flagged_center_right"
+                android:fontFamily="sans-serif-light"
                 android:paddingLeft="3dip"
                 android:paddingRight="8dip"
                 android:singleLine="true"
-                android:fontFamily="sans-serif-light"
-                android:textSize="12sp"
                 android:textColor="?android:attr/textColorSecondary"
-                tools:text="15:12"/>
+                android:textSize="12sp"
+                tools:text="15:12" />
 
-        <LinearLayout
+            <LinearLayout
                 android:id="@+id/extra_items_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/date"
+                android:layout_alignBottom="@+id/preview"
                 android:layout_alignParentRight="true"
-                android:paddingTop="5dip"
+                android:layout_below="@+id/date"
+                android:orientation="horizontal"
                 android:paddingLeft="2dip"
                 android:paddingRight="4dip"
-                android:orientation="horizontal"
-                android:layout_alignBottom="@+id/preview">
+                android:paddingTop="5dip">
 
 
-            <ImageView
+                <ImageView
                     android:id="@+id/attachment_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_email_attachment_small"
                     android:layout_gravity="center"
                     android:padding="4dp"
+                    android:src="@drawable/ic_email_attachment_small"
                     android:visibility="gone"
-                    tools:visibility="visible"
-                    />
-            <CheckBox
+                    tools:visibility="visible" />
+
+                <CheckBox
                     android:id="@+id/flagged_bottom_right"
-                    android:button="@xml/read_message_favorite_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
-                    android:visibility="visible"
+                    android:button="@xml/read_message_favorite_checkbox"
+                    android:focusable="false"
                     android:gravity="center_vertical"
-                    android:focusable="false"/>
-        </LinearLayout>
+                    android:visibility="visible" />
+            </LinearLayout>
 
 
+        </RelativeLayout>
+    </LinearLayout>
 
-    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FF5722"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:weightSum="3">
 
+        <TextView
+            android:id="@+id/txt_delete"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:clickable="false"
+            android:gravity="center_vertical"
+            android:paddingLeft="24dp"
+            android:hapticFeedbackEnabled="true"
+            android:text="@string/message_list_item_removed"
+            android:textColor="@color/white" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/txt_undo"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="false"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:text="@string/message_list_item_undo"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
+
+</FrameLayout>

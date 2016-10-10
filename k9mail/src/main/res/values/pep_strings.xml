@@ -89,6 +89,8 @@
     <string name="pep_account_privacy_protection_explanation">Enable privacy protection for this account </string>
     <string name="pep_forward_warning">Weaker forward warning</string>
     <string name="key_list_title">Available keys</string>
+    <string name="message_list_item_removed">Removed</string>
+    <string name="message_list_item_undo">UNDO</string>
 
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>

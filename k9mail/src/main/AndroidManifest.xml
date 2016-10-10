@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.fsck.k9">
 
     <uses-feature
@@ -69,7 +69,8 @@
         android:icon="@mipmap/icon"
         android:label="@string/app_name"
         android:theme="@style/Theme.K9.Light.NoActionBar"
-        android:allowBackup="false">
+        android:allowBackup="false"
+        tools:replace="android:allowBackup">
 
         <meta-data
             android:name="android.app.default_searchable"
