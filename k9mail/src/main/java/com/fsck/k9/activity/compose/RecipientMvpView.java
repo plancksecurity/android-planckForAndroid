@@ -436,7 +436,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         if(withToast.length>0) reallyWithToast = withToast[0];
         updatePePState();
         PEpUtils.colorToolbar(pEpUiCache, activity.getToolbar(), pEpRating);
-
+        activity.setStatusBarPepColor(pEpRating);
         if(pEpIndicator!=null) {
             pEpIndicator.setIcon(pEpUiCache.getIcon());
             String msg = pEpUiCache.getTitle(pEpRating);

@@ -32,6 +32,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -988,6 +989,9 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                goBack();
+                break;
             case R.id.send:
                 checkToSendMessage();
                 break;
@@ -1022,6 +1026,23 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    private void goBack() {
+        if (draftNeedsSaving) {
+            if (!mAccount.hasDraftsFolder()) {
+                showDialog(DIALOG_CONFIRM_DISCARD_ON_BACK);
+            } else {
+                showDialog(DIALOG_SAVE_OR_DISCARD_DRAFT_MESSAGE);
+            }
+        } else {
+            // Check if editing an existing draft.
+            if (mDraftId == INVALID_DRAFT_ID) {
+                onDiscard();
+            } else {
+                finish();
+            }
+        }
     }
 
     private void forceUnencrypted() {
@@ -1738,7 +1759,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             View view = getLayoutInflater().inflate(R.layout.message_compose_attachment, mAttachments, false);
             attachmentViews.put(attachment.uri, view);
 
-            View deleteButton = view.findViewById(R.id.attachment_delete);
+            ImageView deleteButton = (ImageView) view.findViewById(R.id.attachment_delete);
             deleteButton.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
