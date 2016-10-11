@@ -44,7 +44,6 @@ import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CheckBox;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
@@ -125,8 +124,7 @@ import java.util.Set;
 import java.util.concurrent.Future;
 
 
-public class MessageListFragment extends Fragment implements OnItemClickListener,
-        ConfirmationDialogFragmentListener, LoaderCallbacks<Cursor> {
+public class MessageListFragment extends Fragment implements ConfirmationDialogFragmentListener, LoaderCallbacks<Cursor> {
 
     private static final String[] THREADED_PROJECTION = {
         MessageColumns.ID,
@@ -583,8 +581,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         }
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    public void onMessageClick(AdapterView<?> parent, View view, int position, long id) {
         if (view == mFooterView) {
             if (mCurrentFolder != null && !mSearch.isManualSearch() && mCurrentFolder.moreMessages) {
 
@@ -1018,7 +1015,6 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         mListView.setLongClickable(true);
         mListView.setFastScrollEnabled(true);
         mListView.setScrollingCacheEnabled(false);
-        mListView.setOnItemClickListener(this);
 
         registerForContextMenu(mListView);
         final SwipeToDismissTouchListener<ListViewAdapter> touchListener =
@@ -1041,16 +1037,16 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
 
         mListView.setOnTouchListener(touchListener);
         mListView.setOnScrollListener((AbsListView.OnScrollListener) touchListener.makeScrollListener());
-//        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                if (touchListener.existPendingDismisses()) {
-//                    touchListener.undoPendingDismiss();
-//                } else {
-//                    FeedbackTools.showLongFeedback(getView(), "Position " + position);
-//                }
-//            }
-//        });
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (touchListener.existPendingDismisses()) {
+                    touchListener.undoPendingDismiss();
+                } else {
+                    onMessageClick(parent, view, position, id);
+                }
+            }
+        });
     }
 
     public void onCompose() {
