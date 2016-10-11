@@ -34,4 +34,30 @@
             android:text="@string/add_account_action" />
 
     </RelativeLayout>
+
+    <RelativeLayout android:id="@+id/configure_account_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
+
+        <ImageView
+            android:id="@+id/configure_account_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:background="@drawable/ic_configure_account" />
+
+        <TextView
+            android:id="@+id/configure_inbox_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/configure_account_icon"
+            android:fontFamily="sans-serif-medium"
+            android:paddingLeft="36dp"
+            android:textColor="@android:color/black"
+            android:text="@string/configure_account_action" />
+
+    </RelativeLayout>
 </LinearLayout>

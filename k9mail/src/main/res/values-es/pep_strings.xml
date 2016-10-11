@@ -41,6 +41,7 @@
     <string name="pep_app_license">Licenciado bajo GNU General Public License v3</string>
     <string name="pep_trust_server_description">Guardar los correos en el servidor de forma segura.</string>
     <string name="pep_account_privacy_protection_explanation">Protege la privacidad de esta cuenta</string>
+    <string name="configure_account_action">Administrar cuentas</string>
 
     <string-array name="pep_title">
         <item>Desconocido<!--pEpRatingUndefined--></item>

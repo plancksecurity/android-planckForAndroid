@@ -133,6 +133,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private View foldersDrawerLayout;
     private View accountsDrawerLayout;
     private View addAccountContainer;
+    private View configureAccountContainer;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
             boolean noThreading, boolean newTask) {
@@ -552,6 +553,14 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         navigationAccounts.setAdapter(accountAdapter);
 
         setupCreateAccountListener();
+        configureAccountContainer = findViewById(R.id.configure_account_container);
+        configureAccountContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.closeDrawers();
+                onAccounts();
+            }
+        });
     }
 
     private void setupCreateAccountListener() {
