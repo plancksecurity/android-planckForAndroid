@@ -306,7 +306,9 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         foldersDrawerLayout = findViewById(R.id.navigation_bar_folders_layout);
         accountsDrawerLayout = findViewById(R.id.navigation_bar_accounts_layout);
 
-        loadNavigationView();
+        if (mAccount != null) {
+            loadNavigationView();
+        }
     }
 
     private void loadNavigationView() {
