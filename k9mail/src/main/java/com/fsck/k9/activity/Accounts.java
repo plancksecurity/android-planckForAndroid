@@ -64,7 +64,10 @@ import com.fsck.k9.mail.AuthType;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
+import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
+import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
+import com.fsck.k9.pEp.ui.listeners.OnFolderLongClickListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.SettingsExporter;
 import com.fsck.k9.preferences.SettingsImportExportException;
@@ -93,7 +96,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 
-public class Accounts extends K9ListActivity implements OnItemClickListener {
+public class Accounts extends K9Activity implements OnItemClickListener {
 
     /**
      * URL used to open Android Market application
@@ -122,6 +125,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 
     private AccountsHandler mHandler = new AccountsHandler();
     private AccountsAdapter mAdapter;
+    private FoldersAdapter mFoldersAdapter;
     private SearchAccount mAllMessagesAccount = null;
     private SearchAccount mUnifiedInboxAccount = null;
     private FontSizes mFontSizes = K9.getFontSizes();
@@ -141,6 +145,9 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 
 
     private static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
+    private ListView accountsList;
+    private View addAccountButton;
+    private ListView foldersList;
 
     class AccountsHandler extends Handler {
         private void setViewTitle() {
@@ -175,6 +182,9 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
                 public void run() {
                     if (mAdapter != null) {
                         mAdapter.notifyDataSetChanged();
+                    }
+                    if (mFoldersAdapter != null) {
+                        mFoldersAdapter.notifyDataSetChanged();
                     }
                 }
             });
@@ -317,10 +327,11 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
     };
 
     private static String ACCOUNT_STATS = "accountStats";
+
     private static String STATE_UNREAD_COUNT = "unreadCount";
     private static String SELECTED_CONTEXT_ACCOUNT = "selectedContextAccount";
-
     public static final String EXTRA_STARTUP = "startup";
+
 
     public static final String ACTION_IMPORT_SETTINGS = "importSettings";
 
@@ -364,6 +375,10 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+        setContentView(R.layout.accounts);
+
+        accountsList = (ListView) findViewById(R.id.accounts_list);
+        foldersList = (ListView) findViewById(R.id.folders_list);
 
         if (!K9.isHideSpecialAccounts()) {
             createSpecialAccounts();
@@ -405,6 +420,10 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         listView.setScrollingCacheEnabled(false);
         registerForContextMenu(listView);
 
+        accountsList.setOnItemClickListener(this);
+        accountsList.setItemsCanFocus(false);
+        accountsList.setScrollingCacheEnabled(false);
+        registerForContextMenu(accountsList);
 
         if (icicle != null && icicle.containsKey(SELECTED_CONTEXT_ACCOUNT)) {
             String accountUuid = icicle.getString("selectedContextAccount");
@@ -420,6 +439,28 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
             mNonConfigurationInstance.restore(this);
         }
 
+        setupAddAccountButton();
+        setupSettingsButton();
+    }
+
+    private void setupSettingsButton() {
+        View settingsButton = findViewById(R.id.settings_container);
+        settingsButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onEditPrefs();
+            }
+        });
+    }
+
+    private void setupAddAccountButton() {
+        addAccountButton = findViewById(R.id.add_account_container);
+        addAccountButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onAddNewAccount();
+            }
+        });
     }
 
     private void initializeActionBar() {
@@ -540,10 +581,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
                 createSpecialAccounts();
             }
 
-            newAccounts = new ArrayList<BaseAccount>(accounts.size() +
-                    SPECIAL_ACCOUNTS_COUNT);
-            newAccounts.add(mUnifiedInboxAccount);
-            newAccounts.add(mAllMessagesAccount);
+            newAccounts = new ArrayList<BaseAccount>(accounts.size());
         } else {
             newAccounts = new ArrayList<BaseAccount>(accounts.size());
         }
@@ -552,6 +590,63 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 
         mAdapter = new AccountsAdapter(newAccounts);
         getListView().setAdapter(mAdapter);
+
+        List<BaseAccount> folders = new ArrayList<>(SPECIAL_ACCOUNTS_COUNT);
+        folders.add(mUnifiedInboxAccount);
+        folders.add(mAllMessagesAccount);
+        mFoldersAdapter = new FoldersAdapter(folders, new OnFolderClickListener() {
+            @Override
+            public void onClick(LocalFolder folder) {
+
+            }
+
+            @Override
+            public void onClick(Integer position) {
+                BaseAccount account = mFoldersAdapter.getItem(position);
+                onOpenAccount(account);
+            }
+        }, new OnFolderLongClickListener() {
+            @Override
+            public void onLongClick(LocalFolder folder) {
+
+            }
+
+            @Override
+            public void onLongClick(Integer position) {
+                //TODO
+//                BaseAccount account =  mFoldersAdapter.getItem(position);
+//
+//                if ((account instanceof Account) && !((Account) account).isEnabled()) {
+//                    getMenuInflater().inflate(R.menu.disabled_accounts_context, menu);
+//                } else {
+//                    getMenuInflater().inflate(R.menu.accounts_context, menu);
+//                }
+//
+//                if (account instanceof SearchAccount) {
+//                    for (int i = 0; i < menu.size(); i++) {
+//                        android.view.MenuItem item = menu.getItem(i);
+//                        item.setVisible(false);
+//                    }
+//                }
+//                else {
+//                    EnumSet<ACCOUNT_LOCATION> accountLocation = accountLocation(account);
+//                    if (accountLocation.contains(ACCOUNT_LOCATION.TOP)) {
+//                        menu.findItem(R.id.move_up).setEnabled(false);
+//                    }
+//                    else {
+//                        menu.findItem(R.id.move_up).setEnabled(true);
+//                    }
+//                    if (accountLocation.contains(ACCOUNT_LOCATION.BOTTOM)) {
+//                        menu.findItem(R.id.move_down).setEnabled(false);
+//                    }
+//                    else {
+//                        menu.findItem(R.id.move_down).setEnabled(true);
+//                    }
+//                }
+            }
+        });
+        foldersList.setAdapter(mFoldersAdapter);
+
         if (!newAccounts.isEmpty()) {
             mHandler.progress(Window.PROGRESS_START);
         }
@@ -1738,7 +1833,6 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
                 holder.flaggedMessageCountIcon = (View) view.findViewById(R.id.flagged_message_count_icon);
                 holder.activeIcons = (RelativeLayout) view.findViewById(R.id.active_icons);
 
-                holder.chip = view.findViewById(R.id.chip);
                 holder.folders = (ImageButton) view.findViewById(R.id.folders);
                 holder.accountsItemLayout = (LinearLayout)view.findViewById(R.id.accounts_item_layout);
 
@@ -1791,13 +1885,11 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
             if (account instanceof Account) {
                 Account realAccount = (Account)account;
 
-                holder.chip.setBackgroundColor(realAccount.getChipColor());
 
                 holder.flaggedMessageCountIcon.setBackgroundDrawable( realAccount.generateColorChip(false, false, false, false,true).drawable() );
                 holder.newMessageCountIcon.setBackgroundDrawable( realAccount.generateColorChip(false, false, false, false, false).drawable() );
 
             } else {
-                holder.chip.setBackgroundColor(0xff999999);
                 holder.newMessageCountIcon.setBackgroundDrawable( new ColorChip(0xff999999, false, ColorChip.CIRCULAR).drawable() );
                 holder.flaggedMessageCountIcon.setBackgroundDrawable(new ColorChip(0xff999999, false, ColorChip.STAR).drawable());
             }
@@ -2125,6 +2217,181 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 
             activity.refresh();
             removeProgressDialog();
+        }
+    }
+
+    private ListView getListView() {
+        return accountsList;
+    }
+
+    class FoldersAdapter extends ArrayAdapter<BaseAccount> {
+        private final OnFolderClickListener onFolderClickListener;
+        private final OnFolderLongClickListener onFolderLongClickListener;
+
+        public FoldersAdapter(List<BaseAccount> accounts, OnFolderClickListener onFolderClickListener, OnFolderLongClickListener onFolderLongClickListener) {
+            super(Accounts.this, 0, accounts);
+            this.onFolderClickListener = onFolderClickListener;
+            this.onFolderLongClickListener = onFolderLongClickListener;
+        }
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            final BaseAccount account = getItem(position);
+            View view;
+            if (convertView != null) {
+                view = convertView;
+            } else {
+                view = getLayoutInflater().inflate(R.layout.accounts_item, parent, false);
+            }
+            view.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onFolderClickListener.onClick(position);
+                }
+            });
+            view.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    onFolderLongClickListener.onLongClick(position);
+                    return true;
+                }
+            });
+            AccountViewHolder holder = (AccountViewHolder) view.getTag();
+            if (holder == null) {
+                holder = new AccountViewHolder();
+                holder.description = (TextView) view.findViewById(R.id.description);
+                holder.email = (TextView) view.findViewById(R.id.email);
+                holder.newMessageCount = (TextView) view.findViewById(R.id.new_message_count);
+                holder.flaggedMessageCount = (TextView) view.findViewById(R.id.flagged_message_count);
+                holder.newMessageCountWrapper = (View) view.findViewById(R.id.new_message_count_wrapper);
+                holder.flaggedMessageCountWrapper = (View) view.findViewById(R.id.flagged_message_count_wrapper);
+                holder.newMessageCountIcon = (View) view.findViewById(R.id.new_message_count_icon);
+                holder.flaggedMessageCountIcon = (View) view.findViewById(R.id.flagged_message_count_icon);
+                holder.activeIcons = (RelativeLayout) view.findViewById(R.id.active_icons);
+
+                holder.folders = (ImageButton) view.findViewById(R.id.folders);
+                holder.accountsItemLayout = (LinearLayout)view.findViewById(R.id.accounts_item_layout);
+
+                view.setTag(holder);
+            }
+            AccountStats stats = accountStats.get(account.getUuid());
+
+            if (stats != null && account instanceof Account && stats.size >= 0) {
+                holder.email.setText(SizeFormatter.formatSize(Accounts.this, stats.size));
+                holder.email.setVisibility(View.VISIBLE);
+            } else {
+                if (account.getEmail().equals(account.getDescription())) {
+                    holder.email.setVisibility(View.GONE);
+                } else {
+                    holder.email.setVisibility(View.VISIBLE);
+                    holder.email.setText(account.getEmail());
+                }
+            }
+
+            String description = account.getDescription();
+            if (description == null || description.isEmpty()) {
+                description = account.getEmail();
+            }
+
+            holder.description.setText(description);
+
+            Integer unreadMessageCount = null;
+            if (stats != null) {
+                unreadMessageCount = stats.unreadMessageCount;
+                holder.newMessageCount.setText(String.format("%d", unreadMessageCount));
+                holder.newMessageCountWrapper.setVisibility(unreadMessageCount > 0 ? View.VISIBLE : View.GONE);
+
+                holder.flaggedMessageCount.setText(String.format("%d", stats.flaggedMessageCount));
+                holder.flaggedMessageCountWrapper.setVisibility(K9.messageListStars() && stats.flaggedMessageCount > 0 ? View.VISIBLE : View.GONE);
+
+                holder.flaggedMessageCountWrapper.setOnClickListener(createFlaggedSearchListener(account));
+                holder.newMessageCountWrapper.setOnClickListener(createUnreadSearchListener(account));
+
+                holder.activeIcons.setOnClickListener(new OnClickListener() {
+                                                          public void onClick(View v) {
+                                                              FeedbackTools.showShortFeedback(getListView(), getString(R.string.tap_hint));
+                                                          }
+                                                      }
+                );
+
+            } else {
+                holder.newMessageCountWrapper.setVisibility(View.GONE);
+                holder.flaggedMessageCountWrapper.setVisibility(View.GONE);
+            }
+            if (account instanceof Account) {
+                Account realAccount = (Account)account;
+
+
+                holder.flaggedMessageCountIcon.setBackgroundDrawable( realAccount.generateColorChip(false, false, false, false,true).drawable() );
+                holder.newMessageCountIcon.setBackgroundDrawable( realAccount.generateColorChip(false, false, false, false, false).drawable() );
+
+            } else {
+                holder.newMessageCountIcon.setBackgroundDrawable( new ColorChip(0xff999999, false, ColorChip.CIRCULAR).drawable() );
+                holder.flaggedMessageCountIcon.setBackgroundDrawable(new ColorChip(0xff999999, false, ColorChip.STAR).drawable());
+            }
+
+
+
+
+            mFontSizes.setViewTextSize(holder.description, mFontSizes.getAccountName());
+            mFontSizes.setViewTextSize(holder.email, mFontSizes.getAccountDescription());
+
+            if (account instanceof SearchAccount) {
+                holder.folders.setVisibility(View.GONE);
+            } else {
+                holder.folders.setVisibility(View.VISIBLE);
+                holder.folders.setOnClickListener(new OnClickListener() {
+                    public void onClick(View v) {
+                        FolderList.actionHandleAccount(Accounts.this, (Account)account);
+
+                    }
+                });
+            }
+
+            return view;
+        }
+
+
+        private OnClickListener createFlaggedSearchListener(BaseAccount account) {
+            String searchTitle = getString(R.string.search_title, account.getDescription(),
+                    getString(R.string.flagged_modifier));
+
+            LocalSearch search;
+            if (account instanceof SearchAccount) {
+                search = ((SearchAccount) account).getRelatedSearch().clone();
+                search.setName(searchTitle);
+            } else {
+                search = new LocalSearch(searchTitle);
+                search.addAccountUuid(account.getUuid());
+
+                Account realAccount = (Account) account;
+                realAccount.excludeSpecialFolders(search);
+                realAccount.limitToDisplayableFolders(search);
+            }
+
+            search.and(SearchField.FLAGGED, "1", Attribute.EQUALS);
+
+            return new AccountClickListener(search);
+        }
+
+        private OnClickListener createUnreadSearchListener(BaseAccount account) {
+            LocalSearch search = createUnreadSearch(Accounts.this, account);
+            return new AccountClickListener(search);
+        }
+
+        class AccountViewHolder {
+            public TextView description;
+            public TextView email;
+            public TextView newMessageCount;
+            public TextView flaggedMessageCount;
+            public View newMessageCountIcon;
+            public View flaggedMessageCountIcon;
+            public View newMessageCountWrapper;
+            public View flaggedMessageCountWrapper;
+            public RelativeLayout activeIcons;
+            public View chip;
+            public ImageButton folders;
+            public LinearLayout accountsItemLayout;
         }
     }
 }

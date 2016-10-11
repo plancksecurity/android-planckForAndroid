@@ -5,4 +5,6 @@ import com.fsck.k9.mailstore.LocalFolder;
 public interface OnFolderClickListener {
 
     void onClick(LocalFolder folder);
+
+    void onClick(Integer position);
 }

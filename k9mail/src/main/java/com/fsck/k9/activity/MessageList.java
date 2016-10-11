@@ -610,6 +610,11 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 addMessageListFragment(fragment, true);
                 drawerLayout.closeDrawers();
             }
+
+            @Override
+            public void onClick(Integer position) {
+
+            }
         });
         ListAdapteeCollection<LocalFolder> adapteeCollection = new ListAdapteeCollection<>(folders);
 

@@ -1,22 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-        android:id="@+id/accounts_item_layout"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="?android:attr/listPreferredItemHeight"
-        android:orientation="horizontal"
-        android:descendantFocusability="blocksDescendants"
-        android:gravity="center_vertical">
-
-    <View
-            android:id="@+id/chip"
-            android:layout_height="match_parent"
-            android:layout_width="8dip"
-            android:background="#ff336699"
-            android:layout_marginRight="8dip"
-            />
-
+<LinearLayout android:id="@+id/accounts_item_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:orientation="horizontal"
+    android:descendantFocusability="blocksDescendants"
+    android:gravity="center_vertical"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
             android:layout_width="wrap_content"
@@ -24,7 +15,7 @@
             android:layout_weight="1"
             android:orientation="vertical"
             android:gravity="center_vertical"
-            android:paddingLeft="1dip">
+            android:paddingLeft="16dp">
 
         <TextView
                 android:id="@+id/description"
@@ -32,6 +23,8 @@
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:ellipsize="end"
+                tools:text="description"
+                android:fontFamily="sans-serif"
                 android:textColor="?android:attr/textColorPrimary"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
@@ -41,6 +34,8 @@
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:ellipsize="end"
+                android:fontFamily="sans-serif"
+                tools:text="description"
                 android:textColor="?android:attr/textColorSecondary"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
 
@@ -75,6 +70,20 @@
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 />
+
+        <ImageView
+            android:id="@+id/settings"
+            android:gravity="center_vertical"
+            android:focusable="false"
+            android:layout_marginRight="3dip"
+            android:src="@drawable/ic_configure_account"
+            android:background="?android:attr/selectableItemBackground"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:padding="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            />
 
     </LinearLayout>
 </LinearLayout>
