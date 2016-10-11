@@ -108,6 +108,7 @@ import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification;
 import com.fsck.k9.search.SqlQueryBuilder;
 
+import org.pEp.jniadapter.AndroidHelper;
 import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.Sync;
 
@@ -1453,7 +1454,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
 
                     Log.d("pep", "in download loop (nr="+number+") pre pep");
-                    PEpUtils.dumpMimeMessage("downloadSmallMessages", (MimeMessage) message);
+//                    PEpUtils.dumpMimeMessage("downloadSmallMessages", (MimeMessage) message);
                     final PEpProvider.DecryptResult result;
                     if (account.ispEpPrivacyProtected()) {
                         result = pEpProvider.decryptMessage((MimeMessage) message);
@@ -1461,7 +1462,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     else {
                         result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null);
                     }
-                    PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
+//                    PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
 
                     if (result.keyDetails != null) {
                         showImportKeyDialogIfNeeded(message, result, account);
@@ -3121,7 +3122,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                         // pEp the message to send...
                         Message encryptedMessageToSave;
-                        PEpUtils.dumpMimeMessage("beforeEncrypt", (MimeMessage) message);
+//                        PEpUtils.dumpMimeMessage("beforeEncrypt", (MimeMessage) message);
                         if (PEpUtils.ispEpDisabled(account, message, pEpProvider.getPrivacyState(message))) {
                                     sendMessage(transport, message);
                                     encryptedMessageToSave = message;
@@ -4758,6 +4759,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     @Override
     public void messageToSend(org.pEp.jniadapter.Message message) {
+        Log.i(AndroidHelper.TAG, "messageToSend: ");
+
         List <Account> accounts = Preferences.getPreferences(context).getAccounts();
         Account currentAccount = null;
         for (Account account : accounts) {
