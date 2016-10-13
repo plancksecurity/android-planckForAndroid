@@ -56,7 +56,7 @@ dependencies {
 
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
-
+    compile 'ch.acra:acra:4.6.1'
 }
 
 android {
