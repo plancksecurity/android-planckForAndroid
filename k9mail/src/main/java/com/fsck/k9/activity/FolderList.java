@@ -1066,9 +1066,6 @@ public class FolderList extends K9ListActivity {
                 }
             });
 
-            holder.chip.setBackgroundColor(mAccount.getChipColor());
-
-
             mFontSizes.setViewTextSize(holder.folderName, mFontSizes.getFolderName());
 
             if (K9.wrapFolderNames()) {
@@ -1217,7 +1214,6 @@ public class FolderList extends K9ListActivity {
 
         public RelativeLayout activeIcons;
         public String rawFolderName;
-        public View chip;
         public LinearLayout folderListItemLayout;
     }
 

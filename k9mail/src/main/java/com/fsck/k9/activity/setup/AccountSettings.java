@@ -8,19 +8,39 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.preference.*;
+import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
+import android.preference.ListPreference;
+import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
-import android.support.v7.app.ActionBar;
+import android.preference.PreferenceScreen;
+import android.preference.RingtonePreference;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import com.fsck.k9.*;
-import com.fsck.k9.Account.*;
-import com.fsck.k9.activity.*;
+
+import com.fsck.k9.Account;
+import com.fsck.k9.Account.DeletePolicy;
+import com.fsck.k9.Account.Expunge;
+import com.fsck.k9.Account.FolderMode;
+import com.fsck.k9.Account.MessageFormat;
+import com.fsck.k9.Account.QuoteStyle;
+import com.fsck.k9.Account.Searchable;
+import com.fsck.k9.Account.ShowPictures;
+import com.fsck.k9.K9;
+import com.fsck.k9.NotificationSetting;
+import com.fsck.k9.Preferences;
+import com.fsck.k9.R;
+import com.fsck.k9.activity.ChooseFolder;
+import com.fsck.k9.activity.ChooseIdentity;
+import com.fsck.k9.activity.ColorPickerDialog;
+import com.fsck.k9.activity.K9PreferenceActivity;
+import com.fsck.k9.activity.ManageIdentities;
 import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.service.MailService;
+
 import org.openintents.openpgp.util.OpenPgpAppPreference;
 import org.openintents.openpgp.util.OpenPgpKeyPreference;
 
@@ -188,6 +208,12 @@ public class AccountSettings extends K9PreferenceActivity {
     public static void actionSettings(Context context, Account account) {
         Intent i = new Intent(context, AccountSettings.class);
         i.putExtra(EXTRA_ACCOUNT, account.getUuid());
+        context.startActivity(i);
+    }
+
+    public static void actionSettings(Context context, String accountUuid) {
+        Intent i = new Intent(context, AccountSettings.class);
+        i.putExtra(EXTRA_ACCOUNT, accountUuid);
         context.startActivity(i);
     }
 

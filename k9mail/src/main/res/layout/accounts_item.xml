@@ -9,7 +9,7 @@
     android:gravity="center_vertical"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <LinearLayout android:id="@+id/accounts_description_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -49,13 +49,6 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             >
-
-        <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="2dip"
-                android:layout_marginRight="4dip"
-                android:background="?android:attr/dividerVertical" />
 
         <ImageButton
                 android:id="@+id/folders"

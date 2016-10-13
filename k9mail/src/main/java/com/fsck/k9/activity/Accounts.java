@@ -31,13 +31,13 @@ import android.view.Window;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -66,8 +66,8 @@ import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
+import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
-import com.fsck.k9.pEp.ui.listeners.OnFolderLongClickListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.SettingsExporter;
 import com.fsck.k9.preferences.SettingsImportExportException;
@@ -96,7 +96,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 
-public class Accounts extends K9Activity implements OnItemClickListener {
+public class Accounts extends K9Activity {
 
     /**
      * URL used to open Android Market application
@@ -124,7 +124,7 @@ public class Accounts extends K9Activity implements OnItemClickListener {
     private int mUnreadMessageCount = 0;
 
     private AccountsHandler mHandler = new AccountsHandler();
-    private AccountsAdapter mAdapter;
+    private FoldersAdapter mAdapter;
     private FoldersAdapter mFoldersAdapter;
     private SearchAccount mAllMessagesAccount = null;
     private SearchAccount mUnifiedInboxAccount = null;
@@ -415,12 +415,10 @@ public class Accounts extends K9Activity implements OnItemClickListener {
 //        requestWindowFeature(Window.FEATURE_PROGRESS);
         initializeActionBar();
         ListView listView = getListView();
-        listView.setOnItemClickListener(this);
         listView.setItemsCanFocus(false);
         listView.setScrollingCacheEnabled(false);
         registerForContextMenu(listView);
 
-        accountsList.setOnItemClickListener(this);
         accountsList.setItemsCanFocus(false);
         accountsList.setScrollingCacheEnabled(false);
         registerForContextMenu(accountsList);
@@ -588,7 +586,23 @@ public class Accounts extends K9Activity implements OnItemClickListener {
 
         newAccounts.addAll(accounts);
 
-        mAdapter = new AccountsAdapter(newAccounts);
+        mAdapter = new FoldersAdapter(accounts, new OnFolderClickListener() {
+            @Override
+            public void onClick(LocalFolder folder) {
+
+            }
+
+            @Override
+            public void onClick(Integer position) {
+                BaseAccount account = (BaseAccount)getListView().getItemAtPosition(position);
+                onOpenAccount(account);
+            }
+        }, new OnBaseAccountClickListener() {
+            @Override
+            public void onClick(BaseAccount baseAccount) {
+                AccountSettings.actionSettings(Accounts.this, baseAccount.getUuid());
+            }
+        });
         getListView().setAdapter(mAdapter);
 
         List<BaseAccount> folders = new ArrayList<>(SPECIAL_ACCOUNTS_COUNT);
@@ -605,44 +619,10 @@ public class Accounts extends K9Activity implements OnItemClickListener {
                 BaseAccount account = mFoldersAdapter.getItem(position);
                 onOpenAccount(account);
             }
-        }, new OnFolderLongClickListener() {
+        }, new OnBaseAccountClickListener() {
             @Override
-            public void onLongClick(LocalFolder folder) {
-
-            }
-
-            @Override
-            public void onLongClick(Integer position) {
-                //TODO
-//                BaseAccount account =  mFoldersAdapter.getItem(position);
-//
-//                if ((account instanceof Account) && !((Account) account).isEnabled()) {
-//                    getMenuInflater().inflate(R.menu.disabled_accounts_context, menu);
-//                } else {
-//                    getMenuInflater().inflate(R.menu.accounts_context, menu);
-//                }
-//
-//                if (account instanceof SearchAccount) {
-//                    for (int i = 0; i < menu.size(); i++) {
-//                        android.view.MenuItem item = menu.getItem(i);
-//                        item.setVisible(false);
-//                    }
-//                }
-//                else {
-//                    EnumSet<ACCOUNT_LOCATION> accountLocation = accountLocation(account);
-//                    if (accountLocation.contains(ACCOUNT_LOCATION.TOP)) {
-//                        menu.findItem(R.id.move_up).setEnabled(false);
-//                    }
-//                    else {
-//                        menu.findItem(R.id.move_up).setEnabled(true);
-//                    }
-//                    if (accountLocation.contains(ACCOUNT_LOCATION.BOTTOM)) {
-//                        menu.findItem(R.id.move_down).setEnabled(false);
-//                    }
-//                    else {
-//                        menu.findItem(R.id.move_down).setEnabled(true);
-//                    }
-//                }
+            public void onClick(BaseAccount baseAccount) {
+                Prefs.actionPrefs(Accounts.this);
             }
         });
         foldersList.setAdapter(mFoldersAdapter);
@@ -1291,11 +1271,6 @@ public class Accounts extends K9Activity implements OnItemClickListener {
         MoveAccountAsyncTask asyncTask = new MoveAccountAsyncTask(this, account, up);
         setNonConfigurationInstance(asyncTask);
         asyncTask.execute();
-    }
-
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        BaseAccount account = (BaseAccount)parent.getItemAtPosition(position);
-        onOpenAccount(account);
     }
 
     @Override
@@ -2226,12 +2201,12 @@ public class Accounts extends K9Activity implements OnItemClickListener {
 
     class FoldersAdapter extends ArrayAdapter<BaseAccount> {
         private final OnFolderClickListener onFolderClickListener;
-        private final OnFolderLongClickListener onFolderLongClickListener;
+        private final OnBaseAccountClickListener onBaseAccountClickListener;
 
-        public FoldersAdapter(List<BaseAccount> accounts, OnFolderClickListener onFolderClickListener, OnFolderLongClickListener onFolderLongClickListener) {
+        public FoldersAdapter(List<BaseAccount> accounts, OnFolderClickListener onFolderClickListener, OnBaseAccountClickListener onBaseAccountClickListener) {
             super(Accounts.this, 0, accounts);
             this.onFolderClickListener = onFolderClickListener;
-            this.onFolderLongClickListener = onFolderLongClickListener;
+            this.onBaseAccountClickListener = onBaseAccountClickListener;
         }
 
         @Override
@@ -2243,19 +2218,6 @@ public class Accounts extends K9Activity implements OnItemClickListener {
             } else {
                 view = getLayoutInflater().inflate(R.layout.accounts_item, parent, false);
             }
-            view.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onFolderClickListener.onClick(position);
-                }
-            });
-            view.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    onFolderLongClickListener.onLongClick(position);
-                    return true;
-                }
-            });
             AccountViewHolder holder = (AccountViewHolder) view.getTag();
             if (holder == null) {
                 holder = new AccountViewHolder();
@@ -2270,10 +2232,25 @@ public class Accounts extends K9Activity implements OnItemClickListener {
                 holder.activeIcons = (RelativeLayout) view.findViewById(R.id.active_icons);
 
                 holder.folders = (ImageButton) view.findViewById(R.id.folders);
+                holder.settings = (ImageView) view.findViewById(R.id.settings);
                 holder.accountsItemLayout = (LinearLayout)view.findViewById(R.id.accounts_item_layout);
+                LinearLayout accountsDescriptionLayout = (LinearLayout)view.findViewById(R.id.accounts_description_layout);
 
                 view.setTag(holder);
+
+                holder.accountsItemLayout.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onFolderClickListener.onClick(position);
+                    }
+                });
             }
+            holder.settings.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBaseAccountClickListener.onClick(account);
+                }
+            });
             AccountStats stats = accountStats.get(account.getUuid());
 
             if (stats != null && account instanceof Account && stats.size >= 0) {
@@ -2392,6 +2369,7 @@ public class Accounts extends K9Activity implements OnItemClickListener {
             public View chip;
             public ImageButton folders;
             public LinearLayout accountsItemLayout;
+            public ImageView settings;
         }
     }
 }
