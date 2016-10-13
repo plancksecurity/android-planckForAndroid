@@ -10,10 +10,9 @@
     <!-- Welcome message -->
     <string name="accounts_welcome"><![CDATA[
 <p>
-K-9/p≡p is a powerful free email client for Android with pretty Easy privacy.
-</p><p>
 Its improved features include:
 </p>
+
 <ul>
   <li>Push mail using IMAP IDLE</li>
   <li>Better performance</li>
