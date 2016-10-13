@@ -3,13 +3,22 @@ package com.fsck.k9;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.*;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.*;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.StrictMode;
 import android.text.format.Time;
 import android.util.Log;
+
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.K9Activity;
@@ -33,6 +42,9 @@ import com.fsck.k9.service.MailService;
 import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
 
+import org.acra.ACRA;
+import org.acra.ReportingInteractionMode;
+import org.acra.annotation.ReportsCrashes;
 import org.pEp.jniadapter.Sync;
 
 import java.io.File;
@@ -43,6 +55,9 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
+@ReportsCrashes(mailTo = "hussein@pep-security.net",
+        mode = ReportingInteractionMode.TOAST,
+        resToastText = R.string.crash_toast_text)
 public class K9 extends Application {
     private static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PEpProvider pEpProvider, pEpSyncProvider;
@@ -522,6 +537,8 @@ public class K9 extends Application {
         PRNGFixes.apply();
 
         super.onCreate();
+
+        ACRA.init(this);
         pEpSetupUiEngineSession();
         app = this;
         Globals.setContext(this);

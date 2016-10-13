@@ -92,6 +92,7 @@
     <string name="message_list_item_removed">Removed</string>
     <string name="message_list_item_undo">UNDO</string>
     <string name="available_accounts_title">Available accounts</string>
+    <string name="crash_toast_text">Oops, something went wrong</string>
 
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>

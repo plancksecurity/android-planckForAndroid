@@ -53,6 +53,7 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.github.pedrovgs:renderers:3.2.0'
     compile 'com.hudomju:swipe-to-dismiss-undo:1.0'
+    compile 'ch.acra:acra:4.6.1'
 }
 
 android {
