@@ -13,6 +13,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/white</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="iconFolder">@drawable/folder_light</item>
         <item name="iconListItemMenu">@drawable/dropdown_ic_arrow_normal_holo_light</item>

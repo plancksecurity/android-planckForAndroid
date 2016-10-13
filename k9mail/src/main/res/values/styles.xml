@@ -88,5 +88,18 @@
         <item name="android:textColorSecondary">#FFFFFF</item>
         <item name="android:actionMenuTextAppearance">@color/white</item>
     </style>
+
+    <style name="ToolbarWhiteTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:textColorPrimary">@color/colorPrimary</item>
+        <item name="actionMenuTextColor">@color/light_gray</item>
+        <item name="android:textColorSecondary">@color/light_gray</item>
+        <item name="android:actionMenuTextAppearance">@color/light_gray</item>
+    </style>
+
+    <style name="PEpStyleButton" parent="Theme.AppCompat.Light">
+        <item name="android:textColor">@color/white</item>
+        <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="colorButtonNormal">@color/colorPrimaryDark</item>
+    </style>
 </resources>
 

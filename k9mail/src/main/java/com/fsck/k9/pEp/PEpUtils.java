@@ -5,7 +5,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
@@ -13,16 +12,11 @@ import com.fsck.k9.R;
 import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Body;
-import com.fsck.k9.mail.BodyPart;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
-import com.fsck.k9.mail.internet.MimeMessage;
-import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.mail.internet.MimeUtility;
-import com.fsck.k9.mail.internet.TextBody;
-import com.fsck.k9.mailstore.BinaryMemoryBody;
 import com.fsck.k9.mailstore.LocalMessage;
 
 import org.apache.commons.io.IOUtils;
@@ -269,6 +263,12 @@ public class PEpUtils {
     public static void colorToolbar(PePUIArtefactCache uiCache, ActionBar supportActionBar, Rating pEpRating) {
         ColorDrawable colorDrawable = new ColorDrawable(uiCache.getColor(pEpRating));
         supportActionBar.setBackgroundDrawable(colorDrawable);
+    }
+
+    public static void colorToolbar(PePUIArtefactCache uiCache, Toolbar toolbar, int colorResource) {
+        if (toolbar != null) {
+            toolbar.setBackgroundColor(colorResource);
+        }
     }
 }
 

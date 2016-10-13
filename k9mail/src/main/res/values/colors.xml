@@ -25,6 +25,7 @@
 
     <color name="gray">#757575</color>
     <color name="nav_contact_background">#ABABAB</color>
+    <color name="light_gray">#B8B8B8</color>
 
 
 </resources>

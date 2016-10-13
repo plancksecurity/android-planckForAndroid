@@ -55,6 +55,7 @@ public class AccountSetupAccountType extends K9Activity implements OnClickListen
         setContentView(R.layout.account_setup_account_type);
 
         initializeToolbar(true, R.string.account_setup_account_type_title);
+        setStatusBarPepColor(getResources().getColor(R.color.white));
 
         findViewById(R.id.pop).setOnClickListener(this);
         findViewById(R.id.imap).setOnClickListener(this);

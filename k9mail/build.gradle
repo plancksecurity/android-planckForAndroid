@@ -25,6 +25,8 @@ configurations.all {
 }
 
 dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':pEpJNIAdapter-debug')
     compile project(':k9mail-library')
     compile project(':plugins:Android-PullToRefresh:library')
     compile project(':plugins:HoloColorPicker')

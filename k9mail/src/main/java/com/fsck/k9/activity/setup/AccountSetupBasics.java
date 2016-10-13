@@ -30,8 +30,12 @@ import com.fsck.k9.mail.ConnectionSecurity;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
+import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.view.ClientCertificateSpinner;
 import com.fsck.k9.view.ClientCertificateSpinner.OnClientCertificateChangedListener;
+
+import org.pEp.jniadapter.Rating;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -79,7 +83,7 @@ public class AccountSetupBasics extends K9Activity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.account_setup_basics);
-        initializeToolbar(true, R.string.account_setup_basics_title);
+        setupToolbar();
         mEmailView = (EditText)findViewById(R.id.account_email);
         mPasswordView = (EditText)findViewById(R.id.account_password);
         mClientCertificateCheckBox = (CheckBox)findViewById(R.id.account_client_certificate);
@@ -88,13 +92,18 @@ public class AccountSetupBasics extends K9Activity
         mAccountSpinner = (Spinner)findViewById(R.id.account_spinner);
         accountTokenStore = K9.oAuth2TokenStore;
         ArrayAdapter<String>  adapter = new ArrayAdapter<String>(
-                this, android.R.layout.simple_spinner_item, accountTokenStore.getAccounts());
+                this, R.layout.simple_spinner_item, accountTokenStore.getAccounts());
         mAccountSpinner.setAdapter(adapter);
         mNextButton = (Button)findViewById(R.id.next);
         mManualSetupButton = (Button)findViewById(R.id.manual_setup);
         mShowPasswordCheckBox = (CheckBox) findViewById(R.id.show_password);
         mNextButton.setOnClickListener(this);
         mManualSetupButton.setOnClickListener(this);
+    }
+
+    private void setupToolbar() {
+        initializeToolbar(true, R.string.account_setup_basics_title);
+        setStatusBarPepColor(getResources().getColor(R.color.white));
     }
 
     @Override
@@ -113,6 +122,7 @@ public class AccountSetupBasics extends K9Activity
         mEmailView.addTextChangedListener(this);
         mPasswordView.addTextChangedListener(this);
         mClientCertificateCheckBox.setOnCheckedChangeListener(this);
+        mClientCertificateSpinner.setOnClientCertificateChangedListener(this);
         mClientCertificateSpinner.setOnClientCertificateChangedListener(this);
 
         mOAuth2CheckBox.setOnCheckedChangeListener(this);

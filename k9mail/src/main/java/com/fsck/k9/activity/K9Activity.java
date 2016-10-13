@@ -13,7 +13,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
@@ -120,6 +119,29 @@ public class K9Activity extends AppCompatActivity implements K9ActivityMagic, Sy
         }
     }
 
+    public void setStatusBarPepColor(Integer colorReference) {
+        Window window = this.getWindow();
+
+        // clear FLAG_TRANSLUCENT_STATUS flag:
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+        // finally change the color
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            PePUIArtefactCache uiCache = PePUIArtefactCache.getInstance(getApplicationContext());
+            int color = (colorReference & 0x00FFFFFF);
+            int red = Color.red(color);
+            int green = Color.green(color);
+            int blue = Color.blue(color);
+            float[] hsv = new float[3];
+            Color.RGBToHSV(red, green, blue, hsv);
+            hsv[2] = hsv[2]*0.9f;
+            color = Color.HSVToColor(hsv);
+            window.setStatusBarColor(color);
+        }
+    }
     public View getRootView() {
         return getWindow().getDecorView().getRootView();
     }

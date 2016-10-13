@@ -5,13 +5,14 @@
     android:layout_height="fill_parent"
     android:layout_width="fill_parent" >
 
-    <include layout="@layout/simple_toolbar_layout" />
+    <include layout="@layout/simple_white_toolbar_layout" />
 
     <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="6dip"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:fadingEdge="none"
         android:scrollbarStyle="outsideInset" >
 
@@ -24,8 +25,10 @@
             <EditText
                 android:id="@+id/account_email"
                 android:hint="@string/account_setup_basics_email_hint"
+                android:textColorHint="@color/light_gray"
                 android:singleLine="true"
                 android:inputType="textEmailAddress"
+                android:fontFamily="sans-serif"
                 android:layout_height="wrap_content"
                 android:layout_width="fill_parent" />
 
@@ -41,8 +44,10 @@
                 android:id="@+id/account_password"
                 android:inputType="textPassword"
                 android:hint="@string/account_setup_basics_password_hint"
+                android:textColorHint="@color/light_gray"
                 android:singleLine="true"
                 android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
                 android:layout_width="fill_parent"
                 android:nextFocusDown="@+id/next" />
 
@@ -50,6 +55,7 @@
                 android:id="@+id/show_password"
                 android:layout_height="wrap_content"
                 android:layout_width="fill_parent"
+                android:fontFamily="sans-serif"
                 android:text="@string/account_setup_basics_show_password" />
 
             <com.fsck.k9.view.ClientCertificateSpinner
@@ -61,6 +67,7 @@
                     android:id="@+id/account_oauth2"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif"
                     android:text="@string/account_setup_basics_oauth2_token" />
             <com.fsck.k9.view.FoldableLinearLayout
                 android:id="@+id/foldable_advanced_options"
@@ -73,6 +80,7 @@
                 <CheckBox
                     android:id="@+id/account_client_certificate"
                     android:layout_width="fill_parent"
+                    android:fontFamily="sans-serif"
                     android:layout_height="wrap_content"
                     android:text="@string/account_setup_basics_client_certificate" />
 
