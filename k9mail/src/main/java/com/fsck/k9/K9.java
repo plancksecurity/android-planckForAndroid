@@ -48,6 +48,9 @@ import com.fsck.k9.service.StorageGoneReceiver;
 
 import org.pEp.jniadapter.AndroidHelper;
 import org.pEp.jniadapter.Identity;
+import org.acra.ACRA;
+import org.acra.ReportingInteractionMode;
+import org.acra.annotation.ReportsCrashes;
 import org.pEp.jniadapter.Sync;
 
 import java.io.File;
@@ -58,6 +61,9 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
+@ReportsCrashes(mailTo = "hussein@pep-security.net",
+        mode = ReportingInteractionMode.TOAST,
+        resToastText = R.string.crash_toast_text)
 public class K9 extends Application {
     private static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PEpProvider pEpProvider, pEpSyncProvider;
@@ -547,6 +553,8 @@ public class K9 extends Application {
         PRNGFixes.apply();
 
         super.onCreate();
+
+        ACRA.init(this);
         pEpSetupUiEngineSession();
         app = this;
         Globals.setContext(this);
