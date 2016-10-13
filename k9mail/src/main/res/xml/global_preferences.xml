@@ -23,7 +23,8 @@
   can be displayed after the device has been rotated.
 -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:parentActivityName="com.fsck.k9.pEp.ui.activities.GlobalPreferences">
 
     <PreferenceScreen
         android:title="@string/display_preferences"

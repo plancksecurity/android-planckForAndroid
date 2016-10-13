@@ -66,6 +66,7 @@ import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
+import com.fsck.k9.pEp.ui.activities.GlobalPreferences;
 import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -622,7 +623,7 @@ public class Accounts extends K9Activity {
         }, new OnBaseAccountClickListener() {
             @Override
             public void onClick(BaseAccount baseAccount) {
-                Prefs.actionPrefs(Accounts.this);
+                GlobalPreferences.actionPrefs(Accounts.this);
             }
         });
         foldersList.setAdapter(mFoldersAdapter);
@@ -653,7 +654,7 @@ public class Accounts extends K9Activity {
     }
 
     private void onEditPrefs() {
-        Prefs.actionPrefs(this);
+        GlobalPreferences.actionPrefs(this);
     }
 
 

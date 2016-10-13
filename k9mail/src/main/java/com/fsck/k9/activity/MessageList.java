@@ -43,7 +43,6 @@ import com.fsck.k9.activity.compose.MessageActions;
 import com.fsck.k9.activity.setup.AccountSettings;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.setup.FolderSettings;
-import com.fsck.k9.activity.setup.Prefs;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.fragment.MessageListFragment;
@@ -54,6 +53,7 @@ import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpUIUtils;
+import com.fsck.k9.pEp.ui.activities.GlobalPreferences;
 import com.fsck.k9.pEp.ui.listeners.OnAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
 import com.fsck.k9.pEp.ui.renderers.AccountRenderer;
@@ -1176,7 +1176,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     private void onEditPrefs() {
-        Prefs.actionPrefs(this);
+        GlobalPreferences.actionPrefs(this);
     }
 
     private void onEditAccount() {

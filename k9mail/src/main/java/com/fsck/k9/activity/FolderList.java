@@ -50,6 +50,7 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.power.TracingPowerManager;
 import com.fsck.k9.mail.power.TracingPowerManager.TracingWakeLock;
 import com.fsck.k9.mailstore.LocalFolder;
+import com.fsck.k9.pEp.ui.activities.GlobalPreferences;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchSpecification.Attribute;
@@ -442,7 +443,7 @@ public class FolderList extends K9ListActivity {
     }
 
     private void onEditPrefs() {
-        Prefs.actionPrefs(this);
+        GlobalPreferences.actionPrefs(this);
     }
     private void onEditAccount() {
         AccountSettings.actionSettings(this, mAccount);
