@@ -959,23 +959,19 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void initializePullToRefresh() {
-        if (isRemoteSearchAllowed()) {
-            // "Pull to search server"
-            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (isRemoteSearchAllowed()) {
+                    // "Pull to search server"
                     onRemoteSearchRequested();
-                }
-            });
-        } else if (isCheckMailSupported()) {
-            // "Pull to refresh"
-            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
+                } else if (isCheckMailSupported()) {
+                    // "Pull to refresh"
                     checkMail();
+
                 }
-            });
-        }
+            }
+        });
     }
 
     private void initializeLayout() {
@@ -1507,8 +1503,8 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     }
 
     private int listViewToAdapterPosition(int position) {
-        if (position > 0 && position <= mAdapter.getCount()) {
-            return position - 1;
+        if (position >= 0 && position <= mAdapter.getCount()) {
+            return position;
         }
 
         return AdapterView.INVALID_POSITION;
