@@ -1,7 +1,6 @@
 package com.fsck.k9.fragment;
 
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
@@ -22,6 +21,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.text.Spannable;
@@ -101,9 +101,6 @@ import com.fsck.k9.search.SearchSpecification;
 import com.fsck.k9.search.SearchSpecification.SearchCondition;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.search.SqlQueryBuilder;
-import com.handmark.pulltorefresh.library.ILoadingLayout;
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.hudomju.swipe.SwipeToDismissTouchListener;
 import com.hudomju.swipe.adapter.ListViewAdapter;
 
@@ -224,7 +221,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     }
 
     private ListView mListView;
-    private PullToRefreshListView mPullToRefreshView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private Parcelable mSavedListState;
 
     private int mPreviewLines = 0;
@@ -576,9 +573,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
     private void progress(final boolean progress) {
         mFragmentListener.enableActionBarProgress(progress);
-        if (mPullToRefreshView != null && !progress) {
-            mPullToRefreshView.onRefreshComplete();
-        }
     }
 
     public void onMessageClick(AdapterView<?> parent, View view, int position, long id) {
@@ -679,7 +673,10 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
         View view = inflater.inflate(R.layout.message_list_fragment, container, false);
 
-        initializePullToRefresh(inflater, view);
+        mListView = (ListView) view.findViewById(R.id.message_list);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.message_swipe);
+
+        initializePullToRefresh();
 
         initializeLayout();
         mListView.setVerticalFadingEdgeEnabled(false);
@@ -961,56 +958,27 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         }
     }
 
-    private void initializePullToRefresh(LayoutInflater inflater, View layout) {
-        mPullToRefreshView = (PullToRefreshListView) layout.findViewById(R.id.message_list);
-
-        @SuppressLint("InflateParams")
-        View loadingView = inflater.inflate(R.layout.message_list_loading, null);
-        mPullToRefreshView.setEmptyView(loadingView);
-
+    private void initializePullToRefresh() {
         if (isRemoteSearchAllowed()) {
             // "Pull to search server"
-            mPullToRefreshView.setOnRefreshListener(
-                    new PullToRefreshBase.OnRefreshListener<ListView>() {
-                        @Override
-                        public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-                            mPullToRefreshView.onRefreshComplete();
-                            onRemoteSearchRequested();
-                        }
-                    });
-            ILoadingLayout proxy = mPullToRefreshView.getLoadingLayoutProxy();
-            proxy.setPullLabel(getString(
-                    R.string.pull_to_refresh_remote_search_from_local_search_pull));
-            proxy.setReleaseLabel(getString(
-                    R.string.pull_to_refresh_remote_search_from_local_search_release));
+            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    onRemoteSearchRequested();
+                }
+            });
         } else if (isCheckMailSupported()) {
             // "Pull to refresh"
-            mPullToRefreshView.setOnRefreshListener(
-                    new PullToRefreshBase.OnRefreshListener<ListView>() {
+            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
-                public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+                public void onRefresh() {
                     checkMail();
                 }
             });
         }
-
-        // Disable pull-to-refresh until the message list has been loaded
-        setPullToRefreshEnabled(false);
-    }
-
-    /**
-     * Enable or disable pull-to-refresh.
-     *
-     * @param enable
-     *         {@code true} to enable. {@code false} to disable.
-     */
-    private void setPullToRefreshEnabled(boolean enable) {
-        mPullToRefreshView.setMode((enable) ?
-                PullToRefreshBase.Mode.PULL_FROM_START : PullToRefreshBase.Mode.DISABLED);
     }
 
     private void initializeLayout() {
-        mListView = mPullToRefreshView.getRefreshableView();
         mListView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
         mListView.setLongClickable(true);
         mListView.setFastScrollEnabled(true);
@@ -1097,8 +1065,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         mRemoteSearchPerformed = true;
         mRemoteSearchFuture = mController.searchRemoteMessages(searchAccount, searchFolder,
                 queryString, null, null, mListener);
-
-        setPullToRefreshEnabled(false);
 
         mFragmentListener.remoteSearchStarted();
     }
@@ -3272,10 +3238,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             return;
         }
 
-        // Remove the "Loading..." view
-        mPullToRefreshView.setEmptyView(null);
-
-        setPullToRefreshEnabled(isPullToRefreshAllowed());
+        mSwipeRefreshLayout.setRefreshing(false);
 
         final int loaderId = loader.getId();
         mCursors[loaderId] = data;
