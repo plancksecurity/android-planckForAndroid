@@ -85,7 +85,7 @@ public class PePUIArtefactCache
     }
 
     public Drawable getIcon() {
-        return ContextCompat.getDrawable(context, R.drawable.ic_action_pep_indicator);
+        return ContextCompat.getDrawable(context, R.drawable.ic_action_pep_indicator_white);
     }
 
     public int getColor(Rating pEpRating) {
