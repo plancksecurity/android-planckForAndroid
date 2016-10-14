@@ -73,15 +73,11 @@
                 android:id="@+id/preview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/subject_wrapper"
                 android:layout_alignParentBottom="false"
                 android:layout_alignParentLeft="true"
-                android:layout_alignRight="@+id/subject_wrapper"
                 android:layout_alignWithParentIfMissing="false"
                 android:layout_below="@+id/subject_wrapper"
                 android:layout_marginLeft="1dip"
-                android:layout_toLeftOf="@+id/extra_items_container"
-                android:layout_toStartOf="@+id/extra_items_container"
                 android:bufferType="spannable"
                 android:fontFamily="sans-serif-light"
                 android:gravity="top"
@@ -89,7 +85,8 @@
                 android:singleLine="false"
                 android:textColor="?android:attr/textColorSecondary"
                 android:textSize="16sp"
-                tools:text="Preview" />
+                tools:text="Preview"
+                android:layout_toStartOf="@+id/extra_items_container" />
 
             <LinearLayout
                 android:id="@+id/subject_wrapper"
@@ -174,7 +171,7 @@
                 android:layout_toLeftOf="@+id/flagged_center_right"
                 android:fontFamily="sans-serif-light"
                 android:paddingLeft="3dip"
-                android:paddingRight="8dip"
+                android:paddingRight="16dip"
                 android:singleLine="true"
                 android:textColor="?android:attr/textColorSecondary"
                 android:textSize="12sp"
@@ -189,7 +186,7 @@
                 android:layout_below="@+id/date"
                 android:orientation="horizontal"
                 android:paddingLeft="2dip"
-                android:paddingRight="4dip"
+                android:paddingRight="16dip"
                 android:paddingTop="5dip">
 
 
@@ -223,7 +220,6 @@
         android:background="#FF5722"
         android:orientation="horizontal"
         android:visibility="gone"
-        tools:visibility="visible"
         android:weightSum="3">
 
         <TextView

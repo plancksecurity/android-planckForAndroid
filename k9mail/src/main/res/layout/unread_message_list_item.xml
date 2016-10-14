@@ -67,26 +67,23 @@
             android:layout_marginBottom="8dp">
 
         <TextView
-                android:id="@+id/preview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="1dip"
-                android:bufferType="spannable"
-                android:layout_below="@+id/subject_wrapper"
-                android:singleLine="false"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?android:attr/textColorSecondary"
-                android:longClickable="false"
-                android:layout_alignWithParentIfMissing="false"
-                android:gravity="top"
-                android:layout_alignParentBottom="false"
-                android:fontFamily="sans-serif-light"
-                tools:text="Preview"
-                android:layout_alignRight="@+id/subject_wrapper"
-                android:layout_toLeftOf="@+id/extra_items_container"
-                android:layout_toStartOf="@+id/extra_items_container"
-                android:layout_alignEnd="@+id/subject_wrapper"/>
+            android:id="@+id/preview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentLeft="true"
+            android:layout_alignWithParentIfMissing="false"
+            android:layout_below="@+id/subject_wrapper"
+            android:layout_marginLeft="1dip"
+            android:bufferType="spannable"
+            android:fontFamily="sans-serif-light"
+            android:gravity="top"
+            android:longClickable="false"
+            android:singleLine="false"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="16sp"
+            tools:text="Preview"
+            android:layout_toStartOf="@+id/extra_items_container"/>
 
         <LinearLayout
                 android:id="@+id/subject_wrapper"
@@ -172,7 +169,7 @@
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@+id/flagged_center_right"
                 android:paddingLeft="3dip"
-                android:paddingRight="8dip"
+                android:paddingRight="16dip"
                 android:singleLine="true"
                 android:fontFamily="sans-serif-medium"
                 android:textStyle="bold"
@@ -187,7 +184,6 @@
                 android:layout_alignParentRight="true"
                 android:paddingTop="5dip"
                 android:paddingLeft="2dip"
-                android:paddingRight="4dip"
                 android:orientation="horizontal"
                 android:layout_alignBottom="@+id/preview">
 
@@ -208,6 +204,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
                     android:visibility="visible"
+                    android:paddingRight="16dip"
                     android:gravity="center_vertical"
                     android:focusable="false"/>
         </LinearLayout>
