@@ -5,7 +5,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/simple_toolbar_layout" />
+    <include layout="@layout/simple_white_toolbar_layout" />
 
 <ScrollView
     android:layout_width="fill_parent"

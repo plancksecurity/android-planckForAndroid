@@ -52,6 +52,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
         setContentView(R.layout.account_setup_names);
 
         initializeToolbar(true, R.string.account_setup_names_title);
+        setStatusBarPepColor(getResources().getColor(R.color.white));
 
         mDescription = (EditText)findViewById(R.id.account_description);
         mName = (EditText)findViewById(R.id.account_name);

@@ -92,6 +92,7 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.account_setup_check_settings);
         initializeToolbar(true, R.string.account_setup_check_settings_title);
+        setStatusBarPepColor(getResources().getColor(R.color.white));
         mMessageView = (TextView)findViewById(R.id.message);
         mProgressBar = (ProgressBar)findViewById(R.id.progress);
         findViewById(R.id.cancel).setOnClickListener(this);
