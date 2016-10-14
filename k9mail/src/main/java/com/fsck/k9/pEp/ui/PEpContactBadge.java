@@ -64,7 +64,7 @@ public class PEpContactBadge extends QuickContactBadge {
             return ContextCompat.getDrawable(context, R.drawable.pep_status_yellow);
         }
         else {
-            return ContextCompat.getDrawable(context, R.drawable.pep_status_gray);
+            return null;
         }
     }
 
