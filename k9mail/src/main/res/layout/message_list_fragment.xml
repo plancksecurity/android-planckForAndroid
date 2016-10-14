@@ -8,7 +8,6 @@
         android:id="@+id/message_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFFFFF"
         android:dividerHeight="1px" />
 
 </android.support.v4.widget.SwipeRefreshLayout>

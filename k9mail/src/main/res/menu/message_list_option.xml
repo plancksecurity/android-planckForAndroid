@@ -16,7 +16,7 @@
         android:id="@+id/previous_message"
         android:title="@string/previous_action"
         android:icon="?attr/iconActionPreviousMessage"
-        app:showAsAction="always"
+        app:showAsAction="never"
     />
 
     <!-- MessageView -->
@@ -24,13 +24,13 @@
         android:id="@+id/next_message"
         android:title="@string/next_action"
         android:icon="?attr/iconActionNextMessage"
-        app:showAsAction="always"
+        app:showAsAction="never"
     />
 
     <!-- MessageList -->
     <item
         android:id="@+id/search"
-        android:icon="?attr/iconActionSearch"
+        android:icon="@drawable/ic_action_search"
         app:showAsAction="always"
         android:title="@string/search_action"/>
 
@@ -55,7 +55,7 @@
     <item
         android:id="@+id/delete"
         android:alphabeticShortcut="q"
-        android:icon="?attr/iconActionDelete"
+        android:icon="@drawable/ic_action_delete"
         app:showAsAction="always"
         android:title="@string/delete_action"/>
     <!-- MessageView -->

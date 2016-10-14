@@ -28,6 +28,8 @@
                 android:ellipsize="start"
                 android:singleLine="true"
                 tools:text="actionbar_title_first"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="18dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@color/white"/>
 

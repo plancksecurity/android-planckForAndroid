@@ -3,25 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/search"
-        android:icon="?attr/iconActionSearch"
+        android:icon="@drawable/ic_action_search"
         app:showAsAction="always"
         android:title="@string/search_action"/>
     <item
         android:id="@+id/filter_folders"
-        android:icon="?attr/iconActionSearchFolder"
+        android:icon="@drawable/ic_content_filter"
         app:showAsAction="always|collapseActionView"
         android:title="@string/filter_folders_action"
         app:actionViewClass="android.support.v7.widget.SearchView"/>
     <item
         android:id="@+id/check_mail"
         android:alphabeticShortcut="r"
-        android:icon="?attr/iconActionRefresh"
+        android:icon="@drawable/ic_action_refresh"
         app:showAsAction="always"
         android:title="@string/check_mail_action"/>
     <item
         android:id="@+id/compose"
         android:alphabeticShortcut="c"
-        android:icon="?attr/iconActionCompose"
+        android:icon="@drawable/ic_action_write_message"
         app:showAsAction="always"
         android:title="@string/compose_action"/>
     <item

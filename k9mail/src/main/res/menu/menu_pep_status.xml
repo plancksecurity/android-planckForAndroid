@@ -6,6 +6,6 @@
             android:id="@+id/action_explanation"
             android:title="@string/pep_explanation"
             android:orderInCategory="100"
-            android:icon="@drawable/ic_action_pep_indicator"
+            android:icon="@drawable/ic_action_pep_indicator_white"
             app:showAsAction="always"/>
 </menu>

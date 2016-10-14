@@ -5,14 +5,14 @@
         android:id="@+id/add_attachment"
         android:alphabeticShortcut="n"
         android:title="@string/add_attachment_action"
-        android:icon="?attr/iconActionAddAttachment"
+        android:icon="@drawable/ic_file_attachment"
         app:showAsAction="always"
     />
     <item
         android:id="@+id/send"
         android:alphabeticShortcut="s"
         android:title="@string/send_action"
-        android:icon="?attr/iconActionSend"
+        android:icon="@drawable/ic_content_send"
         app:showAsAction="always"
     />
     <item
@@ -24,7 +24,7 @@
         android:id="@+id/pEp_indicator"
         android:alphabeticShortcut="s"
         android:title="@string/pep_title_activity_privacy_status"
-        android:icon="@drawable/ic_action_pep_indicator"
+        android:icon="@drawable/ic_action_pep_indicator_white"
         app:showAsAction="always"
         />
 
