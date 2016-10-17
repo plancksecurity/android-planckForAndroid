@@ -1,21 +1,21 @@
-package com.fsck.k9.activity.setup;
+package com.fsck.k9.pEp.ui.fragments;
 
-
-import android.content.Context;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.K9Activity;
+import com.fsck.k9.activity.setup.AccountSetupBasics;
+import com.fsck.k9.activity.setup.AccountSetupIncoming;
 import com.fsck.k9.helper.EmailHelper;
-import com.fsck.k9.mail.ServerSettings.Type;
-import com.fsck.k9.pEp.ui.fragments.ChooseAccountTypeFragment;
+import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.setup.ServerNameSuggester;
 
@@ -27,21 +27,17 @@ import static com.fsck.k9.mail.ServerSettings.Type.POP3;
 import static com.fsck.k9.mail.ServerSettings.Type.SMTP;
 import static com.fsck.k9.mail.ServerSettings.Type.WebDAV;
 
+public class ChooseAccountTypeFragment extends Fragment {
 
-/**
- * Prompts the user to select an account type. The account type, along with the
- * passed in email address, password and makeDefault are then passed on to the
- * AccountSetupIncoming activity.
- */
-public class AccountSetupAccountType extends K9Activity implements OnClickListener {
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_MAKE_DEFAULT = "makeDefault";
 
     private final ServerNameSuggester serverNameSuggester = new ServerNameSuggester();
     private Account mAccount;
     private boolean mMakeDefault;
+    private View rootView;
 
-    public static ChooseAccountTypeFragment actionSelectAccountType(Context context, Account account, boolean makeDefault) {
+    public static ChooseAccountTypeFragment actionSelectAccountType(Account account, boolean makeDefault) {
         ChooseAccountTypeFragment fragment = new ChooseAccountTypeFragment();
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_ACCOUNT, account.getUuid());
@@ -51,20 +47,34 @@ public class AccountSetupAccountType extends K9Activity implements OnClickListen
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.account_setup_account_type);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        rootView = inflater.inflate(R.layout.fragment_choose_account_type, container, false);
+        rootView.findViewById(R.id.pop).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onPopClicked();
+            }
+        });
+        rootView.findViewById(R.id.imap).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onIMAPClicked();
+            }
+        });
+        rootView.findViewById(R.id.webdav).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onDavClicked();
+            }
+        });
 
-        initializeToolbar(true, R.string.account_setup_account_type_title);
-        setStatusBarPepColor(getResources().getColor(R.color.white));
-
-        findViewById(R.id.pop).setOnClickListener(this);
-        findViewById(R.id.imap).setOnClickListener(this);
-        findViewById(R.id.webdav).setOnClickListener(this);
-
-        String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
-        mAccount = Preferences.getPreferences(this).getAccount(accountUuid);
-        mMakeDefault = getIntent().getBooleanExtra(EXTRA_MAKE_DEFAULT, false);
+        String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
+        mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
+        mMakeDefault = getArguments().getBoolean(EXTRA_MAKE_DEFAULT, false);
+        ((AccountSetupBasics) getActivity()).initializeToolbar(true, R.string.account_setup_account_type_title);
+        ((AccountSetupBasics) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.white));
+        return rootView;
     }
 
     @Override
@@ -72,14 +82,42 @@ public class AccountSetupAccountType extends K9Activity implements OnClickListen
         int itemId = item.getItemId();
         switch (itemId) {
             case android.R.id.home: {
-                finish();
+                getActivity().finish();
                 return true;
             }
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void setupStoreAndSmtpTransport(Type serverType, String schemePrefix) throws URISyntaxException {
+    // TODO: 17/10/16 make transitions
+    private void onDavClicked() {
+        try {
+            setupDav();
+            AccountSetupIncoming.actionIncomingSettings(getActivity(), mAccount, mMakeDefault);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void onIMAPClicked() {
+        try {
+            setupStoreAndSmtpTransport(IMAP, "imap+ssl+");
+            AccountSetupIncoming.actionIncomingSettings(getActivity(), mAccount, mMakeDefault);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void onPopClicked() {
+        try {
+            setupStoreAndSmtpTransport(POP3, "pop3+ssl+");
+            AccountSetupIncoming.actionIncomingSettings(getActivity(), mAccount, mMakeDefault);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setupStoreAndSmtpTransport(ServerSettings.Type serverType, String schemePrefix) throws URISyntaxException {
         String domainPart = EmailHelper.getDomainFromEmailAddress(mAccount.getEmail());
 
         String suggestedStoreServerName = serverNameSuggester.suggestServerName(serverType, domainPart);
@@ -140,14 +178,15 @@ public class AccountSetupAccountType extends K9Activity implements OnClickListen
             failure(ex);
         }
 
-        AccountSetupIncoming.actionIncomingSettings(this, mAccount, mMakeDefault);
-        finish();
+        AccountSetupIncoming.actionIncomingSettings(getActivity(), mAccount, mMakeDefault);
+        getActivity().finish();
     }
 
     private void failure(Exception use) {
         Log.e(K9.LOG_TAG, "Failure", use);
         String toastText = getString(R.string.account_setup_bad_uri, use.getMessage());
 
-        FeedbackTools.showLongFeedback(getRootView(), toastText);
+        FeedbackTools.showLongFeedback(rootView, toastText);
     }
+
 }

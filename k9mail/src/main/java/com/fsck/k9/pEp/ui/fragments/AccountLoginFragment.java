@@ -30,7 +30,6 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.account.AccountCreator;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
-import com.fsck.k9.activity.setup.AccountSetupAccountType;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.activity.setup.AccountSetupNames;
@@ -483,9 +482,12 @@ public class AccountLoginFragment extends Fragment
 
         setupFolderNames(domain);
 
-        AccountSetupAccountType.actionSelectAccountType(getActivity(), mAccount, false);
-
-        getActivity().finish();
+        ChooseAccountTypeFragment chooseAccountTypeFragment = ChooseAccountTypeFragment.actionSelectAccountType(mAccount, false);
+        getFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                .replace(R.id.account_login, chooseAccountTypeFragment, "chooseAccountTypeFragment")
+                .commit();
     }
 
     private void setupFolderNames(String domain) {
