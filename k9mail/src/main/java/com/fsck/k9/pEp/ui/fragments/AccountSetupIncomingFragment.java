@@ -29,7 +29,6 @@ import com.fsck.k9.R;
 import com.fsck.k9.account.AccountCreator;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
-import com.fsck.k9.activity.setup.AccountSetupOutgoing;
 import com.fsck.k9.activity.setup.AuthTypeAdapter;
 import com.fsck.k9.activity.setup.AuthTypeHolder;
 import com.fsck.k9.activity.setup.ConnectionSecurityAdapter;
@@ -575,8 +574,13 @@ public class AccountSetupIncomingFragment extends Fragment {
                 }
 
 
-                AccountSetupOutgoing.actionOutgoingSettings(getActivity(), mAccount, mMakeDefault);
-                getActivity().finish();
+                AccountSetupCheckSettingsFragment accountSetupOutgoingFragment = AccountSetupCheckSettingsFragment.actionCheckSettings(
+                        mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, mMakeDefault, AccountSetupCheckSettingsFragment.INCOMING);
+                getFragmentManager()
+                        .beginTransaction()
+                        .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                        .replace(R.id.account_login, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
+                        .commit();
             }
         }
     }
@@ -589,8 +593,13 @@ public class AccountSetupIncomingFragment extends Fragment {
                         @Override
                         public void success() {
                             updateAccountSettings("");
-                            AccountSetupCheckSettings.actionCheckSettings(
-                                    getActivity(), mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING);
+                            AccountSetupCheckSettingsFragment accountSetupOutgoingFragment = AccountSetupCheckSettingsFragment.actionCheckSettings(
+                                    mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, mMakeDefault, AccountSetupCheckSettingsFragment.INCOMING);
+                            getFragmentManager()
+                                    .beginTransaction()
+                                    .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                                    .replace(R.id.account_login, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
+                                    .commit();
                         }
 
                         @Override
@@ -601,7 +610,13 @@ public class AccountSetupIncomingFragment extends Fragment {
             return;
         }
         updateAccountSettings(mPasswordView.getText().toString());
-        AccountSetupCheckSettings.actionCheckSettings(getActivity(), mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING);
+        AccountSetupCheckSettingsFragment accountSetupOutgoingFragment = AccountSetupCheckSettingsFragment.actionCheckSettings(
+                mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, mMakeDefault, AccountSetupCheckSettingsFragment.INCOMING);
+        getFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                .replace(R.id.account_login, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
+                .commit();
     }
 
     private void fail(Exception use) {

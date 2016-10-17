@@ -71,7 +71,12 @@ public class AccountLoginFragment extends Fragment
     private AndroidAccountOAuth2TokenStore accountTokenStore;
 
     private EmailAddressValidator mEmailValidator = new EmailAddressValidator();
+
     private boolean mCheckedIncoming = false;
+
+    public boolean ismCheckedIncoming() {
+        return mCheckedIncoming;
+    }
     private CheckBox mShowPasswordCheckBox;
 
     @Nullable
@@ -370,7 +375,12 @@ public class AccountLoginFragment extends Fragment
             mAccount.setDeletePolicy(AccountCreator.getDefaultDeletePolicy(incomingSettings.type));
 
             // Check incoming here.  Then check outgoing in onActivityResult()
-            AccountSetupCheckSettings.actionCheckSettings(getActivity(), mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING);
+            AccountSetupCheckSettingsFragment accountSetupOutgoingFragment = AccountSetupCheckSettingsFragment.actionCheckSettings(mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, false, AccountSetupCheckSettingsFragment.LOGIN);
+            getFragmentManager()
+                    .beginTransaction()
+                    .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                    .replace(R.id.account_login, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
+                    .commit();
         } catch (URISyntaxException use) {
             /*
              * If there is some problem with the URI we give up and go on to
@@ -420,7 +430,12 @@ public class AccountLoginFragment extends Fragment
             if (!mCheckedIncoming) {
                 //We've successfully checked incoming.  Now check outgoing.
                 mCheckedIncoming = true;
-                AccountSetupCheckSettings.actionCheckSettings(getActivity(), mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING);
+                AccountSetupCheckSettingsFragment accountSetupOutgoingFragment = AccountSetupCheckSettingsFragment.actionCheckSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, false, AccountSetupCheckSettingsFragment.LOGIN);
+                getFragmentManager()
+                        .beginTransaction()
+                        .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                        .replace(R.id.account_login, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
+                        .commit();
             } else {
                 //We've successfully checked outgoing as well.
                 mAccount.setDescription(mAccount.getEmail());
