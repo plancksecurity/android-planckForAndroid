@@ -2,16 +2,15 @@
 package com.fsck.k9.activity.setup;
 
 
-import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.FrameLayout;
 
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.pEp.ui.fragments.AccountLoginFragment;
+import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
 
 /**
  * Prompts the user for the email address and password.
@@ -21,6 +20,8 @@ import com.fsck.k9.pEp.ui.fragments.AccountLoginFragment;
  * AccountSetupAccountType activity.
  */
 public class AccountSetupBasics extends K9Activity {
+
+    private AccountLoginFragment accountLoginFragment;
 
     public static void actionNewAccount(Context context) {
         Intent i = new Intent(context, AccountSetupBasics.class);
@@ -32,9 +33,21 @@ public class AccountSetupBasics extends K9Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.account_setup_basics);
         if (savedInstanceState == null) {
-            Fragment accountLoginFragment = new AccountLoginFragment();
+            accountLoginFragment = new AccountLoginFragment();
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.add(R.id.account_login, accountLoginFragment).commit();
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        AccountSetupIncomingFragment accountSetupIncomingFragment = (AccountSetupIncomingFragment)getFragmentManager().findFragmentByTag("accountSetupIncomingFragment");
+        if (accountSetupIncomingFragment != null && accountSetupIncomingFragment.isVisible()) {
+            accountSetupIncomingFragment.onActivityResult(requestCode, resultCode, data);
+        } else {
+            accountLoginFragment.onActivityResult(requestCode, resultCode, data);
+        }
+
     }
 }

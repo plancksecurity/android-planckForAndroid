@@ -89,11 +89,15 @@ public class ChooseAccountTypeFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    // TODO: 17/10/16 make transitions
     private void onDavClicked() {
         try {
             setupDav();
-            AccountSetupIncoming.actionIncomingSettings(getActivity(), mAccount, mMakeDefault);
+            AccountSetupIncomingFragment accountSetupIncomingFragment = AccountSetupIncomingFragment.actionIncomingSettings(mAccount, mMakeDefault);
+            getFragmentManager()
+                    .beginTransaction()
+                    .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                    .replace(R.id.account_login, accountSetupIncomingFragment, "accountSetupIncomingFragment")
+                    .commit();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -102,7 +106,12 @@ public class ChooseAccountTypeFragment extends Fragment {
     private void onIMAPClicked() {
         try {
             setupStoreAndSmtpTransport(IMAP, "imap+ssl+");
-            AccountSetupIncoming.actionIncomingSettings(getActivity(), mAccount, mMakeDefault);
+            AccountSetupIncomingFragment accountSetupIncomingFragment = AccountSetupIncomingFragment.actionIncomingSettings(mAccount, mMakeDefault);
+            getFragmentManager()
+                    .beginTransaction()
+                    .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                    .replace(R.id.account_login, accountSetupIncomingFragment, "accountSetupIncomingFragment")
+                    .commit();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -111,7 +120,12 @@ public class ChooseAccountTypeFragment extends Fragment {
     private void onPopClicked() {
         try {
             setupStoreAndSmtpTransport(POP3, "pop3+ssl+");
-            AccountSetupIncoming.actionIncomingSettings(getActivity(), mAccount, mMakeDefault);
+            AccountSetupIncomingFragment accountSetupIncomingFragment = AccountSetupIncomingFragment.actionEditIncomingSettings(mAccount);
+            getFragmentManager()
+                    .beginTransaction()
+                    .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                    .replace(R.id.account_login, accountSetupIncomingFragment, "accountSetupIncomingFragment")
+                    .commit();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

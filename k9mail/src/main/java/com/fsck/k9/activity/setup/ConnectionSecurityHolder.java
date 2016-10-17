@@ -5,8 +5,8 @@ import android.content.res.Resources;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.ConnectionSecurity;
 
-class ConnectionSecurityHolder {
-    final ConnectionSecurity connectionSecurity;
+public class ConnectionSecurityHolder {
+    public final ConnectionSecurity connectionSecurity;
     private final Resources resources;
 
     public ConnectionSecurityHolder(ConnectionSecurity connectionSecurity, Resources resources) {
