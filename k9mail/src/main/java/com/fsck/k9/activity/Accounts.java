@@ -379,7 +379,7 @@ public class Accounts extends K9Activity {
 
         accountsList = (ListView) findViewById(R.id.accounts_list);
         foldersList = (ListView) findViewById(R.id.folders_list);
-
+        registerForContextMenu(accountsList);
         if (!K9.isHideSpecialAccounts()) {
             createSpecialAccounts();
         }
@@ -417,7 +417,6 @@ public class Accounts extends K9Activity {
         ListView listView = getListView();
         listView.setItemsCanFocus(false);
         listView.setScrollingCacheEnabled(false);
-        registerForContextMenu(listView);
 
         accountsList.setItemsCanFocus(false);
         accountsList.setScrollingCacheEnabled(false);
