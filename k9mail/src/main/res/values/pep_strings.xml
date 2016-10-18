@@ -95,6 +95,7 @@
     <string name="crash_toast_text">Oops, something went wrong</string>
     <string name="pep_app_description">K-9/p≡p is a powerful free email client for Android with pretty Easy privacy.</string>
     <string name="app_k9_pep_name">"K-9/p≡p "</string>
+    <string name="global_settings_title">Global settings</string>
 
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>

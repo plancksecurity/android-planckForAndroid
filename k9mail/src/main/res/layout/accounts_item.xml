@@ -19,36 +19,57 @@
             android:gravity="center_vertical"
             android:paddingLeft="16dp">
 
-        <TextView
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
                 android:id="@+id/description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif"
+                android:singleLine="true"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="?android:attr/textColorPrimary"
+                tools:text="description" />
+
+            <TextView
+                android:id="@+id/description_unread_messages"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:singleLine="true"
                 android:ellipsize="end"
-                tools:text="description"
                 android:fontFamily="sans-serif"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
+                android:singleLine="true"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorSecondary"
+                android:paddingLeft="8dp"
+                tools:text="88"
+                android:layout_alignBaseline="@+id/description"
+                android:layout_alignBottom="@+id/description"
+                android:layout_toEndOf="@+id/description" />
+        </RelativeLayout>
 
         <TextView
-                android:id="@+id/email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:fontFamily="sans-serif"
-                tools:text="description"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textAppearance="?android:attr/textAppearanceSmall"/>
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorSecondary"
+            tools:text="description" />
 
     </LinearLayout>
 
-    <include layout="@layout/accounts_folders_icons"/>
+    <include layout="@layout/accounts_folders_icons" />
 
     <LinearLayout
             android:id="@+id/folder_button_wrapper"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
             android:orientation="horizontal"
             >
 
@@ -65,20 +86,5 @@
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 />
-
-        <ImageView
-            android:id="@+id/settings"
-            android:gravity="center_vertical"
-            android:focusable="false"
-            android:layout_marginRight="3dip"
-            android:src="@drawable/ic_configure_account"
-            android:background="?android:attr/selectableItemBackground"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:padding="8dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            />
-
     </LinearLayout>
 </LinearLayout>

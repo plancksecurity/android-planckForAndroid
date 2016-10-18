@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/active_icons"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
@@ -13,16 +13,17 @@
         android:id="@+id/flagged_message_count_wrapper"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:clickable="true"
+        android:layout_gravity="center_vertical"
         android:paddingLeft="4dip"
         android:paddingRight="4dip">
 
         <View
             android:id="@+id/flagged_message_count_icon"
-            android:layout_width="32dp"
-            android:layout_height="32dp" />
+            android:layout_width="24dp"
+            android:layout_height="24dp" />
 
         <TextView
             android:id="@+id/flagged_message_count"
@@ -30,7 +31,9 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:ellipsize="end"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            tools:text="88"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif" />
 
     </LinearLayout>
 
@@ -43,7 +46,8 @@
         android:gravity="center_vertical"
         android:clickable="true"
         android:paddingLeft="4dip"
-        android:paddingRight="4dip">
+        android:paddingRight="4dip"
+        android:visibility="gone">
 
         <View
             android:id="@+id/new_message_count_icon"

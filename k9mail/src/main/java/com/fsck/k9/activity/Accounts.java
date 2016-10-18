@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
+import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -65,6 +66,7 @@ import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
+import com.fsck.k9.message.MessageBuilder;
 import com.fsck.k9.pEp.ui.activities.GlobalPreferences;
 import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
@@ -80,7 +82,6 @@ import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
-import com.fsck.k9.view.ColorChip;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -1271,9 +1272,6 @@ public class Accounts extends K9Activity {
         case R.id.add_new_account:
             onAddNewAccount();
             break;
-        case R.id.edit_prefs:
-            onEditPrefs();
-            break;
         case R.id.check_mail:
             onCheckMail(null);
             break;
@@ -1792,6 +1790,7 @@ public class Accounts extends K9Activity {
             if (holder == null) {
                 holder = new AccountViewHolder();
                 holder.description = (TextView) view.findViewById(R.id.description);
+                holder.descriptionUnreadMessages = (TextView) view.findViewById(R.id.description_unread_messages);
                 holder.email = (TextView) view.findViewById(R.id.email);
                 holder.newMessageCount = (TextView) view.findViewById(R.id.new_message_count);
                 holder.flaggedMessageCount = (TextView) view.findViewById(R.id.flagged_message_count);
@@ -1830,8 +1829,9 @@ public class Accounts extends K9Activity {
             Integer unreadMessageCount = null;
             if (stats != null) {
                 unreadMessageCount = stats.unreadMessageCount;
+
+                holder.descriptionUnreadMessages.setText(String.format("%d", unreadMessageCount));
                 holder.newMessageCount.setText(String.format("%d", unreadMessageCount));
-                holder.newMessageCountWrapper.setVisibility(unreadMessageCount > 0 ? View.VISIBLE : View.GONE);
 
                 holder.flaggedMessageCount.setText(String.format("%d", stats.flaggedMessageCount));
                 holder.flaggedMessageCountWrapper.setVisibility(K9.messageListStars() && stats.flaggedMessageCount > 0 ? View.VISIBLE : View.GONE);
@@ -1854,12 +1854,10 @@ public class Accounts extends K9Activity {
                 Account realAccount = (Account)account;
 
 
-                holder.flaggedMessageCountIcon.setBackgroundDrawable( realAccount.generateColorChip(false, false, false, false,true).drawable() );
-                holder.newMessageCountIcon.setBackgroundDrawable( realAccount.generateColorChip(false, false, false, false, false).drawable() );
+                holder.flaggedMessageCountIcon.setBackgroundDrawable(getDrawable(R.drawable.ic_unread_toggle_star));
 
             } else {
-                holder.newMessageCountIcon.setBackgroundDrawable( new ColorChip(0xff999999, false, ColorChip.CIRCULAR).drawable() );
-                holder.flaggedMessageCountIcon.setBackgroundDrawable(new ColorChip(0xff999999, false, ColorChip.STAR).drawable());
+                holder.flaggedMessageCountIcon.setBackgroundDrawable(getDrawable(R.drawable.ic_unread_toggle_star));
             }
 
 
@@ -1924,6 +1922,7 @@ public class Accounts extends K9Activity {
             public View chip;
             public ImageButton folders;
             public LinearLayout accountsItemLayout;
+            public TextView descriptionUnreadMessages;
         }
     }
 
@@ -2212,6 +2211,7 @@ public class Accounts extends K9Activity {
             if (holder == null) {
                 holder = new AccountViewHolder();
                 holder.description = (TextView) view.findViewById(R.id.description);
+                holder.descriptionUnreadMessages = (TextView) view.findViewById(R.id.description_unread_messages);
                 holder.email = (TextView) view.findViewById(R.id.email);
                 holder.newMessageCount = (TextView) view.findViewById(R.id.new_message_count);
                 holder.flaggedMessageCount = (TextView) view.findViewById(R.id.flagged_message_count);
@@ -2222,7 +2222,6 @@ public class Accounts extends K9Activity {
                 holder.activeIcons = (RelativeLayout) view.findViewById(R.id.active_icons);
 
                 holder.folders = (ImageButton) view.findViewById(R.id.folders);
-                holder.settings = (ImageView) view.findViewById(R.id.settings);
                 holder.accountsItemLayout = (LinearLayout)view.findViewById(R.id.accounts_item_layout);
                 LinearLayout accountsDescriptionLayout = (LinearLayout)view.findViewById(R.id.accounts_description_layout);
 
@@ -2235,12 +2234,6 @@ public class Accounts extends K9Activity {
                     }
                 });
             }
-            holder.settings.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onBaseAccountClickListener.onClick(account);
-                }
-            });
             AccountStats stats = accountStats.get(account.getUuid());
 
             if (stats != null && account instanceof Account && stats.size >= 0) {
@@ -2265,8 +2258,8 @@ public class Accounts extends K9Activity {
             Integer unreadMessageCount = null;
             if (stats != null) {
                 unreadMessageCount = stats.unreadMessageCount;
+                holder.descriptionUnreadMessages.setText(String.format("%d", unreadMessageCount));
                 holder.newMessageCount.setText(String.format("%d", unreadMessageCount));
-                holder.newMessageCountWrapper.setVisibility(unreadMessageCount > 0 ? View.VISIBLE : View.GONE);
 
                 holder.flaggedMessageCount.setText(String.format("%d", stats.flaggedMessageCount));
                 holder.flaggedMessageCountWrapper.setVisibility(K9.messageListStars() && stats.flaggedMessageCount > 0 ? View.VISIBLE : View.GONE);
@@ -2287,16 +2280,10 @@ public class Accounts extends K9Activity {
             }
             if (account instanceof Account) {
                 Account realAccount = (Account)account;
-
-
-                holder.flaggedMessageCountIcon.setBackgroundDrawable( realAccount.generateColorChip(false, false, false, false,true).drawable() );
-                holder.newMessageCountIcon.setBackgroundDrawable( realAccount.generateColorChip(false, false, false, false, false).drawable() );
-
+                holder.flaggedMessageCountIcon.setBackgroundDrawable(getDrawable(R.drawable.ic_unread_toggle_star));
             } else {
-                holder.newMessageCountIcon.setBackgroundDrawable( new ColorChip(0xff999999, false, ColorChip.CIRCULAR).drawable() );
-                holder.flaggedMessageCountIcon.setBackgroundDrawable(new ColorChip(0xff999999, false, ColorChip.STAR).drawable());
+                holder.flaggedMessageCountIcon.setBackgroundDrawable(getDrawable(R.drawable.ic_unread_toggle_star));
             }
-
 
 
 
@@ -2359,7 +2346,7 @@ public class Accounts extends K9Activity {
             public View chip;
             public ImageButton folders;
             public LinearLayout accountsItemLayout;
-            public ImageView settings;
+            public TextView descriptionUnreadMessages;
         }
     }
 }
