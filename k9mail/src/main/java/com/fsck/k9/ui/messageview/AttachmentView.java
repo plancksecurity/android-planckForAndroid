@@ -23,7 +23,8 @@ public class AttachmentView extends FrameLayout implements OnClickListener, OnLo
     private AttachmentViewCallback callback;
 
     private Button viewButton;
-    private Button downloadButton;
+    private ImageView downloadButton;
+    private View attachmentContainer;
 
 
     public AttachmentView(Context context, AttributeSet attrs, int defStyle) {
@@ -59,15 +60,21 @@ public class AttachmentView extends FrameLayout implements OnClickListener, OnLo
     }
 
     private void displayAttachmentInformation() {
+        attachmentContainer = findViewById(R.id.attachment_container);
         viewButton = (Button) findViewById(R.id.view);
-        downloadButton = (Button) findViewById(R.id.download);
+        downloadButton = (ImageView) findViewById(R.id.download);
 
         if (attachment.size > K9.MAX_ATTACHMENT_DOWNLOAD_SIZE) {
             viewButton.setVisibility(View.GONE);
             downloadButton.setVisibility(View.GONE);
         }
 
-        viewButton.setOnClickListener(this);
+        attachmentContainer.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onViewClick();
+            }
+        });
         downloadButton.setOnClickListener(this);
         downloadButton.setOnLongClickListener(this);
 
@@ -92,10 +99,6 @@ public class AttachmentView extends FrameLayout implements OnClickListener, OnLo
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.view: {
-                onViewButtonClick();
-                break;
-            }
             case R.id.download: {
                 onSaveButtonClick();
                 break;
@@ -113,7 +116,7 @@ public class AttachmentView extends FrameLayout implements OnClickListener, OnLo
         return false;
     }
 
-    private void onViewButtonClick() {
+    private void onViewClick() {
         callback.onViewAttachment(attachment);
     }
 
