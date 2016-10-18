@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#00d13d</color>
-    <color name="colorPrimaryDark">#00B837</color>
-    <color name="colorAccent">#00D941</color>
+    <color name="colorPrimary">#0F9D58</color>
+    <color name="colorPrimaryDark">#0B8043</color>
+    <color name="colorAccent">#0F9D58</color>
 
     <color name="message_list_item_footer_background">#eeeeee</color>
 
@@ -26,6 +26,11 @@
     <color name="gray">#757575</color>
     <color name="nav_contact_background">#ABABAB</color>
     <color name="light_gray">#B8B8B8</color>
+
+    <color name="gray_toolbar">#757575</color>
+    <color name="yellow_toolbar">#FFBB00</color>
+    <color name="red_toolbar">#E62117</color>
+    <color name="green_toolbar">#0F9D58</color>
 
 
 </resources>

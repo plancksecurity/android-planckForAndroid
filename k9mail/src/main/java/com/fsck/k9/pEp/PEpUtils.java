@@ -219,6 +219,28 @@ public class PEpUtils {
         throw new RuntimeException("Invalid rating");
     }
 
+    public static int getToolbarRatingColor(Rating rating, Context context) {
+        // TODO: 02/09/16 PEP_color color_from_rating(PEP_rating rating) from pEpEngine;
+
+        if (rating == null || rating.equals(Rating.pEpRatingB0rken)
+                || rating.value < Rating.pEpRatingReliable.value) {
+            return ContextCompat.getColor(context, R.color.gray_toolbar);
+        }
+
+        if (rating.value < Rating.pEpRatingUndefined.value) {
+            return ContextCompat.getColor(context, R.color.red_toolbar);
+        }
+
+        if (rating.value < Rating.pEpRatingTrusted.value) {
+            return  ContextCompat.getColor(context, R.color.yellow_toolbar);
+        }
+
+        if (rating.value >= Rating.pEpRatingTrusted.value) {
+            return  ContextCompat.getColor(context, R.color.green_toolbar);
+        }
+        throw new RuntimeException("Invalid rating");
+    }
+
     public static Rating extractRating(Message message) {
         String[] pEpRating;
         pEpRating = message.getHeader(MimeHeader.HEADER_PEP_RATING);
@@ -256,12 +278,12 @@ public class PEpUtils {
 
     public static void colorToolbar(PePUIArtefactCache uiCache, Toolbar toolbar, Rating pEpRating) {
         if (toolbar != null) {
-            toolbar.setBackgroundColor(uiCache.getColor(pEpRating));
+            toolbar.setBackgroundColor(uiCache.getToolbarColor(pEpRating));
         }
     }
 
     public static void colorToolbar(PePUIArtefactCache uiCache, ActionBar supportActionBar, Rating pEpRating) {
-        ColorDrawable colorDrawable = new ColorDrawable(uiCache.getColor(pEpRating));
+        ColorDrawable colorDrawable = new ColorDrawable(uiCache.getToolbarColor(pEpRating));
         supportActionBar.setBackgroundDrawable(colorDrawable);
     }
 

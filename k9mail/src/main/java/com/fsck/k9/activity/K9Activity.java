@@ -107,7 +107,7 @@ public class K9Activity extends AppCompatActivity implements K9ActivityMagic, Sy
         // finally change the color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             PePUIArtefactCache uiCache = PePUIArtefactCache.getInstance(getApplicationContext());
-            int color = (uiCache.getColor(pEpRating) & 0x00FFFFFF);
+            int color = (uiCache.getToolbarColor(pEpRating) & 0x00FFFFFF);
             int red = Color.red(color);
             int green = Color.green(color);
             int blue = Color.blue(color);
