@@ -23,7 +23,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.account.AccountCreator;
-import com.fsck.k9.activity.setup.AccountSetupBasics;
+import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.activity.setup.AccountSetupOptions;
 import com.fsck.k9.activity.setup.AuthTypeAdapter;
@@ -50,6 +50,7 @@ public class AccountSetupOutgoingFragment extends Fragment {
     private static final String EXTRA_MAKE_DEFAULT = "makeDefault";
     private static final String STATE_SECURITY_TYPE_POSITION = "stateSecurityTypePosition";
     private static final String STATE_AUTH_TYPE_POSITION = "authTypePosition";
+    private static final String EXTRA_EDIT = "edit";
 
     private EditText mUsernameView;
     private EditText mPasswordView;
@@ -71,6 +72,7 @@ public class AccountSetupOutgoingFragment extends Fragment {
     private boolean mMakeDefault;
 
     private View rootView;
+    private boolean mEdit;
 
     public static AccountSetupOutgoingFragment actionOutgoingSettings(Account account, boolean makeDefault) {
         AccountSetupOutgoingFragment fragment = new AccountSetupOutgoingFragment();
@@ -81,14 +83,24 @@ public class AccountSetupOutgoingFragment extends Fragment {
         return fragment;
     }
 
+    public static AccountSetupOutgoingFragment intentActionEditOutgoingSettings(Account account) {
+        AccountSetupOutgoingFragment fragment = new AccountSetupOutgoingFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(EXTRA_ACCOUNT, account.getUuid());
+        bundle.putBoolean(EXTRA_EDIT, true);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_account_setup_outgoing, container, false);
 
-        ((AccountSetupBasics) getActivity()).initializeToolbar(true, R.string.account_setup_outgoing_title);
+        ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_setup_outgoing_title);
+        ((K9Activity) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.white));
 
         String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
+        mEdit = getArguments().getBoolean(EXTRA_EDIT);
         mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
         try {
             if (new URI(mAccount.getStoreUri()).getScheme().startsWith("webdav")) {
@@ -97,7 +109,7 @@ public class AccountSetupOutgoingFragment extends Fragment {
                 getFragmentManager()
                         .beginTransaction()
                         .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                        .replace(R.id.account_login, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
+                        .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
                         .commit();
             }
         } catch (URISyntaxException e) {
@@ -459,7 +471,7 @@ public class AccountSetupOutgoingFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            if (Intent.ACTION_EDIT.equals(getActivity().getIntent().getAction())) {
+            if (mEdit) {
                 mAccount.save(Preferences.getPreferences(getActivity()));
                 getActivity().finish();
             } else {
@@ -497,7 +509,7 @@ public class AccountSetupOutgoingFragment extends Fragment {
         getFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                .replace(R.id.account_login, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
+                .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
                 .commit();
     }
 

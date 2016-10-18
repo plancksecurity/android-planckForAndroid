@@ -49,7 +49,7 @@ import java.util.Locale;
 
 import static android.app.Activity.RESULT_OK;
 
-public class AccountLoginFragment extends Fragment
+public class AccountSetupBasicsFragment extends Fragment
         implements View.OnClickListener, TextWatcher, CompoundButton.OnCheckedChangeListener, ClientCertificateSpinner.OnClientCertificateChangedListener {
     private final static String EXTRA_ACCOUNT = "com.fsck.k9.AccountSetupBasics.account";
     private final static int DIALOG_NOTE = 1;
@@ -67,7 +67,7 @@ public class AccountLoginFragment extends Fragment
     private Button mNextButton;
     private Button mManualSetupButton;
     private Account mAccount;
-    private AccountLoginFragment.Provider mProvider;
+    private AccountSetupBasicsFragment.Provider mProvider;
     private AndroidAccountOAuth2TokenStore accountTokenStore;
 
     private EmailAddressValidator mEmailValidator = new EmailAddressValidator();
@@ -162,7 +162,7 @@ public class AccountLoginFragment extends Fragment
             }
 
             if (savedInstanceState.containsKey(STATE_KEY_PROVIDER)) {
-                mProvider = (AccountLoginFragment.Provider) savedInstanceState.getSerializable(STATE_KEY_PROVIDER);
+                mProvider = (AccountSetupBasicsFragment.Provider) savedInstanceState.getSerializable(STATE_KEY_PROVIDER);
             }
 
             mCheckedIncoming = savedInstanceState.getBoolean(STATE_KEY_CHECKED_INCOMING);
@@ -379,7 +379,7 @@ public class AccountLoginFragment extends Fragment
             getFragmentManager()
                     .beginTransaction()
                     .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                    .replace(R.id.account_login, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
+                    .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
                     .commit();
         } catch (URISyntaxException use) {
             /*
@@ -434,7 +434,7 @@ public class AccountLoginFragment extends Fragment
                 getFragmentManager()
                         .beginTransaction()
                         .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                        .replace(R.id.account_login, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
+                        .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
                         .commit();
             } else {
                 //We've successfully checked outgoing as well.
@@ -501,7 +501,7 @@ public class AccountLoginFragment extends Fragment
         getFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                .replace(R.id.account_login, chooseAccountTypeFragment, "chooseAccountTypeFragment")
+                .replace(R.id.account_setup_container, chooseAccountTypeFragment, "chooseAccountTypeFragment")
                 .commit();
     }
 
@@ -548,16 +548,16 @@ public class AccountLoginFragment extends Fragment
         }
     }
 
-    private AccountLoginFragment.Provider findProviderForDomain(String domain) {
+    private AccountSetupBasicsFragment.Provider findProviderForDomain(String domain) {
         try {
             XmlResourceParser xml = getResources().getXml(R.xml.providers);
             int xmlEventType;
-            AccountLoginFragment.Provider provider = null;
+            AccountSetupBasicsFragment.Provider provider = null;
             while ((xmlEventType = xml.next()) != XmlResourceParser.END_DOCUMENT) {
                 if (xmlEventType == XmlResourceParser.START_TAG
                         && "provider".equals(xml.getName())
                         && domain.equalsIgnoreCase(getXmlAttribute(xml, "domain"))) {
-                    provider = new AccountLoginFragment.Provider();
+                    provider = new AccountSetupBasicsFragment.Provider();
                     provider.id = getXmlAttribute(xml, "id");
                     provider.label = getXmlAttribute(xml, "label");
                     provider.domain = getXmlAttribute(xml, "domain");

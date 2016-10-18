@@ -96,7 +96,7 @@ public class ChooseAccountTypeFragment extends Fragment {
             getFragmentManager()
                     .beginTransaction()
                     .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                    .replace(R.id.account_login, accountSetupIncomingFragment, "accountSetupIncomingFragment")
+                    .replace(R.id.account_setup_container, accountSetupIncomingFragment, "accountSetupIncomingFragment")
                     .commit();
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -110,7 +110,7 @@ public class ChooseAccountTypeFragment extends Fragment {
             getFragmentManager()
                     .beginTransaction()
                     .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                    .replace(R.id.account_login, accountSetupIncomingFragment, "accountSetupIncomingFragment")
+                    .replace(R.id.account_setup_container, accountSetupIncomingFragment, "accountSetupIncomingFragment")
                     .commit();
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -124,7 +124,7 @@ public class ChooseAccountTypeFragment extends Fragment {
             getFragmentManager()
                     .beginTransaction()
                     .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                    .replace(R.id.account_login, accountSetupIncomingFragment, "accountSetupIncomingFragment")
+                    .replace(R.id.account_setup_container, accountSetupIncomingFragment, "accountSetupIncomingFragment")
                     .commit();
         } catch (URISyntaxException e) {
             e.printStackTrace();

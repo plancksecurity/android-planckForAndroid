@@ -25,7 +25,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
-import com.fsck.k9.activity.setup.AccountSetupBasics;
+import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.activity.setup.AccountSetupNames;
 import com.fsck.k9.controller.MessagingController;
@@ -95,8 +95,8 @@ public class AccountSetupCheckSettingsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_account_setup_check_settings, container, false);
-        ((AccountSetupBasics) getActivity()).initializeToolbar(true, R.string.account_setup_check_settings_title);
-        ((AccountSetupBasics) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.white));
+        ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_setup_check_settings_title);
+        ((K9Activity) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.white));
         mMessageView = (TextView)rootView.findViewById(R.id.message);
         mProgressBar = (ProgressBar)rootView.findViewById(R.id.progress);
         rootView.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
@@ -327,7 +327,7 @@ public class AccountSetupCheckSettingsFragment extends Fragment {
         getFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                .replace(R.id.account_login, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
+                .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
                 .commit();
     }
 
@@ -428,21 +428,15 @@ public class AccountSetupCheckSettingsFragment extends Fragment {
                     return null;
                 }
                 // TODO: 17/10/16 check this
-                if (mProcedence.equals(INCOMING)) {
-                    AccountSetupOutgoingFragment accountSetupOutgoingFragment = AccountSetupOutgoingFragment.actionOutgoingSettings(mAccount, mMakeDefault);
-                    getFragmentManager()
-                            .beginTransaction()
-                            .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                            .replace(R.id.account_login, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
-                            .commit();
-                } else {
-                    mAccount.setDescription(mAccount.getEmail());
-                    mAccount.save(Preferences.getPreferences(getActivity()));
-                    K9.setServicesEnabled(getActivity());
-                    AccountSetupNames.actionSetNames(getActivity(), mAccount);
+                if(Intent.ACTION_EDIT.equals(getActivity().getIntent().getAction())) {
+                    savePreferences();
+                    getActivity().finish();
+                } else if (mProcedence.equals(INCOMING)) {
+                    goToOutgoingSettings();
+                } else if (mProcedence.equals(OUTGOING) || mProcedence.equals(LOGIN) ){
+                    savePreferences();
                     getActivity().finish();
                 }
-
             } catch (AuthenticationFailedException afe) {
                 Log.e(K9.LOG_TAG, "Error while testing settings (auth failed)", afe);
                 showErrorDialog(
@@ -521,6 +515,26 @@ public class AccountSetupCheckSettingsFragment extends Fragment {
         @Override
         protected void onProgressUpdate(Integer... values) {
             setMessage(values[0]);
+        }
+    }
+
+    private void goToOutgoingSettings() {
+        AccountSetupOutgoingFragment accountSetupOutgoingFragment = AccountSetupOutgoingFragment.actionOutgoingSettings(mAccount, mMakeDefault);
+        getFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
+                .commit();
+    }
+
+    private void savePreferences() {
+        mAccount.setDescription(mAccount.getEmail());
+        mAccount.save(Preferences.getPreferences(getActivity()));
+        K9.setServicesEnabled(getActivity());
+        if (Intent.ACTION_EDIT.equals(getActivity().getIntent().getAction())) {
+            getActivity().finish();
+        } else {
+            AccountSetupNames.actionSetNames(getActivity(), mAccount);
         }
     }
 }

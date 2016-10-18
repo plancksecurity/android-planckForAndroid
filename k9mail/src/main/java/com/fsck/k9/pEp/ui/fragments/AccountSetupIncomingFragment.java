@@ -27,7 +27,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.account.AccountCreator;
-import com.fsck.k9.activity.setup.AccountSetupBasics;
+import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.activity.setup.AuthTypeAdapter;
 import com.fsck.k9.activity.setup.AuthTypeHolder;
@@ -116,7 +116,8 @@ public class AccountSetupIncomingFragment extends Fragment {
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_account_setup_incoming, container, false);
 
-        ((AccountSetupBasics) getActivity()).initializeToolbar(true, R.string.account_setup_incoming_title);
+        ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_setup_incoming_title);
+        ((K9Activity) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.white));
 
         mUsernameView = (EditText) rootView.findViewById(R.id.account_username);
         mPasswordView = (EditText) rootView.findViewById(R.id.account_password);
@@ -579,7 +580,7 @@ public class AccountSetupIncomingFragment extends Fragment {
                 getFragmentManager()
                         .beginTransaction()
                         .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                        .replace(R.id.account_login, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
+                        .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
                         .commit();
             }
         }
@@ -598,7 +599,7 @@ public class AccountSetupIncomingFragment extends Fragment {
                             getFragmentManager()
                                     .beginTransaction()
                                     .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                                    .replace(R.id.account_login, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
+                                    .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
                                     .commit();
                         }
 
@@ -615,7 +616,7 @@ public class AccountSetupIncomingFragment extends Fragment {
         getFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                .replace(R.id.account_login, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
+                .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
                 .commit();
     }
 

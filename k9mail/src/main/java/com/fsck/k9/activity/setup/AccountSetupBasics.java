@@ -9,7 +9,7 @@ import android.os.Bundle;
 
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
-import com.fsck.k9.pEp.ui.fragments.AccountLoginFragment;
+import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
 
 /**
@@ -21,7 +21,7 @@ import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
  */
 public class AccountSetupBasics extends K9Activity {
 
-    private AccountLoginFragment accountLoginFragment;
+    private AccountSetupBasicsFragment accountSetupBasicsFragment;
 
     public static void actionNewAccount(Context context) {
         Intent i = new Intent(context, AccountSetupBasics.class);
@@ -33,9 +33,9 @@ public class AccountSetupBasics extends K9Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.account_setup_basics);
         if (savedInstanceState == null) {
-            accountLoginFragment = new AccountLoginFragment();
+            accountSetupBasicsFragment = new AccountSetupBasicsFragment();
             FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.add(R.id.account_login, accountLoginFragment).commit();
+            ft.add(R.id.account_setup_container, accountSetupBasicsFragment).commit();
         }
     }
 
@@ -46,7 +46,7 @@ public class AccountSetupBasics extends K9Activity {
         if (accountSetupIncomingFragment != null && accountSetupIncomingFragment.isVisible()) {
             accountSetupIncomingFragment.onActivityResult(requestCode, resultCode, data);
         } else {
-            accountLoginFragment.onActivityResult(requestCode, resultCode, data);
+            accountSetupBasicsFragment.onActivityResult(requestCode, resultCode, data);
         }
 
     }
