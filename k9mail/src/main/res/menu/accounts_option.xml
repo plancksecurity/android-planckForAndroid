@@ -17,7 +17,7 @@
         android:id="@+id/compose"
         android:alphabeticShortcut="c"
         android:icon="@drawable/ic_action_write_message"
-        app:showAsAction="always"
+        app:showAsAction="never"
         android:title="@string/compose_action"/>
     <item
         android:id="@+id/add_new_account"
