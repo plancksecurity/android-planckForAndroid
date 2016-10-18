@@ -34,9 +34,13 @@
                 android:textColor="?android:attr/textColorPrimary"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:padding="8dp"
-                android:visibility="gone"
-                tools:visibility="visible"
                 tools:text="(no subject)"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="?android:attr/dividerHorizontal"
                 />
 
             <LinearLayout
