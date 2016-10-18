@@ -157,7 +157,7 @@ public class Accounts extends K9Activity {
                 mActionBarUnread.setVisibility(View.GONE);
             } else {
                 mActionBarUnread.setText(String.format("%d", mUnreadMessageCount));
-                mActionBarUnread.setVisibility(View.VISIBLE);
+                mActionBarUnread.setVisibility(View.GONE);
             }
 
             String operation = mListener.getOperation(Accounts.this);

@@ -1572,7 +1572,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         if (unread == 0) {
             mActionBarUnread.setVisibility(View.GONE);
         } else {
-            mActionBarUnread.setVisibility(View.VISIBLE);
+            mActionBarUnread.setVisibility(View.GONE);
             mActionBarUnread.setText(String.format("%d", unread));
         }
     }

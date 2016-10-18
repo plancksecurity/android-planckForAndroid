@@ -108,7 +108,7 @@ public class FolderList extends K9ListActivity {
                         mActionBarUnread.setVisibility(View.GONE);
                     } else {
                         mActionBarUnread.setText(String.format("%d", mUnreadMessageCount));
-                        mActionBarUnread.setVisibility(View.VISIBLE);
+                        mActionBarUnread.setVisibility(View.GONE);
                     }
 
                     String operation = mAdapter.mListener.getOperation(FolderList.this);
