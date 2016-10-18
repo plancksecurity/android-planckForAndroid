@@ -194,7 +194,7 @@ public class Accounts extends K9Activity {
             runOnUiThread(new Runnable() {
                 public void run() {
                     String toastText = getString(res, account.getDescription());
-                    FeedbackTools.showShortFeedback(getListView(), toastText);
+                    FeedbackTools.showShortFeedback(accountsList, toastText);
                 }
             });
         }
@@ -208,7 +208,7 @@ public class Accounts extends K9Activity {
                     }
                     String toastText = getString(R.string.account_size_changed, account.getDescription(),
                                                  SizeFormatter.formatSize(getApplication(), oldSize), SizeFormatter.formatSize(getApplication(), newSize));
-                    FeedbackTools.showLongFeedback(getListView(), toastText);
+                    FeedbackTools.showLongFeedback(accountsList, toastText);
                     if (mAdapter != null) {
                         mAdapter.notifyDataSetChanged();
                     }
@@ -379,7 +379,6 @@ public class Accounts extends K9Activity {
 
         accountsList = (ListView) findViewById(R.id.accounts_list);
         foldersList = (ListView) findViewById(R.id.folders_list);
-        registerForContextMenu(accountsList);
         if (!K9.isHideSpecialAccounts()) {
             createSpecialAccounts();
         }
@@ -414,12 +413,6 @@ public class Accounts extends K9Activity {
 // TODO: 28/9/16 is this really needed?
 //        requestWindowFeature(Window.FEATURE_PROGRESS);
         initializeActionBar();
-        ListView listView = getListView();
-        listView.setItemsCanFocus(false);
-        listView.setScrollingCacheEnabled(false);
-
-        accountsList.setItemsCanFocus(false);
-        accountsList.setScrollingCacheEnabled(false);
         registerForContextMenu(accountsList);
 
         if (icicle != null && icicle.containsKey(SELECTED_CONTEXT_ACCOUNT)) {
@@ -593,7 +586,7 @@ public class Accounts extends K9Activity {
 
             @Override
             public void onClick(Integer position) {
-                BaseAccount account = (BaseAccount)getListView().getItemAtPosition(position);
+                BaseAccount account = (BaseAccount)accountsList.getItemAtPosition(position);
                 onOpenAccount(account);
             }
         }, new OnBaseAccountClickListener() {
@@ -602,7 +595,7 @@ public class Accounts extends K9Activity {
                 AccountSettings.actionSettings(Accounts.this, baseAccount.getUuid());
             }
         });
-        getListView().setAdapter(mAdapter);
+        accountsList.setAdapter(mAdapter);
 
         List<BaseAccount> folders = new ArrayList<>(SPECIAL_ACCOUNTS_COUNT);
         folders.add(mUnifiedInboxAccount);
@@ -706,7 +699,7 @@ public class Accounts extends K9Activity {
                 return false;
             } else if (!realAccount.isAvailable(this)) {
                 String toastText = getString(R.string.account_unavailable, account.getDescription());
-                FeedbackTools.showShortFeedback(getListView(), toastText);
+                FeedbackTools.showShortFeedback(accountsList, toastText);
                 Log.i(K9.LOG_TAG, "refusing to open account that is not available");
                 return false;
             }
@@ -1217,7 +1210,7 @@ public class Accounts extends K9Activity {
         // submenus don't actually set the menuInfo, so the "advanced"
         // submenu wouldn't work.
         if (menuInfo != null) {
-            mSelectedContextAccount = (BaseAccount)getListView().getItemAtPosition(menuInfo.position);
+            mSelectedContextAccount = (BaseAccount)accountsList.getItemAtPosition(menuInfo.position);
         }
         if (mSelectedContextAccount instanceof Account) {
             Account realAccount = (Account)mSelectedContextAccount;
@@ -1428,6 +1421,7 @@ public class Accounts extends K9Activity {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
+        Log.d("onCreateContextMenu", "true");
         menu.setHeaderTitle(R.string.accounts_context_menu_title);
 
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
@@ -1847,7 +1841,7 @@ public class Accounts extends K9Activity {
 
                 holder.activeIcons.setOnClickListener(new OnClickListener() {
                     public void onClick(View v) {
-                        FeedbackTools.showShortFeedback(getListView(), getString(R.string.tap_hint));
+                        FeedbackTools.showShortFeedback(accountsList, getString(R.string.tap_hint));
                     }
                 }
                                                      );
@@ -2194,10 +2188,6 @@ public class Accounts extends K9Activity {
         }
     }
 
-    private ListView getListView() {
-        return accountsList;
-    }
-
     class FoldersAdapter extends ArrayAdapter<BaseAccount> {
         private final OnFolderClickListener onFolderClickListener;
         private final OnBaseAccountClickListener onBaseAccountClickListener;
@@ -2217,6 +2207,7 @@ public class Accounts extends K9Activity {
             } else {
                 view = getLayoutInflater().inflate(R.layout.accounts_item, parent, false);
             }
+            view.setLongClickable(true);
             AccountViewHolder holder = (AccountViewHolder) view.getTag();
             if (holder == null) {
                 holder = new AccountViewHolder();
@@ -2285,7 +2276,7 @@ public class Accounts extends K9Activity {
 
                 holder.activeIcons.setOnClickListener(new OnClickListener() {
                                                           public void onClick(View v) {
-                                                              FeedbackTools.showShortFeedback(getListView(), getString(R.string.tap_hint));
+                                                              FeedbackTools.showShortFeedback(accountsList, getString(R.string.tap_hint));
                                                           }
                                                       }
                 );
