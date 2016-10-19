@@ -1,22 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-        android:id="@+id/folder_list_item_layout"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="?android:attr/listPreferredItemHeight"
-        android:paddingRight="4dip"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
-
-    <View
-            android:id="@+id/chip"
-            android:layout_height="match_parent"
-            android:layout_width="8dip"
-            android:background="#ff336699"
-            android:layout_marginRight="8dip"
-            />
-
+<LinearLayout android:id="@+id/folder_list_item_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:paddingRight="4dip"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
             android:layout_width="fill_parent"
@@ -24,16 +15,18 @@
             android:layout_weight="1"
             android:orientation="vertical"
             android:gravity="center_vertical"
-            android:paddingBottom="2dip"
-
-            android:paddingLeft="6dip">
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp">
 
         <TextView
                 android:id="@+id/folder_name"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textColor="?android:attr/textColorPrimary"
-                android:textAppearance="?android:attr/textAppearanceLarge"/>
+                tools:text="Drafts"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif-medium"/>
 
         <TextView
                 android:id="@+id/folder_status"
@@ -41,8 +34,9 @@
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:ellipsize="end"
+                tools:text="Updated"
                 android:textColor="?android:attr/textColorTertiary"
-                android:textAppearance="?android:attr/textAppearanceSmall"/>
+                android:fontFamily="sans-serif"/>
 
     </LinearLayout>
 

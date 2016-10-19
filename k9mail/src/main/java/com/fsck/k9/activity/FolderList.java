@@ -1054,8 +1054,7 @@ public class FolderList extends K9ListActivity {
                 holder.flaggedMessageCountWrapper.setOnClickListener(
                         createFlaggedSearch(mAccount, folder));
                 holder.flaggedMessageCountWrapper.setVisibility(View.VISIBLE);
-                holder.flaggedMessageCountIcon.setBackgroundDrawable(
-                        mAccount.generateColorChip(false, false, false, false,true).drawable());
+                holder.flaggedMessageCountIcon.setBackgroundDrawable(getDrawable(R.drawable.ic_unread_toggle_star));
             } else {
                 holder.flaggedMessageCountWrapper.setVisibility(View.GONE);
             }
