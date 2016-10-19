@@ -23,7 +23,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -50,6 +49,8 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpStatus;
+import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
+import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
@@ -215,8 +216,28 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         });
         // onDownloadRemainder();;
         mFragmentListener.messageHeaderViewAvailable(mMessageView.getMessageHeaderView());
+
+        setMessageOptionsListener();
+
         pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
         return view;
+    }
+
+    private void setMessageOptionsListener() {
+        mMessageView.getMessageHeader().setOnMessageOptionsListener(new OnMessageOptionsListener() {
+            @Override
+            public void OnMessageOptionsListener(MessageAction action) {
+                if (action.equals(MessageAction.REPLY)) {
+                    onReply();
+                } else if (action.equals(MessageAction.REPLY_ALL)) {
+                    onReplyAll();
+                } else if (action.equals(MessageAction.FORWARD)) {
+                    onForward();
+                } else if (action.equals(MessageAction.SHARE)) {
+                    onSendAlternate();
+                }
+            }
+        });
     }
 
     @Override

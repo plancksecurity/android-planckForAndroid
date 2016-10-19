@@ -11,14 +11,16 @@ import android.text.format.DateUtils;
 import android.text.style.StyleSpan;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
@@ -37,6 +39,8 @@ import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
+import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
+import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.messageview.OnCryptoClickListener;
 
@@ -80,6 +84,13 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     private OnCryptoClickListener onCryptoClickListener;
 
     private Rating pEpRating;
+    private OnMessageOptionsListener onMessageOptionsListener;
+    private ImageView replyMessage;
+    private ImageView moreOptions;
+
+    public void setOnMessageOptionsListener(OnMessageOptionsListener onMessageOptionsListener) {
+        this.onMessageOptionsListener = onMessageOptionsListener;
+    }
 
     /**
      * Pair class is only available since API Level 5, so we need
@@ -113,6 +124,43 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         mCcView = (TextView) findViewById(R.id.cc);
         mCcLabel = (TextView) findViewById(R.id.cc_label);
 
+        replyMessage = (ImageView) findViewById(R.id.reply_message);
+        moreOptions = (ImageView) findViewById(R.id.message_more_options);
+
+        replyMessage.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onMessageOptionsListener.OnMessageOptionsListener(MessageAction.REPLY);
+            }
+        });
+
+        moreOptions.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu popupMenu = new PopupMenu(getContext(), view);
+                popupMenu.getMenuInflater().inflate(R.menu.message_more_options_menu, popupMenu.getMenu());
+
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.reply_all:
+                                onMessageOptionsListener.OnMessageOptionsListener(MessageAction.REPLY_ALL);
+                                break;
+                            case R.id.forward:
+                                onMessageOptionsListener.OnMessageOptionsListener(MessageAction.FORWARD);
+                                break;
+                            case R.id.share:
+                                onMessageOptionsListener.OnMessageOptionsListener(MessageAction.SHARE);
+                                break;
+                        }
+                        return true;
+                    }
+                });
+
+                popupMenu.show();
+            }
+        });
+
         mContactBadge = (PEpContactBadge) findViewById(R.id.contact_badge);
 
         mSubjectView = (TextView) findViewById(R.id.subject);
@@ -143,7 +191,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         mMessageHelper = MessageHelper.getInstance(mContext);
 
         mSubjectView.setVisibility(VISIBLE);
-
 
         hideAdditionalHeaders();
     }

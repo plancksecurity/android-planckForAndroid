@@ -23,7 +23,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
+            
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/subject"
                 android:layout_width="match_parent"
@@ -37,6 +40,19 @@
                 tools:text="(no subject)"
                 />
 
+                <CheckBox
+                    android:id="@+id/flagged"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:focusable="false"
+                    android:button="@xml/read_message_favorite_checkbox"
+                    android:gravity="center_vertical"
+                    android:checked="false"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:paddingRight="8dp"
+                    android:layout_alignBottom="@+id/subject" />
+            </RelativeLayout>
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1px"
@@ -94,9 +110,7 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="6dip"
-                    android:layout_marginLeft="2dp" >
+                    android:layout_height="wrap_content" >
 
                     <!-- From -->
                     <TextView
@@ -182,6 +196,7 @@
                         android:layout_below="@id/cc"
                         android:layout_alignParentRight="true"
                         android:paddingTop="8dp"
+                        android:paddingRight="8dp"
                         android:singleLine="true"
                         android:ellipsize="none"
                         android:textAppearance="?android:attr/textAppearanceSmall"
@@ -198,16 +213,27 @@
                         android:id="@+id/status_icon_strip"
                         >
 
-                        <CheckBox
-                            android:id="@+id/flagged"
+                        <ImageView
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:focusable="false"
-                            android:button="@xml/read_message_favorite_checkbox"
-                            android:gravity="center_vertical"
-                            android:checked="false" />
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left|center_vertical"
+                            android:clickable="true"
+                            android:background="?android:selectableItemBackground"
+                            android:id="@+id/reply_message"
+                            android:src="@drawable/ic_content_reply"
+                            />
 
-                        <include layout="@layout/message_crypto_status_view" />
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left|center_vertical"
+                            android:clickable="true"
+                            android:background="?android:selectableItemBackground"
+                            android:id="@+id/message_more_options"
+                            android:src="@drawable/ic_navigation_more_vert"
+                            />
+                        <include layout="@layout/message_crypto_status_view"
+                            android:visibility="gone"/>
 
                     </LinearLayout>
 

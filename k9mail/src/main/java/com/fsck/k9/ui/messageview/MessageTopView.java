@@ -56,6 +56,10 @@ public class MessageTopView extends LinearLayout {
         super(context, attrs);
     }
 
+    public MessageHeader getMessageHeader() {
+        return mHeaderContainer;
+    }
+
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();

@@ -18,6 +18,7 @@
         android:id="@+id/crypto_status_dots_bg"
         android:src="@drawable/status_dots"
         android:tint="@color/openpgp_grey"
+        android:visibility="gone"
         />
 
     <ImageView
@@ -27,6 +28,7 @@
         android:id="@+id/crypto_status_combined_2"
         tools:src="@drawable/status_none_dots_1"
         tools:tint="@color/openpgp_blue"
+        android:visibility="gone"
         />
 
     <ImageView
@@ -36,6 +38,7 @@
         android:id="@+id/crypto_status_combined_1"
         tools:src="@drawable/status_signature_verified_cutout"
         tools:tint="@color/openpgp_blue"
+        android:visibility="gone"
         />
 
     <ImageView
