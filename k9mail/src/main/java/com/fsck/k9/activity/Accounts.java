@@ -16,6 +16,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
@@ -149,6 +150,7 @@ public class Accounts extends K9Activity {
     private ListView accountsList;
     private View addAccountButton;
     private ListView foldersList;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     class AccountsHandler extends Handler {
         private void setViewTitle() {
@@ -377,7 +379,15 @@ public class Accounts extends K9Activity {
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.accounts);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.message_swipe);
 
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                onCheckMail(null);
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
         accountsList = (ListView) findViewById(R.id.accounts_list);
         foldersList = (ListView) findViewById(R.id.folders_list);
         if (!K9.isHideSpecialAccounts()) {
