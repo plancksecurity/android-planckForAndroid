@@ -33,7 +33,8 @@ import com.fsck.k9.service.MailService;
 import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
 
-import org.pEp.jniadapter.Sync;
+import org.pEp.jniadapter.*;
+import org.pEp.jniadapter.Identity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -515,6 +516,7 @@ public class K9 extends Application {
 
     @Override
     public void onCreate() {
+        initSync();
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
         }
@@ -624,12 +626,23 @@ public class K9 extends Application {
         });
 
         notifyObservers();
-        initSync();
     }
 
     private void initSync() {
         pEpSyncProvider = PEpProviderFactory.createAndSetupProvider(this);
-        pEpSyncProvider.setSyncSendMessageCallback(MessagingController.getInstance(this));
+        pEpSyncProvider.setSyncSendMessageCallback(new Sync.MessageToSendCallback() {
+            @Override
+            public void messageToSend(org.pEp.jniadapter.Message message) {
+                Log.e("PEPJNI", "messageToSend: " );
+            }
+        });
+        pEpSyncProvider.setSyncHandshakeCallback(new Sync.showHandshakeCallback() {
+            @Override
+            public void showHandshake(Identity myself, Identity partner) {
+                Log.e("PEPJNI", "showHandshake: " );
+
+            }
+        });
     }
 
     private void pEpSetupUiEngineSession() {
