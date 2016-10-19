@@ -54,6 +54,7 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpUIUtils;
 import com.fsck.k9.pEp.ui.activities.GlobalPreferences;
+import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.listeners.OnAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
 import com.fsck.k9.pEp.ui.renderers.AccountRenderer;
@@ -89,7 +90,8 @@ import java.util.List;
  * From this Activity the user can perform all standard message operations.
  */
 public class MessageList extends K9Activity implements MessageListFragmentListener,
-        MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener, NavigationView.OnNavigationItemSelectedListener {
+        MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener,
+        NavigationView.OnNavigationItemSelectedListener, DrawerLocker {
 
     // for this activity
     private static final String EXTRA_SEARCH = "search";
@@ -134,6 +136,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private View accountsDrawerLayout;
     private View addAccountContainer;
     private View configureAccountContainer;
+    private ActionBarDrawerToggle toggle;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
             boolean noThreading, boolean newTask) {
@@ -201,6 +204,20 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         MessageListFragment fragment = MessageListFragment.newInstance(searchAccount.getRelatedSearch(), false, false);
         addMessageListFragment(fragment, true);
         drawerLayout.closeDrawers();
+    }
+
+    @Override
+    public void setDrawerEnabled(boolean enabled) {
+        int lockMode = enabled ? DrawerLayout.LOCK_MODE_UNLOCKED :
+                DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
+        drawerLayout.setDrawerLockMode(lockMode);
+        toggle.setDrawerIndicatorEnabled(enabled);
+        toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 
 
@@ -298,14 +315,13 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         initializeFabButton();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
         foldersDrawerLayout = findViewById(R.id.navigation_bar_folders_layout);
         accountsDrawerLayout = findViewById(R.id.navigation_bar_accounts_layout);
-
         if (mAccount != null) {
             loadNavigationView();
         }

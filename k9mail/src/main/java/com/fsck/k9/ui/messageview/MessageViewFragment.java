@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,6 +30,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.ChooseFolder;
+import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.MessageLoaderHelper;
 import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderCallbacks;
@@ -49,6 +51,7 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpStatus;
+import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
 import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -153,6 +156,12 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         mInitialized = true;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((DrawerLocker) getActivity()).setDrawerEnabled(false);
+    }
+
     private void setupSwipeDetector() {
         ((MessageList) getActivity()).setupGestureDetector(this);
     }
@@ -185,6 +194,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             return;
         }
 
+        ((DrawerLocker) getActivity()).setDrawerEnabled(true);
         messageLoaderHelper.onDestroy();
     }
 
