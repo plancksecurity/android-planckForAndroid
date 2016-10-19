@@ -968,8 +968,8 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                 } else if (isCheckMailSupported()) {
                     // "Pull to refresh"
                     checkMail();
-
                 }
+                mSwipeRefreshLayout.setRefreshing(false);
             }
         });
     }
@@ -3233,8 +3233,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             mHandler.goBack();
             return;
         }
-
-        mSwipeRefreshLayout.setRefreshing(false);
 
         final int loaderId = loader.getId();
         mCursors[loaderId] = data;
