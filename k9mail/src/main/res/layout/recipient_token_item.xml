@@ -4,7 +4,7 @@
     android:orientation="horizontal"
     android:layout_width="wrap_content"
     android:layout_height="32dp"
-    android:background="?attr/contactTokenBackgroundColor"
+    android:background="@drawable/recipient_token_shape"
     android:padding="4dp">
 
     <com.fsck.k9.pEp.ui.PEpContactBadge
@@ -52,7 +52,6 @@
         android:src="@drawable/status_dots_2"
         android:tint="@color/openpgp_orange"
         android:visibility="gone"
-        tools:visibility="visible"
         />
 
     <ImageView

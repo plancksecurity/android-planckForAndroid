@@ -86,6 +86,7 @@ public class QuotedMessageMvpView {
                 mQuotedText.setVisibility(View.GONE);
                 mQuotedHTML.setVisibility(View.GONE);
                 mQuotedTextEdit.setVisibility(View.GONE);
+                mQuotedTextDelete.setVisibility(View.GONE);
                 break;
             }
             case HIDE: {
@@ -94,6 +95,7 @@ public class QuotedMessageMvpView {
                 mQuotedText.setVisibility(View.GONE);
                 mQuotedHTML.setVisibility(View.GONE);
                 mQuotedTextEdit.setVisibility(View.GONE);
+                mQuotedTextDelete.setVisibility(View.GONE);
                 break;
             }
             case SHOW: {
@@ -104,10 +106,12 @@ public class QuotedMessageMvpView {
                     mQuotedText.setVisibility(View.GONE);
                     mQuotedHTML.setVisibility(View.VISIBLE);
                     mQuotedTextEdit.setVisibility(View.VISIBLE);
+                    mQuotedTextDelete.setVisibility(View.VISIBLE);
                 } else {
                     mQuotedText.setVisibility(View.VISIBLE);
                     mQuotedHTML.setVisibility(View.GONE);
                     mQuotedTextEdit.setVisibility(View.GONE);
+                    mQuotedTextDelete.setVisibility(View.GONE);
                 }
                 break;
             }
