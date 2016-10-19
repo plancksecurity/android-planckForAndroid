@@ -32,12 +32,12 @@
                 android:paddingLeft="16dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="?android:attr/textColorSecondary"
-                android:singleLine="true"
                 android:ellipsize="middle"
                 android:layout_alignParentTop="true"
-                android:maxLines="1"
+                android:maxLines="2"
+                android:layout_toStartOf="@+id/download"
                 android:layout_toRightOf="@id/attachment_icon"
-                tools:text="here be attachment name"
+                tools:text="here be attachment name and it can be so long but no more than 2 lines"
                 android:layout_alignWithParentIfMissing="true"/>
             <TextView
                 android:id="@+id/attachment_info"
@@ -49,8 +49,9 @@
                 android:singleLine="true"
                 android:ellipsize="middle"
                 android:paddingLeft="16dp"
-                tools:text="here be attachment name"
+                tools:text="here be attachment name and this is not so long"
                 android:layout_alignLeft="@id/attachment_name"
+                android:layout_toStartOf="@+id/download"
                 android:layout_below="@id/attachment_name"
                 android:layout_alignWithParentIfMissing="true" />
 
@@ -71,15 +72,14 @@
             <ImageView
                 android:id="@+id/download"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="20dip"
-                android:paddingRight="20dip"
+                android:layout_height="match_parent"
                 android:text="@string/message_view_attachment_download_action"
                 android:clickable="true"
                 android:background="@drawable/selectable_item_background"
                 android:src="@drawable/ic_file_file_download"
-                android:layout_alignBottom="@+id/attachment_icon"
-                android:layout_alignParentEnd="true" />
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignBottom="@+id/attachment_icon" />
         </RelativeLayout>
 
         <View
