@@ -1,53 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="72dp"
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:id="@+id/recipientContainer">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/recipientContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="72dp"
+    android:orientation="horizontal"
+    android:paddingBottom="8dp"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="8dp">
 
     <LinearLayout
-            android:layout_width="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/buttonHandshake"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvUsername"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_toStartOf="@+id/buttonHandshake"
-            android:layout_centerVertical="true">
+            android:layout_gravity="center_vertical"
+            android:fontFamily="sans-serif"
+            android:textColor="@color/openpgp_black"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            tools:text="Medium Text" />
 
         <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                tools:text="Medium Text"
-                android:id="@+id/tvUsername"
-                android:layout_gravity="center_vertical"
-                />
-
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                tools:text="Medium Text"
-                android:id="@+id/tvAddress"
-                android:layout_gravity="center_vertical"
-                tools:visibility="gone"
-                android:layout_below="@id/tvUsername"
-                />
+            android:id="@+id/tvAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/openpgp_black"
+            android:layout_below="@id/tvUsername"
+            android:layout_gravity="center_vertical"
+            android:fontFamily="sans-serif"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            tools:text="Medium Text" />
     </LinearLayout>
 
-    <Button
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:text="@string/pep_handshake"
-            android:id="@+id/buttonHandshake"
-            android:layout_gravity="center"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"/>
+    <FrameLayout
+        android:id="@+id/buttonHandshake"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
+        android:background="?android:selectableItemBackground"
+        android:clickable="true">
 
+        <TextView android:id="@+id/handshake_button_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="@string/pep_handshake"
+            android:textAllCaps="true"
+            android:textColor="@color/openpgp_black" />
+
+    </FrameLayout>
 
 </RelativeLayout>

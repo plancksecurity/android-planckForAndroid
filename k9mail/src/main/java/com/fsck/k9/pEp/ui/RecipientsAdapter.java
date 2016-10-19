@@ -12,13 +12,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
+
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
+
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
@@ -110,7 +112,8 @@ public class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.Vi
         public TextView identityUserName;
         public TextView identityAdress;
 
-        public Button handshakeButton;
+        public FrameLayout handshakeButton;
+        public TextView handshakeButtonText;
         public View container;
         public Context context;
 
@@ -119,7 +122,8 @@ public class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.Vi
             context = view.getContext();
             identityUserName = ((TextView) view.findViewById(R.id.tvUsername));
             identityAdress = ((TextView) view.findViewById(R.id.tvAddress));
-            handshakeButton = ((Button) view.findViewById(R.id.buttonHandshake));
+            handshakeButton = ((FrameLayout) view.findViewById(R.id.buttonHandshake));
+            handshakeButtonText = ((TextView) view.findViewById(R.id.handshake_button_text));
             container = view.findViewById(R.id.recipientContainer);
         }
 
@@ -129,10 +133,10 @@ public class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.Vi
                 handshakeButton.setVisibility(View.GONE);
             } else if (rating.value == Rating.pEpRatingMistrust.value
                     || rating.value >= Rating.pEpRatingTrusted.value){
-                handshakeButton.setText(context.getString(R.string.pep_reset_trust));
+                handshakeButtonText.setText(context.getString(R.string.pep_reset_trust));
                 handshakeButton.setOnClickListener(onResetClick);
             } else if (rating.value == Rating.pEpRatingReliable.value){
-                handshakeButton.setText(context.getString(R.string.pep_handshake));
+                handshakeButtonText.setText(context.getString(R.string.pep_handshake));
                 handshakeButton.setOnClickListener(onHandshakeClick);
             }
         }

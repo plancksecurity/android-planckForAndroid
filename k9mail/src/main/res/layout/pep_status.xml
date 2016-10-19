@@ -12,7 +12,6 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
         android:textStyle="bold"
         android:text="Large Text"
         android:id="@+id/pEpTitle"
@@ -20,17 +19,20 @@
         android:paddingBottom="8dp"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:gravity="left"
-        fontPath="fonts/UniversLTStd-Bold.otf"/>
+        android:gravity="start"
+        android:textColor="@color/openpgp_black"
+        android:fontFamily="sans-serif-medium"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
         android:text="New Text"
         android:id="@+id/pEpSuggestion"
         android:layout_gravity="left"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="16dp"
         android:gravity="left"
+        android:textColor="@color/openpgp_black"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"/>
 
