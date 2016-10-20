@@ -66,9 +66,9 @@ android {
 //        versionCode 23080
 //        versionName '5.108'
 
-        applicationId "pep.android.k9"
-        versionCode 14
-        versionName '0.9.5 / Materials'
+        applicationId "pep.android.k9.materials"
+        versionCode 15
+        versionName '0.9.5 / Materials 1'
         minSdkVersion 18
         targetSdkVersion 22
 
