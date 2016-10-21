@@ -117,7 +117,7 @@ public class AccountSetupIncomingFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_account_setup_incoming, container, false);
 
         ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_setup_incoming_title);
-        ((K9Activity) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.white));
+        ((K9Activity) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.pep_green));
 
         mUsernameView = (EditText) rootView.findViewById(R.id.account_username);
         mPasswordView = (EditText) rootView.findViewById(R.id.account_password);

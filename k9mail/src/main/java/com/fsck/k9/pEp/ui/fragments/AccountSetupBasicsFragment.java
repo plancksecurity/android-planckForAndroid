@@ -107,7 +107,7 @@ public class AccountSetupBasicsFragment extends Fragment
 
     private void setupToolbar() {
         ((AccountSetupBasics) getActivity()).initializeToolbar(true, R.string.account_setup_basics_title);
-        ((AccountSetupBasics) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.white));
+        ((AccountSetupBasics) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.pep_green));
     }
 
     @Override

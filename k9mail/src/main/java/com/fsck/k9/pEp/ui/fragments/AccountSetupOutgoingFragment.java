@@ -97,7 +97,7 @@ public class AccountSetupOutgoingFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_account_setup_outgoing, container, false);
 
         ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_setup_outgoing_title);
-        ((K9Activity) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.white));
+        ((K9Activity) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.pep_green));
 
         String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
         mEdit = getArguments().getBoolean(EXTRA_EDIT);

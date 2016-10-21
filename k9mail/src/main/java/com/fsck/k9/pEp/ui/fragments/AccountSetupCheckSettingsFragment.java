@@ -96,7 +96,7 @@ public class AccountSetupCheckSettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_account_setup_check_settings, container, false);
         ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_setup_check_settings_title);
-        ((K9Activity) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.white));
+        ((K9Activity) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.pep_green));
         mMessageView = (TextView)rootView.findViewById(R.id.message);
         mProgressBar = (ProgressBar)rootView.findViewById(R.id.progress);
         rootView.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {

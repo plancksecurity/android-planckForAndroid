@@ -73,7 +73,7 @@ public class ChooseAccountTypeFragment extends Fragment {
         mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
         mMakeDefault = getArguments().getBoolean(EXTRA_MAKE_DEFAULT, false);
         ((AccountSetupBasics) getActivity()).initializeToolbar(true, R.string.account_setup_account_type_title);
-        ((AccountSetupBasics) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.white));
+        ((AccountSetupBasics) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.pep_green));
         return rootView;
     }
 
