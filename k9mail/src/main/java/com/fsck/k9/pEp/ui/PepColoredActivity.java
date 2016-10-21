@@ -84,7 +84,7 @@ public class PepColoredActivity extends K9Activity {
 
         // finally change the color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int color = (uiCache.getToolbarColor(pEpRating) & 0x00FFFFFF);
+            int color = (uiCache.getColor(pEpRating) & 0x00FFFFFF);
             int red = Color.red(color);
             int green = Color.green(color);
             int blue = Color.blue(color);

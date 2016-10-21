@@ -92,9 +92,6 @@ public class PePUIArtefactCache
         return PEpUtils.getRatingColor(pEpRating, context);
     }
 
-    public int getToolbarColor(Rating pEpRating) {
-        return PEpUtils.getToolbarRatingColor(pEpRating, context);
-    }
 
     public ArrayList<Identity> getRecipients() {
         if (recipients == null) {
