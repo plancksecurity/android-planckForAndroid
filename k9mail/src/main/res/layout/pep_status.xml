@@ -20,7 +20,7 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:gravity="start"
-        android:textColor="@color/openpgp_black"
+        android:textColor="@color/text_for_white_background"
         android:fontFamily="sans-serif-medium"/>
 
     <TextView
@@ -32,7 +32,7 @@
         android:layout_gravity="left"
         android:layout_marginBottom="16dp"
         android:gravity="left"
-        android:textColor="@color/openpgp_black"
+        android:textColor="@color/text_for_white_background"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"/>
 

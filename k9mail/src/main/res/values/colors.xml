@@ -27,4 +27,7 @@
     <color name="nav_contact_background">#ABABAB</color>
     <color name="light_gray">#B8B8B8</color>
 
+    <color name="text_for_white_background">#212121</color>
+    <color name="secondary_text_color">#757575</color>
+
 </resources>
