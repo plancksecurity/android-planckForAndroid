@@ -8,10 +8,11 @@ import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Toast;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.K9.NotificationHideSubject;
@@ -20,6 +21,7 @@ import com.fsck.k9.K9.SplitViewMode;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.ColorPickerDialog;
+import com.fsck.k9.activity.K9PreferenceActivity;
 import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.notification.NotificationController;
@@ -38,10 +40,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static android.app.Activity.RESULT_OK;
 
-
-public class Prefs extends PreferenceFragment {
+public class Prefs extends K9PreferenceActivity {
 
     /**
      * Immutable empty {@link CharSequence} array
@@ -452,7 +452,7 @@ public class Prefs extends PreferenceFragment {
         mPEpBlacklist.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                PepBlacklist.actionShowBlacklist(getActivity());
+                PepBlacklist.actionShowBlacklist(Prefs.this);
                 return true;
             }
         });
@@ -483,7 +483,7 @@ public class Prefs extends PreferenceFragment {
     }
 
     private void saveSettings() {
-        Storage storage = Preferences.getPreferences(getActivity()).getStorage();
+        Storage storage = Preferences.getPreferences(this).getStorage();
 
         K9.setK9Language(mLanguage.getValue());
 
@@ -562,7 +562,7 @@ public class Prefs extends PreferenceFragment {
         K9.setHideUserAgent(mHideUserAgent.isChecked());
         K9.setHideTimeZone(mHideTimeZone.isChecked());
 //        K9.setPEpExtraAccounts(mPEpExtraAccounts.getText());
-        K9 app = ((K9) getActivity().getApplicationContext());
+        K9 app = ((K9) getApplicationContext());
         app.setPEpUseKeyserver(mPEpUseKeyserver.isChecked());
         app.setPEpPassiveMode(mPEpPassiveMode.isChecked());
         app.setpEpSubjectUnprotected(mPEpSubjectUnprotected.isChecked());
@@ -573,22 +573,22 @@ public class Prefs extends PreferenceFragment {
         editor.commit();
 
         if (needsRefresh) {
-            MailService.actionReset(getActivity(), null);
+            MailService.actionReset(this, null);
         }
     }
 
     @Override
-    public void onPause() {
+    protected void onPause() {
         saveSettings();
         super.onPause();
     }
 
     private void onFontSizeSettings() {
-        FontSizeSettings.actionEditSettings(getActivity());
+        FontSizeSettings.actionEditSettings(this);
     }
 
     private void onChooseContactNameColor() {
-        new ColorPickerDialog(getActivity(), new ColorPickerDialog.OnColorChangedListener() {
+        new ColorPickerDialog(this, new ColorPickerDialog.OnColorChangedListener() {
             public void colorChanged(int color) {
                 K9.setContactNameColor(color);
             }
@@ -597,7 +597,7 @@ public class Prefs extends PreferenceFragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
         case ACTIVITY_CHOOSE_FOLDER:
             if (resultCode == RESULT_OK && data != null) {
@@ -617,45 +617,22 @@ public class Prefs extends PreferenceFragment {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        setupActionBar();
+    }
+
+    private void setupActionBar() {
+        Toolbar toolbar = getToolbar();
+        toolbar.setTitle(R.string.accounts_title);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
     public View getRootView() {
-        return getActivity().getWindow().getDecorView().getRootView();
+        return getWindow().getDecorView().getRootView();
     }
 
-    protected void initListPreference(final ListPreference prefView, final String value,
-                                      final CharSequence[] entries, final CharSequence[] entryValues) {
-        prefView.setEntries(entries);
-        prefView.setEntryValues(entryValues);
-        prefView.setValue(value);
-        prefView.setSummary(prefView.getEntry());
-        prefView.setOnPreferenceChangeListener(new PreferenceChangeListener(prefView));
-    }
-
-    protected ListPreference setupListPreference(final String key, final String value) {
-        final ListPreference prefView = (ListPreference) findPreference(key);
-        prefView.setValue(value);
-        prefView.setSummary(prefView.getEntry());
-        prefView.setOnPreferenceChangeListener(new PreferenceChangeListener(prefView));
-        return prefView;
-    }
-
-    private static class PreferenceChangeListener implements Preference.OnPreferenceChangeListener {
-
-        private ListPreference mPrefView;
-        private PreferenceChangeListener(final ListPreference prefView) {
-            this.mPrefView = prefView;
-        }
-
-        /**
-         * Show the preference value in the preference summary field.
-         */
-        @Override
-        public boolean onPreferenceChange(final Preference preference, final Object newValue) {
-            final String summary = newValue.toString();
-            final int index = mPrefView.findIndexOfValue(summary);
-            mPrefView.setSummary(mPrefView.getEntries()[index]);
-            mPrefView.setValue(summary);
-            return false;
-        }
-
-    }
 }

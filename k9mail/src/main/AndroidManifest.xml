@@ -428,7 +428,6 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".pEp.ui.activities.GlobalPreferences"></activity>
     </application>
 
 </manifest>

@@ -18,7 +18,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
-import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -39,7 +38,6 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -58,6 +56,7 @@ import com.fsck.k9.activity.misc.ExtendedAsyncTask;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
 import com.fsck.k9.activity.setup.AccountSettings;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
+import com.fsck.k9.activity.setup.Prefs;
 import com.fsck.k9.activity.setup.WelcomeMessage;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.helper.SizeFormatter;
@@ -67,8 +66,6 @@ import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
-import com.fsck.k9.message.MessageBuilder;
-import com.fsck.k9.pEp.ui.activities.GlobalPreferences;
 import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -625,7 +622,7 @@ public class Accounts extends K9Activity {
         }, new OnBaseAccountClickListener() {
             @Override
             public void onClick(BaseAccount baseAccount) {
-                GlobalPreferences.actionPrefs(Accounts.this);
+                Prefs.actionPrefs(Accounts.this);
             }
         });
         foldersList.setAdapter(mFoldersAdapter);
@@ -656,7 +653,7 @@ public class Accounts extends K9Activity {
     }
 
     private void onEditPrefs() {
-        GlobalPreferences.actionPrefs(this);
+        Prefs.actionPrefs(this);
     }
 
 
