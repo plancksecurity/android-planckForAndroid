@@ -221,8 +221,6 @@ public class AccountSettings extends K9PreferenceActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setupActionBar();
-
         String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
         mAccount = Preferences.getPreferences(this).getAccount(accountUuid);
 
@@ -1107,6 +1105,12 @@ public class AccountSettings extends K9PreferenceActivity {
                 mTrashFolder.setEnabled(true);
             }
         }
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        setupActionBar();
     }
 
     private void setupActionBar() {

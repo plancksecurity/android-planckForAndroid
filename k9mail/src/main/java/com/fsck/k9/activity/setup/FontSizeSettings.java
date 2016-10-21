@@ -3,11 +3,14 @@ package com.fsck.k9.activity.setup;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.*;
-import android.support.v7.app.ActionBar;
+import android.preference.ListPreference;
+import android.preference.Preference;
 import android.support.v7.widget.Toolbar;
 
-import com.fsck.k9.*;
+import com.fsck.k9.FontSizes;
+import com.fsck.k9.K9;
+import com.fsck.k9.Preferences;
+import com.fsck.k9.R;
 import com.fsck.k9.activity.K9PreferenceActivity;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
@@ -73,8 +76,6 @@ public class FontSizeSettings extends K9PreferenceActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setupActionBar();
 
         FontSizes fontSizes = K9.getFontSizes();
         addPreferencesFromResource(R.xml.font_preferences);
@@ -202,6 +203,12 @@ public class FontSizeSettings extends K9PreferenceActivity {
     public void onBackPressed() {
         saveSettings();
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        setupActionBar();
     }
 
     private void setupActionBar() {
