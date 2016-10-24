@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="48dp"
     android:layout_gravity="center_horizontal"
-    android:layout_marginLeft="8dp"
-    android:layout_marginRight="8dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
     tools:showIn="@layout/toolbar_layout">
 
     <ImageView
@@ -36,7 +36,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
         android:background="@android:color/transparent"
-        android:hint="Search by name or number"
+        android:hint="@string/search_action"
         android:imeOptions="actionSearch"
         android:inputType="textCapSentences|textNoSuggestions"
         android:lines="1"

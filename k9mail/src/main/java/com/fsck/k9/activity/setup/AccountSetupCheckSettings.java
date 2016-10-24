@@ -18,22 +18,22 @@ import android.view.View.OnClickListener;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
+import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmentListener;
-import com.fsck.k9.mail.*;
+import com.fsck.k9.mail.AuthenticationFailedException;
+import com.fsck.k9.mail.CertificateValidationException;
+import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.Store;
+import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.filter.Hex;
 import com.fsck.k9.mail.store.webdav.WebDavStore;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpProviderFactory;
-import com.fsck.k9.pEp.PEpUtils;
-import org.pEp.jniadapter.Identity;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -90,7 +90,7 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.account_setup_check_settings);
+        bindViewsForLayout(R.layout.account_setup_check_settings);
         initializeToolbar(true, R.string.account_setup_check_settings_title);
         setStatusBarPepColor(getResources().getColor(R.color.white));
         mMessageView = (TextView)findViewById(R.id.message);
@@ -129,6 +129,11 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
         super.onDestroy();
         mDestroyed = true;
         mCanceled = true;
+    }
+
+    @Override
+    public void search(String query) {
+
     }
 
     @Override

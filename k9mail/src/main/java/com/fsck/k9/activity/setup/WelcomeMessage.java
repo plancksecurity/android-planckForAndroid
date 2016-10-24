@@ -37,7 +37,7 @@ public class WelcomeMessage extends K9Activity implements OnClickListener{
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        setContentView(R.layout.welcome_message);
+        bindViewsForLayout(R.layout.welcome_message);
         ButterKnife.bind(this);
 
         initializeToolbar(false, R.string.welcome_message_title);
@@ -57,6 +57,11 @@ public class WelcomeMessage extends K9Activity implements OnClickListener{
 
         findViewById(R.id.next).setOnClickListener(this);
         findViewById(R.id.import_settings).setOnClickListener(this);
+    }
+
+    @Override
+    public void search(String query) {
+
     }
 
     @Override

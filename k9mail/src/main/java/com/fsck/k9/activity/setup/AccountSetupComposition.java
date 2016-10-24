@@ -44,7 +44,7 @@ public class AccountSetupComposition extends K9Activity {
         String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
         mAccount = Preferences.getPreferences(this).getAccount(accountUuid);
 
-        setContentView(R.layout.account_setup_composition);
+        bindViewsForLayout(R.layout.account_setup_composition);
 
         initializeToolbar(true, R.string.account_settings_composition_title);
         /*
@@ -98,6 +98,11 @@ public class AccountSetupComposition extends K9Activity {
         } else {
             mAccountSignatureLayout.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void search(String query) {
+
     }
 
     private void saveSettings() {

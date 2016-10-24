@@ -43,7 +43,7 @@ public class EditIdentity extends K9Activity {
             mIdentity = new Identity();
         }
 
-        setContentView(R.layout.edit_identity);
+        bindViewsForLayout(R.layout.edit_identity);
 
         /*
          * If we're being reloaded we override the original account with the one
@@ -88,6 +88,11 @@ public class EditIdentity extends K9Activity {
         } else {
             mSignatureLayout.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void search(String query) {
+
     }
 
     private void saveIdentity() {

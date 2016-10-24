@@ -326,6 +326,19 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         }
     }
 
+    @Override
+    public void search(String query) {
+        if (mAccount != null && query != null) {
+            final Bundle appData = new Bundle();
+            appData.putString(EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
+            appData.putString(EXTRA_SEARCH_FOLDER, mFolderName);
+            triggerSearch(query, appData);
+        } else {
+            // TODO Handle the case where we're searching from within a search result.
+            startSearch(null, false, null, false);
+        }
+    }
+
     private void loadNavigationView() {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -1199,11 +1212,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     @Override
-    public boolean onSearchRequested() {
-        return mMessageListFragment.onSearchRequested();
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         switch (itemId) {
@@ -1265,7 +1273,9 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 return true;
             }
             case R.id.search: {
-                mMessageListFragment.onSearchRequested();
+                // TODO: 24/10/16 think about this
+//                mMessageListFragment.onSearchRequested();
+                showSearchView();
                 return true;
             }
             case R.id.search_remote: {

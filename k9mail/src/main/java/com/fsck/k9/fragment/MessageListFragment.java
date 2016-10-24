@@ -3115,11 +3115,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         return allowRemoteSearch;
     }
 
-    public boolean onSearchRequested() {
-        String folderName = (mCurrentFolder != null) ? mCurrentFolder.name : null;
-        return mFragmentListener.startSearch(mAccount, folderName);
-   }
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String accountUuid = mAccountUuids[id];

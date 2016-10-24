@@ -31,12 +31,17 @@ public class AccountSetupBasics extends K9Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.account_setup_basics);
+        bindViewsForLayout(R.layout.account_setup_basics);
         if (savedInstanceState == null) {
             accountSetupBasicsFragment = new AccountSetupBasicsFragment();
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.add(R.id.account_setup_container, accountSetupBasicsFragment).commit();
         }
+    }
+
+    @Override
+    public void search(String query) {
+
     }
 
     @Override

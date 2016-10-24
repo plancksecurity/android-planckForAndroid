@@ -9,13 +9,13 @@ import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
@@ -32,11 +32,12 @@ import org.pEp.jniadapter.Sync;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
-public class K9Activity extends AppCompatActivity implements K9ActivityMagic, Sync.showHandshakeCallback {
+public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic, Sync.showHandshakeCallback {
 
     @Nullable @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.toolbar_search_container) FrameLayout toolbarSearchContainer;
@@ -175,15 +176,28 @@ public class K9Activity extends AppCompatActivity implements K9ActivityMagic, Sy
     void onSearchInputChanged(CharSequence query) {
         if (query.toString().isEmpty()) {
             clearSearchIcon.setVisibility(View.GONE);
-//            moreOptionsIcon.setVisibility(View.VISIBLE);
         } else {
             clearSearchIcon.setVisibility(View.VISIBLE);
-//            moreOptionsIcon.setVisibility(View.GONE);
         }
+    }
+
+    @OnEditorAction(R.id.search_input)
+    boolean onSearchInputSubmitted(KeyEvent keyEvent) {
+        if (!searchInput.getText().toString().isEmpty()) {
+            search(searchInput.getText().toString());
+        }
+        return true;
     }
 
     public void bindViewsForLayout(int layoutId) {
         setContentView(layoutId);
         ButterKnife.bind(this);
     }
+
+    public void bindViewsForView(View view) {
+        setContentView(view);
+        ButterKnife.bind(this);
+    }
+
+    public abstract void search(String query);
 }

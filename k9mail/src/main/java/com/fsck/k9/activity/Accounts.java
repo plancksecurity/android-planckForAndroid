@@ -441,6 +441,11 @@ public class Accounts extends K9Activity {
         setupSettingsButton();
     }
 
+    @Override
+    public void search(String query) {
+        triggerSearch(query, null);
+    }
+
     private void setupSettingsButton() {
         View settingsButton = findViewById(R.id.settings_container);
         settingsButton.setOnClickListener(new OnClickListener() {
