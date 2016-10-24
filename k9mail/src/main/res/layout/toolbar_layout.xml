@@ -19,6 +19,15 @@
             <include layout="@layout/actionbar_custom" />
     </android.support.v7.widget.Toolbar>
 
+    <FrameLayout android:id="@+id/toolbar_search_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:clipChildren="false"
+        android:visibility="gone"
+        tools:visibility="visible">
 
-
+        <include layout="@layout/include_search_bar" />
+    </FrameLayout>
 </android.support.design.widget.AppBarLayout>

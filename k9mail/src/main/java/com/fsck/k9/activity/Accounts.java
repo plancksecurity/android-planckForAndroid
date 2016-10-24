@@ -375,7 +375,7 @@ public class Accounts extends K9Activity {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        setContentView(R.layout.accounts);
+        bindViewsForLayout(R.layout.accounts);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.message_swipe);
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -1289,7 +1289,7 @@ public class Accounts extends K9Activity {
             onAbout();
             break;
         case R.id.search:
-            onSearchRequested();
+            showSearchView();
             break;
 //        case R.id.export_all:
 //            onExport(true, null);

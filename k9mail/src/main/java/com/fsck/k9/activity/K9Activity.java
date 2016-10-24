@@ -13,6 +13,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
@@ -20,19 +23,25 @@ import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.Sync;
 
 import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.OnTextChanged;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
 public class K9Activity extends AppCompatActivity implements K9ActivityMagic, Sync.showHandshakeCallback {
 
-    @Nullable
-    @Bind(R.id.toolbar) Toolbar toolbar;
+    @Nullable @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.toolbar_search_container) FrameLayout toolbarSearchContainer;
+    @Bind(R.id.search_input) EditText searchInput;
+    @Bind(R.id.search_clear) View clearSearchIcon;
 
     private K9ActivityCommon mBase;
 
@@ -41,7 +50,6 @@ public class K9Activity extends AppCompatActivity implements K9ActivityMagic, Sy
         mBase = K9ActivityCommon.newInstance(this);
         super.onCreate(savedInstanceState);
         ((K9) getApplication()).pEpSyncProvider.setSyncHandshakeCallback(this);
-
     }
 
     @Override
@@ -74,13 +82,18 @@ public class K9Activity extends AppCompatActivity implements K9ActivityMagic, Sy
     }
 
     public void setUpToolbar(boolean showUpButton) {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(showUpButton);
             }
         }
+    }
+
+    @OnClick(R.id.search_clear) void onSearchClearClicked() {
+        toolbarSearchContainer.setVisibility(View.GONE);
+        searchInput.setText(null);
+        KeyboardUtils.hideKeyboard(searchInput);
     }
 
     public Toolbar getToolbar() {
@@ -144,5 +157,33 @@ public class K9Activity extends AppCompatActivity implements K9ActivityMagic, Sy
     }
     public View getRootView() {
         return getWindow().getDecorView().getRootView();
+    }
+
+    public void showSearchView() {
+        if (toolbarSearchContainer != null) {
+            toolbarSearchContainer.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void hideSearchView() {
+        if (toolbarSearchContainer != null) {
+            toolbarSearchContainer.setVisibility(View.GONE);
+        }
+    }
+
+    @OnTextChanged(R.id.search_input)
+    void onSearchInputChanged(CharSequence query) {
+        if (query.toString().isEmpty()) {
+            clearSearchIcon.setVisibility(View.GONE);
+//            moreOptionsIcon.setVisibility(View.VISIBLE);
+        } else {
+            clearSearchIcon.setVisibility(View.VISIBLE);
+//            moreOptionsIcon.setVisibility(View.GONE);
+        }
+    }
+
+    public void bindViewsForLayout(int layoutId) {
+        setContentView(layoutId);
+        ButterKnife.bind(this);
     }
 }

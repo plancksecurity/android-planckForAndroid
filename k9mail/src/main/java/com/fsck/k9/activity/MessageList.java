@@ -289,9 +289,9 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         }
 
         if (useSplitView()) {
-            setContentView(R.layout.split_message_list);
+            bindViewsForLayout(R.layout.split_message_list);
         } else {
-            setContentView(R.layout.message_list);
+            bindViewsForLayout(R.layout.message_list);
             mViewSwitcher = (ViewSwitcher) findViewById(R.id.container);
             mViewSwitcher.setFirstInAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_left));
             mViewSwitcher.setFirstOutAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_out_right));
@@ -299,7 +299,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             mViewSwitcher.setSecondOutAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_out_left));
             mViewSwitcher.setOnSwitchCompleteListener(this);
         }
-
         initializeActionBar();
 
         if (!decodeExtras(getIntent())) {
@@ -316,7 +315,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, getToolbar(), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
