@@ -14,6 +14,7 @@ import android.util.Log;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.AuthenticationFailedException;
 import com.fsck.k9.mail.K9MailLib;
+import com.fsck.k9.mail.oauth.AuthorizationException;
 import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
 
 import java.io.IOException;
@@ -42,7 +43,7 @@ public class AndroidAccountOAuth2TokenStore implements OAuth2TokenProvider {
                              final OAuth2TokenProviderAuthCallback callback) {
         Account account = getAccountFromManager(emailAddress);
         if (account == null) {
-            callback.failure(new Exception(activity.getString(R.string.xoauth2_account_doesnt_exist)));
+            callback.failure(new AuthorizationException(activity.getString(R.string.xoauth2_account_doesnt_exist)));
         }
         if(account.name.equals(emailAddress)) {
             accountManager.getAuthToken(account, GMAIL_AUTH_TOKEN_TYPE, null, activity,
@@ -55,13 +56,13 @@ public class AndroidAccountOAuth2TokenStore implements OAuth2TokenProvider {
                                 callback.success();
                             }
                         } catch (OperationCanceledException e) {
-                            callback.failure(new Exception(activity.getString(
+                            callback.failure(new AuthorizationException(activity.getString(
                                     R.string.xoauth2_auth_cancelled_by_user), e));
                         } catch (IOException e) {
-                            callback.failure(new Exception(activity.getString(
+                            callback.failure(new AuthorizationException(activity.getString(
                                     R.string.xoauth2_unable_to_contact_auth_server), e));
                         } catch (AuthenticatorException e) {
-                            callback.failure(new Exception(activity.getString(
+                            callback.failure(new AuthorizationException(activity.getString(
                                     R.string.xoauth2_error_contacting_auth_server), e));
                         }
                     }

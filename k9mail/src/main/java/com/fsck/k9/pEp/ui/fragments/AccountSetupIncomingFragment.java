@@ -42,6 +42,7 @@ import com.fsck.k9.mail.NetworkType;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.Transport;
+import com.fsck.k9.mail.oauth.AuthorizationException;
 import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mail.store.imap.ImapStoreSettings;
@@ -638,7 +639,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
                         }
 
                         @Override
-                        public void failure(Exception e) {
+                        public void failure(AuthorizationException e) {
                             fail(e);
                         }
                     });
