@@ -112,8 +112,7 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
     }
 
     private void checkOutgoing() throws MessagingException {
-        Transport transport = Transport.getInstance(K9.app, account,
-                new AndroidAccountOAuth2TokenStore(context));
+        Transport transport = Transport.getInstance(K9.app, account);
         transport.close();
         try {
             transport.open();

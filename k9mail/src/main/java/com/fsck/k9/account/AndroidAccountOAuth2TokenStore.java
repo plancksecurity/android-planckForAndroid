@@ -39,8 +39,8 @@ public class AndroidAccountOAuth2TokenStore implements OAuth2TokenProvider {
     }
 
     @Override
-    public void authorizeAPI(final String emailAddress, final Activity activity,
-                             final OAuth2TokenProviderAuthCallback callback) {
+    public void authorizeApi(String emailAddress, Activity activity,
+                              OAuth2TokenProviderAuthCallback callback) {
         Account account = getAccountFromManager(emailAddress);
         if (account == null) {
             callback.failure(new AuthorizationException(activity.getString(R.string.xoauth2_account_doesnt_exist)));

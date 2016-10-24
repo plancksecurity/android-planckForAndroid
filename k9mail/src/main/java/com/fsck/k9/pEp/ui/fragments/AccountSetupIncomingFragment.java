@@ -630,7 +630,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         rootView.setEnabled(false);
         AuthType authType = getSelectedAuthType();
         if (authType == AuthType.XOAUTH2) {
-            K9.oAuth2TokenStore.authorizeAPI(mAccount.getEmail(), getActivity(),
+            K9.oAuth2TokenStore.authorizeApi(mAccount.getEmail(), getActivity(),
                     new OAuth2TokenProvider.OAuth2TokenProviderAuthCallback() {
                         @Override
                         public void success() {
