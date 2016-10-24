@@ -1313,7 +1313,7 @@ public class Account implements BaseAccount, StoreConfig {
     }
 
     public Store getRemoteStore() throws MessagingException {
-        return RemoteStore.getInstance(K9.app, this, K9.oAuth2TokenStore);
+        return RemoteStore.getInstance(K9.app, this, null);
     }
 
     // It'd be great if this actually went into the store implementation
