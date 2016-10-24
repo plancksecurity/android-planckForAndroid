@@ -54,6 +54,7 @@ import com.fsck.k9.mail.power.TracingPowerManager;
 import com.fsck.k9.mail.power.TracingPowerManager.TracingWakeLock;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
@@ -339,6 +340,15 @@ public class FolderList extends K9ListActivity {
                 return true;
             }
         });
+
+        clearSearchIcon.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchInput.setText(null);
+                hideSearchView();
+                KeyboardUtils.hideKeyboard(searchInput);
+            }
+        });
     }
 
     private void search(String query) {
@@ -354,12 +364,14 @@ public class FolderList extends K9ListActivity {
 
     public void showSearchView() {
         if (searchLayout != null) {
+            getToolbar().setVisibility(View.GONE);
             searchLayout.setVisibility(View.VISIBLE);
         }
     }
 
     public void hideSearchView() {
         if (searchLayout != null) {
+            getToolbar().setVisibility(View.VISIBLE);
             searchLayout.setVisibility(View.GONE);
         }
     }

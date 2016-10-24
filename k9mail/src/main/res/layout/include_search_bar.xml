@@ -1,17 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="48dp"
-    android:layout_gravity="center_horizontal"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
+    android:layout_height="32dp"
+    android:layout_gravity="center"
     tools:showIn="@layout/toolbar_layout">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|left"
+        android:paddingLeft="16dp"
+        android:clickable="true"
+        android:background="?selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_action_search"
+        android:tint="@color/white" />
 
     <EditText
         android:id="@+id/search_input"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginLeft="72dp"
         android:layout_gravity="center_vertical"
         android:background="@android:color/transparent"
         android:hint="@string/search_action"
@@ -19,10 +28,9 @@
         android:inputType="textCapSentences|textNoSuggestions"
         android:lines="1"
         android:maxLines="1"
-        android:paddingLeft="16dp"
-        android:textColor="?android:textColorPrimary"
-        android:textColorHint="@color/light_gray"
-        android:textSize="14sp" />
+        android:textColor="@color/white"
+        android:textColorHint="@color/light_primary_color"
+        android:textSize="18sp" />
 
     <ImageView
         android:id="@+id/search_clear"
@@ -33,6 +41,7 @@
         android:clickable="true"
         android:background="?selectableItemBackgroundBorderless"
         android:src="@drawable/ic_content_clear"
+        android:tint="@color/white"
         android:visibility="gone"
         tools:visibility="visible" />
-</android.support.v7.widget.CardView>
+</FrameLayout>

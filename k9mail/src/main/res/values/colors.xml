@@ -4,6 +4,8 @@
     <color name="colorPrimaryDark">#388e3c</color>
     <color name="colorAccent">#0F9D58</color>
 
+    <color name="light_primary_color">#c8e6c9</color>
+
     <color name="message_list_item_footer_background">#eeeeee</color>
 
     <color name="light_black">#444</color>

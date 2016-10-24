@@ -92,7 +92,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     }
 
     @OnClick(R.id.search_clear) void onSearchClearClicked() {
-        toolbarSearchContainer.setVisibility(View.GONE);
+        hideSearchView();
         searchInput.setText(null);
         KeyboardUtils.hideKeyboard(searchInput);
     }
@@ -161,14 +161,16 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     }
 
     public void showSearchView() {
-        if (toolbarSearchContainer != null) {
+        if (toolbarSearchContainer != null && toolbar != null) {
             toolbarSearchContainer.setVisibility(View.VISIBLE);
+            toolbar.setVisibility(View.GONE);
         }
     }
 
     public void hideSearchView() {
-        if (toolbarSearchContainer != null) {
+        if (toolbarSearchContainer != null && toolbar != null) {
             toolbarSearchContainer.setVisibility(View.GONE);
+            toolbar.setVisibility(View.VISIBLE);
         }
     }
 
@@ -192,7 +194,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     @OnClick(R.id.search_clear)
     void onClearText() {
         searchInput.setText(null);
-        toolbarSearchContainer.setVisibility(View.GONE);
+        hideSearchView();
         KeyboardUtils.hideKeyboard(searchInput);
     }
 
