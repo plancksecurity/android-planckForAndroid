@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.support.v7.widget.SearchView;
+import android.text.Editable;
 import android.text.TextUtils.TruncateAt;
+import android.text.TextWatcher;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -23,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.LinearLayout;
@@ -62,6 +65,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import static com.fsck.k9.activity.MessageList.EXTRA_SEARCH_ACCOUNT;
+
 /**
  * FolderList is the primary user interface for the program. This
  * Activity shows list of the Account's folders
@@ -95,6 +100,9 @@ public class FolderList extends K9ListActivity {
     private TextView mActionBarTitle;
     private TextView mActionBarSubTitle;
     private TextView mActionBarUnread;
+    private View searchLayout;
+    private EditText searchInput;
+    private View clearSearchIcon;
 
     class FolderListHandler extends Handler {
 
@@ -296,6 +304,64 @@ public class FolderList extends K9ListActivity {
         mActionBarTitle = (TextView) customView.findViewById(R.id.actionbar_title_first);
         mActionBarSubTitle = (TextView) customView.findViewById(R.id.actionbar_title_sub);
         mActionBarUnread = (TextView) customView.findViewById(R.id.actionbar_unread_count);
+
+        searchLayout = findViewById(R.id.toolbar_search_container);
+        searchInput = (EditText) findViewById(R.id.search_input);
+        clearSearchIcon = findViewById(R.id.search_clear);
+
+        searchInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence query, int start, int before, int count) {
+                if (query.toString().isEmpty()) {
+                    clearSearchIcon.setVisibility(View.GONE);
+                } else {
+                    clearSearchIcon.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        searchInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (!searchInput.getText().toString().isEmpty()) {
+                    search(searchInput.getText().toString());
+                }
+                return true;
+            }
+        });
+    }
+
+    private void search(String query) {
+        if (mAccount != null && query != null) {
+            final Bundle appData = new Bundle();
+            appData.putString(EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
+            triggerSearch(query, appData);
+        } else {
+            // TODO Handle the case where we're searching from within a search result.
+            startSearch(null, false, null, false);
+        }
+    }
+
+    public void showSearchView() {
+        if (searchLayout != null) {
+            searchLayout.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void hideSearchView() {
+        if (searchLayout != null) {
+            searchLayout.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -497,7 +563,7 @@ public class FolderList extends K9ListActivity {
             return true;
 
         case R.id.search:
-            onSearchRequested();
+            showSearchView();
 
             return true;
 
@@ -565,7 +631,7 @@ public class FolderList extends K9ListActivity {
     @Override
     public boolean onSearchRequested() {
          Bundle appData = new Bundle();
-         appData.putString(MessageList.EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
+         appData.putString(EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
          startSearch(null, false, appData, false);
          return true;
      }
