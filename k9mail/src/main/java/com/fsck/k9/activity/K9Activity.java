@@ -189,6 +189,13 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         return true;
     }
 
+    @OnClick(R.id.search_clear)
+    void onClearText() {
+        searchInput.setText(null);
+        toolbarSearchContainer.setVisibility(View.GONE);
+        KeyboardUtils.hideKeyboard(searchInput);
+    }
+
     public void bindViewsForLayout(int layoutId) {
         setContentView(layoutId);
         ButterKnife.bind(this);

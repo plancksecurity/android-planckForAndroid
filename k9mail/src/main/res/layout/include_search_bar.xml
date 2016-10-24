@@ -8,28 +8,6 @@
     android:layout_marginRight="16dp"
     tools:showIn="@layout/toolbar_layout">
 
-    <ImageView
-        android:id="@+id/search_clear"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_gravity="center_vertical|right"
-        android:layout_marginRight="16dp"
-        android:background="?selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_content_clear"
-        android:tint="@color/gray"
-        android:visibility="gone"
-        />
-
-    <ImageView
-        android:id="@+id/search_more"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_gravity="center_vertical|right"
-        android:layout_marginRight="16dp"
-        android:background="?selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_navigation_more_vert"
-        android:tint="@color/white" />
-
     <EditText
         android:id="@+id/search_input"
         android:layout_width="match_parent"
@@ -43,6 +21,18 @@
         android:maxLines="1"
         android:paddingLeft="16dp"
         android:textColor="?android:textColorPrimary"
-        android:textColorHint="#66000000"
+        android:textColorHint="@color/light_gray"
         android:textSize="14sp" />
+
+    <ImageView
+        android:id="@+id/search_clear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|right"
+        android:layout_marginRight="16dp"
+        android:clickable="true"
+        android:background="?selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_content_clear"
+        android:visibility="gone"
+        tools:visibility="visible" />
 </android.support.v7.widget.CardView>
