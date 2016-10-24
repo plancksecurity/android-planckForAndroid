@@ -55,6 +55,7 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpUIUtils;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
+import com.fsck.k9.pEp.ui.infrastructure.Router;
 import com.fsck.k9.pEp.ui.listeners.OnAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
 import com.fsck.k9.pEp.ui.renderers.AccountRenderer;
@@ -137,6 +138,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private View addAccountContainer;
     private View configureAccountContainer;
     private ActionBarDrawerToggle toggle;
+    private FloatingActionButton fabButton;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
             boolean noThreading, boolean newTask) {
@@ -300,6 +302,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             mViewSwitcher.setOnSwitchCompleteListener(this);
         }
         initializeActionBar();
+        initializeFabButton();
 
         if (!decodeExtras(getIntent())) {
             return;
@@ -311,7 +314,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         initializeFragments();
         displayViews();
         if (mAccount != null && mAccount.ispEpPrivacyProtected()) initializePepStatus();
-        initializeFabButton();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
@@ -667,8 +669,8 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     private void initializeFabButton() {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_button_compose_message);
-        fab.setOnClickListener(new View.OnClickListener() {
+        fabButton = (FloatingActionButton) findViewById(R.id.fab_button_compose_message);
+        fabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 goToMessageCompose();
@@ -694,6 +696,8 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         mSearch = null;
         mFolderName = null;
 
+        initializeActionBar();
+        initializeFabButton();
         if (!decodeExtras(intent)) {
             return;
         }
@@ -869,6 +873,8 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 } else {
                     mSearch.addAccountUuid(LocalSearch.ALL_ACCOUNTS);
                 }
+
+                fabButton.setVisibility(View.GONE);
             }
         } else {
             // regular LocalSearch object was passed
@@ -927,8 +933,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
         // now we know if we are in single account mode and need a subtitle
 
-        mActionBarSubTitle.setVisibility((!mSingleFolderMode) ? View.GONE : View.VISIBLE);
-
+        mActionBarSubTitle.setVisibility(Intent.ACTION_SEARCH.equals(intent.getAction()) || !mSingleFolderMode  ? View.GONE : View.VISIBLE);
         return true;
     }
 
@@ -1012,7 +1017,9 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     @Override
     public void onBackPressed() {
-        if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
+        if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
+            Router.onOpenAccount(this, mAccount);
+        } else if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
             showMessageList();
         } else {
             onAccounts();
@@ -1273,8 +1280,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 return true;
             }
             case R.id.search: {
-                // TODO: 24/10/16 think about this
-//                mMessageListFragment.onSearchRequested();
                 showSearchView();
                 return true;
             }

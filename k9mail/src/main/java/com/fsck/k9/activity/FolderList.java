@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
@@ -366,6 +367,7 @@ public class FolderList extends K9ListActivity {
         if (searchLayout != null) {
             getToolbar().setVisibility(View.GONE);
             searchLayout.setVisibility(View.VISIBLE);
+            setFocusOnKeyboard();
         }
     }
 
@@ -374,6 +376,12 @@ public class FolderList extends K9ListActivity {
             getToolbar().setVisibility(View.VISIBLE);
             searchLayout.setVisibility(View.GONE);
         }
+    }
+
+    private void setFocusOnKeyboard() {
+        searchInput.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(searchInput, InputMethodManager.SHOW_IMPLICIT);
     }
 
     @Override

@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 
@@ -164,7 +165,14 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         if (toolbarSearchContainer != null && toolbar != null) {
             toolbarSearchContainer.setVisibility(View.VISIBLE);
             toolbar.setVisibility(View.GONE);
+            setFocusOnKeyboard();
         }
+    }
+
+    private void setFocusOnKeyboard() {
+        searchInput.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(searchInput, InputMethodManager.SHOW_IMPLICIT);
     }
 
     public void hideSearchView() {
