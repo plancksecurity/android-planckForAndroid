@@ -21,6 +21,8 @@ import org.pEp.jniadapter.Pair;
 import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.Sync;
 import org.pEp.jniadapter.pEpException;
+import org.pEp.jniadapter.pEpMessageConsumed;
+import org.pEp.jniadapter.pEpMessageDiscarded;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -147,7 +149,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public DecryptResult decryptMessage(MimeMessage source) {
+    public DecryptResult decryptMessage(MimeMessage source) throws pEpMessageDiscarded, pEpMessageConsumed {
         Log.d(TAG, "decryptMessage() enter");
         Message srcMsg = null;
         Engine.decrypt_message_Return decReturn = null;
@@ -158,6 +160,11 @@ public class PEpProviderImpl implements PEpProvider {
             srcMsg.setDir(Message.Direction.Incoming);
 
             Log.d(TAG, "decryptMessage() before decrypt");
+            if ( srcMsg.getOptFields() != null) {
+                for (Pair<String, String> stringStringPair : srcMsg.getOptFields()) {
+                    Log.d(TAG, "decryptMessage() after decrypt " + stringStringPair.first + ": " + stringStringPair.second);
+                }
+            }
             decReturn = engine.decrypt_message(srcMsg);
             Log.d(TAG, "decryptMessage() after decrypt");
             MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
@@ -167,7 +174,9 @@ public class PEpProviderImpl implements PEpProvider {
                 return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg));
             }
             else return new DecryptResult(decMsg, decReturn.rating, null);
-        } catch (Throwable t) {
+        } catch (pEpMessageDiscarded | pEpMessageConsumed pe) {
+            throw pe;
+        }catch (Throwable t) {
             Log.e(TAG, "while decrypting message:", t);
             throw new RuntimeException("Could not decrypt", t);
         } finally {
@@ -526,7 +535,25 @@ public class PEpProviderImpl implements PEpProvider {
             Log.e(TAG, "setstartSync: ");
         }
         Log.i(TAG, "setSyncHandshakeCallback: SEND");
+    }
 
+    @Override
+    public void startSync() {
+        engine.startSync();
+    }
 
+    @Override
+    public void acceptHandshake(Identity identity) {
+        engine.accept_sync_handshake(identity);
+    }
+
+    @Override
+    public void rejectHandshake(Identity identity) {
+        engine.reject_sync_handshake(identity);
+    }
+
+    @Override
+    public void cancelHandshake(Identity identity) {
+        engine.cancel_sync_handshake(identity);
     }
 }

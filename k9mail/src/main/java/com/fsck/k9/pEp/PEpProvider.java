@@ -12,6 +12,8 @@ import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
 import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.Sync;
+import org.pEp.jniadapter.pEpMessageConsumed;
+import org.pEp.jniadapter.pEpMessageDiscarded;
 
 import java.util.List;
 
@@ -59,7 +61,7 @@ public interface PEpProvider {
      * <p/>
      * TODO: pEp: how do I get the color? Perhaps Via header value in return value?
      */
-    DecryptResult decryptMessage(MimeMessage source);
+    DecryptResult decryptMessage(MimeMessage source) throws pEpMessageDiscarded, pEpMessageConsumed;
 
     /**
      * Encrypts one k9 message. This one hides all the black magic associated with the real
@@ -158,6 +160,14 @@ public interface PEpProvider {
     void setSyncSendMessageCallback(Sync.MessageToSendCallback callback);
 
     void setSyncHandshakeCallback(Sync.showHandshakeCallback activity);
+
+    void startSync();
+
+    void acceptHandshake(Identity identity);
+
+    void rejectHandshake(Identity identity);
+
+    void cancelHandshake(Identity identity);
 
     class KeyDetail {
         private final Address address;

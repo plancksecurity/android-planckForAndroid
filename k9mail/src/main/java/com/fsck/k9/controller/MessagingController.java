@@ -110,7 +110,9 @@ import com.fsck.k9.search.SqlQueryBuilder;
 
 import org.pEp.jniadapter.AndroidHelper;
 import org.pEp.jniadapter.Rating;
+import org.pEp.jniadapter.Status;
 import org.pEp.jniadapter.Sync;
+import org.pEp.jniadapter.pEpMessageDiscarded;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;
@@ -141,7 +143,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Starts a long running (application) Thread that will run through commands
+ * Starts a long running (application) Thread that will run thr ough commands
  * that require remote mailbox access. This class is used to serialize and
  * prioritize these commands. Each method that will submit a command requires a
  * MessagingListener instance to be provided. It is expected that that listener
@@ -1457,14 +1459,28 @@ public class MessagingController implements Sync.MessageToSendCallback {
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", (MimeMessage) message);
                     final PEpProvider.DecryptResult result;
                     if (account.ispEpPrivacyProtected()) {
-                        result = pEpProvider.decryptMessage((MimeMessage) message);
+                        PEpProvider.DecryptResult tempResult;
+
+                        try {
+                            tempResult = pEpProvider.decryptMessage((MimeMessage) message);
+                        } catch (org.pEp.jniadapter.pEpMessageDiscarded pEpMessageDiscarded) {
+                            pEpMessageDiscarded.printStackTrace();
+                            tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null);
+                        } catch (org.pEp.jniadapter.pEpMessageConsumed pEpMessageConsumed) {
+                            tempResult = null;
+
+                            Log.i("PEPJNI", "messageFinished: Deleting");
+                        }
+                        result = tempResult;
                     }
                     else {
                         result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null);
                     }
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
-
-                    if (result.keyDetails != null) {
+                    if (result == null) {
+                        deleteImportMessage(message, account, folder, localFolder);
+                    }
+                    else if (result.keyDetails != null) {
                         showImportKeyDialogIfNeeded(message, result, account);
                         deleteImportMessage(message, account, folder, localFolder);
                     }
@@ -1516,7 +1532,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         notificationController.addNewMailNotification(account, localMessage, unreadBeforeStart);
                     }
                     }
-                } catch (MessagingException | RuntimeException me) {
+                }  catch (MessagingException | RuntimeException me) {
                     addErrorMessage(account, null, me);
                     Log.e(K9.LOG_TAG, "SYNC: fetch small messages", me);
                 }
@@ -4773,7 +4789,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         sendMessage(currentAccount, pEpProvider.getMimeMessage(message), null);
     }
 
-    private Account checkAccount(org.pEp.jniadapter.Message message, Account account) {
+    public Account checkAccount(org.pEp.jniadapter.Message message, Account account) {
         for (Identity identity : account.getIdentities()) {
             if (identity.getEmail().equals(message.getFrom().address)) {
                 return  account;

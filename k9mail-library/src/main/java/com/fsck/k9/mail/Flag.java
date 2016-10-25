@@ -66,5 +66,5 @@ public enum Flag {
     /**
      * This flag is used for force unencrypted.
      */
-    X_FORCE_UNENCRYPTED,
+    X_PEP_DISABLED,
 }
