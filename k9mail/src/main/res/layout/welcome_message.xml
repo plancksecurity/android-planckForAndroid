@@ -5,8 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
-    <include layout="@layout/simple_toolbar_layout" />
-
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="0dp"

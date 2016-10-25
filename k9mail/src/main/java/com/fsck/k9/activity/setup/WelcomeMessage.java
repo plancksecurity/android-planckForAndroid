@@ -2,30 +2,20 @@ package com.fsck.k9.activity.setup;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.text.method.LinkMovementMethod;
-import android.view.View;
-import android.view.View.OnClickListener;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.widget.TextView;
 
 import com.fsck.k9.R;
-import com.fsck.k9.activity.Accounts;
-import com.fsck.k9.activity.K9Activity;
-import com.fsck.k9.helper.HtmlConverter;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.PePUIArtefactCache;
-
-import org.pEp.jniadapter.Rating;
+import com.fsck.k9.pEp.ui.fragments.intro.IntroFirstFragment;
+import com.fsck.k9.pEp.ui.fragments.intro.IntroSecondFragment;
+import com.fsck.k9.pEp.ui.fragments.intro.IntroThirdFragment;
+import com.github.paolorotolo.appintro.AppIntro;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 
-/**
- * Displays a welcome message when no accounts have been created yet.
- */
-public class WelcomeMessage extends K9Activity implements OnClickListener{
+public class WelcomeMessage extends AppIntro {
 
     @Bind(R.id.welcome_app_version) TextView appDescription;
 
@@ -35,43 +25,41 @@ public class WelcomeMessage extends K9Activity implements OnClickListener{
     }
 
     @Override
-    public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
-        setContentView(R.layout.welcome_message);
-        ButterKnife.bind(this);
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        initializeToolbar(false, R.string.welcome_message_title);
-        PEpUtils.colorToolbar(PePUIArtefactCache.getInstance(getApplicationContext()), getToolbar(), Rating.pEpRatingTrustedAndAnonymized);
+        // Add your slide fragments here.
+        // AppIntro will automatically generate the dots indicator and buttons.
+        addSlide(new IntroFirstFragment());
+        addSlide(new IntroSecondFragment());
+        addSlide(new IntroThirdFragment());
 
-        try {
-            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            String description = getString(R.string.app_k9_pep_name) + pInfo.versionName + "\n" + getString(R.string.pep_app_description);
-            appDescription.setText(description);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
+        // OPTIONAL METHODS
+        // Override bar/separator color.
+//        setBarColor(Color.parseColor("#3F51B5"));
+//        setSeparatorColor(Color.parseColor("#2196F3"));
 
-        TextView welcome = (TextView) findViewById(R.id.welcome_message);
-        welcome.setText(HtmlConverter.htmlToSpanned(getString(R.string.accounts_welcome)));
-        welcome.setMovementMethod(LinkMovementMethod.getInstance());
-
-        findViewById(R.id.next).setOnClickListener(this);
-        findViewById(R.id.import_settings).setOnClickListener(this);
+        // Hide Skip/Done button.
+        showSkipButton(true);
+        setProgressButtonEnabled(true);
     }
 
     @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.next: {
-                AccountSetupBasics.actionNewAccount(this);
-                finish();
-                break;
-            }
-            case R.id.import_settings: {
-                Accounts.importSettings(this);
-                finish();
-                break;
-            }
-        }
+    public void onSkipPressed(Fragment currentFragment) {
+        super.onSkipPressed(currentFragment);
+        AccountSetupBasics.actionNewAccount(this);
+        finish();
+    }
+
+    @Override
+    public void onDonePressed(Fragment currentFragment) {
+        super.onDonePressed(currentFragment);
+        AccountSetupBasics.actionNewAccount(this);
+        finish();
+    }
+
+    @Override
+    public void onSlideChanged(@Nullable Fragment oldFragment, @Nullable Fragment newFragment) {
+        super.onSlideChanged(oldFragment, newFragment);
     }
 }

@@ -99,6 +99,7 @@
         <activity
             android:name=".activity.setup.WelcomeMessage"
             android:configChanges="locale"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
             android:label="@string/welcome_message_title" />
         <activity
             android:name=".activity.setup.FontSizeSettings"
