@@ -4,23 +4,18 @@ import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Body;
-import com.fsck.k9.mail.BodyPart;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
-import com.fsck.k9.mail.internet.MimeMessage;
-import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.mail.internet.MimeUtility;
-import com.fsck.k9.mail.internet.TextBody;
-import com.fsck.k9.mailstore.BinaryMemoryBody;
 import com.fsck.k9.mailstore.LocalMessage;
 import org.apache.commons.io.IOUtils;
 import org.pEp.jniadapter.Identity;
@@ -196,7 +191,7 @@ public class PEpUtils {
     }
 
     public static String getShortTrustWords(PEpProvider pEp, Identity id) {
-        return getShortTrustwords(pEp.trustwords(id, "es"));
+        return getShortTrustwords(pEp.trustwords(id, "en"));
     }
 
 
@@ -259,7 +254,7 @@ public class PEpUtils {
     }
 
     public static boolean ispEpDisabled(Account account, LocalMessage message, Rating messageRating) {
-        return message.isSet(Flag.X_FORCE_UNENCRYPTED)
+        return message.isSet(Flag.X_PEP_DISABLED)
                 || messageRating == Rating.pEpRatingUndefined
                 || !account.ispEpPrivacyProtected();
     }

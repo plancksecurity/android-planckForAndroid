@@ -3,6 +3,7 @@ package com.fsck.k9;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.PendingIntent;
 import android.content.*;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
@@ -10,6 +11,8 @@ import android.net.Uri;
 import android.os.*;
 import android.text.format.Time;
 import android.util.Log;
+import android.widget.Toast;
+
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.K9Activity;
@@ -18,13 +21,20 @@ import com.fsck.k9.activity.UpgradeDatabases;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.K9MailLib;
 import com.fsck.k9.mail.Message;
+import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.BinaryTempFileBody;
+import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
+import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.ui.PEpStatus;
+import com.fsck.k9.pEp.ui.PEpTrustwords;
+import com.fsck.k9.pEp.ui.pEpAddDevice;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.UnreadWidgetProvider;
@@ -628,21 +638,74 @@ public class K9 extends Application {
         notifyObservers();
     }
 
+    public PEpProvider getpEpSyncProvider() {
+        return pEpSyncProvider;
+    }
+
     private void initSync() {
         pEpSyncProvider = PEpProviderFactory.createAndSetupProvider(this);
-        pEpSyncProvider.setSyncSendMessageCallback(new Sync.MessageToSendCallback() {
-            @Override
-            public void messageToSend(org.pEp.jniadapter.Message message) {
-                Log.e("PEPJNI", "messageToSend: " );
-            }
-        });
         pEpSyncProvider.setSyncHandshakeCallback(new Sync.showHandshakeCallback() {
             @Override
             public void showHandshake(Identity myself, Identity partner) {
-                Log.e("PEPJNI", "showHandshake: " );
+//3                Toast.makeText(getApplicationContext(), myself.fpr + "/n" + partner.fpr, Toast.LENGTH_LONG).show();
+                //startActivity(new Intent(getApplicationContext(), PEpTrustwords.class));
+                Log.e("PEPJNI", "showHandshake: " + myself.toString() + "\n::\n" + partner.toString());
+
+                String myTrust = PEpUtils.getShortTrustWords(pEpSyncProvider, myself);
+                String theirTrust = PEpUtils.getShortTrustWords(pEpSyncProvider, partner);
+                String trust;
+                if (myself.fpr.compareTo(partner.fpr) > 0) {
+                    trust = theirTrust + myTrust;
+                } else {
+                    trust = myTrust + theirTrust;
+                }
+
+                Context context = K9.this.getApplicationContext();
+                Intent syncTrustowordsActivity = pEpAddDevice.getActionRequestHandshake(context, trust, partner);
+                syncTrustowordsActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                PendingIntent pendingIntent = PendingIntent.getActivity(context, 22, syncTrustowordsActivity, 0);
+                try {
+                    pendingIntent.send();
+                }
+                catch (PendingIntent.CanceledException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
 
             }
         });
+        pEpSyncProvider.setSyncSendMessageCallback(new Sync.MessageToSendCallback() {
+            @Override
+            public void messageToSend(org.pEp.jniadapter.Message pEpMessage) {
+                try {
+
+                    MessagingController messagingController = MessagingController.getInstance(K9.this);
+                    Log.i(AndroidHelper.TAG, "messageToSend: ");
+
+                    List<Account> accounts = Preferences.getPreferences(K9.this).getAccounts();
+                    Account currentAccount = null;
+                    for (Account account : accounts) {
+                        currentAccount = messagingController.checkAccount(pEpMessage, account);
+                        if (currentAccount != null) {
+                            break;
+                        }
+                    }
+                    if (currentAccount == null)
+                        currentAccount = Preferences.getPreferences(K9.this).getDefaultAccount();
+                    Message message = pEpSyncProvider.getMimeMessage(pEpMessage);
+                    message.setFlag(Flag.X_PEP_DISABLED, true);
+
+                    messagingController.sendMessage(currentAccount, message, null);
+
+                    Log.e("PEPJNI", "messageToSend: " + pEpMessage.getShortmsg());
+                    Log.e("PEPJNI", "messageToSend: " + pEpMessage.getLongmsg());
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        pEpSyncProvider.startSync();
     }
 
     private void pEpSetupUiEngineSession() {
@@ -1387,7 +1450,7 @@ public class K9 extends Application {
      * @param save
      *         Whether or not to write the current database version to the
      *         {@code SharedPreferences} {@link #DATABASE_VERSION_CACHE}.
-     
+
      * @see #areDatabasesUpToDate()
      */
     public static synchronized void setDatabasesUpToDate(boolean save) {
@@ -1405,8 +1468,8 @@ public class K9 extends Application {
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
             if (activityCount == 0) {
+//                if (activity instanceof K9Activity) pEpSyncProvider.setSyncHandshakeCallback((Sync.showHandshakeCallback) activity);
                 pEpProvider = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
-                if (activity instanceof K9Activity) pEpSyncProvider.setSyncHandshakeCallback((Sync.showHandshakeCallback) activity);
             }
             ++activityCount;
         }

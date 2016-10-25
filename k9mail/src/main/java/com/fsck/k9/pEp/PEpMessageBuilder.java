@@ -8,11 +8,14 @@ import com.fsck.k9.mail.Part;
 import com.fsck.k9.mail.internet.*;
 import org.pEp.jniadapter.Blob;
 import org.pEp.jniadapter.Message;
+import org.pEp.jniadapter.Pair;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Vector;
+import java.util.logging.StreamHandler;
 
 /**
  * Makes a pEp message from a k9 message
@@ -148,6 +151,11 @@ class PEpMessageBuilder {
             m.setShortmsg(mm.getSubject());
 
             // TODO: other headers
+            ArrayList <Pair<String, String>> optionalFields = new ArrayList<>();
+            if (mm.getHeader(MimeHeader.HEADER_PEP_AUTOCONSUME).length > 0 ) {
+                optionalFields.add(new Pair<>(MimeHeader.HEADER_PEP_AUTOCONSUME, mm.getHeader(MimeHeader.HEADER_PEP_AUTOCONSUME)[0]));
+            }
+            m.setOptFields(optionalFields);
 
     }
 

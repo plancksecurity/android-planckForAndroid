@@ -23,6 +23,7 @@ import org.apache.james.mime4j.codec.EncoderUtil;
 import org.apache.james.mime4j.util.MimeUtil;
 import org.pEp.jniadapter.Blob;
 import org.pEp.jniadapter.Message;
+import org.pEp.jniadapter.Pair;
 
 import java.util.Locale;
 import java.util.Vector;
@@ -71,7 +72,14 @@ class MimeMessageBuilder {
         mimeMsg.setReplyTo(PEpUtils.createAddresses(pEpMessage.getReplyTo()));
         mimeMsg.setInReplyTo(clobberVector(pEpMessage.getInReplyTo()));
         mimeMsg.setReferences(clobberVector(pEpMessage.getReferences()));
-        //TODO: other header fields. See Message.getOpt<something>
+
+        if (pEpMessage.getOptFields() != null) {
+            for (Pair<String, String> field : pEpMessage.getOptFields()) {
+                if (!field.first.equals(MimeHeader.HEADER_PEP_RATING))
+                    mimeMsg.addHeader(field.first, field.second);
+            }
+        }
+
     }
 
     private void buildBody(MimeMessage mimeMsg) throws MessagingException {
