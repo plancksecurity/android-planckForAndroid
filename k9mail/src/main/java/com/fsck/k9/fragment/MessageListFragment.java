@@ -14,7 +14,6 @@ import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -119,6 +118,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Future;
+
+import static android.view.View.GONE;
 
 
 public class MessageListFragment extends Fragment implements ConfirmationDialogFragmentListener, LoaderCallbacks<Cursor> {
@@ -1657,73 +1658,82 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             Log.d("refresh", "newView");
             boolean read = (cursor.getInt(READ_COLUMN) == 1);
             View view;
-            if (!read) {
-                view = mInflater.inflate(R.layout.unread_message_list_item, parent, false);
+            View genericView = mInflater.inflate(R.layout.generic_message_list_item, parent, false);
+            View readView = genericView.findViewById(R.id.message_read_container);
+            View unreadView = genericView.findViewById(R.id.message_unread_container);
+            if (read) {
+                readView.setVisibility(View.VISIBLE);
+                unreadView.setVisibility(GONE);
+                view = readView;
             } else {
-                view = mInflater.inflate(R.layout.message_list_item, parent, false);
+                unreadView.setVisibility(View.VISIBLE);
+                readView.setVisibility(GONE);
+                view = unreadView;
             }
 
-            MessageViewHolder holder = new MessageViewHolder();
-            holder.date = (TextView) view.findViewById(R.id.date);
-            holder.chip = view.findViewById(R.id.chip);
-            holder.attachment = view.findViewById(R.id.attachment_icon);
+            //COMENTED INTENTIONALLY BY ARTURO IN ORDER TO MAKE EASIER THE NEXT PULL
 
-            if (mPreviewLines == 0 && mContactsPictureLoader == null) {
-                view.findViewById(R.id.preview).setVisibility(View.GONE);
-                holder.preview = (TextView) view.findViewById(R.id.sender_compact);
-                holder.flagged = (CheckBox) view.findViewById(R.id.flagged_center_right);
-                view.findViewById(R.id.flagged_bottom_right).setVisibility(View.GONE);
+//            MessageViewHolder holder = new MessageViewHolder();
+//            holder.date = (TextView) view.findViewById(R.id.date);
+//            holder.chip = view.findViewById(R.id.chip);
+//            holder.attachment = view.findViewById(R.id.attachment_icon);
+//
+//            if (mPreviewLines == 0 && mContactsPictureLoader == null) {
+//                view.findViewById(R.id.preview).setVisibility(GONE);
+//                holder.preview = (TextView) view.findViewById(R.id.sender_compact);
+//                holder.flagged = (CheckBox) view.findViewById(R.id.flagged_center_right);
+//                view.findViewById(R.id.flagged_bottom_right).setVisibility(GONE);
+//
+//
+//
+//            } else {
+//                view.findViewById(R.id.sender_compact).setVisibility(GONE);
+//                holder.preview = (TextView) view.findViewById(R.id.preview);
+//                holder.flagged = (CheckBox) view.findViewById(R.id.flagged_bottom_right);
+//                view.findViewById(R.id.flagged_center_right).setVisibility(GONE);
+//
+//            }
+//
+//            PEpContactBadge contactBadge = (PEpContactBadge) view.findViewById(R.id.contact_badge);
+//            if (mContactsPictureLoader != null) {
+//                holder.contactBadge = contactBadge;
+//            } else {
+//                contactBadge.setVisibility(GONE);
+//            }
+//
+//            if (mSenderAboveSubject) {
+//                holder.from = (TextView) view.findViewById(R.id.subject);
+//                mFontSizes.setViewTextSize(holder.from, mFontSizes.getMessageListSender());
+//
+//            } else {
+//                holder.subject = (TextView) view.findViewById(R.id.subject);
+//                mFontSizes.setViewTextSize(holder.subject, mFontSizes.getMessageListSubject());
+//
+//            }
+//
+//            mFontSizes.setViewTextSize(holder.date, mFontSizes.getMessageListDate());
+//
+//
+//            // 1 preview line is needed even if it is set to 0, because subject is part of the same text view
+//            holder.preview.setLines(Math.max(mPreviewLines,1));
+//            mFontSizes.setViewTextSize(holder.preview, mFontSizes.getMessageListPreview());
+//            holder.threadCount = (TextView) view.findViewById(R.id.thread_count);
+//            mFontSizes.setViewTextSize(holder.threadCount, mFontSizes.getMessageListSubject()); // thread count is next to subject
+//            view.findViewById(R.id.selected_checkbox_wrapper).setVisibility((mCheckboxes) ? View.VISIBLE : GONE);
+//
+//            holder.flagged.setVisibility(mStars ? View.VISIBLE : GONE);
+//            holder.flagged.setOnClickListener(holder);
+//
+//
+//            holder.selected = (CheckBox) view.findViewById(R.id.selected_checkbox);
+//            holder.selected.setOnClickListener(holder);
 
 
 
-            } else {
-                view.findViewById(R.id.sender_compact).setVisibility(View.GONE);
-                holder.preview = (TextView) view.findViewById(R.id.preview);
-                holder.flagged = (CheckBox) view.findViewById(R.id.flagged_bottom_right);
-                view.findViewById(R.id.flagged_center_right).setVisibility(View.GONE);
 
-            }
+//            genericView.setTag(holder);
 
-            PEpContactBadge contactBadge = (PEpContactBadge) view.findViewById(R.id.contact_badge);
-            if (mContactsPictureLoader != null) {
-                holder.contactBadge = contactBadge;
-            } else {
-                contactBadge.setVisibility(View.GONE);
-            }
-
-            if (mSenderAboveSubject) {
-                holder.from = (TextView) view.findViewById(R.id.subject);
-                mFontSizes.setViewTextSize(holder.from, mFontSizes.getMessageListSender());
-
-            } else {
-                holder.subject = (TextView) view.findViewById(R.id.subject);
-                mFontSizes.setViewTextSize(holder.subject, mFontSizes.getMessageListSubject());
-
-            }
-
-            mFontSizes.setViewTextSize(holder.date, mFontSizes.getMessageListDate());
-
-
-            // 1 preview line is needed even if it is set to 0, because subject is part of the same text view
-            holder.preview.setLines(Math.max(mPreviewLines,1));
-            mFontSizes.setViewTextSize(holder.preview, mFontSizes.getMessageListPreview());
-            holder.threadCount = (TextView) view.findViewById(R.id.thread_count);
-            mFontSizes.setViewTextSize(holder.threadCount, mFontSizes.getMessageListSubject()); // thread count is next to subject
-            view.findViewById(R.id.selected_checkbox_wrapper).setVisibility((mCheckboxes) ? View.VISIBLE : View.GONE);
-
-            holder.flagged.setVisibility(mStars ? View.VISIBLE : View.GONE);
-            holder.flagged.setOnClickListener(holder);
-
-
-            holder.selected = (CheckBox) view.findViewById(R.id.selected_checkbox);
-            holder.selected.setOnClickListener(holder);
-
-
-
-
-            view.setTag(holder);
-
-            return view;
+            return genericView;
         }
 
         @Override
@@ -1771,11 +1781,78 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             boolean answered = (cursor.getInt(ANSWERED_COLUMN) == 1);
             boolean forwarded = (cursor.getInt(FORWARDED_COLUMN) == 1);
 
+            View readView = view.findViewById(R.id.message_read_container);
+            View unreadView = view.findViewById(R.id.message_unread_container);
+            if (read) {
+                readView.setVisibility(View.VISIBLE);
+                unreadView.setVisibility(GONE);
+                view = readView;
+            } else {
+                unreadView.setVisibility(View.VISIBLE);
+                readView.setVisibility(GONE);
+                view = unreadView;
+            }
+
+            MessageViewHolder holder = new MessageViewHolder();
+            holder.date = (TextView) view.findViewById(R.id.date);
+            holder.chip = view.findViewById(R.id.chip);
+            holder.attachment = view.findViewById(R.id.attachment_icon);
+
+            if (mPreviewLines == 0 && mContactsPictureLoader == null) {
+                view.findViewById(R.id.preview).setVisibility(GONE);
+                holder.preview = (TextView) view.findViewById(R.id.sender_compact);
+                holder.flagged = (CheckBox) view.findViewById(R.id.flagged_center_right);
+                view.findViewById(R.id.flagged_bottom_right).setVisibility(GONE);
+
+
+
+            } else {
+                view.findViewById(R.id.sender_compact).setVisibility(GONE);
+                holder.preview = (TextView) view.findViewById(R.id.preview);
+                holder.flagged = (CheckBox) view.findViewById(R.id.flagged_bottom_right);
+                view.findViewById(R.id.flagged_center_right).setVisibility(GONE);
+
+            }
+
+            PEpContactBadge contactBadge = (PEpContactBadge) view.findViewById(R.id.contact_badge);
+            if (mContactsPictureLoader != null) {
+                holder.contactBadge = contactBadge;
+            } else {
+                contactBadge.setVisibility(GONE);
+            }
+
+            if (mSenderAboveSubject) {
+                holder.from = (TextView) view.findViewById(R.id.subject);
+                mFontSizes.setViewTextSize(holder.from, mFontSizes.getMessageListSender());
+
+            } else {
+                holder.subject = (TextView) view.findViewById(R.id.subject);
+                mFontSizes.setViewTextSize(holder.subject, mFontSizes.getMessageListSubject());
+
+            }
+
+            mFontSizes.setViewTextSize(holder.date, mFontSizes.getMessageListDate());
+
+
+            // 1 preview line is needed even if it is set to 0, because subject is part of the same text view
+            holder.preview.setLines(Math.max(mPreviewLines,1));
+            mFontSizes.setViewTextSize(holder.preview, mFontSizes.getMessageListPreview());
+            holder.threadCount = (TextView) view.findViewById(R.id.thread_count);
+            mFontSizes.setViewTextSize(holder.threadCount, mFontSizes.getMessageListSubject()); // thread count is next to subject
+            view.findViewById(R.id.selected_checkbox_wrapper).setVisibility((mCheckboxes) ? View.VISIBLE : GONE);
+
+            holder.flagged.setVisibility(mStars ? View.VISIBLE : GONE);
+            holder.flagged.setOnClickListener(holder);
+
+
+            holder.selected = (CheckBox) view.findViewById(R.id.selected_checkbox);
+            holder.selected.setOnClickListener(holder);
+
             boolean hasAttachments = (cursor.getInt(ATTACHMENT_COUNT_COLUMN) > 0);
 
-            MessageViewHolder holder = (MessageViewHolder) view.getTag();
+//            MessageViewHolder holder = (MessageViewHolder) view.getTag();
 
-            int maybeBoldTypeface = (read) ? Typeface.NORMAL : Typeface.BOLD;
+//            int maybeBoldTypeface = (read) ? Typeface.NORMAL : Typeface.BOLD;
 
             long uniqueId = cursor.getLong(mUniqueIdColumn);
             boolean selected = mSelected.contains(uniqueId);
@@ -1834,7 +1911,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                 holder.threadCount.setText(String.format("%d", threadCount));
                 holder.threadCount.setVisibility(View.VISIBLE);
             } else {
-                holder.threadCount.setVisibility(View.GONE);
+                holder.threadCount.setVisibility(GONE);
             }
 
             CharSequence beforePreviewText = (mSenderAboveSubject) ? subject : displayName;
@@ -1881,7 +1958,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             }
 
             if (holder.from != null ) {
-                holder.from.setTypeface(Typeface.create(holder.from.getTypeface(), maybeBoldTypeface));
+//                holder.from.setTypeface(Typeface.create(holder.from.getTypeface(), maybeBoldTypeface));
                 if (mSenderAboveSubject) {
                     if (hasAttachments) holder.attachment.setVisibility(View.VISIBLE);
                     holder.from.setCompoundDrawablesWithIntrinsicBounds(
@@ -1905,7 +1982,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                             null, // right
                             null); // bottom
                 }
-                holder.subject.setTypeface(Typeface.create(holder.subject.getTypeface(), maybeBoldTypeface));
+//                holder.subject.setTypeface(Typeface.create(holder.subject.getTypeface(), maybeBoldTypeface));
                 holder.subject.setText(subject);
             }
 
@@ -2011,7 +2088,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             holder.main.setText(text);
             holder.main.setVisibility(View.VISIBLE);
         } else {
-            holder.main.setVisibility(View.GONE);
+            holder.main.setVisibility(GONE);
         }
     }
 
