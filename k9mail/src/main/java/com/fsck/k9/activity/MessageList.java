@@ -55,6 +55,7 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpUIUtils;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
+import com.fsck.k9.pEp.ui.infrastructure.MessageSwipeDirection;
 import com.fsck.k9.pEp.ui.infrastructure.Router;
 import com.fsck.k9.pEp.ui.listeners.OnAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
@@ -139,6 +140,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private View configureAccountContainer;
     private ActionBarDrawerToggle toggle;
     private FloatingActionButton fabButton;
+    private MessageSwipeDirection direction;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
             boolean noThreading, boolean newTask) {
@@ -710,6 +712,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private void goToMessageCompose() {
         Intent intent = new Intent(this, MessageCompose.class);
         startActivity(intent);
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     /**
@@ -1644,6 +1647,13 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
             MessageViewFragment fragment = MessageViewFragment.newInstance(messageReference);
             FragmentTransaction ft = getFragmentManager().beginTransaction();
+            // TODO: 25/10/16 change direction jodedol
+            if (direction == null || direction.getDirectionToLoad().equals(MessageSwipeDirection.FORWARD)) {
+                ft.setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right);
+            } else  {
+                ft.setCustomAnimations(R.animator.fade_in_right, R.animator.fade_out_left);
+            }
+            resetDirection();
             ft.replace(R.id.message_view_container, fragment);
             mMessageViewFragment = fragment;
             ft.commit();
@@ -1652,6 +1662,10 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 showMessageView();
             }
         }
+    }
+
+    private void resetDirection() {
+        direction = new MessageSwipeDirection(MessageSwipeDirection.FORWARD);
     }
 
     @Override
@@ -1824,7 +1838,10 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         if (mDisplayMode == DisplayMode.MESSAGE_VIEW) {
             showMessageList();
         } else if (fragmentManager.getBackStackEntryCount() > 0) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.animator.fade_out_right, R.animator.fade_in_left);
             fragmentManager.popBackStack();
+            fragmentTransaction.commit();
         } else if (mMessageListFragment.isManualSearch()) {
             finish();
         } else if (!mSingleFolderMode) {
@@ -1956,6 +1973,10 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         invalidateOptionsMenu();
     }
 
+    @Override
+    public void setDirection(MessageSwipeDirection direction) {
+        this.direction = direction;
+    }
 
 
     @Override
