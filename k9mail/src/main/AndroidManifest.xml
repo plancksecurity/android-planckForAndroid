@@ -83,12 +83,6 @@
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:uiOptions="splitActionBarWhenNarrow">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".activity.setup.Prefs"
@@ -409,11 +403,11 @@
 
         <activity
             android:name=".pEp.ui.PEpStatus"
-            android:label="@string/pep_title_activity_privacy_status"></activity>
+            android:label="@string/pep_title_activity_privacy_status"/>
         <activity
             android:name=".pEp.ui.blacklist.PepBlacklist"
             android:label="Blacklist"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity
             android:name=".pEp.ui.PEpTrustwords"
             android:label="@string/pep_title_activity_trustwords"
@@ -425,10 +419,19 @@
 
         <receiver android:name=".activity.K9ActivityCommon$PrivateKeyReceiver">
             <intent-filter>
-                <action android:name="PRIVATE_KEY"></action>
+                <action android:name="PRIVATE_KEY"/>
             </intent-filter>
         </receiver>
 
+        <activity
+            android:name=".pEp.ui.activities.SplashActivity"
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
