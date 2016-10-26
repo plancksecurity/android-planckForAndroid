@@ -34,11 +34,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-medium"
-        tools:text="account@ema.il"
+        tools:text="this_is_a_really_long_emailaccount@ema.il"
+        android:singleLine="true"
+        android:layout_toStartOf="@+id/account_unread_messages"
+        android:layout_marginRight="8dp"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@+id/account_image"
         android:textColor="@android:color/black"
-        android:layout_marginStart="32dp" />
+        android:layout_marginStart="16dp" />
 
     <TextView
         android:id="@+id/account_unread_messages"

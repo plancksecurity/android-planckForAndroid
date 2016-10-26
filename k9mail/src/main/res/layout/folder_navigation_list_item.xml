@@ -8,17 +8,12 @@
     android:paddingTop="16dp"
     android:paddingBottom="16dp">
 
-    <TextView
-        android:id="@+id/folder_new_messages"
+    <ImageView
+        android:id="@+id/folder_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginRight="16dp"
-        android:fontFamily="sans-serif-medium"
-        android:visibility="gone"
-        tools:text="77"
-        tools:visibility="visible" />
+        android:layout_marginLeft="16dp"
+        android:background="@drawable/ic_label_black_24dp" />
 
     <TextView
         android:id="@+id/folder_name"
@@ -26,11 +21,26 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="72dp"
         android:fontFamily="sans-serif-medium"
+        android:layout_centerVertical="true"
         android:textColor="@android:color/black"
         tools:text="Folder name"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:layout_toRightOf="@id/folder_new_messages"
+        android:layout_toRightOf="@+id/folder_new_messages"
         android:maxLines="1"
         android:layout_marginStart="32dp" />
+
+    <TextView
+        android:id="@+id/folder_new_messages"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:fontFamily="sans-serif-medium"
+        android:visibility="gone"
+        android:gravity="center_vertical"
+        tools:text="77"
+        tools:visibility="visible"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp" />
 </RelativeLayout>
