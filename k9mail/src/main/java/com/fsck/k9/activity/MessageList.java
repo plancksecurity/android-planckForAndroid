@@ -28,7 +28,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -423,10 +425,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 firstAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
                 mainAccountEmail.setText(firstAccount.getEmail());
                 mainAccountName.setText(firstAccount.getName());
-                mAccount = firstAccount;
-                setupNavigationHeader();
-                onOpenFolder(firstAccount.getAutoExpandFolderName());
-                drawerLayout.closeDrawers();
+                changeAccountAnimation(mainAccountLayout, firstAccountLayout, firstAccount);
             }
         });
     }
@@ -446,10 +445,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 mainAccountName.setText(firstAccount.getName());
                 firstAccountText.setText(PEpUIUtils.firstLetterOf(lastAccount.getName()));
                 secondAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
-                mAccount = firstAccount;
-                setupNavigationHeader();
-                onOpenFolder(firstAccount.getAutoExpandFolderName());
-                drawerLayout.closeDrawers();
+                changeAccountAnimation(mainAccountLayout, firstAccountLayout, firstAccount);
             }
         });
         secondAccountLayout.setOnClickListener(new View.OnClickListener() {
@@ -459,10 +455,42 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 mainAccountEmail.setText(lastAccount.getEmail());
                 mainAccountName.setText(lastAccount.getName());
                 secondAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
-                mAccount = lastAccount;
+                changeAccountAnimation(mainAccountLayout, secondAccountLayout, lastAccount);
+            }
+        });
+    }
+
+    private void changeAccountAnimation(final View goToView, final View fromView, final Account accountClicked) {
+        mMessageListFragment.fadeAnimation();
+        final int firstAccountLayoutPosition[] = new int[2];
+        fromView.getLocationOnScreen( firstAccountLayoutPosition );
+        final int mainAccountLayoutPosition[] = new int[2];
+        goToView.getLocationOnScreen(mainAccountLayoutPosition);
+
+        TranslateAnimation anim = new TranslateAnimation(0, goToView.getX() + goToView.getWidth()/2 - firstAccountLayoutPosition[0] , 0, goToView.getY() + goToView.getHeight()/2 - firstAccountLayoutPosition[1]);
+        anim.setDuration(500);
+        fromView.startAnimation(anim);
+
+        anim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                Animation dissapearAnimation = AnimationUtils.loadAnimation(getBaseContext(), R.anim.scale_down);
+                dissapearAnimation.setDuration(500);
+                goToView.startAnimation(dissapearAnimation);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                fromView.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.scale_up));
+                mAccount = accountClicked;
                 setupNavigationHeader();
-                onOpenFolder(lastAccount.getAutoExpandFolderName());
+                onOpenFolder(accountClicked.getAutoExpandFolderName());
                 drawerLayout.closeDrawers();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
             }
         });
     }

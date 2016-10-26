@@ -40,6 +40,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -173,7 +174,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
     private static final String[] PROJECTION = Arrays.copyOf(THREADED_PROJECTION,
             THREAD_COUNT_COLUMN);
-
 
     public static MessageListFragment newInstance(LocalSearch search, boolean isThreadDisplay, boolean threadedList) {
         MessageListFragment fragment = new MessageListFragment();
@@ -329,6 +329,9 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
      */
     private long mContextMenuUniqueId = 0;
 
+    public void fadeAnimation() {
+        mListView.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.fade_out));
+    }
 
     /**
      * This class is used to run operations that modify UI elements in the UI thread.
@@ -672,17 +675,17 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
         mInflater = inflater;
 
-        View view = inflater.inflate(R.layout.message_list_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.message_list_fragment, container, false);
 
-        mListView = (ListView) view.findViewById(R.id.message_list);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.message_swipe);
+        mListView = (ListView) rootView.findViewById(R.id.message_list);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.message_swipe);
 
         initializePullToRefresh();
 
         initializeLayout();
         mListView.setVerticalFadingEdgeEnabled(false);
 
-        return view;
+        return rootView;
     }
 
     @Override
