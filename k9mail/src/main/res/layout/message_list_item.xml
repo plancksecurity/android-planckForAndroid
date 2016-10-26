@@ -213,38 +213,4 @@
 
         </RelativeLayout>
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FF5722"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        android:weightSum="3">
-
-        <TextView
-            android:id="@+id/txt_delete"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:clickable="false"
-            android:gravity="center_vertical"
-            android:paddingLeft="24dp"
-            android:hapticFeedbackEnabled="true"
-            android:text="@string/message_list_item_removed"
-            android:textColor="@color/white" />
-
-        <TextView
-            android:id="@+id/txt_undo"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:clickable="false"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:text="@string/message_list_item_undo"
-            android:textColor="@color/white" />
-
-    </LinearLayout>
-
 </FrameLayout>
