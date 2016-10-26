@@ -84,7 +84,7 @@
                 android:longClickable="false"
                 android:singleLine="false"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 tools:text="Preview"
                 android:layout_toStartOf="@+id/extra_items_container" />
 
