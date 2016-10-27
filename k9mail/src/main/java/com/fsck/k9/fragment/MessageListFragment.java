@@ -1606,22 +1606,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            Log.d("refresh", "newView");
-            boolean read = (cursor.getInt(READ_COLUMN) == 1);
-            View view;
-            View genericView = mInflater.inflate(R.layout.generic_message_list_item, parent, false);
-            View readView = genericView.findViewById(R.id.message_read_container);
-            View unreadView = genericView.findViewById(R.id.message_unread_container);
-            if (read) {
-                readView.setVisibility(View.VISIBLE);
-                unreadView.setVisibility(GONE);
-                view = readView;
-            } else {
-                unreadView.setVisibility(View.VISIBLE);
-                readView.setVisibility(GONE);
-                view = unreadView;
-            }
-
             //COMENTED INTENTIONALLY BY ARTURO IN ORDER TO MAKE EASIER THE NEXT PULL
 
 //            MessageViewHolder holder = new MessageViewHolder();
@@ -1684,7 +1668,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
 //            genericView.setTag(holder);
 
-            return genericView;
+            return mInflater.inflate(R.layout.generic_message_list_item, parent, false);
         }
 
         @Override
@@ -3396,11 +3380,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
     private void startAndPrepareActionMode() {
         mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
-        mActionMode.invalidate();
-    }
-
-    private void startAndPrepareSelectedMessageActionMode() {
-        mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mSelectedMessageActionModeCallback);
         mActionMode.invalidate();
     }
 
