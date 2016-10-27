@@ -483,9 +483,13 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             public void onAnimationEnd(Animation animation) {
                 fromView.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.scale_up));
                 mAccount = accountClicked;
-                setupNavigationHeader();
-                onOpenFolder(accountClicked.getAutoExpandFolderName());
                 drawerLayout.closeDrawers();
+                setupNavigationHeader();
+                String folder = accountClicked.getAutoExpandFolderName();
+                LocalSearch search = new LocalSearch(folder);
+                search.addAccountUuid(mAccount.getUuid());
+                search.addAllowedFolder(folder);
+                refreshMessages(search);
             }
 
             @Override
@@ -583,7 +587,12 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             @Override
             public void onClick(Account account) {
                 mAccount = account;
-                onOpenFolder(account.getAutoExpandFolderName());
+//                onOpenFolder(account.getAutoExpandFolderName());
+                String folder = account.getAutoExpandFolderName();
+                LocalSearch search = new LocalSearch(folder);
+                search.addAccountUuid(mAccount.getUuid());
+                search.addAllowedFolder(folder);
+                refreshMessages(search);
                 setupNavigationHeader();
                 createFoldersMenu();
                 navigationViewFolders.setVisibility(View.GONE);
@@ -760,6 +769,21 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 mMessageReference != null) {
             openMessage(mMessageReference);
         }
+    }
+
+    private void refreshMessages(LocalSearch search) {
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.addOnBackStackChangedListener(this);
+        boolean hasMessageListFragment = (mMessageListFragment != null);
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        mMessageListFragment = MessageListFragment.newInstance(search, false,
+                (K9.isThreadedViewEnabled() && !mNoThreading));
+        if (!hasMessageListFragment) {
+            ft.add(R.id.message_list_container, mMessageListFragment);
+        } else {
+            ft.replace(R.id.message_list_container, mMessageListFragment);
+        }
+        ft.commit();
     }
 
     /**
