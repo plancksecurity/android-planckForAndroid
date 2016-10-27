@@ -9,7 +9,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.webkit.WebSettings;
-import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
 
@@ -92,12 +91,15 @@ public class MessageWebView extends RigidWebView {
         webSettings.setRenderPriority(RenderPriority.HIGH);
 
         // TODO:  Review alternatives.  NARROW_COLUMNS is deprecated on KITKAT
-        webSettings.setLayoutAlgorithm(LayoutAlgorithm.NARROW_COLUMNS);
+//        webSettings.setLayoutAlgorithm(LayoutAlgorithm.NARROW_COLUMNS);
+        webSettings.setUseWideViewPort(true);
+        webSettings.setLoadWithOverviewMode(true);
 
         setOverScrollMode(OVER_SCROLL_NEVER);
 
         webSettings.setTextZoom(K9.getFontSizes().getMessageViewContentAsPercent());
 
+        setInitialScale((int) getScale());
         // Disable network images by default.  This is overridden by preferences.
         blockNetworkData(true);
     }
