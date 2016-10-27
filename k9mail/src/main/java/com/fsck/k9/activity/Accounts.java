@@ -69,6 +69,7 @@ import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.pEp.ui.tools.NestedListView;
 import com.fsck.k9.preferences.SettingsExporter;
 import com.fsck.k9.preferences.SettingsImportExportException;
 import com.fsck.k9.preferences.SettingsImporter;
@@ -144,9 +145,9 @@ public class Accounts extends K9Activity {
 
 
     private static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
-    private ListView accountsList;
+    private NestedListView accountsList;
     private View addAccountButton;
-    private ListView foldersList;
+    private NestedListView foldersList;
     private SwipeRefreshLayout swipeRefreshLayout;
 
     class AccountsHandler extends Handler {
@@ -385,8 +386,8 @@ public class Accounts extends K9Activity {
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
-        accountsList = (ListView) findViewById(R.id.accounts_list);
-        foldersList = (ListView) findViewById(R.id.folders_list);
+        accountsList = (NestedListView) findViewById(R.id.accounts_list);
+        foldersList = (NestedListView) findViewById(R.id.folders_list);
         if (!K9.isHideSpecialAccounts()) {
             createSpecialAccounts();
         }
