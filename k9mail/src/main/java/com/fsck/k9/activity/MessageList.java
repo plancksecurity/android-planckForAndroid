@@ -15,7 +15,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -314,7 +313,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         initializeFragments();
         displayViews();
         if (mAccount != null && mAccount.ispEpPrivacyProtected()) initializePepStatus();
-        initializeFabButton();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
@@ -691,16 +689,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         return search;
     }
 
-    private void initializeFabButton() {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_button_compose_message);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                goToMessageCompose();
-            }
-        });
-    }
-
     @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -726,11 +714,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         initializeDisplayMode(null);
         initializeFragments();
         displayViews();
-    }
-
-    private void goToMessageCompose() {
-        Intent intent = new Intent(this, MessageCompose.class);
-        startActivity(intent);
     }
 
     /**

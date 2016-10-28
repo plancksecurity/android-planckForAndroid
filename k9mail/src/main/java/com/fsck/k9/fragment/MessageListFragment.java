@@ -19,6 +19,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -55,6 +56,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.ActivityListener;
 import com.fsck.k9.activity.ChooseFolder;
 import com.fsck.k9.activity.FolderInfoHolder;
+import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.misc.ContactPictureLoader;
 import com.fsck.k9.cache.EmailProviderCache;
@@ -170,6 +172,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
     private static final String[] PROJECTION = Arrays.copyOf(THREADED_PROJECTION,
             THREAD_COUNT_COLUMN);
+    private FloatingActionButton fab;
 
     public static MessageListFragment newInstance(LocalSearch search, boolean isThreadDisplay, boolean threadedList) {
         MessageListFragment fragment = new MessageListFragment();
@@ -645,7 +648,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         Context appContext = getActivity().getApplicationContext();
 
         mPreferences = Preferences.getPreferences(appContext);
@@ -678,11 +680,28 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         mListView = (ListView) rootView.findViewById(R.id.message_list);
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.message_swipe);
 
+        initializeFabButton(rootView);
         initializePullToRefresh();
 
         initializeLayout();
         mListView.setVerticalFadingEdgeEnabled(false);
 
+        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            int firstItem = 0;
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (firstVisibleItem > this.firstItem) {
+                    fab.hide();
+                } else {
+                    fab.show();
+                }
+            }
+        });
         return rootView;
     }
 
@@ -723,6 +742,21 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
         outState.putBoolean(STATE_REMOTE_SEARCH_PERFORMED, mRemoteSearchPerformed);
         outState.putParcelable(STATE_ACTIVE_MESSAGE, mActiveMessage);
+    }
+
+    private void initializeFabButton(View rootView) {
+        fab = (FloatingActionButton) rootView.findViewById(R.id.fab_button_compose_message);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                goToMessageCompose();
+            }
+        });
+    }
+
+    private void goToMessageCompose() {
+        Intent intent = new Intent(getActivity(), MessageCompose.class);
+        startActivity(intent);
     }
 
     /**
