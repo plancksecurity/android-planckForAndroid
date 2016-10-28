@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="vertical"
     android:gravity="center_vertical"
-    android:paddingLeft="12dp"
+    android:paddingLeft="24dp"
     android:paddingRight="4dp">
 
     <TextView
@@ -16,6 +16,8 @@
         android:singleLine="true"
         android:ellipsize="end"
         android:textColor="?android:attr/textColorPrimary"
+        tools:text="Name of the Account"
+        android:fontFamily="sans-serif"
         android:textAppearance="?android:attr/textAppearanceSmall"/>
 
     <TextView
@@ -24,6 +26,8 @@
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:ellipsize="end"
+        tools:text="account@ema.il"
+        android:fontFamily="sans-serif-light"
         android:textColor="?android:attr/textColorSecondary"
         android:textAppearance="?android:attr/textAppearanceSmall"/>
 

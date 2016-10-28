@@ -91,14 +91,13 @@ public class IdentityAdapter extends BaseAdapter {
                 view = mLayoutInflater.inflate(R.layout.choose_account_item, parent, false);
                 AccountHolder holder = new AccountHolder();
                 holder.name = (TextView) view.findViewById(R.id.name);
-                holder.chip = view.findViewById(R.id.chip);
                 view.setTag(holder);
             }
 
             Account account = (Account) item;
             AccountHolder holder = (AccountHolder) view.getTag();
             holder.name.setText(account.getDescription());
-            holder.chip.setBackgroundColor(account.getChipColor());
+            holder.name.setTextColor(account.getChipColor());
         } else if (item instanceof IdentityContainer) {
             if (convertView != null && convertView.getTag() instanceof IdentityHolder) {
                 view = convertView;
@@ -113,8 +112,8 @@ public class IdentityAdapter extends BaseAdapter {
             IdentityContainer identityContainer = (IdentityContainer) item;
             Identity identity = identityContainer.identity;
             IdentityHolder holder = (IdentityHolder) view.getTag();
-            holder.name.setText(identity.getDescription());
-            holder.description.setText(getIdentityDescription(identity));
+            holder.name.setText(identity.getName());
+            holder.description.setText(identity.getEmail());
         }
 
         return view;
@@ -141,7 +140,6 @@ public class IdentityAdapter extends BaseAdapter {
 
     static class AccountHolder {
         public TextView name;
-        public View chip;
     }
 
     static class IdentityHolder {
