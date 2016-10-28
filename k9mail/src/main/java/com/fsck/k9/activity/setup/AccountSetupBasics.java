@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
@@ -48,6 +49,17 @@ public class AccountSetupBasics extends K9Activity {
         } else {
             accountSetupBasicsFragment.onActivityResult(requestCode, resultCode, data);
         }
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        switch (itemId) {
+            case android.R.id.home: {
+                finish();
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
