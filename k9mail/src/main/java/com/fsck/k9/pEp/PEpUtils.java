@@ -199,7 +199,6 @@ public class PEpUtils {
 
     public static int getRatingColor(Rating rating, Context context) {
         // TODO: 02/09/16 PEP_color color_from_rating(PEP_rating rating) from pEpEngine;
-
         if (rating == null || rating.equals(Rating.pEpRatingB0rken)
                 || rating.equals(Rating.pEpRatingHaveNoKey)) {
             return ContextCompat.getColor(context, R.color.pep_no_color);
@@ -220,23 +219,6 @@ public class PEpUtils {
         if (rating.value >= Rating.pEpRatingTrusted.value) {
             return  ContextCompat.getColor(context, R.color.pep_green);
         }
-
-        /*
-        if (rating == PEP_rating_b0rken || rating == PEP_rating_have_no_key)
-1892	        return PEP_color_no_color;
-1893
-1894	    if (rating < PEP_rating_undefined)
-1895	        return PEP_color_red;
-1896
-1897	    if (rating < PEP_rating_reliable)
-1898	        return PEP_color_no_color;
-1899
-1900	    if (rating < PEP_rating_trusted)
-1901	        return PEP_color_yellow;
-1902
-1903	    if (rating >= PEP_rating_trusted)
-1904	        return PEP_color_green;
-         */
 
         throw new RuntimeException("Invalid rating");
     }

@@ -1,9 +1,11 @@
 package com.fsck.k9.pEp.ui;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -14,8 +16,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fsck.k9.R;
+import com.fsck.k9.activity.MessageLoaderHelper;
+import com.fsck.k9.activity.MessageReference;
+import com.fsck.k9.mail.internet.MimeHeader;
+import com.fsck.k9.mailstore.LocalMessage;
+import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.pEp.PEpProvider;
 
 import org.pEp.jniadapter.Identity;
@@ -29,6 +37,8 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     private static final String ACTION_SHOW_PEP_STATUS = "com.fsck.k9.intent.action.SHOW_PEP_STATUS";
     private static final String MYSELF = "isComposedKey";
     private static final String RATING = "rating";
+    private static final String MESSAGE_REFERENCE = "message_reference";
+    public static final int REQUEST_STATUS = 2;
 
     @Bind(R.id.pEpTitle)
     TextView pEpTitle;
@@ -42,13 +52,16 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     RecyclerView.LayoutManager recipientsLayoutManager;
 
     String myself = "";
+    private MessageReference messageReference;
+    private LocalMessage localMessage;
 
-    public static void actionShowStatus(Context context, Rating currentRating, String myself) {
+    public static void actionShowStatus(Activity context, Rating currentRating, String myself, MessageReference messageReference) {
         Intent i = new Intent(context, PEpStatus.class);
         i.setAction(ACTION_SHOW_PEP_STATUS);
         i.putExtra(CURRENT_RATING, currentRating.toString());
         i.putExtra(MYSELF, myself);
-        context.startActivity(i);
+        i.putExtra(MESSAGE_REFERENCE, messageReference);
+        context.startActivityForResult(i, REQUEST_STATUS);
     }
 
     @Override
@@ -57,8 +70,10 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
         loadPepRating();
         setContentView(R.layout.pep_status);
         ButterKnife.bind(this);
-        if (getIntent() != null && getIntent().hasExtra(MYSELF)) {
+        if (getIntent() != null && getIntent().hasExtra(MYSELF)
+                && getIntent().hasExtra(MESSAGE_REFERENCE)) {
             myself = getIntent().getStringExtra(MYSELF);
+            loadMessage();
         }
         restorePEpRating(savedInstanceState);
         initPep();
@@ -72,6 +87,12 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
             pEpRating = (Rating) savedInstanceState.getSerializable(RATING);
             setpEpRating(pEpRating);
         }
+    }
+
+    private void loadMessage() {
+        messageReference = (MessageReference) getIntent().getExtras().get(MESSAGE_REFERENCE);
+        MessageLoaderHelper messageLoaderHelper = new MessageLoaderHelper(this, getLoaderManager(), getFragmentManager(), callback());
+        messageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, null);
     }
 
 
@@ -99,8 +120,16 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
 
     @Override
     public void onRatingChanged(Rating rating) {
+        if (localMessage != null) {
+            localMessage.setpEpRating(rating);
+            localMessage.setHeader(MimeHeader.HEADER_PEP_RATING, rating.name());
+            messageReference.saveLocalMessage(getApplicationContext(), localMessage);
+        }
         setpEpRating(rating);
         colorActionBar();
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(CURRENT_RATING, rating);
+        setResult(Activity.RESULT_OK, returnIntent);
     }
 
     public class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
@@ -138,14 +167,52 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
                int position = data.getIntExtra(PEpTrustwords.PARTNER_POSITION, PEpTrustwords.DEFAULT_POSITION);
                 Identity partner = uiCache.getRecipients().get(position);
                 pEpRating = getpEp().identityRating(partner);
-                setpEpRating(pEpRating);
+                Rating pEpRating = getpEp().identityRating(partner);
+                onRatingChanged(pEpRating);
                 recipientsAdapter.notifyDataSetChanged();
                 colorActionBar();
             }
         }
     }
 
+    public MessageLoaderHelper.MessageLoaderCallbacks callback() {
+        return new MessageLoaderHelper.MessageLoaderCallbacks() {
+            @Override
+            public void onMessageDataLoadFinished(LocalMessage message) {
+               localMessage = message;
+            }
 
+            @Override
+            public void onMessageDataLoadFailed() {
+                Toast.makeText(getApplicationContext(), R.string.status_loading_error, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onMessageViewInfoLoadFinished(MessageViewInfo messageViewInfo) {
+            }
+
+            @Override
+            public void onMessageViewInfoLoadFailed(MessageViewInfo messageViewInfo) {
+            }
+
+            @Override
+            public void setLoadingProgress(int current, int max) {
+            }
+
+            @Override
+            public void onDownloadErrorMessageNotFound() {
+            }
+
+            @Override
+            public void onDownloadErrorNetworkError() {
+            }
+
+            @Override
+            public void startIntentSenderForMessageLoaderHelper(IntentSender si, int requestCode, Intent fillIntent,
+                                                                int flagsMask, int flagValues, int extraFlags) {
+            }
+        };
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

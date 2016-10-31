@@ -169,6 +169,31 @@ public class MessageReference implements Parcelable {
         return null;
     }
 
+    public void saveLocalMessage(Context context, LocalMessage message) {
+        if (message != null && !message.getUid().equals(uid)) {
+            throw new RuntimeException("Trying to update another message");
+        }
+        try {
+            Account account = Preferences.getPreferences(context).getAccount(accountUuid);
+            if (account != null) {
+                LocalFolder folder = account.getLocalStore().getFolder(folderName);
+                if (folder != null) {
+                    folder.storeSmallMessage(message, new Runnable() {
+                        @Override
+                        public void run() {
+                        }
+                    });
+                } else {
+                    Log.d(K9.LOG_TAG, "Could not restore message, folder " + folderName + " is unknown.");
+                }
+            } else {
+                Log.d(K9.LOG_TAG, "Could not restore message, account " + accountUuid + " is unknown.");
+            }
+        } catch (MessagingException e) {
+            Log.w(K9.LOG_TAG, "Could not retrieve message for reference.", e);
+        }
+    }
+
     public static final Creator<MessageReference> CREATOR = new Creator<MessageReference>() {
         @Override
         public MessageReference createFromParcel(Parcel source) {

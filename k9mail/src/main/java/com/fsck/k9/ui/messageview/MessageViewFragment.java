@@ -18,7 +18,6 @@ import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -44,6 +43,7 @@ import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
+import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
@@ -51,6 +51,7 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpStatus;
+import com.fsck.k9.pEp.ui.PEpUIUtils;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
 import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
@@ -67,6 +68,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
+
+import static android.app.Activity.RESULT_OK;
 
 public class MessageViewFragment extends Fragment implements ConfirmationDialogFragmentListener,
         AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener {
@@ -283,6 +286,15 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             requestCode ^= REQUEST_MASK_CRYPTO_PRESENTER;
             messageCryptoPresenter.onActivityResult(requestCode, resultCode, data);
         }
+
+        if (resultCode == RESULT_OK && requestCode == PEpStatus.REQUEST_STATUS) {
+            pEpRating = (Rating) data.getSerializableExtra(PEpStatus.CURRENT_RATING);
+            K9Activity activity = (K9Activity) getActivity();
+            PEpUtils.colorToolbar(activity.getToolbar(), PEpUtils.getRatingColor(pEpRating, getActivity()));
+            activity.setStatusBarPepColor(pEpRating);
+            mMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpRating.name());
+            mMessageView.setHeaders(mMessage, mAccount);
+        }
     }
 
     private void hideKeyboard() {
@@ -457,7 +469,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != Activity.RESULT_OK) {
+        if (resultCode != RESULT_OK) {
             return;
         }
 
@@ -768,7 +780,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             }
         }
 
-        PEpStatus.actionShowStatus(getActivity(), pEpRating, myAddress);
+        PEpStatus.actionShowStatus(getActivity(), pEpRating, myAddress, getMessageReference());
     }
 
     public interface MessageViewFragmentListener {

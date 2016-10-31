@@ -2134,5 +2134,9 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 mMessageViewFragment.onPendingIntentResult(requestCode, resultCode, data);
             }
         }
+
+        if (mMessageViewFragment != null) {
+            mMessageViewFragment.onPendingIntentResult(requestCode, resultCode, data);
+        }
     }
 }
