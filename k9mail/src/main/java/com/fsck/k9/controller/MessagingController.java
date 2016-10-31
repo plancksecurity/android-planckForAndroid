@@ -1442,7 +1442,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             @Override
             public void messageFinished(final T message, int number, int ofTotal) {
                 try {
-
+                    boolean store = true;
                     if (!shouldImportMessage(account, message, earliestDate)) {
                         progress.incrementAndGet();
 
@@ -1464,12 +1464,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         try {
                             tempResult = pEpProvider.decryptMessage((MimeMessage) message);
                         } catch (org.pEp.jniadapter.pEpMessageDiscarded pEpMessageDiscarded) {
-                            pEpMessageDiscarded.printStackTrace();
+                            Log.v("pEpJNI", "messageFinished: ", pEpMessageDiscarded);
                             tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null);
+                            store = false;
                         } catch (org.pEp.jniadapter.pEpMessageConsumed pEpMessageConsumed) {
+                            Log.v("pEpJNI", "messageFinished: Deleting", pEpMessageConsumed);
                             tempResult = null;
-
-                            Log.i("PEPJNI", "messageFinished: Deleting");
+                            store = false;
                         }
                         result = tempResult;
                     }
@@ -1484,7 +1485,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         showImportKeyDialogIfNeeded(message, result, account);
                         deleteImportMessage(message, account, folder, localFolder);
                     }
-                    else {
+                    else if (store) {
                         MimeMessage decryptedMessage =  result.msg;
                         if (message.getFolder().getName().equals(account.getSentFolderName())) {
                             decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpProvider.getPrivacyState(message).name());
