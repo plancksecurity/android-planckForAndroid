@@ -39,12 +39,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.fsck.k9.Account;
@@ -173,6 +173,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     private static final String[] PROJECTION = Arrays.copyOf(THREADED_PROJECTION,
             THREAD_COUNT_COLUMN);
     private FloatingActionButton fab;
+    private ProgressBar loadingView;
 
     public static MessageListFragment newInstance(LocalSearch search, boolean isThreadDisplay, boolean threadedList) {
         MessageListFragment fragment = new MessageListFragment();
@@ -184,7 +185,17 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         return fragment;
     }
 
+    public void showLoadingMessages() {
+        mListView.setVisibility(GONE);
+        fab.setVisibility(GONE);
+        loadingView.setVisibility(View.VISIBLE);
+    }
 
+    public void hideLoadingMessages() {
+        mListView.setVisibility(View.VISIBLE);
+        fab.setVisibility(View.VISIBLE);
+        loadingView.setVisibility(View.GONE);
+    }
 
     private static final int ACTIVITY_CHOOSE_FOLDER_MOVE = 1;
     private static final int ACTIVITY_CHOOSE_FOLDER_COPY = 2;
@@ -329,10 +340,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
      * The value of this field is {@code 0} when no context menu is currently open.
      */
     private long mContextMenuUniqueId = 0;
-
-    public void fadeAnimation() {
-        mListView.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.fade_out));
-    }
 
     /**
      * This class is used to run operations that modify UI elements in the UI thread.
@@ -679,6 +686,8 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
         mListView = (ListView) rootView.findViewById(R.id.message_list);
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.message_swipe);
+        loadingView = (ProgressBar) rootView.findViewById(R.id.loading_view);
+
 
         initializeFabButton(rootView);
         initializePullToRefresh();
@@ -880,6 +889,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         }
 
         mListView.setAdapter(mAdapter);
+        hideLoadingMessages();
     }
 
     private void createCacheBroadcastReceiver(Context appContext) {

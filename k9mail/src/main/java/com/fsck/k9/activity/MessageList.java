@@ -138,6 +138,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private View addAccountContainer;
     private View configureAccountContainer;
     private ActionBarDrawerToggle toggle;
+    private DrawerLayout.DrawerListener drawerCloseListener;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
             boolean noThreading, boolean newTask) {
@@ -419,6 +420,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         firstAccountLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mMessageListFragment.showLoadingMessages();
                 mainAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
                 firstAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
                 mainAccountEmail.setText(firstAccount.getEmail());
@@ -438,6 +440,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         firstAccountLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mMessageListFragment.showLoadingMessages();
                 mainAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
                 mainAccountEmail.setText(firstAccount.getEmail());
                 mainAccountName.setText(firstAccount.getName());
@@ -449,6 +452,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         secondAccountLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mMessageListFragment.showLoadingMessages();
                 mainAccountText.setText(PEpUIUtils.firstLetterOf(lastAccount.getName()));
                 mainAccountEmail.setText(lastAccount.getEmail());
                 mainAccountName.setText(lastAccount.getName());
@@ -459,7 +463,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     private void changeAccountAnimation(final View goToView, final View fromView, final Account accountClicked) {
-        mMessageListFragment.fadeAnimation();
         final int firstAccountLayoutPosition[] = new int[2];
         fromView.getLocationOnScreen( firstAccountLayoutPosition );
         final int mainAccountLayoutPosition[] = new int[2];
@@ -468,26 +471,21 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         TranslateAnimation anim = new TranslateAnimation(0, goToView.getX() + goToView.getWidth()/2 - firstAccountLayoutPosition[0] , 0, goToView.getY() + goToView.getHeight()/2 - firstAccountLayoutPosition[1]);
         anim.setDuration(500);
         fromView.startAnimation(anim);
-
+        initializeDrawerListener(fromView, accountClicked);
         anim.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
                 Animation dissapearAnimation = AnimationUtils.loadAnimation(getBaseContext(), R.anim.scale_down);
                 dissapearAnimation.setDuration(500);
                 goToView.startAnimation(dissapearAnimation);
+
+                drawerLayout.addDrawerListener(drawerCloseListener);
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
                 fromView.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.scale_up));
-                mAccount = accountClicked;
                 drawerLayout.closeDrawers();
-                setupNavigationHeader();
-                String folder = accountClicked.getAutoExpandFolderName();
-                LocalSearch search = new LocalSearch(folder);
-                search.addAccountUuid(mAccount.getUuid());
-                search.addAllowedFolder(folder);
-                refreshMessages(search);
             }
 
             @Override
@@ -495,6 +493,43 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
             }
         });
+    }
+
+    private void initializeDrawerListener(final View fromView, final Account accountClicked) {
+        drawerCloseListener = new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                changeAccount(fromView, accountClicked);
+                drawerLayout.removeDrawerListener(drawerCloseListener);
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        };
+    }
+
+    private void changeAccount(View fromView, Account accountClicked) {
+        fromView.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.scale_up));
+        mAccount = accountClicked;
+        drawerLayout.closeDrawers();
+        setupNavigationHeader();
+        String folder = accountClicked.getAutoExpandFolderName();
+        LocalSearch search = new LocalSearch(folder);
+        search.addAccountUuid(mAccount.getUuid());
+        search.addAllowedFolder(folder);
+        refreshMessages(search);
     }
 
     private void createFoldersMenu() {
@@ -583,19 +618,42 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
         accountRenderer.setOnAccountClickListenerListener(new OnAccountClickListener() {
             @Override
-            public void onClick(Account account) {
+            public void onClick(final Account account) {
+                mMessageListFragment.showLoadingMessages();
                 mAccount = account;
-//                onOpenFolder(account.getAutoExpandFolderName());
-                String folder = account.getAutoExpandFolderName();
-                LocalSearch search = new LocalSearch(folder);
-                search.addAccountUuid(mAccount.getUuid());
-                search.addAllowedFolder(folder);
-                refreshMessages(search);
-                setupNavigationHeader();
-                createFoldersMenu();
-                navigationViewFolders.setVisibility(View.GONE);
-                navigationViewAccounts.setVisibility(View.VISIBLE);
+                drawerCloseListener = new DrawerLayout.DrawerListener() {
+                    @Override
+                    public void onDrawerSlide(View drawerView, float slideOffset) {
+
+                    }
+
+                    @Override
+                    public void onDrawerOpened(View drawerView) {
+
+                    }
+
+                    @Override
+                    public void onDrawerClosed(View drawerView) {
+                        String folder = account.getAutoExpandFolderName();
+                        LocalSearch search = new LocalSearch(folder);
+                        search.addAccountUuid(mAccount.getUuid());
+                        search.addAllowedFolder(folder);
+                        refreshMessages(search);
+                        setupNavigationHeader();
+                        createFoldersMenu();
+                        navigationViewFolders.setVisibility(View.GONE);
+                        navigationViewAccounts.setVisibility(View.VISIBLE);
+                        drawerLayout.removeDrawerListener(drawerCloseListener);
+                    }
+
+                    @Override
+                    public void onDrawerStateChanged(int newState) {
+
+                    }
+                };
+                drawerLayout.addDrawerListener(drawerCloseListener);
                 drawerLayout.closeDrawers();
+//                onOpenFolder(account.getAutoExpandFolderName());
             }
         });
         ListAdapteeCollection<Account> adapteeCollection = new ListAdapteeCollection<>(accounts);
@@ -1758,7 +1816,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     private void addMessageListFragment(MessageListFragment fragment, boolean addToBackStack) {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.setCustomAnimations(R.animator.fade_in, R.animator.fade_out);
 
         ft.replace(R.id.message_list_container, fragment);
         if (addToBackStack)
