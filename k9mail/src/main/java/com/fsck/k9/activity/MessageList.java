@@ -714,10 +714,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         folderRenderer.setFolderClickListener(new OnFolderClickListener() {
             @Override
             public void onClick(LocalFolder folder) {
-                LocalSearch search = getLocalSearch(mAccount, folder);
-                MessageListFragment fragment = MessageListFragment.newInstance(search, false, false);
-                addMessageListFragment(fragment, true);
-                drawerLayout.closeDrawers();
+                changeFolder(folder);
             }
 
             @Override
@@ -731,6 +728,36 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
         navigationFolders.setLayoutManager(new LinearLayoutManager(this));
         navigationFolders.setAdapter(folderAdapter);
+    }
+
+    private void changeFolder(final LocalFolder folder) {
+        mMessageListFragment.showLoadingMessages();
+        drawerCloseListener = new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                LocalSearch search = getLocalSearch(mAccount, folder);
+                MessageListFragment fragment = MessageListFragment.newInstance(search, false, false);
+                addMessageListFragment(fragment, true);
+                drawerLayout.removeDrawerListener(drawerCloseListener);
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        };
+        drawerLayout.addDrawerListener(drawerCloseListener);
+        drawerLayout.closeDrawers();
     }
 
     @NonNull
