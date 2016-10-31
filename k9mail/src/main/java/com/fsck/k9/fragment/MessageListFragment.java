@@ -24,6 +24,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
+import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -56,6 +57,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.ActivityListener;
 import com.fsck.k9.activity.ChooseFolder;
 import com.fsck.k9.activity.FolderInfoHolder;
+import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.misc.ContactPictureLoader;
@@ -86,6 +88,7 @@ import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.StorageEditor;
@@ -3317,6 +3320,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                     mTitle = getString(R.string.general_no_subject);
                 }
                 updateTitle();
+                updateToolbarColor(cursor);
             } else {
                 //TODO: empty thread view -> return to full message list
             }
@@ -3337,6 +3341,23 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
             mFragmentListener.updateMenu();
         }
+    }
+
+    private void updateToolbarColor(Cursor cursor) {
+        int worstRatingValue = Rating.pEpRatingFullyAnonymous.value;
+        Rating worstRating = Rating.pEpRatingFullyAnonymous;
+        for (int i = 0; i < cursor.getCount(); i++) {
+            Rating messageRating = Rating.valueOf(cursor.getString(PEP_RATING_COLUMN));
+            int messageRatingValue = messageRating.value;
+            if (messageRatingValue <= worstRatingValue) {
+                worstRatingValue = messageRatingValue;
+                worstRating = messageRating;
+            }
+            cursor.moveToNext();
+        }
+        Toolbar toolbar = ((K9Activity) getActivity()).getToolbar();
+        PEpUtils.colorToolbar(toolbar, PEpUtils.getRatingColor(worstRating, getActivity()));
+        ((K9Activity) getActivity()).setStatusBarPepColor(worstRating);
     }
 
     private void updateMoreMessagesOfCurrentFolder() {

@@ -287,7 +287,7 @@ public class PEpUtils {
         supportActionBar.setBackgroundDrawable(colorDrawable);
     }
 
-    public static void colorToolbar(PePUIArtefactCache uiCache, Toolbar toolbar, int colorResource) {
+    public static void colorToolbar(Toolbar toolbar, int colorResource) {
         if (toolbar != null) {
             toolbar.setBackgroundColor(colorResource);
         }
