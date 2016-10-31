@@ -493,7 +493,7 @@ public class PEpProviderImpl implements PEpProvider {
         try {
             return new MimeMessageBuilder(message).createMessage();
         } catch (MessagingException e) {
-            e.printStackTrace();
+            Log.e(TAG, "getMimeMessage: ", e);
         }
         return null;
     }
