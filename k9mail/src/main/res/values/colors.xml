@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#4caf50</color>
     <color name="colorPrimaryDark">#388e3c</color>
-    <color name="colorAccent">#0F9D58</color>
+    <color name="colorAccent">@color/colorPrimary</color>
 
     <color name="message_list_item_footer_background">#eeeeee</color>
 
