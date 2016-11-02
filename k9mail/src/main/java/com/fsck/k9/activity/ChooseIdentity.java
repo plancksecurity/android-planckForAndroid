@@ -2,6 +2,7 @@
 package com.fsck.k9.activity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -28,11 +29,15 @@ public class ChooseIdentity extends K9ListActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            requestWindowFeature(Window.getDefaultFeatures(this));
+        } else {
+            requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        }
         super.onCreate(savedInstanceState);
-
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.list_content_simple);
 
+        setUpToolbar(false);
         getListView().setTextFilterEnabled(true);
         getListView().setItemsCanFocus(false);
         getListView().setChoiceMode(ListView.CHOICE_MODE_NONE);

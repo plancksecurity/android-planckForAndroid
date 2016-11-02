@@ -44,7 +44,7 @@ public class EditIdentity extends K9Activity {
         }
 
         setContentView(R.layout.edit_identity);
-
+        setUpToolbar(false);
         /*
          * If we're being reloaded we override the original account with the one
          * we saved
