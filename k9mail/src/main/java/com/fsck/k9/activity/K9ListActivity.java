@@ -233,6 +233,6 @@ public class K9ListActivity extends AppCompatActivity implements K9ActivityMagic
     };
 
     public View getRootView() {
-        return getWindow().getDecorView().getRootView();
+        return mList;
     }
 }
