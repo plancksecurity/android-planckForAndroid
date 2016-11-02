@@ -38,6 +38,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
+                android:visibility="gone"
+                tools:visibility="visible"
                 android:singleLine="true"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 tools:text="actionbar_title_sub"

@@ -59,6 +59,7 @@ import com.fsck.k9.activity.ChooseFolder;
 import com.fsck.k9.activity.FolderInfoHolder;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.MessageCompose;
+import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.misc.ContactPictureLoader;
 import com.fsck.k9.cache.EmailProviderCache;
@@ -88,8 +89,8 @@ import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
+import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.EmailProvider;
@@ -177,6 +178,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             THREAD_COUNT_COLUMN);
     private FloatingActionButton fab;
     private ProgressBar loadingView;
+    private Rating worstThreadRating;
 
     public static MessageListFragment newInstance(LocalSearch search, boolean isThreadDisplay, boolean threadedList) {
         MessageListFragment fragment = new MessageListFragment();
@@ -836,6 +838,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
         mThreadedList = args.getBoolean(ARG_THREADED_LIST, false);
         mIsThreadDisplay = args.getBoolean(ARG_IS_THREAD_DISPLAY, false);
+        ((MessageList) getActivity()).setThreadDisplay(mIsThreadDisplay);
         mSearch = args.getParcelable(ARG_SEARCH);
         mTitle = mSearch.getName();
 
@@ -992,6 +995,12 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         }
 
         updateTitle();
+        MessageList activity = (MessageList) getActivity();
+        if (!activity.isMessageViewVisible() && activity.isThreadDisplayed()) {
+            Toolbar toolbar = ((K9Activity) getActivity()).getToolbar();
+            PEpUtils.colorToolbar(toolbar, PEpUtils.getRatingColor(worstThreadRating, getActivity()));
+            ((K9Activity) getActivity()).setStatusBarPepColor(worstThreadRating);
+        }
     }
 
     private void restartLoader() {
@@ -3311,6 +3320,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         }
 
         if (mIsThreadDisplay) {
+            ((DrawerLocker) getActivity()).setDrawerEnabled(false);
             if (cursor.moveToFirst()) {
                 mTitle = cursor.getString(SUBJECT_COLUMN);
                 if (!TextUtils.isEmpty(mTitle)) {
@@ -3324,6 +3334,8 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             } else {
                 //TODO: empty thread view -> return to full message list
             }
+        } else {
+            ((DrawerLocker) getActivity()).setDrawerEnabled(true);
         }
 
         cleanupSelected(cursor);
@@ -3345,19 +3357,21 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
     private void updateToolbarColor(Cursor cursor) {
         int worstRatingValue = Rating.pEpRatingFullyAnonymous.value;
-        Rating worstRating = Rating.pEpRatingFullyAnonymous;
+        worstThreadRating = Rating.pEpRatingFullyAnonymous;
         for (int i = 0; i < cursor.getCount(); i++) {
             Rating messageRating = Rating.valueOf(cursor.getString(PEP_RATING_COLUMN));
             int messageRatingValue = messageRating.value;
             if (messageRatingValue <= worstRatingValue) {
                 worstRatingValue = messageRatingValue;
-                worstRating = messageRating;
+                worstThreadRating = messageRating;
             }
             cursor.moveToNext();
         }
-        Toolbar toolbar = ((K9Activity) getActivity()).getToolbar();
-        PEpUtils.colorToolbar(toolbar, PEpUtils.getRatingColor(worstRating, getActivity()));
-        ((K9Activity) getActivity()).setStatusBarPepColor(worstRating);
+        if (!((MessageList) getActivity()).isMessageViewVisible()) {
+            Toolbar toolbar = ((K9Activity) getActivity()).getToolbar();
+            PEpUtils.colorToolbar(toolbar, PEpUtils.getRatingColor(worstThreadRating, getActivity()));
+            ((K9Activity) getActivity()).setStatusBarPepColor(worstThreadRating);
+        }
     }
 
     private void updateMoreMessagesOfCurrentFolder() {

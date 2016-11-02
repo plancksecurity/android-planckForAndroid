@@ -51,7 +51,6 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpStatus;
-import com.fsck.k9.pEp.ui.PEpUIUtils;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
 import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
@@ -154,8 +153,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         mController = MessagingController.getInstance(context);
         downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         messageCryptoPresenter = new MessageCryptoPresenter(savedInstanceState, messageCryptoMvpView);
-        messageLoaderHelper =
-                new MessageLoaderHelper(context, getLoaderManager(), getFragmentManager(), messageLoaderCallbacks);
         mInitialized = true;
     }
 
@@ -163,6 +160,14 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     public void onResume() {
         super.onResume();
         ((DrawerLocker) getActivity()).setDrawerEnabled(false);
+        Context context = getActivity().getApplicationContext();
+        messageLoaderHelper =
+                new MessageLoaderHelper(context, getLoaderManager(), getFragmentManager(), messageLoaderCallbacks);
+
+        Bundle arguments = getArguments();
+        MessageReference messageReference = arguments.getParcelable(ARG_REFERENCE);
+
+        displayMessage(messageReference);
     }
 
     private void setupSwipeDetector() {
@@ -189,7 +194,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         Activity activity = getActivity();
         boolean isChangingConfigurations = activity != null && activity.isChangingConfigurations();
         if (isChangingConfigurations) {
@@ -197,7 +201,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             return;
         }
 
-        ((DrawerLocker) getActivity()).setDrawerEnabled(true);
         messageLoaderHelper.onDestroy();
     }
 
@@ -256,11 +259,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        Bundle arguments = getArguments();
-        MessageReference messageReference = arguments.getParcelable(ARG_REFERENCE);
-
-        displayMessage(messageReference);
     }
 
     private void displayMessage(MessageReference messageReference) {
@@ -809,6 +807,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
             pEpRating = PEpUtils.extractRating(message);
 
+            ((MessageList) getActivity()).setMessageViewVisible(true);
             PEpUtils.colorToolbar(pePUIArtefactCache,((MessageList)getActivity()).getSupportActionBar(), pEpRating);
             ((MessageList) getActivity()).setStatusBarPepColor(pEpRating);
         }

@@ -139,6 +139,8 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private View configureAccountContainer;
     private ActionBarDrawerToggle toggle;
     private DrawerLayout.DrawerListener drawerCloseListener;
+    private boolean messageViewVisible;
+    private boolean isThreadDisplayed;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
             boolean noThreading, boolean newTask) {
@@ -222,6 +224,21 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         });
     }
 
+    public void setMessageViewVisible(Boolean visible) {
+        messageViewVisible = visible;
+    }
+
+    public Boolean isMessageViewVisible() {
+        return messageViewVisible;
+    }
+
+    public void setThreadDisplay(Boolean threadDisplay) {
+        this.isThreadDisplayed = threadDisplay;
+    }
+
+    public Boolean isThreadDisplayed() {
+        return isThreadDisplayed;
+    }
 
     private enum DisplayMode {
         MESSAGE_LIST,
@@ -1062,6 +1079,11 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             return;
         }
         StorageManager.getInstance(getApplication()).addListener(mStorageListener);
+
+        if (!isThreadDisplayed) {
+            PEpUtils.colorToolbar(PePUIArtefactCache.getInstance(getApplicationContext()), getToolbar(), Rating.pEpRatingTrustedAndAnonymized);
+            setStatusBarPepColor(Rating.pEpRatingTrustedAndAnonymized);
+        }
     }
 
     @Override
@@ -1120,8 +1142,13 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     @Override
     public void onBackPressed() {
+        if (isMessageViewVisible()) {
+            setMessageViewVisible(false);
+        }
         if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
             showMessageList();
+        } else if (isThreadDisplayed) {
+            actionDisplaySearch(this, mSearch, false, false);
         } else {
             onAccounts();
         }
@@ -1329,6 +1356,9 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         int itemId = item.getItemId();
         switch (itemId) {
             case android.R.id.home: {
+                if (isMessageViewVisible()) {
+                    setMessageViewVisible(false);
+                }
                 goBack();
                 return true;
             }
@@ -1701,7 +1731,12 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     public void setActionBarSubTitle(String subTitle) {
-        mActionBarSubTitle.setText(subTitle);
+        if (subTitle != null && !subTitle.isEmpty()) {
+            mActionBarSubTitle.setVisibility(View.VISIBLE);
+            mActionBarSubTitle.setText(subTitle);
+        } else {
+            mActionBarSubTitle.setVisibility(View.GONE);
+        }
     }
 
     public void setActionBarUnread(int unread) {
@@ -2031,9 +2066,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     private void showMessageList() {
-        //I left this here because I don't know nothing about the UI design
-        PEpUtils.colorToolbar(PePUIArtefactCache.getInstance(getApplicationContext()), getToolbar(), Rating.pEpRatingTrustedAndAnonymized);
-        setStatusBarPepColor(Rating.pEpRatingTrustedAndAnonymized);
         mMessageListWasDisplayed = true;
         mDisplayMode = DisplayMode.MESSAGE_LIST;
         mViewSwitcher.showFirstView();
