@@ -68,7 +68,11 @@ class PEpMessageBuilder {
                 charset = "UTF-8";
             }
             String text = new String(PEpUtils.extractBodyContent(b), charset);
-            pEpMsg.setLongmsg(text);
+            if(mm.isMimeType("text/html")) {
+                pEpMsg.setLongmsgFormatted(text);
+            } else {
+                pEpMsg.setLongmsg(text);
+            }
             return;
         }
 
