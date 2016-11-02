@@ -12,8 +12,12 @@ import org.pEp.jniadapter.Pair;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Vector;
 import java.util.logging.StreamHandler;
 
@@ -156,6 +160,14 @@ class PEpMessageBuilder {
                 optionalFields.add(new Pair<>(MimeHeader.HEADER_PEP_AUTOCONSUME, mm.getHeader(MimeHeader.HEADER_PEP_AUTOCONSUME)[0]));
             }
             m.setOptFields(optionalFields);
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
+            if (mm.getHeader("Received").length > 0){
+                Date received = formatter.parse(mm.getHeader("Received")[0].split(";")[1].trim());
+                m.setRecv(received);
+            }
+        } catch (ParseException ignore) {
+        }
 
     }
 
