@@ -415,7 +415,7 @@ public class Accounts extends K9Activity {
             onOpenAccount(mUnifiedInboxAccount);
             finish();
             return;
-        } else if (startup && accounts.size() == 1 && onOpenAccount(accounts.get(0))) {
+        } else if (startup && accounts.size() > 0 && onOpenAccount(accounts.get(0))) {
             finish();
             return;
         }

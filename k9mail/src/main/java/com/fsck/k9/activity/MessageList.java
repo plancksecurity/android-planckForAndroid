@@ -547,6 +547,18 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         search.addAccountUuid(mAccount.getUuid());
         search.addAllowedFolder(folder);
         refreshMessages(search);
+        changeAccountsOrder();
+    }
+
+    private void changeAccountsOrder() {
+        List<Account> accounts = Preferences.getPreferences(this).getAccounts();
+        List<Account> clonedAccounts = new ArrayList<>(accounts.size());
+        clonedAccounts.addAll(accounts);
+        clonedAccounts.remove(mAccount);
+        ArrayList<Account> reorderedAccounts = new ArrayList<>(accounts.size());
+        reorderedAccounts.add(mAccount);
+        reorderedAccounts.addAll(clonedAccounts);
+        Preferences.getPreferences(this).setAccounts(reorderedAccounts);
     }
 
     private void createFoldersMenu() {
@@ -661,6 +673,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                         navigationViewFolders.setVisibility(View.GONE);
                         navigationViewAccounts.setVisibility(View.VISIBLE);
                         drawerLayout.removeDrawerListener(drawerCloseListener);
+                        changeAccountsOrder();
                     }
 
                     @Override

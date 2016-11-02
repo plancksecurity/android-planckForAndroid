@@ -1,6 +1,15 @@
 
 package com.fsck.k9;
 
+import android.content.Context;
+import android.util.Log;
+
+import com.fsck.k9.helper.Utility;
+import com.fsck.k9.mail.store.RemoteStore;
+import com.fsck.k9.mailstore.LocalStore;
+import com.fsck.k9.preferences.Storage;
+import com.fsck.k9.preferences.StorageEditor;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,14 +17,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import android.content.Context;
-import android.util.Log;
-
-import com.fsck.k9.mail.store.RemoteStore;
-import com.fsck.k9.mailstore.LocalStore;
-import com.fsck.k9.preferences.StorageEditor;
-import com.fsck.k9.preferences.Storage;
 
 public class Preferences {
 
@@ -183,5 +184,18 @@ public class Preferences {
                 return defaultEnum;
             }
         }
+    }
+
+    public void setAccounts(List<Account> reorderedAccounts) {
+        accountsInOrder = reorderedAccounts;
+        List<String> uuids = new ArrayList<>(reorderedAccounts.size());
+        for (Account account : reorderedAccounts) {
+            uuids.add(account.getUuid());
+        }
+        String accountUuids = Utility.combine(uuids.toArray(), ',');
+
+        StorageEditor editor = getStorage().edit();
+        editor.putString("accountUuids", accountUuids);
+        editor.commit();
     }
 }
