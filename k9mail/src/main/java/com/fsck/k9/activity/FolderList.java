@@ -307,6 +307,10 @@ public class FolderList extends K9ListActivity {
         mActionBarSubTitle = (TextView) customView.findViewById(R.id.actionbar_title_sub);
         mActionBarUnread = (TextView) customView.findViewById(R.id.actionbar_unread_count);
 
+        initializeSearchBar();
+    }
+
+    private void initializeSearchBar() {
         searchLayout = findViewById(R.id.toolbar_search_container);
         searchInput = (EditText) findViewById(R.id.search_input);
         clearSearchIcon = findViewById(R.id.search_clear);
