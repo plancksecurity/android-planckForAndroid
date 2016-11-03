@@ -56,6 +56,8 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpUIUtils;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
+import com.fsck.k9.pEp.ui.infrastructure.MessageSwipeDirection;
+import com.fsck.k9.pEp.ui.infrastructure.Router;
 import com.fsck.k9.pEp.ui.listeners.OnAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
 import com.fsck.k9.pEp.ui.renderers.AccountRenderer;
@@ -141,6 +143,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private DrawerLayout.DrawerListener drawerCloseListener;
     private boolean messageViewVisible;
     private boolean isThreadDisplayed;
+    private MessageSwipeDirection direction;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
             boolean noThreading, boolean newTask) {
@@ -308,9 +311,9 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         }
 
         if (useSplitView()) {
-            setContentView(R.layout.split_message_list);
+            bindViews(R.layout.split_message_list);
         } else {
-            setContentView(R.layout.message_list);
+            bindViews(R.layout.message_list);
             mViewSwitcher = (ViewSwitcher) findViewById(R.id.container);
             mViewSwitcher.setFirstInAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_left));
             mViewSwitcher.setFirstOutAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_out_right));
@@ -318,7 +321,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             mViewSwitcher.setSecondOutAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_out_left));
             mViewSwitcher.setOnSwitchCompleteListener(this);
         }
-
         initializeActionBar();
 
         if (!decodeExtras(getIntent())) {
@@ -334,7 +336,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, getToolbar(), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
@@ -342,6 +344,19 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         accountsDrawerLayout = findViewById(R.id.navigation_bar_accounts_layout);
         if (mAccount != null) {
             loadNavigationView();
+        }
+    }
+
+    @Override
+    public void search(String query) {
+        if (mAccount != null && query != null) {
+            final Bundle appData = new Bundle();
+            appData.putString(EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
+            appData.putString(EXTRA_SEARCH_FOLDER, mFolderName);
+            triggerSearch(query, appData);
+        } else {
+            // TODO Handle the case where we're searching from within a search result.
+            startSearch(null, false, null, false);
         }
     }
 
@@ -822,6 +837,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         mSearch = null;
         mFolderName = null;
 
+        initializeActionBar();
         if (!decodeExtras(intent)) {
             return;
         }
@@ -1065,8 +1081,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
         // now we know if we are in single account mode and need a subtitle
 
-        mActionBarSubTitle.setVisibility((!mSingleFolderMode) ? View.GONE : View.VISIBLE);
-
+        mActionBarSubTitle.setVisibility(Intent.ACTION_SEARCH.equals(intent.getAction()) || !mSingleFolderMode  ? View.GONE : View.VISIBLE);
         return true;
     }
 
@@ -1155,16 +1170,18 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     @Override
     public void onBackPressed() {
-        if (isMessageViewVisible()) {
-            setMessageViewVisible(false);
-        }
-        if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
-            showMessageList();
-        } else if (isThreadDisplayed) {
-            actionDisplaySearch(this, mSearch, false, false);
-        } else {
-            onAccounts();
-        }
+            if (isMessageViewVisible()) {
+                setMessageViewVisible(false);
+            }
+            if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
+                Router.onOpenAccount(this, mAccount);
+            } else if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
+                showMessageList();
+            } else if (isThreadDisplayed) {
+                actionDisplaySearch(this, mSearch, false, false);
+            } else {
+                onAccounts();
+            }
     }
 
     /**
@@ -1360,11 +1377,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     @Override
-    public boolean onSearchRequested() {
-        return mMessageListFragment.onSearchRequested();
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         switch (itemId) {
@@ -1429,7 +1441,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 return true;
             }
             case R.id.search: {
-                mMessageListFragment.onSearchRequested();
+                showSearchView();
                 return true;
             }
             case R.id.search_remote: {
@@ -1798,6 +1810,12 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
             MessageViewFragment fragment = MessageViewFragment.newInstance(messageReference);
             FragmentTransaction ft = getFragmentManager().beginTransaction();
+            if (direction == null || direction.equals(MessageSwipeDirection.FORWARD)) {
+                ft.setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right);
+            } else  {
+                ft.setCustomAnimations(R.animator.fade_in_right, R.animator.fade_out_left);
+            }
+            resetDirection();
             ft.replace(R.id.message_view_container, fragment);
             mMessageViewFragment = fragment;
             ft.commit();
@@ -1806,6 +1824,10 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 showMessageView();
             }
         }
+    }
+
+    private void resetDirection() {
+        direction = MessageSwipeDirection.FORWARD;
     }
 
     @Override
@@ -1977,7 +1999,10 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         if (mDisplayMode == DisplayMode.MESSAGE_VIEW) {
             showMessageList();
         } else if (fragmentManager.getBackStackEntryCount() > 0) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.animator.fade_out_right, R.animator.fade_in_left);
             fragmentManager.popBackStack();
+            fragmentTransaction.commit();
         } else if (mMessageListFragment.isManualSearch()) {
             finish();
         } else if (!mSingleFolderMode) {
@@ -2106,6 +2131,10 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         invalidateOptionsMenu();
     }
 
+    @Override
+    public void setDirection(MessageSwipeDirection direction) {
+        this.direction = direction;
+    }
 
 
     @Override

@@ -40,7 +40,7 @@ public class AccountSetupIncoming extends K9Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.account_setup_incoming);
+        bindViews(R.layout.account_setup_incoming);
 
         String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
         mAccount = Preferences.getPreferences(this).getAccount(accountUuid);
@@ -49,5 +49,10 @@ public class AccountSetupIncoming extends K9Activity {
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.add(R.id.account_setup_container, accountSetupIncomingFragment).commit();
         }
+    }
+
+    @Override
+    public void search(String query) {
+
     }
 }

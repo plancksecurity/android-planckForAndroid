@@ -119,11 +119,16 @@ public class UpgradeDatabases extends K9Activity {
         setupBroadcastReceiver();
     }
 
+    @Override
+    public void search(String query) {
+
+    }
+
     /**
      * Initialize the activity's layout
      */
     private void initializeLayout() {
-        setContentView(R.layout.upgrade_databases);
+        bindViews(R.layout.upgrade_databases);
 
         mUpgradeText = (TextView) findViewById(R.id.databaseUpgradeText);
     }

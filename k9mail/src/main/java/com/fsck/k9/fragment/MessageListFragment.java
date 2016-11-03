@@ -91,6 +91,7 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
+import com.fsck.k9.pEp.ui.infrastructure.MessageSwipeDirection;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.EmailProvider;
@@ -2906,6 +2907,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     }
 
     public boolean openPrevious(MessageReference messageReference) {
+        mFragmentListener.setDirection(MessageSwipeDirection.BACKWARDS);
         int position = getPosition(messageReference);
         if (position <= 0) {
             return false;
@@ -2916,6 +2918,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     }
 
     public boolean openNext(MessageReference messageReference) {
+        mFragmentListener.setDirection(MessageSwipeDirection.FORWARD);
         int position = getPosition(messageReference);
         if (position < 0 || position == mAdapter.getCount() - 1) {
             return false;
@@ -2995,6 +2998,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         void remoteSearchStarted();
         void goBack();
         void updateMenu();
+        void setDirection(MessageSwipeDirection direction);
     }
 
     public void onReverseSort() {
@@ -3186,11 +3190,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
         return allowRemoteSearch;
     }
-
-    public boolean onSearchRequested() {
-        String folderName = (mCurrentFolder != null) ? mCurrentFolder.name : null;
-        return mFragmentListener.startSearch(mAccount, folderName);
-   }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {

@@ -49,7 +49,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.account_setup_names);
+        bindViews(R.layout.account_setup_names);
 
         initializeToolbar(true, R.string.account_setup_names_title);
         setStatusBarPepColor(getResources().getColor(R.color.pep_green));
@@ -89,6 +89,11 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
         if (!Utility.requiredFieldValid(mName)) {
             mDoneButton.setEnabled(false);
         }
+    }
+
+    @Override
+    public void search(String query) {
+
     }
 
     @Override

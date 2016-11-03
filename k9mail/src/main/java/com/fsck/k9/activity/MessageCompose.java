@@ -324,9 +324,9 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             // background color needs to be forced
             themeContext.getTheme().resolveAttribute(R.attr.messageViewBackgroundColor, outValue, true);
             v.setBackgroundColor(outValue.data);
-            setContentView(v);
+            bindViews(v);
         } else {
-            setContentView(R.layout.message_compose);
+            bindViews(R.layout.message_compose);
         }
 
         final Intent intent = getIntent();
@@ -532,6 +532,11 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         super.onDestroy();
 
         recipientPresenter.onActivityDestroy();
+    }
+
+    @Override
+    public void search(String query) {
+
     }
 
     /**

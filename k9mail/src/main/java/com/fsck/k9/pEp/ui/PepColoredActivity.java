@@ -33,6 +33,11 @@ public class PepColoredActivity extends K9Activity {
         super.onCreate(savedInstanceState);
     }
 
+    @Override
+    public void search(String query) {
+
+    }
+
     protected void colorActionBar() {
         if (getToolbar() != null) {
             PEpUtils.colorToolbar(uiCache, getToolbar(), pEpRating);

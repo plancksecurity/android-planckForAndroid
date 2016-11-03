@@ -53,7 +53,7 @@ public class AccountSetupAccountType extends K9Activity implements OnClickListen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.account_setup_account_type);
+        bindViews(R.layout.account_setup_account_type);
 
         initializeToolbar(true, R.string.account_setup_account_type_title);
         setStatusBarPepColor(getResources().getColor(R.color.white));
@@ -65,6 +65,11 @@ public class AccountSetupAccountType extends K9Activity implements OnClickListen
         String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
         mAccount = Preferences.getPreferences(this).getAccount(accountUuid);
         mMakeDefault = getIntent().getBooleanExtra(EXTRA_MAKE_DEFAULT, false);
+    }
+
+    @Override
+    public void search(String query) {
+
     }
 
     @Override

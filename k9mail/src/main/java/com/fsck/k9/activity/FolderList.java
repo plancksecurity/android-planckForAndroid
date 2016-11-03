@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.support.v7.widget.SearchView;
+import android.text.Editable;
 import android.text.TextUtils.TruncateAt;
+import android.text.TextWatcher;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -19,10 +21,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.LinearLayout;
@@ -51,6 +55,7 @@ import com.fsck.k9.mail.power.TracingPowerManager;
 import com.fsck.k9.mail.power.TracingPowerManager.TracingWakeLock;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
@@ -61,6 +66,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+
+import static com.fsck.k9.activity.MessageList.EXTRA_SEARCH_ACCOUNT;
 
 /**
  * FolderList is the primary user interface for the program. This
@@ -95,6 +102,9 @@ public class FolderList extends K9ListActivity {
     private TextView mActionBarTitle;
     private TextView mActionBarSubTitle;
     private TextView mActionBarUnread;
+    private View searchLayout;
+    private EditText searchInput;
+    private View clearSearchIcon;
 
     class FolderListHandler extends Handler {
 
@@ -298,6 +308,86 @@ public class FolderList extends K9ListActivity {
         mActionBarTitle = (TextView) customView.findViewById(R.id.actionbar_title_first);
         mActionBarSubTitle = (TextView) customView.findViewById(R.id.actionbar_title_sub);
         mActionBarUnread = (TextView) customView.findViewById(R.id.actionbar_unread_count);
+
+        initializeSearchBar();
+    }
+
+    private void initializeSearchBar() {
+        searchLayout = findViewById(R.id.toolbar_search_container);
+        searchInput = (EditText) findViewById(R.id.search_input);
+        clearSearchIcon = findViewById(R.id.search_clear);
+
+        searchInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence query, int start, int before, int count) {
+                if (query.toString().isEmpty()) {
+                    clearSearchIcon.setVisibility(View.GONE);
+                } else {
+                    clearSearchIcon.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        searchInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (!searchInput.getText().toString().isEmpty()) {
+                    search(searchInput.getText().toString());
+                }
+                return true;
+            }
+        });
+
+        clearSearchIcon.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchInput.setText(null);
+                hideSearchView();
+                KeyboardUtils.hideKeyboard(searchInput);
+            }
+        });
+    }
+
+    private void search(String query) {
+        if (mAccount != null && query != null) {
+            final Bundle appData = new Bundle();
+            appData.putString(EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
+            triggerSearch(query, appData);
+        } else {
+            // TODO Handle the case where we're searching from within a search result.
+            startSearch(null, false, null, false);
+        }
+    }
+
+    public void showSearchView() {
+        if (searchLayout != null) {
+            getToolbar().setVisibility(View.GONE);
+            searchLayout.setVisibility(View.VISIBLE);
+            setFocusOnKeyboard();
+        }
+    }
+
+    public void hideSearchView() {
+        if (searchLayout != null) {
+            getToolbar().setVisibility(View.VISIBLE);
+            searchLayout.setVisibility(View.GONE);
+        }
+    }
+
+    private void setFocusOnKeyboard() {
+        searchInput.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(searchInput, InputMethodManager.SHOW_IMPLICIT);
     }
 
     @Override
@@ -499,7 +589,7 @@ public class FolderList extends K9ListActivity {
             return true;
 
         case R.id.search:
-            onSearchRequested();
+            showSearchView();
 
             return true;
 
@@ -567,7 +657,7 @@ public class FolderList extends K9ListActivity {
     @Override
     public boolean onSearchRequested() {
          Bundle appData = new Bundle();
-         appData.putString(MessageList.EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
+         appData.putString(EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
          startSearch(null, false, appData, false);
          return true;
      }
