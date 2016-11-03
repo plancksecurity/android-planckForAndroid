@@ -193,13 +193,15 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
     public void showLoadingMessages() {
         mListView.setVisibility(GONE);
-        fab.setVisibility(GONE);
+//        fab.setVisibility(GONE);
+        fab.hide();
         loadingView.setVisibility(View.VISIBLE);
     }
 
     public void hideLoadingMessages() {
         mListView.setVisibility(View.VISIBLE);
-        fab.setVisibility(View.VISIBLE);
+//        fab.setVisibility(View.VISIBLE);
+        fab.show();
         loadingView.setVisibility(View.GONE);
     }
 
@@ -710,10 +712,12 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (firstVisibleItem > this.firstItem) {
-                    fab.hide();
-                } else {
-                    fab.show();
+                if (!mIsThreadDisplay) {
+                    if (firstVisibleItem > this.firstItem) {
+                        fab.hide();
+                    } else {
+                        fab.show();
+                    }
                 }
             }
         });
@@ -1001,6 +1005,11 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             Toolbar toolbar = ((K9Activity) getActivity()).getToolbar();
             PEpUtils.colorToolbar(toolbar, PEpUtils.getRatingColor(worstThreadRating, getActivity()));
             ((K9Activity) getActivity()).setStatusBarPepColor(worstThreadRating);
+        }
+        if (mIsThreadDisplay) {
+            fab.hide();
+        } else {
+            fab.show();
         }
     }
 
