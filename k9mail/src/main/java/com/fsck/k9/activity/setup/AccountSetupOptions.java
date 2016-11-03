@@ -46,7 +46,7 @@ public class AccountSetupOptions extends K9Activity implements OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        bindViewsForLayout(R.layout.account_setup_options);
+        bindViews(R.layout.account_setup_options);
 
         initializeToolbar(true, R.string.account_settings_title_fmt);
 

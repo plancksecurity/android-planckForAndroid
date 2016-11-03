@@ -43,7 +43,7 @@ public class EditIdentity extends K9Activity {
             mIdentity = new Identity();
         }
 
-        bindViewsForLayout(R.layout.edit_identity);
+        bindViews(R.layout.edit_identity);
 
         /*
          * If we're being reloaded we override the original account with the one

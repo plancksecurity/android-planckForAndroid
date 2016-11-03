@@ -44,7 +44,7 @@ public class AccountSetupComposition extends K9Activity {
         String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
         mAccount = Preferences.getPreferences(this).getAccount(accountUuid);
 
-        bindViewsForLayout(R.layout.account_setup_composition);
+        bindViews(R.layout.account_setup_composition);
 
         initializeToolbar(true, R.string.account_settings_composition_title);
         /*

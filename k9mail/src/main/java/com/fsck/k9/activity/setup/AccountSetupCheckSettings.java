@@ -90,7 +90,7 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        bindViewsForLayout(R.layout.account_setup_check_settings);
+        bindViews(R.layout.account_setup_check_settings);
         initializeToolbar(true, R.string.account_setup_check_settings_title);
         setStatusBarPepColor(getResources().getColor(R.color.white));
         mMessageView = (TextView)findViewById(R.id.message);

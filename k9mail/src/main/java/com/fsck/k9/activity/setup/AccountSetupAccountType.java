@@ -53,7 +53,7 @@ public class AccountSetupAccountType extends K9Activity implements OnClickListen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        bindViewsForLayout(R.layout.account_setup_account_type);
+        bindViews(R.layout.account_setup_account_type);
 
         initializeToolbar(true, R.string.account_setup_account_type_title);
         setStatusBarPepColor(getResources().getColor(R.color.white));

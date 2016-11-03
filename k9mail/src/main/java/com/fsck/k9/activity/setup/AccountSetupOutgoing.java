@@ -29,7 +29,7 @@ public class AccountSetupOutgoing extends K9Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        bindViewsForLayout(R.layout.account_setup_outgoing);
+        bindViews(R.layout.account_setup_outgoing);
 
         String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
         Account mAccount = Preferences.getPreferences(this).getAccount(accountUuid);

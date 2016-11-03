@@ -375,7 +375,7 @@ public class Accounts extends K9Activity {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        bindViewsForLayout(R.layout.accounts);
+        bindViews(R.layout.accounts);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.message_swipe);
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

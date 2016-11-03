@@ -207,12 +207,12 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         KeyboardUtils.hideKeyboard(searchInput);
     }
 
-    public void bindViewsForLayout(int layoutId) {
+    public void bindViews(int layoutId) {
         setContentView(layoutId);
         ButterKnife.bind(this);
     }
 
-    public void bindViewsForView(View view) {
+    public void bindViews(View view) {
         setContentView(view);
         ButterKnife.bind(this);
     }
