@@ -2005,10 +2005,8 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             fragmentTransaction.commit();
         } else if (mMessageListFragment.isManualSearch()) {
             finish();
-        } else if (!mSingleFolderMode) {
-            onAccounts();
         } else {
-            onShowFolderList();
+            onAccounts();
         }
     }
 
