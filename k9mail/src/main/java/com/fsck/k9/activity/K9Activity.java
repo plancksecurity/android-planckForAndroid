@@ -92,7 +92,8 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         }
     }
 
-    @OnClick(R.id.search_clear) void onClearSeachClicked() {
+    @OnClick(R.id.search_clear)
+    void onClearSeachClicked() {
         hideSearchView();
         searchInput.setText(null);
         KeyboardUtils.hideKeyboard(searchInput);
