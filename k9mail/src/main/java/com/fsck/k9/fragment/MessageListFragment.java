@@ -3333,10 +3333,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             } else {
                 //TODO: empty thread view -> return to full message list
             }
-        } else {
-            ((DrawerLocker) getActivity()).setDrawerEnabled(true);
         }
-
         cleanupSelected(cursor);
         updateContextMenu(cursor);
 
