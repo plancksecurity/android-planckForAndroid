@@ -46,27 +46,26 @@
 
             <Button
                 android:id="@+id/confirmTrustWords"
-                android:layout_width="300dp"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="8dp"
-                android:background="@color/pep_green"
-                android:elevation="4dp"
+                android:layout_gravity="center_horizontal"
+                android:minWidth="@dimen/button_minWidth"
+                android:padding="10dip"
+                android:stateListAnimator="@null"
+                android:layout_marginTop="8dp"
                 android:text="@string/pep_confirm_trustwords"
-                android:textColor="@android:color/white" />
+                android:theme="@style/PEpStyleButton"/>
 
             <Button
                 android:id="@+id/wrongTrustwords"
-                android:layout_width="300dp"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="8dp"
-                android:background="@color/pep_red"
-                android:elevation="4dp"
+                android:layout_gravity="center_horizontal"
+                android:minWidth="@dimen/button_minWidth"
+                android:padding="10dip"
+                android:stateListAnimator="@null"
                 android:text="@string/pep_wrong_trustwords"
-                android:textColor="@android:color/white"
-
-                />
+                android:theme="@style/PEpStyleButton.Red"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

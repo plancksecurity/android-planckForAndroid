@@ -32,4 +32,6 @@
     <color name="text_for_white_background">#212121</color>
     <color name="secondary_text_color">#757575</color>
 
+    <color name="dark_red">#d32f2f</color>
+
 </resources>
