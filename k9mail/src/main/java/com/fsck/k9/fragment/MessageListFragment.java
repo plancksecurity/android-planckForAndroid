@@ -2835,7 +2835,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     }
 
     public boolean openPrevious(MessageReference messageReference) {
-        mFragmentListener.setDirection(new MessageSwipeDirection(MessageSwipeDirection.BACKWARDS));
+        mFragmentListener.setDirection(MessageSwipeDirection.BACKWARDS);
         int position = getPosition(messageReference);
         if (position <= 0) {
             return false;
@@ -2846,7 +2846,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     }
 
     public boolean openNext(MessageReference messageReference) {
-        mFragmentListener.setDirection(new MessageSwipeDirection(MessageSwipeDirection.FORWARD));
+        mFragmentListener.setDirection(MessageSwipeDirection.FORWARD);
         int position = getPosition(messageReference);
         if (position < 0 || position == mAdapter.getCount() - 1) {
             return false;
