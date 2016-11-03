@@ -43,9 +43,9 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic, Sync.showHandshakeCallback {
 
     @Nullable @Bind(R.id.toolbar) Toolbar toolbar;
-    @Bind(R.id.toolbar_search_container) FrameLayout toolbarSearchContainer;
-    @Bind(R.id.search_input) EditText searchInput;
-    @Bind(R.id.search_clear) View clearSearchIcon;
+    @Nullable @Bind(R.id.toolbar_search_container) FrameLayout toolbarSearchContainer;
+    @Nullable @Bind(R.id.search_input) EditText searchInput;
+    @Nullable @Bind(R.id.search_clear) View clearSearchIcon;
 
     private K9ActivityCommon mBase;
 
@@ -94,7 +94,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         }
     }
 
-    @OnClick(R.id.search_clear)
+    @Nullable @OnClick(R.id.search_clear)
     void onClearSeachClicked() {
         hideSearchView();
         searchInput.setText(null);
@@ -161,9 +161,8 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         }
     }
     public View getRootView() {
-        ViewGroup viewGroup = (ViewGroup) ((ViewGroup) this
+        return ((ViewGroup) this
                 .findViewById(android.R.id.content)).getChildAt(0);
-        return viewGroup;
     }
 
     public void showSearchView() {
@@ -175,9 +174,11 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     }
 
     private void setFocusOnKeyboard() {
-        searchInput.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(searchInput, InputMethodManager.SHOW_IMPLICIT);
+        if (searchInput != null) {
+            searchInput.requestFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(searchInput, InputMethodManager.SHOW_IMPLICIT);
+        }
     }
 
     public void hideSearchView() {
@@ -187,28 +188,35 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         }
     }
 
-    @OnTextChanged(R.id.search_input)
+    @Nullable @OnTextChanged(R.id.search_input)
     void onSearchInputChanged(CharSequence query) {
-        if (query.toString().isEmpty()) {
-            clearSearchIcon.setVisibility(View.GONE);
-        } else {
-            clearSearchIcon.setVisibility(View.VISIBLE);
+        if (clearSearchIcon != null) {
+            if (query.toString().isEmpty()) {
+                clearSearchIcon.setVisibility(View.GONE);
+            } else {
+                clearSearchIcon.setVisibility(View.VISIBLE);
+            }
         }
     }
 
-    @OnEditorAction(R.id.search_input)
+    @Nullable @OnEditorAction(R.id.search_input)
     boolean onSearchInputSubmitted(KeyEvent keyEvent) {
-        if (!searchInput.getText().toString().isEmpty()) {
-            search(searchInput.getText().toString());
+        if (searchInput != null) {
+            if (!searchInput.getText().toString().isEmpty()) {
+                search(searchInput.getText().toString());
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
-    @OnClick(R.id.search_clear)
+    @Nullable @OnClick(R.id.search_clear)
     void onClearText() {
-        searchInput.setText(null);
-        hideSearchView();
-        KeyboardUtils.hideKeyboard(searchInput);
+        if (searchInput != null) {
+            searchInput.setText(null);
+            hideSearchView();
+            KeyboardUtils.hideKeyboard(searchInput);
+        }
     }
 
     public void bindViews(@LayoutRes int layoutId) {
