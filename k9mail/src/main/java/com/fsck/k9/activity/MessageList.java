@@ -1647,7 +1647,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
             MessageViewFragment fragment = MessageViewFragment.newInstance(messageReference);
             FragmentTransaction ft = getFragmentManager().beginTransaction();
-            // TODO: 25/10/16 change direction jodedol
             if (direction == null || direction.getDirectionToLoad().equals(MessageSwipeDirection.FORWARD)) {
                 ft.setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right);
             } else  {
