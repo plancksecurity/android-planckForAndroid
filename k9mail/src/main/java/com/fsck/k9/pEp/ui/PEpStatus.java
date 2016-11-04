@@ -34,7 +34,7 @@ import org.pEp.jniadapter.Rating;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class PEpStatus extends PepColoredActivity implements ChangeColorListener{
+public class PEpStatus extends PepColoredActivity implements ChangeColorListener {
 
     private static final String ACTION_SHOW_PEP_STATUS = "com.fsck.k9.intent.action.SHOW_PEP_STATUS";
     private static final String MYSELF = "isComposedKey";
@@ -109,7 +109,6 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
             ActionBar actionBar = getActionBar();
             actionBar.setTitle(getString(R.string.pep_title_activity_privacy_status));
             colorActionBar();
-            colorActionBar();
         }
     }
 
@@ -144,6 +143,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
         Intent returnIntent = new Intent();
         returnIntent.putExtra(CURRENT_RATING, rating);
         setResult(Activity.RESULT_OK, returnIntent);
+        loadPepTexts();
     }
 
     public class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
