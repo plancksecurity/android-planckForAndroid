@@ -39,6 +39,7 @@ import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
+import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
@@ -57,6 +58,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
+
+import static android.app.Activity.RESULT_OK;
 
 
 public class MessageViewFragment extends Fragment implements ConfirmationDialogFragmentListener,
@@ -232,6 +235,13 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         if ((requestCode & REQUEST_MASK_CRYPTO_PRESENTER) == REQUEST_MASK_CRYPTO_PRESENTER) {
             requestCode ^= REQUEST_MASK_CRYPTO_PRESENTER;
             messageCryptoPresenter.onActivityResult(requestCode, resultCode, data);
+        }
+
+        if (resultCode == RESULT_OK && requestCode == PEpStatus.REQUEST_STATUS) {
+            pEpRating = (Rating) data.getSerializableExtra(PEpStatus.CURRENT_RATING);
+            PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), pEpRating);
+            mMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpRating.name());
+            mMessageView.setHeaders(mMessage, mAccount);
         }
     }
 
@@ -411,7 +421,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != Activity.RESULT_OK) {
+        if (resultCode != RESULT_OK) {
             return;
         }
 
@@ -722,7 +732,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             }
         }
 
-        PEpStatus.actionShowStatus(getActivity(), pEpRating, myAddress);
+        PEpStatus.actionShowStatus(getActivity(), pEpRating, myAddress, getMessageReference());
     }
 
     public interface MessageViewFragmentListener {
