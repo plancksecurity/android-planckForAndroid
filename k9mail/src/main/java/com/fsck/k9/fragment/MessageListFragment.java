@@ -92,6 +92,7 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageSwipeDirection;
+import com.fsck.k9.pEp.ui.listeners.SwipeToDismissTouchListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.EmailProvider;
@@ -104,7 +105,6 @@ import com.fsck.k9.search.SearchSpecification;
 import com.fsck.k9.search.SearchSpecification.SearchCondition;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.search.SqlQueryBuilder;
-import com.hudomju.swipe.SwipeToDismissTouchListener;
 import com.hudomju.swipe.adapter.ListViewAdapter;
 
 import org.pEp.jniadapter.Rating;
@@ -702,25 +702,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
         initializeLayout();
         mListView.setVerticalFadingEdgeEnabled(false);
-
-        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            int firstItem = 0;
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (!mIsThreadDisplay) {
-                    if (firstVisibleItem > this.firstItem) {
-                        fab.hide();
-                    } else {
-                        fab.show();
-                    }
-                }
-            }
-        });
         return rootView;
     }
 
@@ -1165,6 +1146,11 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                             }
 
                             @Override
+                            public void onPendingDismiss(ListViewAdapter recyclerView, int position) {
+
+                            }
+
+                            @Override
                             public void onDismiss(ListViewAdapter view, int position) {
                                 int adapterPosition = listViewToAdapterPosition(position);
                                 MessageReference messageReference = getMessageAtPosition(adapterPosition);
@@ -1173,8 +1159,25 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                             }
                         });
 
+        touchListener.setDismissDelay(3000);
+
         mListView.setOnTouchListener(touchListener);
-        mListView.setOnScrollListener((AbsListView.OnScrollListener) touchListener.makeScrollListener());
+        mListView.setOnScrollListener((AbsListView.OnScrollListener) touchListener.makeScrollListener(new SwipeToDismissTouchListener.ScrollCallback() {
+
+            @Override
+            public void onScrollUp() {
+                if (!mIsThreadDisplay) {
+                    fab.show();
+                }
+            }
+
+            @Override
+            public void onScrollDown() {
+                if (!mIsThreadDisplay) {
+                    fab.hide();
+                }
+            }
+        }));
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
