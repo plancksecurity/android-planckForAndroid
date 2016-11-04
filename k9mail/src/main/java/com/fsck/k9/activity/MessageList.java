@@ -1817,14 +1817,15 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             MessageViewFragment fragment = MessageViewFragment.newInstance(messageReference);
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             if (direction == null || direction.equals(MessageSwipeDirection.FORWARD)) {
-                ft.setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right);
+                ft.setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out);
             } else  {
-                ft.setCustomAnimations(R.animator.fade_in_right, R.animator.fade_out_left);
+                ft.setCustomAnimations(R.animator.fade_in_right, R.animator.fade_out);
             }
             resetDirection();
             ft.replace(R.id.message_view_container, fragment);
             mMessageViewFragment = fragment;
             ft.commit();
+            getSupportFragmentManager().executePendingTransactions();
 
             if (mDisplayMode != DisplayMode.SPLIT_VIEW) {
                 showMessageView();
@@ -2004,11 +2005,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         FragmentManager fragmentManager = getFragmentManager();
         if (mDisplayMode == DisplayMode.MESSAGE_VIEW) {
             showMessageList();
-        } else if (fragmentManager.getBackStackEntryCount() > 0) {
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.setCustomAnimations(R.animator.fade_out_right, R.animator.fade_in_left);
-            fragmentManager.popBackStack();
-            fragmentTransaction.commit();
         } else if (mMessageListFragment.isManualSearch()) {
             finish();
         } else {
