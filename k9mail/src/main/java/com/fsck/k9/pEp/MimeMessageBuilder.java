@@ -2,6 +2,7 @@ package com.fsck.k9.pEp;
 
 
 import android.support.annotation.NonNull;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -231,8 +232,13 @@ class MimeMessageBuilder {
         String messageText;
         if (simpleMessageFormat == SimpleMessageFormat.HTML)
             messageText = pEpMessage.getLongmsgFormatted();
-        else
-            messageText = pEpMessage.getLongmsg();
+        else {
+            if (messageFormat == SimpleMessageFormat.HTML) {
+                messageText = Html.fromHtml(pEpMessage.getLongmsgFormatted()).toString();
+            } else {
+                messageText = pEpMessage.getLongmsg();
+            }
+        }
 
         if (messageText == null) {       // FIXME: This must (should?) never happen!
             messageText = "Got null msg text (This Is A Bug, please report!)";                // FIXME: Other text for production?
