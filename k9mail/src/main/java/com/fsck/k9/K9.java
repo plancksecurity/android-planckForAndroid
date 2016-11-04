@@ -61,6 +61,7 @@ import java.util.concurrent.SynchronousQueue;
 public class K9 extends Application {
     private static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PEpProvider pEpProvider, pEpSyncProvider;
+    boolean ispEpSyncEnabled = false;
 
 
 
@@ -530,7 +531,9 @@ public class K9 extends Application {
 
     @Override
     public void onCreate() {
-        initSync();
+        if (ispEpSyncEnabled) {
+            initSync();
+        }
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
         }
@@ -643,7 +646,8 @@ public class K9 extends Application {
     }
 
     public PEpProvider getpEpSyncProvider() {
-        return pEpSyncProvider;
+        if (ispEpSyncEnabled) return pEpSyncProvider;
+        else return pEpProvider;
     }
 
     private void initSync() {
