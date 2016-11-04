@@ -1176,12 +1176,18 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
                 Router.onOpenAccount(this, mAccount);
             } else if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
+                updateToolbarColorToOriginal();
                 showMessageList();
             } else if (isThreadDisplayed) {
                 actionDisplaySearch(this, mSearch, false, false);
             } else {
                 onAccounts();
             }
+    }
+
+    private void updateToolbarColorToOriginal() {
+        PEpUtils.colorToolbar(getToolbar(), PEpUtils.getRatingColor(Rating.pEpRatingFullyAnonymous, this));
+        setStatusBarPepColor(Rating.pEpRatingFullyAnonymous);
     }
 
     /**
