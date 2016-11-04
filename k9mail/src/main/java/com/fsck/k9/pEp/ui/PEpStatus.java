@@ -34,7 +34,7 @@ import org.pEp.jniadapter.Rating;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class PEpStatus extends PepColoredActivity implements ChangeColorListener{
+public class PEpStatus extends PepColoredActivity implements ChangeColorListener {
 
     private static final String ACTION_SHOW_PEP_STATUS = "com.fsck.k9.intent.action.SHOW_PEP_STATUS";
     private static final String MYSELF = "isComposedKey";
@@ -84,14 +84,13 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
         setUpContactList(myself, getpEp());
         loadPepTexts();
     }
-    }
 
     private void loadMessage() {
         messageReference = (MessageReference) getIntent().getExtras().get(MESSAGE_REFERENCE);
         MessageLoaderHelper messageLoaderHelper = new MessageLoaderHelper(this, getLoaderManager(), getFragmentManager(), callback());
         messageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, null);
     }
-|
+
     private void restorePEpRating(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             pEpRating = (Rating) savedInstanceState.getSerializable(RATING);
@@ -137,6 +136,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
         Intent returnIntent = new Intent();
         returnIntent.putExtra(CURRENT_RATING, rating);
         setResult(Activity.RESULT_OK, returnIntent);
+        loadPepTexts();
     }
 
     public class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
