@@ -225,10 +225,13 @@ class MimeMessageBuilder {
         if (simpleMessageFormat == SimpleMessageFormat.HTML)
             messageText = pEpMessage.getLongmsgFormatted();
         else {
-            if (messageFormat == SimpleMessageFormat.HTML) {
-                messageText = Html.fromHtml(pEpMessage.getLongmsgFormatted()).toString();
+            if (messageFormat == SimpleMessageFormat.HTML
+                    && pEpMessage.getLongmsg() == null && pEpMessage.getLongmsg().isEmpty()) {
+                String html = pEpMessage.getLongmsgFormatted();
+                String body = html.substring(html.indexOf("<body") + 5, html.indexOf("</body"));
+                messageText = Html.fromHtml(body).toString().trim();
             } else {
-                messageText = pEpMessage.getLongmsg();
+                messageText = pEpMessage.getLongmsg().trim();
             }
         }
 
