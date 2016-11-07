@@ -38,9 +38,12 @@ public class K9PreferenceActivity extends PreferenceActivity {
         super.onPostCreate(savedInstanceState);
         Toolbar bar;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            LinearLayout root = (LinearLayout) findViewById(android.R.id.list).getParent().getParent().getParent();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            ListView list = (ListView) findViewById(android.R.id.list);
+            ListView.MarginLayoutParams layoutParams = (ListView.MarginLayoutParams) list.getLayoutParams();
+            ViewGroup root = (ViewGroup) list.getParent().getParent().getParent();
             bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
+            layoutParams.setMargins(0, bar.getHeight(), 0, 0);
             root.addView(bar, 0); // insert at top
         } else {
             ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
@@ -171,11 +174,21 @@ public class K9PreferenceActivity extends PreferenceActivity {
 
         Toolbar bar;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            LinearLayout root = (LinearLayout) dialog.findViewById(android.R.id.list).getParent().getParent();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH && Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            ListView content = (ListView) dialog.findViewById(android.R.id.list);
+            ViewGroup root = (ViewGroup) content.getParent().getParent();
             bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
+
+            int height;
+            TypedValue tv = new TypedValue();
+            if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
+                height = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+            }else{
+                height = bar.getHeight();
+            }
+            content.setPadding(0, height, 0, 0);
             root.addView(bar, 0); // insert at top
-        } else {
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             ViewGroup root = (ViewGroup) dialog.findViewById(android.R.id.content);
             ListView content = (ListView) root.getChildAt(0);
 
@@ -195,6 +208,10 @@ public class K9PreferenceActivity extends PreferenceActivity {
 
             root.addView(content);
             root.addView(bar);
+        } else {
+            LinearLayout root = (LinearLayout) dialog.findViewById(android.R.id.list).getParent().getParent();
+            bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
+            root.addView(bar, 0); // insert at top
         }
 
         bar.setTitle(preferenceScreen.getTitle());
