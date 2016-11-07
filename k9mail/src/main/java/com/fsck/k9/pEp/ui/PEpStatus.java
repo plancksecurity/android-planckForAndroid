@@ -87,8 +87,10 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
 
     private void loadMessage() {
         messageReference = (MessageReference) getIntent().getExtras().get(MESSAGE_REFERENCE);
-        MessageLoaderHelper messageLoaderHelper = new MessageLoaderHelper(this, getLoaderManager(), getFragmentManager(), callback());
-        messageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, null);
+        if (messageReference != null) {
+            MessageLoaderHelper messageLoaderHelper = new MessageLoaderHelper(this, getLoaderManager(), getFragmentManager(), callback());
+            messageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, null);
+        }
     }
 
     private void restorePEpRating(Bundle savedInstanceState) {
