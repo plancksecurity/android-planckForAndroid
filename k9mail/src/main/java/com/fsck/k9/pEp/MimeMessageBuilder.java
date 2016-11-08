@@ -235,9 +235,7 @@ class MimeMessageBuilder {
         else {
             if (messageFormat == SimpleMessageFormat.HTML
                     && pEpMessage.getLongmsg() == null && pEpMessage.getLongmsg().isEmpty()) {
-                String html = pEpMessage.getLongmsgFormatted();
-                String body = html.substring(html.indexOf("<body") + 5, html.indexOf("</body"));
-                messageText = Jsoup.parse(body).text();
+                messageText = Jsoup.parse(pEpMessage.getLongmsgFormatted()).text();
             } else {
                 messageText = Jsoup.parse(pEpMessage.getLongmsg()).text();
             }
