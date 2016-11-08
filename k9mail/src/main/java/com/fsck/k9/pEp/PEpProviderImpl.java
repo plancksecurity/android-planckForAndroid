@@ -210,6 +210,30 @@ public class PEpProviderImpl implements PEpProvider {
         }
     }
 
+    @Override
+    public MimeMessage encryptMessageToSelf(MimeMessage source) throws MessagingException{
+        Message message = null;
+        try {
+            message = new PEpMessageBuilder(source).createMessage(context);
+            message.setDir(Message.Direction.Outgoing);
+            Log.d(TAG, "encryptMessage() before encrypt to self");
+            Identity from = message.getFrom();
+            from.user_id = PEP_OWN_USER_ID;
+            message.setFrom(from);
+            Message currentEnc = engine.encrypt_message_for_self(message.getFrom(), message);
+            if (currentEnc == null) currentEnc = message;
+            Log.d(TAG, "encryptMessage() after encrypt to self");
+            return new MimeMessageBuilder(currentEnc).createMessage();
+        } catch (pEpException exception) {
+            Log.e(TAG, "encryptMessageToSelf: ", exception);
+            return null;
+        } finally {
+            if (message != null) {
+                message.close();
+            }
+        }
+    }
+
     private List<MimeMessage> getUnencryptedCopies(MimeMessage source, String[] extraKeys) throws MessagingException, pEpException {
         List<MimeMessage> messages = new ArrayList<>();
         messages.add(getUnencryptedBCCCopy(source));
