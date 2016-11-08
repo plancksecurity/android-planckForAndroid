@@ -45,10 +45,18 @@ dependencies {
     testCompile "junit:junit:${junitVersion}"
     testCompile "org.mockito:mockito-core:${mockitoVersion}"
 
-    compile "com.android.support:recyclerview-v7:${project.supportLibraryVersion}"
-    compile "com.android.support:cardview-v7:${project.supportLibraryVersion}"
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
+    compile 'de.hdodenhof:circleimageview:2.1.0'
+    compile 'com.github.pedrovgs:renderers:3.2.0'
+    compile 'ch.acra:acra:4.6.1'
+    compile 'com.android.support:support-v4:24.2.1'
+    compile 'com.android.support:support-vector-drawable:24.2.1'
+    compile 'com.github.paolorotolo:appintro:4.1.0'
+    compile 'org.jsoup:jsoup:1.10.1'
+
+    compile "com.android.support:recyclerview-v7:${project.supportLibraryVersion}"
+    compile "com.android.support:cardview-v7:${project.supportLibraryVersion}"
 }
 
 android {
@@ -78,7 +86,7 @@ android {
         playStore {
         }
     }
-        signingConfigs {
+    signingConfigs {
         release
     }
     buildTypes {
@@ -106,9 +114,15 @@ android {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE'
         exclude 'META-INF/NOTICE.txt'
-        exclude 'LICENSE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/dependencies.txt'
+        exclude 'META-INF/LGPL2.1'
+        exclude 'META-INF/README'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7

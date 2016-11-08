@@ -2,7 +2,6 @@ package com.fsck.k9.pEp;
 
 
 import android.support.annotation.NonNull;
-import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -22,6 +21,7 @@ import com.fsck.k9.message.SimpleMessageFormat;
 
 import org.apache.james.mime4j.codec.EncoderUtil;
 import org.apache.james.mime4j.util.MimeUtil;
+import org.jsoup.Jsoup;
 import org.pEp.jniadapter.Blob;
 import org.pEp.jniadapter.Message;
 import org.pEp.jniadapter.Pair;
@@ -233,10 +233,13 @@ class MimeMessageBuilder {
         if (simpleMessageFormat == SimpleMessageFormat.HTML)
             messageText = pEpMessage.getLongmsgFormatted();
         else {
-            if (messageFormat == SimpleMessageFormat.HTML) {
-                messageText = Html.fromHtml(pEpMessage.getLongmsgFormatted()).toString();
+            if (messageFormat == SimpleMessageFormat.HTML
+                    && pEpMessage.getLongmsg() == null && pEpMessage.getLongmsg().isEmpty()) {
+                String html = pEpMessage.getLongmsgFormatted();
+                String body = html.substring(html.indexOf("<body") + 5, html.indexOf("</body"));
+                messageText = Jsoup.parse(body).text();
             } else {
-                messageText = pEpMessage.getLongmsg();
+                messageText = Jsoup.parse(pEpMessage.getLongmsg()).text();
             }
         }
 
