@@ -421,7 +421,7 @@ public class PEpProviderImpl implements PEpProvider {
             try {
                 createEngineSession();
             } catch (pEpException e) {
-                Log.e(TAG, "createEngineInstanceIfNeeded", e);
+                Log.e(TAG, "createEngineInstanceIfNeeded");
             }
         }
     }
