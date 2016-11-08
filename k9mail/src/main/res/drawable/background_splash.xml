@@ -3,7 +3,4 @@
 
     <item android:drawable="@color/colorPrimary" />
 
-    <item
-        android:drawable="@drawable/ic_action_pep_indicator_white_big"
-        android:gravity="center" />
 </layer-list>
