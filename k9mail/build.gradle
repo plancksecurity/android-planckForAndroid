@@ -64,8 +64,8 @@ android {
 //        versionName '5.200-RC2'
 
         applicationId "pep.android.k9"
-        versionCode 20
-        versionName '0.9.8.4.noKeysync'
+        versionCode 22
+        versionName '0.9.8.8.noKeysync'
         minSdkVersion 18
         targetSdkVersion 22
 

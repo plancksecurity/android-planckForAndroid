@@ -212,6 +212,9 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public MimeMessage encryptMessageToSelf(MimeMessage source) throws MessagingException{
+        if (source == null) {
+            return source;
+        }
         Message message = null;
         try {
             message = new PEpMessageBuilder(source).createMessage(context);
@@ -224,9 +227,9 @@ public class PEpProviderImpl implements PEpProvider {
             if (currentEnc == null) currentEnc = message;
             Log.d(TAG, "encryptMessage() after encrypt to self");
             return new MimeMessageBuilder(currentEnc).createMessage();
-        } catch (pEpException exception) {
+        } catch (Exception exception) {
             Log.e(TAG, "encryptMessageToSelf: ", exception);
-            return null;
+            return source;
         } finally {
             if (message != null) {
                 message.close();
@@ -460,7 +463,7 @@ public class PEpProviderImpl implements PEpProvider {
             try {
                 createEngineSession();
             } catch (pEpException e) {
-                Log.e(TAG, "createEngineInstanceIfNeeded", e);
+                Log.e(TAG, "createIfNeeded");
             }
         }
     }
