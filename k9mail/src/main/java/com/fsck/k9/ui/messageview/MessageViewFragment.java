@@ -343,13 +343,13 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void onReply() {
         if (mMessage != null) {
-            mFragmentListener.onReply(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply());
+            mFragmentListener.onReply(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PEpUtils.extractRating(mMessage));
         }
     }
 
     public void onReplyAll() {
         if (mMessage != null) {
-            mFragmentListener.onReplyAll(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply());
+            mFragmentListener.onReplyAll(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PEpUtils.extractRating(mMessage));
         }
     }
 
@@ -736,10 +736,13 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public interface MessageViewFragmentListener {
-        void onForward(MessageReference messageReference, Parcelable decryptionResultForReply, Rating rating);
+        void onForward(MessageReference messageReference, Parcelable decryptionResultForReply,
+                       Rating pEpRating);
         void disableDeleteAction();
-        void onReplyAll(MessageReference messageReference, Parcelable decryptionResultForReply);
-        void onReply(MessageReference messageReference, Parcelable decryptionResultForReply);
+        void onReplyAll(MessageReference messageReference, Parcelable decryptionResultForReply,
+                        Rating pEpRating);
+        void onReply(MessageReference messageReference, Parcelable decryptionResultForReply,
+                     Rating pEpRating);
         void displayMessageSubject(String title);
         void setProgress(boolean b);
         void showNextMessageOrReturn();

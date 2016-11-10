@@ -31,7 +31,8 @@ public class MessageActions {
      * the function is reply all instead of simply reply.
      */
     public static Intent getActionReplyIntent(
-            Context context, MessageReference messageReference, boolean replyAll, Parcelable decryptionResult) {
+            Context context, MessageReference messageReference, boolean replyAll, Parcelable decryptionResult,
+            Rating pEpRating) {
         Intent i = new Intent(context, MessageCompose.class);
         i.putExtra(MessageCompose.EXTRA_MESSAGE_DECRYPTION_RESULT, decryptionResult);
         i.putExtra(MessageCompose.EXTRA_MESSAGE_REFERENCE, messageReference);
@@ -40,6 +41,7 @@ public class MessageActions {
         } else {
             i.setAction(MessageCompose.ACTION_REPLY);
         }
+        i.putExtra(MessageCompose.EXTRA_PEP_RATING, pEpRating);
         return i;
     }
 
@@ -57,8 +59,9 @@ public class MessageActions {
      * is reply all instead of simply reply.
      */
     public static void actionReply(
-            Context context, MessageReference messageReference, boolean replyAll, Parcelable decryptionResult) {
-        context.startActivity(getActionReplyIntent(context, messageReference, replyAll, decryptionResult));
+            Context context, MessageReference messageReference, boolean replyAll, Parcelable decryptionResult,
+            Rating pEpRating) {
+        context.startActivity(getActionReplyIntent(context, messageReference, replyAll, decryptionResult, pEpRating));
     }
 
     /**
