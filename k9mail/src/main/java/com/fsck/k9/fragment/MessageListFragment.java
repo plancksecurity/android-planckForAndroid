@@ -1043,12 +1043,12 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         }
     }
 
-    public void onReply(MessageReference messageReference) {
-        mFragmentListener.onReply(messageReference);
+    public void onReply(MessageReference messageReference, Rating pEpRating) {
+        mFragmentListener.onReply(messageReference, pEpRating);
     }
 
-    public void onReplyAll(MessageReference messageReference) {
-        mFragmentListener.onReplyAll(messageReference);
+    public void onReplyAll(MessageReference messageReference, Rating pEpRating) {
+        mFragmentListener.onReplyAll(messageReference, pEpRating);
     }
 
     public void onForward(MessageReference messageReference, Rating pEpRating) {
@@ -1379,17 +1379,20 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
                 toggleMessageSelectWithAdapterPosition(adapterPosition);
                 break;
             }
+            //TODO: Check how to avoid to retrive the whole message for only get the color rating, probaly seach the way to cache it
             case R.id.reply: {
-                onReply(getMessageAtPosition(adapterPosition));
+                onReply(getMessageAtPosition(adapterPosition),
+                        PEpUtils.extractRating(getLocalMessageAtPosition(adapterPosition)));
                 break;
             }
             case R.id.reply_all: {
-                onReplyAll(getMessageAtPosition(adapterPosition));
+                onReplyAll(getMessageAtPosition(adapterPosition),
+                        PEpUtils.extractRating(getLocalMessageAtPosition(adapterPosition)));
                 break;
             }
             case R.id.forward: {
-                //TODO: Check how to avoid to retrive the whole message
-                onForward(getMessageAtPosition(adapterPosition), PEpUtils.extractRating(getLocalMessageAtPosition(adapterPosition)));
+                onForward(getMessageAtPosition(adapterPosition),
+                        PEpUtils.extractRating(getLocalMessageAtPosition(adapterPosition)));
                 break;
             }
             case R.id.send_again: {
@@ -2997,9 +3000,9 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         void showThread(Account account, String folderName, long rootId);
         void showMoreFromSameSender(String senderAddress);
         void onResendMessage(MessageReference message);
-        void onForward(MessageReference message, Rating colorRating);
-        void onReply(MessageReference message);
-        void onReplyAll(MessageReference message);
+        void onForward(MessageReference message, Rating pEpRating);
+        void onReply(MessageReference message, Rating pEpRating);
+        void onReplyAll(MessageReference message, Rating pEpRating);
         void openMessage(MessageReference messageReference);
         void setMessageListTitle(String title);
         void setMessageListSubTitle(String subTitle);

@@ -33,10 +33,8 @@ public class MessageActions {
      * @param messageBody optional, for decrypted messages, null if it should be grabbed from the given message
      */
     public static Intent getActionReplyIntent(
-            Context context,
-            LocalMessage message,
-            boolean replyAll,
-            String messageBody) {
+            Context context, MessageReference messageReference, boolean replyAll, Parcelable decryptionResult,
+            Rating pEpRating) {
         Intent i = new Intent(context, MessageCompose.class);
         i.putExtra(MessageCompose.EXTRA_MESSAGE_BODY, messageBody);
         i.putExtra(MessageCompose.EXTRA_MESSAGE_REFERENCE, message.makeMessageReference());
@@ -45,6 +43,7 @@ public class MessageActions {
         } else {
             i.setAction(MessageCompose.ACTION_REPLY);
         }
+        i.putExtra(MessageCompose.EXTRA_PEP_RATING, pEpRating);
         return i;
     }
 
@@ -63,11 +62,9 @@ public class MessageActions {
      * @param messageBody optional, for decrypted messages, null if it should be grabbed from the given message
      */
     public static void actionReply(
-            Context context,
-            LocalMessage message,
-            boolean replyAll,
-            String messageBody) {
-        context.startActivity(getActionReplyIntent(context, message, replyAll, messageBody));
+            Context context, MessageReference messageReference, boolean replyAll, Parcelable decryptionResult,
+            Rating pEpRating) {
+        context.startActivity(getActionReplyIntent(context, messageReference, replyAll, decryptionResult, pEpRating));
     }
 
     /**
