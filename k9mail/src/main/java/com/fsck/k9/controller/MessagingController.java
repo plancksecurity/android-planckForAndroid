@@ -2050,9 +2050,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
     private Message getMessageToSave(Account account, LocalMessage localMessage) throws MessagingException {
         Message encryptedMessage;
         if (PEpUtils.ispEpDisabled(account, localMessage, Rating.pEpRatingTrustedAndAnonymized)) {
-            encryptedMessage = pEpProvider.encryptMessageToSelf(localMessage);
-        } else {
             encryptedMessage = localMessage;
+        } else {
+            encryptedMessage = pEpProvider.encryptMessageToSelf(localMessage);
         }
         return encryptedMessage;
     }
