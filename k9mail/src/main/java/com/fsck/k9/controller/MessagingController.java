@@ -79,9 +79,7 @@ import com.fsck.k9.search.SqlQueryBuilder;
 
 import org.pEp.jniadapter.AndroidHelper;
 import org.pEp.jniadapter.Rating;
-import org.pEp.jniadapter.Status;
 import org.pEp.jniadapter.Sync;
-import org.pEp.jniadapter.pEpMessageDiscarded;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;
@@ -1961,7 +1959,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 localFolder.fetch(Collections.singletonList(localMessage) , fp, null);
                 String oldUid = localMessage.getUid();
                 localMessage.setFlag(Flag.X_REMOTE_COPY_STARTED, true);
-                remoteFolder.appendMessages(Collections.singletonList(localMessage));
+                Message encryptedMessage;
+                // TODO: 10/11/16 check what happens on trusted and untrusted servers
+                encryptedMessage = getMessageToSave(account, localMessage);
+                remoteFolder.appendMessages(Collections.singletonList(encryptedMessage));
 
                 localFolder.changeUid(localMessage);
                 for (MessagingListener l : getListeners()) {
@@ -1996,8 +1997,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     String oldUid = localMessage.getUid();
 
                     localMessage.setFlag(Flag.X_REMOTE_COPY_STARTED, true);
-
-                    remoteFolder.appendMessages(Collections.singletonList(localMessage));
+                    // TODO: 10/11/16 check what happens on trusted and untrusted servers
+                    Message encryptedMessage = getMessageToSave(account, localMessage);
+                    remoteFolder.appendMessages(Collections.singletonList(encryptedMessage));
                     localFolder.changeUid(localMessage);
                     for (MessagingListener l : getListeners()) {
                         l.messageUidChanged(account, folder, oldUid, localMessage.getUid());
@@ -2015,6 +2017,17 @@ public class MessagingController implements Sync.MessageToSendCallback {
             closeFolder(localFolder);
         }
     }
+
+    private Message getMessageToSave(Account account, LocalMessage localMessage) throws MessagingException {
+        Message encryptedMessage;
+        if (PEpUtils.ispEpDisabled(account, localMessage, Rating.pEpRatingTrustedAndAnonymized)) {
+            encryptedMessage = localMessage;
+        } else {
+            encryptedMessage = pEpProvider.encryptMessageToSelf(localMessage);
+        }
+        return encryptedMessage;
+    }
+
     private void queueMoveOrCopy(Account account, String srcFolder, String destFolder, boolean isCopy, String uids[]) {
         if (account.getErrorFolderName().equals(srcFolder)) {
             return;
