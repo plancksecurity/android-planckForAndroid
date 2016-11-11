@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,6 +32,7 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -1924,6 +1926,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
             SpannableStringBuilder messageStringBuilder = new SpannableStringBuilder(sigil)
                     .append(beforePreviewText);
+            messageStringBuilder.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), 0, messageStringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             if (mPreviewLines > 0) {
                 String preview = getPreview(cursor);
