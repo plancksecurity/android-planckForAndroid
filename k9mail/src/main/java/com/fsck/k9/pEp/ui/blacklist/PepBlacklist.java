@@ -7,14 +7,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +47,9 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
 
     PEpProvider pEp;
     private List<KeyListItem> keys;
+    private View searchLayout;
+    private EditText searchInput;
+    private View clearSearchIcon;
 
 
     public static void actionShowBlacklist(Context context) {
@@ -62,8 +72,61 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
         recipientsView.setAdapter(recipientsAdapter);
         recipientsAdapter.notifyDataSetChanged();
         setSupportActionBar(toolbar);
+        initializeSearchBar();
     }
 
+    private void initializeSearchBar() {
+        searchLayout = findViewById(R.id.toolbar_search_container);
+        searchInput = (EditText) findViewById(R.id.search_input);
+        clearSearchIcon = findViewById(R.id.search_clear);
+
+        searchInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence query, int start, int before, int count) {
+                if (query.toString().isEmpty()) {
+                    clearSearchIcon.setVisibility(View.GONE);
+                } else {
+                    clearSearchIcon.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        searchInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (!searchInput.getText().toString().isEmpty()) {
+                    onQueryTextSubmit(searchInput.getText().toString());
+                }
+                return true;
+            }
+        });
+
+        clearSearchIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchInput.setText(null);
+                hideSearchView();
+                KeyboardUtils.hideKeyboard(searchInput);
+            }
+        });
+    }
+
+    public void hideSearchView() {
+        if (searchLayout != null) {
+            toolbar.setVisibility(View.VISIBLE);
+            searchLayout.setVisibility(View.GONE);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -103,5 +166,30 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
         return false;
     }
 
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            case R.id.action_search:
+                showSearchView();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
+    public void showSearchView() {
+        if (searchLayout != null) {
+            toolbar.setVisibility(View.GONE);
+            searchLayout.setVisibility(View.VISIBLE);
+            setFocusOnKeyboard();
+        }
+    }
+
+    private void setFocusOnKeyboard() {
+        searchInput.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(searchInput, InputMethodManager.SHOW_IMPLICIT);
+    }
 }

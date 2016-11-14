@@ -406,8 +406,7 @@
             android:label="@string/pep_title_activity_privacy_status"/>
         <activity
             android:name=".pEp.ui.blacklist.PepBlacklist"
-            android:label="Blacklist"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+            android:label="Blacklist" />
         <activity
             android:name=".pEp.ui.PEpTrustwords"
             android:label="@string/pep_title_activity_trustwords"
