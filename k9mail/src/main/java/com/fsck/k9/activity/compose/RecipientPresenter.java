@@ -9,10 +9,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.Identity;
 import com.fsck.k9.K9;
@@ -32,6 +34,7 @@ import com.fsck.k9.message.ComposePgpInlineDecider;
 import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
+
 import org.openintents.openpgp.IOpenPgpService2;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.openintents.openpgp.util.OpenPgpApi.PermissionPingCallback;
@@ -730,17 +733,11 @@ public class RecipientPresenter implements PermissionPingCallback {
     }
 
     public void updatepEpState() {
-        Rating pEpRating;
         if (forceUnencrypted) {
-            pEpRating = Rating.pEpRatingUnencrypted;
+            recipientMvpView.setpEpRating(Rating.pEpRatingUnencrypted);
         } else {
-            Address fromAddress = recipientMvpView.getFromAddress();
-            List<Address> toAdresses = recipientMvpView.getToAddresses();
-            List<Address> ccAdresses = recipientMvpView.getCcAddresses();
-            List<Address> bccAdresses = recipientMvpView.getBccAddresses();
-            pEpRating = pEp.getPrivacyState(fromAddress, toAdresses, ccAdresses, bccAdresses);
+            new PEPStatusTask().execute();
         }
-        recipientMvpView.setpEpRating(pEpRating);
 
     }
 
@@ -794,5 +791,27 @@ public class RecipientPresenter implements PermissionPingCallback {
         SIGN_ONLY,
         OPPORTUNISTIC,
         PRIVATE,
+    }
+
+    private class PEPStatusTask extends AsyncTask<Void, Void, Rating> {
+
+        @Override
+        protected Rating doInBackground(Void... params) {
+            Rating privacyState = Rating.pEpRatingUnencrypted;
+            Address fromAddress = recipientMvpView.getFromAddress();
+            List<Address> toAdresses = recipientMvpView.getToAddresses();
+            List<Address> ccAdresses = recipientMvpView.getCcAddresses();
+            List<Address> bccAdresses = recipientMvpView.getBccAddresses();
+            if (fromAddress != null && toAdresses != null) {
+                privacyState = pEp.getPrivacyState(fromAddress, toAdresses, ccAdresses, bccAdresses);
+            }
+            return privacyState;
+        }
+
+        @Override
+        protected void onPostExecute(Rating rating) {
+            recipientMvpView.setpEpRating(rating);
+            recipientMvpView.handlepEpState();
+        }
     }
 }
