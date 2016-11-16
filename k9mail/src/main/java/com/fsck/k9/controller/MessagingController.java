@@ -3127,9 +3127,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         Message encryptedMessageToSave;
 //                        PEpUtils.dumpMimeMessage("beforeEncrypt", (MimeMessage) message);
                         if (PEpUtils.ispEpDisabled(account, message, pEpProvider.getPrivacyState(message))) {
-                                    sendMessage(transport, message);
-                                    encryptedMessageToSave = message;
-                                } else {
+                            message.setHeader(MimeHeader.HEADER_PEP_RATING, Rating.pEpRatingUnencrypted.name());
+                            sendMessage(transport, message);
+                            encryptedMessageToSave = message;
+                        } else {
                             encryptedMessageToSave = processWithpEpAndSend(transport, message);
                         }
 
