@@ -9,7 +9,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,6 +33,7 @@ import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.ui.infrastructure.Poller;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import org.openintents.openpgp.IOpenPgpService2;
 import org.openintents.openpgp.util.OpenPgpApi;
@@ -57,6 +60,7 @@ public class RecipientPresenter implements PermissionPingCallback {
     private static final int CONTACT_PICKER_CC = 2;
     private static final int CONTACT_PICKER_BCC = 3;
     private static final int OPENPGP_USER_INTERACTION = 4;
+    public static final int POLLING_INTERVAL = 200;
 
     private static final int PGP_DIALOG_DISPLAY_THRESHOLD = 2;
 
@@ -65,6 +69,7 @@ public class RecipientPresenter implements PermissionPingCallback {
     private final Context context;
     private final RecipientMvpView recipientMvpView;
     private final ComposePgpInlineDecider composePgpInlineDecider;
+    private Poller poller;
     private ReplyToParser replyToParser;
     private Account account;
     private String cryptoProvider;
@@ -93,6 +98,19 @@ public class RecipientPresenter implements PermissionPingCallback {
         recipientMvpView.setPresenter(this);
         recipientMvpView.setLoaderManager(loaderManager);
         onSwitchAccount(account);
+        updateCryptoStatus();
+        setupPEPStatusTask();
+    }
+
+    private void setupPEPStatusTask() {
+        poller = new Poller(new Handler());
+        poller.init(POLLING_INTERVAL, new Runnable() {
+            @Override
+            public void run() {
+                new PEPStatusTask().execute();
+            }
+        });
+        poller.startPolling();
     }
 
     public List<Address> getToAddresses() {
@@ -803,18 +821,7 @@ public class RecipientPresenter implements PermissionPingCallback {
     }
 
     public void updatepEpState() {
-        Rating pEpRating;
-        if (forceUnencrypted) {
-            pEpRating = Rating.pEpRatingUnencrypted;
-        } else {
-            Address fromAddress = recipientMvpView.getFromAddress();
-            List<Address> toAdresses = recipientMvpView.getToAddresses();
-            List<Address> ccAdresses = recipientMvpView.getCcAddresses();
-            List<Address> bccAdresses = recipientMvpView.getBccAddresses();
-            pEpRating = pEp.getPrivacyState(fromAddress, toAdresses, ccAdresses, bccAdresses);
-        }
-        recipientMvpView.setpEpRating(pEpRating);
-
+        /* no-op */
     }
 
 
@@ -895,5 +902,32 @@ public class RecipientPresenter implements PermissionPingCallback {
         SIGN_ONLY,
         OPPORTUNISTIC,
         PRIVATE,
+    }
+
+    private class PEPStatusTask extends AsyncTask<Void, Void, Rating> {
+
+        @Override
+        protected Rating doInBackground(Void... params) {
+            if (forceUnencrypted) {
+                return Rating.pEpRatingUnencrypted;
+            } else {
+                pEp = ((K9) context.getApplicationContext()).getpEpProvider();
+                Rating privacyState = Rating.pEpRatingUnencrypted;
+                Address fromAddress = recipientMvpView.getFromAddress();
+                List<Address> toAdresses = recipientMvpView.getToAddresses();
+                List<Address> ccAdresses = recipientMvpView.getCcAddresses();
+                List<Address> bccAdresses = recipientMvpView.getBccAddresses();
+                if (fromAddress != null && toAdresses != null) {
+                    privacyState = pEp.getPrivacyState(fromAddress, toAdresses, ccAdresses, bccAdresses);
+                }
+                return privacyState;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Rating rating) {
+            recipientMvpView.setpEpRating(rating);
+            recipientMvpView.handlepEpState();
+        }
     }
 }
