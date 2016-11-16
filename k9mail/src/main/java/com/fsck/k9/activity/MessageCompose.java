@@ -195,6 +195,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private boolean mFinishAfterDraftSaved;
     private boolean alreadyNotifiedUserOfEmptySubject = false;
     private Rating originalMessageRating = null;
+    private boolean isSendButtonLocked = false;
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
@@ -216,6 +217,14 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     @Override
     public void onOpenPgpInlineChange(boolean enabled) {
         recipientPresenter.onCryptoPgpInlineChanged(enabled);
+    }
+
+    public void lockSendButton() {
+        isSendButtonLocked = true;
+    }
+
+    public void unlockSendButton() {
+        isSendButtonLocked = false;
     }
 
     public enum Action {
@@ -993,7 +1002,9 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.send:
-                checkToSendMessage();
+                if (!isSendButtonLocked) {
+                    checkToSendMessage();
+                }
                 break;
             case R.id.save:
                 checkToSaveDraftAndSave();
