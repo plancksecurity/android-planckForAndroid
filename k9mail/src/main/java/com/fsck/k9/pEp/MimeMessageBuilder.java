@@ -235,9 +235,10 @@ class MimeMessageBuilder {
         else {
             if (messageFormat == SimpleMessageFormat.HTML
                     && (pEpMessage.getLongmsg() == null || pEpMessage.getLongmsg().isEmpty())) {
-                messageText = Jsoup.parse(pEpMessage.getLongmsgFormatted()).text();
-            } else {
-                messageText = Jsoup.parse(pEpMessage.getLongmsg()).text();
+                String text = Jsoup.parse(pEpMessage.getLongmsgFormatted().replaceAll("(?i)<br[^>]*>", "br2nl").replaceAll("\n", "br2nl")).text();
+                messageText = text.replaceAll("br2nl ", "\n").replaceAll("br2nl", "\n").trim();            } else {
+                String text = Jsoup.parse(pEpMessage.getLongmsg().replaceAll("(?i)<br[^>]*>", "br2nl").replaceAll("\n", "br2nl")).text();
+                messageText = text.replaceAll("br2nl ", "\n").replaceAll("br2nl", "\n").trim();
             }
         }
 
