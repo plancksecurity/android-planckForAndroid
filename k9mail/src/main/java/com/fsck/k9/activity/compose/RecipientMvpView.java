@@ -492,6 +492,13 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         return new Address(getFrom());
     }
 
+    public void lockSendButton() {
+        activity.lockSendButton();
+    }
+
+    public void unlockSendButton() {
+        activity.unlockSendButton();
+    }
 
     public enum CryptoStatusDisplayType {
         UNCONFIGURED(VIEW_INDEX_HIDDEN),

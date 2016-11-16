@@ -934,9 +934,11 @@ public class RecipientPresenter implements PermissionPingCallback {
                     toAdresses = newToAdresses;
                     ccAdresses = newCcAdresses;
                     bccAdresses = newBccAdresses;
+                    recipientMvpView.lockSendButton();
                     pEp = ((K9) context.getApplicationContext()).getpEpProvider();
                     privacyState = pEp.getPrivacyState(fromAddress, toAdresses, ccAdresses, bccAdresses);
                 }
+                recipientMvpView.unlockSendButton();
                 return privacyState;
             }
         }
