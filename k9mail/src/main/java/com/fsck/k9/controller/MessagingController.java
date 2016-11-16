@@ -1430,17 +1430,19 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     if (account.ispEpPrivacyProtected()) {
                         PEpProvider.DecryptResult tempResult;
 
-                        try {
+//                        try {
                             tempResult = pEpProvider.decryptMessage((MimeMessage) message);
-                        } catch (org.pEp.jniadapter.pEpMessageDiscarded pEpMessageDiscarded) {
-                            Log.v("pEpJNI", "messageFinished: ", pEpMessageDiscarded);
-                            tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null);
-                            store = false;
-                        } catch (org.pEp.jniadapter.pEpMessageConsumed pEpMessageConsumed) {
-                            Log.v("pEpJNI", "messageFinished: Deleting", pEpMessageConsumed);
-                            tempResult = null;
-                            store = false;
-                        }
+//                        }
+//                        catch (org.pEp.jniadapter.pEpMessageDiscarded pEpMessageDiscarded) {
+//                            Log.v("pEpJNI", "messageFinished: ", pEpMessageDiscarded);
+//                            tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null);
+//                            store = false;
+//                        }
+//                        catch (org.pEp.jniadapter.pEpMessageConsumed pEpMessageConsumed) {
+//                            Log.v("pEpJNI", "messageFinished: Deleting", pEpMessageConsumed);
+//                            tempResult = null;
+//                            store = false;
+//                        }
                         result = tempResult;
                     }
                     else {

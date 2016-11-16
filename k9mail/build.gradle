@@ -42,8 +42,8 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.github.pedrovgs:renderers:3.2.0'
     compile 'ch.acra:acra:4.6.1'
-    compile 'com.android.support:support-v4:24.2.1'
-    compile 'com.android.support:support-vector-drawable:24.2.1'
+    compile "com.android.support:support-v4:${project.supportLibraryVersion}"
+    compile "com.android.support:support-vector-drawable:${project.supportLibraryVersion}"
     compile 'com.github.paolorotolo:appintro:4.1.0'
     compile 'org.jsoup:jsoup:1.10.1'
     testCompile 'org.robolectric:robolectric:3.0'
@@ -71,8 +71,8 @@ android {
 //        versionName '5.108'
 
         applicationId "pep.android.k9"
-        versionCode 25
-        versionName '0.9.8.5.Keysync'
+        versionCode 27
+        versionName '0.9.8.14.withoutKeysync'
         minSdkVersion 18
         targetSdkVersion 22
 
@@ -137,7 +137,7 @@ android {
             universalApk false
         }
     }
-    buildToolsVersion '23.0.3'
+    buildToolsVersion '25.0.0'
 }
 
 if (project.hasProperty('keyAlias')) {

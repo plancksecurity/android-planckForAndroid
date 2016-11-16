@@ -21,8 +21,6 @@ import org.pEp.jniadapter.Pair;
 import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.Sync;
 import org.pEp.jniadapter.pEpException;
-import org.pEp.jniadapter.pEpMessageConsumed;
-import org.pEp.jniadapter.pEpMessageDiscarded;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -149,7 +147,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public DecryptResult decryptMessage(MimeMessage source) throws pEpMessageDiscarded, pEpMessageConsumed {
+    public DecryptResult decryptMessage(MimeMessage source)  {
         Log.d(TAG, "decryptMessage() enter");
         Message srcMsg = null;
         Engine.decrypt_message_Return decReturn = null;
@@ -174,8 +172,10 @@ public class PEpProviderImpl implements PEpProvider {
                 return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg));
             }
             else return new DecryptResult(decMsg, decReturn.rating, null);
-        } catch (pEpMessageDiscarded | pEpMessageConsumed pe) {
-            throw pe;
+//        } catch (pEpMessageConsume | pEpMessageIgnore pe) {
+//            // TODO: 15/11/16 deal with it as flag not exception
+//            //  throw pe;
+//            return null;
         }catch (Throwable t) {
             Log.e(TAG, "while decrypting message:", t);
             throw new RuntimeException("Could not decrypt", t);
@@ -185,6 +185,7 @@ public class PEpProviderImpl implements PEpProvider {
             Log.d(TAG, "decryptMessage() exit");
         }
     }
+
     private boolean isUsablePrivateKey(Engine.decrypt_message_Return result) {
         // TODO: 13/06/16 Check if is necesary check own id
         return result.rating.value >= Rating.pEpRatingTrusted.value
