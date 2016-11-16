@@ -501,8 +501,7 @@
             android:persistent="false"
             android:key="pep_save_encrypted"
             android:title="@string/pep_mistrust_server_and_store_mails_encrypted"
-            android:defaultValue="true"
-            android:summary="@string/pep_trust_server_description" />
+            android:defaultValue="true" />
         <CheckBoxPreference
             android:persistent="false"
             android:key="pep_disable_privacy_protection"
