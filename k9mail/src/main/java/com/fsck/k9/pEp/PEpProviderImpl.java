@@ -92,7 +92,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     //Don't instantiate a new engine
     @Override
-    public Rating getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses) {
+    public synchronized Rating getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses) {
         int recipientsSize = toAddresses.size() + ccAddresses.size() + bccAddresses.size();
         if (from == null || recipientsSize == 0)
             return Rating.pEpRatingUndefined;

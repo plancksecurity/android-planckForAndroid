@@ -63,6 +63,7 @@ public class RecipientPresenter implements PermissionPingCallback {
     private static final int CONTACT_PICKER_BCC = 3;
     private static final int OPENPGP_USER_INTERACTION = 4;
     public static final int POLLING_INTERVAL = 200;
+    public static final String STATE_RATING = "rating";
 
 
     // transient state, which is either obtained during construction and initialization, or cached
@@ -86,6 +87,11 @@ public class RecipientPresenter implements PermissionPingCallback {
     private CryptoMode currentCryptoMode = CryptoMode.OPPORTUNISTIC;
     private boolean cryptoEnablePgpInline = false;
     private boolean forceUnencrypted = false;
+    private PEPStatusTask pepStatusTask;
+    private List<Address> toAdresses;
+    private List<Address> ccAdresses;
+    private List<Address> bccAdresses;
+    private Rating privacyState = Rating.pEpRatingUnencrypted;
 
     public RecipientPresenter(Context context, LoaderManager loaderManager, RecipientMvpView recipientMvpView,
             Account account, ComposePgpInlineDecider composePgpInlineDecider, ReplyToParser replyToParser) {
@@ -107,7 +113,8 @@ public class RecipientPresenter implements PermissionPingCallback {
         poller.init(POLLING_INTERVAL, new Runnable() {
             @Override
             public void run() {
-                new PEPStatusTask().execute();
+                pepStatusTask = new PEPStatusTask();
+                pepStatusTask.execute();
             }
         });
         poller.startPolling();
@@ -211,16 +218,21 @@ public class RecipientPresenter implements PermissionPingCallback {
         currentCryptoMode = CryptoMode.valueOf(savedInstanceState.getString(STATE_KEY_CURRENT_CRYPTO_MODE));
         cryptoEnablePgpInline = savedInstanceState.getBoolean(STATE_KEY_CRYPTO_ENABLE_PGP_INLINE);
         forceUnencrypted = savedInstanceState.getBoolean(STATE_FORCE_UNENCRYPTED);
+        privacyState = (Rating) savedInstanceState.getSerializable(STATE_RATING);
         updateRecipientExpanderVisibility();
+        recipientMvpView.setpEpRating(privacyState);
     }
 
     public void onSaveInstanceState(Bundle outState) {
+        pepStatusTask.cancel(true);
+        pepStatusTask = new PEPStatusTask();
         outState.putBoolean(STATE_KEY_CC_SHOWN, recipientMvpView.isCcVisible());
         outState.putBoolean(STATE_KEY_BCC_SHOWN, recipientMvpView.isBccVisible());
         outState.putString(STATE_KEY_LAST_FOCUSED_TYPE, lastFocusedType.toString());
         outState.putString(STATE_KEY_CURRENT_CRYPTO_MODE, currentCryptoMode.toString());
         outState.putBoolean(STATE_KEY_CRYPTO_ENABLE_PGP_INLINE, cryptoEnablePgpInline);
         outState.putBoolean(STATE_FORCE_UNENCRYPTED, forceUnencrypted);
+        outState.putSerializable(STATE_RATING, privacyState);
     }
 
     public void initFromDraftMessage(Message message) {
@@ -811,17 +823,33 @@ public class RecipientPresenter implements PermissionPingCallback {
             if (forceUnencrypted) {
                 return Rating.pEpRatingUnencrypted;
             } else {
-                pEp = ((K9) context.getApplicationContext()).getpEpProvider();
-                Rating privacyState = Rating.pEpRatingUnencrypted;
                 Address fromAddress = recipientMvpView.getFromAddress();
-                List<Address> toAdresses = recipientMvpView.getToAddresses();
-                List<Address> ccAdresses = recipientMvpView.getCcAddresses();
-                List<Address> bccAdresses = recipientMvpView.getBccAddresses();
-                if (fromAddress != null && toAdresses != null) {
+                List<Address> newToAdresses = recipientMvpView.getToAddresses();
+                List<Address> newCcAdresses = recipientMvpView.getCcAddresses();
+                List<Address> newBccAdresses = recipientMvpView.getBccAddresses();
+                toAdresses = initializeAdresses(toAdresses);
+                ccAdresses = initializeAdresses(ccAdresses);
+                bccAdresses = initializeAdresses(bccAdresses);
+                if (fromAddress != null && (addressesChanged(toAdresses, newToAdresses) || addressesChanged(ccAdresses, newCcAdresses) || addressesChanged(bccAdresses, newBccAdresses))) {
+                    toAdresses = newToAdresses;
+                    ccAdresses = newCcAdresses;
+                    bccAdresses = newBccAdresses;
+                    pEp = ((K9) context.getApplicationContext()).getpEpProvider();
                     privacyState = pEp.getPrivacyState(fromAddress, toAdresses, ccAdresses, bccAdresses);
                 }
                 return privacyState;
             }
+        }
+
+        private List<Address> initializeAdresses(List<Address> addresses) {
+            if(addresses == null) {
+                addresses = Collections.emptyList();
+            }
+            return addresses;
+        }
+
+        private boolean addressesChanged(List<Address> oldAdresses, List<Address> newAdresses) {
+            return !oldAdresses.equals(newAdresses);
         }
 
         @Override
