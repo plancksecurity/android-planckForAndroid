@@ -91,4 +91,6 @@
         <item>Überprüfen Sie den Inhalt dieser Nachricht zusammen mit Ihrem Kommunikationspartner.<!--pEpRatingUnderAttack--></item>
     </string-array>
 
+    <string name="pep_forward_warning_description">Warnhinweis anzeigen, wenn die Datensicherheit einer Nachricht durch Antwort oder Weiterleitung verloren geht.</string>
+
 </resources>
