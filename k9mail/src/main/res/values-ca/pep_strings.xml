@@ -90,4 +90,5 @@
         <item>Verifiqui tant vostè com el seu company de comunicació el contingut del missatge.<!--pEpRatingUnderAttack--></item>
     </string-array>
 
+    <string name="pep_forward_warning_description">Mostrar un avís quan es reenvii o respongui un missatge segur de forma insegura.</string>
 </resources>
