@@ -89,5 +89,6 @@
         <item><!--pEpRatingB0rken--></item>
         <item>Bu mesajın içeriğini iletişim ortağınız ile ayrıca doğrulayın.<!--pEpRatingUnderAttack--></item>
     </string-array>
-
+    
+    <string name="pep_forward_warning_description">Bir mesaj cevap veya ileti yoluyla güvenliğini kaybettiğinde uyarı mesajı göster.</string>
 </resources>
