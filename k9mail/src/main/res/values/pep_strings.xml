@@ -92,6 +92,7 @@
     <string name="pep_device_group">p≡p Device Group</string>
     <string name="handshake_reset_dialog_message">Warning: This communication partner was previously marked as mistrusted. Are you sure you want to continue with another handshake?</string>
     <string name="pep_gpg_compatibility">OpenPGP Compatibility</string>
+    <string name="crash_toast_text">Oops, something went wrong</string>
 
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>
