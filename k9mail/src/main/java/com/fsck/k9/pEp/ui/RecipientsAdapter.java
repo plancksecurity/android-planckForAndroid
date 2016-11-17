@@ -6,7 +6,9 @@ Created by Helm  23/03/16.
 package com.fsck.k9.pEp.ui;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,11 +16,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
+
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
@@ -57,17 +61,37 @@ public class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.Vi
         }
     };
 
-    private View.OnClickListener onResetClick = new View.OnClickListener() {
+    private View.OnClickListener onResetGreenClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             int position = ((Integer) v.getTag());
             Identity id = identities.get(position);
             id = pEp.updateIdentity(id);
-            Log.i("KeysAdapter", "onResetClick " + id.address);
+            Log.i("KeysAdapter", "onResetGreenClick " + id.address);
             pEp.resetTrust(id);
             notifyDataSetChanged();
             listener.onRatingChanged(Rating.pEpRatingReliable);
 
+        }
+    };
+
+    private View.OnClickListener onResetRedClick = new View.OnClickListener() {
+        @Override
+        public void onClick(final View v) {
+            new AlertDialog.Builder(
+                    context).setMessage(R.string.handshake_reset_dialog_message).setCancelable(false).setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    int position = ((Integer) v.getTag());
+                    Identity id = identities.get(position);
+                    id = pEp.updateIdentity(id);
+                    Log.i("KeysAdapter", "onResetGreenClick " + id.address);
+                    pEp.resetTrust(id);
+                    notifyDataSetChanged();
+                    listener.onRatingChanged(Rating.pEpRatingReliable);
+                    onHandshakeClick.onClick(v);
+                }
+            }).setNegativeButton(R.string.cancel_action, null).show();
         }
     };
 
@@ -127,10 +151,12 @@ public class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.Vi
             if (rating.value != Rating.pEpRatingMistrust.value
                     && rating.value < Rating.pEpRatingReliable.value) {
                 handshakeButton.setVisibility(View.GONE);
-            } else if (rating.value == Rating.pEpRatingMistrust.value
-                    || rating.value >= Rating.pEpRatingTrusted.value){
+            }else if (rating.value == Rating.pEpRatingMistrust.value) {
+                handshakeButton.setText(context.getString(R.string.pep_handshake));
+                handshakeButton.setOnClickListener(onResetRedClick);
+            } else if (rating.value >= Rating.pEpRatingTrusted.value){
                 handshakeButton.setText(context.getString(R.string.pep_reset_trust));
-                handshakeButton.setOnClickListener(onResetClick);
+                handshakeButton.setOnClickListener(onResetGreenClick);
             } else if (rating.value == Rating.pEpRatingReliable.value){
                 handshakeButton.setText(context.getString(R.string.pep_handshake));
                 handshakeButton.setOnClickListener(onHandshakeClick);
