@@ -103,7 +103,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
 
     private void loadPepTexts() {
         pEpTitle.setText(uiCache.getTitle(getpEpRating()));
-        pEpSuggestion.setText(uiCache.getExplanation(getpEpRating()));
+        pEpSuggestion.setText(uiCache.getSuggestion(getpEpRating()));
     }
 
     private void setUpActionBar() {
