@@ -219,11 +219,13 @@ public class RecipientPresenter implements PermissionPingCallback {
         privacyState = (Rating) savedInstanceState.getSerializable(STATE_RATING);
         updateRecipientExpanderVisibility();
         recipientMvpView.setpEpRating(privacyState);
+        poller.startPolling();
     }
 
     public void onSaveInstanceState(Bundle outState) {
         pepStatusTask.cancel(true);
         pepStatusTask = new PEPStatusTask();
+        poller.stopPolling();
         outState.putBoolean(STATE_KEY_CC_SHOWN, recipientMvpView.isCcVisible());
         outState.putBoolean(STATE_KEY_BCC_SHOWN, recipientMvpView.isBccVisible());
         outState.putString(STATE_KEY_LAST_FOCUSED_TYPE, lastFocusedType.toString());
