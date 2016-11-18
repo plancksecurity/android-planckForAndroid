@@ -238,7 +238,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         initializeLayout();
         initializeFragments();
         displayViews();
-        if (mAccount != null && mAccount.ispEpPrivacyProtected()) initializePepStatus();
+        if (mAccount != null) initializePepStatus();
     }
 
     @Override
@@ -551,12 +551,16 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     private void initializePepStatus() {
         mActionBarPepStatus = (TextView) findViewById(R.id.tvPep);
-        mActionBarPepStatus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mMessageViewFragment.onPepStatus();
-            }
-        });
+        if (mAccount.ispEpPrivacyProtected()) {
+            mActionBarPepStatus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mMessageViewFragment.onPepStatus();
+                }
+            });
+        } else {
+            mActionBarPepStatus.setVisibility(View.GONE);
+        }
     }
 
 
