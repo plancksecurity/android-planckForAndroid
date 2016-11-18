@@ -46,11 +46,11 @@ import com.fsck.k9.service.MailService;
 import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
 
-import org.pEp.jniadapter.AndroidHelper;
-import org.pEp.jniadapter.Identity;
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
+import org.pEp.jniadapter.AndroidHelper;
+import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Sync;
 
 import java.io.File;
@@ -68,8 +68,7 @@ public class K9 extends Application {
     private static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PEpProvider pEpProvider, pEpSyncProvider;
     boolean ispEpSyncEnabled = false;
-
-
+    private Account currentAccount;
 
 
     /**
@@ -704,16 +703,7 @@ public class K9 extends Application {
                     MessagingController messagingController = MessagingController.getInstance(K9.this);
                     Log.i(AndroidHelper.TAG, "messageToSend: ");
 
-                    List<Account> accounts = Preferences.getPreferences(K9.this).getAccounts();
-                    Account currentAccount = null;
-                    for (Account account : accounts) {
-                        currentAccount = messagingController.checkAccount(pEpMessage, account);
-                        if (currentAccount != null) {
-                            break;
-                        }
-                    }
-                    if (currentAccount == null)
-                        currentAccount = Preferences.getPreferences(K9.this).getDefaultAccount();
+                    loadCurrentAccount(pEpMessage, messagingController);
                     Message message = pEpSyncProvider.getMimeMessage(pEpMessage);
                     message.setFlag(Flag.X_PEP_DISABLED, true);
 
@@ -728,6 +718,19 @@ public class K9 extends Application {
         });
 
         pEpSyncProvider.startSync();
+    }
+
+    private void loadCurrentAccount(org.pEp.jniadapter.Message pEpMessage, MessagingController messagingController) {
+        List<Account> accounts = Preferences.getPreferences(K9.this).getAccounts();
+        currentAccount = null;
+        for (Account account : accounts) {
+            currentAccount = messagingController.checkAccount(pEpMessage, account);
+            if (currentAccount != null) {
+                break;
+            }
+        }
+        if (currentAccount == null)
+            currentAccount = Preferences.getPreferences(K9.this).getDefaultAccount();
     }
 
     private void pEpSetupUiEngineSession() {

@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.RecipientAdapter;
@@ -37,16 +39,18 @@ public class AlternateRecipientAdapter extends BaseAdapter {
 
     private final Context context;
     private final AlternateRecipientListener listener;
+    private final Account account;
     private List<Recipient> recipients;
     private Recipient currentRecipient;
     private final PEpProvider pEp;
 
 
-    public AlternateRecipientAdapter(Context context, AlternateRecipientListener listener) {
+    public AlternateRecipientAdapter(Context context, AlternateRecipientListener listener, Account account) {
         super();
         this.context = context;
         this.listener = listener;
         pEp = ((K9) context.getApplicationContext()).getpEpProvider();
+        this.account = account;
     }
 
     public void setCurrentRecipient(Recipient currentRecipient) {
@@ -135,7 +139,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
 
         RecipientAdapter.setContactPhotoOrPlaceholder(context, holder.headerPhoto, recipient);
         holder.headerPhoto.assignContactUri(recipient.getContactLookupUri());
-        holder.headerPhoto.setPepRating(pEp.identityRating(recipient.address));
+        holder.headerPhoto.setPepRating(pEp.identityRating(recipient.address), account.ispEpPrivacyProtected());
 
         holder.headerRemove.setOnClickListener(new OnClickListener() {
             @Override

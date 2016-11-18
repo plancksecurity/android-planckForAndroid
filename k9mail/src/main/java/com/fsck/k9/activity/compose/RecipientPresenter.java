@@ -95,7 +95,7 @@ public class RecipientPresenter implements PermissionPingCallback {
     private Rating privacyState = Rating.pEpRatingUnencrypted;
 
     public RecipientPresenter(Context context, LoaderManager loaderManager, RecipientMvpView recipientMvpView,
-            Account account, ComposePgpInlineDecider composePgpInlineDecider, ReplyToParser replyToParser) {
+                              Account account, ComposePgpInlineDecider composePgpInlineDecider, ReplyToParser replyToParser) {
         this.recipientMvpView = recipientMvpView;
         this.context = context;
         this.composePgpInlineDecider = composePgpInlineDecider;

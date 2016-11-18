@@ -1870,7 +1870,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
                     holder.contactBadge.assignContactUri(null);
                     holder.contactBadge.setImageResource(R.drawable.ic_contact_picture);
                 }
-                holder.contactBadge.setPepRating(pEpRating);
+                holder.contactBadge.setPepRating(pEpRating, account.ispEpPrivacyProtected());
             }
 
             // Background color

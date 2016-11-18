@@ -11,6 +11,8 @@ import android.view.View.OnFocusChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
+
+import com.fsck.k9.Account;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageCompose;
@@ -62,6 +64,8 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     private final ViewAnimator cryptoStatusView;
     private final ViewAnimator recipientExpanderContainer;
     private final ViewAnimator cryptoSpecialModeIndicator;
+
+    private final Account mAccount;
     // pEp stuff
     private MenuItem pEpIndicator;
     private Rating pEpRating = Rating.pEpRatingUndefined;
@@ -74,7 +78,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
     public RecipientMvpView(MessageCompose activity) {
         this.activity = activity;
-
+        this.mAccount = activity.getAccount();
         fromView = (TextView) activity.findViewById(R.id.identity);
         toView = (RecipientSelectView) activity.findViewById(R.id.to);
         ccView = (RecipientSelectView) activity.findViewById(R.id.cc);
@@ -457,14 +461,18 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         return pEpRating;
     }
     public void handlepEpState(boolean... withToast) {
-        boolean reallyWithToast = true;
-        if(withToast.length>0) reallyWithToast = withToast[0];
-        updatePePState();
-        PEpUtils.colorActionBar(pEpUiCache, activity.getActionBar(), pEpRating);
+        if (mAccount.ispEpPrivacyProtected()) {
+            boolean reallyWithToast = true;
+            if(withToast.length>0) reallyWithToast = withToast[0];
+            updatePePState();
+            PEpUtils.colorActionBar(pEpUiCache, activity.getActionBar(), pEpRating);
 
-        if(pEpIndicator!=null) {
-            pEpIndicator.setIcon(pEpUiCache.getIcon());
-            String msg = pEpUiCache.getTitle(pEpRating);
+            if(pEpIndicator!=null) {
+                pEpIndicator.setIcon(pEpUiCache.getIcon());
+                String msg = pEpUiCache.getTitle(pEpRating);
+            }
+        } else {
+            PEpUtils.colorActionBar(pEpUiCache, activity.getActionBar(), Rating.pEpRatingUndefined);
         }
     }
 
