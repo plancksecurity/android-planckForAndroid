@@ -24,10 +24,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ListPopupWindow;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.AlternateRecipientAdapter;
 import com.fsck.k9.activity.AlternateRecipientAdapter.AlternateRecipientListener;
+import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.compose.RecipientAdapter;
 import com.fsck.k9.activity.compose.RecipientLoader;
 import com.fsck.k9.mail.Address;
@@ -68,6 +71,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private TokenListener<Recipient> listener;
     private PEpProvider pEp;
     private Context context;
+    private Account account;
 
 
     public RecipientSelectView(Context context) {
@@ -88,8 +92,9 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private void initView(Context context) {
         // TODO: validator?
         this.context = context;
+        account = ((MessageCompose) context).getAccount();
         alternatesPopup = new ListPopupWindow(context);
-        alternatesAdapter = new AlternateRecipientAdapter(context, this);
+        alternatesAdapter = new AlternateRecipientAdapter(context, this, account);
         alternatesPopup.setAdapter(alternatesAdapter);
 
         // don't allow duplicates, based on equality of recipient objects, which is e-mail addresses
@@ -103,12 +108,13 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         setAdapter(adapter);
         pEp = ((K9) context.getApplicationContext()).getpEpProvider();
 
-
         setLongClickable(true);
     }
 
     @Override
     protected View getViewForObject(Recipient recipient) {
+        account = ((MessageCompose) getContext()).getAccount();
+
         View view = inflateLayout();
 
         RecipientTokenViewHolder holder = new RecipientTokenViewHolder(view);
@@ -131,7 +137,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         holder.vName.setText(recipient.getDisplayNameOrAddress());
 
         RecipientAdapter.setContactPhotoOrPlaceholder(getContext(), holder.vContactPhoto, recipient);
-        holder.vContactPhoto.setPepRating(pEp.identityRating(recipient.address));
+        holder.vContactPhoto.setPepRating(pEp.identityRating(recipient.address), account.ispEpPrivacyProtected());
 
         boolean hasCryptoProvider = cryptoProvider != null;
         if (!hasCryptoProvider) {

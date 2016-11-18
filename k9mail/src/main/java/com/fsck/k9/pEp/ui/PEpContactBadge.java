@@ -41,9 +41,13 @@ public class PEpContactBadge extends QuickContactBadge {
         init(context);
     }
 
-    public void setPepRating(Rating pEpRating) {
-        this.pEpRating = pEpRating;
-        color = PEpUtils.getRatingColor(pEpRating, context);
+    public void setPepRating(Rating pEpRating, boolean ispEpEnabled) {
+        if (ispEpEnabled) {
+            this.pEpRating = pEpRating;
+        } else {
+            this.pEpRating = Rating.pEpRatingUndefined;
+        }
+        color = PEpUtils.getRatingColor(this.pEpRating, context);
         paint.setColor(color);
         currentStatus = getCurrentStatus();
         invalidate();
