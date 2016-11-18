@@ -71,8 +71,8 @@ android {
 //        versionName '5.108'
 
         applicationId "pep.android.k9"
-        versionCode 27
-        versionName '0.9.8.14.withoutKeysync'
+        versionCode 28
+        versionName '0.9.8.16.withoutKeysync'
         minSdkVersion 18
         targetSdkVersion 22
 
