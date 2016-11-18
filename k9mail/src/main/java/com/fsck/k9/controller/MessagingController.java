@@ -2050,13 +2050,19 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private Message getMessageToSave(Account account, LocalMessage localMessage) throws MessagingException {
-        Message encryptedMessage;
-        if (PEpUtils.ispEpDisabled(account, localMessage, Rating.pEpRatingTrustedAndAnonymized)) {
-            encryptedMessage = localMessage;
-        } else {
-            encryptedMessage = pEpProvider.encryptMessageToSelf(localMessage);
+        try {
+            Message encryptedMessage;
+            if (PEpUtils.ispEpDisabled(account, localMessage, Rating.pEpRatingTrustedAndAnonymized)) {
+                encryptedMessage = localMessage;
+            } else {
+                encryptedMessage = pEpProvider.encryptMessageToSelf(localMessage);
+            }
+            return encryptedMessage;
+        } catch (Exception ex) {
+            Log.e("pEp", "getMessageToSave: CRASH " + localMessage.getFolder().getName(), ex);
+            throw ex;
         }
-        return encryptedMessage;
+
     }
 
     private void queueMoveOrCopy(Account account, String srcFolder, String destFolder, boolean isCopy, String uids[]) {
@@ -3153,14 +3159,14 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             Log.i(K9.LOG_TAG, "Sending message with UID " + message.getUid());
 
                         // pEp the message to send...
-                        Message encryptedMessageToSave;
+//                        Message encryptedMessageToSave;
 //                        PEpUtils.dumpMimeMessage("beforeEncrypt", (MimeMessage) message);
                         if (PEpUtils.ispEpDisabled(account, message, pEpProvider.getPrivacyState(message))) {
                             message.setHeader(MimeHeader.HEADER_PEP_RATING, Rating.pEpRatingUnencrypted.name());
                             sendMessage(transport, message);
-                            encryptedMessageToSave = message;
+//                            encryptedMessageToSave = message;
                         } else {
-                            encryptedMessageToSave = processWithpEpAndSend(transport, message);
+//                            encryptedMessageToSave = processWithpEpAndSend(transport, message);
                         }
 
                         progress++;
@@ -3180,7 +3186,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                 Log.i(K9.LOG_TAG, "Moving sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
                             if(encOnServer)
-                                localSentFolder.appendMessages(Collections.singletonList(encryptedMessageToSave));    // if insecure server, push enc'd msg to sent folder
+                                localSentFolder.appendMessages(Collections.singletonList(message));    // if insecure server, push enc'd msg to sent folder
                             else {
                                 // if secure server, add color indicator and move plaintext to server
                                 message.addHeader(MimeHeader.HEADER_PEP_RATING, pEpProvider.getPrivacyState(message).name());     // FIXME: this sucks. I should get the "real" color from encryptMessage()!
@@ -3190,21 +3196,21 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moved sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
-                            Message toMove = encOnServer? encryptedMessageToSave : message;
+//                            Message toMove = encOnServer? encryptedMessageToSave : message;
                             PendingCommand command = new PendingCommand();
                             command.command = PENDING_COMMAND_APPEND;
-                            command.arguments = new String[] { localSentFolder.getName(), toMove.getUid() };
+                            command.arguments = new String[] { localSentFolder.getName(), message.getUid() };
                             queuePendingCommand(account, command);              // FIXME: do I really have to fiddle around with localsentfolder or is msg found anywhere by its id?
 
                             processPendingCommands(account);
 
                             if(encOnServer) {       // delete all traces, msg will be sync'ed again from server...
-                                // FIXME: This costs us a round trip and might break color detection. Perhaps do some magic (Id) and move message to localSent? But this won't stop broken color detection...
-                                message.setFlag(Flag.DELETED, true);
-                                localSentFolder.destroyMessages(Collections.singletonList(encryptedMessageToSave));
-                                for (MessagingListener l : getListeners()) {
-                                    l.folderStatusChanged(account, localSentFolder.getName(), localSentFolder.getUnreadMessageCount());
-                                }
+//                                // FIXME: This costs us a round trip and might break color detection. Perhaps do some magic (Id) and move message to localSent? But this won't stop broken color detection...
+//                                message.setFlag(Flag.DELETED, true);
+//                                localSentFolder.destroyMessages(Collections.singletonList(encryptedMessageToSave));
+//                                for (MessagingListener l : getListeners()) {
+//                                    l.folderStatusChanged(account, localSentFolder.getName(), localSentFolder.getUnreadMessageCount());
+//                                }
                             }
                         }
                     } catch (AuthenticationFailedException e) {
