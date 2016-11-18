@@ -552,6 +552,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private void initializePepStatus() {
         mActionBarPepStatus = (TextView) findViewById(R.id.tvPep);
         if (mAccount.ispEpPrivacyProtected()) {
+            mActionBarPepStatus.setVisibility(View.VISIBLE);
             mActionBarPepStatus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
