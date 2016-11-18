@@ -500,6 +500,37 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         activity.unlockSendButton();
     }
 
+    public void notifyAddressesChanged(List<Address> toAdresses, List<Address> ccAdresses, List<Address> bccAdresses) {
+        ccView.notifyDatasetChanged();
+        bccView.notifyDatasetChanged();
+
+        for (Address toAdress : toAdresses) {
+            toView.removeObject(new Recipient(toAdress));
+        }
+
+        for (Address ccAdress : ccAdresses) {
+            ccView.removeObject(new Recipient(ccAdress));
+        }
+
+        for (Address bccAdress : bccAdresses) {
+            bccView.removeObject(new Recipient(bccAdress));
+        }
+        toView.notifyDatasetChanged();
+
+        for (Address toAdress : toAdresses) {
+            addRecipients(RecipientType.TO, new Recipient(toAdress));
+        }
+        toView.notifyDatasetChanged();
+
+        for (Address ccAdress : ccAdresses) {
+            addRecipients(RecipientType.CC, new Recipient(ccAdress));
+        }
+
+        for (Address bccAdress : bccAdresses) {
+            addRecipients(RecipientType.BCC, new Recipient(bccAdress));
+        }
+    }
+
     public enum CryptoStatusDisplayType {
         UNCONFIGURED(VIEW_INDEX_HIDDEN),
         UNINITIALIZED(VIEW_INDEX_HIDDEN),

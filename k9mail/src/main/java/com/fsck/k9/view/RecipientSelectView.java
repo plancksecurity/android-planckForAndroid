@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import java.io.IOException;
@@ -72,6 +73,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private Recipient alternatesPopupRecipient;
     private TokenListener<Recipient> listener;
     private PEpProvider pEp;
+    private Context context;
 
 
     public RecipientSelectView(Context context) {
@@ -91,7 +93,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     private void initView(Context context) {
         // TODO: validator?
-
+        this.context = context;
         alternatesPopup = new ListPopupWindow(context);
         alternatesAdapter = new AlternateRecipientAdapter(context, this);
         alternatesPopup.setAdapter(alternatesAdapter);
@@ -477,6 +479,10 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         this.listener = listener;
     }
 
+    public void notifyDatasetChanged() {
+        alternatesAdapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
+    }
 
     public enum RecipientCryptoStatus {
         UNDEFINED,

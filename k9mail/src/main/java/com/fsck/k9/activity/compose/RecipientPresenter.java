@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Vector;
 
 
 public class RecipientPresenter implements PermissionPingCallback {
@@ -105,10 +106,12 @@ public class RecipientPresenter implements PermissionPingCallback {
         recipientMvpView.setLoaderManager(loaderManager);
         onSwitchAccount(account);
         updateCryptoStatus();
-        setupPEPStatusTask();
     }
 
     private void setupPEPStatusTask() {
+        if (poller != null) {
+            poller.stopPolling();
+        }
         poller = new Poller(new Handler());
         poller.init(POLLING_INTERVAL, new Runnable() {
             @Override
@@ -873,6 +876,18 @@ public class RecipientPresenter implements PermissionPingCallback {
 
     public boolean isForceUnencrypted() {
         return forceUnencrypted;
+    }
+
+    public void onResume() {
+        toAdresses = getToAddresses();
+        ccAdresses = getCcAddresses();
+        bccAdresses = getBccAddresses();
+
+        pEp = ((K9) context.getApplicationContext()).getpEpProvider();
+        privacyState = pEp.getPrivacyState(this.recipientMvpView.getFromAddress(), toAdresses, ccAdresses, bccAdresses);
+
+        this.recipientMvpView.notifyAddressesChanged(toAdresses, ccAdresses, bccAdresses);
+        setupPEPStatusTask();
     }
 
 
