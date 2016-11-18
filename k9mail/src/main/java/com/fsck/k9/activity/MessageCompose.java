@@ -159,6 +159,10 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private MessageLoaderHelper messageLoaderHelper;
     private AttachmentPresenter attachmentPresenter;
 
+    public Account getAccount() {
+        return mAccount;
+    }
+
     /**
      * The account used for message composition.
      */

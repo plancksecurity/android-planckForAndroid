@@ -239,8 +239,13 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
         if (resultCode == RESULT_OK && requestCode == PEpStatus.REQUEST_STATUS) {
             pEpRating = (Rating) data.getSerializableExtra(PEpStatus.CURRENT_RATING);
-            PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), pEpRating);
-            mMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpRating.name());
+            if (mAccount.ispEpPrivacyProtected()) {
+                PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), pEpRating);
+                mMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpRating.name());
+            } else {
+                PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), Rating.pEpRatingUndefined);
+                mMessage.setHeader(MimeHeader.HEADER_PEP_RATING, Rating.pEpRatingUndefined.name());
+            }
             mMessageView.setHeaders(mMessage, mAccount);
         }
     }
@@ -765,7 +770,11 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
             pEpRating = PEpUtils.extractRating(message);
 
-            PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), pEpRating);
+            if (mAccount.ispEpPrivacyProtected()) {
+                PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), pEpRating);
+            } else {
+                PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), Rating.pEpRatingUndefined);
+            }
         }
 
         @Override
