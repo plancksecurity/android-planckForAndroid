@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Vector;
 
 
 public class RecipientPresenter implements PermissionPingCallback {
@@ -66,7 +67,8 @@ public class RecipientPresenter implements PermissionPingCallback {
 
     // transient state, which is either obtained during construction and initialization, or cached
     private final Context context;
-    private final RecipientMvpView recipientMvpView;
+    private final LoaderManager loaderManager;
+    private RecipientMvpView recipientMvpView;
     private final ComposePgpInlineDecider composePgpInlineDecider;
     private Poller poller;
     private ReplyToParser replyToParser;
@@ -97,16 +99,18 @@ public class RecipientPresenter implements PermissionPingCallback {
         this.context = context;
         this.composePgpInlineDecider = composePgpInlineDecider;
         this.replyToParser = replyToParser;
-
+        this.loaderManager = loaderManager;
         pEp = ((K9) context.getApplicationContext()).getpEpProvider();
         recipientMvpView.setPresenter(this);
         recipientMvpView.setLoaderManager(loaderManager);
         onSwitchAccount(account);
         updateCryptoStatus();
-        setupPEPStatusTask();
     }
 
     private void setupPEPStatusTask() {
+        if (poller != null) {
+            poller.stopPolling();
+        }
         poller = new Poller(new Handler());
         poller.init(POLLING_INTERVAL, new Runnable() {
             @Override
@@ -799,6 +803,18 @@ public class RecipientPresenter implements PermissionPingCallback {
 
     public boolean isForceUnencrypted() {
         return forceUnencrypted;
+    }
+
+    public void onResume() {
+        toAdresses = getToAddresses();
+        ccAdresses = getCcAddresses();
+        bccAdresses = getBccAddresses();
+
+        pEp = ((K9) context.getApplicationContext()).getpEpProvider();
+        privacyState = pEp.getPrivacyState(this.recipientMvpView.getFromAddress(), toAdresses, ccAdresses, bccAdresses);
+
+        this.recipientMvpView.notifyAddressesChanged(toAdresses, ccAdresses, bccAdresses);
+        setupPEPStatusTask();
     }
 
     public enum CryptoProviderState {

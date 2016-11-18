@@ -640,6 +640,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     protected void onResume() {
         super.onResume();
         MessagingController.getInstance(this).addListener(messagingListener);
+        recipientPresenter.onResume();
     // TODO: grok mListener
 
     }
@@ -1816,4 +1817,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private boolean isForwardedpEpMessage() {
         return originalMessageRating != null;
     }
+
+
 }
