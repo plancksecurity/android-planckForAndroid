@@ -7,8 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
 
@@ -62,18 +60,6 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
         recipientsView.setAdapter(recipientsAdapter);
         recipientsAdapter.notifyDataSetChanged();
         setSupportActionBar(toolbar);
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_pep_search, menu);
-
-        final MenuItem searchItem = menu.findItem(R.id.action_search);
-        final SearchView searchView = (SearchView) searchItem.getActionView();
-        searchView.setOnQueryTextListener(this);
-
-        return true;
     }
 
 
