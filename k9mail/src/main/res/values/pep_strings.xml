@@ -86,7 +86,7 @@
     <string name="pep_trust_server_description">Store serverside mails in a safe form.</string>
     <string name="pep_account_privacy_protection_explanation">Enable pEp privacy protection for this account </string>
     <string name="pep_forward_warning">Unsecure reply warning</string>
-    <string name="pep_forward_warning_description">Show a warning when a message losses security through reply or forward.</string>
+    <string name="pep_forward_warning_description">Show a warning when a message loses security through reply or forward.</string>
     <string name="key_list_title">Available keys</string>
     <string name="pep_add_device_ask_trustwords">You are about to add a device to your pEp device group. Confirm by successfully verifying the following Trustwords.</string>
     <string name="pep_device_group">p≡p Device Group</string>
