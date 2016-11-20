@@ -1,5 +1,20 @@
 package com.fsck.k9.fragment;
 
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.Future;
+
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
@@ -1512,7 +1527,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
     private int adapterToListViewPosition(int position) {
         if (position >= 0 && position < mAdapter.getCount()) {
-            return position + 1;
+            return position;
         }
 
         return AdapterView.INVALID_POSITION;
