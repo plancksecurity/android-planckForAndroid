@@ -188,7 +188,7 @@ class PEpMessageBuilder {
         if (part.getMimeType().equalsIgnoreCase("message/rfc822")) return "ForwardedMessage.eml";
         if (filename == null) {
             String disposition = MimeUtility.unfoldAndDecode(part.getDisposition());
-            if (("attachment".equalsIgnoreCase(MessageExtractor.getContentDisposition(mm)))) {
+            if (("attachment".equalsIgnoreCase(MessageExtractor.getContentDisposition(part)))) {
                 Log.i("PEpMessageBuilder", "addBody 1 " + disposition);
                 filename = MimeUtility.getHeaderParameter(disposition, "filename");
             }
