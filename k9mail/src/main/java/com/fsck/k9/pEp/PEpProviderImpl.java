@@ -92,7 +92,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     //Don't instantiate a new engine
     @Override
-    public synchronized Rating getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses) {
+    public Rating getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses) {
         int recipientsSize = toAddresses.size() + ccAddresses.size() + bccAddresses.size();
         if (from == null || recipientsSize == 0)
             return Rating.pEpRatingUndefined;
@@ -147,7 +147,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public DecryptResult decryptMessage(MimeMessage source)  {
+    public DecryptResult decryptMessage(MimeMessage source) {
         Log.d(TAG, "decryptMessage() enter");
         Message srcMsg = null;
         Engine.decrypt_message_Return decReturn = null;
@@ -158,11 +158,6 @@ public class PEpProviderImpl implements PEpProvider {
             srcMsg.setDir(Message.Direction.Incoming);
 
             Log.d(TAG, "decryptMessage() before decrypt");
-            if ( srcMsg.getOptFields() != null) {
-                for (Pair<String, String> stringStringPair : srcMsg.getOptFields()) {
-                    Log.d(TAG, "decryptMessage() after decrypt " + stringStringPair.first + ": " + stringStringPair.second);
-                }
-            }
             decReturn = engine.decrypt_message(srcMsg);
             Log.d(TAG, "decryptMessage() after decrypt");
             MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
@@ -566,16 +561,16 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public void acceptHandshake(Identity identity) {
-        engine.accept_sync_handshake(identity);
+//        engine.accept_sync_handshake(identity);
     }
 
     @Override
     public void rejectHandshake(Identity identity) {
-        engine.reject_sync_handshake(identity);
+//        engine.reject_sync_handshake(identity);
     }
 
     @Override
     public void cancelHandshake(Identity identity) {
-        engine.cancel_sync_handshake(identity);
+//        engine.cancel_sync_handshake(identity);
     }
 }

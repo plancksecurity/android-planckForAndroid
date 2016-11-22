@@ -1053,11 +1053,11 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                                 break;
                             }
                             case R.id.reply: {
-                                onReply(getMessageAtPosition(position));
+                                onReply(getMessageAtPosition(position), PEpUtils.extractRating(getLocalMessageAtPosition(position)));
                                 break;
                             }
                             case R.id.reply_all: {
-                                onReplyAll(getMessageAtPosition(position));
+                                onReplyAll(getMessageAtPosition(position), PEpUtils.extractRating(getLocalMessageAtPosition(position)));
                                 break;
                             }
                             case R.id.forward: {

@@ -287,17 +287,15 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
         if (resultCode == RESULT_OK && requestCode == PEpStatus.REQUEST_STATUS) {
             pEpRating = (Rating) data.getSerializableExtra(PEpStatus.CURRENT_RATING);
+            K9Activity activity = (K9Activity) getActivity();
             if (mAccount.ispEpPrivacyProtected()) {
-                K9Activity activity = (K9Activity) getActivity();
                 PEpUtils.colorToolbar(activity.getToolbar(), PEpUtils.getRatingColor(pEpRating, getActivity()));
-                activity.setStatusBarPepColor(pEpRating);
                 mMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpRating.name());
             } else {
-                K9Activity activity = (K9Activity) getActivity();
                 PEpUtils.colorToolbar(activity.getToolbar(), PEpUtils.getRatingColor(Rating.pEpRatingUndefined, getActivity()));
-                activity.setStatusBarPepColor(pEpRating);
                 mMessage.setHeader(MimeHeader.HEADER_PEP_RATING, Rating.pEpRatingUndefined.name());
             }
+            activity.setStatusBarPepColor(pEpRating);
             mMessageView.setHeaders(mMessage, mAccount);
         }
     }
@@ -815,15 +813,15 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             mMessageView.setToLoadingState();
 
             pEpRating = PEpUtils.extractRating(message);
-// TODO: 22/11/16 delete boilerplate
+
+            ((MessageList) getActivity()).setMessageViewVisible(true);
             if (mAccount.ispEpPrivacyProtected()) {
-                ((MessageList) getActivity()).setMessageViewVisible(true);
-                PEpUtils.colorToolbar(pePUIArtefactCache,((MessageList)getActivity()).getSupportActionBar(), pEpRating);
-                ((MessageList) getActivity()).setStatusBarPepColor(pEpRating);
+                PEpUtils.colorToolbar(pePUIArtefactCache, ((MessageList) getActivity()).getSupportActionBar(), pEpRating);
             } else {
-                ((MessageList) getActivity()).setMessageViewVisible(true);
-                PEpUtils.colorToolbar(pePUIArtefactCache,((MessageList)getActivity()).getSupportActionBar(), Rating.pEpRatingUndefined);
-                ((MessageList) getActivity()).setStatusBarPepColor(pEpRating);            }
+                PEpUtils.colorToolbar(pePUIArtefactCache, ((MessageList) getActivity()).getSupportActionBar(), Rating.pEpRatingUndefined);
+                pEpRating = Rating.pEpRatingUndefined;
+            }
+            ((MessageList) getActivity()).setStatusBarPepColor(pEpRating);
         }
 
         @Override
