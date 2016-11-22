@@ -91,4 +91,5 @@
         <item>Verifique, tanto usted como su interlocutor el contenido del mensaje.<!--pEpRatingUnderAttack--></item>
     </string-array>
 
+    <string name="pep_forward_warning_description">Mostrar un aviso si un mensaje pierde seguridad al responder o reenviar.</string>
 </resources>

@@ -414,6 +414,17 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".pEp.ui.PEpStatus" />
+
+        </activity>
+        <activity
+            android:name=".pEp.ui.pEpAddDevice"
+            android:label="@string/pep_device_group"
+            android:parentActivityName=".pEp.ui.PEpStatus">
+
+            <intent-filter>
+                <action android:name="com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
 
         <receiver android:name=".activity.K9ActivityCommon$PrivateKeyReceiver">

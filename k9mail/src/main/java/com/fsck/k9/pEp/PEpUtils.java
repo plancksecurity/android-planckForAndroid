@@ -5,7 +5,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
@@ -193,12 +192,13 @@ public class PEpUtils {
     }
 
     public static String getShortTrustWords(PEpProvider pEp, Identity id) {
-        return getShortTrustwords(pEp.trustwords(id, "es"));
+        return getShortTrustwords(pEp.trustwords(id, "en"));
     }
 
 
     public static int getRatingColor(Rating rating, Context context) {
         // TODO: 02/09/16 PEP_color color_from_rating(PEP_rating rating) from pEpEngine;
+
         if (rating == null || rating.equals(Rating.pEpRatingB0rken)
                 || rating.equals(Rating.pEpRatingHaveNoKey)) {
             return ContextCompat.getColor(context, R.color.pep_no_color);
@@ -219,7 +219,6 @@ public class PEpUtils {
         if (rating.value >= Rating.pEpRatingTrusted.value) {
             return  ContextCompat.getColor(context, R.color.pep_green);
         }
-
         throw new RuntimeException("Invalid rating");
     }
 
@@ -253,7 +252,7 @@ public class PEpUtils {
     }
 
     public static boolean ispEpDisabled(Account account, LocalMessage message, Rating messageRating) {
-        return message.isSet(Flag.X_FORCE_UNENCRYPTED)
+        return message.isSet(Flag.X_PEP_DISABLED)
                 || messageRating == Rating.pEpRatingUndefined
                 || !account.ispEpPrivacyProtected();
     }

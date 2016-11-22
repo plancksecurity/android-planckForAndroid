@@ -1204,12 +1204,12 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         }
     }
 
-    public void onReply(MessageReference messageReference) {
-        mFragmentListener.onReply(messageReference);
+    public void onReply(MessageReference messageReference, Rating pEpRating) {
+        mFragmentListener.onReply(messageReference, pEpRating);
     }
 
-    public void onReplyAll(MessageReference messageReference) {
-        mFragmentListener.onReplyAll(messageReference);
+    public void onReplyAll(MessageReference messageReference, Rating pEpRating) {
+        mFragmentListener.onReplyAll(messageReference, pEpRating);
     }
 
     public void onForward(MessageReference messageReference, Rating pEpRating) {
@@ -1895,7 +1895,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                     holder.contactBadge.assignContactUri(null);
                     holder.contactBadge.setImageResource(R.drawable.ic_contact_picture);
                 }
-                holder.contactBadge.setPepRating(pEpRating);
+                holder.contactBadge.setPepRating(pEpRating, account.ispEpPrivacyProtected());
             }
             if (mActiveMessage != null) {
                 String uid = cursor.getString(UID_COLUMN);
@@ -3001,9 +3001,9 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         void showThread(Account account, String folderName, long rootId);
         void showMoreFromSameSender(String senderAddress);
         void onResendMessage(MessageReference message);
-        void onForward(MessageReference message, Rating colorRating);
-        void onReply(MessageReference message);
-        void onReplyAll(MessageReference message);
+        void onForward(MessageReference message, Rating pEpRating);
+        void onReply(MessageReference message, Rating pEpRating);
+        void onReplyAll(MessageReference message, Rating pEpRating);
         void openMessage(MessageReference messageReference);
         void setMessageListTitle(String title);
         void setMessageListSubTitle(String subTitle);

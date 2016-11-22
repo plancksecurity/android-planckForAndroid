@@ -287,10 +287,17 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
         if (resultCode == RESULT_OK && requestCode == PEpStatus.REQUEST_STATUS) {
             pEpRating = (Rating) data.getSerializableExtra(PEpStatus.CURRENT_RATING);
-            K9Activity activity = (K9Activity) getActivity();
-            PEpUtils.colorToolbar(activity.getToolbar(), PEpUtils.getRatingColor(pEpRating, getActivity()));
-            activity.setStatusBarPepColor(pEpRating);
-            mMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpRating.name());
+            if (mAccount.ispEpPrivacyProtected()) {
+                K9Activity activity = (K9Activity) getActivity();
+                PEpUtils.colorToolbar(activity.getToolbar(), PEpUtils.getRatingColor(pEpRating, getActivity()));
+                activity.setStatusBarPepColor(pEpRating);
+                mMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpRating.name());
+            } else {
+                K9Activity activity = (K9Activity) getActivity();
+                PEpUtils.colorToolbar(activity.getToolbar(), PEpUtils.getRatingColor(Rating.pEpRatingUndefined, getActivity()));
+                activity.setStatusBarPepColor(pEpRating);
+                mMessage.setHeader(MimeHeader.HEADER_PEP_RATING, Rating.pEpRatingUndefined.name());
+            }
             mMessageView.setHeaders(mMessage, mAccount);
         }
     }
@@ -391,13 +398,13 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     public void onReply() {
         if (mMessage != null) {
-            mFragmentListener.onReply(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply());
+            mFragmentListener.onReply(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PEpUtils.extractRating(mMessage));
         }
     }
 
     public void onReplyAll() {
         if (mMessage != null) {
-            mFragmentListener.onReplyAll(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply());
+            mFragmentListener.onReplyAll(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PEpUtils.extractRating(mMessage));
         }
     }
 
@@ -468,10 +475,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) {
+            messageCryptoPresenter.onActivityResult(requestCode, resultCode, data);
             return;
         }
-
-        messageCryptoPresenter.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
             case ACTIVITY_CHOOSE_DIRECTORY: {
@@ -782,10 +788,13 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public interface MessageViewFragmentListener {
-        void onForward(MessageReference messageReference, Parcelable decryptionResultForReply, Rating rating);
+        void onForward(MessageReference messageReference, Parcelable decryptionResultForReply,
+                       Rating pEpRating);
         void disableDeleteAction();
-        void onReplyAll(MessageReference messageReference, Parcelable decryptionResultForReply);
-        void onReply(MessageReference messageReference, Parcelable decryptionResultForReply);
+        void onReplyAll(MessageReference messageReference, Parcelable decryptionResultForReply,
+                        Rating pEpRating);
+        void onReply(MessageReference messageReference, Parcelable decryptionResultForReply,
+                     Rating pEpRating);
         void displayMessageSubject(String title);
         void setProgress(boolean b);
         void showNextMessageOrReturn();
@@ -806,10 +815,15 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             mMessageView.setToLoadingState();
 
             pEpRating = PEpUtils.extractRating(message);
-
-            ((MessageList) getActivity()).setMessageViewVisible(true);
-            PEpUtils.colorToolbar(pePUIArtefactCache,((MessageList)getActivity()).getSupportActionBar(), pEpRating);
-            ((MessageList) getActivity()).setStatusBarPepColor(pEpRating);
+// TODO: 22/11/16 delete boilerplate
+            if (mAccount.ispEpPrivacyProtected()) {
+                ((MessageList) getActivity()).setMessageViewVisible(true);
+                PEpUtils.colorToolbar(pePUIArtefactCache,((MessageList)getActivity()).getSupportActionBar(), pEpRating);
+                ((MessageList) getActivity()).setStatusBarPepColor(pEpRating);
+            } else {
+                ((MessageList) getActivity()).setMessageViewVisible(true);
+                PEpUtils.colorToolbar(pePUIArtefactCache,((MessageList)getActivity()).getSupportActionBar(), Rating.pEpRatingUndefined);
+                ((MessageList) getActivity()).setStatusBarPepColor(pEpRating);            }
         }
 
         @Override

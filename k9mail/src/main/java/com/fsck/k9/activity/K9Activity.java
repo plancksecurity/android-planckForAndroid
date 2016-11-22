@@ -40,7 +40,7 @@ import butterknife.OnTextChanged;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
-public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic, Sync.showHandshakeCallback {
+public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic {
 
     @Nullable @Bind(R.id.toolbar) Toolbar toolbar;
     @Nullable @Bind(R.id.toolbar_search_container) FrameLayout toolbarSearchContainer;
@@ -53,7 +53,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     public void onCreate(Bundle savedInstanceState) {
         mBase = K9ActivityCommon.newInstance(this);
         super.onCreate(savedInstanceState);
-        ((K9) getApplication()).pEpSyncProvider.setSyncHandshakeCallback(this);
     }
 
     @Override
@@ -77,12 +76,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     protected void onDestroy() {
         mBase.onDestroy();
         super.onDestroy();
-    }
-
-    @Override
-    public void showHandshake(Identity myself, Identity partner) {
-        FeedbackTools.showLongFeedback(getRootView(), myself.fpr + "/n" + partner.fpr);
-        Log.i("pEp", "showHandshake: " + myself.fpr + "/n" + partner.fpr);
     }
 
     public void setUpToolbar(boolean showUpButton) {

@@ -147,7 +147,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public DecryptResult decryptMessage(MimeMessage source) {
+    public DecryptResult decryptMessage(MimeMessage source)  {
         Log.d(TAG, "decryptMessage() enter");
         Message srcMsg = null;
         Engine.decrypt_message_Return decReturn = null;
@@ -158,6 +158,11 @@ public class PEpProviderImpl implements PEpProvider {
             srcMsg.setDir(Message.Direction.Incoming);
 
             Log.d(TAG, "decryptMessage() before decrypt");
+            if ( srcMsg.getOptFields() != null) {
+                for (Pair<String, String> stringStringPair : srcMsg.getOptFields()) {
+                    Log.d(TAG, "decryptMessage() after decrypt " + stringStringPair.first + ": " + stringStringPair.second);
+                }
+            }
             decReturn = engine.decrypt_message(srcMsg);
             Log.d(TAG, "decryptMessage() after decrypt");
             MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
@@ -167,7 +172,11 @@ public class PEpProviderImpl implements PEpProvider {
                 return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg));
             }
             else return new DecryptResult(decMsg, decReturn.rating, null);
-        } catch (Throwable t) {
+//        } catch (pEpMessageConsume | pEpMessageIgnore pe) {
+//            // TODO: 15/11/16 deal with it as flag not exception
+//            //  throw pe;
+//            return null;
+        }catch (Throwable t) {
             Log.e(TAG, "while decrypting message:", t);
             throw new RuntimeException("Could not decrypt", t);
         } finally {
@@ -176,6 +185,7 @@ public class PEpProviderImpl implements PEpProvider {
             Log.d(TAG, "decryptMessage() exit");
         }
     }
+
     private boolean isUsablePrivateKey(Engine.decrypt_message_Return result) {
         // TODO: 13/06/16 Check if is necesary check own id
         return result.rating.value >= Rating.pEpRatingTrusted.value
@@ -198,6 +208,33 @@ public class PEpProviderImpl implements PEpProvider {
             throw new RuntimeException("Could not encrypt", t);
         } finally {
             Log.d(TAG, "encryptMessage() exit");
+        }
+    }
+
+    @Override
+    public MimeMessage encryptMessageToSelf(MimeMessage source) throws MessagingException{
+        if (source == null) {
+            return source;
+        }
+        Message message = null;
+        try {
+            message = new PEpMessageBuilder(source).createMessage(context);
+            message.setDir(Message.Direction.Outgoing);
+            Log.d(TAG, "encryptMessage() before encrypt to self");
+            Identity from = message.getFrom();
+            from.user_id = PEP_OWN_USER_ID;
+            message.setFrom(from);
+            Message currentEnc = engine.encrypt_message_for_self(message.getFrom(), message);
+            if (currentEnc == null) currentEnc = message;
+            Log.d(TAG, "encryptMessage() after encrypt to self");
+            return new MimeMessageBuilder(currentEnc).createMessage();
+        } catch (Exception exception) {
+            Log.e(TAG, "encryptMessageToSelf: ", exception);
+            return source;
+        } finally {
+            if (message != null) {
+                message.close();
+            }
         }
     }
 
@@ -421,7 +458,7 @@ public class PEpProviderImpl implements PEpProvider {
             try {
                 createEngineSession();
             } catch (pEpException e) {
-                Log.e(TAG, "createEngineInstanceIfNeeded");
+                Log.e(TAG, "createIfNeeded");
             }
         }
     }
@@ -484,7 +521,7 @@ public class PEpProviderImpl implements PEpProvider {
         try {
             return new MimeMessageBuilder(message).createMessage();
         } catch (MessagingException e) {
-            e.printStackTrace();
+            Log.e(TAG, "getMimeMessage: ", e);
         }
         return null;
     }
@@ -520,7 +557,25 @@ public class PEpProviderImpl implements PEpProvider {
             Log.e(TAG, "setstartSync: ");
         }
         Log.i(TAG, "setSyncHandshakeCallback: SEND");
+    }
 
+    @Override
+    public void startSync() {
+        engine.startSync();
+    }
 
+    @Override
+    public void acceptHandshake(Identity identity) {
+        engine.accept_sync_handshake(identity);
+    }
+
+    @Override
+    public void rejectHandshake(Identity identity) {
+        engine.reject_sync_handshake(identity);
+    }
+
+    @Override
+    public void cancelHandshake(Identity identity) {
+        engine.cancel_sync_handshake(identity);
     }
 }

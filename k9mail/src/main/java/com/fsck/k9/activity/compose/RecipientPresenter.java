@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Vector;
 
 
 public class RecipientPresenter implements PermissionPingCallback {
@@ -68,7 +69,8 @@ public class RecipientPresenter implements PermissionPingCallback {
 
     // transient state, which is either obtained during construction and initialization, or cached
     private final Context context;
-    private final RecipientMvpView recipientMvpView;
+    private final LoaderManager loaderManager;
+    private RecipientMvpView recipientMvpView;
     private final ComposePgpInlineDecider composePgpInlineDecider;
     private Poller poller;
     private ReplyToParser replyToParser;
@@ -94,12 +96,12 @@ public class RecipientPresenter implements PermissionPingCallback {
     private Rating privacyState = Rating.pEpRatingUnencrypted;
 
     public RecipientPresenter(Context context, LoaderManager loaderManager, RecipientMvpView recipientMvpView,
-            Account account, ComposePgpInlineDecider composePgpInlineDecider, ReplyToParser replyToParser) {
+                              Account account, ComposePgpInlineDecider composePgpInlineDecider, ReplyToParser replyToParser) {
         this.recipientMvpView = recipientMvpView;
         this.context = context;
         this.composePgpInlineDecider = composePgpInlineDecider;
         this.replyToParser = replyToParser;
-
+        this.loaderManager = loaderManager;
         pEp = ((K9) context.getApplicationContext()).getpEpProvider();
         recipientMvpView.setPresenter(this);
         recipientMvpView.setLoaderManager(loaderManager);
@@ -109,14 +111,18 @@ public class RecipientPresenter implements PermissionPingCallback {
     }
 
     private void setupPEPStatusTask() {
-        poller = new Poller(new Handler());
-        poller.init(POLLING_INTERVAL, new Runnable() {
-            @Override
-            public void run() {
-                pepStatusTask = new PEPStatusTask();
-                pepStatusTask.execute();
-            }
-        });
+        if (poller == null) {
+            poller = new Poller(new Handler());
+            poller.init(POLLING_INTERVAL, new Runnable() {
+                @Override
+                public void run() {
+                    pepStatusTask = new PEPStatusTask();
+                    pepStatusTask.execute();
+                }
+            });
+        } else {
+            poller.stopPolling();
+        }
         poller.startPolling();
     }
 
@@ -221,11 +227,13 @@ public class RecipientPresenter implements PermissionPingCallback {
         privacyState = (Rating) savedInstanceState.getSerializable(STATE_RATING);
         updateRecipientExpanderVisibility();
         recipientMvpView.setpEpRating(privacyState);
+        setupPEPStatusTask();
     }
 
     public void onSaveInstanceState(Bundle outState) {
         pepStatusTask.cancel(true);
         pepStatusTask = new PEPStatusTask();
+        poller.stopPolling();
         outState.putBoolean(STATE_KEY_CC_SHOWN, recipientMvpView.isCcVisible());
         outState.putBoolean(STATE_KEY_BCC_SHOWN, recipientMvpView.isBccVisible());
         outState.putString(STATE_KEY_LAST_FOCUSED_TYPE, lastFocusedType.toString());
@@ -799,6 +807,18 @@ public class RecipientPresenter implements PermissionPingCallback {
 
     public boolean isForceUnencrypted() {
         return forceUnencrypted;
+    }
+
+    public void onResume() {
+        toAdresses = getToAddresses();
+        ccAdresses = getCcAddresses();
+        bccAdresses = getBccAddresses();
+
+        pEp = ((K9) context.getApplicationContext()).getpEpProvider();
+        privacyState = pEp.getPrivacyState(this.recipientMvpView.getFromAddress(), toAdresses, ccAdresses, bccAdresses);
+
+        this.recipientMvpView.notifyAddressesChanged(toAdresses, ccAdresses, bccAdresses);
+        setupPEPStatusTask();
     }
 
     public enum CryptoProviderState {

@@ -311,7 +311,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         pEpRating = PEpUtils.extractRating(message);
 
         Log.i("pEp", "got color " + pEpRating + " " + pEpRating.value);
-        mContactBadge.setPepRating(pEpRating);
+        mContactBadge.setPepRating(pEpRating, account.ispEpPrivacyProtected());
 
         final Contacts contacts = K9.showContactName() ? mContacts : null;
         final CharSequence from = MessageHelper.toFriendly(message.getFrom(), contacts);

@@ -129,7 +129,7 @@ public abstract class MessageBuilder {
         if (isDraft && isPgpInlineEnabled) {
             message.setFlag(Flag.X_DRAFT_OPENPGP_INLINE, true);
         }
-        if (isForcedUnencrypted) message.setFlag(Flag.X_FORCE_UNENCRYPTED, true);
+        if (isForcedUnencrypted) message.setFlag(Flag.X_PEP_DISABLED, true);
     }
 
     protected MimeMultipart createMimeMultipart() {

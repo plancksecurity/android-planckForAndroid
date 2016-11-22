@@ -418,10 +418,11 @@
             <CheckBoxPreference
                 android:key="pep_forward_warning"
                 android:persistent="false"
-                android:title="@string/pep_forward_warning" />
+                android:title="@string/pep_forward_warning"
+                android:summary="@string/pep_forward_warning_description"/>
         </PreferenceCategory>
         <PreferenceCategory
-            android:title="GPG Compatibility"
+            android:title="@string/pep_gpg_compatibility"
             android:key="pep_gpg_compatibility"
             />
             <CheckBoxPreference

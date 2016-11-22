@@ -2,7 +2,6 @@ package com.fsck.k9.controller;
 
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -71,7 +70,6 @@ import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
 import com.fsck.k9.search.ConditionsTreeNode;
@@ -80,6 +78,7 @@ import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification;
 import com.fsck.k9.search.SqlQueryBuilder;
 
+import org.pEp.jniadapter.AndroidHelper;
 import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.Sync;
 
@@ -112,7 +111,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Starts a long running (application) Thread that will run through commands
+ * Starts a long running (application) Thread that will run thr ough commands
  * that require remote mailbox access. This class is used to serialize and
  * prioritize these commands. Each method that will submit a command requires a
  * MessagingListener instance to be provided. It is expected that that listener
@@ -1413,7 +1412,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             @Override
             public void messageFinished(final T message, int number, int ofTotal) {
                 try {
-
+                    boolean store = true;
                     if (!shouldImportMessage(account, message, earliestDate)) {
                         progress.incrementAndGet();
 
@@ -1430,18 +1429,35 @@ public class MessagingController implements Sync.MessageToSendCallback {
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", (MimeMessage) message);
                     final PEpProvider.DecryptResult result;
                     if (account.ispEpPrivacyProtected()) {
-                        result = pEpProvider.decryptMessage((MimeMessage) message);
+                        PEpProvider.DecryptResult tempResult;
+
+//                        try {
+                            tempResult = pEpProvider.decryptMessage((MimeMessage) message);
+//                        }
+//                        catch (org.pEp.jniadapter.pEpMessageDiscarded pEpMessageDiscarded) {
+//                            Log.v("pEpJNI", "messageFinished: ", pEpMessageDiscarded);
+//                            tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null);
+//                            store = false;
+//                        }
+//                        catch (org.pEp.jniadapter.pEpMessageConsumed pEpMessageConsumed) {
+//                            Log.v("pEpJNI", "messageFinished: Deleting", pEpMessageConsumed);
+//                            tempResult = null;
+//                            store = false;
+//                        }
+                        result = tempResult;
                     }
                     else {
                         result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null);
                     }
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
-
-                    if (result.keyDetails != null) {
+                    if (result == null) {
+                        deleteImportMessage(message, account, folder, localFolder);
+                    }
+                    else if (result.keyDetails != null) {
                         showImportKeyDialogIfNeeded(message, result, account);
                         deleteImportMessage(message, account, folder, localFolder);
                     }
-                    else {
+                    else if (store) {
                         MimeMessage decryptedMessage =  result.msg;
                         if (message.getFolder().getName().equals(account.getSentFolderName())) {
                             decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpProvider.getPrivacyState(message).name());
@@ -1489,7 +1505,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         notificationController.addNewMailNotification(account, localMessage, unreadBeforeStart);
                     }
                     }
-                } catch (MessagingException | RuntimeException me) {
+                }  catch (MessagingException | RuntimeException me) {
                     addErrorMessage(account, null, me);
                     Log.e(K9.LOG_TAG, "SYNC: fetch small messages", me);
                 }
@@ -1526,7 +1542,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_ADDRESS, result.keyDetails.getAddress().getAddress());
                     broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_USERNAME, result.keyDetails.getAddress().getPersonal());
                     context.getApplicationContext().sendOrderedBroadcast(broadcastIntent, null);
-                    FeedbackTools.showLongFeedback(getRootView((Activity) context), "Private key");
+                    Log.i("pEp", "Private key");
                 }
             });
         }
@@ -1946,7 +1962,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 localFolder.fetch(Collections.singletonList(localMessage) , fp, null);
                 String oldUid = localMessage.getUid();
                 localMessage.setFlag(Flag.X_REMOTE_COPY_STARTED, true);
-                remoteFolder.appendMessages(Collections.singletonList(localMessage));
+                Message encryptedMessage;
+                // TODO: 10/11/16 check what happens on trusted and untrusted servers
+                encryptedMessage = getMessageToSave(account, localMessage);
+                remoteFolder.appendMessages(Collections.singletonList(encryptedMessage));
 
                 localFolder.changeUid(localMessage);
                 for (MessagingListener l : getListeners()) {
@@ -1981,8 +2000,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     String oldUid = localMessage.getUid();
 
                     localMessage.setFlag(Flag.X_REMOTE_COPY_STARTED, true);
-
-                    remoteFolder.appendMessages(Collections.singletonList(localMessage));
+                    // TODO: 10/11/16 check what happens on trusted and untrusted servers
+                    Message encryptedMessage = getMessageToSave(account, localMessage);
+                    remoteFolder.appendMessages(Collections.singletonList(encryptedMessage));
                     localFolder.changeUid(localMessage);
                     for (MessagingListener l : getListeners()) {
                         l.messageUidChanged(account, folder, oldUid, localMessage.getUid());
@@ -2000,6 +2020,26 @@ public class MessagingController implements Sync.MessageToSendCallback {
             closeFolder(localFolder);
         }
     }
+
+    private Message getMessageToSave(Account account, LocalMessage localMessage) throws MessagingException {
+       try {
+           Message encryptedMessage;
+           if (account.getDraftsFolderName().equals(localMessage.getFolder().getName())
+                   && !PEpUtils.ispEpDisabled(account, localMessage, Rating.pEpRatingTrustedAndAnonymized) ){
+               encryptedMessage = pEpProvider.encryptMessageToSelf(localMessage);
+           } else if (!account.getSentFolderName().equals(localMessage.getFolder().getName())) {
+               encryptedMessage = pEpProvider.encryptMessage(localMessage, null).get(0);
+           } else {
+               encryptedMessage = localMessage;
+           }
+           return encryptedMessage;
+       }
+       catch (Exception ex) {
+           Log.e("pEp", "getMessageToSave: ", ex);
+           throw  ex;
+       }
+    }
+
     private void queueMoveOrCopy(Account account, String srcFolder, String destFolder, boolean isCopy, String uids[]) {
         if (account.getErrorFolderName().equals(srcFolder)) {
             return;
@@ -2758,10 +2798,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
         });
     }
 
-    private View getRootView(Activity context) {
-        return context.getWindow().getDecorView().getRootView();
-    }
-
     private boolean loadMessageRemoteSynchronous(final Account account, final String folder,
             final String uid, final MessagingListener listener, final boolean loadPartialFromSearch) {
         Folder remoteFolder = null;
@@ -2776,7 +2812,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
             if (uid.startsWith(K9.LOCAL_UID_PREFIX)) {
                 Log.w(K9.LOG_TAG, "Message has local UID so cannot download fully.");
                 // ASH move toast
-                FeedbackTools.showLongFeedback(getRootView((Activity) context), "Message has local UID so cannot download fully");
+                android.widget.Toast.makeText(context,
+                        "Message has local UID so cannot download fully",
+                        android.widget.Toast.LENGTH_LONG).show();
                 // TODO: Using X_DOWNLOADED_FULL is wrong because it's only a partial message. But
                 // one we can't download completely. Maybe add a new flag; X_PARTIAL_MESSAGE ?
                 message.setFlag(Flag.X_DOWNLOADED_FULL, true);
@@ -3099,9 +3137,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         Message encryptedMessageToSave;
 //                        PEpUtils.dumpMimeMessage("beforeEncrypt", (MimeMessage) message);
                         if (PEpUtils.ispEpDisabled(account, message, pEpProvider.getPrivacyState(message))) {
-                                    sendMessage(transport, message);
-                                    encryptedMessageToSave = message;
-                                } else {
+                            message.setHeader(MimeHeader.HEADER_PEP_RATING, Rating.pEpRatingUnencrypted.name());
+                            sendMessage(transport, message);
+                            encryptedMessageToSave = message;
+                        } else {
                             encryptedMessageToSave = processWithpEpAndSend(transport, message);
                         }
 
@@ -3121,9 +3160,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moving sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
-                            if(encOnServer)
-                                localSentFolder.appendMessages(Collections.singletonList(encryptedMessageToSave));    // if insecure server, push enc'd msg to sent folder
-                            else {
+                            if(encOnServer) {
+                                message.addHeader(MimeHeader.HEADER_PEP_RATING, pEpProvider.getPrivacyState(message).name());
+                                localSentFolder.appendMessages(Collections.singletonList(message));    // if insecure server, push enc'd msg to sent folder
+                            } else {
                                 // if secure server, add color indicator and move plaintext to server
                                 message.addHeader(MimeHeader.HEADER_PEP_RATING, pEpProvider.getPrivacyState(message).name());     // FIXME: this sucks. I should get the "real" color from encryptMessage()!
                                 localFolder.moveMessages(Collections.singletonList(message), localSentFolder);
@@ -3132,10 +3172,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moved sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
-                            Message toMove = encOnServer? encryptedMessageToSave : message;
+                            //Message toMove = encOnServer? encryptedMessageToSave : message;
                             PendingCommand command = new PendingCommand();
                             command.command = PENDING_COMMAND_APPEND;
-                            command.arguments = new String[] { localSentFolder.getName(), toMove.getUid() };
+                            command.arguments = new String[] { localSentFolder.getName(), message.getUid() };
                             queuePendingCommand(account, command);              // FIXME: do I really have to fiddle around with localsentfolder or is msg found anywhere by its id?
 
                             processPendingCommands(account);
@@ -4713,6 +4753,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     @Override
     public void messageToSend(org.pEp.jniadapter.Message message) {
+        Log.i(AndroidHelper.TAG, "messageToSend: ");
+
         List <Account> accounts = Preferences.getPreferences(context).getAccounts();
         Account currentAccount = null;
         for (Account account : accounts) {
@@ -4725,7 +4767,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         sendMessage(currentAccount, pEpProvider.getMimeMessage(message), null);
     }
 
-    private Account checkAccount(org.pEp.jniadapter.Message message, Account account) {
+    public Account checkAccount(org.pEp.jniadapter.Message message, Account account) {
         for (Identity identity : account.getIdentities()) {
             if (identity.getEmail().equals(message.getFrom().address)) {
                 return  account;

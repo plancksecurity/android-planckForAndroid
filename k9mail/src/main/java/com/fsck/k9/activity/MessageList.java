@@ -1142,12 +1142,17 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     private void initializePepStatus() {
         mActionBarPepStatus = (TextView) customView.findViewById(R.id.tvPep);
-        mActionBarPepStatus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mMessageViewFragment.onPepStatus();
-            }
-        });
+        if (mAccount.ispEpPrivacyProtected()) {
+            mActionBarPepStatus.setVisibility(View.VISIBLE);
+            mActionBarPepStatus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mMessageViewFragment.onPepStatus();
+                }
+            });
+        } else {
+            mActionBarPepStatus.setVisibility(View.GONE);
+        }
     }
 
 
@@ -1853,23 +1858,26 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     @Override
-    public void onReply(MessageReference messageReference) {
-        onReply(messageReference, null);
+    public void onReply(MessageReference messageReference,
+                        Rating pEpRating) {
+        onReply(messageReference, pEpRating);
     }
 
     @Override
-    public void onReply(MessageReference messageReference, Parcelable decryptionResultForReply) {
-        MessageActions.actionReply(this, messageReference, false, decryptionResultForReply);
+    public void onReply(MessageReference messageReference, Parcelable decryptionResultForReply,
+                        Rating rating) {
+        MessageActions.actionReply(this, messageReference, false, decryptionResultForReply, rating);
     }
 
     @Override
-    public void onReplyAll(MessageReference messageReference) {
-        onReplyAll(messageReference, null);
+    public void onReplyAll(MessageReference messageReference, Rating pEpRating) {
+        onReplyAll(messageReference, null, pEpRating);
     }
 
     @Override
-    public void onReplyAll(MessageReference messageReference, Parcelable decryptionResultForReply) {
-        MessageActions.actionReply(this, messageReference, true, decryptionResultForReply);
+    public void onReplyAll(MessageReference messageReference, Parcelable decryptionResultForReply,
+                           Rating rating) {
+        MessageActions.actionReply(this, messageReference, true, decryptionResultForReply, rating);
     }
 
     @Override

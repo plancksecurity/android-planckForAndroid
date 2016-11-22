@@ -32,7 +32,7 @@ import org.pEp.jniadapter.Rating;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class PEpStatus extends PepColoredActivity implements ChangeColorListener{
+public class PEpStatus extends PepColoredActivity implements ChangeColorListener {
 
     private static final String ACTION_SHOW_PEP_STATUS = "com.fsck.k9.intent.action.SHOW_PEP_STATUS";
     private static final String MYSELF = "isComposedKey";
@@ -55,6 +55,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     private MessageReference messageReference;
     private LocalMessage localMessage;
 
+
     public static void actionShowStatus(Activity context, Rating currentRating, String myself, MessageReference messageReference) {
         Intent i = new Intent(context, PEpStatus.class);
         i.setAction(ACTION_SHOW_PEP_STATUS);
@@ -69,7 +70,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
         super.onCreate(savedInstanceState);
         loadPepRating();
         setContentView(R.layout.pep_status);
-        ButterKnife.bind(this);
+        ButterKnife.bind(PEpStatus.this);
         if (getIntent() != null && getIntent().hasExtra(MYSELF)
                 && getIntent().hasExtra(MESSAGE_REFERENCE)) {
             myself = getIntent().getStringExtra(MYSELF);
@@ -82,13 +83,6 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
         loadPepTexts();
     }
 
-    private void restorePEpRating(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            pEpRating = (Rating) savedInstanceState.getSerializable(RATING);
-            setpEpRating(pEpRating);
-        }
-    }
-
     private void loadMessage() {
         messageReference = (MessageReference) getIntent().getExtras().get(MESSAGE_REFERENCE);
         if (messageReference != null) {
@@ -97,10 +91,17 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
         }
     }
 
+    private void restorePEpRating(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            pEpRating = (Rating) savedInstanceState.getSerializable(RATING);
+            setpEpRating(pEpRating);
+        }
+    }
+
 
     private void loadPepTexts() {
         pEpTitle.setText(uiCache.getTitle(getpEpRating()));
-        pEpSuggestion.setText(uiCache.getExplanation(getpEpRating()));
+        pEpSuggestion.setText(uiCache.getSuggestion(getpEpRating()));
     }
 
     private void setUpActionBar() {
@@ -132,6 +133,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
         Intent returnIntent = new Intent();
         returnIntent.putExtra(CURRENT_RATING, rating);
         setResult(Activity.RESULT_OK, returnIntent);
+        loadPepTexts();
     }
 
     public class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
@@ -169,7 +171,6 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
                int position = data.getIntExtra(PEpTrustwords.PARTNER_POSITION, PEpTrustwords.DEFAULT_POSITION);
                 Identity partner = uiCache.getRecipients().get(position);
                 pEpRating = getpEp().identityRating(partner);
-                Rating pEpRating = getpEp().identityRating(partner);
                 onRatingChanged(pEpRating);
                 recipientsAdapter.notifyDataSetChanged();
                 colorActionBar();

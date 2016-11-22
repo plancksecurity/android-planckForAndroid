@@ -48,7 +48,7 @@
 
     <string name="pep_account_setup_generating_keys">Setting your Privacy by Default </string>
     <string name="pep_reset_trust">Stop trust</string>
-    <string name="pep_pgp_fingerprint">PGP Fingerprint</string>
+    <string name="pep_pgp_fingerprint">OpenPGP Fingerprint</string>
 
     <string name="pep_dialog_weaker_forward_warning_message">You\'re about to forward a secure message as unsecure. If you choose to proceed, confidential information might be leaked putting you and your communication partners at risk. Are you sure you want to continue? </string>
 
@@ -80,23 +80,28 @@
     <string name="pep_received_this_secret_key" translatable="false">The following secret key was received</string>
     <string name="pep_from_format">from sender %1$s</string>
     <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Trust server and store mails unprotected</string>
-    <string name="pep_mistrust_server_and_store_mails_encrypted">E-Mails on server are protected</string>
-    <string name="pep_enable_privacy_protection">Privacy protection</string>
+    <string name="pep_mistrust_server_and_store_mails_encrypted">Store messages securely</string>
+    <string name="pep_enable_privacy_protection">pEp privacy protection</string>
     <string name="pep_explanation">Explanation</string>
     <string name="pep_suggestion">Suggestion</string>
     <string name="pep_app_license">Licensed under the GNU General Public License v3</string>
     <string name="pep_trust_server_description">Store serverside mails in a safe form.</string>
-    <string name="pep_account_privacy_protection_explanation">Enable privacy protection for this account </string>
-    <string name="pep_forward_warning">Weaker forward warning</string>
+    <string name="pep_account_privacy_protection_explanation">Enable pEp privacy protection for this account </string>
+    <string name="pep_forward_warning">Unsecure reply warning</string>
+    <string name="pep_forward_warning_description">Show a warning when a message loses security through reply or forward.</string>
     <string name="key_list_title">Available keys</string>
     <string name="message_list_item_removed">Removed</string>
     <string name="message_list_item_undo">UNDO</string>
     <string name="available_accounts_title">Available accounts</string>
-    <string name="crash_toast_text">Oops, something went wrong</string>
     <string name="pep_app_description">K-9/p≡p is a powerful free email client for Android with pretty Easy privacy.</string>
     <string name="app_k9_pep_name">"K-9/p≡p "</string>
     <string name="global_settings_title">Global settings</string>
     <string name="configure_account_action">Manage accounts</string>
+    <string name="pep_add_device_ask_trustwords">You are about to add a device to your pEp device group. Confirm by successfully verifying the following Trustwords.</string>
+    <string name="pep_device_group">p≡p Device Group</string>
+    <string name="handshake_reset_dialog_message">Warning: This communication partner was previously marked as mistrusted. Are you sure you want to continue with another handshake?</string>
+    <string name="pep_gpg_compatibility">OpenPGP Compatibility</string>
+    <string name="crash_toast_text">Oops, something went wrong</string>
 
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>

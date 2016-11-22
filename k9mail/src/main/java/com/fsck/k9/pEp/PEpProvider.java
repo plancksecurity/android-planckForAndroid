@@ -1,10 +1,9 @@
 package com.fsck.k9.pEp;
 
-import android.app.Activity;
 import android.content.Context;
 
-import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
@@ -75,6 +74,9 @@ public interface PEpProvider {
      * @return the encrypted message
      */
     List<MimeMessage> encryptMessage(MimeMessage source, String[] extraKeys);
+
+    //TODO> When alias available check if it works correctly
+    MimeMessage encryptMessageToSelf(MimeMessage source) throws MessagingException;
 
     /**
      * Helper for pEp setup. Smells funny to have it in an interface, but fits nowhere else.
@@ -158,6 +160,14 @@ public interface PEpProvider {
     void setSyncSendMessageCallback(Sync.MessageToSendCallback callback);
 
     void setSyncHandshakeCallback(Sync.showHandshakeCallback activity);
+
+    void startSync();
+
+    void acceptHandshake(Identity identity);
+
+    void rejectHandshake(Identity identity);
+
+    void cancelHandshake(Identity identity);
 
     class KeyDetail {
         private final Address address;

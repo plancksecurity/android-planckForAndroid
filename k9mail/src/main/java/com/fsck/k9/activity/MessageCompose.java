@@ -162,6 +162,10 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private MessageLoaderHelper messageLoaderHelper;
     private AttachmentPresenter attachmentPresenter;
 
+    public Account getAccount() {
+        return mAccount;
+    }
+
     /**
      * The account used for message composition.
      */
@@ -644,6 +648,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     protected void onResume() {
         super.onResume();
         MessagingController.getInstance(this).addListener(messagingListener);
+        recipientPresenter.onResume();
     // TODO: grok mListener
 
     }
@@ -1834,4 +1839,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private boolean isForwardedpEpMessage() {
         return originalMessageRating != null;
     }
+
+
 }

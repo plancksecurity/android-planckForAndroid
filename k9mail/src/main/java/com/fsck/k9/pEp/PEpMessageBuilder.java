@@ -8,11 +8,18 @@ import com.fsck.k9.mail.Part;
 import com.fsck.k9.mail.internet.*;
 import org.pEp.jniadapter.Blob;
 import org.pEp.jniadapter.Message;
+import org.pEp.jniadapter.Pair;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Vector;
+import java.util.logging.StreamHandler;
 
 /**
  * Makes a pEp message from a k9 message
@@ -152,6 +159,19 @@ class PEpMessageBuilder {
             m.setShortmsg(mm.getSubject());
 
             // TODO: other headers
+            ArrayList <Pair<String, String>> optionalFields = new ArrayList<>();
+            if (mm.getHeader(MimeHeader.HEADER_PEP_AUTOCONSUME).length > 0 ) {
+                optionalFields.add(new Pair<>(MimeHeader.HEADER_PEP_AUTOCONSUME, mm.getHeader(MimeHeader.HEADER_PEP_AUTOCONSUME)[0]));
+            }
+            m.setOptFields(optionalFields);
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
+            if (mm.getHeader("Received").length > 0){
+                Date received = formatter.parse(mm.getHeader("Received")[0].split(";")[1].trim());
+                m.setRecv(received);
+            }
+        } catch (ParseException ignore) {
+        }
 
     }
 
@@ -168,7 +188,7 @@ class PEpMessageBuilder {
         if (part.getMimeType().equalsIgnoreCase("message/rfc822")) return "ForwardedMessage.eml";
         if (filename == null) {
             String disposition = MimeUtility.unfoldAndDecode(part.getDisposition());
-            if (("attachment".equalsIgnoreCase(MessageExtractor.getContentDisposition(mm)))) {
+            if (("attachment".equalsIgnoreCase(MessageExtractor.getContentDisposition(part)))) {
                 Log.i("PEpMessageBuilder", "addBody 1 " + disposition);
                 filename = MimeUtility.getHeaderParameter(disposition, "filename");
             }
