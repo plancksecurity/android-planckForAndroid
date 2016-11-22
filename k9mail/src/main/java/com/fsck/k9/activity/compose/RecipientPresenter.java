@@ -109,17 +109,18 @@ public class RecipientPresenter implements PermissionPingCallback {
     }
 
     private void setupPEPStatusTask() {
-        if (poller != null) {
+        if (poller == null) {
+            poller = new Poller(new Handler());
+            poller.init(POLLING_INTERVAL, new Runnable() {
+                @Override
+                public void run() {
+                    pepStatusTask = new PEPStatusTask();
+                    pepStatusTask.execute();
+                }
+            });
+        } else {
             poller.stopPolling();
         }
-        poller = new Poller(new Handler());
-        poller.init(POLLING_INTERVAL, new Runnable() {
-            @Override
-            public void run() {
-                pepStatusTask = new PEPStatusTask();
-                pepStatusTask.execute();
-            }
-        });
         poller.startPolling();
     }
 
@@ -224,7 +225,7 @@ public class RecipientPresenter implements PermissionPingCallback {
         privacyState = (Rating) savedInstanceState.getSerializable(STATE_RATING);
         updateRecipientExpanderVisibility();
         recipientMvpView.setpEpRating(privacyState);
-        poller.startPolling();
+        setupPEPStatusTask();
     }
 
     public void onSaveInstanceState(Bundle outState) {
