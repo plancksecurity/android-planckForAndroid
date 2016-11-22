@@ -68,11 +68,15 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
         recipientsView.setLayoutManager(recipientsLayoutManager);
         recipientsView.setVisibility(View.VISIBLE);
         keys = pEp.getAvailableKey();
+        initializeKeysView();
+        setSupportActionBar(toolbar);
+        initializeSearchBar();
+    }
+
+    private void initializeKeysView() {
         recipientsAdapter = new KeysAdapter(this, keys);
         recipientsView.setAdapter(recipientsAdapter);
         recipientsAdapter.notifyDataSetChanged();
-        setSupportActionBar(toolbar);
-        initializeSearchBar();
     }
 
     private void initializeSearchBar() {
@@ -90,8 +94,10 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
             public void onTextChanged(CharSequence query, int start, int before, int count) {
                 if (query.toString().isEmpty()) {
                     clearSearchIcon.setVisibility(View.GONE);
+                    initializeKeysView();
                 } else {
                     clearSearchIcon.setVisibility(View.VISIBLE);
+                    onQueryTextSubmit(searchInput.getText().toString());
                 }
             }
 
@@ -117,6 +123,7 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
                 searchInput.setText(null);
                 hideSearchView();
                 KeyboardUtils.hideKeyboard(searchInput);
+                initializeKeysView();
             }
         });
     }
@@ -154,7 +161,8 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
         final List<KeyListItem> filteredModelList = new ArrayList<>();
         for (KeyListItem model : models) {
             final String text = model.getGpgUid().toLowerCase();
-            if (text.contains(lowerCaseQuery)) {
+            if (text.contains(lowerCaseQuery)
+                    || model.getFpr().toLowerCase().contains(lowerCaseQuery)) {
                 filteredModelList.add(model);
             }
         }
