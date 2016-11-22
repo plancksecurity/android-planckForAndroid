@@ -2,6 +2,7 @@ package com.fsck.k9.preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
 import com.fsck.k9.Account;
@@ -677,8 +678,9 @@ public class SettingsImporter {
         editor.putString(key, value);
     }
 
-    private static Imported parseSettings(InputStream inputStream, boolean globalSettings,
-            List<String> accountUuids, boolean overview)
+    @VisibleForTesting
+    static Imported parseSettings(InputStream inputStream, boolean globalSettings,
+                                  List<String> accountUuids, boolean overview)
     throws SettingsImportExportException {
 
         if (!overview && accountUuids == null) {
@@ -1154,7 +1156,8 @@ public class SettingsImporter {
         }
     }
 
-    private static class Imported {
+    @VisibleForTesting
+    static class Imported {
         public int contentVersion;
         public ImportedSettings globalSettings;
         public Map<String, ImportedAccount> accounts;
@@ -1164,7 +1167,8 @@ public class SettingsImporter {
         public Map<String, String> settings = new HashMap<String, String>();
     }
 
-    private static class ImportedAccount {
+    @VisibleForTesting
+    static class ImportedAccount {
         public String uuid;
         public String name;
         public ImportedServer incoming;
@@ -1174,7 +1178,8 @@ public class SettingsImporter {
         public List<ImportedFolder> folders;
     }
 
-    private static class ImportedServer {
+    @VisibleForTesting
+    static class ImportedServer {
         public String type;
         public String host;
         public String port;
@@ -1186,7 +1191,8 @@ public class SettingsImporter {
         public ImportedSettings extras;
     }
 
-    private static class ImportedIdentity {
+    @VisibleForTesting
+    static class ImportedIdentity {
         public String name;
         public String email;
         public String description;
