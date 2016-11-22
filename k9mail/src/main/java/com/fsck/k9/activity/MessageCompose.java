@@ -160,6 +160,13 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private AttachmentPresenter attachmentPresenter;
 
     public Account getAccount() {
+        String accountUuid = (mMessageReference != null) ?
+                mMessageReference.getAccountUuid() :
+                getIntent().getStringExtra(EXTRA_ACCOUNT);
+        mAccount = Preferences.getPreferences(this).getAccount(accountUuid);
+        if (mAccount == null) {
+            return Preferences.getPreferences(this).getDefaultAccount();
+        }
         return mAccount;
     }
 
