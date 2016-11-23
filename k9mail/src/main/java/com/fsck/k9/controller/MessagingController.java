@@ -1458,7 +1458,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     }
                     else if (store) {
                         MimeMessage decryptedMessage =  result.msg;
-                        if (message.getFolder().getName().equals(account.getSentFolderName())) {
+                        if (message.getFolder().getName().equals(account.getSentFolderName())
+                                || message.getFolder().getName().equals(account.getDraftsFolderName())) {
                             decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpProvider.getPrivacyState(message).name());
                         }
 
