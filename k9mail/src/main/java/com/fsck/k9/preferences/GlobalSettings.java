@@ -240,7 +240,7 @@ public class GlobalSettings {
                 new V(31, new IntegerRangeSetting(40, 250, 100))
             ));
         s.put("hideUserAgent", Settings.versions(
-                new V(32, new BooleanSetting(false))
+                new V(32, new BooleanSetting(true))
             ));
         s.put("hideTimeZone", Settings.versions(
                 new V(32, new BooleanSetting(false))
