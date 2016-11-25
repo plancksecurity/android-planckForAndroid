@@ -53,7 +53,9 @@ import com.fsck.k9.mail.internet.MimeMessageHelper;
 import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mail.internet.MimeHeader;
+import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
+import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
@@ -63,6 +65,8 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.mailstore.MessageViewInfo.MessageViewContainer;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpProviderFactory;
+import com.fsck.k9.pEp.PEpProviderImpl;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpStatus;
@@ -812,6 +816,11 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
             pEpRating = PEpUtils.extractRating(message);
 
+            if (pEpRating.value == Rating.pEpRatingCannotDecrypt.value
+                    || pEpRating.value == Rating.pEpRatingHaveNoKey.value) {
+                decryptMessage(message);
+            }
+
             if (mAccount.ispEpPrivacyProtected()) {
                 PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), pEpRating);
             } else {
@@ -873,6 +882,33 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             }
         }
     };
+
+    private void decryptMessage(LocalMessage message) {
+        PEpProvider pEpProvider = PEpProviderFactory.createProvider(getActivity());
+        PEpProvider.DecryptResult decryptResult = pEpProvider.decryptMessage(mMessage);
+        MimeMessage decryptedMessage =  decryptResult.msg;
+        if (message.getFolder().getName().equals(mAccount.getSentFolderName())
+                || message.getFolder().getName().equals(mAccount.getDraftsFolderName())) {
+            decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpProvider.getPrivacyState(message).name());
+        }
+
+        decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
+
+        // Store the updated message locally
+        LocalFolder folder = mMessage.getFolder();
+        LocalMessage localMessage = null;
+        try {
+            localMessage = folder.storeSmallMessage(decryptedMessage, new Runnable() {
+                @Override
+                public void run() {
+                }
+            });
+            mMessage = localMessage;
+            newInstance(mMessageReference);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     @Override
