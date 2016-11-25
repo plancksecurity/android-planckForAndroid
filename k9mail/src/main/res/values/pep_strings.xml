@@ -45,7 +45,7 @@
     <!-- Translatable strings -->
 
     <string name="pep_account_setup_generating_keys">Setting your Privacy by Default </string>
-    <string name="pep_reset_trust">Stop trust</string>
+    <string name="pep_reset_trust">Stop trusting</string>
     <string name="pep_pgp_fingerprint">OpenPGP Fingerprint</string>
 
     <string name="pep_dialog_weaker_forward_warning_message">You\'re about to forward a secure message as unsecure. If you choose to proceed, confidential information might be leaked putting you and your communication partners at risk. Are you sure you want to continue? </string>
@@ -65,7 +65,7 @@
     <string name="pep_confirm_trustwords">Confirm Trustwords</string>
     <string name="pep_wrong_trustwords">Wrong Trustwords</string>
     <string name="pep_wrong_fingerprint">Wrong fingerprint</string>
-    <string name="pep_ask_trustwords">Ask your partner: What are your Trustwords? Then compare to the correct answer shown below.</string>
+    <string name="pep_ask_trustwords">Ask your partner in person or over the phone: What are your trustwords? Then compare to the correct answer shown below.</string>
     <string name="pep_complete_partner_format">Partner\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_partner_format">Partner\n%1$s</string>
     <string name="pep_complete_myself_format">Myself\n%1$s &lt;%2$s&gt;</string>

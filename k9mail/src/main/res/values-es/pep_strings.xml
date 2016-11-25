@@ -21,7 +21,7 @@
     <string name="pep_confirm_trustwords">Confirmar trustwords</string>
     <string name="pep_wrong_trustwords">Trustwords incorrectas</string>
     <string name="pep_wrong_fingerprint">Huella incorrecta</string>
-    <string name="pep_ask_trustwords">Preguntar a su interlocutor: ¿Cuáles son sus palabras de confianza?. Después compare con las palabras de confianza que se muestran a continuación.</string>
+    <string name="pep_ask_trustwords">Pregunta a tu interlocutor cuáles son las trustwords. Después compáralas con las que se muestran a continuación.</string>
     <string name="pep_complete_partner_format">Compañero\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_partner_format">Compañero\n%1$s</string>
     <string name="pep_complete_myself_format">Yo\n%1$s &lt;%2$s&gt;</string>
