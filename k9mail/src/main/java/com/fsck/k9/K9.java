@@ -65,7 +65,7 @@ import java.util.concurrent.SynchronousQueue;
         mode = ReportingInteractionMode.TOAST,
         resToastText = R.string.crash_toast_text)
 public class K9 extends Application {
-    private static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
+    public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PEpProvider pEpProvider, pEpSyncProvider;
     boolean ispEpSyncEnabled = false;
     private Account currentAccount;
@@ -264,7 +264,7 @@ public class K9 extends Application {
     private static String mQuietTimeEnds = null;
     private static String mAttachmentDefaultPath = "";
     private static boolean mWrapFolderNames = false;
-    private static boolean mHideUserAgent = false;
+    private static boolean mHideUserAgent = true;
     private static boolean mHideTimeZone = false;
 
     private static SortType mSortType;
@@ -797,7 +797,7 @@ public class K9 extends Application {
         mMessageViewReturnToList = storage.getBoolean("messageViewReturnToList", false);
         mMessageViewShowNext = storage.getBoolean("messageViewShowNext", false);
         mWrapFolderNames = storage.getBoolean("wrapFolderNames", false);
-        mHideUserAgent = storage.getBoolean("hideUserAgent", false);
+        mHideUserAgent = storage.getBoolean("hideUserAgent", true);
         mHideTimeZone = storage.getBoolean("hideTimeZone", false);
 
         mConfirmDelete = storage.getBoolean("confirmDelete", false);

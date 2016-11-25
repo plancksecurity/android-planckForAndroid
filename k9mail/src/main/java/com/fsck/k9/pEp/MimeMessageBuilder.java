@@ -229,22 +229,22 @@ class MimeMessageBuilder {
 
     /* FIXME: the following logic needs some intense testing. Not completely sure whether I broke threading and quoting badly somewhere... */
     private TextBody buildText(SimpleMessageFormat simpleMessageFormat) {
-        String messageText;
+        String messageText = null;
         if (simpleMessageFormat == SimpleMessageFormat.HTML)
             messageText = pEpMessage.getLongmsgFormatted();
         else {
             if (messageFormat == SimpleMessageFormat.HTML
                     && (pEpMessage.getLongmsg() == null || pEpMessage.getLongmsg().isEmpty())) {
                 messageText = Jsoup.parse(pEpMessage.getLongmsgFormatted()).text();
-            } else {
+            } else if (pEpMessage.getLongmsg() != null){
                 String text = Jsoup.parse(pEpMessage.getLongmsg().replaceAll("\n", "br2nl")).text();
                 messageText = text.replaceAll("br2nl ", "\n").replaceAll("br2nl", "\n").trim();
             }
         }
 
         if (messageText == null) {       // FIXME: This must (should?) never happen!
-            messageText = "Got null msg text (This Is A Bug, please report!)";                // FIXME: Other text for production?
-            Log.e("pep", "got null msg txt longmsg=" + pEpMessage.getLongmsg() + " format=" + pEpMessage.getLongmsgFormatted());
+            messageText = "";
+            Log.e("pep", "\"Got null msg text (This Is A Bug, please report!)\"=" + pEpMessage.getLongmsg() + " format=" + pEpMessage.getLongmsgFormatted());
         }
 
         MimeTextBodyBuilder mimeTextBodyBuilder = new MimeTextBodyBuilder(messageText);

@@ -1297,9 +1297,9 @@ public class Accounts extends K9Activity {
         case R.id.search:
             showSearchView();
             break;
-//        case R.id.export_all:
-//            onExport(true, null);
-//            break;
+        case R.id.export_all:
+            onExport(true, null);
+            break;
         case R.id.import_settings:
             onImport();
             break;

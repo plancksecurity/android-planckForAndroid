@@ -257,6 +257,13 @@ public class PEpUtils {
                 || !account.ispEpPrivacyProtected();
     }
 
+    public static void pEpGenerateAccountKeys(Context context, Account account) {
+        PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(context);
+        org.pEp.jniadapter.Identity myIdentity = PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()),context);
+        pEp.myself(myIdentity);
+        pEp.close();
+    }
+
     public static void colorToolbar(PePUIArtefactCache uiCache, Toolbar toolbar, Rating pEpRating) {
         if (toolbar != null) {
             toolbar.setBackgroundColor(uiCache.getColor(pEpRating));
