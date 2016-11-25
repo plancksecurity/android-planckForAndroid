@@ -2030,7 +2030,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
            if (account.getDraftsFolderName().equals(localMessage.getFolder().getName())
                    && !PEpUtils.ispEpDisabled(account, localMessage, Rating.pEpRatingTrustedAndAnonymized) ){
                encryptedMessage = pEpProvider.encryptMessageToSelf(localMessage);
-           } else if (!account.getSentFolderName().equals(localMessage.getFolder().getName())) {
+           } else if (account.getSentFolderName().equals(localMessage.getFolder().getName())) {
                encryptedMessage = pEpProvider.encryptMessage(localMessage, null).get(0);
            } else {
                encryptedMessage = localMessage;
