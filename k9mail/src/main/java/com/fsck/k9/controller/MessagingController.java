@@ -1996,7 +1996,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 localMessage.setFlag(Flag.X_REMOTE_COPY_STARTED, true);
                 Message encryptedMessage;
                 // TODO: 10/11/16 check what happens on trusted and untrusted servers
-                encryptedMessage = getMessageToSave(account, localMessage);
+                encryptedMessage = getMessageToUploadToOwnDirectories(account, localMessage);
                 remoteFolder.appendMessages(Collections.singletonList(encryptedMessage));
 
                 localFolder.changeUid(localMessage);
@@ -2033,7 +2033,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                     localMessage.setFlag(Flag.X_REMOTE_COPY_STARTED, true);
                     // TODO: 10/11/16 check what happens on trusted and untrusted servers
-                    Message encryptedMessage = getMessageToSave(account, localMessage);
+                    Message encryptedMessage = getMessageToUploadToOwnDirectories(account, localMessage);
                     remoteFolder.appendMessages(Collections.singletonList(encryptedMessage));
                     localFolder.changeUid(localMessage);
                     for (MessagingListener l : getListeners()) {
@@ -2053,23 +2053,38 @@ public class MessagingController implements Sync.MessageToSendCallback {
         }
     }
 
-    private Message getMessageToSave(Account account, LocalMessage localMessage) throws MessagingException {
-       try {
-           Message encryptedMessage;
-           if (account.getDraftsFolderName().equals(localMessage.getFolder().getName())
-                   && !PEpUtils.ispEpDisabled(account, localMessage, Rating.pEpRatingTrustedAndAnonymized) ){
-               encryptedMessage = pEpProvider.encryptMessageToSelf(localMessage);
-           } else if (account.getSentFolderName().equals(localMessage.getFolder().getName())) {
-               encryptedMessage = pEpProvider.encryptMessage(localMessage, null).get(0);
-           } else {
-               encryptedMessage = localMessage;
-           }
-           return encryptedMessage;
-       }
-       catch (Exception ex) {
-           Log.e("pEp", "getMessageToSave: ", ex);
-           throw  ex;
-       }
+    private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage localMessage) throws MessagingException {
+        /*
+        *
+        * *** If we are on an Untrusted Server / save encrypted on server
+        *   If is pEp is disables -> don-t care
+        *   If is a draft ALWAYS encrypt to self
+        *   Otherwise, try to encrypt and send as it is
+        * *** Trusted server
+        *   we save/upload as it is on own folders *do not confuse with send, always send encrypted*
+        */
+        Message encryptedMessage;
+
+        if (account.isPEpStoreEncryptedOnServer()) { //Untrusted server
+            try {
+                if (PEpUtils.ispEpDisabled(account, localMessage, null)) {
+                    encryptedMessage = localMessage;
+                } else if (account.getDraftsFolderName().equals(localMessage.getFolder().getName())) {
+                    encryptedMessage = pEpProvider.encryptMessageToSelf(localMessage);
+                } else {
+                    encryptedMessage = pEpProvider.encryptMessage(localMessage, null).get(0);
+                }
+
+            } catch (Exception ex) {
+                Log.e("pEp", "getMessageToUploadToOwnDirectories: ", ex);
+                throw ex;
+            }
+        } else { // Trusted
+            encryptedMessage = localMessage;
+        }
+
+        return encryptedMessage;
+
     }
 
     private void queueMoveOrCopy(Account account, String srcFolder, String destFolder, boolean isCopy, String uids[]) {
