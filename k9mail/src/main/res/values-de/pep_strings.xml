@@ -22,7 +22,7 @@
     <string name="pep_confirm_trustwords">Trustwords bestätigen</string>
     <string name="pep_wrong_trustwords">Falsche Trustwords</string>
     <string name="pep_wrong_fingerprint">Falscher Fingerprint</string>
-    <string name="pep_ask_trustwords">Die Kommunikationssicherheit kann durch einen Handshake erhöht werden. Überprüfen Sie dazu, ob Ihr Kommunikationspartner dieselben Trustwords angezeigt bekommt.</string>
+    <string name="pep_ask_trustwords">Bitten Sie Ihren Kommunikationspartner, seine Trustwords persönlich oder telefonisch vorzulesen. Diese sollten mit den untenstehenden übereinstimmen.</string>
     <string name="pep_complete_partner_format">Partner\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_partner_format">Partner\n%1$s</string>
     <string name="pep_complete_myself_format">Ich\n%1$s &lt;%2$s&gt;</string>

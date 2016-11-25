@@ -20,7 +20,7 @@
     <string name="pep_confirm_trustwords">Confirmar Trustwords</string>
     <string name="pep_wrong_trustwords">Trustwords incorrectes</string>
     <string name="pep_wrong_fingerprint">Empremta incorrecte</string>
-    <string name="pep_ask_trustwords">Pregunti a l’altre interlocutor: quines són les seves paraules de confiança? La resposta  correcta es mostra a continuació</string>
+    <string name="pep_ask_trustwords">PPregunta al teu interlocutor quines són les seves Trustwords. La resposta correcta es mostra a continuació.</string>
     <string name="pep_complete_partner_format">Company\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_partner_format">Company\n%1$s</string>
     <string name="pep_complete_myself_format">Myself\n%1$s &lt;%2$s&gt;</string>
