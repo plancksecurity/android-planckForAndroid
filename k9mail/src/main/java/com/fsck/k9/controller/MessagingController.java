@@ -70,6 +70,7 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
+import com.fsck.k9.pEp.ui.PEpStatus;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
 import com.fsck.k9.search.ConditionsTreeNode;
@@ -1430,11 +1431,15 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     final PEpProvider.DecryptResult result;
                     if (account.ispEpPrivacyProtected()) {
                         PEpProvider.DecryptResult tempResult;
-
-                        try {
-                            tempResult = pEpProvider.decryptMessage((MimeMessage) message);
-                        } catch (AppCannotDecryptException error) {
-                            tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null);
+                        if (!account.isPEpStoreEncryptedOnServer()) { //trusted server
+                            Rating rating = PEpUtils.extractRating(message);
+                            if (rating.equals(Rating.pEpRatingUndefined)) {
+                                result = decryptMessage((MimeMessage) message);
+                            } else {
+                                result = new PEpProvider.DecryptResult((MimeMessage) message, rating, null);
+                            }
+                        } else {
+                            result = decryptMessage((MimeMessage) message);
                         }
 //                        catch (org.pEp.jniadapter.pEpMessageDiscarded pEpMessageDiscarded) {
 //                            Log.v("pEpJNI", "messageFinished: ", pEpMessageDiscarded);
@@ -1446,18 +1451,17 @@ public class MessagingController implements Sync.MessageToSendCallback {
 //                            tempResult = null;
 //                            store = false;
 //                        }
-                        result = tempResult;
                     }
                     else {
                         result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null);
                     }
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
                     if (result == null) {
-                        deleteImportMessage(message, account, folder, localFolder);
+                        deleteMessage(message, account, folder, localFolder);
                     }
                     else if (result.keyDetails != null) {
                         showImportKeyDialogIfNeeded(message, result, account);
-                        deleteImportMessage(message, account, folder, localFolder);
+                        deleteMessage(message, account, folder, localFolder);
                     }
                     else if (store) {
                         MimeMessage decryptedMessage =  result.msg;
@@ -1525,7 +1529,17 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Log.d(K9.LOG_TAG, "SYNC: Done fetching small messages for folder " + folder);
     }
 
-    private <T extends Message> void deleteImportMessage(T message, Account account, String folder, LocalFolder localFolder) throws MessagingException {
+    private <T extends Message> PEpProvider.DecryptResult decryptMessage(MimeMessage message) {
+        PEpProvider.DecryptResult tempResult;
+        try {
+            tempResult = pEpProvider.decryptMessage(message);
+        } catch (AppCannotDecryptException error) {
+            tempResult = new PEpProvider.DecryptResult(message, Rating.pEpRatingUndefined, null);
+        }
+        return tempResult;
+    }
+
+    private <T extends Message> void deleteMessage(T message, Account account, String folder, LocalFolder localFolder) throws MessagingException {
         queueSetFlag(account, folder, Boolean.toString(true), Flag.DELETED.toString(), new String[]{message.getUid()});
         localFolder.setFlags(Collections.singletonList(message), Collections.singleton(Flag.DELETED), true);
     }
@@ -3178,13 +3192,18 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moving sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
+                            //Decorate the local message with
                             if(encOnServer) {
-                                message.addHeader(MimeHeader.HEADER_PEP_RATING, pEpProvider.getPrivacyState(message).name());
-                                localSentFolder.appendMessages(Collections.singletonList(message));    // if insecure server, push enc'd msg to sent folder
+                                localSentFolder.appendMessages(Collections.singletonList(message));
+                                message.addHeader(MimeHeader.HEADER_PEP_VERSION, encryptedMessageToSave.getHeader(MimeHeader.HEADER_PEP_VERSION)[0]);
+
                             } else {
+                                //On trusted server we will not call encrypt to move the message
+                                message.addHeader(MimeHeader.HEADER_PEP_VERSION, encryptedMessageToSave.getHeader(MimeHeader.HEADER_PEP_VERSION)[0]);
                                 // if secure server, add color indicator and move plaintext to server
                                 message.addHeader(MimeHeader.HEADER_PEP_RATING, pEpProvider.getPrivacyState(message).name());     // FIXME: this sucks. I should get the "real" color from encryptMessage()!
-                                localFolder.moveMessages(Collections.singletonList(message), localSentFolder);
+                                localSentFolder.appendMessages(Collections.singletonList(message));
+
                             }
 
                             if (K9.DEBUG)
@@ -3198,14 +3217,14 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                             processPendingCommands(account);
 
-                            if(encOnServer) {       // delete all traces, msg will be sync'ed again from server...
-                                // FIXME: This costs us a round trip and might break color detection. Perhaps do some magic (Id) and move message to localSent? But this won't stop broken color detection...
-                                message.setFlag(Flag.DELETED, true);
-                                localSentFolder.destroyMessages(Collections.singletonList(encryptedMessageToSave));
-                                for (MessagingListener l : getListeners()) {
-                                    l.folderStatusChanged(account, localSentFolder.getName(), localSentFolder.getUnreadMessageCount());
-                                }
+//                      if(encOnServer) {       // delete all traces, msg will be sync'ed again from server...
+                        //Delete from outbox, the sent folder message is a new one (appended)
+                            message.setFlag(Flag.DELETED, true);
+                            localSentFolder.destroyMessages(Collections.singletonList(encryptedMessageToSave));
+                            for (MessagingListener l : getListeners()) {
+                                l.folderStatusChanged(account, localSentFolder.getName(), localSentFolder.getUnreadMessageCount());
                             }
+//                        }
                         }
                     } catch (AuthenticationFailedException e) {
                         lastFailure = e;
