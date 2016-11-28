@@ -69,6 +69,7 @@ import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
 import com.fsck.k9.search.ConditionsTreeNode;
@@ -1430,9 +1431,11 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     if (account.ispEpPrivacyProtected()) {
                         PEpProvider.DecryptResult tempResult;
 
-//                        try {
+                        try {
                             tempResult = pEpProvider.decryptMessage((MimeMessage) message);
-//                        }
+                        } catch (AppCannotDecryptException error) {
+                            tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null);
+                        }
 //                        catch (org.pEp.jniadapter.pEpMessageDiscarded pEpMessageDiscarded) {
 //                            Log.v("pEpJNI", "messageFinished: ", pEpMessageDiscarded);
 //                            tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null);

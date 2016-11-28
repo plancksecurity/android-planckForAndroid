@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp.ui.infrastructure;
+package com.fsck.k9.pEp.infrastructure;
 
 import android.os.Handler;
 

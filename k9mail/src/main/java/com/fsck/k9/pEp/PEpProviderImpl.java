@@ -10,6 +10,7 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
+import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
 import org.pEp.jniadapter.AndroidHelper;
@@ -147,7 +148,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public DecryptResult decryptMessage(MimeMessage source)  {
+    public DecryptResult decryptMessage(MimeMessage source) {
         Log.d(TAG, "decryptMessage() enter");
         Message srcMsg = null;
         Engine.decrypt_message_Return decReturn = null;
@@ -178,7 +179,7 @@ public class PEpProviderImpl implements PEpProvider {
 //            return null;
         }catch (Throwable t) {
             Log.e(TAG, "while decrypting message:", t);
-            throw new RuntimeException("Could not decrypt", t);
+            throw new AppCannotDecryptException("Could not decrypt", t);
         } finally {
             if (srcMsg != null) srcMsg.close();
             if (decReturn != null && decReturn.dst != srcMsg) decReturn.dst.close();
