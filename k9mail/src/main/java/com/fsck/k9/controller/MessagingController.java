@@ -1435,6 +1435,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             Rating rating = PEpUtils.extractRating(message);
                             if (rating.equals(Rating.pEpRatingUndefined)) {
                                 result = decryptMessage((MimeMessage) message);
+
                             } else {
                                 result = new PEpProvider.DecryptResult((MimeMessage) message, rating, null);
                             }
@@ -1480,10 +1481,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         }
                     });
 
-                    if(!account.isPEpStoreEncryptedOnServer()) {    // put unenc'd msg to server...
-                        // TODO: delete decmsg on server
-                        // move msg to server
-                        // thats it.
+                    if (!account.isPEpStoreEncryptedOnServer()) {
+                        appendMessage(account, localMessage, localFolder);
                     }
                     Log.d("pep", "in download loop (nr=" + number + ") post pep");
 
@@ -2000,16 +1999,17 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 remoteFolder.fetch(Collections.singletonList(remoteMessage), fp, null);
                 Date localDate = localMessage.getInternalDate();
                 Date remoteDate = remoteMessage.getInternalDate();
-                if (remoteDate != null && remoteDate.compareTo(localDate) > 0) {
+                if (remoteDate != null && remoteDate.compareTo(localDate) > 0 && account.isPEpStoreEncryptedOnServer()) {
                     /*
                      * If the remote message is newer than ours we'll just
                      * delete ours and move on. A sync will get the server message
-                     * if we need to be able to see it.
+                     * if we need to be able to see it. And is an untrusted server.
                      */
                     localMessage.destroy();
                 } else {
                     /*
                      * Otherwise we'll upload our message and then delete the remote message.
+                     * (that include trusted servers)
                      */
                     fp = new FetchProfile();
                     fp.add(FetchProfile.Item.BODY);
@@ -3210,12 +3210,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                 Log.i(K9.LOG_TAG, "Moved sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
                             //Message toMove = encOnServer? encryptedMessageToSave : message;
-                            PendingCommand command = new PendingCommand();
-                            command.command = PENDING_COMMAND_APPEND;
-                            command.arguments = new String[] { localSentFolder.getName(), message.getUid() };
-                            queuePendingCommand(account, command);              // FIXME: do I really have to fiddle around with localsentfolder or is msg found anywhere by its id?
-
-                            processPendingCommands(account);
+                            appendMessage(account, message, localSentFolder);
 
 //                      if(encOnServer) {       // delete all traces, msg will be sync'ed again from server...
                         //Delete from outbox, the sent folder message is a new one (appended)
@@ -3286,6 +3281,15 @@ public class MessagingController implements Sync.MessageToSendCallback {
             }
             closeFolder(localFolder);
         }
+    }
+
+    private void appendMessage(Account account, LocalMessage localMessage, LocalFolder localFolder) {
+        PendingCommand command = new PendingCommand();
+        command.command = PENDING_COMMAND_APPEND;
+        command.arguments = new String[] { localFolder.getName(), localMessage.getUid() };
+        queuePendingCommand(account, command);              // FIXME: do I really have to fiddle around with localsentfolder or is msg found anywhere by its id?
+
+        processPendingCommands(account);
     }
 
     private Message processWithpEpAndSend(Transport transport, LocalMessage message) throws MessagingException {
