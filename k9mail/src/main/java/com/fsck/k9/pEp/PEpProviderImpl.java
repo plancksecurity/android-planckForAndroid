@@ -108,7 +108,7 @@ public class PEpProviderImpl implements PEpProvider {
 
             Identity idFrom = PEpUtils.createIdentity(from, context);
             idFrom.me = true;
-            idFrom = myself(idFrom);            // not sure wether that call is necessary. But it should do no harm. If necessary, add below too. Now called in right context if only one account.
+            idFrom.user_id = PEP_OWN_USER_ID;
             testee.setFrom(idFrom);
             testee.setTo(PEpUtils.createIdentities(toAddresses, context));
             testee.setCc(PEpUtils.createIdentities(ccAddresses, context));
@@ -459,8 +459,10 @@ public class PEpProviderImpl implements PEpProvider {
             try {
                 createEngineSession();
             } catch (pEpException e) {
-                Log.e(TAG, "createIfNeeded");
+                Log.e(TAG, "createIfNeeded " + Thread.currentThread().getId());
             }
+        } else {
+            Log.d(TAG, "createIfNeeded " + Thread.currentThread().getId());
         }
     }
 
