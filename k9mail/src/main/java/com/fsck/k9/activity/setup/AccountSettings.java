@@ -711,7 +711,7 @@ public class AccountSettings extends K9PreferenceActivity {
 //        }
 
         mPEpSaveEncrypted = (CheckBoxPreference) findPreference(PREFERENCE_PEP_SAVE_ENCRYPTED_ON_SERVER);
-        mPEpSaveEncrypted.setChecked(mAccount.isPEpStoreEncryptedOnServer());
+        mPEpSaveEncrypted.setChecked(mAccount.isUntrustedSever());
 
         mPEpDisablePrivacyProtection = (CheckBoxPreference) findPreference(PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION);
         mPEpDisablePrivacyProtection.setChecked(mAccount.ispEpPrivacyProtected());
