@@ -1,11 +1,13 @@
 package com.fsck.k9.ui.messageview;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.DownloadManager;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
@@ -29,6 +31,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.ChooseFolder;
+import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.MessageLoaderHelper;
 import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderCallbacks;
 import com.fsck.k9.activity.MessageReference;
@@ -49,7 +52,6 @@ import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
-import com.fsck.k9.pEp.PEpProviderImpl;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpStatus;
@@ -776,9 +778,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
             pEpRating = PEpUtils.extractRating(message);
 
-            if (pEpRating.value == Rating.pEpRatingCannotDecrypt.value
-                    || pEpRating.value == Rating.pEpRatingHaveNoKey.value) {
-                decryptMessage(message);
+            boolean hasToBeDecrypted = hasToBeDecrypted();
+            if (hasToBeDecrypted) {
+                showNeedsDecryptionFeedback(message);
             }
 
             if (mAccount.ispEpPrivacyProtected()) {
@@ -843,6 +845,25 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         }
     };
 
+    private void showNeedsDecryptionFeedback(final LocalMessage message) {
+        new AlertDialog.Builder(getActivity())
+                .setMessage(R.string.decrypt_message_explanation)
+                .setPositiveButton(getString(R.string.okay_action), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        decryptMessage(message);
+                    }
+                })
+                .setNegativeButton(getString(R.string.cancel_action), null)
+                .create().show();
+    }
+
+    private boolean hasToBeDecrypted() {
+        return mAccount.ispEpPrivacyProtected() && (pEpRating.value == Rating.pEpRatingCannotDecrypt.value
+                || pEpRating.value == Rating.pEpRatingHaveNoKey.value
+                || pEpRating.value == Rating.pEpRatingUndefined.value);
+    }
+
     private void decryptMessage(LocalMessage message) {
         PEpProvider pEpProvider = PEpProviderFactory.createProvider(getActivity());
         PEpProvider.DecryptResult decryptResult = pEpProvider.decryptMessage(mMessage);
@@ -864,7 +885,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 }
             });
             mMessage = localMessage;
-            newInstance(mMessageReference);
+            ((MessageList) getActivity()).onBackPressed();
         } catch (MessagingException e) {
             e.printStackTrace();
         }
