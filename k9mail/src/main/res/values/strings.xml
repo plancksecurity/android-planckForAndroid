@@ -1262,5 +1262,6 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="decrypt_message_explanation">This email in encrypted, do you want to decrypt it? It may take a few seconds</string>
 
 </resources>
