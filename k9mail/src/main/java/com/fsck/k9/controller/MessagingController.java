@@ -100,7 +100,6 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
-import com.fsck.k9.pEp.ui.PEpStatus;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
 import org.pEp.jniadapter.DecryptFlags;
@@ -1460,7 +1459,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     final PEpProvider.DecryptResult result;
                     if (account.ispEpPrivacyProtected()) {
                         PEpProvider.DecryptResult tempResult;
-                        if (!account.isPEpStoreEncryptedOnServer()) { //trusted server
+                        if (!account.isUntrustedSever()) { //trusted server
                             Rating rating = PEpUtils.extractRating(message);
                             if (rating.equals(Rating.pEpRatingUndefined)) {
                                 result = decryptMessage((MimeMessage) message);
@@ -1510,7 +1509,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         }
                     });
 
-                    if (!account.isPEpStoreEncryptedOnServer()) {
+                    if (!account.isUntrustedSever()) {
                         appendMessage(account, localMessage, localFolder);
                     }
                     Log.d("pep", "in download loop (nr=" + number + ") post pep");
@@ -2028,7 +2027,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 remoteFolder.fetch(Collections.singletonList(remoteMessage), fp, null);
                 Date localDate = localMessage.getInternalDate();
                 Date remoteDate = remoteMessage.getInternalDate();
-                if (remoteDate != null && remoteDate.compareTo(localDate) > 0 && account.isPEpStoreEncryptedOnServer()) {
+                if (remoteDate != null && remoteDate.compareTo(localDate) > 0 && account.isUntrustedSever()) {
                     /*
                      * If the remote message is newer than ours we'll just
                      * delete ours and move on. A sync will get the server message
@@ -2079,7 +2078,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         */
         Message encryptedMessage;
 
-        if (account.isPEpStoreEncryptedOnServer()) { //Untrusted server
+        if (account.isUntrustedSever()) { //Untrusted server
             try {
                 if (PEpUtils.ispEpDisabled(account, localMessage, null)) {
                     encryptedMessage = localMessage;
@@ -3216,29 +3215,22 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             // no need to delete encmsg, has not seen db up to now...
                         } else {
                             LocalFolder localSentFolder = (LocalFolder) localStore.getFolder(account.getSentFolderName());
-                            boolean encOnServer = account.isPEpStoreEncryptedOnServer();
+                            boolean isUntrustedServer = account.isUntrustedSever();
 
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moving sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
-                            //Decorate the local message with
-                            if(encOnServer) {
-                                localSentFolder.appendMessages(Collections.singletonList(message));
-                                message.addHeader(MimeHeader.HEADER_PEP_VERSION, encryptedMessageToSave.getHeader(MimeHeader.HEADER_PEP_VERSION)[0]);
-
-                            } else {
-                                //On trusted server we will not call encrypt to move the message
-                                message.addHeader(MimeHeader.HEADER_PEP_VERSION, encryptedMessageToSave.getHeader(MimeHeader.HEADER_PEP_VERSION)[0]);
+                            //Decorate the local message
+                            message.addHeader(MimeHeader.HEADER_PEP_VERSION, encryptedMessageToSave.getHeader(MimeHeader.HEADER_PEP_VERSION)[0]);
+                            if(!isUntrustedServer) {
                                 // if secure server, add color indicator and move plaintext to server
                                 message.addHeader(MimeHeader.HEADER_PEP_RATING, pEpProvider.getPrivacyState(message).name());     // FIXME: this sucks. I should get the "real" color from encryptMessage()!
-                                localSentFolder.appendMessages(Collections.singletonList(message));
-
                             }
+                            localSentFolder.appendMessages(Collections.singletonList(message));
 
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moved sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
-                            //Message toMove = encOnServer? encryptedMessageToSave : message;
                             appendMessage(account, message, localSentFolder);
 
 //                      if(encOnServer) {       // delete all traces, msg will be sync'ed again from server...

@@ -245,7 +245,7 @@ public class Account implements BaseAccount, StoreConfig {
     private ColorChip mFlaggedUnreadColorChip;
     private ColorChip mFlaggedReadColorChip;
 
-    private boolean mPEpStoreEncryptedOnServer;
+    private boolean pEpUntrustedServer;
     private boolean pEpPrivacyProtectected;
 
     /**
@@ -357,7 +357,7 @@ public class Account implements BaseAccount, StoreConfig {
         mNotificationSetting.setRingtone("content://settings/system/notification_sound");
         mNotificationSetting.setLedColor(mChipColor);
 
-        mPEpStoreEncryptedOnServer = DEFAULT_PEP_ENC_ON_SERVER;
+        pEpUntrustedServer = DEFAULT_PEP_ENC_ON_SERVER;
         pEpPrivacyProtectected = DEFAULT_PEP_PRIVACY_PROTECTED;
         cacheChips();
     }
@@ -492,7 +492,7 @@ public class Account implements BaseAccount, StoreConfig {
         mEnabled = storage.getBoolean(mUuid + ".enabled", true);
         mMarkMessageAsReadOnView = storage.getBoolean(mUuid + ".markMessageAsReadOnView", true);
         mAlwaysShowCcBcc = storage.getBoolean(mUuid + ".alwaysShowCcBcc", false);
-        mPEpStoreEncryptedOnServer = storage.getBoolean(mUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
+        pEpUntrustedServer = storage.getBoolean(mUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
         pEpPrivacyProtectected = storage.getBoolean(mUuid + ".pEpPrivacyProtected", DEFAULT_PEP_PRIVACY_PROTECTED);
         cacheChips();
 
@@ -771,7 +771,7 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putString(mUuid + ".ringtone", mNotificationSetting.getRingtone());
         editor.putBoolean(mUuid + ".led", mNotificationSetting.isLed());
         editor.putInt(mUuid + ".ledColor", mNotificationSetting.getLedColor());
-        editor.putBoolean(mUuid + ".pEpStoreEncryptedOnServer", mPEpStoreEncryptedOnServer);
+        editor.putBoolean(mUuid + ".pEpStoreEncryptedOnServer", pEpUntrustedServer);
         editor.putBoolean(mUuid + ".pEpPrivacyProtected", pEpPrivacyProtectected);
 
         for (NetworkType type : NetworkType.values()) {
@@ -1708,12 +1708,12 @@ public class Account implements BaseAccount, StoreConfig {
 
 
     // TODO: pEp: do we really *need* synchronized here?!
-    public synchronized boolean isPEpStoreEncryptedOnServer() {
-        return mPEpStoreEncryptedOnServer;
+    public synchronized boolean isUntrustedSever() {
+        return pEpUntrustedServer;
     }
 
     public synchronized void setPEpStoreEncryptedOnServer(boolean mPEpStoreEncryptedOnServer) {
-        this.mPEpStoreEncryptedOnServer = mPEpStoreEncryptedOnServer;
+        this.pEpUntrustedServer = mPEpStoreEncryptedOnServer;
     }
 
     /**
