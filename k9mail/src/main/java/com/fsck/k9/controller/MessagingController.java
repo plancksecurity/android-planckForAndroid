@@ -3801,7 +3801,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Store localStore = account.getLocalStore();
             localFolder = localStore.getFolder(folder);
             Map<String, String> uidMap = null;
-            if (folder.equals(account.getTrashFolderName()) || !account.hasTrashFolder()) {
+            if (folder.equals(account.getDraftsFolderName())
+                    || folder.equals(account.getTrashFolderName())
+                    || !account.hasTrashFolder()) {
                 if (K9.DEBUG)
                     Log.d(K9.LOG_TAG, "Deleting messages in trash folder or trash set to -None-, not copying");
 
