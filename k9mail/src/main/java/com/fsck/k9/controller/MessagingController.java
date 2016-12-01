@@ -1481,7 +1481,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     });
 
                     if (!account.isUntrustedSever()) {
-                        appendMessage(account, localMessage, localFolder);
+                        appendMessageCommand(account, localMessage, localFolder);
                     }
                     Log.d("pep", "in download loop (nr=" + number + ") post pep");
 
@@ -1998,7 +1998,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 remoteFolder.fetch(Collections.singletonList(remoteMessage), fp, null);
                 Date localDate = localMessage.getInternalDate();
                 Date remoteDate = remoteMessage.getInternalDate();
-                if (remoteDate != null && remoteDate.compareTo(localDate) > 0 && account.isUntrustedSever()) {
+                if ((remoteDate != null && remoteDate.compareTo(localDate) > 0) || account.isUntrustedSever()) {
                     /*
                      * If the remote message is newer than ours we'll just
                      * delete ours and move on. A sync will get the server message
@@ -3165,14 +3165,14 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             Log.i(K9.LOG_TAG, "Sending message with UID " + message.getUid());
 
                         // pEp the message to send...
-                        Message encryptedMessageToSave;
+                        Message encryptedMessage;
 //                        PEpUtils.dumpMimeMessage("beforeEncrypt", (MimeMessage) message);
                         if (PEpUtils.ispEpDisabled(account, message, pEpProvider.getPrivacyState(message))) {
                             message.setHeader(MimeHeader.HEADER_PEP_RATING, Rating.pEpRatingUnencrypted.name());
                             sendMessage(transport, message);
-                            encryptedMessageToSave = message;
+                            encryptedMessage = message;
                         } else {
-                            encryptedMessageToSave = processWithpEpAndSend(transport, message);
+                            encryptedMessage = processWithpEpAndSend(transport, message);
                         }
 
                         progress++;
@@ -3192,22 +3192,22 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                 Log.i(K9.LOG_TAG, "Moving sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
                             //Decorate the local message
-                            message.addHeader(MimeHeader.HEADER_PEP_VERSION, encryptedMessageToSave.getHeader(MimeHeader.HEADER_PEP_VERSION)[0]);
-                            if(!isUntrustedServer) {
+                            message.addHeader(MimeHeader.HEADER_PEP_VERSION, encryptedMessage.getHeader(MimeHeader.HEADER_PEP_VERSION)[0]);
+//                            if(!isUntrustedServer) {
                                 // if secure server, add color indicator and move plaintext to server
                                 message.addHeader(MimeHeader.HEADER_PEP_RATING, pEpProvider.getPrivacyState(message).name());     // FIXME: this sucks. I should get the "real" color from encryptMessage()!
-                            }
+//                            }
                             localSentFolder.appendMessages(Collections.singletonList(message));
 
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moved sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
-                            appendMessage(account, message, localSentFolder);
+                            appendMessageCommand(account, message, localSentFolder);
 
 //                      if(encOnServer) {       // delete all traces, msg will be sync'ed again from server...
                         //Delete from outbox, the sent folder message is a new one (appended)
                             message.setFlag(Flag.DELETED, true);
-                            localSentFolder.destroyMessages(Collections.singletonList(encryptedMessageToSave));
+                            localSentFolder.destroyMessages(Collections.singletonList(encryptedMessage));
                             for (MessagingListener l : getListeners()) {
                                 l.folderStatusChanged(account, localSentFolder.getName(), localSentFolder.getUnreadMessageCount());
                             }
@@ -3275,7 +3275,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         }
     }
 
-    private void appendMessage(Account account, LocalMessage localMessage, LocalFolder localFolder) {
+    private void appendMessageCommand(Account account, LocalMessage localMessage, LocalFolder localFolder) {
         PendingCommand command = new PendingCommand();
         command.command = PENDING_COMMAND_APPEND;
         command.arguments = new String[] { localFolder.getName(), localMessage.getUid() };
