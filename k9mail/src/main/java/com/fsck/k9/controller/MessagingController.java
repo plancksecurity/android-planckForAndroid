@@ -1467,7 +1467,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         MimeMessage decryptedMessage =  result.msg;
                         if (message.getFolder().getName().equals(account.getSentFolderName())
                                 || message.getFolder().getName().equals(account.getDraftsFolderName())) {
-                            decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpProvider.getPrivacyState(message).name());
+                            decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
                         }
 
                     decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
@@ -3168,7 +3168,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         Message encryptedMessage;
 //                        PEpUtils.dumpMimeMessage("beforeEncrypt", (MimeMessage) message);
                         if (PEpUtils.ispEpDisabled(account, message, pEpProvider.getPrivacyState(message))) {
-                            message.setHeader(MimeHeader.HEADER_PEP_RATING, Rating.pEpRatingUnencrypted.name());
+                            message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(Rating.pEpRatingUnencrypted));
                             sendMessage(transport, message);
                             encryptedMessage = message;
                         } else {
@@ -3195,7 +3195,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             message.addHeader(MimeHeader.HEADER_PEP_VERSION, encryptedMessage.getHeader(MimeHeader.HEADER_PEP_VERSION)[0]);
 //                            if(!isUntrustedServer) {
                                 // if secure server, add color indicator and move plaintext to server
-                                message.addHeader(MimeHeader.HEADER_PEP_RATING, pEpProvider.getPrivacyState(message).name());     // FIXME: this sucks. I should get the "real" color from encryptMessage()!
+                                message.addHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
 //                            }
                             localSentFolder.appendMessages(Collections.singletonList(message));
 

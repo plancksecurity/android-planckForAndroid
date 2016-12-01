@@ -168,7 +168,6 @@ public class PEpProviderImpl implements PEpProvider {
             Log.d(TAG, "decryptMessage() after decrypt");
             MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
 
-            decMsg.addHeader(MimeHeader.HEADER_PEP_RATING, decReturn.rating.name());
             if (isUsablePrivateKey(decReturn)) {
                 return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg));
             }

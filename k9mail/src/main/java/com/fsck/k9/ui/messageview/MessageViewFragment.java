@@ -250,10 +250,10 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             pEpRating = (Rating) data.getSerializableExtra(PEpStatus.CURRENT_RATING);
             if (mAccount.ispEpPrivacyProtected()) {
                 PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), pEpRating);
-                mMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpRating.name());
+                mMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpRating));
             } else {
                 PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), Rating.pEpRatingUndefined);
-                mMessage.setHeader(MimeHeader.HEADER_PEP_RATING, Rating.pEpRatingUndefined.name());
+                mMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(Rating.pEpRatingUndefined));
             }
             mMessageView.setHeaders(mMessage, mAccount);
         }
@@ -870,7 +870,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         MimeMessage decryptedMessage =  decryptResult.msg;
         if (message.getFolder().getName().equals(mAccount.getSentFolderName())
                 || message.getFolder().getName().equals(mAccount.getDraftsFolderName())) {
-            decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpProvider.getPrivacyState(message).name());
+            decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
         }
 
         decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...

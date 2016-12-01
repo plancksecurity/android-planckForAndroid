@@ -42,7 +42,7 @@ public class PepColoredActivity extends K9Activity {
         if (intent.hasExtra(CURRENT_RATING)) {
             ratingString = intent.getStringExtra(CURRENT_RATING);
             Log.d(K9.LOG_TAG, "Got color:" + ratingString);
-            pEpRating = Rating.valueOf(ratingString);
+            pEpRating = PEpUtils.stringToRating(ratingString);
         } else {
             throw new RuntimeException(PEP_COLOR_RATING_DETAIL_MESSAGE);
         }
