@@ -778,7 +778,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
             pEpRating = PEpUtils.extractRating(message);
 
-            boolean hasToBeDecrypted = hasToBeDecrypted();
+            boolean hasToBeDecrypted = hasToBeDecrypted(message);
             if (hasToBeDecrypted) {
                 showNeedsDecryptionFeedback(message);
             }
@@ -858,10 +858,10 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 .create().show();
     }
 
-    private boolean hasToBeDecrypted() {
+    private boolean hasToBeDecrypted(LocalMessage message) {
         return mAccount.ispEpPrivacyProtected() && (pEpRating.value == Rating.pEpRatingCannotDecrypt.value
                 || pEpRating.value == Rating.pEpRatingHaveNoKey.value
-                || pEpRating.value == Rating.pEpRatingUndefined.value);
+                || (message.getHeader(MimeHeader.HEADER_PEP_VERSION).length == 0 && pEpRating.value == Rating.pEpRatingUndefined.value));
     }
 
     private void decryptMessage(LocalMessage message) {
