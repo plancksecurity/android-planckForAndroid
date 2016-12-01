@@ -2,8 +2,11 @@ package com.fsck.k9.pEp.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.app.AlertDialog;
+import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -14,8 +17,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
 import org.pEp.jniadapter.Identity;
+
+import java.util.Locale;
 
 public class PEpTrustwords extends PepColoredActivity {
 
@@ -142,10 +149,60 @@ public class PEpTrustwords extends PepColoredActivity {
                 flipper.showNext();
                 showingPgpFingerprint = !showingPgpFingerprint;
                 return true;
+            case R.id.action_language:
+                showLanguageSelectionDialog();
+                return true;
         }
         //noinspection SimplifiableIfStatement
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showLanguageSelectionDialog() {
+        final CharSequence[] pEpLanguages = PEpUtils.getPEpLanguages();
+        CharSequence[] displayLanguages = prettifyLanguages(pEpLanguages);
+        new AlertDialog.Builder(PEpTrustwords.this).setTitle(getResources().getString(R.string.settings_language_label))
+                .setItems(displayLanguages, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String language = pEpLanguages[i].toString();
+                        changeTrustwords(language);
+                    }
+        }).create().show();
+    }
+
+    @NonNull
+    private CharSequence[] prettifyLanguages(CharSequence[] pEpLocales) {
+        CharSequence[] pEpLanguages = new CharSequence[pEpLocales.length];
+        for (Locale locale : Locale.getAvailableLocales()) {
+            for (int i = 0; i < pEpLocales.length; i++) {
+                if (locale.getLanguage().equals(pEpLocales[i])) {
+                    String uppercasedLanguage = uppercaseFirstCharacter(locale);
+                    pEpLanguages[i] = uppercasedLanguage;
+                }
+            }
+        }
+        return pEpLanguages;
+    }
+
+    @NonNull
+    private String uppercaseFirstCharacter(Locale locale) {
+        String displayLanguage = locale.getDisplayLanguage();
+        return displayLanguage.substring(0, 1).toUpperCase() + displayLanguage.substring(1);
+    }
+
+    private void changeTrustwords(String language) {
+        String trust;
+        PEpProvider pEpProvider = PEpProviderFactory.createProvider(context);
+        String myTrust = PEpUtils.getShortTrustWords(pEpProvider, myself, language);
+        String theirTrust = PEpUtils.getShortTrustWords(pEpProvider, partner, language);
+        if (myself.fpr.compareTo(partner.fpr) > 0) {
+            trust = theirTrust + myTrust;
+        } else {
+            trust = myTrust + theirTrust;
+        }
+        tvTrustwords.setText(trust);
+        pEpProvider.close();
     }
 
 
