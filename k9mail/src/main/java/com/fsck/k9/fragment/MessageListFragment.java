@@ -63,6 +63,7 @@ import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.MessageReference;
+import com.fsck.k9.activity.compose.MessageActions;
 import com.fsck.k9.activity.misc.ContactPictureLoader;
 import com.fsck.k9.cache.EmailProviderCache;
 import com.fsck.k9.controller.MessagingController;
@@ -93,6 +94,7 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
+import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
 import com.fsck.k9.pEp.ui.infrastructure.MessageSwipeDirection;
 import com.fsck.k9.pEp.ui.listeners.SwipeToDismissTouchListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -757,8 +759,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void goToMessageCompose() {
-        Intent intent = new Intent(getActivity(), MessageCompose.class);
-        startActivity(intent);
+        MessageActions.actionCompose(getActivity(), mAccount);
     }
 
     /**

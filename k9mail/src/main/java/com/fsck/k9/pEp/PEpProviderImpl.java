@@ -10,6 +10,7 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
+import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
 import org.pEp.jniadapter.AndroidHelper;
@@ -107,7 +108,7 @@ public class PEpProviderImpl implements PEpProvider {
 
             Identity idFrom = PEpUtils.createIdentity(from, context);
             idFrom.me = true;
-            idFrom = myself(idFrom);            // not sure wether that call is necessary. But it should do no harm. If necessary, add below too. Now called in right context if only one account.
+            idFrom.user_id = PEP_OWN_USER_ID;
             testee.setFrom(idFrom);
             testee.setTo(PEpUtils.createIdentities(toAddresses, context));
             testee.setCc(PEpUtils.createIdentities(ccAddresses, context));
@@ -173,7 +174,7 @@ public class PEpProviderImpl implements PEpProvider {
 //            return null;
         }catch (Throwable t) {
             Log.e(TAG, "while decrypting message:", t);
-            throw new RuntimeException("Could not decrypt", t);
+            throw new AppCannotDecryptException("Could not decrypt", t);
         } finally {
             if (srcMsg != null) srcMsg.close();
             if (decReturn != null && decReturn.dst != srcMsg) decReturn.dst.close();
@@ -453,8 +454,10 @@ public class PEpProviderImpl implements PEpProvider {
             try {
                 createEngineSession();
             } catch (pEpException e) {
-                Log.e(TAG, "createIfNeeded");
+                Log.e(TAG, "createIfNeeded " + Thread.currentThread().getId());
             }
+        } else {
+            Log.d(TAG, "createIfNeeded " + Thread.currentThread().getId());
         }
     }
 

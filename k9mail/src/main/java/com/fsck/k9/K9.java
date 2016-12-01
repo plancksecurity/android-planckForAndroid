@@ -20,6 +20,7 @@ import android.os.StrictMode;
 import android.text.format.Time;
 import android.util.Log;
 
+import com.frogermcs.androiddevmetrics.AndroidDevMetrics;
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.MessageCompose;
@@ -46,9 +47,6 @@ import com.fsck.k9.service.MailService;
 import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
 
-import org.acra.ACRA;
-import org.acra.ReportingInteractionMode;
-import org.acra.annotation.ReportsCrashes;
 import org.pEp.jniadapter.AndroidHelper;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Sync;
@@ -61,9 +59,6 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
-@ReportsCrashes(mailTo = "hussein@pep-security.net",
-        mode = ReportingInteractionMode.TOAST,
-        resToastText = R.string.crash_toast_text)
 public class K9 extends Application {
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PEpProvider pEpProvider, pEpSyncProvider;
@@ -542,12 +537,14 @@ public class K9 extends Application {
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
         }
+        if (BuildConfig.DEBUG) {
+            AndroidDevMetrics.initWith(this);
+        }
 
         PRNGFixes.apply();
 
         super.onCreate();
 
-        ACRA.init(this);
         pEpSetupUiEngineSession();
         app = this;
         Globals.setContext(this);

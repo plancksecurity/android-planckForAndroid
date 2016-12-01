@@ -21,7 +21,7 @@
     <string name="pep_confirm_trustwords">Güvenlik kelimelerini Onayla</string>
     <string name="pep_wrong_trustwords">Hatalı Güvenlik kelimeleri</string>
     <string name="pep_wrong_fingerprint">Yanlış parmak izi</string>
-    <string name="pep_ask_trustwords">İletişim ortağınıza sorun: Güvenlik kelimeleriniz nedir? Ardından aşağıda gösterilen doğru cevap ile karşılaştırınız.</string>
+    <string name="pep_ask_trustwords">İletişim ortağınıza şahsen veya telefonla sorun: Trustwords\'ün nedir? Ardından aşağıda gösterilen doğru cevap ile karşılaştırınız.</string>
     <string name="pep_complete_partner_format">Ortak\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_partner_format">Ortak\n%1$s</string>
     <string name="pep_complete_myself_format">Kendim\n%1$s &lt;%2$s&gt;</string>

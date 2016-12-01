@@ -1,4 +1,16 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.frogermcs.androiddevmetrics:androiddevmetrics-plugin:0.4'
+    }
+}
+
 apply plugin: 'com.android.application'
+apply plugin: 'com.frogermcs.androiddevmetrics'
+
 
 if (!rootProject.optimizeForDevelopment) {
     apply from: '../gradle/plugins/checkstyle-android.gradle'
@@ -26,7 +38,7 @@ configurations.all {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':pEpJNIAdapter-debug')
+    compile project(':pEpJNIAdapter')
     compile project(':k9mail-library')
     compile project(':plugins:HoloColorPicker')
     compile project(':plugins:openpgp-api-lib:openpgp-api')
@@ -73,8 +85,8 @@ android {
 //        versionName '5.108'
 
         applicationId "pep.android.k9"
-        versionCode 30
-        versionName '0.9.8.20.withoutKeysync'
+        versionCode 31
+        versionName '0.9.8.22.withoutKeysync'
         minSdkVersion 18
         targetSdkVersion 22
 
