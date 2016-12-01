@@ -232,6 +232,90 @@ public class PEpUtils {
     }
 
 
+    public static String ratingToString(Rating rating)
+    {
+        switch (rating) {
+            case pEpRatingCannotDecrypt:
+                return "cannot_decrypt";
+            case pEpRatingHaveNoKey:
+                return "have_no_key";
+            case pEpRatingUnencrypted:
+                return "unencrypted";
+            case pEpRatingUnencryptedForSome:
+                return "unencrypted_for_some";
+            case pEpRatingUnreliable:
+                return "unreliable";
+            case pEpRatingReliable:
+                return "reliable";
+            case pEpRatingTrusted:
+                return "trusted";
+            case pEpRatingTrustedAndAnonymized:
+                return "trusted_and_anonymized";
+            case pEpRatingFullyAnonymous:
+                return "fully_anonymous";
+            case pEpRatingMistrust:
+                return "mistrust";
+            case pEpRatingB0rken:
+                return "b0rken";
+            case pEpRatingUnderAttack:
+                return "under_attack";
+            default:
+                return "undefined";
+        }
+    }
+
+    public static Rating stringToRating(String rating) {
+        if (rating.equalsIgnoreCase("cannot_decrypt")
+                || rating.equalsIgnoreCase("pEpRatingCannotDecrypt")) {
+            return Rating.pEpRatingCannotDecrypt;
+        }
+        if (rating.equalsIgnoreCase("have_no_key")
+                || rating.equalsIgnoreCase("pEpRatingHaveNoKey")) {
+            return Rating.pEpRatingHaveNoKey;
+        }
+        if (rating.equalsIgnoreCase("unencrypted")
+                || rating.equalsIgnoreCase("pEpRatingUnencrypted")) {
+            return Rating.pEpRatingUnencrypted;
+        }
+        if (rating.equalsIgnoreCase("unencrypted_for_some")
+                || rating.equalsIgnoreCase("pEpRatingUnencryptedForSome")) {
+            return Rating.pEpRatingUnencryptedForSome;
+        }
+        if (rating.equalsIgnoreCase("unreliable")
+                || rating.equalsIgnoreCase("pEpRatingUnreliable")) {
+            return Rating.pEpRatingUnreliable;
+        }
+        if (rating.equalsIgnoreCase("reliable")
+                || rating.equalsIgnoreCase("pEpRatingReliable")) {
+            return Rating.pEpRatingReliable;
+        }
+        if (rating.equalsIgnoreCase("trusted")
+                || rating.equalsIgnoreCase("pEpRatingTrusted")) {
+            return Rating.pEpRatingTrusted;
+        }
+        if (rating.equalsIgnoreCase("trusted_and_anonymized")
+                || rating.equalsIgnoreCase("pEpRatingTrustedAndAnonymized")) {
+            return Rating.pEpRatingTrustedAndAnonymized;
+        }
+        if (rating.equalsIgnoreCase("fully_anonymous")
+                || rating.equalsIgnoreCase("pEpRatingFullyAnonymous")) {
+            return Rating.pEpRatingFullyAnonymous;
+        }
+        if (rating.equalsIgnoreCase("mistrust")
+                || rating.equalsIgnoreCase("pEpRatingMistrust")) {
+            return Rating.pEpRatingMistrust;
+        }
+        if (rating.equalsIgnoreCase("b0rken")
+                || rating.equalsIgnoreCase("pEpRatingB0rken")) {
+            return Rating.pEpRatingB0rken;
+        }
+        if (rating.equalsIgnoreCase("under_attack")
+                || rating.equalsIgnoreCase("pEpRatingUnderAttack")) {
+            return Rating.pEpRatingUnderAttack;
+        }
+        return Rating.pEpRatingUndefined;
+
+    }
     public static int getRatingColor(Rating rating, Context context) {
         // TODO: 02/09/16 PEP_color color_from_rating(PEP_rating rating) from pEpEngine;
 
@@ -287,7 +371,7 @@ public class PEpUtils {
         String[] pEpRating;
         pEpRating = message.getHeader(MimeHeader.HEADER_PEP_RATING);
         if(pEpRating.length > 0)
-            return Rating.valueOf(pEpRating[0]);
+            return PEpUtils.stringToRating(pEpRating[0]);
         else
             return Rating.pEpRatingUndefined;
     }

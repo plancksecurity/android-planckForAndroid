@@ -69,7 +69,7 @@ public class PePUIArtefactCache
     private void fillIndexMapping(Resources resources) {
         String[] colornames = resources.getStringArray(R.array.pep_states);
         for(int idx=0; idx < colornames.length; idx ++) {
-            colorIndexMapping.put(Rating.valueOf(colornames[idx]), idx);
+            colorIndexMapping.put( PEpUtils.stringToRating(colornames[idx]), idx);
         }
     }
 

@@ -76,8 +76,7 @@ class MimeMessageBuilder {
 
         if (pEpMessage.getOptFields() != null) {
             for (Pair<String, String> field : pEpMessage.getOptFields()) {
-                if (!field.first.equals(MimeHeader.HEADER_PEP_RATING))
-                    mimeMsg.addHeader(field.first, field.second);
+                mimeMsg.addHeader(field.first, field.second);
             }
         }
 

@@ -27,6 +27,7 @@ import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpUtils;
 
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
@@ -137,7 +138,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     public void onRatingChanged(Rating rating) {
         if (localMessage != null) {
             localMessage.setpEpRating(rating);
-            localMessage.setHeader(MimeHeader.HEADER_PEP_RATING, rating.name());
+            localMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(rating));
             messageReference.saveLocalMessage(getApplicationContext(), localMessage);
         }
         setpEpRating(rating);
