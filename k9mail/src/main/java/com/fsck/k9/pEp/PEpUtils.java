@@ -3,9 +3,12 @@ package com.fsck.k9.pEp;
 import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.helper.Contacts;
@@ -26,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
 /**
@@ -37,6 +41,12 @@ import java.util.Vector;
 public class PEpUtils {
     private static final String TRUSTWORDS_SEPARATOR = " ";
     private static final int CHUNK_SIZE = 4;
+
+    private static final CharSequence[] pEpLanguages = {"ca", "de", "es", "fr", "tr", "en"};
+
+    public static CharSequence[] getPEpLanguages() {
+        return pEpLanguages;
+    }
 
     public static Vector<Identity> createIdentities(List <Address> addressList, Context context) {
         Vector<Identity> rv = new Vector<>(addressList.size());
@@ -190,8 +200,35 @@ public class PEpUtils {
         return builder.toString();
     }
 
-    public static String getShortTrustWords(PEpProvider pEp, Identity id) {
-        return getShortTrustwords(pEp.trustwords(id, "en"));
+    public static String getShortTrustWords(PEpProvider pEp, Identity id, String... languages) {
+        if (languages.length == 0) {
+            String k9Language = K9.getK9Language();
+            return obtainTrustwords(pEp, id, k9Language);
+        } else {
+            String language = languages[0];
+            return obtainTrustwords(pEp, id, language);
+        }
+    }
+
+    @NonNull
+    private static String obtainTrustwords(PEpProvider pEp, Identity id, String language) {
+        if (language.equals("")) {
+            language = Locale.getDefault().getLanguage();
+        }
+        if (isLanguageInPEPLanguages(language)) {
+            return getShortTrustwords(pEp.trustwords(id, language));
+        } else {
+            return getShortTrustwords(pEp.trustwords(id, "en"));
+        }
+    }
+
+    private static boolean isLanguageInPEPLanguages(String language) {
+        for (CharSequence pEpLanguage : pEpLanguages) {
+            if (pEpLanguage.equals(language)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
