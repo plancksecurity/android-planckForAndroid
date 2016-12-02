@@ -818,8 +818,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
             pEpRating = PEpUtils.extractRating(message);
 
-            boolean hasToBeDecrypted = hasToBeDecrypted(message);
-            if (hasToBeDecrypted) {
+            boolean hasToBeDecrypted = hasToBeDecrypted(message) && hasKeyToDecryp() && canDecrypt();
+            if (hasToBeDecrypted || !hasKeyToDecryp() || !canDecrypt()) {
                 showNeedsDecryptionFeedback(message);
             }
 
@@ -885,6 +885,16 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         }
     };
 
+    private void showKeyNotFoundFeedback() {
+        String title = pePUIArtefactCache.getTitle(Rating.pEpRatingHaveNoKey);
+        String message = pePUIArtefactCache.getSuggestion(Rating.pEpRatingHaveNoKey);
+        new AlertDialog.Builder(getActivity())
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.okay_action), null)
+                .create().show();
+    }
+
     private void showNeedsDecryptionFeedback(final LocalMessage message) {
         new AlertDialog.Builder(getActivity())
                 .setMessage(R.string.decrypt_message_explanation)
@@ -899,9 +909,17 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     private boolean hasToBeDecrypted(LocalMessage message) {
-        return mAccount.ispEpPrivacyProtected() && (pEpRating.value == Rating.pEpRatingCannotDecrypt.value
-                || pEpRating.value == Rating.pEpRatingHaveNoKey.value
-                || (message.getHeader(MimeHeader.HEADER_PEP_VERSION).length == 0 && pEpRating.value == Rating.pEpRatingUndefined.value));
+        return mAccount.ispEpPrivacyProtected()
+                && (message.getHeader(MimeHeader.HEADER_PEP_VERSION).length == 0
+                && pEpRating.value == Rating.pEpRatingUndefined.value);
+    }
+
+    private boolean canDecrypt() {
+        return pEpRating.value != Rating.pEpRatingCannotDecrypt.value;
+    }
+
+    private boolean hasKeyToDecryp() {
+        return pEpRating.value != Rating.pEpRatingHaveNoKey.value;
     }
 
     private void decryptMessage(LocalMessage message) {
@@ -925,7 +943,12 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 }
             });
             mMessage = localMessage;
-            ((MessageList) getActivity()).onBackPressed();
+            if (Rating.pEpRatingHaveNoKey.value == decryptResult.rating.value
+                    ) {
+                showKeyNotFoundFeedback();
+            } else {
+                ((MessageList) getActivity()).onBackPressed();
+            }
         } catch (MessagingException e) {
             e.printStackTrace();
         }

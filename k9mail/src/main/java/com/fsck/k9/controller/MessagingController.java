@@ -1497,6 +1497,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         if (message.getFolder().getName().equals(account.getSentFolderName())
                                 || message.getFolder().getName().equals(account.getDraftsFolderName())) {
                             decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
+                        } else {
+                            decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(result.rating));
                         }
 
                     decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
