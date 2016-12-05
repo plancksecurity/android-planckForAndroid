@@ -47,6 +47,7 @@ import com.fsck.k9.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmen
 import com.fsck.k9.fragment.ProgressDialogFragment;
 import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
+import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
@@ -762,31 +763,23 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public void onPepStatus() {
-        ArrayList<Identity> adresses = new ArrayList<>();
-        adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getFrom()), getApplicationContext()));
-        adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), getApplicationContext()));
-        adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.CC)), getApplicationContext()));
+        ArrayList<Identity> addresses = new ArrayList<>();
+        addresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getFrom()), getApplicationContext()));
+        addresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), getApplicationContext()));
+        addresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.CC)), getApplicationContext()));
 
-        String myAddress = "";
-        for (int position = adresses.size() - 1; position >= 0; position--) {
-            Identity identity = adresses.get(position);
-            if (identity.user_id.equals(PEpProvider.PEP_OWN_USER_ID)) {
-                myAddress = identity.address;
-                adresses.remove(position);
-            }
-        }
-        pePUIArtefactCache.setRecipients(adresses);
-        try {
-            for (String s : mMessage.getHeaderNames()) {
-                for (String s1 : mMessage.getHeader(s)) {
-                    Log.i("MessageHeader", "onClick " + s + " " + s1);
-                }
+        Address[] from = mMessage.getFrom();
+        String fromAddress = from[0].getAddress();
+        pePUIArtefactCache.setRecipients(addresses);
+        for (String s : mMessage.getHeaderNames()) {
+            for (String s1 : mMessage.getHeader(s)) {
+                Log.i("MessageHeader", "onClick " + s + " " + s1);
             }
         } catch (MessagingException e) {
             e.printStackTrace();
         }
 
-        PEpStatus.actionShowStatus(getActivity(), pEpRating, myAddress, getMessageReference());
+        PEpStatus.actionShowStatus(getActivity(), pEpRating, fromAddress, getMessageReference());
     }
 
     public interface MessageViewFragmentListener {

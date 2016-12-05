@@ -26,6 +26,7 @@ import com.fsck.k9.pEp.ui.PEpStatus;
 import com.fsck.k9.view.RecipientSelectView;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.RecipientSelectView.TokenListener;
+
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
