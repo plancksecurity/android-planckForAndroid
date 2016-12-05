@@ -6,6 +6,7 @@ import android.app.DialogFragment;
 import android.app.DownloadManager;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -898,11 +899,18 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                     || !canDecrypt()) {
                 showKeyNotFoundFeedback();
             } else {
-                ((MessageList) getActivity()).onBackPressed();
+                refreshMessage();
             }
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+    }
+
+    private void refreshMessage() {
+        MessageViewFragment fragment = MessageViewFragment.newInstance(mMessageReference);
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.replace(R.id.message_view_container, fragment);
+        ft.commit();
     }
 
 
