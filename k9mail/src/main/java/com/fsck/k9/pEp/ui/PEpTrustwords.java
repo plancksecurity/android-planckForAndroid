@@ -152,10 +152,42 @@ public class PEpTrustwords extends PepColoredActivity {
             case R.id.action_language:
                 showLanguageSelectionDialog();
                 return true;
+            case R.id.long_trustwords:
+                if (item.getTitle().equals(getString(R.string.pep_menu_long_trustwords))){
+                    item.setTitle(R.string.pep_menu_short_trustwords);
+                    changeTrustwordsLength(false);
+                }
+                else{
+                    item.setTitle(getString(R.string.pep_menu_long_trustwords));
+                    changeTrustwordsLength(true);
+                }
+
+                return true;
         }
         //noinspection SimplifiableIfStatement
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void changeTrustwordsLength(Boolean areShort) {
+        String trust;
+        PEpProvider pEpProvider = PEpProviderFactory.createProvider(context);
+        String myTrust;
+        String theirTrust;
+        if (!areShort) {
+            myTrust = PEpUtils.getTrustWords(pEpProvider, myself);
+            theirTrust = PEpUtils.getTrustWords(pEpProvider, partner);
+        } else {
+            myTrust = PEpUtils.getShortTrustWords(pEpProvider, myself);
+            theirTrust = PEpUtils.getShortTrustWords(pEpProvider, partner);
+        }
+        if (myself.fpr.compareTo(partner.fpr) > 0) {
+            trust = theirTrust + myTrust;
+        } else {
+            trust = myTrust + theirTrust;
+        }
+        tvTrustwords.setText(trust);
+        pEpProvider.close();
     }
 
     private void showLanguageSelectionDialog() {

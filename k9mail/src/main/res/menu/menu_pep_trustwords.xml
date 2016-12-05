@@ -13,4 +13,10 @@
         android:title="@string/settings_language_label"
         android:orderInCategory="100"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/long_trustwords"
+        android:title="@string/pep_menu_long_trustwords"
+        android:orderInCategory="100"
+        app:showAsAction="never"/>
 </menu>

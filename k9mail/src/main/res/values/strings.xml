@@ -1263,5 +1263,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="decrypt_message_explanation">This email is encrypted and it may take a few seconds to decrypt it. Do you want to continue?</string>
+    <string name="pep_menu_long_trustwords">Show long trustwords</string>
+    <string name="pep_menu_short_trustwords">Show short trustwords</string>
 
 </resources>
