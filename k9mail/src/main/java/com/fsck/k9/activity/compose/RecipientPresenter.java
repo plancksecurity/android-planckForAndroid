@@ -227,7 +227,9 @@ public class RecipientPresenter implements PermissionPingCallback {
     }
 
     public void onSaveInstanceState(Bundle outState) {
-        pepStatusTask.cancel(true);
+        if (pepStatusTask != null) {
+            pepStatusTask.cancel(true);
+        }
         pepStatusTask = new PEPStatusTask();
         poller.stopPolling();
         outState.putBoolean(STATE_KEY_CC_SHOWN, recipientMvpView.isCcVisible());
