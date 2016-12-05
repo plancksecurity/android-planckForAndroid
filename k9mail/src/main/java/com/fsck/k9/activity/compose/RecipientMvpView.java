@@ -1,9 +1,6 @@
 package com.fsck.k9.activity.compose;
 
 
-import java.util.Arrays;
-import java.util.List;
-
 import android.app.LoaderManager;
 import android.app.PendingIntent;
 import android.text.TextWatcher;
@@ -29,10 +26,13 @@ import com.fsck.k9.pEp.ui.PEpStatus;
 import com.fsck.k9.view.RecipientSelectView;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.RecipientSelectView.TokenListener;
+
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class RecipientMvpView implements OnFocusChangeListener, OnClickListener {
