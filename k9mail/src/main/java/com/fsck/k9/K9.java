@@ -20,7 +20,6 @@ import android.os.StrictMode;
 import android.text.format.Time;
 import android.util.Log;
 
-import com.frogermcs.androiddevmetrics.AndroidDevMetrics;
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.MessageCompose;
@@ -548,9 +547,6 @@ public class K9 extends Application {
         }
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
-        }
-        if (BuildConfig.DEBUG) {
-            AndroidDevMetrics.initWith(this);
         }
 
         PRNGFixes.apply();
