@@ -62,6 +62,7 @@ import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
+import com.fsck.k9.message.extractors.EncryptionVerifier;
 import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
@@ -811,8 +812,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
             pEpRating = PEpUtils.extractRating(message);
 
-            boolean hasToBeDecrypted = hasToBeDecrypted(message) && hasKeyToDecryp() && canDecrypt();
-            if (hasToBeDecrypted || !hasKeyToDecryp() || !canDecrypt()) {
+            boolean hasToBeDecrypted = hasToBeDecrypted(message);
+            if (hasToBeDecrypted) {
                 showNeedsDecryptionFeedback(message);
             }
 
@@ -903,16 +904,11 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private boolean hasToBeDecrypted(LocalMessage message) {
         return mAccount.ispEpPrivacyProtected()
-                && (message.getHeader(MimeHeader.HEADER_PEP_VERSION).length == 0
-                && pEpRating.value == Rating.pEpRatingUndefined.value);
+                && EncryptionVerifier.isEncrypted(message);
     }
 
     private boolean canDecrypt() {
         return pEpRating.value != Rating.pEpRatingCannotDecrypt.value;
-    }
-
-    private boolean hasKeyToDecryp() {
-        return pEpRating.value != Rating.pEpRatingHaveNoKey.value;
     }
 
     private void decryptMessage(LocalMessage message) {
@@ -937,7 +933,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             });
             mMessage = localMessage;
             if (Rating.pEpRatingHaveNoKey.value == decryptResult.rating.value
-                    ) {
+                    || !canDecrypt()) {
                 showKeyNotFoundFeedback();
             } else {
                 ((MessageList) getActivity()).onBackPressed();
