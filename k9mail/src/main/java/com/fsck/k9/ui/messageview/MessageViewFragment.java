@@ -770,8 +770,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         addresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), getApplicationContext()));
         addresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.CC)), getApplicationContext()));
 
-        Address[] from = mMessage.getFrom();
-        String fromAddress = from[0].getAddress();
+        String myAdress = mAccount.getEmail();
         pePUIArtefactCache.setRecipients(addresses);
         for (String s : mMessage.getHeaderNames()) {
             for (String s1 : mMessage.getHeader(s)) {
@@ -781,7 +780,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             e.printStackTrace();
         }
 
-        PEpStatus.actionShowStatus(getActivity(), pEpRating, fromAddress, getMessageReference());
+        PEpStatus.actionShowStatus(getActivity(), pEpRating, myAdress, getMessageReference());
     }
 
     public interface MessageViewFragmentListener {

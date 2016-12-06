@@ -42,24 +42,7 @@ public class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.Vi
         @Override
         public void onClick(View v) {
             int partnerPosition = ((Integer) v.getTag());
-            Identity id = identities.get(partnerPosition);
-            Identity myId = PEpUtils.createIdentity(new Address(myself), context);
-            id = pEp.updateIdentity(id);
-            myId = pEp.myself(myId);
-
-            String trust;
-            pEp.myself(myId);
-            myId = pEp.updateIdentity(myId);
-            String myTrust = PEpUtils.getShortTrustWords(pEp, myId);
-            String theirTrust = PEpUtils.getShortTrustWords(pEp, id);
-            if (myId.fpr.compareTo(id.fpr) > 0) {
-                trust = theirTrust + myTrust;
-            } else {
-                trust = myTrust + theirTrust;
-            }
-            Log.i("KeysAdapter", "onClick " + trust);
-
-            PEpTrustwords.actionRequestHandshake(context, trust, myself, partnerPosition);
+            PEpTrustwords.actionRequestHandshake(context, myself, partnerPosition);
         }
     };
 
@@ -73,20 +56,6 @@ public class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.Vi
             pEp.resetTrust(id);
             notifyDataSetChanged();
             listener.onRatingChanged(Rating.pEpRatingReliable);
-
-        }
-    };
-
-    private View.OnClickListener onResetClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            int position = ((Integer) v.getTag());
-            Identity id = identities.get(position);
-            id = pEp.updateIdentity(id);
-            Log.i("RecipientsAdapter", "onResetClick " + id.address);
-            pEp.resetTrust(id);
-            notifyDataSetChanged();
-            listener.colorChanged(Color.pEpRatingReliable);
 
         }
     };

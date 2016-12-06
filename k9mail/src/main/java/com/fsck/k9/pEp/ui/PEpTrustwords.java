@@ -27,7 +27,6 @@ import java.util.Locale;
 public class PEpTrustwords extends PepColoredActivity {
 
     private static final String ACTION_SHOW_PEP_TRUSTWORDS = "com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS";
-    private static final String TRUSTWORDS = "trustwordsKey";
     public static final String PARTNER_POSITION = "partnerPositionKey";
     public static final int DEFAULT_POSITION = -1;
     public static final int HANDSHAKE_REQUEST = 1;
@@ -57,13 +56,15 @@ public class PEpTrustwords extends PepColoredActivity {
     boolean showingPgpFingerprint = false;
     private Boolean areTrustwordsShort = true;
     private String trustwordsLanguage;
+    private String myTrust;
+    private String theirTrust;
+    private String trust;
     private MenuItem menuItemTrustwordsLanguage;
     private MenuItem menuItemtrustwordsLength;
 
-    public static void actionRequestHandshake(Activity context, String trust, String myself, int partnerPosition) {
+    public static void actionRequestHandshake(Activity context, String myself, int partnerPosition) {
         Intent i = new Intent(context, PEpTrustwords.class);
         i.setAction(ACTION_SHOW_PEP_TRUSTWORDS);
-        i.putExtra(TRUSTWORDS, trust);
         i.putExtra(PARTNER_POSITION, partnerPosition);
         i.putExtra(MYSELF, myself);
         context.startActivityForResult(i, HANDSHAKE_REQUEST);
@@ -82,14 +83,12 @@ public class PEpTrustwords extends PepColoredActivity {
         initPep();
 
         if (getIntent() != null) {
-            if (intent.hasExtra(TRUSTWORDS)) {
-                tvTrustwords.setText(getIntent().getStringExtra(TRUSTWORDS));
-            }
 
             if (intent.hasExtra(PARTNER_POSITION)) {
                 partnerPosition = intent.getIntExtra(PARTNER_POSITION, DEFAULT_POSITION);
                 partner = getUiCache().getRecipients().get(partnerPosition);
                 partner = getpEp().updateIdentity(partner);
+                theirTrust = PEpUtils.getShortTrustWords(getpEp(), partner);
                 if (!partner.username.equals(partner.address)) {
                     partnerView.setText(String.format(getString(R.string.pep_complete_partner_format), partner.username, partner.address));
                     partnerLabel.setText(String.format(getString(R.string.pep_complete_partner_format), partner.username, partner.address));
@@ -107,6 +106,7 @@ public class PEpTrustwords extends PepColoredActivity {
             if (intent.hasExtra(MYSELF)) {
                 myself = PEpUtils.createIdentity(new Address(intent.getStringExtra(MYSELF)), context);
                 myself = getpEp().myself(myself);
+                myTrust = PEpUtils.getShortTrustWords(getpEp(), myself);
                 if (!myself.username.equals(myself.address)) {
                     myselfView.setText(String.format(getString(R.string.pep_complete_myself_format), myself.username, myself.address));
                     myselfLabel.setText(String.format(getString(R.string.pep_complete_myself_format), myself.username, myself.address));
@@ -117,6 +117,14 @@ public class PEpTrustwords extends PepColoredActivity {
                 myselfFpr.setText(PEpUtils.formatFpr(myself.fpr));
 
             }
+
+            if (myself.fpr.compareTo(partner.fpr) > 0) {
+                trust = theirTrust + myTrust;
+            } else {
+                trust = myTrust + theirTrust;
+            }
+            tvTrustwords.setText(trust);
+
 
         }
 
