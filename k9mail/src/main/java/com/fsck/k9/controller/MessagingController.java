@@ -1492,7 +1492,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         showImportKeyDialogIfNeeded(message, result, account);
                         deleteMessage(message, account, folder, localFolder);
                     }
-                    else if (store) {
+                    else if (store && result.rating != Rating.pEpRatingUndefined) {
                         MimeMessage decryptedMessage =  result.msg;
                         if (message.getFolder().getName().equals(account.getSentFolderName())
                                 || message.getFolder().getName().equals(account.getDraftsFolderName())) {
@@ -3218,13 +3218,15 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         } else {
                             LocalFolder localSentFolder = (LocalFolder) localStore.getFolder(account.getSentFolderName());
                             boolean isUntrustedServer = account.isUntrustedSever();
-
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moving sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
                             //Decorate the local message
-                            message.addHeader(MimeHeader.HEADER_PEP_VERSION, encryptedMessage.getHeader(MimeHeader.HEADER_PEP_VERSION)[0]);
-//                            if(!isUntrustedServer) {
+                            String[] pEpVersionHeader = encryptedMessage.getHeader(MimeHeader.HEADER_PEP_VERSION);
+                            if (pEpVersionHeader.length > 0) {
+                                message.addHeader(MimeHeader.HEADER_PEP_VERSION, pEpVersionHeader[0]);
+                            }
+                            //                            if(!isUntrustedServer) {
                                 // if secure server, add color indicator and move plaintext to server
                                 message.addHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
 //                            }
