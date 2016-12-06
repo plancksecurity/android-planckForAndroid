@@ -28,7 +28,8 @@
 
                 <include
                     android:id="@+id/trustwordsView"
-                    layout="@layout/pep_trustwords_view" />
+                    layout="@layout/pep_trustwords_view"
+                    android:visibility="gone" />
             </LinearLayout>
 
 

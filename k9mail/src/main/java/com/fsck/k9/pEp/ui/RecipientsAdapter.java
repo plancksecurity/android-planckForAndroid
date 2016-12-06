@@ -42,22 +42,7 @@ public class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.Vi
         @Override
         public void onClick(View v) {
             int partnerPosition = ((Integer) v.getTag());
-            Identity id = identities.get(partnerPosition);
-            Identity myId = PEpUtils.createIdentity(new Address(myself), context);
-            id = pEp.updateIdentity(id);
-            myId = pEp.myself(myId);
-
-            String trust;
-            String myTrust = PEpUtils.getShortTrustWords(pEp, myId);
-            String theirTrust = PEpUtils.getShortTrustWords(pEp, id);
-            if (myId.fpr.compareTo(id.fpr) > 0) {
-                trust = theirTrust + myTrust;
-            } else {
-                trust = myTrust + theirTrust;
-            }
-            Log.i("KeysAdapter", "onClick " + trust);
-
-            PEpTrustwords.actionRequestHandshake(context, trust, myself, partnerPosition);
+            PEpTrustwords.actionRequestHandshake(context, myself, partnerPosition);
         }
     };
 
