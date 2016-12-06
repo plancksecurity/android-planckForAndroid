@@ -240,7 +240,7 @@ public class PEpUtils {
 
     @NonNull
     private static String obtainTrustwords(PEpProvider pEp, Identity id, String language, Boolean shouldBeShorten) {
-        if (language.equals("")) {
+        if (language == null || language.equals("")) {
             language = Locale.getDefault().getLanguage();
         }
         if (isLanguageInPEPLanguages(language)) {
