@@ -546,8 +546,8 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void setSyncHandshakeCallback(Sync.showHandshakeCallback activity) {
-        engine.setShowHandshakeCallback(activity);
+    public void setSyncHandshakeCallback(Sync.notifyHandshakeCallback activity) {
+        engine.setnotifyHandshakeCallback(activity);
         showHandshakeSet = true;
         if (areCallbackSet() && !keysyncStarted) {
             engine.startSync();
