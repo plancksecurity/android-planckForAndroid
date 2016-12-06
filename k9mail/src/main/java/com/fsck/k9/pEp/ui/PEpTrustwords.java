@@ -55,6 +55,8 @@ public class PEpTrustwords extends PepColoredActivity {
     Button wrongTrustWords;
 
     boolean showingPgpFingerprint = false;
+    private Boolean areTrustwordsShort = true;
+    private String trustwordsLanguage;
 
     public static void actionRequestHandshake(Activity context, String trust, String myself, int partnerPosition) {
         Intent i = new Intent(context, PEpTrustwords.class);
@@ -170,16 +172,17 @@ public class PEpTrustwords extends PepColoredActivity {
     }
 
     private void changeTrustwordsLength(Boolean areShort) {
+        areTrustwordsShort = areShort;
         String trust;
         PEpProvider pEpProvider = PEpProviderFactory.createProvider(context);
         String myTrust;
         String theirTrust;
         if (!areShort) {
-            myTrust = PEpUtils.getTrustWords(pEpProvider, myself);
-            theirTrust = PEpUtils.getTrustWords(pEpProvider, partner);
+            myTrust = PEpUtils.getTrustWords(pEpProvider, myself, trustwordsLanguage);
+            theirTrust = PEpUtils.getTrustWords(pEpProvider, partner, trustwordsLanguage);
         } else {
-            myTrust = PEpUtils.getShortTrustWords(pEpProvider, myself);
-            theirTrust = PEpUtils.getShortTrustWords(pEpProvider, partner);
+            myTrust = PEpUtils.getShortTrustWords(pEpProvider, myself, trustwordsLanguage);
+            theirTrust = PEpUtils.getShortTrustWords(pEpProvider, partner, trustwordsLanguage);
         }
         if (myself.fpr.compareTo(partner.fpr) > 0) {
             trust = theirTrust + myTrust;
@@ -224,10 +227,19 @@ public class PEpTrustwords extends PepColoredActivity {
     }
 
     private void changeTrustwords(String language) {
+        trustwordsLanguage = language;
         String trust;
         PEpProvider pEpProvider = PEpProviderFactory.createProvider(context);
-        String myTrust = PEpUtils.getShortTrustWords(pEpProvider, myself, language);
-        String theirTrust = PEpUtils.getShortTrustWords(pEpProvider, partner, language);
+        String myTrust;
+        String theirTrust;
+        if (areTrustwordsShort) {
+            myTrust = PEpUtils.getShortTrustWords(pEpProvider, myself, language);
+            theirTrust = PEpUtils.getShortTrustWords(pEpProvider, partner, language);
+        } else {
+            myTrust = PEpUtils.getTrustWords(pEpProvider, myself, language);
+            theirTrust = PEpUtils.getTrustWords(pEpProvider, partner, language);
+        }
+
         if (myself.fpr.compareTo(partner.fpr) > 0) {
             trust = theirTrust + myTrust;
         } else {
