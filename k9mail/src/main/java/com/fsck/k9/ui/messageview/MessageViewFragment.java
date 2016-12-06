@@ -914,19 +914,20 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private void decryptMessage(LocalMessage message) {
         PEpProvider pEpProvider = PEpProviderFactory.createProvider(getActivity());
-        PEpProvider.DecryptResult decryptResult = pEpProvider.decryptMessage(mMessage);
-        MimeMessage decryptedMessage =  decryptResult.msg;
-        if (message.getFolder().getName().equals(mAccount.getSentFolderName())
-                || message.getFolder().getName().equals(mAccount.getDraftsFolderName())) {
-            decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
-        }
-
-        decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
-
-        // Store the updated message locally
-        LocalFolder folder = mMessage.getFolder();
-        LocalMessage localMessage = null;
         try {
+            PEpProvider.DecryptResult decryptResult = pEpProvider.decryptMessage(mMessage);
+            MimeMessage decryptedMessage = decryptResult.msg;
+            if (message.getFolder().getName().equals(mAccount.getSentFolderName())
+                    || message.getFolder().getName().equals(mAccount.getDraftsFolderName())) {
+                decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
+            }
+
+            decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
+
+            // Store the updated message locally
+            LocalFolder folder = mMessage.getFolder();
+            LocalMessage localMessage = null;
+
             localMessage = folder.storeSmallMessage(decryptedMessage, new Runnable() {
                 @Override
                 public void run() {
@@ -940,7 +941,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 refreshMessage();
             }
         } catch (MessagingException e) {
-            e.printStackTrace();
+            Log.e("pEp", "decryptMessage: view", e);
         }
     }
 
