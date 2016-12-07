@@ -46,7 +46,7 @@
 
     <string name="pep_account_setup_generating_keys">Setting your Privacy by Default </string>
     <string name="pep_reset_trust">Stop trusting</string>
-    <string name="pep_pgp_fingerprint">OpenPGP Fingerprint</string>
+    <string name="pep_pgp_fingerprint">PGP Fingerprint</string>
 
     <string name="pep_dialog_weaker_forward_warning_message">You\'re about to forward a secure message as unsecure. If you choose to proceed, confidential information might be leaked putting you and your communication partners at risk. Are you sure you want to continue? </string>
 
