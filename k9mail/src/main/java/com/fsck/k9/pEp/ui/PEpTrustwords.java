@@ -57,6 +57,8 @@ public class PEpTrustwords extends PepColoredActivity {
     boolean showingPgpFingerprint = false;
     private Boolean areTrustwordsShort = true;
     private String trustwordsLanguage;
+    private MenuItem menuItemTrustwordsLanguage;
+    private MenuItem menuItemtrustwordsLength;
 
     public static void actionRequestHandshake(Activity context, String trust, String myself, int partnerPosition) {
         Intent i = new Intent(context, PEpTrustwords.class);
@@ -125,6 +127,9 @@ public class PEpTrustwords extends PepColoredActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_pep_trustwords, menu);
+
+        menuItemTrustwordsLanguage = menu.findItem(R.id.action_language);
+        menuItemtrustwordsLength = menu.findItem(R.id.long_trustwords);
         return true;
     }
 
@@ -143,10 +148,14 @@ public class PEpTrustwords extends PepColoredActivity {
                 if (item.getTitle().equals(getString(R.string.pep_pgp_fingerprint))){
                     item.setTitle(R.string.pEp_trustwords);
                     wrongTrustWords.setText(R.string.pep_wrong_fingerprint);
+                    menuItemTrustwordsLanguage.setVisible(false);
+                    menuItemtrustwordsLength.setVisible(false);
                 }
                 else{
                     item.setTitle(getString(R.string.pep_pgp_fingerprint));
                     wrongTrustWords.setText(R.string.pep_wrong_trustwords);
+                    menuItemTrustwordsLanguage.setVisible(true);
+                    menuItemtrustwordsLength.setVisible(true);
                 }
                 flipper.showNext();
                 showingPgpFingerprint = !showingPgpFingerprint;
