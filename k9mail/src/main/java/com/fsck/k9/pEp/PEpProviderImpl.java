@@ -378,7 +378,6 @@ public class PEpProviderImpl implements PEpProvider {
     public String trustwords(Identity id, String language) {
         id.lang = language;
         createEngineInstanceIfNeeded();
-        id = updateIdentity(id);
         return engine.trustwords(id);
     }
 
