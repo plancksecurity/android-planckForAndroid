@@ -1982,8 +1982,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 Message encryptedMessage;
                 // TODO: 10/11/16 check what happens on trusted and untrusted servers
                 encryptedMessage = getMessageToUploadToOwnDirectories(account, localMessage);
-                remoteFolder.appendMessages(Collections.singletonList(localMessage));
+                remoteFolder.appendMessages(Collections.singletonList(encryptedMessage));
 
+                localMessage.setUid(encryptedMessage.getUid());
                 localFolder.changeUid(localMessage);
                 for (MessagingListener l : getListeners()) {
                     l.messageUidChanged(account, folder, oldUid, localMessage.getUid());
@@ -3178,6 +3179,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             encryptedMessage = message;
                         } else {
                             encryptedMessage = processWithpEpAndSend(transport, message);
+                            encryptedMessage.setFlags(message.getFlags(), true);
                         }
 
                         progress++;
