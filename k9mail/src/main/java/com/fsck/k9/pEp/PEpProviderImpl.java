@@ -119,12 +119,8 @@ public class PEpProviderImpl implements PEpProvider {
 
             Rating result = engine.outgoing_message_rating(testee);   // stupid way to be able to patch the value in debugger
             Log.i(TAG, "getPrivacyState " + idFrom.fpr);
-            if (result.value != Rating.pEpRatingUnencrypted.value) return result;
-            else {
-                if (isUnencryptedForSome(toAddresses, ccAddresses, bccAddresses)) {
-                    return Rating.pEpRatingUnencryptedForSome;
-                } else return result;
-            }
+
+            return result;
         } catch (Throwable e) {
             Log.e(TAG, "during color test:", e);
         } finally {
@@ -163,7 +159,6 @@ public class PEpProviderImpl implements PEpProvider {
             Log.d(TAG, "decryptMessage() after decrypt");
             MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
 
-            decMsg.addHeader(MimeHeader.HEADER_PEP_RATING, decReturn.rating.name());
             if (isUsablePrivateKey(decReturn)) {
                 return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg));
             }
@@ -191,13 +186,13 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public List<MimeMessage> encryptMessage(MimeMessage source, String[] extraKeys) {
+        // TODO: 06/12/16 add unencrypted for some
         Log.d(TAG, "encryptMessage() enter");
         List<MimeMessage> resultMessages = new ArrayList<>();
-
+        Message message = new PEpMessageBuilder(source).createMessage(context);
         try {
             if (engine == null) createEngineSession();
-            resultMessages.addAll(getEncryptedCopies(source, extraKeys));
-            resultMessages.addAll(getUnencryptedCopies(source, extraKeys));
+            resultMessages.add(getEncryptedCopy(message, extraKeys));
             return resultMessages;
         } catch (Throwable t) {
             Log.e(TAG, "while encrypting message:", t);
@@ -378,7 +373,6 @@ public class PEpProviderImpl implements PEpProvider {
     public String trustwords(Identity id, String language) {
         id.lang = language;
         createEngineInstanceIfNeeded();
-        id = updateIdentity(id);
         return engine.trustwords(id);
     }
 
@@ -546,8 +540,8 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void setSyncHandshakeCallback(Sync.showHandshakeCallback activity) {
-        engine.setShowHandshakeCallback(activity);
+    public void setSyncHandshakeCallback(Sync.notifyHandshakeCallback activity) {
+        engine.setnotifyHandshakeCallback(activity);
         showHandshakeSet = true;
         if (areCallbackSet() && !keysyncStarted) {
             engine.startSync();

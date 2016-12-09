@@ -33,10 +33,11 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <include
-                        android:id="@+id/trustwordsView"
-                        layout="@layout/pep_trustwords_view" />
-                </LinearLayout>
+                <include
+                    android:id="@+id/trustwordsView"
+                    layout="@layout/pep_trustwords_view"
+                    android:visibility="gone" />
+            </LinearLayout>
 
 
                 <include

@@ -6,6 +6,7 @@ import android.app.DialogFragment;
 import android.app.DownloadManager;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -44,6 +45,7 @@ import com.fsck.k9.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmen
 import com.fsck.k9.fragment.ProgressDialogFragment;
 import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
+import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
@@ -53,6 +55,7 @@ import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
+import com.fsck.k9.message.extractors.EncryptionVerifier;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
@@ -75,6 +78,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 public class MessageViewFragment extends Fragment implements ConfirmationDialogFragmentListener,
@@ -479,7 +483,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != RESULT_OK) {
+        if (resultCode != RESULT_OK && resultCode != RESULT_CANCELED) {
             messageCryptoPresenter.onActivityResult(requestCode, resultCode, data);
             return;
         }
@@ -769,27 +773,20 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public void onPepStatus() {
-        ArrayList<Identity> adresses = new ArrayList<>();
-        adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getFrom()), getApplicationContext()));
-        adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), getApplicationContext()));
-        adresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.CC)), getApplicationContext()));
+        ArrayList<Identity> addresses = new ArrayList<>();
+        addresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getFrom()), getApplicationContext()));
+        addresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), getApplicationContext()));
+        addresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.CC)), getApplicationContext()));
 
-        String myAddress = "";
-        for (int position = adresses.size() - 1; position >= 0; position--) {
-            Identity identity = adresses.get(position);
-            if (identity.user_id.equals(PEpProvider.PEP_OWN_USER_ID)) {
-                myAddress = identity.address;
-                adresses.remove(position);
-            }
-        }
-        pePUIArtefactCache.setRecipients(adresses);
+        String myAdress = mAccount.getEmail();
+        pePUIArtefactCache.setRecipients(addresses);
         for (String s : mMessage.getHeaderNames()) {
             for (String s1 : mMessage.getHeader(s)) {
                 Log.i("MessageHeader", "onClick " + s + " " + s1);
             }
         }
 
-        PEpStatus.actionShowStatus(getActivity(), pEpRating, myAddress, getMessageReference());
+        PEpStatus.actionShowStatus(getActivity(), pEpRating, myAdress, getMessageReference());
     }
 
     public interface MessageViewFragmentListener {
@@ -823,7 +820,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
             ((MessageList) getActivity()).setMessageViewVisible(true);
 
-            boolean hasToBeDecrypted = hasToBeDecrypted();
+            boolean hasToBeDecrypted = hasToBeDecrypted(message);
             if (hasToBeDecrypted) {
                 showNeedsDecryptionFeedback(message);
             }
@@ -892,6 +889,16 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         }
     };
 
+    private void showKeyNotFoundFeedback() {
+        String title = pePUIArtefactCache.getTitle(Rating.pEpRatingHaveNoKey);
+        String message = pePUIArtefactCache.getSuggestion(Rating.pEpRatingHaveNoKey);
+        new AlertDialog.Builder(getActivity())
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.okay_action), null)
+                .create().show();
+    }
+
     private void showNeedsDecryptionFeedback(final LocalMessage message) {
         new AlertDialog.Builder(getActivity())
                 .setMessage(R.string.decrypt_message_explanation)
@@ -905,37 +912,53 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 .create().show();
     }
 
-    private boolean hasToBeDecrypted() {
-        return mAccount.ispEpPrivacyProtected() && (pEpRating.value == Rating.pEpRatingCannotDecrypt.value
-                || pEpRating.value == Rating.pEpRatingHaveNoKey.value
-                || pEpRating.value == Rating.pEpRatingUndefined.value);
+    private boolean hasToBeDecrypted(LocalMessage message) {
+        return mAccount.ispEpPrivacyProtected()
+                && EncryptionVerifier.isEncrypted(message);
+    }
+
+    private boolean canDecrypt() {
+        return pEpRating.value != Rating.pEpRatingCannotDecrypt.value;
     }
 
     private void decryptMessage(LocalMessage message) {
         PEpProvider pEpProvider = PEpProviderFactory.createProvider(getActivity());
-        PEpProvider.DecryptResult decryptResult = pEpProvider.decryptMessage(mMessage);
-        MimeMessage decryptedMessage =  decryptResult.msg;
-        if (message.getFolder().getName().equals(mAccount.getSentFolderName())
-                || message.getFolder().getName().equals(mAccount.getDraftsFolderName())) {
-            decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpProvider.getPrivacyState(message).name());
-        }
-
-        decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
-
-        // Store the updated message locally
-        LocalFolder folder = mMessage.getFolder();
-        LocalMessage localMessage = null;
         try {
+            PEpProvider.DecryptResult decryptResult = pEpProvider.decryptMessage(mMessage);
+            MimeMessage decryptedMessage = decryptResult.msg;
+            if (message.getFolder().getName().equals(mAccount.getSentFolderName())
+                    || message.getFolder().getName().equals(mAccount.getDraftsFolderName())) {
+                decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
+            }
+
+            decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
+
+            // Store the updated message locally
+            LocalFolder folder = mMessage.getFolder();
+            LocalMessage localMessage = null;
+
             localMessage = folder.storeSmallMessage(decryptedMessage, new Runnable() {
                 @Override
                 public void run() {
                 }
             });
             mMessage = localMessage;
-            ((MessageList) getActivity()).onBackPressed();
+            if (Rating.pEpRatingHaveNoKey.value == decryptResult.rating.value
+                    || !canDecrypt()) {
+                showKeyNotFoundFeedback();
+            } else {
+                refreshMessage();
+            }
         } catch (MessagingException e) {
-            e.printStackTrace();
+            Log.e("pEp", "decryptMessage: view", e);
         }
+    }
+
+    private void refreshMessage() {
+        MessageViewFragment fragment = MessageViewFragment.newInstance(mMessageReference);
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.replace(R.id.message_view_container, fragment);
+        ft.commit();
     }
 
 

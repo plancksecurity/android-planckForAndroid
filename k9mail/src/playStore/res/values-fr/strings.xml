@@ -14,7 +14,7 @@
   <string name="welcome_message_title">Bienvenue sur Courriel p≡p</string>
 
   <!--Default signature-->
-  <string name="default_signature">-- \nEnvoyé de mon appareil Android avec Courriel p≡p Mail. Veuillez excuser ma brièveté.</string>
+  <string name="default_signature">-- \nEnvoyé de mon p≡p pour Android.\n</string>
   <!--General strings that include the app name-->
   <string name="account_delete_dlg_instructions_fmt">Le compte «\u00A0<xliff:g id="account">%s</xliff:g>\u00A0» sera enlevé de Courriel p≡p.</string>
 

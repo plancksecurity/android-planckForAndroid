@@ -1753,8 +1753,12 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             Address[] fromAddrs = Address.unpack(fromList);
             Address[] toAddrs = Address.unpack(toList);
             Address[] ccAddrs = Address.unpack(ccList);
-            Rating pEpRating = Rating.valueOf(cursor.getString(PEP_RATING_COLUMN));
-
+            Rating pEpRating;
+            try {
+                pEpRating = PEpUtils.stringToRating(cursor.getString(PEP_RATING_COLUMN));
+            } catch (IllegalArgumentException ex) {
+                pEpRating = PEpUtils.stringToRating(cursor.getString(PEP_RATING_COLUMN));
+            }
             boolean fromMe = mMessageHelper.toMe(account, fromAddrs);
             boolean toMe = mMessageHelper.toMe(account, toAddrs);
             boolean ccMe = mMessageHelper.toMe(account, ccAddrs);

@@ -20,7 +20,6 @@ import android.os.StrictMode;
 import android.text.format.Time;
 import android.util.Log;
 
-import com.frogermcs.androiddevmetrics.AndroidDevMetrics;
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.MessageCompose;
@@ -50,6 +49,7 @@ import com.fsck.k9.service.StorageGoneReceiver;
 import org.pEp.jniadapter.AndroidHelper;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Sync;
+import org.pEp.jniadapter.SyncHandshakeSignal;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -537,9 +537,6 @@ public class K9 extends Application {
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
         }
-        if (BuildConfig.DEBUG) {
-            AndroidDevMetrics.initWith(this);
-        }
 
         PRNGFixes.apply();
 
@@ -656,35 +653,41 @@ public class K9 extends Application {
 
     private void initSync() {
         pEpSyncProvider = PEpProviderFactory.createAndSetupProvider(this);
-        pEpSyncProvider.setSyncHandshakeCallback(new Sync.showHandshakeCallback() {
+        pEpSyncProvider.setSyncHandshakeCallback(new Sync.notifyHandshakeCallback() {
             @Override
-            public void showHandshake(Identity myself, Identity partner) {
-//3                Toast.makeText(getApplicationContext(), myself.fpr + "/n" + partner.fpr, Toast.LENGTH_LONG).show();
-                //startActivity(new Intent(getApplicationContext(), PEpTrustwords.class));
-                Log.e("PEPJNI", "showHandshake: " + myself.toString() + "\n::\n" + partner.toString());
+            public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
 
-                String myTrust = PEpUtils.getShortTrustWords(pEpSyncProvider, myself);
-                String theirTrust = PEpUtils.getShortTrustWords(pEpSyncProvider, partner);
-                String trust;
-                if (myself.fpr.compareTo(partner.fpr) > 0) {
-                    trust = theirTrust + myTrust;
-                } else {
-                    trust = myTrust + theirTrust;
-                }
+                switch (signal) {
+                    case SyncHandshakeShowDialog:
+                        //3                Toast.makeText(getApplicationContext(), myself.fpr + "/n" + partner.fpr, Toast.LENGTH_LONG).show();
+                        //startActivity(new Intent(getApplicationContext(), PEpTrustwords.class));
+                        Log.e("PEPJNI", "showHandshake: " + myself.toString() + "\n::\n" + partner.toString());
 
-                Context context = K9.this.getApplicationContext();
-                Intent syncTrustowordsActivity = pEpAddDevice.getActionRequestHandshake(context, trust, partner);
-                syncTrustowordsActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                PendingIntent pendingIntent = PendingIntent.getActivity(context, 22, syncTrustowordsActivity, 0);
-                try {
-                    pendingIntent.send();
-                }
-                catch (PendingIntent.CanceledException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                        String myTrust = PEpUtils.getShortTrustWords(pEpSyncProvider, myself);
+                        String theirTrust = PEpUtils.getShortTrustWords(pEpSyncProvider, partner);
+                        String trust;
+                        if (myself.fpr.compareTo(partner.fpr) > 0) {
+                            trust = theirTrust + myTrust;
+                        } else {
+                            trust = myTrust + theirTrust;
+                        }
+
+                        Context context = K9.this.getApplicationContext();
+                        Intent syncTrustowordsActivity = pEpAddDevice.getActionRequestHandshake(context, trust, partner);
+                        syncTrustowordsActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(context, 22, syncTrustowordsActivity, 0);
+                        try {
+                            pendingIntent.send();
+                        }
+                        catch (PendingIntent.CanceledException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        break;
                 }
 
             }
+
         });
         pEpSyncProvider.setSyncSendMessageCallback(new Sync.MessageToSendCallback() {
             @Override

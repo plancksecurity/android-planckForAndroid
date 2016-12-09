@@ -1464,11 +1464,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         showImportKeyDialogIfNeeded(message, result, account);
                         deleteMessage(message, account, folder, localFolder);
                     }
-                    else if (store) {
+                    else if (store && result.rating != Rating.pEpRatingUndefined) {
                         MimeMessage decryptedMessage =  result.msg;
                         if (message.getFolder().getName().equals(account.getSentFolderName())
                                 || message.getFolder().getName().equals(account.getDraftsFolderName())) {
-                            decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpProvider.getPrivacyState(message).name());
+                            decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
+                        } else {
+                            decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(result.rating));
                         }
 
                     decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
@@ -1482,7 +1484,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     });
 
                     if (!account.isUntrustedSever()) {
-                        appendMessage(account, localMessage, localFolder);
+                        appendMessageCommand(account, localMessage, localFolder);
                     }
                     Log.d("pep", "in download loop (nr=" + number + ") post pep");
 
@@ -1983,6 +1985,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 encryptedMessage = getMessageToUploadToOwnDirectories(account, localMessage);
                 remoteFolder.appendMessages(Collections.singletonList(encryptedMessage));
 
+                localMessage.setUid(encryptedMessage.getUid());
                 localFolder.changeUid(localMessage);
                 for (MessagingListener l : getListeners()) {
                     l.messageUidChanged(account, folder, oldUid, localMessage.getUid());
@@ -1999,7 +2002,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 remoteFolder.fetch(Collections.singletonList(remoteMessage), fp, null);
                 Date localDate = localMessage.getInternalDate();
                 Date remoteDate = remoteMessage.getInternalDate();
-                if (remoteDate != null && remoteDate.compareTo(localDate) > 0 && account.isUntrustedSever()) {
+                if ((remoteDate != null && remoteDate.compareTo(localDate) > 0) || account.isUntrustedSever()) {
                     /*
                      * If the remote message is newer than ours we'll just
                      * delete ours and move on. A sync will get the server message
@@ -2068,6 +2071,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
             encryptedMessage = localMessage;
         }
 
+        encryptedMessage.setUid(localMessage.getUid());
+        encryptedMessage.setInternalDate(localMessage.getInternalDate());
+        encryptedMessage.setFlags(localMessage.getFlags(), true);
         return encryptedMessage;
 
     }
@@ -3166,14 +3172,15 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             Log.i(K9.LOG_TAG, "Sending message with UID " + message.getUid());
 
                         // pEp the message to send...
-                        Message encryptedMessageToSave;
+                        Message encryptedMessage;
 //                        PEpUtils.dumpMimeMessage("beforeEncrypt", (MimeMessage) message);
                         if (PEpUtils.ispEpDisabled(account, message, pEpProvider.getPrivacyState(message))) {
-                            message.setHeader(MimeHeader.HEADER_PEP_RATING, Rating.pEpRatingUnencrypted.name());
+                            message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(Rating.pEpRatingUnencrypted));
                             sendMessage(transport, message);
-                            encryptedMessageToSave = message;
+                            encryptedMessage = message;
                         } else {
-                            encryptedMessageToSave = processWithpEpAndSend(transport, message);
+                            encryptedMessage = processWithpEpAndSend(transport, message);
+                            encryptedMessage.setFlags(message.getFlags(), true);
                         }
 
                         progress++;
@@ -3188,27 +3195,29 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         } else {
                             LocalFolder localSentFolder = (LocalFolder) localStore.getFolder(account.getSentFolderName());
                             boolean isUntrustedServer = account.isUntrustedSever();
-
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moving sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
                             //Decorate the local message
-                            message.addHeader(MimeHeader.HEADER_PEP_VERSION, encryptedMessageToSave.getHeader(MimeHeader.HEADER_PEP_VERSION)[0]);
-                            if(!isUntrustedServer) {
-                                // if secure server, add color indicator and move plaintext to server
-                                message.addHeader(MimeHeader.HEADER_PEP_RATING, pEpProvider.getPrivacyState(message).name());     // FIXME: this sucks. I should get the "real" color from encryptMessage()!
+                            String[] pEpVersionHeader = encryptedMessage.getHeader(MimeHeader.HEADER_PEP_VERSION);
+                            if (pEpVersionHeader.length > 0) {
+                                message.addHeader(MimeHeader.HEADER_PEP_VERSION, pEpVersionHeader[0]);
                             }
+                            //                            if(!isUntrustedServer) {
+                                // if secure server, add color indicator and move plaintext to server
+                                message.addHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
+//                            }
                             localSentFolder.appendMessages(Collections.singletonList(message));
 
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moved sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
-                            appendMessage(account, message, localSentFolder);
+                            appendMessageCommand(account, message, localSentFolder);
 
 //                      if(encOnServer) {       // delete all traces, msg will be sync'ed again from server...
                         //Delete from outbox, the sent folder message is a new one (appended)
                             message.setFlag(Flag.DELETED, true);
-                            localSentFolder.destroyMessages(Collections.singletonList(encryptedMessageToSave));
+                            localSentFolder.destroyMessages(Collections.singletonList(encryptedMessage));
                             for (MessagingListener l : getListeners()) {
                                 l.folderStatusChanged(account, localSentFolder.getName(), localSentFolder.getUnreadMessageCount());
                             }
@@ -3276,7 +3285,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         }
     }
 
-    private void appendMessage(Account account, LocalMessage localMessage, LocalFolder localFolder) {
+    private void appendMessageCommand(Account account, LocalMessage localMessage, LocalFolder localFolder) {
         PendingCommand command = new PendingCommand();
         command.command = PENDING_COMMAND_APPEND;
         command.arguments = new String[] { localFolder.getName(), localMessage.getUid() };

@@ -1399,7 +1399,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 return true;
             }
             case R.id.compose: {
-                mMessageListFragment.onCompose();
+                MessageActions.actionCompose(this, mAccount);
                 return true;
             }
             case R.id.toggle_message_view_theme: {

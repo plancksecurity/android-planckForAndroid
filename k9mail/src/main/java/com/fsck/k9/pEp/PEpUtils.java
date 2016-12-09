@@ -2,10 +2,12 @@ package com.fsck.k9.pEp;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import com.fsck.k9.Account;
+import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.helper.Contacts;
@@ -25,8 +27,12 @@ import org.pEp.jniadapter.Rating;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
 /**
@@ -39,7 +45,13 @@ public class PEpUtils {
     private static final String TRUSTWORDS_SEPARATOR = " ";
     private static final int CHUNK_SIZE = 4;
 
-    public static Vector<Identity> createIdentities(List <Address> addressList, Context context) {
+    private static final CharSequence[] pEpLanguages = {"ca", "de", "es", "fr", "tr", "en"};
+
+    public static CharSequence[] getPEpLanguages() {
+        return pEpLanguages;
+    }
+
+    public static Vector<Identity> createIdentities(List<Address> addressList, Context context) {
         Vector<Identity> rv = new Vector<>(addressList.size());
         for (Address adr : addressList)
             rv.add(createIdentity(adr, context));
@@ -80,7 +92,22 @@ public class PEpUtils {
         for (Account account : accounts) {
             List<com.fsck.k9.Identity> identities = account.getIdentities();
             for (com.fsck.k9.Identity identity : identities) {
-                if (identity.getEmail().equals(adr.getAddress())) {
+                if (identity.getEmail().equalsIgnoreCase(adr.getAddress())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+
+    }
+
+    private static boolean isMyself(Context context, Identity adr) {
+        Preferences prefs = Preferences.getPreferences(context.getApplicationContext());
+        Collection<Account> accounts = prefs.getAvailableAccounts();
+        for (Account account : accounts) {
+            List<com.fsck.k9.Identity> identities = account.getIdentities();
+            for (com.fsck.k9.Identity identity : identities) {
+                if (identity.getEmail().equalsIgnoreCase(adr.address)) {
                     return true;
                 }
             }
@@ -89,10 +116,10 @@ public class PEpUtils {
     }
 
     static Address[] createAddresses(Vector<Identity> ids) {
-        if(ids == null) return null;                // this should be consistent with pep api
+        if (ids == null) return null;                // this should be consistent with pep api
         Address[] rv = new Address[ids.size()];
         int idx = 0;
-        for (Identity i: ids)
+        for (Identity i : ids)
             rv[idx++] = createAddress(i);
 
         return rv;
@@ -102,7 +129,7 @@ public class PEpUtils {
         Address adr = new Address(id.address, id.username);
         // Address() parses the address, eventually not setting it, therefore just a little sanity...
         // TODO: pEp check what happens if id.address == null beforehand
-        if(adr.getAddress() == null && id.address != null)
+        if (adr.getAddress() == null && id.address != null)
             throw new RuntimeException("Could not convert Identiy.address " + id.address + " to Address.");
         return adr;
     }
@@ -191,10 +218,139 @@ public class PEpUtils {
         return builder.toString();
     }
 
-    public static String getShortTrustWords(PEpProvider pEp, Identity id) {
-        return getShortTrustwords(pEp.trustwords(id, "en"));
+    public static String getShortTrustWords(PEpProvider pEp, Identity id, String... languages) {
+        if (languages.length == 0) {
+            String k9Language = K9.getK9Language();
+            return obtainTrustwords(pEp, id, k9Language, true);
+        } else {
+            String language = languages[0];
+            return obtainTrustwords(pEp, id, language, true);
+        }
     }
 
+    public static String getTrustWords(PEpProvider pEp, Identity id, String... languages) {
+        if (languages.length == 0) {
+            String k9Language = K9.getK9Language();
+            return obtainTrustwords(pEp, id, k9Language, false);
+        } else {
+            String language = languages[0];
+            return obtainTrustwords(pEp, id, language, false);
+        }
+    }
+
+    @NonNull
+    private static String obtainTrustwords(PEpProvider pEp, Identity id, String language, Boolean shouldBeShorten) {
+        if (language == null || language.equals("")) {
+            language = Locale.getDefault().getLanguage();
+        }
+        if (isLanguageInPEPLanguages(language)) {
+            if (shouldBeShorten) {
+                return getShortTrustwords(pEp.trustwords(id, language));
+            } else {
+                return pEp.trustwords(id, language);
+            }
+        } else {
+            if (shouldBeShorten) {
+                return getShortTrustwords(pEp.trustwords(id, "en"));
+            } else {
+                return pEp.trustwords(id, "en");
+            }
+        }
+    }
+
+    private static boolean isLanguageInPEPLanguages(String language) {
+        for (CharSequence pEpLanguage : pEpLanguages) {
+            if (pEpLanguage.equals(language)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public static String ratingToString(Rating rating) {
+        switch (rating) {
+            case pEpRatingCannotDecrypt:
+                return "cannot_decrypt";
+            case pEpRatingHaveNoKey:
+                return "have_no_key";
+            case pEpRatingUnencrypted:
+                return "unencrypted";
+            case pEpRatingUnencryptedForSome:
+                return "unencrypted_for_some";
+            case pEpRatingUnreliable:
+                return "unreliable";
+            case pEpRatingReliable:
+                return "reliable";
+            case pEpRatingTrusted:
+                return "trusted";
+            case pEpRatingTrustedAndAnonymized:
+                return "trusted_and_anonymized";
+            case pEpRatingFullyAnonymous:
+                return "fully_anonymous";
+            case pEpRatingMistrust:
+                return "mistrust";
+            case pEpRatingB0rken:
+                return "b0rken";
+            case pEpRatingUnderAttack:
+                return "under_attack";
+            default:
+                return "undefined";
+        }
+    }
+
+    public static Rating stringToRating(String rating) {
+        if (rating.equalsIgnoreCase("cannot_decrypt")
+                || rating.equalsIgnoreCase("pEpRatingCannotDecrypt")) {
+            return Rating.pEpRatingCannotDecrypt;
+        }
+        if (rating.equalsIgnoreCase("have_no_key")
+                || rating.equalsIgnoreCase("pEpRatingHaveNoKey")) {
+            return Rating.pEpRatingHaveNoKey;
+        }
+        if (rating.equalsIgnoreCase("unencrypted")
+                || rating.equalsIgnoreCase("pEpRatingUnencrypted")) {
+            return Rating.pEpRatingUnencrypted;
+        }
+        if (rating.equalsIgnoreCase("unencrypted_for_some")
+                || rating.equalsIgnoreCase("pEpRatingUnencryptedForSome")) {
+            return Rating.pEpRatingUnencryptedForSome;
+        }
+        if (rating.equalsIgnoreCase("unreliable")
+                || rating.equalsIgnoreCase("pEpRatingUnreliable")) {
+            return Rating.pEpRatingUnreliable;
+        }
+        if (rating.equalsIgnoreCase("reliable")
+                || rating.equalsIgnoreCase("pEpRatingReliable")) {
+            return Rating.pEpRatingReliable;
+        }
+        if (rating.equalsIgnoreCase("trusted")
+                || rating.equalsIgnoreCase("pEpRatingTrusted")) {
+            return Rating.pEpRatingTrusted;
+        }
+        if (rating.equalsIgnoreCase("trusted_and_anonymized")
+                || rating.equalsIgnoreCase("pEpRatingTrustedAndAnonymized")) {
+            return Rating.pEpRatingTrustedAndAnonymized;
+        }
+        if (rating.equalsIgnoreCase("fully_anonymous")
+                || rating.equalsIgnoreCase("pEpRatingFullyAnonymous")) {
+            return Rating.pEpRatingFullyAnonymous;
+        }
+        if (rating.equalsIgnoreCase("mistrust")
+                || rating.equalsIgnoreCase("pEpRatingMistrust")) {
+            return Rating.pEpRatingMistrust;
+        }
+        if (rating.equalsIgnoreCase("b0rken")
+                || rating.equalsIgnoreCase("pEpRatingB0rken")) {
+            return Rating.pEpRatingB0rken;
+        }
+        if (rating.equalsIgnoreCase("under_attack")
+                || rating.equalsIgnoreCase("pEpRatingUnderAttack")) {
+            return Rating.pEpRatingUnderAttack;
+        }
+        return Rating.pEpRatingUndefined;
+
+    }
 
     public static int getRatingColor(Rating rating, Context context) {
         // TODO: 02/09/16 PEP_color color_from_rating(PEP_rating rating) from pEpEngine;
@@ -209,15 +365,15 @@ public class PEpUtils {
         }
 
         if (rating.value < Rating.pEpRatingReliable.value) {
-            return  ContextCompat.getColor(context, R.color.pep_no_color);
+            return ContextCompat.getColor(context, R.color.pep_no_color);
         }
 
         if (rating.value < Rating.pEpRatingTrusted.value) {
-            return  ContextCompat.getColor(context, R.color.pep_yellow);
+            return ContextCompat.getColor(context, R.color.pep_yellow);
         }
 
         if (rating.value >= Rating.pEpRatingTrusted.value) {
-            return  ContextCompat.getColor(context, R.color.pep_green);
+            return ContextCompat.getColor(context, R.color.pep_green);
         }
         throw new RuntimeException("Invalid rating");
     }
@@ -225,8 +381,8 @@ public class PEpUtils {
     public static Rating extractRating(Message message) {
         String[] pEpRating;
         pEpRating = message.getHeader(MimeHeader.HEADER_PEP_RATING);
-        if(pEpRating.length > 0)
-            return Rating.valueOf(pEpRating[0]);
+        if (pEpRating.length > 0)
+            return PEpUtils.stringToRating(pEpRating[0]);
         else
             return Rating.pEpRatingUndefined;
     }
@@ -235,19 +391,18 @@ public class PEpUtils {
         int requiredSeparators = fpr.length() / CHUNK_SIZE;
         char[] fprChars = new char[fpr.length() + requiredSeparators];
         int sourcePosition = 0;
-        for (int destPosition = 0; destPosition < fprChars.length-1; destPosition++) {
+        for (int destPosition = 0; destPosition < fprChars.length - 1; destPosition++) {
             if (sourcePosition % CHUNK_SIZE == 0
                     && destPosition > 0
-                    && fprChars[destPosition-1] != TRUSTWORDS_SEPARATOR.charAt(0)) {
+                    && fprChars[destPosition - 1] != TRUSTWORDS_SEPARATOR.charAt(0)) {
                 fprChars[destPosition] = TRUSTWORDS_SEPARATOR.charAt(0);
-            }
-            else {
+            } else {
                 fprChars[destPosition] = fpr.charAt(sourcePosition);
                 ++sourcePosition;
             }
 
         }
-        fprChars[fprChars.length/2-1] = '\n';
+        fprChars[fprChars.length / 2 - 1] = '\n';
         return String.valueOf(fprChars);
     }
 
@@ -259,7 +414,7 @@ public class PEpUtils {
 
     public static void pEpGenerateAccountKeys(Context context, Account account) {
         PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(context);
-        org.pEp.jniadapter.Identity myIdentity = PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()),context);
+        org.pEp.jniadapter.Identity myIdentity = PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), context);
         pEp.myself(myIdentity);
         pEp.close();
     }
@@ -280,5 +435,32 @@ public class PEpUtils {
             toolbar.setBackgroundColor(colorResource);
         }
     }
+
+    public static ArrayList<Identity> filterRecipients(Context context, ArrayList<Identity> recipients) {
+        ArrayList<Identity> identities = new ArrayList<>();
+
+        Collections.sort(recipients, new Comparator<Identity>() {
+            @Override
+            public int compare(Identity left, Identity right) {
+                return left.address.compareTo(right.address);
+            }
+        });
+
+        for (int i = 0; i < recipients.size(); i++) {
+            Identity identity = recipients.get(i);
+            if (!isMyself(context, identity)) {
+                if (identities.size() == 0) {
+                    identities.add(identity);
+                } else {
+                    Identity previousIdentity = recipients.get(i - 1);
+                    if (!previousIdentity.address.equals(identity.address)) {
+                        identities.add(identity);
+                    }
+                }
+            }
+        }
+        return identities;
+    }
+
 }
 

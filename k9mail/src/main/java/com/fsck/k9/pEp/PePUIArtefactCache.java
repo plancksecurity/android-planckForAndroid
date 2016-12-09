@@ -12,8 +12,6 @@ import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 
 /**
@@ -69,7 +67,7 @@ public class PePUIArtefactCache
     private void fillIndexMapping(Resources resources) {
         String[] colornames = resources.getStringArray(R.array.pep_states);
         for(int idx=0; idx < colornames.length; idx ++) {
-            colorIndexMapping.put(Rating.valueOf(colornames[idx]), idx);
+            colorIndexMapping.put( PEpUtils.stringToRating(colornames[idx]), idx);
         }
     }
 
@@ -101,28 +99,6 @@ public class PePUIArtefactCache
     }
 
     public void setRecipients(ArrayList<Identity> recipients) {
-        this.recipients = filteredRecipients(recipients);
-    }
-
-    private ArrayList<Identity> filteredRecipients(ArrayList<Identity> recipients) {
-        ArrayList<Identity> identities = new ArrayList<>();
-        Collections.sort(recipients, new Comparator<Identity>() {
-            @Override
-            public int compare(Identity left, Identity right) {
-                return left.address.compareTo(right.address);
-            }
-        });
-        for (int i = 0; i < recipients.size(); i++) {
-            Identity identity = recipients.get(i);
-            if (i == 0) {
-                identities.add(identity);
-            } else {
-                Identity previousIdentity = recipients.get(i - 1);
-                if (!previousIdentity.address.equals(identity.address)) {
-                    identities.add(identity);
-                }
-            }
-        }
-        return identities;
+        this.recipients = PEpUtils.filterRecipients(context, recipients);
     }
 }
