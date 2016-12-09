@@ -174,12 +174,11 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PEpTrustwords.HANDSHAKE_REQUEST) {
             if (resultCode == RESULT_OK) {
-               int position = data.getIntExtra(PEpTrustwords.PARTNER_POSITION, PEpTrustwords.DEFAULT_POSITION);
-                Identity partner = uiCache.getRecipients().get(position);
-                Rating pEpRating = getpEp().identityRating(partner);
-                onRatingChanged(pEpRating);
-                recipientsAdapter.notifyDataSetChanged();
-                colorActionBar();
+                loadPepRating();
+                initPep();
+                setUpActionBar();
+                setUpContactList(myself, getpEp());
+                loadPepTexts();
             }
         }
     }
