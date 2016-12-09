@@ -90,6 +90,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 
