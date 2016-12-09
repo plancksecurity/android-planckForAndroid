@@ -1986,6 +1986,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                 localMessage.setUid(encryptedMessage.getUid());
                 localFolder.changeUid(localMessage);
+
                 for (MessagingListener l : getListeners()) {
                     l.messageUidChanged(account, folder, oldUid, localMessage.getUid());
                 }
@@ -2022,6 +2023,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     // TODO: 10/11/16 check what happens on trusted and untrusted servers
                     Message encryptedMessage = getMessageToUploadToOwnDirectories(account, localMessage);
                     remoteFolder.appendMessages(Collections.singletonList(encryptedMessage));
+                    localMessage.setUid(encryptedMessage.getUid());
                     localFolder.changeUid(localMessage);
                     for (MessagingListener l : getListeners()) {
                         l.messageUidChanged(account, folder, oldUid, localMessage.getUid());
