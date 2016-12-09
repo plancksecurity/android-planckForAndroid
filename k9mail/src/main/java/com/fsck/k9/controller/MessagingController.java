@@ -1463,7 +1463,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         showImportKeyDialogIfNeeded(message, result, account);
                         deleteMessage(message, account, folder, localFolder);
                     }
-                    else if (store && result.rating != Rating.pEpRatingUndefined) {
+                    else if (store && (!account.ispEpPrivacyProtected() || account.ispEpPrivacyProtected() && result.rating != Rating.pEpRatingUndefined)) {
                         MimeMessage decryptedMessage =  result.msg;
                         if (message.getFolder().getName().equals(account.getSentFolderName())
                                 || message.getFolder().getName().equals(account.getDraftsFolderName())) {
