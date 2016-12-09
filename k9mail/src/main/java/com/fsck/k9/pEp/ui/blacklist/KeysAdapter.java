@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.fsck.k9.K9;
@@ -46,8 +45,10 @@ class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ViewHolder> {
         this.context = context;
         pEp = ((K9) context.getApplicationContext()).getpEpProvider();
         this.comparator = ALPHABETICAL_COMPARATOR;
-        dataSet = new SortedList<KeyListItem>(KeyListItem.class, sortedListCallback);
-        dataSet.addAll(identities);
+        dataSet = new SortedList<>(KeyListItem.class, sortedListCallback);
+        if (identities != null) {
+            dataSet.addAll(identities);
+        }
     }
 
     @Override
