@@ -137,12 +137,15 @@ public class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.Vi
                     && rating.value < Rating.pEpRatingReliable.value) {
                 handshakeButton.setVisibility(View.GONE);
             }else if (rating.value == Rating.pEpRatingMistrust.value) {
+                handshakeButton.setVisibility(View.VISIBLE);
                 handshakeButton.setText(context.getString(R.string.pep_handshake));
                 handshakeButton.setOnClickListener(onResetRedClick);
             } else if (rating.value >= Rating.pEpRatingTrusted.value){
+                handshakeButton.setVisibility(View.VISIBLE);
                 handshakeButton.setText(context.getString(R.string.pep_reset_trust));
                 handshakeButton.setOnClickListener(onResetGreenClick);
             } else if (rating.value == Rating.pEpRatingReliable.value){
+                handshakeButton.setVisibility(View.VISIBLE);
                 handshakeButton.setText(context.getString(R.string.pep_handshake));
                 handshakeButton.setOnClickListener(onHandshakeClick);
             }
