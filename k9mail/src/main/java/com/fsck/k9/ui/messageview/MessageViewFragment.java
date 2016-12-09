@@ -71,6 +71,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 
@@ -438,7 +439,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != RESULT_OK) {
+        if (resultCode != RESULT_OK && resultCode != RESULT_CANCELED) {
             messageCryptoPresenter.onActivityResult(requestCode, resultCode, data);
             return;
         }
