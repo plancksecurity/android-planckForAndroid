@@ -7,6 +7,7 @@ package com.fsck.k9.pEp.ui.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,17 +24,15 @@ import org.pEp.jniadapter.Rating;
 import java.util.List;
 
 public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdapter.ViewHolder> {
-    private final List<PEpIdentity> identities;
+    private List<PEpIdentity> identities;
 
     private View.OnClickListener onHandshakeClick;
     private View.OnClickListener onResetGreenClick;
     private View.OnClickListener onResetRedClick;
 
-    public PEpIdentitiesAdapter(List<PEpIdentity> identities,
-                                View.OnClickListener onResetGreenClick,
+    public PEpIdentitiesAdapter(View.OnClickListener onResetGreenClick,
                                 View.OnClickListener onResetRedClick,
                                 View.OnClickListener onHandshakeClick) {
-        this.identities = identities;
         this.onResetGreenClick = onResetGreenClick;
         this.onResetRedClick = onResetRedClick;
         this.onHandshakeClick = onHandshakeClick;
@@ -66,6 +65,14 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
 
     public PEpIdentity get(int position) {
         return identities.get(position);
+    }
+
+    public List<PEpIdentity> getIdentities() {
+        return identities;
+    }
+
+    public void setIdentities(List<PEpIdentity> identities) {
+        this.identities = identities;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -116,6 +123,7 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
         }
 
         public void render(int position, PEpIdentity identity) {
+            Log.d("RENDER", String.valueOf(identity.getRating().value));
             renderColor(identity.getRating());
             renderButton(identity.getRating());
             setPosition(position);

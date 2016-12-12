@@ -35,6 +35,7 @@ import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -126,16 +127,11 @@ public class PEpStatus extends PepColoredActivity {
         recipientsView.setLayoutManager(recipientsLayoutManager);
         recipientsView.setVisibility(View.VISIBLE);
         final ArrayList<PEpIdentity> recipients = pEpStatusController.getRecipients();
-        recipientsAdapter = new PEpIdentitiesAdapter(recipients, new View.OnClickListener() {
+        recipientsAdapter = new PEpIdentitiesAdapter(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int position = ((Integer) view.getTag());
-                Identity id = recipientsAdapter.get(position);
-                id = pEp.updateIdentity(id);
-                Log.i("KeysAdapter", "onResetGreenClick " + id.address);
-                pEp.resetTrust(id);
-                recipientsAdapter.notifyDataSetChanged();
-                onRatingChanged(Rating.pEpRatingReliable);
+                pEpStatusController.updateTrust(pEp, position);
             }
         }, new View.OnClickListener() {
 
@@ -145,13 +141,7 @@ public class PEpStatus extends PepColoredActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         int position = ((Integer) view.getTag());
-                        Identity id = recipientsAdapter.get(position);
-                        id = pEp.updateIdentity(id);
-                        Log.i("KeysAdapter", "onResetGreenClick " + id.address);
-                        pEp.resetTrust(id);
-                        recipientsAdapter.notifyDataSetChanged();
-                        onRatingChanged(Rating.pEpRatingReliable);
-                        recipientsAdapter.handshake(view);
+                        pEpStatusController.updateTrust(pEp, position);
                     }
                 }).setNegativeButton(R.string.cancel_action, null).show();
             }
@@ -162,6 +152,7 @@ public class PEpStatus extends PepColoredActivity {
                 PEpTrustwords.actionRequestHandshake(activity, myself, partnerPosition);
             }
         });
+        recipientsAdapter.setIdentities(recipients);
         recipientsView.setAdapter(recipientsAdapter);
         recipientsView.addItemDecoration(new SimpleDividerItemDecoration(this));
 
@@ -211,13 +202,19 @@ public class PEpStatus extends PepColoredActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d("RESULT", String.valueOf(requestCode));
         if (requestCode == PEpTrustwords.HANDSHAKE_REQUEST) {
+            Log.d("RESULT", "HAND");
             if (resultCode == RESULT_OK) {
-                loadPepRating();
-                initPep();
-                setUpActionBar();
-                setUpContactList(myself, getpEp());
-                loadPepTexts();
+                Log.d("RESULT", "OK");
+                int position = data.getIntExtra(PEpTrustwords.PARTNER_POSITION, PEpTrustwords.DEFAULT_POSITION);
+                ArrayList<PEpIdentity> recipients = pEpStatusController.getRecipients();
+                Identity partner = uiCache.getRecipients().get(position);
+                pEpRating = getpEp().identityRating(partner);
+                recipientsAdapter.setIdentities(recipients);
+                recipientsAdapter.notifyDataSetChanged();
+                onRatingChanged(pEpRating);
+                colorActionBar();
             }
         }
     }
@@ -330,7 +327,33 @@ public class PEpStatus extends PepColoredActivity {
             return mapRecipients(recipients);
         }
 
-        private ArrayList<PEpIdentity> mapRecipients(ArrayList<Identity> recipients) {
+        void updateTrust(PEpProvider pEp, int position) {
+            List<PEpIdentity> identities = recipientsAdapter.getIdentities();
+            Identity id = identities.get(position);
+            id = pEp.updateIdentity(id);
+            Log.i("PEPStatus", "updateTrust " + id.address);
+            pEp.resetTrust(id);
+            List<PEpIdentity> updatedIdentities = updateRecipients(identities);
+            onRatingChanged(Rating.pEpRatingReliable);
+            recipientsAdapter.setIdentities(updatedIdentities);
+            recipientsAdapter.notifyDataSetChanged();
+        }
+
+        private List<PEpIdentity> updateRecipients(List<PEpIdentity> identities) {
+            ArrayList<PEpIdentity> pEpIdentities = new ArrayList<>(identities.size());
+            for (Identity recipient : identities) {
+                pEpIdentities.add(updateRecipient(recipient));
+            }
+            return pEpIdentities;
+        }
+
+        private PEpIdentity updateRecipient(Identity recipient) {
+            PEpIdentity pEpIdentity = new PEpIdentity();
+            pEpIdentity.setRating(getpEp().identityRating(recipient));
+            return pEpIdentity;
+        }
+
+        private ArrayList<PEpIdentity> mapRecipients(List<Identity> recipients) {
             ArrayList<PEpIdentity> pEpIdentities = new ArrayList<>(recipients.size());
             for (Identity recipient : recipients) {
                 pEpIdentities.add(mapRecipient(recipient));
