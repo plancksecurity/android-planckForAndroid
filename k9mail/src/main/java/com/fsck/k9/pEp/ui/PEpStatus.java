@@ -30,12 +30,18 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.adapters.PEpIdentitiesAdapter;
 import com.fsck.k9.pEp.ui.models.PEpIdentity;
+import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
+import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
+import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
+import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -47,6 +53,8 @@ public class PEpStatus extends PepColoredActivity {
     private static final String RATING = "rating";
     private static final String MESSAGE_REFERENCE = "message_reference";
     public static final int REQUEST_STATUS = 2;
+
+    @Inject PEpUtils pEpUtils;
 
     @Bind(R.id.pEpTitle)
     TextView pEpTitle;
@@ -89,6 +97,17 @@ public class PEpStatus extends PepColoredActivity {
         setUpActionBar();
         setUpContactList(myself, getpEp());
         loadPepTexts();
+    }
+
+    @Override
+    protected void initializeInjector(ApplicationComponent applicationComponent) {
+        applicationComponent.inject(this);
+        DaggerPEpComponent.builder()
+                .applicationComponent(applicationComponent)
+                .activityModule(new ActivityModule(this))
+                .pEpModule(new PEpModule())
+                .build()
+                .inject(this);
     }
 
     private void restorePEpRating(Bundle savedInstanceState) {
@@ -161,7 +180,7 @@ public class PEpStatus extends PepColoredActivity {
     private void onRatingChanged(Rating rating) {
         if (localMessage != null) {
             localMessage.setpEpRating(rating);
-            localMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(rating));
+            localMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpUtils.ratingToString(rating));
             pEpStatusController.saveLocalMessage(getApplicationContext(), localMessage);
         }
         setpEpRating(rating);
@@ -223,7 +242,7 @@ public class PEpStatus extends PepColoredActivity {
         return new MessageLoaderHelper.MessageLoaderCallbacks() {
             @Override
             public void onMessageDataLoadFinished(LocalMessage message) {
-                localMessage = message;
+               localMessage = message;
             }
 
             @Override
@@ -281,7 +300,7 @@ public class PEpStatus extends PepColoredActivity {
     }
 
     private void showExplanationDialog() {
-        new AlertDialog.Builder(this)
+         new AlertDialog.Builder(this)
                 .setTitle(R.string.pep_explanation)
                 .setMessage(uiCache.getExplanation(getpEpRating()))
                 .setPositiveButton(R.string.okay_action,
@@ -291,7 +310,7 @@ public class PEpStatus extends PepColoredActivity {
                             }
                         })
                 .create()
-                .show();
+                 .show();
 
     }
 
