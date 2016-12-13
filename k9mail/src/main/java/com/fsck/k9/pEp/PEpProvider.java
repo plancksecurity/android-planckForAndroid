@@ -80,6 +80,8 @@ public interface PEpProvider {
      */
     List<MimeMessage> encryptMessage(MimeMessage source, String[] extraKeys);
 
+    void encryptMessage(MimeMessage source, String[] extraKeys, Callback<List<MimeMessage>> callback);
+
     //TODO> When alias available check if it works correctly
     MimeMessage encryptMessageToSelf(MimeMessage source) throws MessagingException;
 
@@ -91,6 +93,8 @@ public interface PEpProvider {
      */
     void setup(Context c);
 
+    void identityRating(Address address, Callback<Rating> callback);
+
     /**
      * Checks the trust status (Color) for a given identity
      *
@@ -100,6 +104,8 @@ public interface PEpProvider {
     Rating identityRating(Identity identity);
 
     void identityRating(Identity identity, Callback<Rating> callback);
+
+    void encryptMessageToSelf(MimeMessage source, Callback<MimeMessage> callback);
 
     Rating identityRating(Address address);
 

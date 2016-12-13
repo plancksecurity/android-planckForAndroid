@@ -28,6 +28,7 @@ public abstract class PepColoredActivity extends K9Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initializeInjector(getApplicationComponent());
     }
 
     protected void colorActionBar() {

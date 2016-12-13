@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.ui.models.PEpIdentity;
+import com.fsck.k9.pEp.models.PEpIdentity;
 
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
