@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp.ui.models;
+package com.fsck.k9.pEp.models;
 
 
 import org.pEp.jniadapter.Identity;

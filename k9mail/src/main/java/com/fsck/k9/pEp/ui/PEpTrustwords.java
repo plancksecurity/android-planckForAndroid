@@ -181,7 +181,7 @@ public class PEpTrustwords extends PepColoredActivity {
         DaggerPEpComponent.builder()
                 .applicationComponent(applicationComponent)
                 .activityModule(new ActivityModule(this))
-                .pEpModule(new PEpModule())
+                .pEpModule(new PEpModule(this, getLoaderManager(), getFragmentManager()))
                 .build()
                 .inject(this);
     }

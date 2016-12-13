@@ -149,40 +149,42 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public synchronized void getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, Callback<Rating> callback) {
-        int recipientsSize = toAddresses.size() + ccAddresses.size() + bccAddresses.size();
-        if (from == null || recipientsSize == 0)
-            notifyLoaded(Rating.pEpRatingUndefined, callback);
+        threadExecutor.execute(() -> {
+            int recipientsSize = toAddresses.size() + ccAddresses.size() + bccAddresses.size();
+            if (from == null || recipientsSize == 0)
+                notifyLoaded(Rating.pEpRatingUndefined, callback);
 
-        Message testee = null;
-        try {
-            if (engine == null) {
-                createEngineSession();
+            Message testee = null;
+            try {
+                if (engine == null) {
+                    createEngineSession();
 
+                }
+                testee = new Message();
+
+                Identity idFrom = PEpUtils.createIdentity(from, context);
+                idFrom.me = true;
+                idFrom.user_id = PEP_OWN_USER_ID;
+                testee.setFrom(idFrom);
+                testee.setTo(PEpUtils.createIdentities(toAddresses, context));
+                testee.setCc(PEpUtils.createIdentities(ccAddresses, context));
+                testee.setBcc(PEpUtils.createIdentities(bccAddresses, context));
+                testee.setShortmsg("hello, world");     // FIXME: do I need them?
+                testee.setLongmsg("Lorem ipsum");
+                testee.setDir(Message.Direction.Outgoing);
+
+                Rating result = engine.outgoing_message_rating(testee);   // stupid way to be able to patch the value in debugger
+                Log.i(TAG, "getPrivacyState " + idFrom.fpr);
+
+                notifyLoaded(result, callback);
+            } catch (Throwable e) {
+                Log.e(TAG, "during color test:", e);
+            } finally {
+                if (testee != null) testee.close();
             }
-            testee = new Message();
 
-            Identity idFrom = PEpUtils.createIdentity(from, context);
-            idFrom.me = true;
-            idFrom.user_id = PEP_OWN_USER_ID;
-            testee.setFrom(idFrom);
-            testee.setTo(PEpUtils.createIdentities(toAddresses, context));
-            testee.setCc(PEpUtils.createIdentities(ccAddresses, context));
-            testee.setBcc(PEpUtils.createIdentities(bccAddresses, context));
-            testee.setShortmsg("hello, world");     // FIXME: do I need them?
-            testee.setLongmsg("Lorem ipsum");
-            testee.setDir(Message.Direction.Outgoing);
-
-            Rating result = engine.outgoing_message_rating(testee);   // stupid way to be able to patch the value in debugger
-            Log.i(TAG, "getPrivacyState " + idFrom.fpr);
-
-            notifyLoaded(result, callback);
-        } catch (Throwable e) {
-            Log.e(TAG, "during color test:", e);
-        } finally {
-            if (testee != null) testee.close();
-        }
-
-        notifyLoaded(Rating.pEpRatingUndefined, callback);
+            notifyLoaded(Rating.pEpRatingUndefined, callback);
+        });
     }
 
     private boolean isUnencryptedForSome(List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses) {
@@ -239,41 +241,43 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public void decryptMessage(MimeMessage source, Callback<DecryptResult> callback) {
-        Log.d(TAG, "decryptMessage() enter");
-        Message srcMsg = null;
-        Engine.decrypt_message_Return decReturn = null;
-        try {
-            if (engine == null) createEngineSession();
+        threadExecutor.execute(() -> {
+            Log.d(TAG, "decryptMessage() enter");
+            Message srcMsg = null;
+            Engine.decrypt_message_Return decReturn = null;
+            try {
+                if (engine == null) createEngineSession();
 
-            srcMsg = new PEpMessageBuilder(source).createMessage(context);
-            srcMsg.setDir(Message.Direction.Incoming);
+                srcMsg = new PEpMessageBuilder(source).createMessage(context);
+                srcMsg.setDir(Message.Direction.Incoming);
 
-            Log.d(TAG, "decryptMessage() before decrypt");
-            if ( srcMsg.getOptFields() != null) {
-                for (Pair<String, String> stringStringPair : srcMsg.getOptFields()) {
-                    Log.d(TAG, "decryptMessage() after decrypt " + stringStringPair.first + ": " + stringStringPair.second);
+                Log.d(TAG, "decryptMessage() before decrypt");
+                if ( srcMsg.getOptFields() != null) {
+                    for (Pair<String, String> stringStringPair : srcMsg.getOptFields()) {
+                        Log.d(TAG, "decryptMessage() after decrypt " + stringStringPair.first + ": " + stringStringPair.second);
+                    }
                 }
-            }
-            decReturn = engine.decrypt_message(srcMsg);
-            Log.d(TAG, "decryptMessage() after decrypt");
-            MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
+                decReturn = engine.decrypt_message(srcMsg);
+                Log.d(TAG, "decryptMessage() after decrypt");
+                MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
 
-            if (isUsablePrivateKey(decReturn)) {
-                notifyLoaded(new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg)), callback);
-            }
-            else notifyLoaded(new DecryptResult(decMsg, decReturn.rating, null), callback);
+                if (isUsablePrivateKey(decReturn)) {
+                    notifyLoaded(new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg)), callback);
+                }
+                else notifyLoaded(new DecryptResult(decMsg, decReturn.rating, null), callback);
 //        } catch (pEpMessageConsume | pEpMessageIgnore pe) {
 //            // TODO: 15/11/16 deal with it as flag not exception
 //            //  throw pe;
 //            return null;
-        }catch (Throwable t) {
-            Log.e(TAG, "while decrypting message:", t);
-            throw new AppCannotDecryptException("Could not decrypt", t);
-        } finally {
-            if (srcMsg != null) srcMsg.close();
-            if (decReturn != null && decReturn.dst != srcMsg) decReturn.dst.close();
-            Log.d(TAG, "decryptMessage() exit");
-        }
+            }catch (Throwable t) {
+                Log.e(TAG, "while decrypting message:", t);
+                notifyError(new AppCannotDecryptException("Could not decrypt", t), callback);
+            } finally {
+                if (srcMsg != null) srcMsg.close();
+                if (decReturn != null && decReturn.dst != srcMsg) decReturn.dst.close();
+                Log.d(TAG, "decryptMessage() exit");
+            }
+        });
     }
 
     private boolean isUsablePrivateKey(Engine.decrypt_message_Return result) {
@@ -302,6 +306,24 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
+    public void encryptMessage(MimeMessage source, String[] extraKeys, Callback<List<MimeMessage>> callback) {
+        // TODO: 06/12/16 add unencrypted for some
+        Log.d(TAG, "encryptMessage() enter");
+        List<MimeMessage> resultMessages = new ArrayList<>();
+        Message message = new PEpMessageBuilder(source).createMessage(context);
+        try {
+            if (engine == null) createEngineSession();
+            resultMessages.add(getEncryptedCopy(message, extraKeys));
+            notifyLoaded(resultMessages, callback);
+        } catch (Throwable t) {
+            Log.e(TAG, "while encrypting message:", t);
+            notifyError(new RuntimeException("Could not encrypt", t), callback);
+        } finally {
+            Log.d(TAG, "encryptMessage() exit");
+        }
+    }
+
+    @Override
     public MimeMessage encryptMessageToSelf(MimeMessage source) throws MessagingException{
         if (source == null) {
             return source;
@@ -321,6 +343,33 @@ public class PEpProviderImpl implements PEpProvider {
         } catch (Exception exception) {
             Log.e(TAG, "encryptMessageToSelf: ", exception);
             return source;
+        } finally {
+            if (message != null) {
+                message.close();
+            }
+        }
+    }
+
+    @Override
+    public void encryptMessageToSelf(MimeMessage source, Callback<MimeMessage> callback){
+        if (source == null) {
+            notifyLoaded(source, callback);
+        }
+        Message message = null;
+        try {
+            message = new PEpMessageBuilder(source).createMessage(context);
+            message.setDir(Message.Direction.Outgoing);
+            Log.d(TAG, "encryptMessage() before encrypt to self");
+            Identity from = message.getFrom();
+            from.user_id = PEP_OWN_USER_ID;
+            message.setFrom(from);
+            Message currentEnc = engine.encrypt_message_for_self(message.getFrom(), message);
+            if (currentEnc == null) currentEnc = message;
+            Log.d(TAG, "encryptMessage() after encrypt to self");
+            notifyLoaded(new MimeMessageBuilder(currentEnc).createMessage(), callback);
+        } catch (Exception exception) {
+            Log.e(TAG, "encryptMessageToSelf: ", exception);
+            notifyLoaded(source, callback);
         } finally {
             if (message != null) {
                 message.close();
@@ -455,6 +504,14 @@ public class PEpProviderImpl implements PEpProvider {
     public Rating identityRating(Address address) {
         Identity ident = PEpUtils.createIdentity(address, context);
         return identityRating(ident);
+    }
+
+    @Override
+    public void identityRating(Address address, Callback<Rating> callback) {
+        threadExecutor.execute(() -> {
+            Identity ident = PEpUtils.createIdentity(address, context);
+            notifyLoaded(identityRating(ident), callback);
+        });
     }
 
     @Override
