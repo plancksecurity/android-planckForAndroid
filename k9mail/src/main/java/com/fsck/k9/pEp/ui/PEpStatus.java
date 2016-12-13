@@ -32,6 +32,8 @@ import com.fsck.k9.pEp.PEpUtils;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
+import java.util.ArrayList;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -174,11 +176,13 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PEpTrustwords.HANDSHAKE_REQUEST) {
             if (resultCode == RESULT_OK) {
-                loadPepRating();
-                initPep();
-                setUpActionBar();
-                setUpContactList(myself, getpEp());
-                loadPepTexts();
+                int position = data.getIntExtra(PEpTrustwords.PARTNER_POSITION, PEpTrustwords.DEFAULT_POSITION);
+                ArrayList<Identity> recipients = uiCache.getRecipients();
+                Identity partner = uiCache.getRecipients().get(position);
+                pEpRating = getpEp().identityRating(partner);
+                recipientsAdapter.notifyDataSetChanged();
+                onRatingChanged(pEpRating);
+                colorActionBar();
             }
         }
     }
