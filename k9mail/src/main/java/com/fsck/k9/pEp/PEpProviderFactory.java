@@ -2,6 +2,11 @@ package com.fsck.k9.pEp;
 
 import android.content.Context;
 
+import com.fsck.k9.pEp.infrastructure.threading.JobExecutor;
+import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
+import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
+import com.fsck.k9.pEp.infrastructure.threading.UIThread;
+
 /**
  * Factory for real providers
  */
@@ -16,6 +21,8 @@ public class PEpProviderFactory {
     }
 
     static public PEpProvider createProvider(Context context) {
-        return new PEpProviderImpl(context);
+        ThreadExecutor threadExecutor = new JobExecutor();
+        PostExecutionThread postExecutionThread = new UIThread();
+        return new PEpProviderImpl(threadExecutor, postExecutionThread, context);
     }
 }

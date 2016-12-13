@@ -132,59 +132,45 @@ public class PEpTrustwords extends PepColoredActivity {
     }
 
     private void loadPartnerRating() {
-        executor.execute(new Runnable() {
+        getpEp().identityRating(partner, new PEpProvider.Callback<Rating>() {
             @Override
-            public void run() {
-                getpEp().identityRating(partner, new PEpProvider.Callback<Rating>() {
-                    @Override
-                    public void onError(Exception exception) {
-                        setpEpRating(Rating.pEpRatingUndefined);
-                    }
+            public void onLoaded(Rating rating) {
+                setpEpRating(rating);
+                colorActionBar();
+            }
 
-                    @Override
-                    public void onFinish(Rating result) {
-                        setpEpRating(result);
-                        colorActionBar();
-                    }
-                });
+            @Override
+            public void onError(Throwable throwable) {
+                setpEpRating(Rating.pEpRatingUndefined);
             }
         });
     }
 
     private void loadTrustwords() {
         //Actually what is heavy is update identity and myself.
-        executor.execute(new Runnable() {
+        getpEp().trustwords(myself, partner, trustwordsLanguage, new PEpProvider.Callback<HandshakeData>() {
             @Override
-            public void run() {
-                getpEp().trustwords(myself, partner, trustwordsLanguage, new PEpProvider.Callback<HandshakeData>() {
-                    @Override
-                    public void onError(Exception exception) {
+            public void onLoaded(final HandshakeData handshakeData) {
+                fullTrustwords = handshakeData.fullTrustwords;
+                shortTrustwords = handshakeData.shortTrustwords;
+                if (areTrustwordsShort) {
+                    tvTrustwords.setText(shortTrustwords);
+                } else {
+                    tvTrustwords.setText(fullTrustwords);
+                }
 
-                    }
+                myself = handshakeData.myself;
+                partner = handshakeData.partner;
+                myselfFpr.setText(PEpUtils.formatFpr(myself.fpr));
+                partnerFpr.setText(PEpUtils.formatFpr(partner.fpr));
+                loading.setVisibility(View.GONE);
 
-                    @Override
-                    public void onFinish(final HandshakeData result) {
-                        PEpTrustwords.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                fullTrustwords = result.fullTrustwords;
-                                shortTrustwords = result.shortTrustwords;
-                                if (areTrustwordsShort) {
-                                    tvTrustwords.setText(shortTrustwords);
-                                } else {
-                                    tvTrustwords.setText(fullTrustwords);
-                                }
 
-                                myself = result.myself;
-                                partner = result.partner;
-                                myselfFpr.setText(PEpUtils.formatFpr(myself.fpr));
-                                partnerFpr.setText(PEpUtils.formatFpr(partner.fpr));
-                                loading.setVisibility(View.GONE);
-                            }
-                        });
+            }
 
-                    }
-                });
+            @Override
+            public void onError(Throwable throwable) {
+
             }
         });
     }
