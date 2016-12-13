@@ -28,16 +28,19 @@ import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.ui.adapters.PEpIdentitiesAdapter;
+import com.fsck.k9.pEp.ui.models.PEpIdentity;
 
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class PEpStatus extends PepColoredActivity implements ChangeColorListener {
+public class PEpStatus extends PepColoredActivity {
 
     private static final String ACTION_SHOW_PEP_STATUS = "com.fsck.k9.intent.action.SHOW_PEP_STATUS";
     private static final String MYSELF = "isComposedKey";
@@ -53,13 +56,12 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     RecyclerView recipientsView;
 
 
-    RecyclerView.Adapter recipientsAdapter;
+    PEpIdentitiesAdapter recipientsAdapter;
     RecyclerView.LayoutManager recipientsLayoutManager;
 
     String myself = "";
-    private MessageReference messageReference;
     private LocalMessage localMessage;
-
+    private PEpStatusController pEpStatusController;
 
     public static void actionShowStatus(Activity context, Rating currentRating, String myself, MessageReference messageReference) {
         Intent i = new Intent(context, PEpStatus.class);
@@ -76,24 +78,17 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
         loadPepRating();
         setContentView(R.layout.pep_status);
         ButterKnife.bind(PEpStatus.this);
+        pEpStatusController = new PEpStatusController();
         if (getIntent() != null && getIntent().hasExtra(MYSELF)
                 && getIntent().hasExtra(MESSAGE_REFERENCE)) {
             myself = getIntent().getStringExtra(MYSELF);
-            loadMessage();
+            pEpStatusController.loadMessage(this);
         }
         restorePEpRating(savedInstanceState);
         initPep();
         setUpActionBar();
         setUpContactList(myself, getpEp());
         loadPepTexts();
-    }
-
-    private void loadMessage() {
-        messageReference = (MessageReference) getIntent().getExtras().get(MESSAGE_REFERENCE);
-        if (messageReference != null) {
-            MessageLoaderHelper messageLoaderHelper = new MessageLoaderHelper(this, getLoaderManager(), getFragmentManager(), callback());
-            messageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, null);
-        }
     }
 
     private void restorePEpRating(Bundle savedInstanceState) {
@@ -118,23 +113,49 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     }
 
 
-    private void setUpContactList(String myself, PEpProvider pEp) {
+    private void setUpContactList(final String myself, final PEpProvider pEp) {
+        final Activity activity = this;
         recipientsLayoutManager = new LinearLayoutManager(this);
         ((LinearLayoutManager) recipientsLayoutManager).setOrientation(LinearLayoutManager.VERTICAL);
         recipientsView.setLayoutManager(recipientsLayoutManager);
         recipientsView.setVisibility(View.VISIBLE);
-        recipientsAdapter = new RecipientsAdapter(this, uiCache.getRecipients(), pEp, myself, this);
+        final ArrayList<PEpIdentity> recipients = pEpStatusController.getRecipients();
+        recipientsAdapter = new PEpIdentitiesAdapter(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int position = ((Integer) view.getTag());
+                pEpStatusController.updateTrust(pEp, position);
+            }
+        }, new View.OnClickListener() {
+
+            @Override
+            public void onClick(final View view) {
+                new AlertDialog.Builder(view.getContext()).setMessage(R.string.handshake_reset_dialog_message).setCancelable(false).setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        int position = ((Integer) view.getTag());
+                        pEpStatusController.updateTrust(pEp, position);
+                    }
+                }).setNegativeButton(R.string.cancel_action, null).show();
+            }
+        }, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int partnerPosition = ((Integer) v.getTag());
+                PEpTrustwords.actionRequestHandshake(activity, myself, partnerPosition);
+            }
+        });
+        recipientsAdapter.setIdentities(recipients);
         recipientsView.setAdapter(recipientsAdapter);
         recipientsView.addItemDecoration(new SimpleDividerItemDecoration(this));
 
     }
 
-    @Override
-    public void onRatingChanged(Rating rating) {
+    private void onRatingChanged(Rating rating) {
         if (localMessage != null) {
             localMessage.setpEpRating(rating);
             localMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(rating));
-            messageReference.saveLocalMessage(getApplicationContext(), localMessage);
+            pEpStatusController.saveLocalMessage(getApplicationContext(), localMessage);
         }
         setpEpRating(rating);
         colorActionBar();
@@ -177,9 +198,10 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
         if (requestCode == PEpTrustwords.HANDSHAKE_REQUEST) {
             if (resultCode == RESULT_OK) {
                 int position = data.getIntExtra(PEpTrustwords.PARTNER_POSITION, PEpTrustwords.DEFAULT_POSITION);
-                ArrayList<Identity> recipients = uiCache.getRecipients();
+                ArrayList<PEpIdentity> recipients = pEpStatusController.getRecipients();
                 Identity partner = uiCache.getRecipients().get(position);
                 pEpRating = getpEp().identityRating(partner);
+                recipientsAdapter.setIdentities(recipients);
                 recipientsAdapter.notifyDataSetChanged();
                 onRatingChanged(pEpRating);
                 colorActionBar();
@@ -191,7 +213,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
         return new MessageLoaderHelper.MessageLoaderCallbacks() {
             @Override
             public void onMessageDataLoadFinished(LocalMessage message) {
-               localMessage = message;
+                localMessage = message;
             }
 
             @Override
@@ -249,7 +271,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     }
 
     private void showExplanationDialog() {
-         new AlertDialog.Builder(this)
+        new AlertDialog.Builder(this)
                 .setTitle(R.string.pep_explanation)
                 .setMessage(uiCache.getExplanation(getpEpRating()))
                 .setPositiveButton(R.string.okay_action,
@@ -259,7 +281,7 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
                             }
                         })
                 .create()
-                 .show();
+                .show();
 
     }
 
@@ -273,5 +295,74 @@ public class PEpStatus extends PepColoredActivity implements ChangeColorListener
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(RATING, pEpRating);
+    }
+
+    private class PEpStatusController {
+        private MessageReference messageReference;
+
+        void loadMessage(Context context) {
+            messageReference = (MessageReference) getIntent().getExtras().get(MESSAGE_REFERENCE);
+            if (messageReference != null) {
+                MessageLoaderHelper messageLoaderHelper = new MessageLoaderHelper(context, getLoaderManager(), getFragmentManager(), callback());
+                messageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, null);
+            }
+        }
+
+        void saveLocalMessage(Context context, LocalMessage localMessage) {
+            messageReference.saveLocalMessage(context, localMessage);
+        }
+
+        ArrayList<PEpIdentity> getRecipients() {
+            ArrayList<Identity> recipients = uiCache.getRecipients();
+            return mapRecipients(recipients);
+        }
+
+        void updateTrust(PEpProvider pEp, int position) {
+            List<PEpIdentity> identities = recipientsAdapter.getIdentities();
+            Identity id = identities.get(position);
+            id = pEp.updateIdentity(id);
+            Log.i("PEPStatus", "updateTrust " + id.address);
+            pEp.resetTrust(id);
+            List<PEpIdentity> updatedIdentities = updateRecipients(identities);
+            onRatingChanged(Rating.pEpRatingReliable);
+            recipientsAdapter.setIdentities(updatedIdentities);
+            recipientsAdapter.notifyDataSetChanged();
+        }
+
+        private List<PEpIdentity> updateRecipients(List<PEpIdentity> identities) {
+            ArrayList<PEpIdentity> pEpIdentities = new ArrayList<>(identities.size());
+            for (Identity recipient : identities) {
+                pEpIdentities.add(updateRecipient(recipient));
+            }
+            return pEpIdentities;
+        }
+
+        private PEpIdentity updateRecipient(Identity recipient) {
+            PEpIdentity pEpIdentity = new PEpIdentity();
+            pEpIdentity.setRating(getpEp().identityRating(recipient));
+            return pEpIdentity;
+        }
+
+        private ArrayList<PEpIdentity> mapRecipients(List<Identity> recipients) {
+            ArrayList<PEpIdentity> pEpIdentities = new ArrayList<>(recipients.size());
+            for (Identity recipient : recipients) {
+                pEpIdentities.add(mapRecipient(recipient));
+            }
+            return pEpIdentities;
+        }
+
+        private PEpIdentity mapRecipient(Identity recipient) {
+            PEpIdentity pEpIdentity = new PEpIdentity();
+            pEpIdentity.address = recipient.address;
+            pEpIdentity.comm_type = recipient.comm_type;
+            pEpIdentity.flags = recipient.flags;
+            pEpIdentity.fpr = recipient.fpr;
+            pEpIdentity.lang = recipient.lang;
+            pEpIdentity.me = recipient.me;
+            pEpIdentity.user_id = recipient.user_id;
+            pEpIdentity.username = recipient.username;
+            pEpIdentity.setRating(getpEp().identityRating(recipient));
+            return pEpIdentity;
+        }
     }
 }
