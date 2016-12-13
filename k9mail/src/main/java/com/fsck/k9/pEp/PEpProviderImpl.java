@@ -8,9 +8,11 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
+import com.fsck.k9.pEp.ui.HandshakeData;
+import com.fsck.k9.pEp.ui.PEpStatus;
+import com.fsck.k9.pEp.ui.PEpTrustwords;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
 import org.pEp.jniadapter.AndroidHelper;
@@ -375,10 +377,60 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
+    public void identityRating(Identity identity, Callback<Rating> callback) {
+        Engine engine = null;
+        try {
+            engine = new Engine();
+            Rating rating = engine.identity_rating(identity);
+            callback.onFinish(rating);
+        } catch (Exception e) {
+            callback.onError(e);
+        } finally {
+            if (engine != null) {
+                engine.close();
+            }
+        }
+    }
+
+    @Override
     public String trustwords(Identity id, String language) {
         id.lang = language;
         createEngineInstanceIfNeeded();
         return engine.trustwords(id);
+    }
+
+    @Override
+    public void trustwords(Identity myself, Identity partner, String lang, Callback<HandshakeData> callback) {
+        Engine engine = null;
+        try {
+            engine = new Engine();
+            myself.lang = PEpUtils.obtainTrustwordsLang(lang);
+            myself.user_id = PEP_OWN_USER_ID;
+            myself = engine.myself(myself);
+            partner.lang = PEpUtils.obtainTrustwordsLang(lang);
+            partner = engine.updateIdentity(partner);
+            String myTrust = engine.trustwords(myself);
+            String theirTrust = engine.trustwords(partner);
+            String myTrustShort = PEpUtils.getShortTrustwords(myTrust);
+            String theirTrustShort = PEpUtils.getShortTrustwords(theirTrust);
+
+            String trust = "";
+            String shortTrust = "";
+            if (myself.fpr.compareTo(partner.fpr) > 0) {
+                trust = theirTrust + myTrust;
+                shortTrust = theirTrustShort + myTrustShort;
+            } else {
+                trust = myTrust + theirTrust;
+                shortTrust = myTrustShort + theirTrustShort;
+            }
+            callback.onFinish(new HandshakeData(trust, shortTrust, myself, partner));
+        } catch (Exception e) {
+            callback.onError(e);
+        } finally {
+            if (engine != null) {
+                engine.close();
+            }
+        }
     }
 
     @Override
