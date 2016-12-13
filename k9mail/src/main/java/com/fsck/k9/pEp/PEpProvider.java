@@ -1,14 +1,19 @@
 package com.fsck.k9.pEp;
 
 import android.content.Context;
+import android.support.annotation.WorkerThread;
 
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeMessage;
+import com.fsck.k9.pEp.ui.HandshakeData;
+import com.fsck.k9.pEp.ui.PEpTrustwords;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
+import org.jsoup.select.Evaluator;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
+import org.pEp.jniadapter.Pair;
 import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.Sync;
 
@@ -94,6 +99,8 @@ public interface PEpProvider {
      */
     Rating identityRating(Identity identity);
 
+    void identityRating(Identity identity, Callback<Rating> callback);
+
     Rating identityRating(Address address);
 
     /**
@@ -103,6 +110,8 @@ public interface PEpProvider {
      * @return trustwords string
      */
     String trustwords(Identity id, String language);
+    void trustwords(Identity myself, Identity partner, String lang,
+                    Callback<HandshakeData> callback);
 
     /**
      * Close the engine/session associated to the provider
@@ -211,5 +220,10 @@ public interface PEpProvider {
      enum ProtectionScope {
         ACCOUNT,
         MESSAGE
+    }
+
+    interface Callback<T> {
+        void onError(Exception exception);
+        void onFinish(T result);
     }
 }
