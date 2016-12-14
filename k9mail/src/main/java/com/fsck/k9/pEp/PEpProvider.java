@@ -1,19 +1,15 @@
 package com.fsck.k9.pEp;
 
 import android.content.Context;
-import android.support.annotation.WorkerThread;
 
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.pEp.ui.HandshakeData;
-import com.fsck.k9.pEp.ui.PEpTrustwords;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
-import org.jsoup.select.Evaluator;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
-import org.pEp.jniadapter.Pair;
 import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.Sync;
 
@@ -49,8 +45,10 @@ public interface PEpProvider {
      */
     Rating getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses);
     Rating getPrivacyState(com.fsck.k9.mail.Message message);
-    Rating getPrivacyState(Message message);
 
+    void getPrivacyState(com.fsck.k9.mail.Message message, Callback<Rating> callback);
+
+    void getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, Callback<Rating> callback);
 
     /**
      * Decrypts one k9 MimeMessage. Hides all the black magic associated with the real
@@ -64,6 +62,8 @@ public interface PEpProvider {
      * TODO: pEp: how do I get the color? Perhaps Via header value in return value?
      */
     DecryptResult decryptMessage(MimeMessage source);
+
+    void decryptMessage(MimeMessage source, Callback<DecryptResult> callback);
 
     /**
      * Encrypts one k9 message. This one hides all the black magic associated with the real
@@ -80,6 +80,8 @@ public interface PEpProvider {
      */
     List<MimeMessage> encryptMessage(MimeMessage source, String[] extraKeys);
 
+    void encryptMessage(MimeMessage source, String[] extraKeys, Callback<List<MimeMessage>> callback);
+
     //TODO> When alias available check if it works correctly
     MimeMessage encryptMessageToSelf(MimeMessage source) throws MessagingException;
 
@@ -91,6 +93,8 @@ public interface PEpProvider {
      */
     void setup(Context c);
 
+    void identityRating(Address address, Callback<Rating> callback);
+
     /**
      * Checks the trust status (Color) for a given identity
      *
@@ -100,6 +104,8 @@ public interface PEpProvider {
     Rating identityRating(Identity identity);
 
     void identityRating(Identity identity, Callback<Rating> callback);
+
+    void encryptMessageToSelf(MimeMessage source, Callback<MimeMessage> callback);
 
     Rating identityRating(Address address);
 
@@ -220,8 +226,15 @@ public interface PEpProvider {
         MESSAGE
     }
 
-    interface Callback<T> {
-        void onError(Exception exception);
-        void onFinish(T result);
+    interface Callback<Result> {
+        void onLoaded(Result result);
+
+        void onError(Throwable throwable);
+    }
+
+    interface CompletedCallback {
+        void onComplete();
+
+        void onError(Throwable throwable);
     }
 }

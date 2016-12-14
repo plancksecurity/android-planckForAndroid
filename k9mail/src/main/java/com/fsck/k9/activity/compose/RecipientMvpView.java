@@ -22,7 +22,7 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.ui.PEpStatus;
+import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.view.RecipientSelectView;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.RecipientSelectView.TokenListener;
@@ -467,7 +467,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
 //        mIgnoreOnPause = true;  // do *not* save state
         pEpUiCache.setRecipients(recipients);
-        PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), messageReference);
+        PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom());
     }
 
     public Address getFromAddress() {

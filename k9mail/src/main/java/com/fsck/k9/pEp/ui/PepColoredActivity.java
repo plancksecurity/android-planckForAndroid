@@ -14,10 +14,11 @@ import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 
 import org.pEp.jniadapter.Rating;
 
-public class PepColoredActivity extends K9Activity {
+public abstract class PepColoredActivity extends K9Activity {
     public static final String CURRENT_RATING = "current_color";
     public static final String PEP_COLOR_RATING_DETAIL_MESSAGE = "Cannot retrieve pEpRating";
     protected Rating pEpRating = Rating.pEpRatingUndefined;
@@ -27,6 +28,7 @@ public class PepColoredActivity extends K9Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initializeInjector(getApplicationComponent());
     }
 
     protected void colorActionBar() {
@@ -67,4 +69,15 @@ public class PepColoredActivity extends K9Activity {
     public PePUIArtefactCache getUiCache() {
         return uiCache;
     }
+
+    private ApplicationComponent getApplicationComponent() {
+        return getAndroidApplication().getComponent();
+    }
+
+    public K9 getAndroidApplication() {
+        return (K9) getApplication();
+    }
+
+    protected abstract void initializeInjector(ApplicationComponent applicationComponent);
+
 }

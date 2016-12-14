@@ -8,6 +8,10 @@ import android.widget.TextView;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
+import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
+import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
+import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 
 import org.pEp.jniadapter.Identity;
 
@@ -96,5 +100,16 @@ public class pEpAddDevice extends PepColoredActivity {
     public PEpProvider getpEp() {
         return
                 ((K9)getApplication()).getpEpSyncProvider();
+    }
+
+    @Override
+    protected void initializeInjector(ApplicationComponent applicationComponent) {
+        applicationComponent.inject(this);
+        DaggerPEpComponent.builder()
+                .applicationComponent(applicationComponent)
+                .activityModule(new ActivityModule(this))
+                .pEpModule(new PEpModule(this, getLoaderManager(), getFragmentManager()))
+                .build()
+                .inject(this);
     }
 }

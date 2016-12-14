@@ -29,6 +29,7 @@ import com.fsck.k9.ui.crypto.MessageCryptoCallback;
 import com.fsck.k9.ui.crypto.MessageCryptoHelper;
 import com.fsck.k9.ui.message.LocalMessageExtractorLoader;
 import com.fsck.k9.ui.message.LocalMessageLoader;
+
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 
 
@@ -91,13 +92,12 @@ public class MessageLoaderHelper {
 
 
     public MessageLoaderHelper(Context context, LoaderManager loaderManager, FragmentManager fragmentManager,
-            @NonNull MessageLoaderCallbacks callback) {
+                               @NonNull MessageLoaderCallbacks callback) {
         this.context = context;
         this.loaderManager = loaderManager;
         this.fragmentManager = fragmentManager;
         this.callback = callback;
     }
-
 
     // public interface
 
