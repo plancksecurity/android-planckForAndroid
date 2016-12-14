@@ -149,7 +149,7 @@ public class PEpTrustwords extends PepColoredActivity {
     }
 
     private void loadTrustwords() {
-        //Actually what is heavy is update identity and sender.
+        //Actually what is heavy is update identity and myself.
         getpEp().trustwords(myself, partner, trustwordsLanguage, new PEpProvider.Callback<HandshakeData>() {
             @Override
             public void onLoaded(final HandshakeData handshakeData) {
