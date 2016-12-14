@@ -6,6 +6,7 @@ import android.content.IntentSender;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageLoaderHelper;
 import com.fsck.k9.activity.MessageReference;
+import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
@@ -19,6 +20,7 @@ import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -33,6 +35,8 @@ public class PEpStatusPresenter implements Presenter {
     private PEpProvider pEpProvider;
     private List<PEpIdentity> identities;
     private LocalMessage localMessage;
+    private boolean isMessageIncoming;
+    private Address senderAddress;
 
     @Inject
     public PEpStatusPresenter(SimpleMessageLoaderHelper simpleMessageLoaderHelper, PEpUtils pEpUtils, PEpIdentityMapper pEpIdentityMapper) {
@@ -41,16 +45,18 @@ public class PEpStatusPresenter implements Presenter {
         this.pEpIdentityMapper = pEpIdentityMapper;
     }
 
-    public void initilize(PEpStatusView pEpStatusView, PePUIArtefactCache uiCache, PEpProvider pEpProvider) {
+    public void initilize(PEpStatusView pEpStatusView, PePUIArtefactCache uiCache, PEpProvider pEpProvider, boolean isMessageIncoming, Address senderAddress) {
         this.view = pEpStatusView;
         this.cache = uiCache;
         this.pEpProvider = pEpProvider;
+        this.isMessageIncoming = isMessageIncoming;
+        this.senderAddress = senderAddress;
         pEpIdentityMapper.initialize(pEpProvider);
     }
 
     public void loadMessage(MessageReference messageReference) {
         if (messageReference != null) {
-            simpleMessageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, null);
+            simpleMessageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, callback());
         }
     }
 
@@ -65,7 +71,16 @@ public class PEpStatusPresenter implements Presenter {
         id = pEpProvider.updateIdentity(id);
         pEpProvider.resetTrust(id);
         List<PEpIdentity> updatedIdentities = updateRecipients(identities);
-        onRatingChanged(Rating.pEpRatingReliable);
+        if (isMessageIncoming) {
+            onRatingChanged(Rating.pEpRatingReliable);
+        } else {
+            List<Address> addresses = new ArrayList<>(identities.size());
+            for (PEpIdentity identity : identities) {
+                addresses.add(new Address(identity.address));
+            }
+            Rating privacyState = pEpProvider.getPrivacyState(senderAddress, addresses, Collections.emptyList(), Collections.emptyList());
+            onRatingChanged(privacyState);
+        }
         view.updateIdentities(updatedIdentities);
     }
 
@@ -89,7 +104,17 @@ public class PEpStatusPresenter implements Presenter {
         Rating pEpRating = pEpProvider.identityRating(partner);
         identities = pEpIdentityMapper.mapRecipients(recipients);
         view.updateIdentities(identities);
-        onRatingChanged(pEpRating);
+        if (isMessageIncoming) {
+            Rating rating = pEpProvider.identityRating(senderAddress);
+            onRatingChanged(rating);
+        } else {
+            List<Address> addresses = new ArrayList<>(identities.size());
+            for (PEpIdentity identity : identities) {
+                addresses.add(new Address(identity.address));
+            }
+            Rating privacyState = pEpProvider.getPrivacyState(senderAddress, addresses, Collections.emptyList(), Collections.emptyList());
+            onRatingChanged(privacyState);
+        }
     }
 
     private List<PEpIdentity> updateRecipients(List<PEpIdentity> identities) {
@@ -120,8 +145,6 @@ public class PEpStatusPresenter implements Presenter {
     public void destroy() {
 
     }
-
-
 
     public MessageLoaderHelper.MessageLoaderCallbacks callback() {
         return new MessageLoaderHelper.MessageLoaderCallbacks() {

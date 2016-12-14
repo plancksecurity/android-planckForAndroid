@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
+import com.fsck.k9.mail.Address;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.pEp.PEpStatusPresenter;
 import com.fsck.k9.pEp.PEpUtils;
@@ -42,9 +43,11 @@ import butterknife.ButterKnife;
 public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
     private static final String ACTION_SHOW_PEP_STATUS = "com.fsck.k9.intent.action.SHOW_PEP_STATUS";
-    private static final String MYSELF = "isComposedKey";
+    private static final String SENDER = "isComposedKey";
+    private static final String MYSELF = "mySelf";
     private static final String RATING = "rating";
     private static final String MESSAGE_REFERENCE = "message_reference";
+    private static final String MESSAGE_DIRECTION = "message_direction";
     public static final int REQUEST_STATUS = 2;
 
     @Inject PEpUtils pEpUtils;
@@ -61,15 +64,18 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     PEpIdentitiesAdapter recipientsAdapter;
     RecyclerView.LayoutManager recipientsLayoutManager;
 
-    String myself = "";
+    String sender = "";
     private MessageReference messageReference;
+    private String myself = "";
 
-    public static void actionShowStatus(Activity context, Rating currentRating, String myself, MessageReference messageReference) {
+    public static void actionShowStatus(Activity context, Rating currentRating, String sender, MessageReference messageReference, Boolean isMessageIncoming, String myself) {
         Intent i = new Intent(context, PEpStatus.class);
         i.setAction(ACTION_SHOW_PEP_STATUS);
         i.putExtra(CURRENT_RATING, currentRating.toString());
+        i.putExtra(SENDER, sender);
         i.putExtra(MYSELF, myself);
         i.putExtra(MESSAGE_REFERENCE, messageReference);
+        i.putExtra(MESSAGE_DIRECTION, isMessageIncoming);
         context.startActivityForResult(i, REQUEST_STATUS);
     }
 
@@ -80,11 +86,13 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         setContentView(R.layout.pep_status);
         ButterKnife.bind(PEpStatus.this);
         initPep();
-        presenter.initilize(this, uiCache, getpEp());
-        if (getIntent() != null && getIntent().hasExtra(MYSELF)
+        if (getIntent() != null && getIntent().hasExtra(SENDER)
                 && getIntent().hasExtra(MESSAGE_REFERENCE)) {
+            sender = getIntent().getStringExtra(SENDER);
             myself = getIntent().getStringExtra(MYSELF);
             messageReference = (MessageReference) getIntent().getExtras().get(MESSAGE_REFERENCE);
+            boolean isMessageIncoming = getIntent().getBooleanExtra(MESSAGE_DIRECTION, false);
+            presenter.initilize(this, uiCache, getpEp(), isMessageIncoming, new Address(sender));
             presenter.loadMessage(messageReference);
         }
         restorePEpRating(savedInstanceState);
