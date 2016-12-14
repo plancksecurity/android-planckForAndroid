@@ -74,14 +74,18 @@ public class PEpStatusPresenter implements Presenter {
         if (isMessageIncoming) {
             onRatingChanged(Rating.pEpRatingReliable);
         } else {
-            List<Address> addresses = new ArrayList<>(identities.size());
-            for (PEpIdentity identity : identities) {
-                addresses.add(new Address(identity.address));
-            }
-            Rating privacyState = pEpProvider.getPrivacyState(senderAddress, addresses, Collections.emptyList(), Collections.emptyList());
-            onRatingChanged(privacyState);
+            setupOutgoingMessageRating();
         }
         view.updateIdentities(updatedIdentities);
+    }
+
+    private void setupOutgoingMessageRating() {
+        List<Address> addresses = new ArrayList<>(identities.size());
+        for (PEpIdentity identity : identities) {
+            addresses.add(new Address(identity.address));
+        }
+        Rating privacyState = pEpProvider.getPrivacyState(senderAddress, addresses, Collections.emptyList(), Collections.emptyList());
+        onRatingChanged(privacyState);
     }
 
     private void onRatingChanged(Rating rating) {
@@ -108,12 +112,7 @@ public class PEpStatusPresenter implements Presenter {
             Rating rating = pEpProvider.identityRating(senderAddress);
             onRatingChanged(rating);
         } else {
-            List<Address> addresses = new ArrayList<>(identities.size());
-            for (PEpIdentity identity : identities) {
-                addresses.add(new Address(identity.address));
-            }
-            Rating privacyState = pEpProvider.getPrivacyState(senderAddress, addresses, Collections.emptyList(), Collections.emptyList());
-            onRatingChanged(privacyState);
+            setupOutgoingMessageRating();
         }
     }
 
