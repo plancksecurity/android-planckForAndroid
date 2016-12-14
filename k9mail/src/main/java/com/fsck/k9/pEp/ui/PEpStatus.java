@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -134,35 +135,38 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         ((LinearLayoutManager) recipientsLayoutManager).setOrientation(LinearLayoutManager.VERTICAL);
         recipientsView.setLayoutManager(recipientsLayoutManager);
         recipientsView.setVisibility(View.VISIBLE);
-        recipientsAdapter = new PEpIdentitiesAdapter(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int position = ((Integer) view.getTag());
-                presenter.updateTrust(position);
-            }
-        }, new View.OnClickListener() {
-
-            @Override
-            public void onClick(final View view) {
-                new AlertDialog.Builder(view.getContext()).setMessage(R.string.handshake_reset_dialog_message).setCancelable(false).setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        int position = ((Integer) view.getTag());
-                        presenter.updateTrust(position);
-                    }
-                }).setNegativeButton(R.string.cancel_action, null).show();
-            }
-        }, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int partnerPosition = ((Integer) v.getTag());
-                PEpTrustwords.actionRequestHandshake(activity, myself, partnerPosition);
-            }
-        });
+        recipientsAdapter = new PEpIdentitiesAdapter(getOnResetGreenClickListener(), getOnResetRedClickListener(), getOnHandshakeClickListener(activity));
         recipientsAdapter.setIdentities(pEpIdentities);
         recipientsView.setAdapter(recipientsAdapter);
         recipientsView.addItemDecoration(new SimpleDividerItemDecoration(this));
 
+    }
+
+    @NonNull
+    private View.OnClickListener getOnHandshakeClickListener(final Activity activity) {
+        return v -> {
+            int partnerPosition = ((Integer) v.getTag());
+            PEpTrustwords.actionRequestHandshake(activity, myself, partnerPosition);
+        };
+    }
+
+    @NonNull
+    private View.OnClickListener getOnResetRedClickListener() {
+        return view -> new AlertDialog.Builder(view.getContext())
+                .setMessage(R.string.handshake_reset_dialog_message)
+                .setCancelable(false)
+                .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
+            int position = ((Integer) view.getTag());
+            presenter.updateTrust(position);
+        }).setNegativeButton(R.string.cancel_action, null).show();
+    }
+
+    @NonNull
+    private View.OnClickListener getOnResetGreenClickListener() {
+        return view -> {
+            int position = ((Integer) view.getTag());
+            presenter.updateTrust(position);
+        };
     }
 
     @Override
