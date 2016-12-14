@@ -3,8 +3,8 @@ package com.fsck.k9.pEp.infrastructure.components;
 import com.fsck.k9.pEp.infrastructure.PerActivity;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
-import com.fsck.k9.pEp.ui.PEpStatus;
-import com.fsck.k9.pEp.ui.PEpTrustwords;
+import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
+import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 import com.fsck.k9.pEp.ui.pEpAddDevice;
 
 import dagger.Component;
