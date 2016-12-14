@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.Identity;
 import com.fsck.k9.K9;
@@ -35,6 +36,7 @@ import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.Poller;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
+
 import org.openintents.openpgp.IOpenPgpService2;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.openintents.openpgp.util.OpenPgpApi.PermissionPingCallback;
@@ -91,6 +93,7 @@ public class RecipientPresenter implements PermissionPingCallback {
     private List<Address> ccAdresses;
     private List<Address> bccAdresses;
     private Rating privacyState = Rating.pEpRatingUnencrypted;
+    private boolean dirty;
 
     public RecipientPresenter(Context context, LoaderManager loaderManager, RecipientMvpView recipientMvpView,
                               Account account, ComposePgpInlineDecider composePgpInlineDecider, ReplyToParser replyToParser) {
@@ -812,8 +815,7 @@ public class RecipientPresenter implements PermissionPingCallback {
         ccAdresses = getCcAddresses();
         bccAdresses = getBccAddresses();
 
-        pEp = ((K9) context.getApplicationContext()).getpEpProvider();
-        privacyState = pEp.getPrivacyState(this.recipientMvpView.getFromAddress(), toAdresses, ccAdresses, bccAdresses);
+        dirty = true;
 
         this.recipientMvpView.notifyAddressesChanged(toAdresses, ccAdresses, bccAdresses);
         setupPEPStatusTask();
@@ -848,7 +850,10 @@ public class RecipientPresenter implements PermissionPingCallback {
                 toAdresses = initializeAdresses(toAdresses);
                 ccAdresses = initializeAdresses(ccAdresses);
                 bccAdresses = initializeAdresses(bccAdresses);
-                if (fromAddress != null && (addressesChanged(toAdresses, newToAdresses) || addressesChanged(ccAdresses, newCcAdresses) || addressesChanged(bccAdresses, newBccAdresses))) {
+                addressesChanged(toAdresses, newToAdresses);
+                addressesChanged(ccAdresses, newCcAdresses);
+                addressesChanged(bccAdresses, newBccAdresses);
+                if (fromAddress != null && dirty) {
                     toAdresses = newToAdresses;
                     ccAdresses = newCcAdresses;
                     bccAdresses = newBccAdresses;
@@ -869,7 +874,8 @@ public class RecipientPresenter implements PermissionPingCallback {
         }
 
         private boolean addressesChanged(List<Address> oldAdresses, List<Address> newAdresses) {
-            return !oldAdresses.equals(newAdresses);
+            dirty = !oldAdresses.equals(newAdresses);
+            return dirty;
         }
 
         @Override
