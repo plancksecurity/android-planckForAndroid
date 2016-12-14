@@ -179,11 +179,10 @@ public class PEpProviderImpl implements PEpProvider {
                 notifyLoaded(result, callback);
             } catch (Throwable e) {
                 Log.e(TAG, "during color test:", e);
+                notifyError(e, callback);
             } finally {
                 if (testee != null) testee.close();
             }
-
-            notifyLoaded(Rating.pEpRatingUndefined, callback);
         });
     }
 
