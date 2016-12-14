@@ -135,7 +135,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         ((LinearLayoutManager) recipientsLayoutManager).setOrientation(LinearLayoutManager.VERTICAL);
         recipientsView.setLayoutManager(recipientsLayoutManager);
         recipientsView.setVisibility(View.VISIBLE);
-        recipientsAdapter = new PEpIdentitiesAdapter(getOnResetGreenClickListener(), getOnResetRedClickListener(), getOnHandshakeClickListener(activity));
+        recipientsAdapter = new PEpIdentitiesAdapter(getOnResetGreenClickListener(), getOnResetRedClickListener(), getOnHandshakeClickListener());
         recipientsAdapter.setIdentities(pEpIdentities);
         recipientsView.setAdapter(recipientsAdapter);
         recipientsView.addItemDecoration(new SimpleDividerItemDecoration(this));
@@ -143,10 +143,10 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     }
 
     @NonNull
-    private View.OnClickListener getOnHandshakeClickListener(final Activity activity) {
+    private View.OnClickListener getOnHandshakeClickListener() {
         return v -> {
             int partnerPosition = ((Integer) v.getTag());
-            PEpTrustwords.actionRequestHandshake(activity, myself, partnerPosition);
+            PEpTrustwords.actionRequestHandshake(PEpStatus.this, myself, partnerPosition);
         };
     }
 
