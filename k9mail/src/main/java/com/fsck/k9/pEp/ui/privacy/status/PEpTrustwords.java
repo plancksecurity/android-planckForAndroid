@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp.ui;
+package com.fsck.k9.pEp.ui.privacy.status;
 
 import android.app.Activity;
 import android.content.Context;
@@ -24,6 +24,8 @@ import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
+import com.fsck.k9.pEp.ui.HandshakeData;
+import com.fsck.k9.pEp.ui.PepColoredActivity;
 
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
@@ -151,16 +153,16 @@ public class PEpTrustwords extends PepColoredActivity {
         getpEp().trustwords(myself, partner, trustwordsLanguage, new PEpProvider.Callback<HandshakeData>() {
             @Override
             public void onLoaded(final HandshakeData handshakeData) {
-                fullTrustwords = handshakeData.fullTrustwords;
-                shortTrustwords = handshakeData.shortTrustwords;
+                fullTrustwords = handshakeData.getFullTrustwords();
+                shortTrustwords = handshakeData.getShortTrustwords();
                 if (areTrustwordsShort) {
                     tvTrustwords.setText(shortTrustwords);
                 } else {
                     tvTrustwords.setText(fullTrustwords);
                 }
 
-                myself = handshakeData.myself;
-                partner = handshakeData.partner;
+                myself = handshakeData.getMyself();
+                partner = handshakeData.getPartner();
                 myselfFpr.setText(PEpUtils.formatFpr(myself.fpr));
                 partnerFpr.setText(PEpUtils.formatFpr(partner.fpr));
                 loading.setVisibility(View.GONE);

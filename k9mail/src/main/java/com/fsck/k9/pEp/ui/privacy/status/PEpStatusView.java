@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp.ui;
+package com.fsck.k9.pEp.ui.privacy.status;
 
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.pEp.models.PEpIdentity;

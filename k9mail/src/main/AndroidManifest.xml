@@ -441,7 +441,7 @@
         </provider>
 
         <activity
-            android:name=".pEp.ui.PEpStatus"
+            android:name=".pEp.ui.privacy.status.PEpStatus"
             android:label="@string/pep_title_activity_privacy_status">
         </activity>
         <activity
@@ -450,18 +450,18 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         </activity>
         <activity
-            android:name=".pEp.ui.PEpTrustwords"
+            android:name=".pEp.ui.privacy.status.PEpTrustwords"
             android:label="@string/pep_title_activity_trustwords"
-            android:parentActivityName=".pEp.ui.PEpStatus">
+            android:parentActivityName=".pEp.ui.privacy.status.PEpStatus">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".pEp.ui.PEpStatus" />
+                android:value=".pEp.ui.privacy.status.PEpStatus" />
 
         </activity>
         <activity
             android:name=".pEp.ui.pEpAddDevice"
             android:label="@string/pep_device_group"
-            android:parentActivityName=".pEp.ui.PEpStatus">
+            android:parentActivityName=".pEp.ui.privacy.status.PEpStatus">
 
             <intent-filter>
                 <action android:name="com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS" />

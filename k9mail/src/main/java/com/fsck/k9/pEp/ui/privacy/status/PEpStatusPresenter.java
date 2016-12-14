@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp;
+package com.fsck.k9.pEp.ui.privacy.status;
 
 import android.content.Intent;
 import android.content.IntentSender;
@@ -10,10 +10,12 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
+import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.infrastructure.Presenter;
 import com.fsck.k9.pEp.models.PEpIdentity;
 import com.fsck.k9.pEp.models.mappers.PEpIdentityMapper;
-import com.fsck.k9.pEp.ui.PEpStatusView;
 import com.fsck.k9.pEp.ui.SimpleMessageLoaderHelper;
 
 import org.pEp.jniadapter.Identity;

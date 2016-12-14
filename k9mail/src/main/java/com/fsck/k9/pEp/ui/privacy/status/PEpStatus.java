@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp.ui;
+package com.fsck.k9.pEp.ui.privacy.status;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -23,7 +23,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mailstore.LocalMessage;
-import com.fsck.k9.pEp.PEpStatusPresenter;
+import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
@@ -93,7 +93,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
             myself = getIntent().getStringExtra(MYSELF);
             messageReference = (MessageReference) getIntent().getExtras().get(MESSAGE_REFERENCE);
             boolean isMessageIncoming = getIntent().getBooleanExtra(MESSAGE_DIRECTION, false);
-            presenter.initilize(this, uiCache, getpEp(), isMessageIncoming, new Address(sender));
+            presenter.initilize(this, getUiCache(), getpEp(), isMessageIncoming, new Address(sender));
             presenter.loadMessage(messageReference);
         }
         restorePEpRating(savedInstanceState);
@@ -270,13 +270,9 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     private void showExplanationDialog() {
          new AlertDialog.Builder(this)
                 .setTitle(R.string.pep_explanation)
-                .setMessage(uiCache.getExplanation(getpEpRating()))
+                .setMessage(getUiCache().getExplanation(getpEpRating()))
                 .setPositiveButton(R.string.okay_action,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
+                        (dialog, which) -> dialog.dismiss())
                 .create()
                  .show();
 
