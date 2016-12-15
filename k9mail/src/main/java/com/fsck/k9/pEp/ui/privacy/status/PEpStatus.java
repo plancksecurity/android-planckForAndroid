@@ -4,7 +4,6 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -16,6 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,13 +23,13 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mailstore.LocalMessage;
-import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.models.PEpIdentity;
+import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.ui.adapters.PEpIdentitiesAdapter;
 
 import org.pEp.jniadapter.Rating;
@@ -156,16 +156,20 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
                 .setMessage(R.string.handshake_reset_dialog_message)
                 .setCancelable(false)
                 .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
-            int position = ((Integer) view.getTag());
-            presenter.updateTrust(position);
-        }).setNegativeButton(R.string.cancel_action, null).show();
+                    Button button = (Button) view;
+                    button.setText(R.string.message_list_loading);
+                    int position = ((Integer) view.getTag());
+                    presenter.resetRecipientTrust(position);
+                }).setNegativeButton(R.string.cancel_action, null).show();
     }
 
     @NonNull
     private View.OnClickListener getOnResetGreenClickListener() {
         return view -> {
+            Button button = (Button) view;
+            button.setText(R.string.message_list_loading);
             int position = ((Integer) view.getTag());
-            presenter.updateTrust(position);
+            presenter.resetRecipientTrust(position);
         };
     }
 

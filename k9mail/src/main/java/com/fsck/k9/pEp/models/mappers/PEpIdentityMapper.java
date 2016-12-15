@@ -30,7 +30,7 @@ public class PEpIdentityMapper {
         return pEpIdentities;
     }
 
-    private PEpIdentity mapRecipient(Identity recipient) {
+    public PEpIdentity mapRecipient(Identity recipient) {
         PEpIdentity pEpIdentity = new PEpIdentity();
         pEpIdentity.address = recipient.address;
         pEpIdentity.comm_type = recipient.comm_type;
