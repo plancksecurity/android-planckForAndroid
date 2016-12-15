@@ -43,6 +43,8 @@ public class PEpTrustwords extends PepColoredActivity {
     private static final String MYSELF = "myselfKey";
     private static final String PARTNER_PREFIX = "Partner: ";
     private static final String SHOWING_PGP_FINGERPRINT = "showingPgpKey";
+    private static final String ARE_TRUSTWORD_SHORT = "are_trustword_short";
+    private static final String TRUSTWORD_LANGUAGE = "trustword_length";
 
     private Identity partner, myself;
     private int partnerPosition;
@@ -127,11 +129,16 @@ public class PEpTrustwords extends PepColoredActivity {
 
             }
             //
-            loadTrustwords();
 
         }
 
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadTrustwords();
     }
 
     private void loadPartnerRating() {
@@ -335,6 +342,8 @@ public class PEpTrustwords extends PepColoredActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         showingPgpFingerprint = savedInstanceState.getBoolean(SHOWING_PGP_FINGERPRINT);
+        areTrustwordsShort = savedInstanceState.getBoolean(ARE_TRUSTWORD_SHORT);
+        trustwordsLanguage = savedInstanceState.getString(TRUSTWORD_LANGUAGE);
         if (showingPgpFingerprint) flipper.showNext();
     }
 
@@ -342,5 +351,7 @@ public class PEpTrustwords extends PepColoredActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(SHOWING_PGP_FINGERPRINT, showingPgpFingerprint);
+        outState.putBoolean(ARE_TRUSTWORD_SHORT, areTrustwordsShort);
+        outState.putString(TRUSTWORD_LANGUAGE, trustwordsLanguage);
     }
 }
