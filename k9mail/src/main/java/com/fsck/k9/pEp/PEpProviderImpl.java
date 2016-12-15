@@ -8,9 +8,11 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
+import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
+import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
+import com.fsck.k9.pEp.ui.HandshakeData;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
 import org.pEp.jniadapter.AndroidHelper;
@@ -30,16 +32,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import javax.inject.Inject;
+
 /**
  * pep provider implementation. Dietz is the culprit.
  */
 public class PEpProviderImpl implements PEpProvider {
     private static final String TAG = "pEp";
     private static boolean pEpInitialized = false;
+    private final ThreadExecutor threadExecutor;
+    private final PostExecutionThread postExecutionThread;
     private Context context;
     private Engine engine;
 
-    public PEpProviderImpl(Context context) {
+    @Inject
+    public PEpProviderImpl(ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread, Context context) {
+        this.threadExecutor = threadExecutor;
+        this.postExecutionThread = postExecutionThread;
         this.context = context;
         createEngineInstanceIfNeeded();
     }
@@ -57,17 +66,25 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public Rating getPrivacyState(com.fsck.k9.mail.Message message) {
-
         Address from = message.getFrom()[0];                            // FIXME: From is an array?!
         List<Address> to = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO));
         List<Address> cc = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC));
         List<Address> bcc = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC));
         return getPrivacyState(from, to, cc, bcc);
-
     }
 
     @Override
-    public Rating getPrivacyState(Message message) {
+    public void getPrivacyState(com.fsck.k9.mail.Message message, Callback<Rating> callback) {
+        threadExecutor.execute(() -> {
+            Address from = message.getFrom()[0];                            // FIXME: From is an array?!
+            List<Address> to = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO));
+            List<Address> cc = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC));
+            List<Address> bcc = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC));
+            notifyLoaded(getPrivacyState(from, to, cc, bcc), callback);
+        });
+    }
+
+    private Rating getPrivacyState(Message message) {
         try {
             if (engine == null) {
                 createEngineSession();
@@ -130,6 +147,45 @@ public class PEpProviderImpl implements PEpProvider {
         return Rating.pEpRatingUndefined;
     }
 
+    @Override
+    public synchronized void getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, Callback<Rating> callback) {
+        threadExecutor.execute(() -> {
+            int recipientsSize = toAddresses.size() + ccAddresses.size() + bccAddresses.size();
+            if (from == null || recipientsSize == 0)
+                notifyLoaded(Rating.pEpRatingUndefined, callback);
+
+            Message testee = null;
+            try {
+                if (engine == null) {
+                    createEngineSession();
+
+                }
+                testee = new Message();
+
+                Identity idFrom = PEpUtils.createIdentity(from, context);
+                idFrom.me = true;
+                idFrom.user_id = PEP_OWN_USER_ID;
+                testee.setFrom(idFrom);
+                testee.setTo(PEpUtils.createIdentities(toAddresses, context));
+                testee.setCc(PEpUtils.createIdentities(ccAddresses, context));
+                testee.setBcc(PEpUtils.createIdentities(bccAddresses, context));
+                testee.setShortmsg("hello, world");     // FIXME: do I need them?
+                testee.setLongmsg("Lorem ipsum");
+                testee.setDir(Message.Direction.Outgoing);
+
+                Rating result = engine.outgoing_message_rating(testee);   // stupid way to be able to patch the value in debugger
+                Log.i(TAG, "getPrivacyState " + idFrom.fpr);
+
+                notifyLoaded(result, callback);
+            } catch (Throwable e) {
+                Log.e(TAG, "during color test:", e);
+                notifyError(e, callback);
+            } finally {
+                if (testee != null) testee.close();
+            }
+        });
+    }
+
     private boolean isUnencryptedForSome(List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses) {
         for (Address toAddress : toAddresses) {
             if (identityRating(toAddress).value > Rating.pEpRatingUnencrypted.value) return true;
@@ -177,6 +233,47 @@ public class PEpProviderImpl implements PEpProvider {
         }
     }
 
+    @Override
+    public void decryptMessage(MimeMessage source, Callback<DecryptResult> callback) {
+        threadExecutor.execute(() -> {
+            Log.d(TAG, "decryptMessage() enter");
+            Message srcMsg = null;
+            Engine.decrypt_message_Return decReturn = null;
+            try {
+                if (engine == null) createEngineSession();
+
+                srcMsg = new PEpMessageBuilder(source).createMessage(context);
+                srcMsg.setDir(Message.Direction.Incoming);
+
+                Log.d(TAG, "decryptMessage() before decrypt");
+                if ( srcMsg.getOptFields() != null) {
+                    for (Pair<String, String> stringStringPair : srcMsg.getOptFields()) {
+                        Log.d(TAG, "decryptMessage() after decrypt " + stringStringPair.first + ": " + stringStringPair.second);
+                    }
+                }
+                decReturn = engine.decrypt_message(srcMsg);
+                Log.d(TAG, "decryptMessage() after decrypt");
+                MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
+
+                if (isUsablePrivateKey(decReturn)) {
+                    notifyLoaded(new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg)), callback);
+                }
+                else notifyLoaded(new DecryptResult(decMsg, decReturn.rating, null), callback);
+//        } catch (pEpMessageConsume | pEpMessageIgnore pe) {
+//            // TODO: 15/11/16 deal with it as flag not exception
+//            //  throw pe;
+//            return null;
+            }catch (Throwable t) {
+                Log.e(TAG, "while decrypting message:", t);
+                notifyError(new AppCannotDecryptException("Could not decrypt", t), callback);
+            } finally {
+                if (srcMsg != null) srcMsg.close();
+                if (decReturn != null && decReturn.dst != srcMsg) decReturn.dst.close();
+                Log.d(TAG, "decryptMessage() exit");
+            }
+        });
+    }
+
     private boolean isUsablePrivateKey(Engine.decrypt_message_Return result) {
         // TODO: 13/06/16 Check if is necesary check own id
         return result.rating.value >= Rating.pEpRatingTrusted.value
@@ -203,6 +300,24 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
+    public void encryptMessage(MimeMessage source, String[] extraKeys, Callback<List<MimeMessage>> callback) {
+        // TODO: 06/12/16 add unencrypted for some
+        Log.d(TAG, "encryptMessage() enter");
+        List<MimeMessage> resultMessages = new ArrayList<>();
+        Message message = new PEpMessageBuilder(source).createMessage(context);
+        try {
+            if (engine == null) createEngineSession();
+            resultMessages.add(getEncryptedCopy(message, extraKeys));
+            notifyLoaded(resultMessages, callback);
+        } catch (Throwable t) {
+            Log.e(TAG, "while encrypting message:", t);
+            notifyError(new RuntimeException("Could not encrypt", t), callback);
+        } finally {
+            Log.d(TAG, "encryptMessage() exit");
+        }
+    }
+
+    @Override
     public MimeMessage encryptMessageToSelf(MimeMessage source) throws MessagingException{
         if (source == null) {
             return source;
@@ -222,6 +337,33 @@ public class PEpProviderImpl implements PEpProvider {
         } catch (Exception exception) {
             Log.e(TAG, "encryptMessageToSelf: ", exception);
             return source;
+        } finally {
+            if (message != null) {
+                message.close();
+            }
+        }
+    }
+
+    @Override
+    public void encryptMessageToSelf(MimeMessage source, Callback<MimeMessage> callback){
+        if (source == null) {
+            notifyLoaded(source, callback);
+        }
+        Message message = null;
+        try {
+            message = new PEpMessageBuilder(source).createMessage(context);
+            message.setDir(Message.Direction.Outgoing);
+            Log.d(TAG, "encryptMessage() before encrypt to self");
+            Identity from = message.getFrom();
+            from.user_id = PEP_OWN_USER_ID;
+            message.setFrom(from);
+            Message currentEnc = engine.encrypt_message_for_self(message.getFrom(), message);
+            if (currentEnc == null) currentEnc = message;
+            Log.d(TAG, "encryptMessage() after encrypt to self");
+            notifyLoaded(new MimeMessageBuilder(currentEnc).createMessage(), callback);
+        } catch (Exception exception) {
+            Log.e(TAG, "encryptMessageToSelf: ", exception);
+            notifyLoaded(source, callback);
         } finally {
             if (message != null) {
                 message.close();
@@ -359,6 +501,14 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
+    public void identityRating(Address address, Callback<Rating> callback) {
+        threadExecutor.execute(() -> {
+            Identity ident = PEpUtils.createIdentity(address, context);
+            notifyLoaded(identityRating(ident), callback);
+        });
+    }
+
+    @Override
     public Rating identityRating(Identity ident) {
         createEngineInstanceIfNeeded();
         try {
@@ -370,10 +520,62 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
+    public void identityRating(final Identity identity, final Callback<Rating> callback) {
+        threadExecutor.execute(() -> {
+            Engine engine1 = null;
+            try {
+                engine1 = new Engine();
+                Rating rating = engine1.identity_rating(identity);
+                notifyLoaded(rating, callback);
+            } catch (Exception e) {
+                notifyError(e, callback);
+            } finally {
+                if (engine1 != null) {
+                    engine1.close();
+                }
+            }
+        });
+    }
+
+    @Override
     public String trustwords(Identity id, String language) {
         id.lang = language;
         createEngineInstanceIfNeeded();
         return engine.trustwords(id);
+    }
+
+    @Override
+    public void trustwords(Identity myself, Identity partner, String lang, Callback<HandshakeData> callback) {
+        Engine engine = null;
+        try {
+            engine = new Engine();
+            myself.lang = PEpUtils.obtainTrustwordsLang(lang);
+            myself.user_id = PEP_OWN_USER_ID;
+            myself = engine.myself(myself);
+            partner.lang = PEpUtils.obtainTrustwordsLang(lang);
+            partner = engine.updateIdentity(partner);
+            String myTrust = engine.trustwords(myself);
+            String theirTrust = engine.trustwords(partner);
+            String myTrustShort = PEpUtils.getShortTrustwords(myTrust);
+            String theirTrustShort = PEpUtils.getShortTrustwords(theirTrust);
+
+            String trust = "";
+            String shortTrust = "";
+            if (myself.fpr.compareTo(partner.fpr) > 0) {
+                trust = theirTrust + myTrust;
+                shortTrust = theirTrustShort + myTrustShort;
+            } else {
+                trust = myTrust + theirTrust;
+                shortTrust = myTrustShort + theirTrustShort;
+            }
+            notifyLoaded(new HandshakeData(trust, shortTrust, myself, partner), callback);
+        } catch (Exception e) {
+            notifyError(e, callback);
+        } finally {
+            if (engine != null) {
+                engine.close();
+            }
+        }
     }
 
     @Override
@@ -569,5 +771,23 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public void cancelHandshake(Identity identity) {
 //        engine.cancel_sync_handshake(identity);
+    }
+
+    private void notifyLoaded(final Object privacyState, final Callback callback) {
+        this.postExecutionThread.post(new Runnable() {
+            @Override
+            public void run() {
+                callback.onLoaded(privacyState);
+            }
+        });
+    }
+
+    private void notifyError(final Throwable throwable, final Callback callback) {
+        this.postExecutionThread.post(new Runnable() {
+            @Override
+            public void run() {
+                callback.onError(throwable);
+            }
+        });
     }
 }

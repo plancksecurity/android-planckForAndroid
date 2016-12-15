@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:tools="http://schemas.android.com/tools"
       xmlns:app="http://schemas.android.com/apk/res-auto"
-      tools:context=".pEp.ui.PEpStatus">
+      tools:context=".pEp.ui.privacy.status.PEpStatus">
     <item
             android:id="@+id/action_explanation"
             android:title="@string/pep_explanation"

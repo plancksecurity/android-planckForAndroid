@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -88,11 +87,11 @@ public class RecipientPresenter implements PermissionPingCallback {
     private CryptoMode currentCryptoMode = CryptoMode.OPPORTUNISTIC;
     private boolean cryptoEnablePgpInline = false;
     private boolean forceUnencrypted = false;
-    private PEPStatusTask pepStatusTask;
     private List<Address> toAdresses;
     private List<Address> ccAdresses;
     private List<Address> bccAdresses;
     private Rating privacyState = Rating.pEpRatingUnencrypted;
+    private boolean dirty;
 
     public RecipientPresenter(Context context, LoaderManager loaderManager, RecipientMvpView recipientMvpView,
                               Account account, ComposePgpInlineDecider composePgpInlineDecider, ReplyToParser replyToParser) {
@@ -106,19 +105,13 @@ public class RecipientPresenter implements PermissionPingCallback {
         recipientMvpView.setLoaderManager(loaderManager);
         onSwitchAccount(account);
         updateCryptoStatus();
-        setupPEPStatusTask();
+        setupPEPStatusPolling();
     }
 
-    private void setupPEPStatusTask() {
+    private void setupPEPStatusPolling() {
         if (poller == null) {
             poller = new Poller(new Handler());
-            poller.init(POLLING_INTERVAL, new Runnable() {
-                @Override
-                public void run() {
-                    pepStatusTask = new PEPStatusTask();
-                    pepStatusTask.execute();
-                }
-            });
+            poller.init(POLLING_INTERVAL, this::loadPEpStatus);
         } else {
             poller.stopPolling();
         }
@@ -226,14 +219,10 @@ public class RecipientPresenter implements PermissionPingCallback {
         privacyState = (Rating) savedInstanceState.getSerializable(STATE_RATING);
         updateRecipientExpanderVisibility();
         recipientMvpView.setpEpRating(privacyState);
-        setupPEPStatusTask();
+        setupPEPStatusPolling();
     }
 
     public void onSaveInstanceState(Bundle outState) {
-        if (pepStatusTask != null) {
-            pepStatusTask.cancel(true);
-        }
-        pepStatusTask = new PEPStatusTask();
         poller.stopPolling();
         outState.putBoolean(STATE_KEY_CC_SHOWN, recipientMvpView.isCcVisible());
         outState.putBoolean(STATE_KEY_BCC_SHOWN, recipientMvpView.isBccVisible());
@@ -815,11 +804,10 @@ public class RecipientPresenter implements PermissionPingCallback {
         ccAdresses = getCcAddresses();
         bccAdresses = getBccAddresses();
 
-        pEp = ((K9) context.getApplicationContext()).getpEpProvider();
-        privacyState = pEp.getPrivacyState(this.recipientMvpView.getFromAddress(), toAdresses, ccAdresses, bccAdresses);
+        dirty = true;
 
         this.recipientMvpView.notifyAddressesChanged(toAdresses, ccAdresses, bccAdresses);
-        setupPEPStatusTask();
+        setupPEPStatusPolling();
     }
 
     public enum CryptoProviderState {
@@ -837,48 +825,57 @@ public class RecipientPresenter implements PermissionPingCallback {
         PRIVATE,
     }
 
-    private class PEPStatusTask extends AsyncTask<Void, Void, Rating> {
+    private void loadPEpStatus() {
+        if (forceUnencrypted) {
+            showRatingFeedback(Rating.pEpRatingUnencrypted);
+        } else {
+            Address fromAddress = recipientMvpView.getFromAddress();
+            List<Address> newToAdresses = recipientMvpView.getToAddresses();
+            List<Address> newCcAdresses = recipientMvpView.getCcAddresses();
+            List<Address> newBccAdresses = recipientMvpView.getBccAddresses();
+            toAdresses = initializeAdresses(toAdresses);
+            ccAdresses = initializeAdresses(ccAdresses);
+            bccAdresses = initializeAdresses(bccAdresses);
+            if (fromAddress != null
+                    && (dirty
+                    || addressesChanged(toAdresses, newToAdresses)
+                    || addressesChanged(ccAdresses, newCcAdresses)
+                    || addressesChanged(bccAdresses, newBccAdresses))) {
+                dirty = false;
+                toAdresses = newToAdresses;
+                ccAdresses = newCcAdresses;
+                bccAdresses = newBccAdresses;
+                recipientMvpView.lockSendButton();
+                pEp = ((K9) context.getApplicationContext()).getpEpProvider();
+                pEp.getPrivacyState(fromAddress, toAdresses, ccAdresses, bccAdresses, new PEpProvider.Callback<Rating>() {
+                    @Override
+                    public void onLoaded(Rating rating) {
+                        showRatingFeedback(rating);
+                    }
 
-        @Override
-        protected Rating doInBackground(Void... params) {
-            if (forceUnencrypted) {
-                return Rating.pEpRatingUnencrypted;
-            } else {
-                Address fromAddress = recipientMvpView.getFromAddress();
-                List<Address> newToAdresses = recipientMvpView.getToAddresses();
-                List<Address> newCcAdresses = recipientMvpView.getCcAddresses();
-                List<Address> newBccAdresses = recipientMvpView.getBccAddresses();
-                toAdresses = initializeAdresses(toAdresses);
-                ccAdresses = initializeAdresses(ccAdresses);
-                bccAdresses = initializeAdresses(bccAdresses);
-                if (fromAddress != null && (addressesChanged(toAdresses, newToAdresses) || addressesChanged(ccAdresses, newCcAdresses) || addressesChanged(bccAdresses, newBccAdresses))) {
-                    toAdresses = newToAdresses;
-                    ccAdresses = newCcAdresses;
-                    bccAdresses = newBccAdresses;
-                    recipientMvpView.lockSendButton();
-                    pEp = ((K9) context.getApplicationContext()).getpEpProvider();
-                    privacyState = pEp.getPrivacyState(fromAddress, toAdresses, ccAdresses, bccAdresses);
-                }
-                recipientMvpView.unlockSendButton();
-                return privacyState;
+                    @Override
+                    public void onError(Throwable throwable) {
+
+                    }
+                });
             }
+            recipientMvpView.unlockSendButton();
         }
+    }
 
-        private List<Address> initializeAdresses(List<Address> addresses) {
-            if(addresses == null) {
-                addresses = Collections.emptyList();
-            }
-            return addresses;
-        }
+    private void showRatingFeedback(Rating rating) {
+        recipientMvpView.setpEpRating(rating);
+        recipientMvpView.handlepEpState();
+    }
 
-        private boolean addressesChanged(List<Address> oldAdresses, List<Address> newAdresses) {
-            return !oldAdresses.equals(newAdresses);
+    private List<Address> initializeAdresses(List<Address> addresses) {
+        if(addresses == null) {
+            addresses = Collections.emptyList();
         }
+        return addresses;
+    }
 
-        @Override
-        protected void onPostExecute(Rating rating) {
-            recipientMvpView.setpEpRating(rating);
-            recipientMvpView.handlepEpState();
-        }
+    private boolean addressesChanged(List<Address> oldAdresses, List<Address> newAdresses) {
+        return !oldAdresses.equals(newAdresses);
     }
 }

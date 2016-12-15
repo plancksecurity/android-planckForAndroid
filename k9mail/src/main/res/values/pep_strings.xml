@@ -81,12 +81,12 @@
     <string name="pep_from_format">from sender %1$s</string>
     <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Trust server and store mails unprotected</string>
     <string name="pep_mistrust_server_and_store_mails_encrypted">Store messages securely</string>
-    <string name="pep_enable_privacy_protection">pEp privacy protection</string>
+    <string name="pep_enable_privacy_protection">p≡p privacy protection</string>
     <string name="pep_explanation">Explanation</string>
     <string name="pep_suggestion">Suggestion</string>
     <string name="pep_app_license">Licensed under the GNU General Public License v3</string>
     <string name="pep_trust_server_description">Store serverside mails in a safe form.</string>
-    <string name="pep_account_privacy_protection_explanation">Enable pEp privacy protection for this account </string>
+    <string name="pep_account_privacy_protection_explanation">Enable p≡p privacy protection for this account </string>
     <string name="pep_forward_warning">Unsecure reply warning</string>
     <string name="pep_forward_warning_description">Show a warning when a message loses security through reply or forward.</string>
     <string name="key_list_title">Available keys</string>

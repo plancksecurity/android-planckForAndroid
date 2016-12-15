@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
+import javax.inject.Inject;
+
 /**
  * some helper stuff
  */
@@ -49,6 +51,9 @@ public class PEpUtils {
 
     public static CharSequence[] getPEpLanguages() {
         return pEpLanguages;
+    }
+
+    @Inject public PEpUtils() {
     }
 
     public static Vector<Identity> createIdentities(List<Address> addressList, Context context) {
@@ -205,7 +210,7 @@ public class PEpUtils {
         return new ByteArrayOutputStream().toByteArray();
     }
 
-    private static String getShortTrustwords(String trustwords) {
+    public static String getShortTrustwords(String trustwords) {
         StringBuilder builder = new StringBuilder();
         String[] trustArray = trustwords.split(TRUSTWORDS_SEPARATOR);
 
@@ -258,6 +263,18 @@ public class PEpUtils {
         }
     }
 
+
+    @NonNull
+    public static String obtainTrustwordsLang(String language) {
+        if (language == null || language.equals("")) {
+            language = Locale.getDefault().getLanguage();
+        }
+        if (isLanguageInPEPLanguages(language)) {
+            return language;
+        } else {
+            return  "en";
+        }
+    }
     private static boolean isLanguageInPEPLanguages(String language) {
         for (CharSequence pEpLanguage : pEpLanguages) {
             if (pEpLanguage.equals(language)) {

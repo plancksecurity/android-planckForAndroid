@@ -3,12 +3,9 @@ Created by Helm  23/03/16.
 */
 
 
-package com.fsck.k9.pEp.ui;
+package com.fsck.k9.pEp.ui.adapters;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,78 +15,27 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.fsck.k9.R;
-import com.fsck.k9.mail.Address;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.models.PEpIdentity;
 
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
 import java.util.List;
 
-public class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.ViewHolder> {
-    private final PEpProvider pEp;
+public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdapter.ViewHolder> {
+    private List<PEpIdentity> identities;
 
-    private final Activity context;
-    private final List<Identity> identities;
-    private final ChangeColorListener listener;
-    private ViewHolder viewHolder;
+    private View.OnClickListener onHandshakeClick;
+    private View.OnClickListener onResetGreenClick;
+    private View.OnClickListener onResetRedClick;
 
-    private final String myself;
-
-    private View.OnClickListener onHandshakeClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            int partnerPosition = ((Integer) v.getTag());
-            PEpTrustwords.actionRequestHandshake(context, myself, partnerPosition);
-        }
-    };
-
-    private View.OnClickListener onResetGreenClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            int position = ((Integer) v.getTag());
-            Identity id = identities.get(position);
-            id = pEp.updateIdentity(id);
-            Log.i("KeysAdapter", "onResetGreenClick " + id.address);
-            pEp.resetTrust(id);
-            notifyDataSetChanged();
-            listener.onRatingChanged(Rating.pEpRatingReliable);
-
-        }
-    };
-
-    private View.OnClickListener onResetRedClick = new View.OnClickListener() {
-        @Override
-        public void onClick(final View v) {
-            new AlertDialog.Builder(
-                    context).setMessage(R.string.handshake_reset_dialog_message).setCancelable(false).setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    int position = ((Integer) v.getTag());
-                    Identity id = identities.get(position);
-                    id = pEp.updateIdentity(id);
-                    Log.i("KeysAdapter", "onResetGreenClick " + id.address);
-                    pEp.resetTrust(id);
-                    notifyDataSetChanged();
-                    listener.onRatingChanged(Rating.pEpRatingReliable);
-                    onHandshakeClick.onClick(v);
-                }
-            }).setNegativeButton(R.string.cancel_action, null).show();
-        }
-    };
-
-    public RecipientsAdapter(Activity context,
-                             List<Identity> identities,
-                             PEpProvider pEp,
-                             String myself,
-                             ChangeColorListener listener) {
-        this.pEp = pEp;
-        this.identities = identities;
-        this.context = context;
-        this.myself = myself;
-        this.listener = listener;
+    public PEpIdentitiesAdapter(View.OnClickListener onResetGreenClick,
+                                View.OnClickListener onResetRedClick,
+                                View.OnClickListener onHandshakeClick) {
+        this.onResetGreenClick = onResetGreenClick;
+        this.onResetRedClick = onResetRedClick;
+        this.onHandshakeClick = onHandshakeClick;
     }
 
     @Override
@@ -97,14 +43,13 @@ public class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.Vi
                                          int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.pep_recipient_row, parent, false);
-
-        viewHolder = new ViewHolder(v);
+        ViewHolder viewHolder = new ViewHolder(v);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        Identity identity = identities.get(position);
+        PEpIdentity identity = identities.get(position);
         holder.render(position, identity);
     }
 
@@ -112,6 +57,22 @@ public class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.Vi
     @Override
     public int getItemCount() {
         return identities.size();
+    }
+
+    public void handshake(View view) {
+        onHandshakeClick.onClick(view);
+    }
+
+    public PEpIdentity get(int position) {
+        return identities.get(position);
+    }
+
+    public List<PEpIdentity> getIdentities() {
+        return identities;
+    }
+
+    public void setIdentities(List<PEpIdentity> identities) {
+        this.identities = identities;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -163,10 +124,10 @@ public class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.Vi
             container.setTag(position);
         }
 
-        public void render(int position, Identity identity) {
-            Rating color = pEp.identityRating(identity);
-            renderColor(color);
-            renderButton(color);
+        public void render(int position, PEpIdentity identity) {
+            Log.d("RENDER", String.valueOf(identity.getRating().value));
+            renderColor(identity.getRating());
+            renderButton(identity.getRating());
             setPosition(position);
             renderIdentity(identity);
         }
@@ -183,5 +144,4 @@ public class RecipientsAdapter extends RecyclerView.Adapter<RecipientsAdapter.Vi
             }
         }
     }
-
 }

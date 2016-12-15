@@ -37,6 +37,9 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
+import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
+import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.pEp.ui.pEpAddDevice;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
@@ -46,6 +49,7 @@ import com.fsck.k9.service.MailService;
 import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
 
+import org.acra.ACRA;
 import org.pEp.jniadapter.AndroidHelper;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Sync;
@@ -64,7 +68,7 @@ public class K9 extends Application {
     public PEpProvider pEpProvider, pEpSyncProvider;
     boolean ispEpSyncEnabled = false;
     private Account currentAccount;
-
+    private ApplicationComponent component;
 
     /**
      * Components that are interested in knowing when the K9 instance is
@@ -542,6 +546,9 @@ public class K9 extends Application {
 
         super.onCreate();
 
+        initializeInjector();
+
+        ACRA.init(this);
         pEpSetupUiEngineSession();
         app = this;
         Globals.setContext(this);
@@ -658,7 +665,8 @@ public class K9 extends Application {
             public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
 
                 switch (signal) {
-                    case SyncHandshakeShowDialog:
+                    //// TODO: 13/12/16 review
+                    case SyncNotifyInitAddOtherDevice:
                         //3                Toast.makeText(getApplicationContext(), myself.fpr + "/n" + partner.fpr, Toast.LENGTH_LONG).show();
                         //startActivity(new Intent(getApplicationContext(), PEpTrustwords.class));
                         Log.e("PEPJNI", "showHandshake: " + myself.toString() + "\n::\n" + partner.toString());
@@ -1580,5 +1588,14 @@ public class K9 extends Application {
         K9.pEpForwardWarningEnabled = pEpForwardWarningEnabled;
     }
 
+    private void initializeInjector() {
+        component = DaggerApplicationComponent.builder()
+                .applicationModule(new ApplicationModule(this))
+                .build();
+    }
+
+    public ApplicationComponent getComponent() {
+        return component;
+    }
 
 }

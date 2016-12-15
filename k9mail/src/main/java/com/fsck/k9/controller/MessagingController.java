@@ -1464,7 +1464,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         showImportKeyDialogIfNeeded(message, result, account);
                         deleteMessage(message, account, folder, localFolder);
                     }
-                    else if (store && result.rating != Rating.pEpRatingUndefined) {
+                    else if (store && (!account.ispEpPrivacyProtected() || account.ispEpPrivacyProtected() && result.rating != Rating.pEpRatingUndefined)) {
                         MimeMessage decryptedMessage =  result.msg;
                         if (message.getFolder().getName().equals(account.getSentFolderName())
                                 || message.getFolder().getName().equals(account.getDraftsFolderName())) {
@@ -1987,6 +1987,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                 localMessage.setUid(encryptedMessage.getUid());
                 localFolder.changeUid(localMessage);
+
                 for (MessagingListener l : getListeners()) {
                     l.messageUidChanged(account, folder, oldUid, localMessage.getUid());
                 }
@@ -2023,6 +2024,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     // TODO: 10/11/16 check what happens on trusted and untrusted servers
                     Message encryptedMessage = getMessageToUploadToOwnDirectories(account, localMessage);
                     remoteFolder.appendMessages(Collections.singletonList(encryptedMessage));
+                    localMessage.setUid(encryptedMessage.getUid());
                     localFolder.changeUid(localMessage);
                     for (MessagingListener l : getListeners()) {
                         l.messageUidChanged(account, folder, oldUid, localMessage.getUid());
