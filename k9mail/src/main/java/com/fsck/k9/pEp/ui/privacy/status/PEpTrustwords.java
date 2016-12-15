@@ -61,6 +61,7 @@ public class PEpTrustwords extends PepColoredActivity {
     @Bind(R.id.myselfLabel) TextView myselfLabel;
     @Bind(R.id.myselfFpr) TextView myselfFpr;
     @Bind(R.id.wrongTrustwords) Button wrongTrustWords;
+    @Bind(R.id.confirmTrustWords) Button confirmTrustWords;
 
     @Bind(R.id.loading) View loading;
 
@@ -134,7 +135,7 @@ public class PEpTrustwords extends PepColoredActivity {
     }
 
     private void loadPartnerRating() {
-        getpEp().identityRating(partner, new PEpProvider.Callback<Rating>() {
+        getpEp().identityRating(partner, new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
                 setpEpRating(rating);
@@ -150,7 +151,7 @@ public class PEpTrustwords extends PepColoredActivity {
 
     private void loadTrustwords() {
         //Actually what is heavy is update identity and myself.
-        getpEp().trustwords(myself, partner, trustwordsLanguage, new PEpProvider.Callback<HandshakeData>() {
+        getpEp().trustwords(myself, partner, trustwordsLanguage, new PEpProvider.ResultCallback<HandshakeData>() {
             @Override
             public void onLoaded(final HandshakeData handshakeData) {
                 fullTrustwords = handshakeData.getFullTrustwords();
@@ -166,8 +167,8 @@ public class PEpTrustwords extends PepColoredActivity {
                 myselfFpr.setText(PEpUtils.formatFpr(myself.fpr));
                 partnerFpr.setText(PEpUtils.formatFpr(partner.fpr));
                 loading.setVisibility(View.GONE);
-
-
+                wrongTrustWords.setVisibility(View.VISIBLE);
+                confirmTrustWords.setVisibility(View.VISIBLE);
             }
 
             @Override
