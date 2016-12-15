@@ -47,7 +47,10 @@
             android:background="@color/pep_green"
             android:elevation="4dp"
             android:text="@string/pep_confirm_trustwords"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:visibility="gone"
+            tools:visibility="visible"
+            />
 
         <Button
             android:id="@+id/wrongTrustwords"
@@ -59,7 +62,8 @@
             android:elevation="4dp"
             android:text="@string/pep_wrong_trustwords"
             android:textColor="@android:color/white"
-
+            android:visibility="gone"
+            tools:visibility="visible"
             />
     </LinearLayout>
 </ScrollView>
