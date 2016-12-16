@@ -35,6 +35,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
 import com.fsck.k9.FontSizes;
@@ -86,6 +87,7 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
+
 import org.pEp.jniadapter.Rating;
 
 import java.util.Date;
@@ -158,6 +160,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private QuotedMessagePresenter quotedMessagePresenter;
     private MessageLoaderHelper messageLoaderHelper;
     private AttachmentPresenter attachmentPresenter;
+    private boolean encrypted = true;
 
     public Account getAccount() {
         String accountUuid = (mMessageReference != null) ?
@@ -1044,11 +1047,16 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 onReadReceipt();
                 break;
             case R.id.force_unencrypted:
+                if (encrypted) {
+                    item.setTitle(R.string.pep_force_protected);
+                } else {
+                    item.setTitle(R.string.pep_force_unprotected);
+                }
+                encrypted = !encrypted;
                 forceUnencrypted();
-            default:
-                return super.onOptionsItemSelected(item);
+                break;
         }
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
     private void forceUnencrypted() {
@@ -1073,20 +1081,10 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         if (!mAccount.hasDraftsFolder()) {
             menu.findItem(R.id.save).setEnabled(false);
         }
-
         // grab our icon and set it to the wanted color.
         recipientPresenter.setpEpIndicator(menu.findItem(R.id.pEp_indicator));
 //  TODO> Review after rebase
         handlePEpState(false);       // fire once to get everything set up.
-
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-
-        recipientPresenter.onPrepareOptionsMenu(menu);
 
         return true;
     }
