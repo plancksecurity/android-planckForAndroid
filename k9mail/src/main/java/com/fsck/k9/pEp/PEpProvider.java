@@ -174,7 +174,7 @@ public interface PEpProvider {
 
     void setSyncSendMessageCallback(Sync.MessageToSendCallback callback);
 
-    void setSyncHandshakeCallback(Sync.notifyHandshakeCallback callback);
+    void setSyncHandshakeCallback(Sync.showHandshakeCallback callback);
 
     void startSync();
 
