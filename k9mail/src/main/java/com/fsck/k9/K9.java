@@ -665,9 +665,14 @@ public class K9 extends Application {
 
     private void initSync() {
         pEpSyncProvider = PEpProviderFactory.createAndSetupProvider(this);
-        pEpSyncProvider.setSyncHandshakeCallback(new Sync.showHandshakeCallback() {
+        pEpSyncProvider.setSyncHandshakeCallback(new Sync.notifyHandshakeCallback() {
 
             @Override
+            public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
+
+            }
+
+//            @Override
             public void showHandshake(Identity myself, Identity partner/*, SyncHandshakeSignal signal*/) {
 
 //                switch (signal) {
