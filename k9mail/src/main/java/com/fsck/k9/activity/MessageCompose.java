@@ -1136,6 +1136,15 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        recipientPresenter.onPrepareOptionsMenu(menu);
+
+        return true;
+    }
+
+    @Override
     public void onBackPressed() {
         if (draftNeedsSaving) {
             if (!mAccount.hasDraftsFolder()) {
