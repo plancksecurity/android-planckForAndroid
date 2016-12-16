@@ -71,6 +71,7 @@
     <string name="pep_complete_myself_format">Myself\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_myself_format">Myself\n%1$s</string>
     <string name="pep_force_unprotected">Disable protection</string>
+    <string name="pep_force_protected">Enable protection</string>
     <string name="pep_receivedSecretKey">Received this Secret Key:</string>
     <string name="pep_username">User Name</string>
     <string name="pep_userAddress">User Address</string>
