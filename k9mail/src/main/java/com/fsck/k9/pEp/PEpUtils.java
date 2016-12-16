@@ -473,19 +473,26 @@ public class PEpUtils {
 
         for (int i = 0; i < recipients.size(); i++) {
             Identity identity = recipients.get(i);
-            if (!isMyself(context, identity)) {
-                if (identities.size() == 0) {
+            if (identities.size() == 0) {
+                identities.add(identity);
+            } else {
+                Identity previousIdentity = recipients.get(i - 1);
+                if (!previousIdentity.address.equals(identity.address)) {
                     identities.add(identity);
-                } else {
-                    Identity previousIdentity = recipients.get(i - 1);
-                    if (!previousIdentity.address.equals(identity.address)) {
-                        identities.add(identity);
-                    }
                 }
             }
         }
         return identities;
     }
 
+    public List<Identity> filterMyselfFromRecipients(String myself, List<Identity> recipients) {
+        List<Identity> recipientsFiltered = new ArrayList<>();
+        for (Identity recipient : recipients) {
+            if (!myself.equals(recipient.address)) {
+                recipientsFiltered.add(recipient);
+            }
+        }
+        return recipientsFiltered;
+    }
 }
 

@@ -39,6 +39,7 @@ public class PEpStatusPresenter implements Presenter {
     private LocalMessage localMessage;
     private boolean isMessageIncoming;
     private Address senderAddress;
+    private String myself;
 
     @Inject
     public PEpStatusPresenter(SimpleMessageLoaderHelper simpleMessageLoaderHelper, PEpUtils pEpUtils, PEpIdentityMapper pEpIdentityMapper) {
@@ -47,12 +48,13 @@ public class PEpStatusPresenter implements Presenter {
         this.pEpIdentityMapper = pEpIdentityMapper;
     }
 
-    public void initilize(PEpStatusView pEpStatusView, PePUIArtefactCache uiCache, PEpProvider pEpProvider, boolean isMessageIncoming, Address senderAddress) {
+    public void initilize(PEpStatusView pEpStatusView, PePUIArtefactCache uiCache, PEpProvider pEpProvider, boolean isMessageIncoming, Address senderAddress, String myself) {
         this.view = pEpStatusView;
         this.cache = uiCache;
         this.pEpProvider = pEpProvider;
         this.isMessageIncoming = isMessageIncoming;
         this.senderAddress = senderAddress;
+        this.myself = myself;
         pEpIdentityMapper.initialize(pEpProvider);
     }
 
@@ -63,7 +65,7 @@ public class PEpStatusPresenter implements Presenter {
     }
 
     public void loadRecipients() {
-        List<Identity> recipients = cache.getRecipients();
+        List<Identity> recipients = pEpUtils.filterMyselfFromRecipients(myself, cache.getRecipients());
         identities = pEpIdentityMapper.mapRecipients(recipients);
         view.setupRecipients(identities);
     }

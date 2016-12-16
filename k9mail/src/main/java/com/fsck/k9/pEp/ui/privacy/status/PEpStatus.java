@@ -93,7 +93,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
             myself = getIntent().getStringExtra(MYSELF);
             messageReference = (MessageReference) getIntent().getExtras().get(MESSAGE_REFERENCE);
             boolean isMessageIncoming = getIntent().getBooleanExtra(MESSAGE_DIRECTION, false);
-            presenter.initilize(this, getUiCache(), getpEp(), isMessageIncoming, new Address(sender));
+            presenter.initilize(this, getUiCache(), getpEp(), isMessageIncoming, new Address(sender), myself);
             presenter.loadMessage(messageReference);
         }
         restorePEpRating(savedInstanceState);
