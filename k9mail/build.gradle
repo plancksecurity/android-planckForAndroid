@@ -1,3 +1,7 @@
+def pEpEngineRevision = 1492
+def pEpJNIAdapterRevision = 272
+
+
 buildscript {
     repositories {
         mavenCentral()
@@ -87,8 +91,8 @@ android {
 //        versionName '5.200-RC2'
 
         applicationId "pep.android.k9"
-        versionCode 38
-        versionName '0.9.8.34.withoutKeysync'
+        versionCode 39
+        versionName '0.9.8.36.withoutKeysync'
         minSdkVersion 18
         targetSdkVersion 22
 
@@ -99,6 +103,9 @@ android {
         jackOptions {
             enabled true
         }
+
+        buildConfigField "int", "ENGINE_REVISION", "${pEpEngineRevision}"
+        buildConfigField "int", "ADAPTER_REVISION", "${pEpJNIAdapterRevision}"
     }
 
     productFlavors {
