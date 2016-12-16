@@ -17,6 +17,7 @@ import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
+import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.mailstore.LocalMessage;
 
@@ -448,7 +449,7 @@ public class PEpUtils {
         return String.valueOf(fprChars);
     }
 
-    public static boolean ispEpDisabled(Account account, LocalMessage message, Rating messageRating) {
+    public static boolean ispEpDisabled(Account account, Message message, Rating messageRating) {
         return message.isSet(Flag.X_PEP_DISABLED)
                 || messageRating == Rating.pEpRatingUndefined
                 || !account.ispEpPrivacyProtected();

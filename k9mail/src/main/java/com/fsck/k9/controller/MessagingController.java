@@ -3042,6 +3042,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
             LocalStore localStore = account.getLocalStore();
             LocalFolder localFolder = localStore.getFolder(account.getOutboxFolderName());
             localFolder.open(Folder.OPEN_MODE_RW);
+            if (PEpUtils.ispEpDisabled(account, message, pEpProvider.getPrivacyState(message))) {
+                message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(Rating.pEpRatingUnencrypted));
+            } else {
+                Rating privacyState = pEpProvider.getPrivacyState(message);
+                message.setHeader(MimeHeader.HEADER_PEP_RATING, privacyState.name());
+            }
             localFolder.appendMessages(Collections.singletonList(message));
             Message localMessage = localFolder.getMessage(message.getUid());
             localMessage.setFlag(Flag.X_DOWNLOADED_FULL, true);
