@@ -338,6 +338,7 @@ public class PEpProviderImpl implements PEpProvider {
         if (source == null) {
             return source;
         }
+        createEngineInstanceIfNeeded();
         Message message = null;
         try {
             message = new PEpMessageBuilder(source).createMessage(context);
@@ -528,7 +529,9 @@ public class PEpProviderImpl implements PEpProvider {
     public Rating identityRating(Identity ident) {
         createEngineInstanceIfNeeded();
         try {
-            return engine.identity_rating(ident);
+            Rating result =  engine.identity_rating(ident);
+            Log.e("PEPJNI", "identityRating: " + result.name());
+            return result;
         } catch (pEpException e) {
             Log.e(TAG, "identityRating: ", e);
             return Rating.pEpRatingUndefined;
@@ -780,8 +783,8 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void setSyncHandshakeCallback(Sync.notifyHandshakeCallback activity) {
-        engine.setnotifyHandshakeCallback(activity);
+    public void setSyncHandshakeCallback(Sync.showHandshakeCallback activity) {
+        engine.setShowHandshakeCallback(activity);
         showHandshakeSet = true;
         if (areCallbackSet() && !keysyncStarted) {
             engine.startSync();
