@@ -457,12 +457,10 @@ public class MessageExtractor {
     }
 
     public static String getContentDisposition(Part part) {
-        try {
-            String disposition = part.getDisposition();
-            if (disposition != null) {
-                return MimeUtility.getHeaderParameter(disposition, null);
-            }
-        } catch (MessagingException e) { /* ignore */ }
+        String disposition = part.getDisposition();
+        if (disposition != null) {
+            return MimeUtility.getHeaderParameter(disposition, null);
+        }
         return null;
     }
 }

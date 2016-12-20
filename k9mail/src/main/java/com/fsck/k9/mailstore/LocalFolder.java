@@ -41,7 +41,6 @@ import com.fsck.k9.message.extractors.MessageFulltextCreator;
 import com.fsck.k9.message.extractors.MessagePreviewCreator;
 import com.fsck.k9.message.extractors.PreviewResult;
 import com.fsck.k9.message.extractors.PreviewResult.PreviewType;
-import com.fsck.k9.message.extractors.MessageFulltextCreator;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import org.apache.commons.io.IOUtils;
@@ -69,7 +68,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
 
-import org.pEp.jniadapter.Color;
 
 public class LocalFolder extends Folder<LocalMessage> implements Serializable {
 

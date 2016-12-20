@@ -1,11 +1,5 @@
 package com.fsck.k9.ui.messageview;
 
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Locale;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
@@ -50,11 +44,6 @@ import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.internet.MimeBodyPart;
-import com.fsck.k9.mail.internet.MimeMessage;
-import com.fsck.k9.mail.internet.MimeMessageHelper;
-import com.fsck.k9.mail.internet.MimeMultipart;
-import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
@@ -62,22 +51,14 @@ import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.message.extractors.EncryptionVerifier;
-import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
-import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
-import com.fsck.k9.view.MessageCryptoDisplayStatus;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpProviderFactory;
-import com.fsck.k9.mailstore.MessageViewInfo.MessageViewContainer;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
-import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
-import com.fsck.k9.ui.crypto.MessageCryptoCallback;
-import com.fsck.k9.ui.crypto.MessageCryptoHelper;
-import com.fsck.k9.ui.message.DecodeMessageLoader;
-import com.fsck.k9.ui.message.LocalMessageLoader;
+import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
+import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
+import com.fsck.k9.view.MessageCryptoDisplayStatus;
 import com.fsck.k9.view.MessageHeader;
 
 import org.pEp.jniadapter.Identity;
@@ -201,7 +182,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         Context context = new ContextThemeWrapper(inflater.getContext(),
                 K9.getK9ThemeResourceId(K9.getK9MessageViewTheme()));
         LayoutInflater layoutInflater = LayoutInflater.from(context);
@@ -226,6 +207,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 messageLoaderHelper.downloadCompleteMessage();
             }
         });
+        // onDownloadRemainder();;
 
         mFragmentListener.messageHeaderViewAvailable(mMessageView.getMessageHeaderView());
         pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
@@ -455,19 +437,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         intent.putExtra(ChooseFolder.EXTRA_SEL_FOLDER, mAccount.getLastSelectedFolderName());
         intent.putExtra(ChooseFolder.EXTRA_MESSAGE, mMessageReference);
         startActivityForResult(intent, activity);
-    }
-
-    public void onPendingIntentResult(int requestCode, int resultCode, Intent data) {
-        if ((requestCode & REQUEST_MASK_LOADER_HELPER) == REQUEST_MASK_LOADER_HELPER) {
-            requestCode ^= REQUEST_MASK_LOADER_HELPER;
-            messageLoaderHelper.onActivityResult(requestCode, resultCode, data);
-            return;
-        }
-
-        if ((requestCode & REQUEST_MASK_CRYPTO_PRESENTER) == REQUEST_MASK_CRYPTO_PRESENTER) {
-            requestCode ^= REQUEST_MASK_CRYPTO_PRESENTER;
-            messageCryptoPresenter.onActivityResult(requestCode, resultCode, data);
-        }
     }
 
     @Override
@@ -733,7 +702,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
         @Override
         public void startPendingIntentForCryptoPresenter(IntentSender si, Integer requestCode, Intent fillIntent,
-                int flagsMask, int flagValues, int extraFlags) throws SendIntentException {
+                                                         int flagsMask, int flagValues, int extraFlags) throws SendIntentException {
             if (requestCode == null) {
                 getActivity().startIntentSender(si, fillIntent, flagsMask, flagValues, extraFlags);
                 return;
@@ -775,8 +744,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             for (String s1 : mMessage.getHeader(s)) {
                 Log.i("MessageHeader", "onClick " + s + " " + s1);
             }
-        } catch (MessagingException e) {
-            e.printStackTrace();
         }
 
         PEpStatus.actionShowStatus(getActivity(), pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAdress);
@@ -795,11 +762,10 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         void showNextMessageOrReturn();
         void messageHeaderViewAvailable(MessageHeader messageHeaderView);
         void updateMenu();
-        public void setPepStatusEnabled(boolean enable);
     }
 
     public boolean isInitialized() {
-        return mInitialized ;
+        return mInitialized;
     }
 
 
@@ -808,6 +774,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         public void onMessageDataLoadFinished(LocalMessage message) {
             mMessage = message;
 
+            displayHeaderForLoadingMessage(message);
+            mMessageView.setToLoadingState();
 
             pEpRating = PEpUtils.extractRating(message);
 
@@ -867,7 +835,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
         @Override
         public void startIntentSenderForMessageLoaderHelper(IntentSender si, int requestCode, Intent fillIntent,
-                int flagsMask, int flagValues, int extraFlags) {
+                                                            int flagsMask, int flagValues, int extraFlags) {
             try {
                 requestCode |= REQUEST_MASK_LOADER_HELPER;
                 getActivity().startIntentSenderForResult(

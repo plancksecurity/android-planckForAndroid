@@ -101,6 +101,7 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.DatabasePreviewType;
 import com.fsck.k9.mailstore.LocalFolder;
+import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
@@ -3060,19 +3061,23 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
     }
 
 
+
     private LocalMessage getLocalMessageAtPosition(int adapterPosition) {
         if (adapterPosition == AdapterView.INVALID_POSITION) {
             return null;
         }
-
         Cursor cursor = (Cursor) mAdapter.getItem(adapterPosition);
-
-        String accountUuid = cursor.getString(ACCOUNT_UUID_COLUMN);
-        String folderName = cursor.getString(FOLDER_NAME_COLUMN);
-        String messageUid = cursor.getString(UID_COLUMN);
-
-        return new MessageReference(accountUuid, folderName, messageUid, null);
+        String uid = cursor.getString(UID_COLUMN);
+        Account account = getAccountFromCursor(cursor);
+        long folderId = cursor.getLong(FOLDER_ID_COLUMN);
+        LocalFolder folder = getFolderById(account, folderId);
+        try {
+            return folder.getMessage(uid);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
     }
+
 
     private List<MessageReference> getCheckedMessages() {
         List<MessageReference> messages = new ArrayList<>(mSelected.size());

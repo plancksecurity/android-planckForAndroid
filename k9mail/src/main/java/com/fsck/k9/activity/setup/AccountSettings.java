@@ -188,9 +188,6 @@ public class AccountSettings extends K9PreferenceActivity {
 
     // flag: save mails only encrypted on server side
     private CheckBoxPreference mPEpSaveEncrypted;
-
-    // flag: save mails only encrypted on server side
-    private CheckBoxPreference mPEpSaveEncrypted;
     private CheckBoxPreference mPEpDisablePrivacyProtection;
 
     private PreferenceScreen mSearchScreen;

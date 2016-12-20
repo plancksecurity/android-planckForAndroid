@@ -3,17 +3,10 @@ package com.fsck.k9.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.test.mock.MockApplication;
-import android.util.Log;
 import android.view.MotionEvent;
-import android.widget.Toast;
 
-import com.fsck.k9.K9;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
-
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Sync;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 

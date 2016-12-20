@@ -70,7 +70,6 @@ class ImapConnection {
 
     private final ConnectivityManager connectivityManager;
     private final OAuth2TokenProvider oauthTokenProvider;
-    private final AccountManager accountManager;
     private final TrustedSocketFactory socketFactory;
     private final int socketConnectTimeout;
     private final int socketReadTimeout;

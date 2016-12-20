@@ -280,7 +280,6 @@ public class GlobalSettings {
         s.put("pep_forward_warning", Settings.versions(
                 new V(47, new BooleanSetting(false))
         ));
-            ));
         s.put("pgpInlineDialogCounter", Settings.versions(
                 new V(43, new IntegerRangeSetting(0, Integer.MAX_VALUE, 0))
         ));

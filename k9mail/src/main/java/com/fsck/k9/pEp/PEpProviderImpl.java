@@ -686,12 +686,6 @@ public class PEpProviderImpl implements PEpProvider {
         return null;
     }
 
-    @Override
-    public void setPassiveModeEnabled(boolean enable) {
-        createEngineInstanceIfNeeded();
-        engine.config_passive_mode(enable);
-    }
-
     private void createEngineInstanceIfNeeded() {
         if (engine == null) {
             try {

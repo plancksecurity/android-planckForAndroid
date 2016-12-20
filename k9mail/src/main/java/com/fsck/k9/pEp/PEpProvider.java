@@ -210,8 +210,6 @@ public interface PEpProvider {
         }
     }
 
-    void setPassiveModeEnabled(boolean enable);
-
     class DecryptResult {
         public final KeyDetail keyDetails;
 

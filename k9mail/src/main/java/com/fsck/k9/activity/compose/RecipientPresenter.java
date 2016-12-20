@@ -31,6 +31,7 @@ import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mailstore.LocalMessage;
+import com.fsck.k9.message.ComposePgpInlineDecider;
 import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.Poller;
@@ -835,18 +836,6 @@ public class RecipientPresenter implements PermissionPingCallback {
     }
 
 
-    public void handlepEpState(boolean... withToast) {
-        recipientMvpView.handlepEpState(withToast);
-    }
-
-    public void setpEpIndicator(MenuItem pEpIndicator) {
-        recipientMvpView.setpEpIndicator(pEpIndicator);
-    }
-
-    public void onPepIndicator() {
-        recipientMvpView.onPepIndicator();
-    }
-
     public boolean isForwardedMessageWeakestThanOriginal(Rating originalMessageRating) {
         Rating currentRating = recipientMvpView.getpEpRating();
         return currentRating.value < Rating.pEpRatingReliable.value && currentRating.value < originalMessageRating.value;
@@ -883,15 +872,6 @@ public class RecipientPresenter implements PermissionPingCallback {
     }
 
 
-    public void updatepEpState() {
-        Address fromAddress = recipientMvpView.getFromAddress();
-        List<Address> toAdresses = recipientMvpView.getToAddresses();
-        List<Address> ccAdresses = recipientMvpView.getCcAddresses();
-        List<Address> bccAdresses = recipientMvpView.getBccAddresses();
-        Color pEpColor = pEp.getPrivacyState(fromAddress, toAdresses, ccAdresses, bccAdresses);
-        recipientMvpView.setpEpColor(pEpColor);
-
-    }
 
     public void handlepEpState(boolean... withToast) {
         recipientMvpView.handlepEpState(withToast);
@@ -905,10 +885,6 @@ public class RecipientPresenter implements PermissionPingCallback {
         recipientMvpView.onPepIndicator();
     }
 
-    public boolean isForwardedMessageWeakestThanOriginal(Color originalMessageColor) {
-        Color currentColor = recipientMvpView.getpEpColor();
-        return currentColor.value < Color.pEpRatingReliable.value && currentColor.value < originalMessageColor.value;
-    }
 
     public enum CryptoProviderState {
         UNCONFIGURED,

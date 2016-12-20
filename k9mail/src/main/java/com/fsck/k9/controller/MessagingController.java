@@ -37,12 +37,15 @@ import android.content.pm.PackageInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.os.Process;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.DeletePolicy;
@@ -54,12 +57,10 @@ import com.fsck.k9.K9;
 import com.fsck.k9.K9.Intents;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.cache.EmailProviderCache;
 import com.fsck.k9.helper.Contacts;
-import com.fsck.k9.helper.MessageHelper;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.AuthenticationFailedException;
@@ -79,7 +80,6 @@ import com.fsck.k9.mail.Pusher;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.internet.MessageExtractor;
-import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.internet.MimeMessageHelper;
 import com.fsck.k9.mail.internet.MimeUtility;
@@ -96,13 +96,11 @@ import com.fsck.k9.mailstore.MessageRemovalListener;
 import com.fsck.k9.mailstore.UnavailableStorageException;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.notification.NotificationController;
-import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
-import org.pEp.jniadapter.DecryptFlags;
 import com.fsck.k9.search.ConditionsTreeNode;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
@@ -112,34 +110,6 @@ import com.fsck.k9.search.SqlQueryBuilder;
 import org.pEp.jniadapter.AndroidHelper;
 import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.Sync;
-
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Starts a long running (application) Thread that will run thr ough commands
@@ -3826,27 +3796,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         }
                     }
                 });
-            }
-        });
-
-    }
-
-    @SuppressLint("NewApi") // used for debugging only
-    public void debugClearMessagesLocally(final List<LocalMessage> messages) {
-        if (!BuildConfig.DEBUG) {
-            throw new AssertionError("method must only be used in debug build!");
-        }
-
-        putBackground("debugClearLocalMessages", null, new Runnable() {
-            @Override
-            public void run() {
-                for (LocalMessage message : messages) {
-                    try {
-                        message.debugClearLocalData();
-                    } catch (MessagingException e) {
-                        throw new AssertionError("clearing local message content failed!", e);
-                    }
-                }
             }
         });
 
