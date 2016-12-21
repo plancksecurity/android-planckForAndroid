@@ -513,6 +513,10 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             return;
         }
         StorageManager.getInstance(getApplication()).addListener(mStorageListener);
+
+        if (mAccount != null) {
+            initializePepStatus();
+        }
     }
 
     @Override

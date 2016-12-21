@@ -333,4 +333,8 @@ public class MessageTopView extends LinearLayout {
             progressBar.setProgress(newPosition);
         }
     }
+
+    public void setPrivacyProtected(boolean ispEpEnabled) {
+        mHeaderContainer.setPrivacyProtected(ispEpEnabled);
+    }
 }

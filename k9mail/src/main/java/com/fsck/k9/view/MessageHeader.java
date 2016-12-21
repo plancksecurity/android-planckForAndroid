@@ -542,4 +542,8 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     public void setOnCryptoClickListener(OnCryptoClickListener onCryptoClickListener) {
         this.onCryptoClickListener = onCryptoClickListener;
     }
+
+    public void setPrivacyProtected(boolean enabled) {
+        mContactBadge.setPepRating(pEpRating, enabled);
+    }
 }

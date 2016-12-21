@@ -69,7 +69,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 
-import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 
@@ -784,11 +783,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 showNeedsDecryptionFeedback(message);
             }
 
-            if (mAccount.ispEpPrivacyProtected()) {
-                PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), pEpRating);
-            } else {
-                PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), Rating.pEpRatingUndefined);
-            }
+            colorActionBar();
         }
 
         @Override
@@ -845,6 +840,14 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             }
         }
     };
+
+    private void colorActionBar() {
+        if (mAccount.ispEpPrivacyProtected()) {
+            PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), pEpRating);
+        } else {
+            PEpUtils.colorActionBar(pePUIArtefactCache, getActivity().getActionBar(), Rating.pEpRatingUndefined);
+        }
+    }
 
     private void showKeyNotFoundFeedback() {
         String title = pePUIArtefactCache.getTitle(Rating.pEpRatingHaveNoKey);
@@ -954,5 +957,13 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private AttachmentController getAttachmentController(AttachmentViewInfo attachment) {
         return new AttachmentController(mController, downloadManager, this, attachment);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        colorActionBar();
+        mMessageView.setPrivacyProtected(mAccount.ispEpPrivacyProtected());
+
     }
 }
