@@ -65,7 +65,7 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
-@ReportsCrashes(mailTo = "hussein@pep-security.net",
+@ReportsCrashes(mailTo = "crashreport@prettyeasyprivacy.com",
         mode = ReportingInteractionMode.TOAST,
         resToastText = R.string.crash_toast_text)
 public class K9 extends Application {
