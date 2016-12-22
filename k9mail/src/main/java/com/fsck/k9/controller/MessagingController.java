@@ -1427,7 +1427,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     Log.d("pep", "in download loop (nr="+number+") pre pep");
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", (MimeMessage) message);
                     final PEpProvider.DecryptResult result;
-                    if (account.ispEpPrivacyProtected()) {
+                    //// TODO: 22/12/16  message.getFrom()[0].getAddress() != null) should ne removed when ENGINE-160 is fixed
+                    if (account.ispEpPrivacyProtected() && message.getFrom()[0].getAddress() != null) {
                         PEpProvider.DecryptResult tempResult;
                         if (!account.isUntrustedSever()) { //trusted server
                             Rating rating = PEpUtils.extractRating(message);
@@ -1462,7 +1463,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         showImportKeyDialogIfNeeded(message, result, account);
                         deleteMessage(message, account, folder, localFolder);
                     }
-                    else if (store && (!account.ispEpPrivacyProtected() || account.ispEpPrivacyProtected() && result.rating != Rating.pEpRatingUndefined)) {
+                    else if (store && (!account.ispEpPrivacyProtected() || account.ispEpPrivacyProtected() && (result.rating != Rating.pEpRatingUndefined || message.getFrom()[0].getAddress() == null))) {
                         MimeMessage decryptedMessage =  result.msg;
                         if (message.getFolder().getName().equals(account.getSentFolderName())
                                 || message.getFolder().getName().equals(account.getDraftsFolderName())) {
