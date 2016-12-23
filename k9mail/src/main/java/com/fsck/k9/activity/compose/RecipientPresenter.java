@@ -381,7 +381,7 @@ public class RecipientPresenter implements PermissionPingCallback {
 
     public void updateCryptoStatus() {
         cachedCryptoStatus = null;
-        recipientMvpView.handlepEpState();
+        handlepEpState();
 
         boolean isOkStateButLostConnection = cryptoProviderState == CryptoProviderState.OK &&
                 (openPgpServiceConnection == null || !openPgpServiceConnection.isBound());
@@ -941,7 +941,7 @@ public class RecipientPresenter implements PermissionPingCallback {
 
     private void showRatingFeedback(Rating rating) {
         recipientMvpView.setpEpRating(rating);
-        recipientMvpView.handlepEpState();
+        handlepEpState();
     }
 
     private List<Address> initializeAdresses(List<Address> addresses) {
