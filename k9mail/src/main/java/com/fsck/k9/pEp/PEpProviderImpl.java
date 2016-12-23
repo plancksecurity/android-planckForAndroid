@@ -121,6 +121,9 @@ public class PEpProviderImpl implements PEpProvider {
     //Don't instantiate a new engine
     @Override
     public synchronized Rating getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses) {
+        if (bccAddresses.size()  > 0){
+            return Rating.pEpRatingUnencrypted;
+        }
         int recipientsSize = toAddresses.size() + ccAddresses.size() + bccAddresses.size();
         if (from == null || recipientsSize == 0)
             return Rating.pEpRatingUndefined;
@@ -160,6 +163,10 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public synchronized void getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback) {
         threadExecutor.execute(() -> {
+            if (bccAddresses.size()  > 0) {
+                notifyLoaded(Rating.pEpRatingUnencrypted, callback);
+                return;
+            }
             Message testee = null;
             Engine engine = null;
             try {

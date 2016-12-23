@@ -267,6 +267,7 @@ public class RecipientPresenter implements PermissionPingCallback {
 
     public void addBccAddresses(Address... bccRecipients) {
         if (bccRecipients.length > 0) {
+            forceUnencrypted = true;
             addRecipientsFromAddresses(RecipientType.BCC, bccRecipients);
             String bccAddress = account.getAlwaysBcc();
 
@@ -461,11 +462,13 @@ public class RecipientPresenter implements PermissionPingCallback {
 
     @SuppressWarnings("UnusedParameters")
     public void onBccTokenAdded(Recipient recipient) {
+        forceUnencrypted = true;
         updateCryptoStatus();
     }
 
     @SuppressWarnings("UnusedParameters")
     public void onBccTokenRemoved(Recipient recipient) {
+        forceUnencrypted = false;
         updateCryptoStatus();
     }
 
@@ -843,15 +846,21 @@ public class RecipientPresenter implements PermissionPingCallback {
 
 
     public void switchPrivacyProtection(PEpProvider.ProtectionScope scope, boolean... protection) {
-        switch (scope) {
-            case MESSAGE:
-                if (protection.length > 0) throw new RuntimeException("On message only switch allowed");
-                forceUnencrypted = !forceUnencrypted;
-                break;
-            case ACCOUNT:
-                if (protection.length < 1) throw new RuntimeException("On account only explicit boolean allowed");
-                forceUnencrypted = !protection[0];
-                break;
+        if (bccAdresses == null || bccAdresses.size() == 0) {
+            switch (scope) {
+                case MESSAGE:
+                    if (protection.length > 0)
+                        throw new RuntimeException("On message only switch allowed");
+                    forceUnencrypted = !forceUnencrypted;
+                    break;
+                case ACCOUNT:
+                    if (protection.length < 1)
+                        throw new RuntimeException("On account only explicit boolean allowed");
+                    forceUnencrypted = !protection[0];
+                    break;
+            }
+        } else {
+            forceUnencrypted = true;
         }
         handlepEpState();
     }
@@ -875,6 +884,7 @@ public class RecipientPresenter implements PermissionPingCallback {
 
     public void handlepEpState(boolean... withToast) {
         recipientMvpView.handlepEpState(withToast);
+        dirty = true;
     }
 
     public void setpEpIndicator(MenuItem pEpIndicator) {
