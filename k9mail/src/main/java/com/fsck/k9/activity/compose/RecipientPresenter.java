@@ -464,12 +464,14 @@ public class RecipientPresenter implements PermissionPingCallback {
     public void onBccTokenAdded(Recipient recipient) {
         forceUnencrypted = true;
         updateCryptoStatus();
+        dirty = true;
     }
 
     @SuppressWarnings("UnusedParameters")
     public void onBccTokenRemoved(Recipient recipient) {
         forceUnencrypted = false;
         updateCryptoStatus();
+        dirty = true;
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -880,11 +882,15 @@ public class RecipientPresenter implements PermissionPingCallback {
         setupPEPStatusPolling();
     }
 
+    public void onPause() {
+        poller.stopPolling();
+    }
+
 
 
     public void handlepEpState(boolean... withToast) {
         recipientMvpView.handlepEpState(withToast);
-        dirty = true;
+    //    dirty = true;
     }
 
     public void setpEpIndicator(MenuItem pEpIndicator) {
