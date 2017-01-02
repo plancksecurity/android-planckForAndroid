@@ -1,5 +1,5 @@
-def pEpEngineRevision = 1510
-def pEpJNIAdapterRevision = 274
+def pEpEngineRevision = 1514
+def pEpJNIAdapterRevision = 280
 
 
 buildscript {
