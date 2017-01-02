@@ -709,6 +709,19 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
+    public String getLog() {
+        return engine.getCrashdumpLog(100);
+    }
+
+    @Override
+    public void printLog() {
+        String logLines[] = getLog().split("\n");
+        for (String logLine : logLines) {
+            Log.i("PEPJNI", logLine);
+        }
+    }
+
+    @Override
     public Identity myself(Identity myId) {
         createEngineInstanceIfNeeded();
         myId.user_id = PEP_OWN_USER_ID;
