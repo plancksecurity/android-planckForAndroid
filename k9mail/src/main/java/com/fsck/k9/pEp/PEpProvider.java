@@ -8,6 +8,7 @@ import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.pEp.ui.HandshakeData;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
+import org.pEp.jniadapter.DecryptFlags;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
 import org.pEp.jniadapter.Rating;
@@ -212,11 +213,13 @@ public interface PEpProvider {
 
     class DecryptResult {
         public final KeyDetail keyDetails;
+        public final DecryptFlags flags;
 
-        public DecryptResult(MimeMessage msg, Rating rating, KeyDetail keyDetails) {
+        public DecryptResult(MimeMessage msg, Rating rating, KeyDetail keyDetails, DecryptFlags flags) {
             this.msg = msg;
             this.rating = rating;
             this.keyDetails = keyDetails;
+            this.flags = flags;
         }
 
         final public MimeMessage msg;

@@ -148,7 +148,7 @@ public class PEpProviderImpl implements PEpProvider {
             testee.setDir(Message.Direction.Outgoing);
 
             Rating result = engine.outgoing_message_rating(testee);   // stupid way to be able to patch the value in debugger
-            Log.i(TAG, "getPrivacyState " + idFrom.fpr);
+            Log.i(TAG, "getPrivacyState " + result.name());
 
             return result;
         } catch (Throwable e) {
@@ -189,7 +189,7 @@ public class PEpProviderImpl implements PEpProvider {
                 testee.setDir(Message.Direction.Outgoing);
 
                 Rating result = engine.outgoing_message_rating(testee);   // stupid way to be able to patch the value in debugger
-                Log.i(TAG, "getPrivacyState " + idFrom.fpr);
+                Log.i(TAG, "getPrivacyState " + result.name());
 
                 notifyLoaded(result, callback);
             } catch (Throwable e) {
@@ -239,15 +239,16 @@ public class PEpProviderImpl implements PEpProvider {
             MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
 
             if (isUsablePrivateKey(decReturn)) {
-                return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg));
+                return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg), null);
             }
-            else return new DecryptResult(decMsg, decReturn.rating, null);
+            else return new DecryptResult(decMsg, decReturn.rating, null, decReturn.flags);
 //        } catch (pEpMessageConsume | pEpMessageIgnore pe) {
 //            // TODO: 15/11/16 deal with it as flag not exception
 //            //  throw pe;
 //            return null;
         }catch (Throwable t) {
-            Log.e(TAG, "while decrypting message:", t);
+            Log.e(TAG, "while decrypting message: "  + source.getSubject()
+                    + "\n" + source.getFrom()[0], t);
             throw new AppCannotDecryptException("Could not decrypt", t);
         } finally {
             if (srcMsg != null) srcMsg.close();
@@ -279,9 +280,9 @@ public class PEpProviderImpl implements PEpProvider {
                 MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
 
                 if (isUsablePrivateKey(decReturn)) {
-                    notifyLoaded(new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg)), callback);
+                    notifyLoaded(new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg), null), callback);
                 }
-                else notifyLoaded(new DecryptResult(decMsg, decReturn.rating, null), callback);
+                else notifyLoaded(new DecryptResult(decMsg, decReturn.rating, null, decReturn.flags), callback);
 //        } catch (pEpMessageConsume | pEpMessageIgnore pe) {
 //            // TODO: 15/11/16 deal with it as flag not exception
 //            //  throw pe;
@@ -537,7 +538,6 @@ public class PEpProviderImpl implements PEpProvider {
         createEngineInstanceIfNeeded();
         try {
             Rating result =  engine.identity_rating(ident);
-            Log.e("PEPJNI", "identityRating: " + result.name());
             return result;
         } catch (pEpException e) {
             Log.e(TAG, "identityRating: ", e);

@@ -1433,27 +1433,33 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         if (!account.isUntrustedSever()) { //trusted server
                             Rating rating = PEpUtils.extractRating(message);
                             if (rating.equals(Rating.pEpRatingUndefined)) {
-                                result = decryptMessage((MimeMessage) message);
+                                tempResult = decryptMessage((MimeMessage) message);
 
                             } else {
-                                result = new PEpProvider.DecryptResult((MimeMessage) message, rating, null);
+                                tempResult = new PEpProvider.DecryptResult((MimeMessage) message, rating, null, null);
                             }
                         } else {
-                            result = decryptMessage((MimeMessage) message);
+                            tempResult = decryptMessage((MimeMessage) message);
                         }
-//                        catch (org.pEp.jniadapter.pEpMessageDiscarded pEpMessageDiscarded) {
-//                            Log.v("pEpJNI", "messageFinished: ", pEpMessageDiscarded);
-//                            tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null);
-//                            store = false;
-//                        }
-//                        catch (org.pEp.jniadapter.pEpMessageConsumed pEpMessageConsumed) {
-//                            Log.v("pEpJNI", "messageFinished: Deleting", pEpMessageConsumed);
-//                            tempResult = null;
-//                            store = false;
-//                        }
+
+                        if (tempResult.flags != null) {
+                            switch (tempResult.flags) {
+                                case PEPDecryptFlagConsumed:
+                                    Log.v("pEpJNI", "messageFinished: Deleting");
+                                    tempResult = null;
+                                    store = false;
+                                    break;
+                                case PEPDecryptFlagIgnored:
+                                    Log.v("pEpJNI", "messageFinished: ");
+                                    tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null, null);
+                                    store = false;
+                                    break;
+                            }
+                        }
+                        result = tempResult;
                     }
                     else {
-                        result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null);
+                        result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null, null);
                     }
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
                     if (result == null) {
@@ -1534,7 +1540,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         try {
             tempResult = pEpProvider.decryptMessage(message);
         } catch (AppCannotDecryptException error) {
-            tempResult = new PEpProvider.DecryptResult(message, Rating.pEpRatingUndefined, null);
+            tempResult = new PEpProvider.DecryptResult(message, Rating.pEpRatingUndefined, null, null);
         }
         return tempResult;
     }
