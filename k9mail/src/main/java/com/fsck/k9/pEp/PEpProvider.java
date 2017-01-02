@@ -187,6 +187,10 @@ public interface PEpProvider {
 
     void resetTrust(Identity id, CompletedCallback completedCallback);
 
+    String getLog();
+
+    void printLog();
+
     class KeyDetail {
         private final Address address;
         private final String detailMessage;
