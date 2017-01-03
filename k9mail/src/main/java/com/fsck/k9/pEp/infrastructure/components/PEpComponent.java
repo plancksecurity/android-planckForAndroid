@@ -5,7 +5,7 @@ import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
-import com.fsck.k9.pEp.ui.pEpAddDevice;
+import com.fsck.k9.pEp.ui.keysync.pEpAddDevice;
 
 import dagger.Component;
 
