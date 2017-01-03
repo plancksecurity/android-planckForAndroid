@@ -3,7 +3,13 @@ package com.fsck.k9.pEp.ui.keysync;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
@@ -13,8 +19,11 @@ import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
+import com.fsck.k9.pEp.ui.adapters.IdentitiesAdapter;
 
 import org.pEp.jniadapter.Identity;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -35,6 +44,11 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
     TextView tvTrustwords;
     @Bind(R.id.tvPartner)
     TextView partnerView;
+    @Bind(R.id.advenced_keys_title)
+    TextView advancedKeysTextView;
+    @Bind(R.id.advanced_options_key_list)
+    RecyclerView identitiesList;
+    private MenuItem advancedOptionsMenuItem;
 
     public static Intent getActionRequestHandshake(Context context, String trustwords, Identity partner) {
         Intent intent = new Intent(context, PEpAddDevice.class);
@@ -68,6 +82,28 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_add_device, menu);
+        advancedOptionsMenuItem = menu.findItem(R.id.action_advanced_options);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_advanced_options:
+                if (advancedOptionsMenuItem.getTitle().equals(getResources().getString(R.string.advanced_options))) {
+                    advancedOptionsMenuItem.setTitle(R.string.basic_options);
+                    presenter.advancedOptionsClicked();
+                } else {
+                    advancedOptionsMenuItem.setTitle(getResources().getString(R.string.advanced_options));
+                    presenter.basicOptionsClicked();
+                }
+                break;
+        }
+        return true;
+    }
 
     @OnClick(R.id.confirmTrustWords)
     public void confirmTrustwords() {
@@ -118,5 +154,25 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
     @Override
     public void goBack() {
         super.onBackPressed();
+    }
+
+    @Override
+    public void showIdentities(List<Identity> identities) {
+        advancedKeysTextView.setVisibility(View.VISIBLE);
+        identitiesList.setVisibility(View.VISIBLE);
+        IdentitiesAdapter identityAdapter = new IdentitiesAdapter(identities, (identity, check) -> presenter.identityCheckStatusChanged(identity, check));
+        identitiesList.setLayoutManager(new LinearLayoutManager(this));
+        identitiesList.setAdapter(identityAdapter);
+    }
+
+    @Override
+    public void showError() {
+        Toast.makeText(this, R.string.openpgp_unknown_error, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void hideIdentities() {
+        advancedKeysTextView.setVisibility(View.GONE);
+        identitiesList.setVisibility(View.GONE);
     }
 }
