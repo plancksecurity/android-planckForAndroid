@@ -22,7 +22,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class pEpAddDevice extends PepColoredActivity implements AddDeviceView {
+public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
 
     public static final String ACTION_SHOW_PEP_TRUSTWORDS = "com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS";
     private static final String TRUSTWORDS = "trustwordsKey";
@@ -37,7 +37,7 @@ public class pEpAddDevice extends PepColoredActivity implements AddDeviceView {
     TextView partnerView;
 
     public static Intent getActionRequestHandshake(Context context, String trustwords, Identity partner) {
-        Intent intent = new Intent(context, pEpAddDevice.class);
+        Intent intent = new Intent(context, PEpAddDevice.class);
         intent.setAction(ACTION_SHOW_PEP_TRUSTWORDS);
         intent.putExtra(TRUSTWORDS, trustwords);
         intent.putExtra(PARTNER_USER_ID, partner.user_id);

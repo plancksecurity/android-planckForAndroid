@@ -40,7 +40,7 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
-import com.fsck.k9.pEp.ui.keysync.pEpAddDevice;
+import com.fsck.k9.pEp.ui.keysync.PEpAddDevice;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.UnreadWidgetProvider;
@@ -693,7 +693,7 @@ public class K9 extends Application {
                         }
 
                         Context context = K9.this.getApplicationContext();
-                        Intent syncTrustowordsActivity = pEpAddDevice.getActionRequestHandshake(context, trust, partner);
+                        Intent syncTrustowordsActivity = PEpAddDevice.getActionRequestHandshake(context, trust, partner);
                         syncTrustowordsActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         PendingIntent pendingIntent = PendingIntent.getActivity(context, 22, syncTrustowordsActivity, 0);
                         try {
@@ -734,7 +734,7 @@ public class K9 extends Application {
 //                        }
 //
 //                        Context context = K9.this.getApplicationContext();
-//                        Intent syncTrustowordsActivity = pEpAddDevice.getActionRequestHandshake(context, trust, partner);
+//                        Intent syncTrustowordsActivity = PEpAddDevice.getActionRequestHandshake(context, trust, partner);
 //                        syncTrustowordsActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //                        PendingIntent pendingIntent = PendingIntent.getActivity(context, 22, syncTrustowordsActivity, 0);
 //                        try {
