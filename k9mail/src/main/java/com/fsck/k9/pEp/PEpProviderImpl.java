@@ -893,8 +893,8 @@ public class PEpProviderImpl implements PEpProvider {
             Engine engine = null;
             try {
                 engine = getNewEngineSession();
-                List<Identity> identities = engine.own_identities_retrieve();
-                notifyLoaded(identities, callback);
+                List<Identity> identitiesVector = engine.own_identities_retrieve();
+                notifyLoaded(identitiesVector, callback);
             } catch (pEpException error) {
                 notifyError(error, callback);
             } finally {
