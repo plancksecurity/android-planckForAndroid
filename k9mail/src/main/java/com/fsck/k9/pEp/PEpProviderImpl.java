@@ -834,6 +834,60 @@ public class PEpProviderImpl implements PEpProvider {
         engine.cancel_sync_handshake(identity);
     }
 
+    @Override
+    public void loadOwnIdentities(ResultCallback<List<Identity>> callback) {
+        threadExecutor.execute(() -> {
+            Engine engine = null;
+            try {
+                engine = getNewEngineSession();
+                List<Identity> identities = engine.own_identities_retrieve();
+                notifyLoaded(identities, callback);
+            } catch (pEpException error) {
+                notifyError(error, callback);
+            } finally {
+                if (engine != null) {
+                    engine.close();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void setIdentityFlag(Identity identity, Integer flags, CompletedCallback completedCallback) {
+        threadExecutor.execute(() -> {
+            Engine engine = null;
+            try {
+                engine = getNewEngineSession();
+                engine.set_identity_flags(identity, flags);
+                notifyCompleted(completedCallback);
+            } catch (pEpException e) {
+                notifyError(e, completedCallback);
+            } finally {
+                if (engine != null) {
+                    engine.close();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void unsetIdentityFlag(Identity identity, Integer flags, CompletedCallback completedCallback) {
+        threadExecutor.execute(() -> {
+            Engine engine = null;
+            try {
+                engine = getNewEngineSession();
+                engine.unset_identity_flags(identity, flags);
+                notifyCompleted(completedCallback);
+            } catch (pEpException e) {
+                notifyError(e, completedCallback);
+            } finally {
+                if (engine != null) {
+                    engine.close();
+                }
+            }
+        });
+    }
+
     private void notifyLoaded(final Object privacyState, final ResultCallback callback) {
         this.postExecutionThread.post(() -> callback.onLoaded(privacyState));
     }
