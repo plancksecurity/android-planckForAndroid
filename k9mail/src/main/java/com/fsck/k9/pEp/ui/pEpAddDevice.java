@@ -12,27 +12,31 @@ import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
+import com.fsck.k9.pEp.ui.keysync.AddDevicePresenter;
+import com.fsck.k9.pEp.ui.keysync.AddDeviceView;
 
 import org.pEp.jniadapter.Identity;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class pEpAddDevice extends PepColoredActivity {
+public class pEpAddDevice extends PepColoredActivity implements AddDeviceView {
 
     public static final String ACTION_SHOW_PEP_TRUSTWORDS = "com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS";
     private static final String TRUSTWORDS = "trustwordsKey";
     private static final String PARTNER_ADRESS = "partnerAdress";
     private static final String PARTNER_USER_ID = "partnerUserUd";
 
-    Context context;
+    @Inject AddDevicePresenter presenter;
+
     @Bind(R.id.trustwords)
     TextView tvTrustwords;
     @Bind(R.id.tvPartner)
     TextView partnerView;
 
-    Identity partner;
     public static Intent getActionRequestHandshake(Context context, String trustwords, Identity partner) {
         Intent intent = new Intent(context, pEpAddDevice.class);
         intent.setAction(ACTION_SHOW_PEP_TRUSTWORDS);
@@ -50,7 +54,6 @@ public class pEpAddDevice extends PepColoredActivity {
 
         setContentView(R.layout.pep_add_device);
         ButterKnife.bind(this);
-        context = getApplicationContext();
         if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
         initPep();
 
@@ -59,47 +62,32 @@ public class pEpAddDevice extends PepColoredActivity {
                 tvTrustwords.setText(getIntent().getStringExtra(TRUSTWORDS));
             }
             if (intent.hasExtra(PARTNER_ADRESS) && intent.hasExtra(PARTNER_USER_ID)) {
-                partner = new Identity();
-                partner.user_id = intent.getStringExtra(PARTNER_USER_ID);
-                partner.address = intent.getStringExtra(PARTNER_ADRESS);
-                partner = getpEp().updateIdentity(partner);
-                if (!partner.username.equals(partner.address)) {
-                    partnerView.setText(String.format(getString(R.string.pep_complete_partner_format), partner.username, partner.address));
-                } else {
-                    partnerView.setText(String.format(getString(R.string.pep_partner_format),partner.address));
-                }
+                String partnerUserId = intent.getStringExtra(PARTNER_USER_ID);
+                String partnerAddress = intent.getStringExtra(PARTNER_ADRESS);
+                presenter.initialize(this, getpEp(), partnerUserId, partnerAddress);
             }
-
         }
-
-
     }
 
 
     @OnClick(R.id.confirmTrustWords)
     public void confirmTrustwords() {
-        getpEp().acceptHandshake(partner);
-        finish();
-
+        presenter.acceptHandshake();
     }
 
     @OnClick(R.id.wrongTrustwords)
     public void wrongTrustwords() {
-        getpEp().rejectHandshake(partner);
-        finish();
-
+        presenter.rejectHandshake();
     }
 
     @Override
     public void onBackPressed() {
-        getpEp().cancelHandshake(partner);
-        super.onBackPressed();
+        presenter.cancelHandshake();
     }
 
     @Override
     public PEpProvider getpEp() {
-        return
-                ((K9)getApplication()).getpEpSyncProvider();
+        return ((K9)getApplication()).getpEpSyncProvider();
     }
 
     @Override
@@ -111,5 +99,25 @@ public class pEpAddDevice extends PepColoredActivity {
                 .pEpModule(new PEpModule(this, getLoaderManager(), getFragmentManager()))
                 .build()
                 .inject(this);
+    }
+
+    @Override
+    public void showPartnerFormat(Identity partner) {
+        partnerView.setText(String.format(getString(R.string.pep_partner_format),partner.address));
+    }
+
+    @Override
+    public void showCompletePartnerFormat(Identity partner) {
+        partnerView.setText(String.format(getString(R.string.pep_complete_partner_format), partner.username, partner.address));
+    }
+
+    @Override
+    public void close() {
+        finish();
+    }
+
+    @Override
+    public void goBack() {
+        super.onBackPressed();
     }
 }
