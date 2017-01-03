@@ -71,7 +71,7 @@ import java.util.concurrent.SynchronousQueue;
 public class K9 extends Application {
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PEpProvider pEpProvider, pEpSyncProvider;
-    boolean ispEpSyncEnabled = true;
+    final boolean ispEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
     private Account currentAccount;
     private ApplicationComponent component;
 
