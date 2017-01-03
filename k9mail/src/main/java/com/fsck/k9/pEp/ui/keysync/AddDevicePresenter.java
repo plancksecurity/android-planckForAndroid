@@ -14,7 +14,7 @@ public class AddDevicePresenter implements Presenter {
     private Identity partner;
 
     @Inject
-    public AddDevicePresenter() {
+    AddDevicePresenter() {
     }
 
     public void initialize(AddDeviceView view, PEpProvider pEpProvider, String partnerUserId, String partnerAddress) {
@@ -24,7 +24,10 @@ public class AddDevicePresenter implements Presenter {
         partner.user_id = partnerUserId;
         partner.address = partnerAddress;
         partner = pEpProvider.updateIdentity(partner);
+        loadPartner(view);
+    }
 
+    private void loadPartner(AddDeviceView view) {
         if (!partner.username.equals(partner.address)) {
             view.showCompletePartnerFormat(partner);
         } else {
@@ -32,17 +35,17 @@ public class AddDevicePresenter implements Presenter {
         }
     }
 
-    public void acceptHandshake() {
+    void acceptHandshake() {
         pEpProvider.acceptHandshake(partner);
         view.close();
     }
 
-    public void rejectHandshake() {
+    void rejectHandshake() {
         pEpProvider.rejectHandshake(partner);
         view.close();
     }
 
-    public void cancelHandshake() {
+    void cancelHandshake() {
         pEpProvider.cancelHandshake(partner);
         view.goBack();
     }
