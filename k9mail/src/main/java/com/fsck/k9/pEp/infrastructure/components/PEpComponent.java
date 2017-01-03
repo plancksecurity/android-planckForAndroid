@@ -3,9 +3,9 @@ package com.fsck.k9.pEp.infrastructure.components;
 import com.fsck.k9.pEp.infrastructure.PerActivity;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
+import com.fsck.k9.pEp.ui.keysync.PEpAddDevice;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
-import com.fsck.k9.pEp.ui.keysync.pEpAddDevice;
 
 import dagger.Component;
 
@@ -18,5 +18,5 @@ import dagger.Component;
 
     void inject(PEpTrustwords pEpTrustwords);
 
-    void inject(pEpAddDevice pEpStatus);
+    void inject(PEpAddDevice pEpStatus);
 }
