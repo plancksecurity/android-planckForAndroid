@@ -4,6 +4,7 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.Presenter;
 
 import org.pEp.jniadapter.Identity;
+import org.pEp.jniadapter.IdentityFlags;
 
 import java.util.List;
 
@@ -68,7 +69,7 @@ public class AddDevicePresenter implements Presenter {
 
     public void identityCheckStatusChanged(Identity identity, Boolean checked) {
         if (checked) {
-            pEpProvider.setIdentityFlag(identity, 0, new PEpProvider.CompletedCallback() {
+            pEpProvider.setIdentityFlag(identity, IdentityFlags.PEPIdfNotForSync.value, new PEpProvider.CompletedCallback() {
                 @Override
                 public void onComplete() {
 
@@ -80,7 +81,7 @@ public class AddDevicePresenter implements Presenter {
                 }
             });
         } else {
-            pEpProvider.unsetIdentityFlag(identity, 0, new PEpProvider.CompletedCallback() {
+            pEpProvider.unsetIdentityFlag(identity, IdentityFlags.PEPIdfNotForSync.value, new PEpProvider.CompletedCallback() {
                 @Override
                 public void onComplete() {
 
