@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp.ui;
+package com.fsck.k9.pEp.ui.keysync;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,8 +12,7 @@ import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
-import com.fsck.k9.pEp.ui.keysync.AddDevicePresenter;
-import com.fsck.k9.pEp.ui.keysync.AddDeviceView;
+import com.fsck.k9.pEp.ui.PepColoredActivity;
 
 import org.pEp.jniadapter.Identity;
 
