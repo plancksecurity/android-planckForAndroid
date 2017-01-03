@@ -5,6 +5,8 @@ import com.fsck.k9.pEp.infrastructure.Presenter;
 
 import org.pEp.jniadapter.Identity;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 public class AddDevicePresenter implements Presenter {
@@ -48,6 +50,52 @@ public class AddDevicePresenter implements Presenter {
     void cancelHandshake() {
         pEpProvider.cancelHandshake(partner);
         view.goBack();
+    }
+
+    public void advancedOptionsClicked() {
+        pEpProvider.loadOwnIdentities(new PEpProvider.ResultCallback<List<Identity>>() {
+            @Override
+            public void onLoaded(List<Identity> identities) {
+                view.showIdentities(identities);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                view.showError();
+            }
+        });
+    }
+
+    public void identityCheckStatusChanged(Identity identity, Boolean checked) {
+        if (checked) {
+            pEpProvider.setIdentityFlag(identity, 0, new PEpProvider.CompletedCallback() {
+                @Override
+                public void onComplete() {
+
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                    view.showError();
+                }
+            });
+        } else {
+            pEpProvider.unsetIdentityFlag(identity, 0, new PEpProvider.CompletedCallback() {
+                @Override
+                public void onComplete() {
+
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                    view.showError();
+                }
+            });
+        }
+    }
+
+    public void basicOptionsClicked() {
+        view.hideIdentities();
     }
 
     @Override

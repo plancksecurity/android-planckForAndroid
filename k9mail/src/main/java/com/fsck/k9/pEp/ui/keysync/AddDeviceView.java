@@ -2,6 +2,8 @@ package com.fsck.k9.pEp.ui.keysync;
 
 import org.pEp.jniadapter.Identity;
 
+import java.util.List;
+
 public interface AddDeviceView {
 
     void showPartnerFormat(Identity partner);
@@ -11,4 +13,10 @@ public interface AddDeviceView {
     void close();
 
     void goBack();
+
+    void showIdentities(List<Identity> identities);
+
+    void showError();
+
+    void hideIdentities();
 }
