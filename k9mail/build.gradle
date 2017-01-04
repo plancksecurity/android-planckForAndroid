@@ -108,17 +108,23 @@ android {
         buildConfigField "int", "ENGINE_REVISION", "${pEpEngineRevision}"
         buildConfigField "int", "ADAPTER_REVISION", "${pEpJNIAdapterRevision}"
     }
+    flavorDimensions 'playStore', 'none'
 
     productFlavors {
         withkeysync {
             buildConfigField "boolean", "WITH_KEY_SYNC", "true"
             versionName "${version}" + '.withKeysync'
+            dimension 'playStore'
 
         }
         withthoutkeysync {
             buildConfigField "boolean", "WITH_KEY_SYNC", "false"
             versionName "${version}" + '.withoutKeysync'
+            dimension 'playStore'
 
+        }
+        playStore {
+            dimension 'none'
         }
     }
     signingConfigs {
