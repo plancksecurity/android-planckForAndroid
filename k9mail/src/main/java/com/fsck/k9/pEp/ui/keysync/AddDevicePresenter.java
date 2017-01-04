@@ -1,11 +1,13 @@
 package com.fsck.k9.pEp.ui.keysync;
 
+import com.fsck.k9.Account;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.Presenter;
 
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.IdentityFlags;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -15,14 +17,16 @@ public class AddDevicePresenter implements Presenter {
     private AddDeviceView view;
     private PEpProvider pEpProvider;
     private Identity partner;
+    private List<Account> accounts;
 
     @Inject
     AddDevicePresenter() {
     }
 
-    public void initialize(AddDeviceView view, PEpProvider pEpProvider, String partnerUserId, String partnerAddress) {
+    public void initialize(AddDeviceView view, PEpProvider pEpProvider, String partnerUserId, String partnerAddress, List<Account> accounts) {
         this.view = view;
         this.pEpProvider = pEpProvider;
+        this.accounts = accounts;
         partner = new Identity();
         partner.user_id = partnerUserId;
         partner.address = partnerAddress;
@@ -57,7 +61,17 @@ public class AddDevicePresenter implements Presenter {
         pEpProvider.loadOwnIdentities(new PEpProvider.ResultCallback<List<Identity>>() {
             @Override
             public void onLoaded(List<Identity> identities) {
-                view.showIdentities(identities);
+                ArrayList<Identity> identitiesToShow = new ArrayList<>();
+                for (Identity identity : identities) {
+                    for (Account account : accounts) {
+                        if (account.getEmail().equals(identity.address)) {
+                            identitiesToShow.add(identity);
+                        }
+                    }
+                }
+                identities.removeAll(identitiesToShow);
+                identitiesCheckStatusChanged(identities, true);
+                view.showIdentities(identitiesToShow);
             }
 
             @Override
@@ -65,6 +79,14 @@ public class AddDevicePresenter implements Presenter {
                 view.showError();
             }
         });
+    }
+
+    private void identitiesCheckStatusChanged(List<Identity> identities, Boolean checked) {
+        if (!identities.isEmpty()) {
+            for (Identity identity : identities) {
+                identityCheckStatusChanged(identity, checked);
+            }
+        }
     }
 
     public void identityCheckStatusChanged(Identity identity, Boolean checked) {
