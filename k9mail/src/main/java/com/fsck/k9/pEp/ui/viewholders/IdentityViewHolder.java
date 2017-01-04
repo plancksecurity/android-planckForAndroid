@@ -10,6 +10,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.pEp.ui.IdentityClickListener;
 
 import org.pEp.jniadapter.Identity;
+import org.pEp.jniadapter.IdentityFlags;
 
 public class IdentityViewHolder extends RecyclerView.ViewHolder {
     private final IdentityClickListener identityClickListener;
@@ -37,7 +38,8 @@ public class IdentityViewHolder extends RecyclerView.ViewHolder {
     private void renderIdentity(final Identity keyItem) {
         identityUserName.setText(keyItem.username);
         identityAddress.setText(keyItem.address);
-        //isBlacklistedCheckbox.setChecked(keyItem.isSelected());
+        boolean flagged = IdentityFlags.PEPIdfNotForSync.value == keyItem.flags;
+        isBlacklistedCheckbox.setChecked(flagged);
         isBlacklistedCheckbox.setOnClickListener(v -> {
             boolean checked = ((CheckBox) v).isChecked();
             identityClickListener.onClick(keyItem, checked);

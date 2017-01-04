@@ -11,7 +11,9 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fsck.k9.Account;
 import com.fsck.k9.K9;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
@@ -77,7 +79,8 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
             if (intent.hasExtra(PARTNER_ADRESS) && intent.hasExtra(PARTNER_USER_ID)) {
                 String partnerUserId = intent.getStringExtra(PARTNER_USER_ID);
                 String partnerAddress = intent.getStringExtra(PARTNER_ADRESS);
-                presenter.initialize(this, getpEp(), partnerUserId, partnerAddress);
+                List<Account> accounts = Preferences.getPreferences(PEpAddDevice.this).getAccounts();
+                presenter.initialize(this, getpEp(), partnerUserId, partnerAddress, accounts);
             }
         }
     }
