@@ -3,6 +3,7 @@ package com.fsck.k9.preferences;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.VisibleForTesting;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.fsck.k9.Account;
@@ -134,7 +135,13 @@ public class SettingsImporter {
             // will not be null.
             if (imported.accounts != null) {
                 for (ImportedAccount account : imported.accounts.values()) {
-                    accounts.add(new AccountDescription(account.name, account.uuid));
+                    //Show a alternative text in the case the description is empty
+                    String name = account.name;
+                    if (TextUtils.isEmpty(name) && account.identities != null && account.identities.size() > 0){
+                        name = account.identities.get(0).email;
+                    }
+
+                    accounts.add(new AccountDescription(name, account.uuid));
                 }
             }
 
@@ -951,11 +958,8 @@ public class SettingsImporter {
                             account.settings = parseSettings(xpp, SettingsExporter.SETTINGS_ELEMENT);
                         }
                     } else if (SettingsExporter.IDENTITIES_ELEMENT.equals(element)) {
-                        if (overview) {
-                            skipToEndTag(xpp, SettingsExporter.IDENTITIES_ELEMENT);
-                        } else {
-                            account.identities = parseIdentities(xpp);
-                        }
+                        //Read the full content to have an alternative identifier to display if the name is empty
+                        account.identities = parseIdentities(xpp);
                     } else if (SettingsExporter.FOLDERS_ELEMENT.equals(element)) {
                         if (overview) {
                             skipToEndTag(xpp, SettingsExporter.FOLDERS_ELEMENT);
