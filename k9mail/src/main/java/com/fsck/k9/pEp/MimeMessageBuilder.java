@@ -1,15 +1,19 @@
 package com.fsck.k9.pEp;
 
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.fsck.k9.K9;
+import com.fsck.k9.Globals;
 import com.fsck.k9.mail.Body;
-import com.fsck.k9.mail.Message.RecipientType;
+import com.fsck.k9.mail.BoundaryGenerator;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.filter.Base64;
+import com.fsck.k9.mail.internet.MessageIdGenerator;
 import com.fsck.k9.mail.internet.MimeBodyPart;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
@@ -17,6 +21,7 @@ import com.fsck.k9.mail.internet.MimeMessageHelper;
 import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
+import com.fsck.k9.message.MessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
 
 import org.apache.james.mime4j.codec.EncoderUtil;
@@ -35,12 +40,41 @@ import java.util.Vector;
  */
 
 
-class MimeMessageBuilder {
+class MimeMessageBuilder extends MessageBuilder {
     private SimpleMessageFormat messageFormat = SimpleMessageFormat.TEXT;
 
     private Message pEpMessage;
 
+    public MimeMessageBuilder newInstance() {
+        Context context = Globals.getContext();
+        MessageIdGenerator messageIdGenerator = MessageIdGenerator.getInstance();
+        BoundaryGenerator boundaryGenerator = BoundaryGenerator.getInstance();
+        return new MimeMessageBuilder(context, messageIdGenerator, boundaryGenerator);
+    }
+
+    @VisibleForTesting
+    MimeMessageBuilder(Context context, MessageIdGenerator messageIdGenerator, BoundaryGenerator boundaryGenerator) {
+        super(context, messageIdGenerator, boundaryGenerator);
+    }
+
+    @Override
+    protected void buildMessageInternal() {
+        try {
+            MimeMessage message = build();
+            queueMessageBuildSuccess(message);
+        } catch (MessagingException me) {
+            queueMessageBuildException(me);
+        }
+    }
+
+    @Override
+    protected void buildMessageOnActivityResult(int requestCode, Intent data) {
+        throw new UnsupportedOperationException();
+    }
+
+    //--------------------------
     MimeMessageBuilder(Message m) {
+        super(null, null, null);
         this.pEpMessage = m;
     }
 
@@ -53,6 +87,18 @@ class MimeMessageBuilder {
         return mimeMsg;
     }
 
+    @NonNull
+    MimeMessage parseMessage(Message m) throws MessagingException {
+        this.pEpMessage = m;
+        MimeMessage message = new MimeMessage();
+
+        evaluateMessageFormat();
+        buildHeaderForMessage(message);
+        buildBodyForMessage(message);
+
+        return message;
+    }
+
     private void evaluateMessageFormat() {
         if (!TextUtils.isEmpty(pEpMessage.getLongmsgFormatted()))
             messageFormat = SimpleMessageFormat.HTML;
@@ -60,14 +106,10 @@ class MimeMessageBuilder {
             messageFormat = SimpleMessageFormat.TEXT;
     }
 
-    private void buildHeader(MimeMessage mimeMsg) throws MessagingException {
-        if (pEpMessage.getSent() != null) mimeMsg.addSentDate(pEpMessage.getSent(), K9.hideTimeZone());
-        else Log.e("pep", "sent daten == null from engine.");       // FIXME: this should never happen
-        mimeMsg.setFrom(PEpUtils.createAddress(pEpMessage.getFrom()));
-        mimeMsg.setRecipients(RecipientType.TO, PEpUtils.createAddresses(pEpMessage.getTo()));
-        mimeMsg.setRecipients(RecipientType.CC, PEpUtils.createAddresses(pEpMessage.getCc()));
-        mimeMsg.setRecipients(RecipientType.BCC, PEpUtils.createAddresses(pEpMessage.getBcc()));
-        mimeMsg.setSubject(pEpMessage.getShortmsg());
+    private void buildHeaderForMessage(MimeMessage mimeMsg) throws MessagingException {
+        //if (pEpMessage.getSent() != null) mimeMsg.addSentDate(pEpMessage.getSent(), K9.hideTimeZone());
+        //else Log.e("pep", "sent daten == null from engine.");       // FIXME: this should never happen
+        buildHeader(mimeMsg);
         mimeMsg.setMessageId(pEpMessage.getId());
 
         mimeMsg.setReplyTo(PEpUtils.createAddresses(pEpMessage.getReplyTo()));
@@ -79,66 +121,19 @@ class MimeMessageBuilder {
                 mimeMsg.addHeader(field.first, field.second);
             }
         }
-
     }
 
-    private void buildBody(MimeMessage mimeMsg) throws MessagingException {
+    private void buildBodyForMessage(MimeMessage mimeMsg) throws MessagingException {
         if (pEpMessage.getEncFormat() != Message.EncFormat.None) {   // we have an encrypted msg. Therefore, just attachments...
             // FIXME: how do I add some text ("this mail encrypted by pEp") before the first mime part?
             MimeMultipart mp = MimeMultipart.newInstance();
             mp.setSubType("encrypted; protocol=\"application/pgp-encrypted\"");     // FIXME: what if other enc types?
             addAttachmentsToMessage(mp);
             MimeMessageHelper.setBody(mimeMsg, mp);
-
             return;
         }
 
-        // the following copied from MessageBuilder...
-
-        TextBody body = buildText();        // builds eitehr plain or html
-
-        // text/plain part when messageFormat == MessageFormat.HTML
-        TextBody bodyPlain;
-        boolean hasAttachments = pEpMessage.getAttachments() != null;
-        // FIXME: the following is for sure not correct, at least with respect to mime types
-
-        if (messageFormat == SimpleMessageFormat.HTML) {
-            // HTML message (with alternative text part)
-
-            // This is the compiled MIME part for an HTML message.
-            MimeMultipart composedMimeMessage = MimeMultipart.newInstance();
-            composedMimeMessage.setSubType("alternative");   // Let the receiver select either the text or the HTML part.
-            composedMimeMessage.addBodyPart(new MimeBodyPart(body, "text/html"));
-            bodyPlain = buildText(SimpleMessageFormat.TEXT);
-            composedMimeMessage.addBodyPart(new MimeBodyPart(bodyPlain, "text/plain"));
-
-            if (hasAttachments) {
-                // If we're HTML and have attachments, we have a MimeMultipart container to hold the
-                // whole message (mp here), of which one part is a MimeMultipart container
-                // (composedMimeMessage) with the user's composed messages, and subsequent parts for
-                // the attachments.
-                MimeMultipart mp = MimeMultipart.newInstance();
-                mp.addBodyPart(new MimeBodyPart(composedMimeMessage));
-                addAttachmentsToMessage(mp);
-                MimeMessageHelper.setBody(mimeMsg, mp);
-            } else {
-                // If no attachments, our multipart/alternative part is the only one we need.
-                MimeMessageHelper.setBody(mimeMsg, composedMimeMessage);
-            }
-
-        } else if (messageFormat == SimpleMessageFormat.TEXT) {
-            // Text-only message.
-            if (hasAttachments) {
-                MimeMultipart mp = MimeMultipart.newInstance();
-                mp.addBodyPart(new MimeBodyPart(body, "text/plain"));
-                addAttachmentsToMessage(mp);
-                MimeMessageHelper.setBody(mimeMsg, mp);
-            } else {
-                // No attachments to include, just stick the text body in the message and call it good.
-                MimeMessageHelper.setBody(mimeMsg, body);
-            }
-
-        }
+        buildBody(mimeMsg);
     }
 
     private TextBody buildText() {
