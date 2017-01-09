@@ -2,10 +2,17 @@ package com.fsck.k9.pEp;
 
 import android.content.Context;
 import android.util.Log;
+
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.Part;
-import com.fsck.k9.mail.internet.*;
+import com.fsck.k9.mail.internet.MessageExtractor;
+import com.fsck.k9.mail.internet.MimeBodyPart;
+import com.fsck.k9.mail.internet.MimeHeader;
+import com.fsck.k9.mail.internet.MimeMessage;
+import com.fsck.k9.mail.internet.MimeMultipart;
+import com.fsck.k9.mail.internet.MimeUtility;
+
 import org.pEp.jniadapter.Blob;
 import org.pEp.jniadapter.Message;
 import org.pEp.jniadapter.Pair;
@@ -19,7 +26,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
-import java.util.logging.StreamHandler;
 
 /**
  * Makes a pEp message from a k9 message
@@ -119,10 +125,21 @@ class PEpMessageBuilder {
                 } else {
                     text = new String(PEpUtils.extractBodyContent(mbp_body));
                 }
-                if(plain)
-                    pEpMsg.setLongmsg(text);
-                else
-                    pEpMsg.setLongmsgFormatted(text);
+                if(plain) {
+                    String longmsg = pEpMsg.getLongmsg();
+                    if (longmsg != null) {
+                        pEpMsg.setLongmsg(longmsg + text);
+                    } else {
+                        pEpMsg.setLongmsg(text);
+                    }
+                } else {
+                    String longmsg = pEpMsg.getLongmsgFormatted();
+                    if (longmsg != null) {
+                        pEpMsg.setLongmsgFormatted(longmsg + text);
+                    } else {
+                        pEpMsg.setLongmsgFormatted(text);
+                    }
+                }
                 Log.d("pep", "found Text: " + text);
             } else  {
                 String filename = getFileName(mbp);
