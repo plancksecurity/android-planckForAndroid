@@ -132,8 +132,48 @@ class MimeMessageBuilder extends MessageBuilder {
             MimeMessageHelper.setBody(mimeMsg, mp);
             return;
         }
-
-        buildBody(mimeMsg);
+        // FIXME: 9/01/17 we should use buildbody
+        //buildBody(mimeMsg);
+        // FIXME: 9/01/17 and we should remove the following
+        // the following copied from MessageBuilder...
+        TextBody body = buildText();        // builds eitehr plain or html
+        // text/plain part when messageFormat == MessageFormat.HTML
+        TextBody bodyPlain;
+        boolean hasAttachments = pEpMessage.getAttachments() != null;
+        // FIXME: the following is for sure not correct, at least with respect to mime types
+        if (messageFormat == SimpleMessageFormat.HTML) {
+            // HTML message (with alternative text part)
+            // This is the compiled MIME part for an HTML message.
+            MimeMultipart composedMimeMessage = MimeMultipart.newInstance();
+            composedMimeMessage.setSubType("alternative");   // Let the receiver select either the text or the HTML part.
+            composedMimeMessage.addBodyPart(new MimeBodyPart(body, "text/html"));
+            bodyPlain = buildText(SimpleMessageFormat.TEXT);
+            composedMimeMessage.addBodyPart(new MimeBodyPart(bodyPlain, "text/plain"));
+            if (hasAttachments) {
+                // If we're HTML and have attachments, we have a MimeMultipart container to hold the
+                // whole message (mp here), of which one part is a MimeMultipart container
+                // (composedMimeMessage) with the user's composed messages, and subsequent parts for
+                // the attachments.
+                MimeMultipart mp = MimeMultipart.newInstance();
+                mp.addBodyPart(new MimeBodyPart(composedMimeMessage));
+                addAttachmentsToMessage(mp);
+                MimeMessageHelper.setBody(mimeMsg, mp);
+            } else {
+                // If no attachments, our multipart/alternative part is the only one we need.
+                MimeMessageHelper.setBody(mimeMsg, composedMimeMessage);
+            }
+        } else if (messageFormat == SimpleMessageFormat.TEXT) {
+            // Text-only message.
+            if (hasAttachments) {
+                MimeMultipart mp = MimeMultipart.newInstance();
+                mp.addBodyPart(new MimeBodyPart(body, "text/plain"));
+                addAttachmentsToMessage(mp);
+                MimeMessageHelper.setBody(mimeMsg, mp);
+            } else {
+                // No attachments to include, just stick the text body in the message and call it good.
+                MimeMessageHelper.setBody(mimeMsg, body);
+            }
+        }
     }
 
     private TextBody buildText() {
