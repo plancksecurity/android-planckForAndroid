@@ -64,6 +64,9 @@ import com.fsck.k9.pEp.ui.renderers.AccountRenderer;
 import com.fsck.k9.pEp.ui.renderers.FolderRenderer;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.StorageEditor;
+import com.fsck.k9.mailstore.LocalMessage;
+import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification;
@@ -83,6 +86,14 @@ import com.pedrogomez.renderers.RendererBuilder;
 import org.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.pEp.jniadapter.Rating;
+
+import java.util.Collection;
+import java.util.List;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -111,6 +122,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     private static final String STATE_DISPLAY_MODE = "displayMode";
     private static final String STATE_MESSAGE_LIST_WAS_DISPLAYED = "messageListWasDisplayed";
+    private static final String STATE_FIRST_BACK_STACK_ID = "firstBackstackId";
 
     // Used for navigating to next/previous message
     private static final int PREVIOUS = 1;
@@ -1108,6 +1120,10 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         }
         StorageManager.getInstance(getApplication()).addListener(mStorageListener);
 
+        if (mAccount != null) {
+            initializePepStatus();
+        }
+
         if (!isThreadDisplayed) {
             PEpUtils.colorToolbar(PePUIArtefactCache.getInstance(getApplicationContext()), getToolbar(), Rating.pEpRatingTrustedAndAnonymized);
             setStatusBarPepColor(Rating.pEpRatingTrustedAndAnonymized);
@@ -1120,11 +1136,13 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
         outState.putSerializable(STATE_DISPLAY_MODE, mDisplayMode);
         outState.putBoolean(STATE_MESSAGE_LIST_WAS_DISPLAYED, mMessageListWasDisplayed);
+        outState.putInt(STATE_FIRST_BACK_STACK_ID, mFirstBackStackId);
     }
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         mMessageListWasDisplayed = savedInstanceState.getBoolean(STATE_MESSAGE_LIST_WAS_DISPLAYED);
+        mFirstBackStackId = savedInstanceState.getInt(STATE_FIRST_BACK_STACK_ID);
     }
 
     private void initializeActionBar() {
@@ -1154,7 +1172,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             mActionBarPepStatus.setVisibility(View.GONE);
         }
     }
-
 
     @SuppressLint("InflateParams")
     private View getActionButtonIndeterminateProgress() {
@@ -1350,6 +1367,18 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 FeedbackTools.showLongFeedback(getRootView(), getString(R.string.message_list_help_key));
                 return true;
             }
+            case KeyEvent.KEYCODE_DPAD_LEFT: {
+                if (mMessageViewFragment != null && mDisplayMode == DisplayMode.MESSAGE_VIEW) {
+                    return showPreviousMessage();
+                }
+                return false;
+            }
+            case KeyEvent.KEYCODE_DPAD_RIGHT: {
+                if (mMessageViewFragment != null && mDisplayMode == DisplayMode.MESSAGE_VIEW) {
+                    return showNextMessage();
+                }
+                return false;
+            }
 
         }
 
@@ -1530,6 +1559,10 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 updateMenu();
                 return true;
             }
+            case R.id.pEp_indicator: {
+                mMessageViewFragment.onPepStatus();
+
+            }
         }
 
         if (!mSingleFolderMode) {
@@ -1623,6 +1656,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             menu.findItem(R.id.toggle_message_view_theme).setVisible(false);
             menu.findItem(R.id.show_headers).setVisible(false);
             menu.findItem(R.id.hide_headers).setVisible(false);
+
         } else {
             // hide prev/next buttons in split mode
             if (mDisplayMode != DisplayMode.MESSAGE_VIEW) {
@@ -2112,6 +2146,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     private void showMessageList() {
+        PEpUtils.colorToolbar(PePUIArtefactCache.getInstance(getApplicationContext()), getToolbar(), Rating.pEpRatingUnencrypted);
         mMessageListWasDisplayed = true;
         mDisplayMode = DisplayMode.MESSAGE_LIST;
         mViewSwitcher.showFirstView();

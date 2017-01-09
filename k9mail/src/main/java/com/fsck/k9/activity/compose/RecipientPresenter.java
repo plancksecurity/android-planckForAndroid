@@ -64,6 +64,8 @@ public class RecipientPresenter implements PermissionPingCallback {
     public static final int POLLING_INTERVAL = 200;
     public static final String STATE_RATING = "rating";
 
+    private static final int PGP_DIALOG_DISPLAY_THRESHOLD = 2;
+
 
     // transient state, which is either obtained during construction and initialization, or cached
     private final Context context;
@@ -266,6 +268,7 @@ public class RecipientPresenter implements PermissionPingCallback {
 
     public void addBccAddresses(Address... bccRecipients) {
         if (bccRecipients.length > 0) {
+            forceUnencrypted = true;
             addRecipientsFromAddresses(RecipientType.BCC, bccRecipients);
             String bccAddress = account.getAlwaysBcc();
 
@@ -282,6 +285,9 @@ public class RecipientPresenter implements PermissionPingCallback {
         boolean isCryptoConfigured = cryptoProviderState != CryptoProviderState.UNCONFIGURED;
         menu.findItem(R.id.openpgp_inline_enable).setVisible(isCryptoConfigured && !cryptoEnablePgpInline);
         menu.findItem(R.id.openpgp_inline_disable).setVisible(isCryptoConfigured && cryptoEnablePgpInline);
+
+        boolean showSignOnly = isCryptoConfigured && account.getCryptoSupportSignOnly();
+        boolean isSignOnly = cachedCryptoStatus.isSignOnly();
 
         boolean noContactPickerAvailable = !hasContactPicker();
         if (noContactPickerAvailable) {
@@ -375,7 +381,7 @@ public class RecipientPresenter implements PermissionPingCallback {
 
     public void updateCryptoStatus() {
         cachedCryptoStatus = null;
-        recipientMvpView.handlepEpState();
+        handlepEpState();
 
         boolean isOkStateButLostConnection = cryptoProviderState == CryptoProviderState.OK &&
                 (openPgpServiceConnection == null || !openPgpServiceConnection.isBound());
@@ -385,7 +391,7 @@ public class RecipientPresenter implements PermissionPingCallback {
         }
 
         recipientMvpView.showCryptoStatus(getCurrentCryptoStatus().getCryptoStatusDisplayType());
-        recipientMvpView.showPgpInlineModeIndicator(getCurrentCryptoStatus().isPgpInlineModeEnabled());
+        recipientMvpView.showCryptoSpecialMode(getCurrentCryptoStatus().getCryptoSpecialModeDisplayType());
     }
 
     public ComposeCryptoStatus getCurrentCryptoStatus() {
@@ -410,8 +416,12 @@ public class RecipientPresenter implements PermissionPingCallback {
     }
 
     public boolean isForceTextMessageFormat() {
-        ComposeCryptoStatus cryptoStatus = getCurrentCryptoStatus();
-        return cryptoStatus.isEncryptionEnabled() || cryptoStatus.isSigningEnabled();
+        if (cryptoEnablePgpInline) {
+            ComposeCryptoStatus cryptoStatus = getCurrentCryptoStatus();
+            return cryptoStatus.isEncryptionEnabled() || cryptoStatus.isSigningEnabled();
+        } else {
+            return false;
+        }
     }
 
     public boolean isAllowSavingDraftRemotely() {
@@ -451,12 +461,16 @@ public class RecipientPresenter implements PermissionPingCallback {
 
     @SuppressWarnings("UnusedParameters")
     public void onBccTokenAdded(Recipient recipient) {
+        forceUnencrypted = true;
         updateCryptoStatus();
+        dirty = true;
     }
 
     @SuppressWarnings("UnusedParameters")
     public void onBccTokenRemoved(Recipient recipient) {
+        forceUnencrypted = false;
         updateCryptoStatus();
+        dirty = true;
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -580,7 +594,11 @@ public class RecipientPresenter implements PermissionPingCallback {
                 Log.e(K9.LOG_TAG, "click on crypto status while unconfigured - this should not really happen?!");
                 return;
             case OK:
-                recipientMvpView.showCryptoDialog(currentCryptoMode);
+                if (cachedCryptoStatus.isSignOnly()) {
+                    recipientMvpView.showErrorIsSignOnly();
+                } else {
+                    recipientMvpView.showCryptoDialog(currentCryptoMode);
+                }
                 return;
 
             case LOST_CONNECTION:
@@ -628,7 +646,7 @@ public class RecipientPresenter implements PermissionPingCallback {
     public void showPgpAttachError(AttachErrorState attachErrorState) {
         switch (attachErrorState) {
             case IS_INLINE:
-                recipientMvpView.showErrorAttachInline();
+                recipientMvpView.showErrorInlineAttach();
                 break;
             default:
                 throw new AssertionError("not all error states handled, this is a bug!");
@@ -747,50 +765,93 @@ public class RecipientPresenter implements PermissionPingCallback {
     }
 
     public void onMenuSetPgpInline(boolean enablePgpInline) {
-        cryptoEnablePgpInline = enablePgpInline;
-        updateCryptoStatus();
+        if (getCurrentCryptoStatus().isSignOnly()) {
+            if (cryptoEnablePgpInline) {
+                Log.e(K9.LOG_TAG, "Inconsistent state: PGP/INLINE was enabled in sign-only mode!");
+                onCryptoPgpInlineChanged(false);
+            }
+
+            //recipientMvpView.showErrorSignOnlyInline();
+            return;
+        }
+
+        onCryptoPgpInlineChanged(enablePgpInline);
         if (enablePgpInline) {
-            recipientMvpView.showOpenPgpInlineDialog(true);
+            boolean shouldShowPgpInlineDialog = checkAndIncrementPgpInlineDialogCounter();
+            if (shouldShowPgpInlineDialog) {
+                recipientMvpView.showOpenPgpInlineDialog(true);
+            }
         }
     }
 
-    public void onClickPgpInlineIndicator() {
-        recipientMvpView.showOpenPgpInlineDialog(false);
+    public void onMenuSetSignOnly(boolean enableSignOnly) {
+        if (enableSignOnly) {
+            if (getCurrentCryptoStatus().isPgpInlineModeEnabled()) {
+                recipientMvpView.showErrorInlineSignOnly();
+                return;
+            }
+
+            onCryptoPgpInlineChanged(false);
+            onCryptoModeChanged(CryptoMode.SIGN_ONLY);
+            boolean shouldShowPgpSignOnlyDialog = checkAndIncrementPgpSignOnlyDialogCounter();
+            if (shouldShowPgpSignOnlyDialog) {
+                recipientMvpView.showOpenPgpSignOnlyDialog(true);
+            }
+        } else {
+            onCryptoModeChanged(CryptoMode.OPPORTUNISTIC);
+        }
     }
 
-    public void updatepEpState() {
-        /* no-op */
+    public void onCryptoPgpSignOnlyDisabled() {
+        onCryptoModeChanged(CryptoMode.OPPORTUNISTIC);
     }
 
-
-    public void handlepEpState(boolean... withToast) {
-        recipientMvpView.handlepEpState(withToast);
+    private boolean checkAndIncrementPgpInlineDialogCounter() {
+        int pgpInlineDialogCounter = K9.getPgpInlineDialogCounter();
+        if (pgpInlineDialogCounter < PGP_DIALOG_DISPLAY_THRESHOLD) {
+            K9.setPgpInlineDialogCounter(pgpInlineDialogCounter + 1);
+            return true;
+        }
+        return false;
     }
 
-    public void setpEpIndicator(MenuItem pEpIndicator) {
-        recipientMvpView.setpEpIndicator(pEpIndicator);
+    private boolean checkAndIncrementPgpSignOnlyDialogCounter() {
+        int pgpSignOnlyDialogCounter = K9.getPgpSignOnlyDialogCounter();
+        if (pgpSignOnlyDialogCounter < PGP_DIALOG_DISPLAY_THRESHOLD) {
+            K9.setPgpSignOnlyDialogCounter(pgpSignOnlyDialogCounter + 1);
+            return true;
+        }
+        return false;
     }
 
-    public void onPepIndicator() {
-        recipientMvpView.onPepIndicator();
-    }
-
-    public boolean isForwardedMessageWeakestThanOriginal(Rating originalMessageRating) {
-        Rating currentRating = recipientMvpView.getpEpRating();
-        return currentRating.value < Rating.pEpRatingReliable.value && currentRating.value < originalMessageRating.value;
+    void onClickCryptoSpecialModeIndicator() {
+        ComposeCryptoStatus currentCryptoStatus = getCurrentCryptoStatus();
+        if (currentCryptoStatus.isPgpInlineModeEnabled()) {
+            recipientMvpView.showOpenPgpInlineDialog(false);
+        } else if (currentCryptoStatus.isSignOnly()) {
+            recipientMvpView.showOpenPgpSignOnlyDialog(false);
+        } else {
+            throw new IllegalStateException("This icon should not be clickable while no special mode is active!");
+        }
     }
 
 
     public void switchPrivacyProtection(PEpProvider.ProtectionScope scope, boolean... protection) {
-        switch (scope) {
-            case MESSAGE:
-                if (protection.length > 0) throw new RuntimeException("On message only switch allowed");
-                forceUnencrypted = !forceUnencrypted;
-                break;
-            case ACCOUNT:
-                if (protection.length < 1) throw new RuntimeException("On account only explicit boolean allowed");
-                forceUnencrypted = !protection[0];
-                break;
+        if (bccAdresses == null || bccAdresses.size() == 0) {
+            switch (scope) {
+                case MESSAGE:
+                    if (protection.length > 0)
+                        throw new RuntimeException("On message only switch allowed");
+                    forceUnencrypted = !forceUnencrypted;
+                    break;
+                case ACCOUNT:
+                    if (protection.length < 1)
+                        throw new RuntimeException("On account only explicit boolean allowed");
+                    forceUnencrypted = !protection[0];
+                    break;
+            }
+        } else {
+            forceUnencrypted = true;
         }
         handlepEpState();
     }
@@ -808,6 +869,33 @@ public class RecipientPresenter implements PermissionPingCallback {
 
         this.recipientMvpView.notifyAddressesChanged(toAdresses, ccAdresses, bccAdresses);
         setupPEPStatusPolling();
+    }
+
+    public void onPause() {
+        poller.stopPolling();
+    }
+
+    public void onPepIndicator() {
+        recipientMvpView.onPepIndicator();
+    }
+
+
+    public void updatepEpState() {
+        /* no-op */
+    }
+
+
+    public void handlepEpState(boolean... withToast) {
+        recipientMvpView.handlepEpState(withToast);
+    }
+
+    public void setpEpIndicator(MenuItem pEpIndicator) {
+        recipientMvpView.setpEpIndicator(pEpIndicator);
+    }
+
+    public boolean isForwardedMessageWeakestThanOriginal(Rating originalMessageRating) {
+        Rating currentRating = recipientMvpView.getpEpRating();
+        return currentRating.value < Rating.pEpRatingReliable.value && currentRating.value < originalMessageRating.value;
     }
 
     public enum CryptoProviderState {
@@ -847,7 +935,7 @@ public class RecipientPresenter implements PermissionPingCallback {
                 bccAdresses = newBccAdresses;
                 recipientMvpView.lockSendButton();
                 pEp = ((K9) context.getApplicationContext()).getpEpProvider();
-                pEp.getPrivacyState(fromAddress, toAdresses, ccAdresses, bccAdresses, new PEpProvider.Callback<Rating>() {
+                pEp.getPrivacyState(fromAddress, toAdresses, ccAdresses, bccAdresses, new PEpProvider.ResultCallback<Rating>() {
                     @Override
                     public void onLoaded(Rating rating) {
                         showRatingFeedback(rating);
@@ -865,7 +953,7 @@ public class RecipientPresenter implements PermissionPingCallback {
 
     private void showRatingFeedback(Rating rating) {
         recipientMvpView.setpEpRating(rating);
-        recipientMvpView.handlepEpState();
+        handlepEpState();
     }
 
     private List<Address> initializeAdresses(List<Address> addresses) {

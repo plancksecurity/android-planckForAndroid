@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +50,7 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
@@ -113,6 +115,8 @@ public class MessagingControllerTest {
     @Mock
     private LocalMessage localNewMessage2;
     private volatile boolean hasFetchedMessage = false;
+
+    private Context appContext;
 
 
     @Before
@@ -716,14 +720,14 @@ public class MessagingControllerTest {
     private Message buildSmallNewMessage() {
         Message message = mock(Message.class);
         when(message.olderThan(any(Date.class))).thenReturn(false);
-        when(message.getSize()).thenReturn(MAXIMUM_SMALL_MESSAGE_SIZE);
+        when(message.getSize()).thenReturn((long) MAXIMUM_SMALL_MESSAGE_SIZE);
         return message;
     }
 
     private Message buildLargeNewMessage() {
         Message message = mock(Message.class);
         when(message.olderThan(any(Date.class))).thenReturn(false);
-        when(message.getSize()).thenReturn(MAXIMUM_SMALL_MESSAGE_SIZE + 1);
+        when(message.getSize()).thenReturn((long) (MAXIMUM_SMALL_MESSAGE_SIZE + 1));
         return message;
     }
 
@@ -767,6 +771,19 @@ public class MessagingControllerTest {
         when(account.getRemoteStore()).thenReturn(remoteStore);
         when(remoteStore.getFolder(FOLDER_NAME)).thenReturn(remoteFolder);
         when(remoteFolder.getName()).thenReturn(FOLDER_NAME);
+    }
+
+    private void setAccountsInPreferences(Map<String, Account> newAccounts)
+            throws Exception {
+        Field accounts = Preferences.class.getDeclaredField("accounts");
+        accounts.setAccessible(true);
+        accounts.set(Preferences.getPreferences(appContext), newAccounts);
+
+        Field accountsInOrder = Preferences.class.getDeclaredField("accountsInOrder");
+        accountsInOrder.setAccessible(true);
+        ArrayList<Account> newAccountsInOrder = new ArrayList<>();
+        newAccountsInOrder.addAll(newAccounts.values());
+        accountsInOrder.set(Preferences.getPreferences(appContext), newAccountsInOrder);
     }
 
     private void setAccountsInPreferences(Map<String, Account> newAccounts)

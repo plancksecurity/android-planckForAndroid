@@ -401,6 +401,17 @@
                 android:resource="@xml/decrypted_file_provider_paths" />
         </provider>
 
+        <provider
+            android:name=".provider.AttachmentTempFileProvider"
+            android:authorities="${applicationId}.tempfileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/temp_file_provider_paths" />
+        </provider>
+
         <activity
             android:name=".pEp.ui.privacy.status.PEpStatus"
             android:label="@string/pep_title_activity_privacy_status">

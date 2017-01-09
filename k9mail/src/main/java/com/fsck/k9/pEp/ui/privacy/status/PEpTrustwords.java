@@ -43,6 +43,8 @@ public class PEpTrustwords extends PepColoredActivity {
     private static final String MYSELF = "myselfKey";
     private static final String PARTNER_PREFIX = "Partner: ";
     private static final String SHOWING_PGP_FINGERPRINT = "showingPgpKey";
+    private static final String ARE_TRUSTWORD_SHORT = "are_trustword_short";
+    private static final String TRUSTWORD_LANGUAGE = "trustword_length";
 
     private Identity partner, myself;
     private int partnerPosition;
@@ -61,6 +63,7 @@ public class PEpTrustwords extends PepColoredActivity {
     @Bind(R.id.myselfLabel) TextView myselfLabel;
     @Bind(R.id.myselfFpr) TextView myselfFpr;
     @Bind(R.id.wrongTrustwords) Button wrongTrustWords;
+    @Bind(R.id.confirmTrustWords) Button confirmTrustWords;
 
     @Bind(R.id.loading) View loading;
 
@@ -134,8 +137,14 @@ public class PEpTrustwords extends PepColoredActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadTrustwords();
+    }
+
     private void loadPartnerRating() {
-        getpEp().identityRating(partner, new PEpProvider.Callback<Rating>() {
+        getpEp().identityRating(partner, new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
                 setpEpRating(rating);
@@ -151,7 +160,7 @@ public class PEpTrustwords extends PepColoredActivity {
 
     private void loadTrustwords() {
         //Actually what is heavy is update identity and myself.
-        getpEp().trustwords(myself, partner, trustwordsLanguage, new PEpProvider.Callback<HandshakeData>() {
+        getpEp().trustwords(myself, partner, trustwordsLanguage, new PEpProvider.ResultCallback<HandshakeData>() {
             @Override
             public void onLoaded(final HandshakeData handshakeData) {
                 fullTrustwords = handshakeData.getFullTrustwords();
@@ -167,8 +176,8 @@ public class PEpTrustwords extends PepColoredActivity {
                 myselfFpr.setText(PEpUtils.formatFpr(myself.fpr));
                 partnerFpr.setText(PEpUtils.formatFpr(partner.fpr));
                 loading.setVisibility(View.GONE);
-
-
+                wrongTrustWords.setVisibility(View.VISIBLE);
+                confirmTrustWords.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -335,6 +344,8 @@ public class PEpTrustwords extends PepColoredActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         showingPgpFingerprint = savedInstanceState.getBoolean(SHOWING_PGP_FINGERPRINT);
+        areTrustwordsShort = savedInstanceState.getBoolean(ARE_TRUSTWORD_SHORT);
+        trustwordsLanguage = savedInstanceState.getString(TRUSTWORD_LANGUAGE);
         if (showingPgpFingerprint) flipper.showNext();
     }
 
@@ -342,5 +353,7 @@ public class PEpTrustwords extends PepColoredActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(SHOWING_PGP_FINGERPRINT, showingPgpFingerprint);
+        outState.putBoolean(ARE_TRUSTWORD_SHORT, areTrustwordsShort);
+        outState.putString(TRUSTWORD_LANGUAGE, trustwordsLanguage);
     }
 }

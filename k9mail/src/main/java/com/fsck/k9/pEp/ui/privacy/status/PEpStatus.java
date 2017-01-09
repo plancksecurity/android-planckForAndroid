@@ -3,7 +3,6 @@ package com.fsck.k9.pEp.ui.privacy.status;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -22,13 +21,13 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mailstore.LocalMessage;
-import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.models.PEpIdentity;
+import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.ui.adapters.PEpIdentitiesAdapter;
 
 import org.pEp.jniadapter.Rating;
@@ -153,7 +152,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
                 .setCancelable(false)
                 .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
             int position = ((Integer) view.getTag());
-            presenter.updateTrust(position);
+            presenter.resetRecipientTrust(position);
         }).setNegativeButton(R.string.cancel_action, null).show();
     }
 
@@ -161,7 +160,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     private View.OnClickListener getOnResetGreenClickListener() {
         return view -> {
             int position = ((Integer) view.getTag());
-            presenter.updateTrust(position);
+            presenter.resetRecipientTrust(position);
         };
     }
 

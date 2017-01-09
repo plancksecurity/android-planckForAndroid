@@ -47,17 +47,17 @@ public class MessageExtractor {
             if ((part != null) && (part.getBody() != null)) {
                 final Body body = part.getBody();
                 if (body instanceof TextBody) {
-                    return ((TextBody)body).getRawText();
+                    return ((TextBody) body).getRawText();
                 }
                 final String mimeType = part.getMimeType();
                 if (mimeType != null && MimeUtility.mimeTypeMatches(mimeType, "text/*") ||
                         part.isMimeType("application/pgp")) {
                     return getTextFromTextPart(part, body, mimeType, textSizeLimit);
                 } else {
-                    throw new MessagingException("Provided non-text part: " + part);
+                    throw new MessagingException("Provided non-text part: " + mimeType);
                 }
             } else {
-                throw new MessagingException("Provided invalid part: " + part);
+                throw new MessagingException("Provided invalid part");
             }
         } catch (IOException e) {
             Log.e(LOG_TAG, "Unable to getTextFromPart", e);

@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -17,6 +18,7 @@ import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
+import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.mailstore.LocalMessage;
 
@@ -423,7 +425,7 @@ public class PEpUtils {
         return String.valueOf(fprChars);
     }
 
-    public static boolean ispEpDisabled(Account account, LocalMessage message, Rating messageRating) {
+    public static boolean ispEpDisabled(Account account, Message message, Rating messageRating) {
         return message.isSet(Flag.X_PEP_DISABLED)
                 || messageRating == Rating.pEpRatingUndefined
                 || !account.ispEpPrivacyProtected();

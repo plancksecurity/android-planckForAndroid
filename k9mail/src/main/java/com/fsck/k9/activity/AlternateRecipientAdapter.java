@@ -6,7 +6,7 @@ import android.content.res.Resources;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorRes;
+import android.support.annotation.AttrRes;
 import android.support.annotation.DrawableRes;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -24,6 +24,11 @@ import com.fsck.k9.activity.compose.RecipientAdapter;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
+import com.fsck.k9.view.ThemeUtils;
+
+import java.util.List;
+
+import java.util.List;
 
 import java.util.List;
 
@@ -176,15 +181,15 @@ public class AlternateRecipientAdapter extends BaseAdapter {
     private void configureCryptoStatusView(RecipientTokenHolder holder, Recipient recipient) {
         switch (recipient.getCryptoStatus()) {
             case AVAILABLE_TRUSTED: {
-                setCryptoStatusView(holder, R.drawable.status_lock_dots_3, R.color.openpgp_green);
+                setCryptoStatusView(holder, R.drawable.status_lock_dots_3, R.attr.openpgp_green);
                 break;
             }
             case AVAILABLE_UNTRUSTED: {
-                setCryptoStatusView(holder, R.drawable.status_lock_dots_2, R.color.openpgp_orange);
+                setCryptoStatusView(holder, R.drawable.status_lock_dots_2, R.attr.openpgp_orange);
                 break;
             }
             case UNAVAILABLE: {
-                setCryptoStatusView(holder, R.drawable.status_lock_disabled_dots_1, R.color.openpgp_red);
+                setCryptoStatusView(holder, R.drawable.status_lock_disabled_dots_1, R.attr.openpgp_red);
                 break;
             }
             case UNDEFINED: {
@@ -195,14 +200,14 @@ public class AlternateRecipientAdapter extends BaseAdapter {
     }
 
     private void setCryptoStatusView(RecipientTokenHolder holder, @DrawableRes int cryptoStatusRes,
-            @ColorRes int cryptoStatusColorRes) {
+            @AttrRes int cryptoStatusColorAttr) {
         Resources resources = context.getResources();
 
         Drawable drawable = resources.getDrawable(cryptoStatusRes);
         // noinspection ConstantConditions, we know the resource exists!
         drawable.mutate();
 
-        int cryptoStatusColor = resources.getColor(cryptoStatusColorRes);
+        int cryptoStatusColor = ThemeUtils.getStyledColor(context, cryptoStatusColorAttr);
         drawable.setColorFilter(cryptoStatusColor, Mode.SRC_ATOP);
 
         holder.itemCryptoStatus.setImageDrawable(drawable);

@@ -135,7 +135,7 @@ public class AttachmentView extends FrameLayout implements OnClickListener, OnLo
     public void refreshThumbnail() {
         ImageView thumbnailView = (ImageView) findViewById(R.id.attachment_icon);
         Glide.with(getContext())
-                .load(attachment.uri)
+                .load(attachment.internalUri)
                 .placeholder(R.drawable.attached_image_placeholder)
                 .centerCrop()
                 .into(thumbnailView);

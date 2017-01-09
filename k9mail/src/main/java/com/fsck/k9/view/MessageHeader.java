@@ -42,6 +42,8 @@ import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
 import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.pEp.PePUIArtefactCache;
+
 import com.fsck.k9.ui.messageview.OnCryptoClickListener;
 
 import org.pEp.jniadapter.Rating;
@@ -50,6 +52,12 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+
+import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.ui.PEpContactBadge;
+
+import org.pEp.jniadapter.Rating;
 
 
 
@@ -84,6 +92,8 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     private OnCryptoClickListener onCryptoClickListener;
 
     private Rating pEpRating;
+    private PePUIArtefactCache pePUIArtefactCache;
+
     private OnMessageOptionsListener onMessageOptionsListener;
     private ImageView replyMessage;
     private ImageView moreOptions;
@@ -110,6 +120,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         super(context, attrs);
         mContext = context;
         mContacts = Contacts.getInstance(mContext);
+        pePUIArtefactCache = PePUIArtefactCache.getInstance(context);
     }
 
     @Override
@@ -395,18 +406,25 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         }
     }
 
+    public void hideCryptoStatus() {
+        mCryptoStatusIcon.setVisibility(View.GONE);
+    }
+
     public void setCryptoStatusLoading() {
         mCryptoStatusIcon.setVisibility(View.VISIBLE);
+        mCryptoStatusIcon.setEnabled(false);
         mCryptoStatusIcon.setCryptoDisplayStatus(MessageCryptoDisplayStatus.LOADING);
     }
 
     public void setCryptoStatusDisabled() {
         mCryptoStatusIcon.setVisibility(View.VISIBLE);
+        mCryptoStatusIcon.setEnabled(false);
         mCryptoStatusIcon.setCryptoDisplayStatus(MessageCryptoDisplayStatus.DISABLED);
     }
 
     public void setCryptoStatus(MessageCryptoDisplayStatus displayStatus) {
         mCryptoStatusIcon.setVisibility(View.VISIBLE);
+        mCryptoStatusIcon.setEnabled(true);
         mCryptoStatusIcon.setCryptoDisplayStatus(displayStatus);
     }
 
@@ -565,5 +583,9 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     public void setOnCryptoClickListener(OnCryptoClickListener onCryptoClickListener) {
         this.onCryptoClickListener = onCryptoClickListener;
+    }
+
+    public void setPrivacyProtected(boolean enabled) {
+        mContactBadge.setPepRating(pEpRating, enabled);
     }
 }

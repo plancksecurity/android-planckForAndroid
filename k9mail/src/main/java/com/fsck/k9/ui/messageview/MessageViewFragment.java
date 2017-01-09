@@ -61,8 +61,8 @@ import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
 import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
@@ -177,6 +177,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         MessageReference messageReference = arguments.getParcelable(ARG_REFERENCE);
 
         displayMessage(messageReference);
+        mMessageView.setPrivacyProtected(mAccount.ispEpPrivacyProtected());
     }
 
     private void setupSwipeDetector() {
@@ -327,7 +328,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private void showMessage(MessageViewInfo messageViewInfo) {
         hideKeyboard();
-
         boolean handledByCryptoPresenter = messageCryptoPresenter.maybeHandleShowMessage(
                 mMessageView, mAccount, messageViewInfo);
         if (!handledByCryptoPresenter) {

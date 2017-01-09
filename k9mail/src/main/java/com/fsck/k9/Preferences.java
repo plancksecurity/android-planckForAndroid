@@ -133,7 +133,6 @@ public class Preferences {
         }
         LocalStore.removeAccount(account);
 
-        account.deleteCertificates();
         account.delete(this);
 
         if (newAccount == account) {

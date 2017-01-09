@@ -40,6 +40,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.openintents.openpgp.util.OpenPgpApi.OpenPgpDataSource;
 import org.robolectric.RobolectricTestRunner;
@@ -60,9 +61,9 @@ import static org.mockito.Mockito.when;
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = "src/main/AndroidManifest.xml", sdk = 21)
 public class PgpMessageBuilderTest {
-    public static final long TEST_SIGN_KEY_ID = 123L;
-    public static final long TEST_SELF_ENCRYPT_KEY_ID = 234L;
-    public static final String TEST_MESSAGE_TEXT = "message text with a ☭ CCCP symbol";
+    private static final long TEST_SIGN_KEY_ID = 123L;
+    private static final long TEST_SELF_ENCRYPT_KEY_ID = 234L;
+    private static final String TEST_MESSAGE_TEXT = "message text with a ☭ CCCP symbol";
 
 
     private ComposeCryptoStatusBuilder cryptoStatusBuilder = createDefaultComposeCryptoStatusBuilder();
@@ -153,8 +154,11 @@ public class PgpMessageBuilderTest {
         assertContentOfBodyPartEquals("content must match the message text", contentBodyPart, TEST_MESSAGE_TEXT);
 
         BodyPart signatureBodyPart = multipart.getBodyPart(1);
-        Assert.assertEquals("second part must be pgp signature",
-                "application/pgp-signature", signatureBodyPart.getContentType());
+        String contentType = signatureBodyPart.getContentType();
+        Assert.assertEquals("second part must be pgp signature", "application/pgp-signature",
+                MimeUtility.getHeaderParameter(contentType, null));
+        Assert.assertEquals("second part must be called signature.asc", "signature.asc",
+                MimeUtility.getHeaderParameter(contentType, "name"));
         assertContentOfBodyPartEquals("content must match the supplied detached signature",
                 signatureBodyPart, new byte[] { 1, 2, 3 });
     }
@@ -339,8 +343,8 @@ public class PgpMessageBuilderTest {
         Assert.assertEquals(MimeUtil.ENC_7BIT, ((BinaryTempFileBody) message.getBody()).getEncoding());
     }
 
-    @Test
-    public void buildSign__withInlineEnabled__shouldSucceed() throws MessagingException {
+    @Test(expected = RuntimeException.class) // this is a wrapped UnsupportedOperationException from AsyncTask
+    public void buildSign__withInlineEnabled__shouldFail() throws MessagingException {
         ComposeCryptoStatus cryptoStatus = cryptoStatusBuilder
                 .setCryptoMode(CryptoMode.SIGN_ONLY)
                 .setRecipients(Collections.singletonList(new Recipient("test", "test@example.org", "labru", -1, "key")))
@@ -348,28 +352,8 @@ public class PgpMessageBuilderTest {
                 .build();
         pgpMessageBuilder.setCryptoStatus(cryptoStatus);
 
-        ArgumentCaptor<Intent> capturedApiIntent = ArgumentCaptor.forClass(Intent.class);
-
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
-
-        when(openPgpApi.executeApi(capturedApiIntent.capture(), any(OpenPgpDataSource.class), any(OutputStream.class)))
-                .thenReturn(returnIntent);
-
         Callback mockCallback = mock(Callback.class);
         pgpMessageBuilder.buildAsync(mockCallback);
-
-        Intent expectedApiIntent = new Intent(OpenPgpApi.ACTION_SIGN);
-        expectedApiIntent.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, TEST_SIGN_KEY_ID);
-        expectedApiIntent.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
-        assertIntentEqualsActionAndExtras(expectedApiIntent, capturedApiIntent.getValue());
-
-        ArgumentCaptor<MimeMessage> captor = ArgumentCaptor.forClass(MimeMessage.class);
-        verify(mockCallback).onMessageBuildSuccess(captor.capture(), eq(false));
-        verifyNoMoreInteractions(mockCallback);
-
-        MimeMessage message = captor.getValue();
-        Assert.assertEquals("message must be text/plain", "text/plain", message.getMimeType());
     }
 
     @Test
@@ -397,6 +381,92 @@ public class PgpMessageBuilderTest {
                 .build();
         pgpMessageBuilder.setCryptoStatus(cryptoStatus);
         pgpMessageBuilder.setAttachments(Collections.singletonList(Attachment.createAttachment(null, 0, null)));
+
+        Callback mockCallback = mock(Callback.class);
+        pgpMessageBuilder.buildAsync(mockCallback);
+
+        verify(mockCallback).onMessageBuildException(any(MessagingException.class));
+        verifyNoMoreInteractions(mockCallback);
+        verifyNoMoreInteractions(openPgpApi);
+    }
+
+    @Test
+    public void buildOpportunisticEncrypt__withNoKeysAndNoSignOnly__shouldNotBeSigned() throws MessagingException {
+        ComposeCryptoStatus cryptoStatus = cryptoStatusBuilder
+                .setRecipients(Collections.singletonList(new Recipient("test", "test@example.org", "labru", -1, "key")))
+                .setCryptoMode(CryptoMode.OPPORTUNISTIC)
+                .build();
+        pgpMessageBuilder.setCryptoStatus(cryptoStatus);
+
+
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
+        returnIntent.putExtra(OpenPgpApi.RESULT_ERROR,
+                new OpenPgpError(OpenPgpError.OPPORTUNISTIC_MISSING_KEYS, "Missing keys"));
+
+
+        when(openPgpApi.executeApi(any(Intent.class), any(OpenPgpDataSource.class), any(OutputStream.class)))
+                .thenReturn(returnIntent);
+
+        Callback mockCallback = mock(Callback.class);
+        pgpMessageBuilder.buildAsync(mockCallback);
+
+
+        ArgumentCaptor<MimeMessage> captor = ArgumentCaptor.forClass(MimeMessage.class);
+        verify(mockCallback).onMessageBuildSuccess(captor.capture(), eq(false));
+        verifyNoMoreInteractions(mockCallback);
+
+        MimeMessage message = captor.getValue();
+        Assert.assertEquals("text/plain", message.getMimeType());
+    }
+
+    @Test
+    public void buildSign__withNoDetachedSignatureExtra__shouldFail() throws MessagingException {
+        ComposeCryptoStatus cryptoStatus = cryptoStatusBuilder
+                .setCryptoMode(CryptoMode.SIGN_ONLY)
+                .build();
+        pgpMessageBuilder.setCryptoStatus(cryptoStatus);
+
+        Intent returnIntentSigned = new Intent();
+        returnIntentSigned.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+        // no OpenPgpApi.EXTRA_DETACHED_SIGNATURE!
+
+
+        when(openPgpApi.executeApi(any(Intent.class), any(OpenPgpDataSource.class), any(OutputStream.class)))
+                .thenReturn(returnIntentSigned);
+        Callback mockCallback = mock(Callback.class);
+        pgpMessageBuilder.buildAsync(mockCallback);
+
+
+        verify(mockCallback).onMessageBuildException(any(MessagingException.class));
+        verifyNoMoreInteractions(mockCallback);
+    }
+
+    @Test
+    public void buildSignWithAttach__withInlineEnabled__shouldThrow() throws MessagingException {
+        ComposeCryptoStatus cryptoStatus = cryptoStatusBuilder
+                .setCryptoMode(CryptoMode.SIGN_ONLY)
+                .setEnablePgpInline(true)
+                .build();
+        pgpMessageBuilder.setCryptoStatus(cryptoStatus);
+        pgpMessageBuilder.setAttachments(Collections.singletonList(new Attachment()));
+
+        Callback mockCallback = mock(Callback.class);
+        pgpMessageBuilder.buildAsync(mockCallback);
+
+        verify(mockCallback).onMessageBuildException(any(MessagingException.class));
+        verifyNoMoreInteractions(mockCallback);
+        verifyNoMoreInteractions(openPgpApi);
+    }
+
+    @Test
+    public void buildEncryptWithAttach__withInlineEnabled__shouldThrow() throws MessagingException {
+        ComposeCryptoStatus cryptoStatus = cryptoStatusBuilder
+                .setCryptoMode(CryptoMode.OPPORTUNISTIC)
+                .setEnablePgpInline(true)
+                .build();
+        pgpMessageBuilder.setCryptoStatus(cryptoStatus);
+        pgpMessageBuilder.setAttachments(Collections.singletonList(new Attachment()));
 
         Callback mockCallback = mock(Callback.class);
         pgpMessageBuilder.buildAsync(mockCallback);

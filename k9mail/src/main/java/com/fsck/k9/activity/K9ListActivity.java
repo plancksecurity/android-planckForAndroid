@@ -103,12 +103,6 @@ public class K9ListActivity extends AppCompatActivity implements K9ActivityMagic
         super.onDestroy();
     }
 
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-
-    }
-
     public void setUpToolbar(boolean showUpButton) {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
@@ -234,5 +228,11 @@ public class K9ListActivity extends AppCompatActivity implements K9ActivityMagic
 
     public View getRootView() {
         return mList;
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+
     }
 }

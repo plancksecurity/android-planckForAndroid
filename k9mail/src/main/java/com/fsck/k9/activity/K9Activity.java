@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,17 +19,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 
-import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 
-import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
-import org.pEp.jniadapter.Sync;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -53,6 +48,8 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     public void onCreate(Bundle savedInstanceState) {
         mBase = K9ActivityCommon.newInstance(this);
         super.onCreate(savedInstanceState);
+//        ((K9) getApplication()).pEpSyncProvider.setSyncHandshakeCallback(this);
+
     }
 
     @Override
@@ -67,15 +64,21 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     }
 
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-
-    }
-
-    @Override
     protected void onDestroy() {
         mBase.onDestroy();
         super.onDestroy();
+    }
+
+//    @Override
+//    public void showHandshake(Identity myself, Identity partner) {
+//        Toast.makeText(getApplicationContext(), myself.fpr + "/n" + partner.fpr, Toast.LENGTH_LONG).show();
+//        Log.i("pEp", "showHandshake: " + myself.fpr + "/n" + partner.fpr);
+//    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+
     }
 
     public void setUpToolbar(boolean showUpButton) {

@@ -1,3 +1,7 @@
+def pEpEngineRevision = 1510
+def pEpJNIAdapterRevision = 274
+
+
 buildscript {
     repositories {
         mavenCentral()
@@ -26,7 +30,7 @@ ext {
 //noinspection GroovyAssignabilityCheck
 configurations.all {
     resolutionStrategy {
-        force "com.android.support:support-annotations:${project.supportLibraryVersion}"
+        force "com.android.support:support-annotations:${androidSupportLibraryVersion}"
     }
 }
 
@@ -36,24 +40,31 @@ dependencies {
     compile project(':k9mail-library')
     compile project(':plugins:HoloColorPicker')
     compile project(':plugins:openpgp-api-lib:openpgp-api')
+    compile "com.squareup.okio:okio:${okioVersion}"
     compile 'commons-io:commons-io:2.4'
     compile 'net.sourceforge.htmlcleaner:htmlcleaner:2.16'
+    compile 'de.cketti.library.changelog:ckchangelog:1.2.1'
     compile 'com.github.bumptech.glide:glide:3.6.1'
     compile 'com.splitwise:tokenautocomplete:2.0.7'
     compile 'de.cketti.safecontentresolver:safe-content-resolver-v14:0.9.0'
     compile 'com.github.amlcurran.showcaseview:library:5.4.1'
+
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
+
+    testCompile "org.robolectric:robolectric:${robolectricVersion}"
+    testCompile "junit:junit:${junitVersion}"
+    testCompile "org.mockito:mockito-core:${mockitoVersion}"
+
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.github.pedrovgs:renderers:3.2.0'
+    compile 'ch.acra:acra:4.6.1'
     compile "com.android.support:support-v4:${project.supportLibraryVersion}"
     compile "com.android.support:support-vector-drawable:${project.supportLibraryVersion}"
     compile 'com.github.paolorotolo:appintro:4.1.0'
     compile 'org.jsoup:jsoup:1.10.1'
-    testCompile 'org.robolectric:robolectric:3.0'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:1.10.19'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
+    compile 'com.hudomju:swipe-to-dismiss-undo:1.0'
 
     compile "com.android.support:recyclerview-v7:${project.supportLibraryVersion}"
     compile "com.android.support:cardview-v7:${project.supportLibraryVersion}"
@@ -63,8 +74,6 @@ dependencies {
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
     compile 'ch.acra:acra:4.6.1'
-    compile 'com.hudomju:swipe-to-dismiss-undo:1.0'
-
 
     // Arch dependencies
     provided 'org.glassfish:javax.annotation:10.0-b28'
@@ -73,19 +82,20 @@ dependencies {
 }
 
 android {
-    compileSdkVersion rootProject.compileSdkVersion
-    buildToolsVersion rootProject.buildToolsVersion
+    compileSdkVersion androidCompileSdkVersion.toInteger()
+    buildToolsVersion androidBuildToolsVersion
 
     defaultConfig {
         //Original config
 //        applicationId "com.fsck.k9"
 //        testApplicationId "com.fsck.k9.tests"
-//        versionCode 23080
-//        versionName '5.108'
+
+//        versionCode 23191
+//        versionName '5.200-RC2'
 
         applicationId "pep.android.k9"
-        versionCode 37
-        versionName '0.9.8.32.withoutKeysync'
+        versionCode 43
+        versionName '0.9.9.2.withoutKeysync'
         minSdkVersion 18
         targetSdkVersion 22
 
@@ -97,13 +107,17 @@ android {
             enabled true
         }
         vectorDrawables.useSupportLibrary = true
+
+
+        buildConfigField "int", "ENGINE_REVISION", "${pEpEngineRevision}"
+        buildConfigField "int", "ADAPTER_REVISION", "${pEpJNIAdapterRevision}"
     }
 
     productFlavors {
         playStore {
         }
     }
-    signingConfigs {
+        signingConfigs {
         release
     }
     buildTypes {

@@ -1,12 +1,31 @@
 package com.fsck.k9.mail.store.imap;
 
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.util.Log;
+
+import com.fsck.k9.mail.Authentication;
+import com.fsck.k9.mail.AuthenticationFailedException;
+import com.fsck.k9.mail.CertificateValidationException;
+import com.fsck.k9.mail.ConnectionSecurity;
+import com.fsck.k9.mail.K9MailLib;
+import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.NetworkType;
+import com.fsck.k9.mail.filter.Base64;
+import com.fsck.k9.mail.filter.PeekableInputStream;
+import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
+import com.fsck.k9.mail.ssl.TrustedSocketFactory;
+import com.jcraft.jzlib.JZlib;
+import com.jcraft.jzlib.ZOutputStream;
+
+import org.apache.commons.io.IOUtils;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -27,25 +46,7 @@ import java.util.regex.Pattern;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.util.Log;
-
-import com.fsck.k9.mail.Authentication;
-import com.fsck.k9.mail.AuthenticationFailedException;
-import com.fsck.k9.mail.CertificateValidationException;
-import com.fsck.k9.mail.ConnectionSecurity;
-import com.fsck.k9.mail.K9MailLib;
-import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.NetworkType;
-import com.fsck.k9.mail.filter.Base64;
-import com.fsck.k9.mail.filter.PeekableInputStream;
-import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
-import com.fsck.k9.mail.ssl.TrustedSocketFactory;
-import com.jcraft.jzlib.JZlib;
-import com.jcraft.jzlib.ZOutputStream;
 import javax.net.ssl.SSLException;
-import org.apache.commons.io.IOUtils;
 
 import static com.fsck.k9.mail.ConnectionSecurity.STARTTLS_REQUIRED;
 import static com.fsck.k9.mail.K9MailLib.DEBUG_PROTOCOL_IMAP;
@@ -75,10 +76,10 @@ class ImapConnection {
     private int nextCommandTag;
     private Set<String> capabilities = new HashSet<String>();
     private ImapSettings settings;
-    private String authToken = null;
-    private boolean authTokenExpired = false;
     private Exception stacktraceForClose;
     private boolean open = false;
+    private String authToken = null;
+    private boolean authTokenExpired = false;
 
 
     public ImapConnection(ImapSettings settings, TrustedSocketFactory socketFactory,

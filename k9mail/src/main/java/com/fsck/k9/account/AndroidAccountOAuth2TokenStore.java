@@ -11,10 +11,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.fsck.k9.K9;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
-import com.fsck.k9.activity.setup.AccountSetupIncoming;
 import com.fsck.k9.mail.AuthenticationFailedException;
 import com.fsck.k9.mail.K9MailLib;
 import com.fsck.k9.mail.oauth.OAuth2TokenProvider;

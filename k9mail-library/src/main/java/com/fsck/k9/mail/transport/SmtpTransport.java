@@ -1,6 +1,7 @@
 
 package com.fsck.k9.mail.transport;
 
+import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
 import com.fsck.k9.mail.*;
@@ -34,8 +35,6 @@ import static com.fsck.k9.mail.CertificateValidationException.Reason.MissingCapa
 public class SmtpTransport extends Transport {
     private TrustedSocketFactory mTrustedSocketFactory;
     private OAuth2TokenProvider oauthTokenProvider;
-
-    public static final String PEP_FQDN = "pretty.Easy.privacy";
 
     /**
      * Decodes a SmtpTransport URI.
@@ -248,7 +247,7 @@ public class SmtpTransport extends Transport {
             executeSimpleCommand(null);
 
             InetAddress localAddress = mSocket.getLocalAddress();
-            String localHost = PEP_FQDN;
+            String localHost = getCanonicalHostName(localAddress);
             String ipAddr = localAddress.getHostAddress();
 
             if (localHost.equals("") || localHost.equals(ipAddr) || localHost.contains("_")) {
@@ -815,6 +814,11 @@ public class SmtpTransport extends Transport {
         executeSimpleCommand(
                 String.format("AUTH EXTERNAL %s",
                         Base64.encode(username)), false);
+    }
+
+    @VisibleForTesting
+    protected String getCanonicalHostName(InetAddress localAddress) {
+        return localAddress.getCanonicalHostName();
     }
 
     /**

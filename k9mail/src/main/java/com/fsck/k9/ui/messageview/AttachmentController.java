@@ -18,6 +18,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.support.annotation.WorkerThread;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -38,6 +39,7 @@ import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalPart;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
+import com.fsck.k9.provider.AttachmentTempFileProvider;
 import org.apache.commons.io.IOUtils;
 
 
@@ -88,7 +90,7 @@ public class AttachmentController {
             @Override
             public void run() {
                 messageViewFragment.refreshAttachmentThumbnail(attachment);
-                saveAttachmentTo(directory);
+                saveLocalAttachmentTo(directory);
             }
         });
     }
@@ -148,7 +150,7 @@ public class AttachmentController {
     }
 
     private void writeAttachmentToStorage(File file) throws IOException {
-        InputStream in = context.getContentResolver().openInputStream(attachment.uri);
+        InputStream in = context.getContentResolver().openInputStream(attachment.internalUri);
         try {
             OutputStream out = new FileOutputStream(file);
             try {
@@ -171,23 +173,33 @@ public class AttachmentController {
         downloadManager.addCompletedDownload(fileName, fileName, true, mimeType, path, fileLength, true);
     }
 
-    private Intent getBestViewIntentAndSaveFileIfNecessary() {
+    @WorkerThread
+    private Intent getBestViewIntentAndSaveFile() {
+        Uri intentDataUri;
+        try {
+            intentDataUri = AttachmentTempFileProvider.createTempUriForContentUri(context, attachment.internalUri);
+        } catch (IOException e) {
+            Log.e(K9.LOG_TAG, "Error creating temp file for attachment!", e);
+            return null;
+        }
+
         String displayName = attachment.displayName;
         String inferredMimeType = MimeUtility.getMimeTypeByExtension(displayName);
 
         IntentAndResolvedActivitiesCount resolvedIntentInfo;
         String mimeType = attachment.mimeType;
         if (MimeUtility.isDefaultMimeType(mimeType)) {
-            resolvedIntentInfo = getBestViewIntentForMimeType(inferredMimeType);
+            resolvedIntentInfo = getBestViewIntentForMimeType(intentDataUri, inferredMimeType);
         } else {
-            resolvedIntentInfo = getBestViewIntentForMimeType(mimeType);
+            resolvedIntentInfo = getBestViewIntentForMimeType(intentDataUri, mimeType);
             if (!resolvedIntentInfo.hasResolvedActivities() && !inferredMimeType.equals(mimeType)) {
-                resolvedIntentInfo = getBestViewIntentForMimeType(inferredMimeType);
+                resolvedIntentInfo = getBestViewIntentForMimeType(intentDataUri, inferredMimeType);
             }
         }
 
         if (!resolvedIntentInfo.hasResolvedActivities()) {
-            resolvedIntentInfo = getBestViewIntentForMimeType(MimeUtility.DEFAULT_ATTACHMENT_MIME_TYPE);
+            resolvedIntentInfo = getBestViewIntentForMimeType(
+                    intentDataUri, MimeUtility.DEFAULT_ATTACHMENT_MIME_TYPE);
         }
 
         Intent viewIntent;
@@ -200,7 +212,7 @@ public class AttachmentController {
                 if (K9.DEBUG) {
                     Log.e(K9.LOG_TAG, "Error while saving attachment to use file:// URI with ACTION_VIEW Intent", e);
                 }
-                viewIntent = createViewIntentForAttachmentProviderUri(MimeUtility.DEFAULT_ATTACHMENT_MIME_TYPE);
+                viewIntent = createViewIntentForAttachmentProviderUri(intentDataUri, MimeUtility.DEFAULT_ATTACHMENT_MIME_TYPE);
             }
         } else {
             viewIntent = resolvedIntentInfo.getIntent();
@@ -209,8 +221,8 @@ public class AttachmentController {
         return viewIntent;
     }
 
-    private IntentAndResolvedActivitiesCount getBestViewIntentForMimeType(String mimeType) {
-        Intent contentUriIntent = createViewIntentForAttachmentProviderUri(mimeType);
+    private IntentAndResolvedActivitiesCount getBestViewIntentForMimeType(Uri contentUri, String mimeType) {
+        Intent contentUriIntent = createViewIntentForAttachmentProviderUri(contentUri, mimeType);
         int contentUriActivitiesCount = getResolvedIntentActivitiesCount(contentUriIntent);
 
         if (contentUriActivitiesCount > 0) {
@@ -229,8 +241,8 @@ public class AttachmentController {
         return new IntentAndResolvedActivitiesCount(contentUriIntent, contentUriActivitiesCount);
     }
 
-    private Intent createViewIntentForAttachmentProviderUri(String mimeType) {
-        Uri uri = getAttachmentUriForMimeType(attachment, mimeType);
+    private Intent createViewIntentForAttachmentProviderUri(Uri contentUri, String mimeType) {
+        Uri uri = AttachmentTempFileProvider.getMimeTypeUri(contentUri, mimeType);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(uri, mimeType);
@@ -238,16 +250,6 @@ public class AttachmentController {
         addUiIntentFlags(intent);
 
         return intent;
-    }
-
-    private Uri getAttachmentUriForMimeType(AttachmentViewInfo attachment, String mimeType) {
-        if (attachment.mimeType.equals(mimeType)) {
-            return attachment.uri;
-        }
-
-        return attachment.uri.buildUpon()
-                .appendPath(mimeType)
-                .build();
     }
 
     private Intent createViewIntentForFileUri(String mimeType, Uri uri) {
@@ -319,7 +321,7 @@ public class AttachmentController {
 
         @Override
         protected Intent doInBackground(Void... params) {
-            return getBestViewIntentAndSaveFileIfNecessary();
+            return getBestViewIntentAndSaveFile();
         }
 
         @Override

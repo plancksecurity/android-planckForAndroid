@@ -1,6 +1,5 @@
 package com.fsck.k9.fragment;
 
-
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
@@ -60,7 +59,6 @@ import com.fsck.k9.activity.ActivityListener;
 import com.fsck.k9.activity.ChooseFolder;
 import com.fsck.k9.activity.FolderInfoHolder;
 import com.fsck.k9.activity.K9Activity;
-import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.compose.MessageActions;
@@ -94,7 +92,6 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
-import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
 import com.fsck.k9.pEp.ui.infrastructure.MessageSwipeDirection;
 import com.fsck.k9.pEp.ui.listeners.SwipeToDismissTouchListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -2006,7 +2003,8 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             DatabasePreviewType previewType = DatabasePreviewType.fromDatabaseValue(previewTypeString);
 
             switch (previewType) {
-                case NONE: {
+                case NONE:
+                case ERROR: {
                     return "";
                 }
                 case ENCRYPTED: {
@@ -3062,19 +3060,15 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         return new MessageReference(accountUuid, folderName, messageUid, null);
     }
 
-
     private LocalMessage getLocalMessageAtPosition(int adapterPosition) {
         if (adapterPosition == AdapterView.INVALID_POSITION) {
             return null;
         }
-
         Cursor cursor = (Cursor) mAdapter.getItem(adapterPosition);
         String uid = cursor.getString(UID_COLUMN);
-
         Account account = getAccountFromCursor(cursor);
         long folderId = cursor.getLong(FOLDER_ID_COLUMN);
         LocalFolder folder = getFolderById(account, folderId);
-
         try {
             return folder.getMessage(uid);
         } catch (MessagingException e) {

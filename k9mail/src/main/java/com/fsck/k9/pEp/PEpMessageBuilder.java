@@ -146,27 +146,27 @@ class PEpMessageBuilder {
 
 
     private void addHeaders(Message m, Context context) {
-            // headers
-            m.setFrom(PEpUtils.createIdentity(mm.getFrom()[0], context));
-            m.setTo(PEpUtils.createIdentities(Arrays.asList(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO)), context));
-            m.setCc(PEpUtils.createIdentities(Arrays.asList(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC)), context));
-            m.setBcc(PEpUtils.createIdentities(Arrays.asList(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC)), context));
-            m.setId(mm.getMessageId());
-            m.setInReplyTo(createMessageReferences(mm.getReferences()));
-            m.setSent(mm.getSentDate());
-            m.setReplyTo(PEpUtils.createIdentities(Arrays.asList(mm.getReplyTo()), context));
-            m.setReferences(createMessageReferences(mm.getReferences()));
-            m.setShortmsg(mm.getSubject());
+        // headers
+        m.setFrom(PEpUtils.createIdentity(mm.getFrom()[0], context));
+        m.setTo(PEpUtils.createIdentities(Arrays.asList(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO)), context));
+        m.setCc(PEpUtils.createIdentities(Arrays.asList(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC)), context));
+        m.setBcc(PEpUtils.createIdentities(Arrays.asList(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC)), context));
+        m.setId(mm.getMessageId());
+        m.setInReplyTo(createMessageReferences(mm.getReferences()));
+        m.setSent(mm.getSentDate());
+        m.setReplyTo(PEpUtils.createIdentities(Arrays.asList(mm.getReplyTo()), context));
+        m.setReferences(createMessageReferences(mm.getReferences()));
+        m.setShortmsg(mm.getSubject());
 
-            // TODO: other headers
-            ArrayList <Pair<String, String>> optionalFields = new ArrayList<>();
-            if (mm.getHeader(MimeHeader.HEADER_PEP_AUTOCONSUME).length > 0 ) {
-                optionalFields.add(new Pair<>(MimeHeader.HEADER_PEP_AUTOCONSUME, mm.getHeader(MimeHeader.HEADER_PEP_AUTOCONSUME)[0]));
-            }
-            m.setOptFields(optionalFields);
+        // TODO: other headers
+        ArrayList<Pair<String, String>> optionalFields = new ArrayList<>();
+        if (mm.getHeader(MimeHeader.HEADER_PEP_AUTOCONSUME).length > 0) {
+            optionalFields.add(new Pair<>(MimeHeader.HEADER_PEP_AUTOCONSUME, mm.getHeader(MimeHeader.HEADER_PEP_AUTOCONSUME)[0]));
+        }
+        m.setOptFields(optionalFields);
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
-            if (mm.getHeader("Received").length > 0){
+            if (mm.getHeader("Received").length > 0) {
                 Date received = formatter.parse(mm.getHeader("Received")[0].split(";")[1].trim());
                 m.setRecv(received);
             }

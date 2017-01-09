@@ -35,6 +35,11 @@ import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.filter.Hex;
 import com.fsck.k9.mail.store.webdav.WebDavStore;
 
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import com.fsck.k9.mail.store.webdav.WebDavStore;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateEncodingException;
@@ -125,7 +130,7 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
 
 
     @Override
-    public void onDestroy() {
+    protected void onDestroy() {
         super.onDestroy();
         mDestroyed = true;
         mCanceled = true;

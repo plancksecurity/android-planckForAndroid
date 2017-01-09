@@ -53,6 +53,7 @@ import com.fsck.k9.activity.compose.CryptoSettingsDialog.OnCryptoModeChangedList
 import com.fsck.k9.activity.compose.IdentityAdapter;
 import com.fsck.k9.activity.compose.IdentityAdapter.IdentityContainer;
 import com.fsck.k9.activity.compose.PgpInlineDialog.OnOpenPgpInlineChangeListener;
+import com.fsck.k9.activity.compose.PgpSignOnlyDialog;
 import com.fsck.k9.activity.compose.RecipientMvpView;
 import com.fsck.k9.activity.compose.RecipientPresenter;
 import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
@@ -84,6 +85,7 @@ import com.fsck.k9.message.QuotedTextMode;
 import com.fsck.k9.message.SimpleMessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
@@ -102,7 +104,7 @@ import java.util.regex.Pattern;
 @SuppressWarnings("deprecation")
 public class MessageCompose extends K9Activity implements OnClickListener,
         CancelListener, OnFocusChangeListener, OnCryptoModeChangedListener,
-        OnOpenPgpInlineChangeListener, MessageBuilder.Callback {
+        OnOpenPgpInlineChangeListener, PgpSignOnlyDialog.OnOpenPgpSignOnlyChangeListener, MessageBuilder.Callback {
 
     private static final int DIALOG_SAVE_OR_DISCARD_DRAFT_MESSAGE = 1;
     private static final int DIALOG_CONFIRM_DISCARD_ON_BACK = 2;
@@ -161,6 +163,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private QuotedMessagePresenter quotedMessagePresenter;
     private MessageLoaderHelper messageLoaderHelper;
     private AttachmentPresenter attachmentPresenter;
+    private boolean encrypted = true;
 
     public Account getAccount() {
         String accountUuid = (mMessageReference != null) ?
@@ -203,6 +206,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
      */
     private boolean mSourceMessageProcessed = false;
 
+    private PePUIArtefactCache pEpUiCache;
+    private PEpProvider pEp;
 
     private RecipientPresenter recipientPresenter;
     private MessageBuilder currentMessageBuilder;
@@ -239,6 +244,11 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
     public void unlockSendButton() {
         isSendButtonLocked = false;
+    }
+
+    @Override
+    public void onOpenPgpSignOnlyChange(boolean enabled) {
+        recipientPresenter.onCryptoPgpSignOnlyDisabled();
     }
 
     public enum Action {
@@ -349,6 +359,9 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             bindViews(R.layout.message_compose);
         }
 
+        // on api level 15, setContentView() shows the progress bar for some reason...
+        setProgressBarIndeterminateVisibility(false);
+
         final Intent intent = getIntent();
 
         mMessageReference = intent.getParcelableExtra(EXTRA_MESSAGE_REFERENCE);
@@ -358,8 +371,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                                    mMessageReference.getAccountUuid() :
                                    intent.getStringExtra(EXTRA_ACCOUNT);
 
-        Preferences preferences = Preferences.getPreferences(getApplicationContext());
-        mAccount = getAccount();
+        mAccount = Preferences.getPreferences(this).getAccount(accountUuid);
 
         if (mAccount == null || accountUuid == null) {
             mAccount = getAccount();
@@ -385,6 +397,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         ComposePgpInlineDecider composePgpInlineDecider = new ComposePgpInlineDecider();
         recipientPresenter = new RecipientPresenter(getApplicationContext(), getLoaderManager(), recipientMvpView,
                 mAccount, composePgpInlineDecider, new ReplyToParser());
+        recipientPresenter.updateCryptoStatus();
+
 
         mSubjectView = (EditText) findViewById(R.id.subject);
         mSubjectView.getInputExtras(true).putBoolean("allowEmoji", true);
@@ -400,7 +414,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         mMessageContentView.getInputExtras(true).putBoolean("allowEmoji", true);
 
         mAttachments = (LinearLayout)findViewById(R.id.attachments);
-
 
         TextWatcher draftNeedsChangingTextWatcher = new SimpleTextWatcher() {
             @Override
@@ -657,8 +670,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         super.onResume();
         MessagingController.getInstance(this).addListener(messagingListener);
         recipientPresenter.onResume();
-    // TODO: grok mListener
-
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -675,6 +687,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
 
         checkToSaveDraftImplicitly();
+        recipientPresenter.onPause();
     }
 
     /**
@@ -785,6 +798,10 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 .setDraft(isDraft)
                 .setIsPgpInlineEnabled(cryptoStatus.isPgpInlineModeEnabled())
                 .setForcedUnencrypted(recipientPresenter.isForceUnencrypted());
+
+        quotedMessagePresenter.builderSetProperties(builder);
+
+        quotedMessagePresenter.builderSetProperties(builder);
 
         quotedMessagePresenter.builderSetProperties(builder);
 
@@ -1035,9 +1052,11 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 break;
             case R.id.openpgp_inline_enable:
                 recipientPresenter.onMenuSetPgpInline(true);
+                updateMessageFormat();
                 break;
             case R.id.openpgp_inline_disable:
                 recipientPresenter.onMenuSetPgpInline(false);
+                updateMessageFormat();
                 break;
             case R.id.add_attachment:
                 attachmentPresenter.onClickAddAttachment(recipientPresenter);
@@ -1050,11 +1069,29 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 onReadReceipt();
                 break;
             case R.id.force_unencrypted:
+                if (encrypted) {
+                    item.setTitle(R.string.pep_force_protected);
+                } else {
+                    item.setTitle(R.string.pep_force_unprotected);
+                }
+                encrypted = !encrypted;
                 forceUnencrypted();
-            default:
-                return super.onOptionsItemSelected(item);
+                break;
         }
-        return true;
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void forceUnencrypted() {
+        recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.MESSAGE);
+    }
+
+    private void handlePEpState(boolean... withToast) {
+        recipientPresenter.handlepEpState(withToast);
+    }
+
+    private void onPEpIndicator() {
+        handlePEpState(false);
+        recipientPresenter.onPepIndicator();
     }
 
     private void goBack() {
@@ -1072,19 +1109,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 finish();
             }
         }
-    }
-
-    private void forceUnencrypted() {
-        recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.MESSAGE);
-    }
-
-    private void handlePEpState(boolean... withToast) {
-        recipientPresenter.handlepEpState(withToast);
-    }
-
-    private void onPEpIndicator() {
-        handlePEpState(false);
-        recipientPresenter.onPepIndicator();
     }
 
     @Override

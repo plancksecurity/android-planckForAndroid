@@ -19,7 +19,9 @@ import com.fsck.k9.activity.compose.ComposeCryptoStatus;
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.BodyPart;
 import com.fsck.k9.mail.BoundaryGenerator;
+import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.filter.EOLConvertingOutputStream;
 import com.fsck.k9.mail.internet.BinaryTempFileBody;
 import com.fsck.k9.mail.internet.MessageIdGenerator;
 import com.fsck.k9.mail.internet.MimeBodyPart;
@@ -38,15 +40,13 @@ import org.openintents.openpgp.util.OpenPgpApi.OpenPgpDataSource;
 
 
 public class PgpMessageBuilder extends MessageBuilder {
+    private static final int REQUEST_USER_INTERACTION = 1;
 
-    public static final int REQUEST_USER_INTERACTION = 1;
 
     private OpenPgpApi openPgpApi;
 
     private MimeMessage currentProcessedMimeMessage;
     private ComposeCryptoStatus cryptoStatus;
-    private boolean opportunisticSkipEncryption;
-    private boolean opportunisticSecondPass;
 
 
     public static PgpMessageBuilder newInstance() {
@@ -103,7 +103,7 @@ public class PgpMessageBuilder extends MessageBuilder {
     private void startOrContinueBuildMessage(@Nullable Intent pgpApiIntent) {
         try {
             boolean shouldSign = cryptoStatus.isSigningEnabled();
-            boolean shouldEncrypt = cryptoStatus.isEncryptionEnabled() && !opportunisticSkipEncryption;
+            boolean shouldEncrypt = cryptoStatus.isEncryptionEnabled();
             boolean isPgpInlineMode = cryptoStatus.isPgpInlineModeEnabled();
 
             if (!shouldSign && !shouldEncrypt) {
@@ -116,20 +116,18 @@ public class PgpMessageBuilder extends MessageBuilder {
                 throw new MessagingException("Attachments are not supported in PGP/INLINE format!");
             }
 
+            if (isPgpInlineMode && shouldSign && !shouldEncrypt) {
+                throw new UnsupportedOperationException("Clearsigning is not supported!");
+            }
+
             if (pgpApiIntent == null) {
                 pgpApiIntent = buildOpenPgpApiIntent(shouldSign, shouldEncrypt, isPgpInlineMode);
             }
 
             PendingIntent returnedPendingIntent = launchOpenPgpApiIntent(
-                    pgpApiIntent, shouldEncrypt || isPgpInlineMode, shouldEncrypt || !isPgpInlineMode, isPgpInlineMode);
+                    pgpApiIntent, shouldEncrypt, isPgpInlineMode);
             if (returnedPendingIntent != null) {
                 queueMessageBuildPendingIntent(returnedPendingIntent, REQUEST_USER_INTERACTION);
-                return;
-            }
-
-            if (opportunisticSkipEncryption && !opportunisticSecondPass) {
-                opportunisticSecondPass = true;
-                startOrContinueBuildMessage(null);
                 return;
             }
 
@@ -177,7 +175,7 @@ public class PgpMessageBuilder extends MessageBuilder {
     }
 
     private PendingIntent launchOpenPgpApiIntent(@NonNull Intent openPgpIntent,
-            boolean captureOutputPart, boolean capturedOutputPartIs7Bit, boolean writeBodyContentOnly) throws MessagingException {
+            boolean captureOutputPart, boolean writeBodyContentOnly) throws MessagingException {
         final MimeBodyPart bodyPart = currentProcessedMimeMessage.toBodyPart();
         String[] contentType = currentProcessedMimeMessage.getHeader(MimeHeader.HEADER_CONTENT_TYPE);
         if (contentType.length > 0) {
@@ -190,9 +188,11 @@ public class PgpMessageBuilder extends MessageBuilder {
         OutputStream outputStream = null;
         if (captureOutputPart) {
             try {
-                pgpResultTempBody = new BinaryTempFileBody(
-                        capturedOutputPartIs7Bit ? MimeUtil.ENC_7BIT : MimeUtil.ENC_8BIT);
+                pgpResultTempBody = new BinaryTempFileBody(MimeUtil.ENC_7BIT);
                 outputStream = pgpResultTempBody.getOutputStream();
+                // OpenKeychain/BouncyCastle at this point use the system newline for formatting, which is LF on android.
+                // we need this to be CRLF, so we convert the data after receiving.
+                outputStream = new EOLConvertingOutputStream(outputStream);
             } catch (IOException e) {
                 throw new MessagingException("could not allocate temp file for storage!", e);
             }
@@ -219,7 +219,11 @@ public class PgpMessageBuilder extends MessageBuilder {
                 }
                 boolean isOpportunisticError = error.getErrorId() == OpenPgpError.OPPORTUNISTIC_MISSING_KEYS;
                 if (isOpportunisticError) {
-                    skipEncryptingMessage();
+                    if (!cryptoStatus.isEncryptionOpportunistic()) {
+                        throw new IllegalStateException(
+                                "Got opportunistic error, but encryption wasn't supposed to be opportunistic!");
+                    }
+                    Log.d(K9.LOG_TAG, "Skipping encryption due to opportunistic mode");
                     return null;
                 }
                 throw new MessagingException(error.getMessage());
@@ -254,8 +258,7 @@ public class PgpMessageBuilder extends MessageBuilder {
             @NonNull Intent result, @NonNull MimeBodyPart bodyPart, @Nullable BinaryTempFileBody pgpResultTempBody)
             throws MessagingException {
         if (pgpResultTempBody == null) {
-            boolean shouldHaveResultPart = cryptoStatus.isPgpInlineModeEnabled() ||
-                    (cryptoStatus.isEncryptionEnabled() && !opportunisticSkipEncryption);
+            boolean shouldHaveResultPart = cryptoStatus.isPgpInlineModeEnabled() || cryptoStatus.isEncryptionEnabled();
             if (shouldHaveResultPart) {
                 throw new AssertionError("encryption or pgp/inline is enabled, but no output part!");
             }
@@ -286,7 +289,8 @@ public class PgpMessageBuilder extends MessageBuilder {
         multipartSigned.setSubType("signed");
         multipartSigned.addBodyPart(signedBodyPart);
         multipartSigned.addBodyPart(
-                new MimeBodyPart(new BinaryMemoryBody(signedData, MimeUtil.ENC_7BIT), "application/pgp-signature"));
+                new MimeBodyPart(new BinaryMemoryBody(signedData, MimeUtil.ENC_7BIT),
+                        "application/pgp-signature; name=\"signature.asc\""));
         MimeMessageHelper.setBody(currentProcessedMimeMessage, multipartSigned);
 
         String contentType = String.format(
@@ -328,13 +332,6 @@ public class PgpMessageBuilder extends MessageBuilder {
             inlineBodyPart.setEncoding(MimeUtil.ENC_QUOTED_PRINTABLE);
         }
         MimeMessageHelper.setBody(currentProcessedMimeMessage, inlineBodyPart);
-    }
-
-    private void skipEncryptingMessage() throws MessagingException {
-        if (!cryptoStatus.isEncryptionOpportunistic()) {
-            throw new AssertionError("Got opportunistic error, but encryption wasn't supposed to be opportunistic!");
-        }
-        opportunisticSkipEncryption = true;
     }
 
     public void setCryptoStatus(ComposeCryptoStatus cryptoStatus) {

@@ -68,17 +68,26 @@ public class PEpStatusPresenter implements Presenter {
         view.setupRecipients(identities);
     }
 
-    public void updateTrust(int position) {
+    public void resetRecipientTrust(int position) {
         Identity id = identities.get(position);
-        id = pEpProvider.updateIdentity(id);
-        pEpProvider.resetTrust(id);
-        List<PEpIdentity> updatedIdentities = updateRecipients(identities);
-        if (isMessageIncoming) {
-            onRatingChanged(Rating.pEpRatingReliable);
-        } else {
-            setupOutgoingMessageRating();
-        }
-        view.updateIdentities(updatedIdentities);
+        pEpProvider.resetTrust(id, new PEpProvider.CompletedCallback() {
+            @Override
+            public void onComplete() {
+                List<PEpIdentity> updatedIdentities = updateRecipients(identities, id);
+                if (isMessageIncoming) {
+                    onRatingChanged(Rating.pEpRatingReliable);
+                } else {
+                    setupOutgoingMessageRating();
+                }
+                view.updateIdentities(updatedIdentities);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+        });
+
     }
 
     private void setupOutgoingMessageRating() {
@@ -86,8 +95,17 @@ public class PEpStatusPresenter implements Presenter {
         for (PEpIdentity identity : identities) {
             addresses.add(new Address(identity.address));
         }
-        Rating privacyState = pEpProvider.getPrivacyState(senderAddress, addresses, Collections.emptyList(), Collections.emptyList());
-        onRatingChanged(privacyState);
+        pEpProvider.getPrivacyState(senderAddress, addresses, Collections.emptyList(), Collections.emptyList(), new PEpProvider.ResultCallback<Rating>() {
+            @Override
+            public void onLoaded(Rating rating) {
+                onRatingChanged(rating);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+        });
     }
 
     private void onRatingChanged(Rating rating) {
@@ -118,16 +136,16 @@ public class PEpStatusPresenter implements Presenter {
         }
     }
 
-    private List<PEpIdentity> updateRecipients(List<PEpIdentity> identities) {
+    private List<PEpIdentity> updateRecipients(List<PEpIdentity> identities, Identity id) {
         ArrayList<PEpIdentity> pEpIdentities = new ArrayList<>(identities.size());
         for (Identity recipient : identities) {
-            pEpIdentities.add(updateRecipient(recipient));
+            pEpIdentities.add(updateRecipient(recipient, id));
         }
         return pEpIdentities;
     }
 
-    private PEpIdentity updateRecipient(Identity recipient) {
-        PEpIdentity pEpIdentity = new PEpIdentity();
+    private PEpIdentity updateRecipient(Identity recipient, Identity id) {
+        PEpIdentity pEpIdentity = pEpIdentityMapper.mapRecipient(recipient);
         pEpIdentity.setRating(pEpProvider.identityRating(recipient));
         return pEpIdentity;
     }
