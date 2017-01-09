@@ -102,7 +102,7 @@ public abstract class MessageBuilder {
         return message;
     }
 
-    public void buildHeader(MimeMessage message) throws MessagingException {
+    protected void buildHeader(MimeMessage message) throws MessagingException {
         message.addSentDate(sentDate, hideTimeZone);
         Address from = new Address(identity.getEmail(), identity.getName());
         message.setFrom(from);
@@ -143,12 +143,12 @@ public abstract class MessageBuilder {
         if (isForcedUnencrypted) message.setFlag(Flag.X_PEP_DISABLED, true);
     }
 
-    protected MimeMultipart createMimeMultipart() {
+    MimeMultipart createMimeMultipart() {
         String boundary = boundaryGenerator.generateBoundary();
         return new MimeMultipart(boundary);
     }
 
-    public void buildBody(MimeMessage message) throws MessagingException {
+    protected void buildBody(MimeMessage message) throws MessagingException {
         // Build the body.
         // TODO FIXME - body can be either an HTML or Text part, depending on whether we're in
         // HTML mode or not.  Should probably fix this so we don't mix up html and text parts.
