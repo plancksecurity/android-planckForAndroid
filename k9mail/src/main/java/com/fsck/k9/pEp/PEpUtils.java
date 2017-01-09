@@ -131,6 +131,16 @@ public class PEpUtils {
         return rv;
     }
 
+    static List<Address> createAddressesList(Vector<Identity> ids) {
+        if (ids == null) return Collections.emptyList();                // this should be consistent with pep api
+        List<Address> rv = new ArrayList<>(ids.size());
+        int idx = 0;
+        for (Identity i : ids)
+            rv.add(createAddress(i));
+
+        return rv;
+    }
+
     static Address createAddress(Identity id) {
         Address adr = new Address(id.address, id.username);
         // Address() parses the address, eventually not setting it, therefore just a little sanity...
@@ -488,5 +498,28 @@ public class PEpUtils {
         return identities;
     }
 
+    public static String clobberVector(Vector<String> sv) {   // FIXME: how do revs come out of array? "<...>" or "...."?
+        String rt = "";
+        if (sv != null)
+            for (String cur : sv)
+                rt += cur + "; ";
+        return rt;
+    }
+
+    public static String getReplyTo(Address[] replyTo) {
+        List<String> addresses = new ArrayList<>(replyTo.length);
+        for (Address address : replyTo) {
+            addresses.add(address.toString());
+        }
+        return clobberVector(addresses);
+    }
+
+    private static String clobberVector(List<String> sv) {
+        String rt = "";
+        if (sv != null)
+            for (String cur : sv)
+                rt += cur + "; ";
+        return rt;
+    }
 }
 

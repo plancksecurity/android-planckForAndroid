@@ -2,6 +2,7 @@ package com.fsck.k9.pEp;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.fsck.k9.K9;
@@ -9,6 +10,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeMessage;
+import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
 import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
@@ -28,6 +30,7 @@ import org.pEp.jniadapter.pEpException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -236,7 +239,8 @@ public class PEpProviderImpl implements PEpProvider {
             }
             decReturn = engine.decrypt_message(srcMsg);
             Log.d(TAG, "decryptMessage() after decrypt");
-            MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
+            Message message = decReturn.dst;
+            MimeMessage decMsg = getMimeMessage(source, message);
 
             if (isUsablePrivateKey(decReturn)) {
                 return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg));
@@ -276,7 +280,9 @@ public class PEpProviderImpl implements PEpProvider {
                 }
                 decReturn = engine.decrypt_message(srcMsg);
                 Log.d(TAG, "decryptMessage() after decrypt");
-                MimeMessage decMsg = new MimeMessageBuilder(decReturn.dst).createMessage();
+
+                Message message = decReturn.dst;
+                MimeMessage decMsg = getMimeMessage(source, message);
 
                 if (isUsablePrivateKey(decReturn)) {
                     notifyLoaded(new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg)), callback);
@@ -297,6 +303,53 @@ public class PEpProviderImpl implements PEpProvider {
         });
     }
 
+    @NonNull
+    private MimeMessage getMimeMessage(MimeMessage source, Message message) throws MessagingException {
+        MimeMessageBuilder builder = new MimeMessageBuilder(message).newInstance();
+
+        String text = message.getLongmsgFormatted();
+        SimpleMessageFormat messageFormat;
+        if (!TextUtils.isEmpty(message.getLongmsgFormatted())) {
+            messageFormat = SimpleMessageFormat.HTML;
+        } else {
+            messageFormat = SimpleMessageFormat.TEXT;
+            text = message.getLongmsg();
+        }
+
+        Date sent = message.getSent();
+        if (sent == null) sent = new Date();
+
+        Address[] replyTo = new Address[0];
+        if (source != null) {
+            replyTo = source.getReplyTo();
+        }
+        builder.setSubject(message.getShortmsg())
+                .setSentDate(sent)
+                .setHideTimeZone(K9.hideTimeZone())
+                .setTo(PEpUtils.createAddressesList(message.getTo()))
+                .setCc(PEpUtils.createAddressesList(message.getCc()))
+                .setBcc(PEpUtils.createAddressesList(message.getBcc()))
+                .setInReplyTo(PEpUtils.clobberVector(message.getInReplyTo()))
+                .setReferences(PEpUtils.clobberVector(message.getReferences()))
+                .setIdentity(message.getFrom(), replyTo)
+                .setMessageFormat(messageFormat)
+                //.setMessageFormat(message.getEncFormat())
+                .setText(text)
+                .setAttachments(message.getAttachments(), message.getEncFormat());
+        //.setSignature(message.get)
+        //.setSignatureBeforeQuotedText(mAccount.isSignatureBeforeQuotedText())
+        //.setIdentityChanged(message.get)
+        //.setSignatureChanged(mSignatureChanged)
+        //.setCursorPosition(mMessageContentView.getSelectionStart())
+        //TODO rethink message reference
+        //.setMessageReference(source.getReferences());
+        //.setDraft(isDraft)
+        //.setIsPgpInlineEnabled(cryptoStatus.isPgpInlineModeEnabled())
+        //.setForcedUnencrypted(recipientPresenter.isForceUnencrypted());
+
+        return builder.parseMessage(message);
+    }
+
     private boolean isUsablePrivateKey(Engine.decrypt_message_Return result) {
         // TODO: 13/06/16 Check if is necesary check own id
         return result.rating.value >= Rating.pEpRatingTrusted.value
@@ -312,7 +365,7 @@ public class PEpProviderImpl implements PEpProvider {
         Message message = new PEpMessageBuilder(source).createMessage(context);
         try {
             if (engine == null) createEngineSession();
-            resultMessages.add(getEncryptedCopy(message, extraKeys));
+            resultMessages.add(getEncryptedCopy(source, message, extraKeys));
             return resultMessages;
         } catch (Throwable t) {
             Log.e(TAG, "while encrypting message:", t);
@@ -330,7 +383,7 @@ public class PEpProviderImpl implements PEpProvider {
         Message message = new PEpMessageBuilder(source).createMessage(context);
         try {
             if (engine == null) createEngineSession();
-            resultMessages.add(getEncryptedCopy(message, extraKeys));
+            resultMessages.add(getEncryptedCopy(source, message, extraKeys));
             notifyLoaded(resultMessages, callback);
         } catch (Throwable t) {
             Log.e(TAG, "while encrypting message:", t);
@@ -357,7 +410,7 @@ public class PEpProviderImpl implements PEpProvider {
             Message currentEnc = engine.encrypt_message_for_self(message.getFrom(), message);
             if (currentEnc == null) currentEnc = message;
             Log.d(TAG, "encryptMessage() after encrypt to self");
-            return new MimeMessageBuilder(currentEnc).createMessage();
+            return getMimeMessage(source, currentEnc);
         } catch (Exception exception) {
             Log.e(TAG, "encryptMessageToSelf: ", exception);
             return source;
@@ -384,7 +437,7 @@ public class PEpProviderImpl implements PEpProvider {
             Message currentEnc = engine.encrypt_message_for_self(message.getFrom(), message);
             if (currentEnc == null) currentEnc = message;
             Log.d(TAG, "encryptMessage() after encrypt to self");
-            notifyLoaded(new MimeMessageBuilder(currentEnc).createMessage(), callback);
+            notifyLoaded(getMimeMessage(source, message), callback);
         } catch (Exception exception) {
             Log.e(TAG, "encryptMessageToSelf: ", exception);
             notifyLoaded(source, callback);
@@ -398,7 +451,7 @@ public class PEpProviderImpl implements PEpProvider {
     private List<MimeMessage> getUnencryptedCopies(MimeMessage source, String[] extraKeys) throws MessagingException, pEpException {
         List<MimeMessage> messages = new ArrayList<>();
         messages.add(getUnencryptedBCCCopy(source));
-        messages.add(getEncryptedCopy(getUnencryptedCopyWithoutBCC(source), extraKeys));
+        messages.add(getEncryptedCopy(source, getUnencryptedCopyWithoutBCC(source), extraKeys));
         return messages;
 
     }
@@ -413,16 +466,16 @@ public class PEpProviderImpl implements PEpProvider {
         Message message = stripEncryptedRecipients(source);
         message.setTo(null);
         message.setCc(null);
-        MimeMessage result = new MimeMessageBuilder(message).createMessage();
+        MimeMessage result = getMimeMessage(source, message);
         message.close();
         return result;
     }
 
     @NonNull
-    private List<MimeMessage> encryptMessages(String[] extraKeys, List<Message> messagesToEncrypt) throws pEpException, MessagingException {
+    private List<MimeMessage> encryptMessages(MimeMessage source, String[] extraKeys, List<Message> messagesToEncrypt) throws pEpException, MessagingException {
         List<MimeMessage> messages = new ArrayList<>();
         for (Message message : messagesToEncrypt) {
-            messages.add(getEncryptedCopy(message, extraKeys));
+            messages.add(getEncryptedCopy(source, message, extraKeys));
         }
         return messages;
     }
@@ -437,7 +490,7 @@ public class PEpProviderImpl implements PEpProvider {
             handleEncryptedBCC(source, toEncryptMessage, messagesToEncrypt);
         }
 
-        result.addAll(encryptMessages(extraKeys, messagesToEncrypt));
+        result.addAll(encryptMessages(source, extraKeys, messagesToEncrypt));
 
         for (Message message : messagesToEncrypt) {
             message.close();
@@ -471,7 +524,7 @@ public class PEpProviderImpl implements PEpProvider {
         }
     }
 
-    private MimeMessage getEncryptedCopy(Message message, String[] extraKeys) throws pEpException, MessagingException {
+    private MimeMessage getEncryptedCopy(MimeMessage source, Message message, String[] extraKeys) throws pEpException, MessagingException {
         message.setDir(Message.Direction.Outgoing);
         Log.d(TAG, "encryptMessage() before encrypt");
         Identity from = message.getFrom();
@@ -480,7 +533,7 @@ public class PEpProviderImpl implements PEpProvider {
         Message currentEnc = engine.encrypt_message(message, convertExtraKeys(extraKeys));
         if (currentEnc == null) currentEnc = message;
         Log.d(TAG, "encryptMessage() after encrypt");
-        return new MimeMessageBuilder(currentEnc).createMessage();
+        return getMimeMessage(source, currentEnc);
     }
 
     private Message stripRecipients(MimeMessage src, boolean encrypted) {
@@ -761,7 +814,7 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public com.fsck.k9.mail.Message getMimeMessage(Message message) {
         try {
-            return new MimeMessageBuilder(message).createMessage();
+            return getMimeMessage(null, message);
         } catch (MessagingException e) {
             Log.e(TAG, "getMimeMessage: ", e);
         }
