@@ -1,10 +1,10 @@
-# K-9 Mail / p≡p
+p≡p
 
-K-9 Mail / p≡p is an open-source email client for Android with pretty Easy privacy
+p≡p is an open-source email client for Android with pretty Easy privacy
 
 ## Download
 
-K-9 Mail can be downloaded from a couple of sources:
+p≡p can be downloaded from a couple of sources:
 
 - [Google Play](https://play.google.com/store/apps/details?id=pep.android.k9)
 - [F-Droid]
