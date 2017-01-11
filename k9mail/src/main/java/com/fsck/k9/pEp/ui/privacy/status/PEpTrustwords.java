@@ -1,25 +1,23 @@
 package com.fsck.k9.pEp.ui.privacy.status;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.AlertDialog;
-import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.UIUtils;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
@@ -30,9 +28,12 @@ import com.fsck.k9.pEp.ui.PepColoredActivity;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
-import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class PEpTrustwords extends PepColoredActivity {
 
@@ -262,35 +263,12 @@ public class PEpTrustwords extends PepColoredActivity {
 
     private void showLanguageSelectionDialog() {
         final CharSequence[] pEpLanguages = PEpUtils.getPEpLanguages();
-        CharSequence[] displayLanguages = prettifyLanguages(pEpLanguages);
+        CharSequence[] displayLanguages = UIUtils.prettifyLanguages(pEpLanguages);
         new AlertDialog.Builder(PEpTrustwords.this).setTitle(getResources().getString(R.string.settings_language_label))
-                .setItems(displayLanguages, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        String language = pEpLanguages[i].toString();
-                        changeTrustwords(language);
-                    }
-        }).create().show();
-    }
-
-    @NonNull
-    private CharSequence[] prettifyLanguages(CharSequence[] pEpLocales) {
-        CharSequence[] pEpLanguages = new CharSequence[pEpLocales.length];
-        for (Locale locale : Locale.getAvailableLocales()) {
-            for (int i = 0; i < pEpLocales.length; i++) {
-                if (locale.getLanguage().equals(pEpLocales[i])) {
-                    String uppercasedLanguage = uppercaseFirstCharacter(locale);
-                    pEpLanguages[i] = uppercasedLanguage;
-                }
-            }
-        }
-        return pEpLanguages;
-    }
-
-    @NonNull
-    private String uppercaseFirstCharacter(Locale locale) {
-        String displayLanguage = locale.getDisplayLanguage();
-        return displayLanguage.substring(0, 1).toUpperCase() + displayLanguage.substring(1);
+                .setItems(displayLanguages, (dialogInterface, i) -> {
+                    String language = pEpLanguages[i].toString();
+                    changeTrustwords(language);
+                }).create().show();
     }
 
     private void changeTrustwords(String language) {
