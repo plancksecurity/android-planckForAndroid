@@ -475,5 +475,11 @@
                 </action>
             </intent-filter>
         </receiver>
+        <receiver android:name="K9$DismissKeysyncDialogReceiver">
+            <intent-filter>
+                <action android:name="KEYSYNC_DISMISS">
+                </action>
+            </intent-filter>
+            </receiver>
     </application>
 </manifest>
