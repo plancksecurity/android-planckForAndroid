@@ -2,6 +2,7 @@ package com.fsck.k9.pEp.ui.privacy.status;
 
 import android.content.Intent;
 import android.content.IntentSender;
+import android.view.View;
 
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageLoaderHelper;
@@ -118,8 +119,14 @@ public class PEpStatusPresenter implements Presenter {
         view.setupBackIntent(rating);
     }
 
-    public void loadPepTexts(Rating rating) {
+    public void loadRating(Rating rating) {
         view.showPEpTexts(cache.getTitle(rating), cache.getSuggestion(rating));
+        if (rating.value != Rating.pEpRatingMistrust.value
+                && rating.value < Rating.pEpRatingReliable.value) {
+            view.hideBadge();
+        } else {
+            view.showBadge(rating);
+        }
     }
 
     public void onResult(int position) {

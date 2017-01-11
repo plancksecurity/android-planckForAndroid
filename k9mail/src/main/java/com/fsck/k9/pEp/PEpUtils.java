@@ -3,6 +3,7 @@ package com.fsck.k9.pEp;
 import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 
@@ -17,9 +18,7 @@ import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
-import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.internet.MimeUtility;
-import com.fsck.k9.mailstore.LocalMessage;
 
 import org.apache.commons.io.IOUtils;
 import org.pEp.jniadapter.Identity;
@@ -520,6 +519,20 @@ public class PEpUtils {
             for (String cur : sv)
                 rt += cur + "; ";
         return rt;
+    }
+
+    public static Drawable getDrawableForRating(Context context, Rating rating) {
+        if (rating.value != Rating.pEpRatingMistrust.value
+                && rating.value < Rating.pEpRatingReliable.value) {
+            return null;
+        }else if (rating.value == Rating.pEpRatingMistrust.value) {
+            return context.getResources().getDrawable(R.drawable.pep_status_red);
+        } else if (rating.value >= Rating.pEpRatingTrusted.value){
+            return context.getResources().getDrawable(R.drawable.pep_status_green);
+        } else if (rating.value == Rating.pEpRatingReliable.value){
+            return context.getResources().getDrawable(R.drawable.pep_status_gray);
+        }
+        return context.getResources().getDrawable(R.drawable.pep_status_gray);
     }
 }
 

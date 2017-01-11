@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +57,8 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
     @Bind(R.id.pEpTitle)
     TextView pEpTitle;
+    @Bind(R.id.title_status_badge)
+    ImageView statusBadge;
     @Bind(R.id.pEpSuggestion)
     TextView pEpSuggestion;
     @Bind(R.id.my_recycler_view)
@@ -99,7 +102,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         restorePEpRating(savedInstanceState);
         setUpActionBar();
         presenter.loadRecipients();
-        presenter.loadPepTexts(getpEpRating());
+        presenter.loadRating(getpEpRating());
     }
 
     @Override
@@ -201,12 +204,23 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     public void setRating(Rating pEpRating) {
         setpEpRating(pEpRating);
         colorActionBar();
-        presenter.loadPepTexts(pEpRating);
+        presenter.loadRating(pEpRating);
     }
 
     @Override
     public void showError(int status_loading_error) {
         Toast.makeText(getApplicationContext(), R.string.status_loading_error, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showBadge(Rating rating) {
+        statusBadge.setVisibility(View.VISIBLE);
+        statusBadge.setImageDrawable(PEpUtils.getDrawableForRating(PEpStatus.this, rating));
+    }
+
+    @Override
+    public void hideBadge() {
+        statusBadge.setVisibility(View.GONE);
     }
 
     public class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
