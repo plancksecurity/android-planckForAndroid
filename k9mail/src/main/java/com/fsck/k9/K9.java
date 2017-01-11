@@ -4,6 +4,7 @@ package com.fsck.k9;
 import android.app.Activity;
 import android.app.Application;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -23,6 +24,7 @@ import android.util.Log;
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.MessageCompose;
+import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.UpgradeDatabases;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
@@ -74,6 +76,8 @@ public class K9 extends Application {
     final boolean ispEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
     private Account currentAccount;
     private ApplicationComponent component;
+    private DismissKeysyncDialogReceiver receiver;
+    private IntentFilter filter;
 
     /**
      * Components that are interested in knowing when the K9 instance is
@@ -546,6 +550,11 @@ public class K9 extends Application {
 
     @Override
     public void onCreate() {
+        receiver = new DismissKeysyncDialogReceiver();
+        filter = new IntentFilter();
+        filter.addAction("KEYSYNC_DISMISS");
+        filter.setPriority(1);
+        registerReceiver(receiver, filter);
         if (ispEpSyncEnabled) {
             initSync();
         }
@@ -693,7 +702,7 @@ public class K9 extends Application {
                         }
 
                         Context context = K9.this.getApplicationContext();
-                        Intent syncTrustowordsActivity = PEpAddDevice.getActionRequestHandshake(context, trust, partner);
+                        Intent syncTrustowordsActivity = PEpAddDevice.getActionRequestHandshake(context, trust, myself, partner);
                         syncTrustowordsActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         PendingIntent pendingIntent = PendingIntent.getActivity(context, 22, syncTrustowordsActivity, 0);
                         try {
@@ -1671,4 +1680,15 @@ public class K9 extends Application {
         return component;
     }
 
+    public class DismissKeysyncDialogReceiver extends BroadcastReceiver {
+        public DismissKeysyncDialogReceiver() {
+        }
+
+        @Override
+        public void onReceive(final Context context, Intent intent) {
+            Intent messageListIntent = MessageList.shortcutIntent(context, currentAccount.getInboxFolderName());
+            messageListIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(messageListIntent);
+        }
+    }
 }
