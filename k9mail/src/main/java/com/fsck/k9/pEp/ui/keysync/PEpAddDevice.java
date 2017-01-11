@@ -1,5 +1,6 @@
 package com.fsck.k9.pEp.ui.keysync;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,11 +16,15 @@ import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
+import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.UIUtils;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
+import com.fsck.k9.pEp.ui.HandshakeData;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.ui.adapters.IdentitiesAdapter;
 
@@ -39,6 +44,7 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
     private static final String TRUSTWORDS = "trustwordsKey";
     private static final String PARTNER_ADRESS = "partnerAdress";
     private static final String PARTNER_USER_ID = "partnerUserUd";
+    private static final String MY_ADRESS = "myAddress";
 
     @Inject AddDevicePresenter presenter;
 
@@ -51,13 +57,20 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
     @Bind(R.id.advanced_options_key_list)
     RecyclerView identitiesList;
     private MenuItem advancedOptionsMenuItem;
+    private String trustwordsLanguage;
+    private Boolean areTrustwordsShort = true;
+    private String fullTrustwords = "";
+    private String shortTrustwords = "";
+    private Identity partnerIdentity;
+    private Identity myIdentity;
 
-    public static Intent getActionRequestHandshake(Context context, String trustwords, Identity partner) {
+    public static Intent getActionRequestHandshake(Context context, String trustwords, Identity myself, Identity partner) {
         Intent intent = new Intent(context, PEpAddDevice.class);
         intent.setAction(ACTION_SHOW_PEP_TRUSTWORDS);
         intent.putExtra(TRUSTWORDS, trustwords);
         intent.putExtra(PARTNER_USER_ID, partner.user_id);
         intent.putExtra(PARTNER_ADRESS, partner.address);
+        intent.putExtra(MY_ADRESS, myself.address);
         return intent;
 
     }
@@ -79,6 +92,9 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
             if (intent.hasExtra(PARTNER_ADRESS) && intent.hasExtra(PARTNER_USER_ID)) {
                 String partnerUserId = intent.getStringExtra(PARTNER_USER_ID);
                 String partnerAddress = intent.getStringExtra(PARTNER_ADRESS);
+                String myAddress = intent.getStringExtra(MY_ADRESS);
+                myIdentity = PEpUtils.createIdentity(new Address(myAddress), PEpAddDevice.this);
+                partnerIdentity = PEpUtils.createIdentity(new Address(partnerAddress), PEpAddDevice.this);
                 List<Account> accounts = Preferences.getPreferences(PEpAddDevice.this).getAccounts();
                 presenter.initialize(this, getpEp(), partnerUserId, partnerAddress, accounts);
             }
@@ -104,8 +120,61 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
                     presenter.basicOptionsClicked();
                 }
                 break;
+            case R.id.action_language:
+                showLanguageSelectionDialog();
+                return true;
+            case R.id.long_trustwords:
+                if (item.getTitle().equals(getString(R.string.pep_menu_long_trustwords))){
+                    item.setTitle(R.string.pep_menu_short_trustwords);
+                    changeTrustwordsLength(false);
+                }
+                else{
+                    item.setTitle(getString(R.string.pep_menu_long_trustwords));
+                    changeTrustwordsLength(true);
+                }
+
+                return true;
         }
         return true;
+    }
+
+    private void showLanguageSelectionDialog() {
+        final CharSequence[] pEpLanguages = PEpUtils.getPEpLanguages();
+        CharSequence[] displayLanguages = UIUtils.prettifyLanguages(pEpLanguages);
+        new AlertDialog.Builder(PEpAddDevice.this).setTitle(getResources().getString(R.string.settings_language_label))
+                .setItems(displayLanguages, (dialogInterface, i) -> {
+                    String language = pEpLanguages[i].toString();
+                    changeTrustwords(language);
+                }).create().show();
+    }
+
+    private void changeTrustwords(String language) {
+        trustwordsLanguage = language;
+
+        String partnerFullTrustwords = PEpUtils.getTrustWords(getpEp(), partnerIdentity, language);
+        String myFullTrustwords = PEpUtils.getTrustWords(getpEp(), myIdentity, language);
+        String partnerShortTrustwords = PEpUtils.getShortTrustWords(getpEp(), partnerIdentity, language);
+        String myShortTrustWords = PEpUtils.getShortTrustWords(getpEp(), myIdentity, language);
+
+        if (myIdentity.fpr.compareTo(partnerIdentity.fpr) > 0) {
+            fullTrustwords = partnerFullTrustwords + myFullTrustwords;
+            shortTrustwords = partnerShortTrustwords + myShortTrustWords;
+        } else {
+            fullTrustwords = myFullTrustwords + partnerFullTrustwords;
+            shortTrustwords = myShortTrustWords + partnerShortTrustwords;
+        }
+
+        if (areTrustwordsShort) {
+            tvTrustwords.setText(shortTrustwords);
+        } else {
+            tvTrustwords.setText(fullTrustwords);
+        }
+    }
+
+    private void changeTrustwordsLength(Boolean areShort) {
+        areTrustwordsShort = areShort;
+        if (areShort) tvTrustwords.setText(shortTrustwords);
+        else tvTrustwords.setText(fullTrustwords);
     }
 
     @OnClick(R.id.confirmTrustWords)
@@ -178,4 +247,37 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
         advancedKeysTextView.setVisibility(View.GONE);
         identitiesList.setVisibility(View.GONE);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadTrustwords();
+    }
+
+    private void loadTrustwords() {
+        //Actually what is heavy is update identity and myself.
+        getpEp().trustwords(myIdentity, partnerIdentity, trustwordsLanguage, new PEpProvider.ResultCallback<HandshakeData>() {
+            @Override
+            public void onLoaded(final HandshakeData handshakeData) {
+                fullTrustwords = handshakeData.getFullTrustwords();
+                shortTrustwords = handshakeData.getShortTrustwords();
+                if (areTrustwordsShort) {
+                    tvTrustwords.setText(shortTrustwords);
+                } else {
+                    tvTrustwords.setText(fullTrustwords);
+                }
+
+                //myself = handshakeData.getMyself();
+                //partner = handshakeData.getPartner();
+                //wrongTrustWords.setVisibility(View.VISIBLE);
+                //confirmTrustWords.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+        });
+    }
+
 }
