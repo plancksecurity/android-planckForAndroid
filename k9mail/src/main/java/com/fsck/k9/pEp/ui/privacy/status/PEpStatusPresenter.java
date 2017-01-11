@@ -121,8 +121,7 @@ public class PEpStatusPresenter implements Presenter {
 
     public void loadRating(Rating rating) {
         view.showPEpTexts(cache.getTitle(rating), cache.getSuggestion(rating));
-        if (rating.value != Rating.pEpRatingMistrust.value
-                && rating.value < Rating.pEpRatingReliable.value) {
+        if (rating == null) {
             view.hideBadge();
         } else {
             view.showBadge(rating);

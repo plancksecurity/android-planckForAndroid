@@ -6,6 +6,10 @@ Created by Helm  23/03/16.
 package com.fsck.k9.pEp.ui.adapters;
 
 import android.content.Context;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.models.PEpIdentity;
 
@@ -107,20 +112,19 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
                 handshakeButton.setText(context.getString(R.string.pep_handshake));
                 handshakeButton.setOnClickListener(onResetRedClick);
                 badge.setVisibility(View.VISIBLE);
-                badge.setImageDrawable(context.getResources().getDrawable(R.drawable.pep_status_red));
             } else if (rating.value >= Rating.pEpRatingTrusted.value){
                 handshakeButton.setVisibility(View.VISIBLE);
                 handshakeButton.setText(context.getString(R.string.pep_reset_trust));
                 handshakeButton.setOnClickListener(onResetGreenClick);
                 badge.setVisibility(View.VISIBLE);
-                badge.setImageDrawable(context.getResources().getDrawable(R.drawable.pep_status_green));
             } else if (rating.value == Rating.pEpRatingReliable.value){
                 handshakeButton.setVisibility(View.VISIBLE);
                 handshakeButton.setText(context.getString(R.string.pep_handshake));
                 handshakeButton.setOnClickListener(onHandshakeClick);
                 badge.setVisibility(View.VISIBLE);
-                badge.setImageDrawable(context.getResources().getDrawable(R.drawable.pep_status_gray));
             }
+            Drawable drawableForRating = PEpUtils.getDrawableForRatingRecipient(context, rating);
+            badge.setImageDrawable(drawableForRating);
         }
 
         private void renderColor(Rating rating) {

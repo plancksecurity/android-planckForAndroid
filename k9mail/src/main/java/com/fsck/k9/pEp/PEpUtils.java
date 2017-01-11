@@ -524,15 +524,29 @@ public class PEpUtils {
     public static Drawable getDrawableForRating(Context context, Rating rating) {
         if (rating.value != Rating.pEpRatingMistrust.value
                 && rating.value < Rating.pEpRatingReliable.value) {
-            return null;
+            return context.getResources().getDrawable(R.drawable.pep_status_gray);
         }else if (rating.value == Rating.pEpRatingMistrust.value) {
             return context.getResources().getDrawable(R.drawable.pep_status_red);
         } else if (rating.value >= Rating.pEpRatingTrusted.value){
             return context.getResources().getDrawable(R.drawable.pep_status_green);
         } else if (rating.value == Rating.pEpRatingReliable.value){
-            return context.getResources().getDrawable(R.drawable.pep_status_gray);
+            return context.getResources().getDrawable(R.drawable.pep_status_yellow);
         }
         return context.getResources().getDrawable(R.drawable.pep_status_gray);
+    }
+
+    public static Drawable getDrawableForRatingRecipient(Context context, Rating rating) {
+        if (rating.value != Rating.pEpRatingMistrust.value
+                && rating.value < Rating.pEpRatingReliable.value) {
+            return context.getResources().getDrawable(R.drawable.pep_status_gray_white);
+        }else if (rating.value == Rating.pEpRatingMistrust.value) {
+            return context.getResources().getDrawable(R.drawable.pep_status_red_white);
+        } else if (rating.value >= Rating.pEpRatingTrusted.value){
+            return context.getResources().getDrawable(R.drawable.pep_status_green_white);
+        } else if (rating.value == Rating.pEpRatingReliable.value){
+            return context.getResources().getDrawable(R.drawable.pep_status_yellow_white);
+        }
+        return context.getResources().getDrawable(R.drawable.pep_status_gray_white);
     }
 }
 
