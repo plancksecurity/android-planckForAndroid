@@ -17,9 +17,7 @@ import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
-import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.internet.MimeUtility;
-import com.fsck.k9.mailstore.LocalMessage;
 
 import org.apache.commons.io.IOUtils;
 import org.pEp.jniadapter.Identity;
@@ -142,7 +140,10 @@ public class PEpUtils {
     }
 
     static Address createAddress(Identity id) {
-        Address adr = new Address(id.address, id.username);
+        Address adr = new Address("", id.username);
+        if (id.address != null) {
+            adr = new Address(id.address, id.username);
+        }
         // Address() parses the address, eventually not setting it, therefore just a little sanity...
         // TODO: pEp check what happens if id.address == null beforehand
         if (adr.getAddress() == null && id.address != null)
