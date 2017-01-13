@@ -1433,13 +1433,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         if (!account.isUntrustedSever()) { //trusted server
                             Rating rating = PEpUtils.extractRating(message);
                             if (rating.equals(Rating.pEpRatingUndefined)) {
-                                result = decryptMessage((MimeMessage) message);
+                                result = decryptMessage((MimeMessage) message, account.isPEpDecryptionEnabled());
 
                             } else {
                                 result = new PEpProvider.DecryptResult((MimeMessage) message, rating, null);
                             }
                         } else {
-                            result = decryptMessage((MimeMessage) message);
+                            result = decryptMessage((MimeMessage) message, account.isPEpDecryptionEnabled());
                         }
 //                        catch (org.pEp.jniadapter.pEpMessageDiscarded pEpMessageDiscarded) {
 //                            Log.v("pEpJNI", "messageFinished: ", pEpMessageDiscarded);
@@ -1529,14 +1529,17 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Log.d(K9.LOG_TAG, "SYNC: Done fetching small messages for folder " + folder);
     }
 
-    private <T extends Message> PEpProvider.DecryptResult decryptMessage(MimeMessage message) {
-        PEpProvider.DecryptResult tempResult;
-        try {
-            tempResult = pEpProvider.decryptMessage(message);
-        } catch (AppCannotDecryptException error) {
-            tempResult = new PEpProvider.DecryptResult(message, Rating.pEpRatingUndefined, null);
+    private <T extends Message> PEpProvider.DecryptResult decryptMessage(MimeMessage message, Boolean isDecryptionEnabled) {
+        if (isDecryptionEnabled) {
+            PEpProvider.DecryptResult tempResult;
+            try {
+                tempResult = pEpProvider.decryptMessage(message);
+            } catch (AppCannotDecryptException error) {
+                tempResult = new PEpProvider.DecryptResult(message, Rating.pEpRatingUndefined, null);
+            }
+            return tempResult;
         }
-        return tempResult;
+        return new PEpProvider.DecryptResult(message, Rating.pEpRatingUndefined, null);
     }
 
     private <T extends Message> void deleteMessage(T message, Account account, String folder, LocalFolder localFolder) throws MessagingException {

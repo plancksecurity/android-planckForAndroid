@@ -508,5 +508,10 @@
             android:title="@string/pep_enable_privacy_protection"
             android:defaultValue="false"
             android:summary="@string/pep_account_privacy_protection_explanation" />
+        <CheckBoxPreference
+            android:persistent="false"
+            android:key="pep_disable_decryption"
+            android:title="@string/pep_enable_decryption"
+            android:defaultValue="false" />
     </PreferenceScreen>
 </PreferenceScreen>

@@ -39,7 +39,6 @@ import com.fsck.k9.activity.ChooseIdentity;
 import com.fsck.k9.activity.ColorPickerDialog;
 import com.fsck.k9.activity.K9PreferenceActivity;
 import com.fsck.k9.activity.ManageIdentities;
-import com.fsck.k9.crypto.OpenPgpApiHelper;
 import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mailstore.LocalFolder;
@@ -48,7 +47,6 @@ import com.fsck.k9.service.MailService;
 
 import org.openintents.openpgp.util.OpenPgpAppPreference;
 import org.openintents.openpgp.util.OpenPgpKeyPreference;
-import org.openintents.openpgp.util.OpenPgpUtils;
 
 
 public class AccountSettings extends K9PreferenceActivity {
@@ -130,6 +128,7 @@ public class AccountSettings extends K9PreferenceActivity {
 
     private static final String PREFERENCE_PEP_SAVE_ENCRYPTED_ON_SERVER = "pep_save_encrypted";
     private static final String PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION = "pep_disable_privacy_protection";
+    private static final String PREFERENCE_PEP_DISABLE_DECRYPTION = "pep_disable_decryption";
 
     private Account mAccount;
     private boolean mIsMoveCapable = false;
@@ -189,6 +188,7 @@ public class AccountSettings extends K9PreferenceActivity {
     // flag: save mails only encrypted on server side
     private CheckBoxPreference mPEpSaveEncrypted;
     private CheckBoxPreference mPEpDisablePrivacyProtection;
+    private CheckBoxPreference mPEpDisableDecryption;
 
     private PreferenceScreen mSearchScreen;
     private CheckBoxPreference mCloudSearchEnabled;
@@ -743,6 +743,9 @@ public class AccountSettings extends K9PreferenceActivity {
 
         mPEpDisablePrivacyProtection = (CheckBoxPreference) findPreference(PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION);
         mPEpDisablePrivacyProtection.setChecked(mAccount.ispEpPrivacyProtected());
+
+        mPEpDisableDecryption = (CheckBoxPreference) findPreference(PREFERENCE_PEP_DISABLE_DECRYPTION);
+        mPEpDisableDecryption.setChecked(mAccount.isPEpDecryptionEnabled());
     }
 
     private void removeListEntry(ListPreference listPreference, String remove) {
@@ -876,6 +879,7 @@ public class AccountSettings extends K9PreferenceActivity {
         // pEp:
         mAccount.setPEpStoreEncryptedOnServer(mPEpSaveEncrypted.isChecked());
         mAccount.setpEpPrivacyProtection(mPEpDisablePrivacyProtection.isChecked());
+        mAccount.setpEpDecryption(mPEpDisableDecryption.isChecked());
 
         // TODO: refresh folder list here
         mAccount.save(Preferences.getPreferences(this));

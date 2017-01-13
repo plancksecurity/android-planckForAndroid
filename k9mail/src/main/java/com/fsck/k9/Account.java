@@ -63,6 +63,7 @@ public class Account implements BaseAccount, StoreConfig {
      * This local folder is used to store messages to be sent.
      */
     public static final String OUTBOX = "K9MAIL_INTERNAL_OUTBOX";
+    private boolean pEpDecryption;
 
     public boolean ispEpPrivacyProtected() {
         return pEpPrivacyProtectected;
@@ -71,6 +72,14 @@ public class Account implements BaseAccount, StoreConfig {
 
     public void setpEpPrivacyProtection(boolean privacyProtection) {
          this.pEpPrivacyProtectected = privacyProtection;
+    }
+
+    public void setpEpDecryption(boolean pEpDecryption) {
+        this.pEpDecryption = pEpDecryption;
+    }
+
+    public Boolean isPEpDecryptionEnabled() {
+        return pEpDecryption;
     }
 
     public enum Expunge {
@@ -125,6 +134,7 @@ public class Account implements BaseAccount, StoreConfig {
 
     public static final boolean DEFAULT_PEP_ENC_ON_SERVER = true;
     public static final boolean DEFAULT_PEP_PRIVACY_PROTECTED = true;
+    public static final boolean DEFAULT_PEP_DECRYPT_ENABLED = true;
     /*
      * http://developer.android.com/design/style/color.html
      * Note: Order does matter, it's the order in which they will be picked.
@@ -359,6 +369,7 @@ public class Account implements BaseAccount, StoreConfig {
 
         pEpUntrustedServer = DEFAULT_PEP_ENC_ON_SERVER;
         pEpPrivacyProtectected = DEFAULT_PEP_PRIVACY_PROTECTED;
+        pEpDecryption = DEFAULT_PEP_DECRYPT_ENABLED;
         cacheChips();
     }
 
@@ -494,6 +505,7 @@ public class Account implements BaseAccount, StoreConfig {
         mAlwaysShowCcBcc = storage.getBoolean(mUuid + ".alwaysShowCcBcc", false);
         pEpUntrustedServer = storage.getBoolean(mUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
         pEpPrivacyProtectected = storage.getBoolean(mUuid + ".pEpPrivacyProtected", DEFAULT_PEP_PRIVACY_PROTECTED);
+        pEpDecryption = storage.getBoolean(mUuid + ".pEpDecryption", DEFAULT_PEP_DECRYPT_ENABLED);
         cacheChips();
 
         // Use email address as account description if necessary

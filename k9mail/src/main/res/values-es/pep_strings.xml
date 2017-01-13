@@ -35,7 +35,7 @@
     <string name="pep_from_format">Recibido de %1$s</string>
     <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Confiar en el servidor y guardar los mensajes sin proteger</string>
     <string name="pep_mistrust_server_and_store_mails_encrypted">Los correos que se encuentran en el servidor están protegidos</string>
-    <string name="pep_enable_privacy_protection">Proteger privadidad</string>
+    <string name="pep_enable_privacy_protection">Proteger privacidad</string>
     <string name="pep_explanation">Explicación</string>
     <string name="pep_suggestion">Sugerencia</string>
     <string name="pep_app_license">Licenciado bajo GNU General Public License v3</string>

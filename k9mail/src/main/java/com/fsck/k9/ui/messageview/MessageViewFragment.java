@@ -865,7 +865,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 .setPositiveButton(getString(R.string.okay_action), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        decryptMessage(message);
+                        if (mAccount.isPEpDecryptionEnabled()) {
+                            decryptMessage(message);
+                        }
                     }
                 })
                 .setNegativeButton(getString(R.string.cancel_action), null)
