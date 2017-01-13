@@ -1,6 +1,34 @@
 package com.fsck.k9.controller;
 
 
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -33,6 +61,7 @@ import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.cache.EmailProviderCache;
 import com.fsck.k9.helper.Contacts;
+import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.AuthenticationFailedException;
 import com.fsck.k9.mail.CertificateValidationException;
@@ -51,7 +80,6 @@ import com.fsck.k9.mail.Pusher;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.internet.MessageExtractor;
-import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.internet.MimeMessageHelper;
 import com.fsck.k9.mail.internet.MimeUtility;
@@ -66,8 +94,8 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.mailstore.LocalStore.PendingCommand;
 import com.fsck.k9.mailstore.MessageRemovalListener;
 import com.fsck.k9.mailstore.UnavailableStorageException;
-import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
@@ -82,34 +110,6 @@ import com.fsck.k9.search.SqlQueryBuilder;
 import org.pEp.jniadapter.AndroidHelper;
 import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.Sync;
-
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Starts a long running (application) Thread that will run thr ough commands
@@ -1433,15 +1433,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         if (!account.isUntrustedSever()) { //trusted server
                             Rating rating = PEpUtils.extractRating(message);
                             if (rating.equals(Rating.pEpRatingUndefined)) {
-                                tempResult = decryptMessage((MimeMessage) message);
-                                result = decryptMessage((MimeMessage) message, account.isPEpDecryptionEnabled());
+                                tempResult = decryptMessage((MimeMessage) message, account.isPEpDecryptionEnabled());
 
                             } else {
                                 tempResult = new PEpProvider.DecryptResult((MimeMessage) message, rating, null, null);
                             }
                         } else {
-                            tempResult = decryptMessage((MimeMessage) message);
-                            result = decryptMessage((MimeMessage) message, account.isPEpDecryptionEnabled());
+                            tempResult = decryptMessage((MimeMessage) message, account.isPEpDecryptionEnabled());
                         }
 
                         if (tempResult.flags != null) {
@@ -1547,7 +1545,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             }
             return tempResult;
         }
-        return new PEpProvider.DecryptResult(message, Rating.pEpRatingUndefined, null);
+        return new PEpProvider.DecryptResult(message, Rating.pEpRatingUndefined, null, null);
     }
 
     private <T extends Message> void deleteMessage(T message, Account account, String folder, LocalFolder localFolder) throws MessagingException {
