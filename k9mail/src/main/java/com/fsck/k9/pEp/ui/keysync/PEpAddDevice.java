@@ -151,6 +151,9 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
     private void changeTrustwords(String language) {
         trustwordsLanguage = language;
 
+        myIdentity = getpEp().updateIdentity(myIdentity);
+        partnerIdentity = getpEp().updateIdentity(partnerIdentity);
+
         String partnerFullTrustwords = PEpUtils.getTrustWords(getpEp(), partnerIdentity, language);
         String myFullTrustwords = PEpUtils.getTrustWords(getpEp(), myIdentity, language);
         String partnerShortTrustwords = PEpUtils.getShortTrustWords(getpEp(), partnerIdentity, language);
