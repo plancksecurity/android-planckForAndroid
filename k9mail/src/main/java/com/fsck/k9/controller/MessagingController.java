@@ -2599,7 +2599,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     private void processPendingSetFlag(PendingCommand command, Account account) throws MessagingException {
         String folder = command.arguments[0];
 
-        if (account.getErrorFolderName().equals(folder)) {
+        if (account.getErrorFolderName().equals(folder) || account.getOutboxFolderName().equals(folder)) {
             return;
         }
 
@@ -2641,7 +2641,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         String folder = command.arguments[0];
         String uid = command.arguments[1];
 
-        if (account.getErrorFolderName().equals(folder)) {
+        if (account.getErrorFolderName().equals(folder) || account.getOutboxFolderName().equals(folder)) {
             return;
         }
         if (K9.DEBUG)
