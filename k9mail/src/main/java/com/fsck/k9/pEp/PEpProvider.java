@@ -183,6 +183,12 @@ public interface PEpProvider {
 
     void printLog();
 
+    void loadOwnIdentities(ResultCallback<List<Identity>> callback);
+
+    void setIdentityFlag(Identity identity, Integer flags, CompletedCallback completedCallback);
+
+    void unsetIdentityFlag(Identity identity, Integer flags, CompletedCallback completedCallback);
+
     class KeyDetail {
         private final Address address;
         private final String detailMessage;
