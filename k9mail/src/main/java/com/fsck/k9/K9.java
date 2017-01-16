@@ -546,6 +546,7 @@ public class K9 extends Application {
 
     @Override
     public void onCreate() {
+        pEpInitEnvironment();
         if (ispEpSyncEnabled) {
             initSync();
         }
@@ -662,6 +663,10 @@ public class K9 extends Application {
         });
 
         notifyObservers();
+    }
+
+    private void pEpInitEnvironment() {
+        AndroidHelper.setup(this);
     }
 
     public PEpProvider getpEpSyncProvider() {

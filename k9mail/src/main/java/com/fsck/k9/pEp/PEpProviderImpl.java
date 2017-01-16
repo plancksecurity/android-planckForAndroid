@@ -42,7 +42,6 @@ import javax.inject.Inject;
  */
 public class PEpProviderImpl implements PEpProvider {
     private static final String TAG = "pEp";
-    private static boolean pEpInitialized = false;
     private final ThreadExecutor threadExecutor;
     private final PostExecutionThread postExecutionThread;
     private Context context;
@@ -54,17 +53,6 @@ public class PEpProviderImpl implements PEpProvider {
         this.postExecutionThread = postExecutionThread;
         this.context = context;
         createEngineInstanceIfNeeded();
-    }
-
-    public synchronized void setup(Context c) {
-        if (!pEpInitialized) {
-            AndroidHelper.setup(c);
-            pEpInitialized = true;
-        }
-
-        context = c;
-        createEngineInstanceIfNeeded();
-
     }
 
     @Override
@@ -245,14 +233,17 @@ public class PEpProviderImpl implements PEpProvider {
             if (isUsablePrivateKey(decReturn)) {
                 return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg), null);
             }
-            else return new DecryptResult(decMsg, decReturn.rating, null, decReturn.flags);
+           else return new DecryptResult(decMsg, decReturn.rating, null, decReturn.flags);
 //        } catch (pEpMessageConsume | pEpMessageIgnore pe) {
 //            // TODO: 15/11/16 deal with it as flag not exception
 //            //  throw pe;
 //            return null;
         }catch (Throwable t) {
             Log.e(TAG, "while decrypting message: "  + source.getSubject()
-                    + "\n" + source.getFrom()[0], t);
+                    + "\n" + source.getFrom()[0]
+                    + "\n" + source.getSentDate().toString()
+                    + "\n" + source.getMessageId(),
+                    t);
             throw new AppCannotDecryptException("Could not decrypt", t);
         } finally {
             if (srcMsg != null) srcMsg.close();
