@@ -3,6 +3,7 @@ package com.fsck.k9.pEp;
 import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 
@@ -521,6 +522,34 @@ public class PEpUtils {
             for (String cur : sv)
                 rt += cur + "; ";
         return rt;
+    }
+
+    public static Drawable getDrawableForRating(Context context, Rating rating) {
+        if (rating.value != Rating.pEpRatingMistrust.value
+                && rating.value < Rating.pEpRatingReliable.value) {
+            return context.getResources().getDrawable(R.drawable.pep_status_gray);
+        }else if (rating.value == Rating.pEpRatingMistrust.value) {
+            return context.getResources().getDrawable(R.drawable.pep_status_red);
+        } else if (rating.value >= Rating.pEpRatingTrusted.value){
+            return context.getResources().getDrawable(R.drawable.pep_status_green);
+        } else if (rating.value == Rating.pEpRatingReliable.value){
+            return context.getResources().getDrawable(R.drawable.pep_status_yellow);
+        }
+        return context.getResources().getDrawable(R.drawable.pep_status_gray);
+    }
+
+    public static Drawable getDrawableForRatingRecipient(Context context, Rating rating) {
+        if (rating.value != Rating.pEpRatingMistrust.value
+                && rating.value < Rating.pEpRatingReliable.value) {
+            return context.getResources().getDrawable(R.drawable.pep_status_gray_white);
+        }else if (rating.value == Rating.pEpRatingMistrust.value) {
+            return context.getResources().getDrawable(R.drawable.pep_status_red_white);
+        } else if (rating.value >= Rating.pEpRatingTrusted.value){
+            return context.getResources().getDrawable(R.drawable.pep_status_green_white);
+        } else if (rating.value == Rating.pEpRatingReliable.value){
+            return context.getResources().getDrawable(R.drawable.pep_status_yellow_white);
+        }
+        return context.getResources().getDrawable(R.drawable.pep_status_gray_white);
     }
 }
 

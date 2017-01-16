@@ -1,53 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="72dp"
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:id="@+id/recipientContainer">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/recipientContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="72dp"
+    android:paddingBottom="8dp"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="8dp">
 
     <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/buttonHandshake">
+
+        <ImageView
+            android:id="@+id/status_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginRight="8dp"
+            tools:visibility="visible"
+            tools:src="@drawable/pep_status_gray" />
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/status_badge"
             android:layout_toStartOf="@+id/buttonHandshake"
-            android:layout_centerVertical="true">
+            android:orientation="vertical">
 
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                tools:text="Medium Text"
+            <TextView
                 android:id="@+id/tvUsername"
-                android:layout_gravity="center_vertical"
-                />
-
-        <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                tools:text="Medium Text" />
+
+            <TextView
+                android:id="@+id/tvAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tvUsername"
+                android:layout_gravity="center_vertical"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 tools:text="Medium Text"
-                android:id="@+id/tvAddress"
-                android:layout_gravity="center_vertical"
-                tools:visibility="gone"
-                android:layout_below="@id/tvUsername"
-                />
-    </LinearLayout>
+                tools:visibility="gone" />
+        </LinearLayout>
 
+        </LinearLayout>
     <Button
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:text="@string/pep_handshake"
-            android:id="@+id/buttonHandshake"
-            android:layout_gravity="center"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"/>
-
+        android:id="@+id/buttonHandshake"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
+        android:text="@string/pep_handshake" />
 
 </RelativeLayout>
