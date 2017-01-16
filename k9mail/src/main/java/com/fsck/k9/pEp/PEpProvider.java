@@ -86,14 +86,6 @@ public interface PEpProvider {
     //TODO> When alias available check if it works correctly
     MimeMessage encryptMessageToSelf(MimeMessage source) throws MessagingException;
 
-    /**
-     * Helper for pEp setup. Smells funny to have it in an interface, but fits nowhere else.
-     * FIXME: How long can I use the context?
-     *
-     * @param c
-     */
-    void setup(Context c);
-
     void identityRating(Address address, ResultCallback<Rating> callback);
 
     /**

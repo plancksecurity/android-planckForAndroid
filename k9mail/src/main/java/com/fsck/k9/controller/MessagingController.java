@@ -201,7 +201,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     private void runInBackground() {
         Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-        pEpProvider = PEpProviderFactory.createProvider(context);
+        pEpProvider = PEpProviderFactory.createAndSetupProvider(context);
         while (!stopped) {
             String commandDescription = null;
             try {

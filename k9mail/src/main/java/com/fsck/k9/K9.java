@@ -550,6 +550,7 @@ public class K9 extends Application {
 
     @Override
     public void onCreate() {
+        pEpInitEnvironment();
         receiver = new DismissKeysyncDialogReceiver();
         filter = new IntentFilter();
         filter.addAction("KEYSYNC_DISMISS");
@@ -671,6 +672,10 @@ public class K9 extends Application {
         });
 
         notifyObservers();
+    }
+
+    private void pEpInitEnvironment() {
+        AndroidHelper.setup(this);
     }
 
     public PEpProvider getpEpSyncProvider() {
