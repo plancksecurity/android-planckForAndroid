@@ -23,13 +23,13 @@ import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
+import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 import com.fsck.k9.view.RecipientSelectView;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.RecipientSelectView.TokenListener;
 
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
-
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -494,7 +494,16 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
 //        mIgnoreOnPause = true;  // do *not* save state
         pEpUiCache.setRecipients(recipients);
-        PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom());
+
+        if (pEpRating.value == Rating.pEpRatingReliable.value) {
+            if (recipients.size() == 1) {
+                PEpTrustwords.actionRequestHandshake(activity, getFrom(), 0);
+            } else {
+                PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom());
+            }
+        } else {
+            PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom());
+        }
     }
 
     public Address getFromAddress() {
