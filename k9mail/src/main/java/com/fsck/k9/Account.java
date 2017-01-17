@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.util.Log;
+
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.Address;
@@ -63,6 +64,7 @@ public class Account implements BaseAccount, StoreConfig {
      * This local folder is used to store messages to be sent.
      */
     public static final String OUTBOX = "K9MAIL_INTERNAL_OUTBOX";
+    private boolean pEpSyncEnabled;
 
     public boolean ispEpPrivacyProtected() {
         return pEpPrivacyProtectected;
@@ -71,6 +73,14 @@ public class Account implements BaseAccount, StoreConfig {
 
     public void setpEpPrivacyProtection(boolean privacyProtection) {
          this.pEpPrivacyProtectected = privacyProtection;
+    }
+
+    public Boolean isPepSyncEnabled() {
+        return pEpSyncEnabled;
+    }
+
+    public void setPEpSyncAccount(Boolean pEpSyncEnabled) {
+        this.pEpSyncEnabled = pEpSyncEnabled;
     }
 
     public enum Expunge {
