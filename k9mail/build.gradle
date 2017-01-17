@@ -96,7 +96,7 @@ android {
 //        versionName '0.9.9.2'
         minSdkVersion 18
         targetSdkVersion 22
-
+        setProperty("archivesBaseName", "$version")
         generatedDensities = ['mdpi', 'hdpi', 'xhdpi']
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -187,8 +187,7 @@ android {
         variant.outputs.each { output ->
             output.outputFile = new File(
                     output.outputFile.parent,
-                    output.outputFile.name.replace("k9mail", "${variant.versionName}")
-                    .replace("release.apk", "-${variant.versionCode}.apk"))
+                    output.outputFile.name.replace("release.apk", "${variant.versionCode}.apk"))
         }
     }
 }
