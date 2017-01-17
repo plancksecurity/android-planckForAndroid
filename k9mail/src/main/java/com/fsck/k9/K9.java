@@ -201,6 +201,7 @@ public class K9 extends Application {
     private static boolean mConfirmDeleteStarred = false;
     private static boolean mConfirmSpam = false;
     private static boolean mConfirmDeleteFromNotification = true;
+    private static boolean mConfirmMarkAllRead = true;
 
     private static NotificationHideSubject sNotificationHideSubject = NotificationHideSubject.NEVER;
 
@@ -516,6 +517,7 @@ public class K9 extends Application {
         editor.putBoolean("confirmDeleteStarred", mConfirmDeleteStarred);
         editor.putBoolean("confirmSpam", mConfirmSpam);
         editor.putBoolean("confirmDeleteFromNotification", mConfirmDeleteFromNotification);
+        editor.putBoolean("confirmMarkAllRead", mConfirmMarkAllRead);
 
         editor.putString("sortTypeEnum", mSortType.name());
         editor.putBoolean("sortAscending", mSortAscending.get(mSortType));
@@ -881,6 +883,7 @@ public class K9 extends Application {
         mConfirmDeleteStarred = storage.getBoolean("confirmDeleteStarred", false);
         mConfirmSpam = storage.getBoolean("confirmSpam", false);
         mConfirmDeleteFromNotification = storage.getBoolean("confirmDeleteFromNotification", true);
+        mConfirmMarkAllRead = storage.getBoolean("confirmMarkAllRead", true);
 
         try {
             String value = storage.getString("sortTypeEnum", Account.DEFAULT_SORT_TYPE.name());
@@ -1370,6 +1373,14 @@ public class K9 extends Application {
 
     public static void setConfirmDeleteFromNotification(final boolean confirm) {
         mConfirmDeleteFromNotification = confirm;
+    }
+
+    public static boolean confirmMarkAllRead() {
+        return mConfirmMarkAllRead;
+    }
+
+    public static void setConfirmMarkAllRead(final boolean confirm) {
+        mConfirmMarkAllRead = confirm;
     }
 
     public static NotificationHideSubject getNotificationHideSubject() {

@@ -5,6 +5,22 @@
      Locale specific versions are kept in res/xml-<locale qualifier>/changelog.xml.
 -->
 <changelog>
+    <release version="5.202" versioncode="23220">
+        <change>Fixed bug where BCC header line was accidentally included in sent messages</change>
+        <change>Fixed problem with getting the list of IMAP folders</change>
+        <change>Always show subject in message header when split mode is active</change>
+        <change>Hide crypto status indicator in contact dropdown when no crypto provider is configured</change>
+        <change>Fixed button to expand CC/BCC recipients in dark theme</change>
+        <change>Fixed various crashes</change>
+    </release>
+    <release version="5.201" versioncode="23210">
+        <change>Fixed crash during database upgrade</change>
+        <change>Fixed various minor bugs</change>
+    </release>
+    <release version="5.200" versioncode="23200">
+        <change>Fixed bug with status display of signed messages</change>
+        <change>Updated translations</change>
+    </release>
     <release version="5.200-RC2" versioncode="23191">
         <change>Fixed crash when opening attached messages</change>
         <change>Don't crash when message list contains messages for which we couldn't extract a preview</change>

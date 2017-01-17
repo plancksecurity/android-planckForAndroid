@@ -590,7 +590,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     public void onDestroy() {
         super.onDestroy();
 
-        recipientPresenter.onActivityDestroy();
+        if (recipientPresenter != null)
+            recipientPresenter.onActivityDestroy();
     }
 
     /**
@@ -1122,6 +1123,11 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
+        
+        if (isFinishing()) {
+            return false;
+        }
+        
         getMenuInflater().inflate(R.menu.message_compose_option, menu);
 
         // Disable the 'Save' menu option if Drafts folder is set to -NONE-
@@ -1613,7 +1619,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 message.setUid(mMessageReference.getUid());
             }
 
-            boolean saveRemotely = recipientPresenter.isAllowSavingDraftRemotely();
+            // TODO more appropriate logic here? not sure
+            boolean saveRemotely = !recipientPresenter.getCurrentCryptoStatus().shouldUsePgpMessageBuilder();
             new SaveMessageTask(getApplicationContext(), mAccount, mContacts, mHandler,
                     message, mDraftId, saveRemotely).execute();
             if (mFinishAfterDraftSaved) {
