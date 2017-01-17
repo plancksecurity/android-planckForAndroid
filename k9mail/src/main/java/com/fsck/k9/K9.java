@@ -550,14 +550,12 @@ public class K9 extends Application {
 
     @Override
     public void onCreate() {
+        AndroidHelper.setup(this);
         receiver = new DismissKeysyncDialogReceiver();
         filter = new IntentFilter();
         filter.addAction("KEYSYNC_DISMISS");
         filter.setPriority(1);
         registerReceiver(receiver, filter);
-        if (ispEpSyncEnabled) {
-            initSync();
-        }
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
         }
@@ -794,6 +792,13 @@ public class K9 extends Application {
                 break;
             }
         }
+        ensureCurrentAccountLoaded();
+        if (ispEpSyncEnabled && currentAccount.isPepSyncEnabled()) {
+            initSync();
+        }
+    }
+
+    private void ensureCurrentAccountLoaded() {
         if (currentAccount == null)
             currentAccount = Preferences.getPreferences(K9.this).getDefaultAccount();
     }
