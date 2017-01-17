@@ -20,6 +20,7 @@ import android.os.Looper;
 import android.os.StrictMode;
 import android.text.format.Time;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
@@ -713,10 +714,13 @@ public class K9 extends Application {
                         break;
                     case SyncNotifyTimeout:
                         //Close handshake
+                        Toast.makeText(K9.this, R.string.import_dialog_error_title, Toast.LENGTH_SHORT).show();
                         break;
                     case SyncNotifyAcceptedDeviceAdded:
+                        Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show();
                         break;
                     case SyncNotifyAcceptedGroupCreated:
+                        Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
