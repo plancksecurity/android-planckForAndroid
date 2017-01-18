@@ -88,8 +88,8 @@ android {
 //        applicationId "com.fsck.k9"
 //        testApplicationId "com.fsck.k9.tests"
 
-//        versionCode 231220
-//        versionName '5.202'
+//        versionCode 23230
+//        versionName '5.203'
 
         applicationId "pep.android.k9"
         versionCode 44
