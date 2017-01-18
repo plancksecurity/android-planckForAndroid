@@ -201,7 +201,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     private void runInBackground() {
         Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-        pEpProvider = PEpProviderFactory.createProvider(context);
+        pEpProvider = PEpProviderFactory.createAndSetupProvider(context);
         while (!stopped) {
             String commandDescription = null;
             try {
@@ -1355,12 +1355,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     }
 
                     // commented out, we might need it again later...
-//                    if (account.getMaximumAutoDownloadMessageSize() > 0 &&
-//                    message.getSize() > account.getMaximumAutoDownloadMessageSize()) {
-//                        largeMessages.add(message);
-//                    } else {
+                    if (account.getMaximumAutoDownloadMessageSize() > 0 &&
+                    message.getSize() > account.getMaximumAutoDownloadMessageSize()
+                            || !account.isPEpDownloadEnabled()) {
+                        largeMessages.add(message);
+                    } else {
                         smallMessages.add(message);
-//                    }
+                    }
                 } catch (Exception e) {
                     Log.e(K9.LOG_TAG, "Error while storing downloaded message.", e);
                     addErrorMessage(account, null, e);
@@ -1433,13 +1434,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         if (!account.isUntrustedSever()) { //trusted server
                             Rating rating = PEpUtils.extractRating(message);
                             if (rating.equals(Rating.pEpRatingUndefined)) {
-                                result = decryptMessage((MimeMessage) message, account.isPEpDecryptionEnabled());
+                                result = decryptMessage((MimeMessage) message, account.isPEpDownloadEnabled());
 
                             } else {
                                 result = new PEpProvider.DecryptResult((MimeMessage) message, rating, null);
                             }
                         } else {
-                            result = decryptMessage((MimeMessage) message, account.isPEpDecryptionEnabled());
+                            result = decryptMessage((MimeMessage) message, account.isPEpDownloadEnabled());
                         }
 //                        catch (org.pEp.jniadapter.pEpMessageDiscarded pEpMessageDiscarded) {
 //                            Log.v("pEpJNI", "messageFinished: ", pEpMessageDiscarded);
