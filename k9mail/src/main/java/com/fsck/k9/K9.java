@@ -20,6 +20,7 @@ import android.os.Looper;
 import android.os.StrictMode;
 import android.text.format.Time;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
@@ -558,9 +559,6 @@ public class K9 extends Application {
         filter.addAction("KEYSYNC_DISMISS");
         filter.setPriority(1);
         registerReceiver(receiver, filter);
-        if (ispEpSyncEnabled) {
-            initSync();
-        }
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
         }
@@ -722,10 +720,13 @@ public class K9 extends Application {
                         break;
                     case SyncNotifyTimeout:
                         //Close handshake
+                        Toast.makeText(K9.this, R.string.import_dialog_error_title, Toast.LENGTH_SHORT).show();
                         break;
                     case SyncNotifyAcceptedDeviceAdded:
+                        Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show();
                         break;
                     case SyncNotifyAcceptedGroupCreated:
+                        Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -801,6 +802,13 @@ public class K9 extends Application {
                 break;
             }
         }
+        ensureCurrentAccountLoaded();
+        if (ispEpSyncEnabled && currentAccount.isPepSyncEnabled()) {
+            initSync();
+        }
+    }
+
+    private void ensureCurrentAccountLoaded() {
         if (currentAccount == null)
             currentAccount = Preferences.getPreferences(K9.this).getDefaultAccount();
     }

@@ -513,5 +513,10 @@
             android:key="pep_disable_decryption"
             android:title="@string/pep_enable_decryption"
             android:defaultValue="false" />
+        <CheckBoxPreference
+            android:persistent="false"
+            android:key="pep_enable_sync_account"
+            android:title="@string/pep_enable_sync_account"
+            android:defaultValue="false" />
     </PreferenceScreen>
 </PreferenceScreen>
