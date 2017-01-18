@@ -53,6 +53,16 @@ public class MimeMessageParseTest {
     }
 
     @Test
+    public void headerFieldNameWithSpace() throws Exception {
+        MimeMessage msg = parseWithoutRecurse(toStream("" +
+                "From : <adam@example.org>\r\n" +
+                "\r\n" +
+                "Body"));
+
+        assertEquals("<adam@example.org>", msg.getHeader("From")[0]);
+    }
+
+    @Test
     public void testSinglePart8BitRecurse() throws Exception {
         MimeMessage msg = parseWithRecurse(toStream(
                 "From: <adam@example.org>\r\n" +
@@ -128,8 +138,8 @@ public class MimeMessageParseTest {
                         "");
     }
 
-    @Test(expected = UnsupportedContentTransferEncodingException.class)
-    public void testSinglePartUnknownEncoding_throwsUnsupportedEncodingException() throws Exception {
+    @Test
+    public void decodeBody_withUnknownEncoding_shouldReturnUnmodifiedBodyContents() throws Exception {
         MimeMessage msg = parseWithoutRecurse(toStream(
                 "From: <adam@example.org>\r\n" +
                         "To: <eva@example.org>\r\n" +
@@ -140,7 +150,9 @@ public class MimeMessageParseTest {
                         "\r\n" +
                         "dGhpcyBpcyBzb21lIG1vcmUgdGVzdCB0ZXh0Lg==\r\n"));
 
-        MimeUtility.decodeBody(msg.getBody());
+        InputStream inputStream = MimeUtility.decodeBody(msg.getBody());
+
+        assertEquals("dGhpcyBpcyBzb21lIG1vcmUgdGVzdCB0ZXh0Lg==\r\n", streamToString(inputStream));
     }
 
     @Test

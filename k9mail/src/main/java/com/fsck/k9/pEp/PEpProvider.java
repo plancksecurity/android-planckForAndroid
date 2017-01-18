@@ -8,6 +8,7 @@ import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.pEp.ui.HandshakeData;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
+import org.pEp.jniadapter.DecryptFlags;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
 import org.pEp.jniadapter.Rating;
@@ -84,14 +85,6 @@ public interface PEpProvider {
 
     //TODO> When alias available check if it works correctly
     MimeMessage encryptMessageToSelf(MimeMessage source) throws MessagingException;
-
-    /**
-     * Helper for pEp setup. Smells funny to have it in an interface, but fits nowhere else.
-     * FIXME: How long can I use the context?
-     *
-     * @param c
-     */
-    void setup(Context c);
 
     void identityRating(Address address, ResultCallback<Rating> callback);
 
@@ -186,6 +179,16 @@ public interface PEpProvider {
 
     void resetTrust(Identity id, CompletedCallback completedCallback);
 
+    String getLog();
+
+    void printLog();
+
+    void loadOwnIdentities(ResultCallback<List<Identity>> callback);
+
+    void setIdentityFlag(Identity identity, Integer flags, CompletedCallback completedCallback);
+
+    void unsetIdentityFlag(Identity identity, Integer flags, CompletedCallback completedCallback);
+
     class KeyDetail {
         private final Address address;
         private final String detailMessage;
@@ -212,11 +215,13 @@ public interface PEpProvider {
 
     class DecryptResult {
         public final KeyDetail keyDetails;
+        public final DecryptFlags flags;
 
-        public DecryptResult(MimeMessage msg, Rating rating, KeyDetail keyDetails) {
+        public DecryptResult(MimeMessage msg, Rating rating, KeyDetail keyDetails, DecryptFlags flags) {
             this.msg = msg;
             this.rating = rating;
             this.keyDetails = keyDetails;
+            this.flags = flags;
         }
 
         final public MimeMessage msg;

@@ -882,7 +882,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void decryptMessage(LocalMessage message) {
-        PEpProvider pEpProvider = PEpProviderFactory.createProvider(getActivity());
+        PEpProvider pEpProvider = PEpProviderFactory.createAndSetupProvider(getActivity());
         try {
             PEpProvider.DecryptResult decryptResult = pEpProvider.decryptMessage(mMessage);
             MimeMessage decryptedMessage = decryptResult.msg;

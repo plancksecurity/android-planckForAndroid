@@ -4,6 +4,7 @@ package com.fsck.k9;
 import android.app.Activity;
 import android.app.Application;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -19,10 +20,12 @@ import android.os.Looper;
 import android.os.StrictMode;
 import android.text.format.Time;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.MessageCompose;
+import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.UpgradeDatabases;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
@@ -40,7 +43,7 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
-import com.fsck.k9.pEp.ui.pEpAddDevice;
+import com.fsck.k9.pEp.ui.keysync.PEpAddDevice;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.UnreadWidgetProvider;
@@ -71,9 +74,11 @@ import java.util.concurrent.SynchronousQueue;
 public class K9 extends Application {
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PEpProvider pEpProvider, pEpSyncProvider;
-    boolean ispEpSyncEnabled = false;
+    final boolean ispEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
     private Account currentAccount;
     private ApplicationComponent component;
+    private DismissKeysyncDialogReceiver receiver;
+    private IntentFilter filter;
 
     /**
      * Components that are interested in knowing when the K9 instance is
@@ -197,6 +202,7 @@ public class K9 extends Application {
     private static boolean mConfirmDeleteStarred = false;
     private static boolean mConfirmSpam = false;
     private static boolean mConfirmDeleteFromNotification = true;
+    private static boolean mConfirmMarkAllRead = true;
 
     private static NotificationHideSubject sNotificationHideSubject = NotificationHideSubject.NEVER;
 
@@ -512,6 +518,7 @@ public class K9 extends Application {
         editor.putBoolean("confirmDeleteStarred", mConfirmDeleteStarred);
         editor.putBoolean("confirmSpam", mConfirmSpam);
         editor.putBoolean("confirmDeleteFromNotification", mConfirmDeleteFromNotification);
+        editor.putBoolean("confirmMarkAllRead", mConfirmMarkAllRead);
 
         editor.putString("sortTypeEnum", mSortType.name());
         editor.putBoolean("sortAscending", mSortAscending.get(mSortType));
@@ -546,9 +553,12 @@ public class K9 extends Application {
 
     @Override
     public void onCreate() {
-        if (ispEpSyncEnabled) {
-            initSync();
-        }
+        pEpInitEnvironment();
+        receiver = new DismissKeysyncDialogReceiver();
+        filter = new IntentFilter();
+        filter.addAction("KEYSYNC_DISMISS");
+        filter.setPriority(1);
+        registerReceiver(receiver, filter);
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
         }
@@ -664,6 +674,10 @@ public class K9 extends Application {
         notifyObservers();
     }
 
+    private void pEpInitEnvironment() {
+        AndroidHelper.setup(this);
+    }
+
     public PEpProvider getpEpSyncProvider() {
         if (ispEpSyncEnabled) return pEpSyncProvider;
         else return pEpProvider;
@@ -675,7 +689,46 @@ public class K9 extends Application {
 
             @Override
             public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
+                switch (signal) {
+                    case SyncNotifyUndefined:
+                        break;
+                    case SyncNotifyInitAddOurDevice:
+                    case SyncNotifyInitAddOtherDevice:
+                    case SyncNotifyInitFormGroup:
+                        Log.i("PEPJNI", "showHandshake: " + signal.name() + " " + myself.toString() + "\n::\n" + partner.toString());
 
+                        String myTrust = PEpUtils.getShortTrustWords(pEpSyncProvider, myself);
+                        String theirTrust = PEpUtils.getShortTrustWords(pEpSyncProvider, partner);
+                        String trust;
+                        if (myself.fpr.compareTo(partner.fpr) > 0) {
+                            trust = theirTrust + myTrust;
+                        } else {
+                            trust = myTrust + theirTrust;
+                        }
+
+                        Context context = K9.this.getApplicationContext();
+                        Intent syncTrustowordsActivity = PEpAddDevice.getActionRequestHandshake(context, trust, myself, partner);
+                        syncTrustowordsActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(context, 22, syncTrustowordsActivity, 0);
+                        try {
+                            pendingIntent.send();
+                        }
+                        catch (PendingIntent.CanceledException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        break;
+                    case SyncNotifyTimeout:
+                        //Close handshake
+                        Toast.makeText(K9.this, R.string.import_dialog_error_title, Toast.LENGTH_SHORT).show();
+                        break;
+                    case SyncNotifyAcceptedDeviceAdded:
+                        Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show();
+                        break;
+                    case SyncNotifyAcceptedGroupCreated:
+                        Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show();
+                        break;
+                }
             }
 
 //            @Override
@@ -698,7 +751,7 @@ public class K9 extends Application {
 //                        }
 //
 //                        Context context = K9.this.getApplicationContext();
-//                        Intent syncTrustowordsActivity = pEpAddDevice.getActionRequestHandshake(context, trust, partner);
+//                        Intent syncTrustowordsActivity = PEpAddDevice.getActionRequestHandshake(context, trust, partner);
 //                        syncTrustowordsActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //                        PendingIntent pendingIntent = PendingIntent.getActivity(context, 22, syncTrustowordsActivity, 0);
 //                        try {
@@ -749,6 +802,13 @@ public class K9 extends Application {
                 break;
             }
         }
+        ensureCurrentAccountLoaded();
+        if (ispEpSyncEnabled && currentAccount.isPepSyncEnabled()) {
+            initSync();
+        }
+    }
+
+    private void ensureCurrentAccountLoaded() {
         if (currentAccount == null)
             currentAccount = Preferences.getPreferences(K9.this).getDefaultAccount();
     }
@@ -831,6 +891,7 @@ public class K9 extends Application {
         mConfirmDeleteStarred = storage.getBoolean("confirmDeleteStarred", false);
         mConfirmSpam = storage.getBoolean("confirmSpam", false);
         mConfirmDeleteFromNotification = storage.getBoolean("confirmDeleteFromNotification", true);
+        mConfirmMarkAllRead = storage.getBoolean("confirmMarkAllRead", true);
 
         try {
             String value = storage.getString("sortTypeEnum", Account.DEFAULT_SORT_TYPE.name());
@@ -1322,6 +1383,14 @@ public class K9 extends Application {
         mConfirmDeleteFromNotification = confirm;
     }
 
+    public static boolean confirmMarkAllRead() {
+        return mConfirmMarkAllRead;
+    }
+
+    public static void setConfirmMarkAllRead(final boolean confirm) {
+        mConfirmMarkAllRead = confirm;
+    }
+
     public static NotificationHideSubject getNotificationHideSubject() {
         return sNotificationHideSubject;
     }
@@ -1635,4 +1704,15 @@ public class K9 extends Application {
         return component;
     }
 
+    public class DismissKeysyncDialogReceiver extends BroadcastReceiver {
+        public DismissKeysyncDialogReceiver() {
+        }
+
+        @Override
+        public void onReceive(final Context context, Intent intent) {
+            Intent messageListIntent = MessageList.shortcutIntent(context, currentAccount.getInboxFolderName());
+            messageListIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(messageListIntent);
+        }
+    }
 }
