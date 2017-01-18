@@ -745,7 +745,7 @@ public class AccountSettings extends K9PreferenceActivity {
         mPEpDisablePrivacyProtection.setChecked(mAccount.ispEpPrivacyProtected());
 
         mPEpDisableDecryption = (CheckBoxPreference) findPreference(PREFERENCE_PEP_DISABLE_DECRYPTION);
-        mPEpDisableDecryption.setChecked(mAccount.isPEpDecryptionEnabled());
+        mPEpDisableDecryption.setChecked(mAccount.isPEpDownloadEnabled());
     }
 
     private void removeListEntry(ListPreference listPreference, String remove) {

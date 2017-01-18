@@ -78,7 +78,7 @@ public class Account implements BaseAccount, StoreConfig {
         this.pEpDecryption = pEpDecryption;
     }
 
-    public Boolean isPEpDecryptionEnabled() {
+    public Boolean isPEpDownloadEnabled() {
         return pEpDecryption;
     }
 
