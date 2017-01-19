@@ -672,6 +672,11 @@ public class K9 extends Application {
         });
 
         notifyObservers();
+
+        ensureCurrentAccountLoaded();
+        if (ispEpSyncEnabled && currentAccount.isPepSyncEnabled()) {
+            initSync();
+        }
     }
 
     private void pEpInitEnvironment() {
@@ -801,10 +806,6 @@ public class K9 extends Application {
             if (currentAccount != null) {
                 break;
             }
-        }
-        ensureCurrentAccountLoaded();
-        if (ispEpSyncEnabled && currentAccount.isPepSyncEnabled()) {
-            initSync();
         }
     }
 

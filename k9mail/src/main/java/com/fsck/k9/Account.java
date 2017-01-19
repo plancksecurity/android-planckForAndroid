@@ -64,6 +64,7 @@ public class Account implements BaseAccount, StoreConfig {
      * This local folder is used to store messages to be sent.
      */
     public static final String OUTBOX = "K9MAIL_INTERNAL_OUTBOX";
+    private final boolean DEFAULT_PEP_SYNC_ENABLED = true;
     private boolean pEpSyncEnabled;
     private boolean pEpDownload;
 
@@ -379,6 +380,7 @@ public class Account implements BaseAccount, StoreConfig {
 
         pEpUntrustedServer = DEFAULT_PEP_ENC_ON_SERVER;
         pEpPrivacyProtectected = DEFAULT_PEP_PRIVACY_PROTECTED;
+        pEpSyncEnabled = DEFAULT_PEP_SYNC_ENABLED;
         pEpDownload = DEFAULT_PEP_DECRYPT_ENABLED;
         cacheChips();
     }
@@ -516,6 +518,7 @@ public class Account implements BaseAccount, StoreConfig {
         pEpUntrustedServer = storage.getBoolean(mUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
         pEpPrivacyProtectected = storage.getBoolean(mUuid + ".pEpPrivacyProtected", DEFAULT_PEP_PRIVACY_PROTECTED);
         pEpDownload = storage.getBoolean(mUuid + ".pEpDownload", DEFAULT_PEP_DECRYPT_ENABLED);
+        pEpSyncEnabled = storage.getBoolean(mUuid + ".pEpSync", DEFAULT_PEP_SYNC_ENABLED);
         cacheChips();
 
         // Use email address as account description if necessary
@@ -796,6 +799,7 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putBoolean(mUuid + ".pEpStoreEncryptedOnServer", pEpUntrustedServer);
         editor.putBoolean(mUuid + ".pEpPrivacyProtected", pEpPrivacyProtectected);
         editor.putBoolean(mUuid + ".pEpDownload", pEpDownload);
+        editor.putBoolean(mUuid + ".pEpSync", pEpSyncEnabled);
 
         for (NetworkType type : NetworkType.values()) {
             Boolean useCompression = compressionMap.get(type);
