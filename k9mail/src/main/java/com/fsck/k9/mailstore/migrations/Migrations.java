@@ -67,6 +67,8 @@ public class Migrations {
             case 55:
                 MigrationTo56.renamepEpRatingColumn(db);
                 MigrationTo56.cleanUpFtsTable(db);
+            case 56:
+                MigrationTo57.fixDataLocationForMultipartParts(db);
         }
     }
 }
