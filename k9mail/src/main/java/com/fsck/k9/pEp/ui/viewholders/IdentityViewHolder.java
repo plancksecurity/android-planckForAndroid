@@ -38,7 +38,7 @@ public class IdentityViewHolder extends RecyclerView.ViewHolder {
     private void renderIdentity(final Identity keyItem) {
         identityUserName.setText(keyItem.username);
         identityAddress.setText(keyItem.address);
-        boolean flagged = IdentityFlags.PEPIdfNotForSync.value == keyItem.flags;
+        boolean flagged = IdentityFlags.PEPIdfNotForSync.value != keyItem.flags;
         isBlacklistedCheckbox.setChecked(flagged);
         isBlacklistedCheckbox.setOnClickListener(v -> {
             boolean checked = ((CheckBox) v).isChecked();
