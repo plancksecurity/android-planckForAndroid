@@ -1052,7 +1052,7 @@ public class MimeUtility {
                 inputStream = rawInputStream;
             }
         } else {
-            inputStream = body.getInputStream();
+            inputStream = null;
         }
 
         return inputStream;
