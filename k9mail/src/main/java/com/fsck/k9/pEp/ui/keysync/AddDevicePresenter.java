@@ -90,7 +90,7 @@ public class AddDevicePresenter implements Presenter {
     }
 
     public void identityCheckStatusChanged(Identity identity, Boolean checked) {
-        if (checked) {
+        if (!checked) {
             pEpProvider.setIdentityFlag(identity, IdentityFlags.PEPIdfNotForSync.value, new PEpProvider.CompletedCallback() {
                 @Override
                 public void onComplete() {
