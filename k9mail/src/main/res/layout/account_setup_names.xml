@@ -41,6 +41,7 @@
             android:id="@+id/pep_enable_sync_account"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:checked="true"
             android:text="@string/pep_enable_sync_account" />
     </LinearLayout>
 </ScrollView>
