@@ -1,8 +1,10 @@
 package com.fsck.k9.pEp.ui.keysync;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +18,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
+import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
@@ -63,6 +66,8 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
     private String shortTrustwords = "";
     private Identity partnerIdentity;
     private Identity myIdentity;
+    private DismissKeysyncDialogReceiver receiver;
+    private IntentFilter filter;
 
     public static Intent getActionRequestHandshake(Context context, String trustwords, Identity myself, Identity partner) {
         Intent intent = new Intent(context, PEpAddDevice.class);
@@ -78,6 +83,12 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final Intent intent = getIntent();
+
+        receiver = new DismissKeysyncDialogReceiver();
+        filter = new IntentFilter();
+        filter.addAction("KEYSYNC_DISMISS");
+        filter.setPriority(1);
+        registerReceiver(receiver, filter);
 
         setContentView(R.layout.pep_add_device);
         ButterKnife.bind(this);
@@ -279,4 +290,13 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
         });
     }
 
+    public class DismissKeysyncDialogReceiver extends BroadcastReceiver {
+        public DismissKeysyncDialogReceiver() {
+        }
+
+        @Override
+        public void onReceive(final Context context, Intent intent) {
+            PEpAddDevice.this.finish();
+        }
+    }
 }
