@@ -266,7 +266,7 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
 
     private void loadTrustwords() {
         //Actually what is heavy is update identity and myself.
-        getpEp().trustwords(myIdentity, partnerIdentity, trustwordsLanguage, new PEpProvider.ResultCallback<HandshakeData>() {
+        getpEp().obtainTrustwords(myIdentity, partnerIdentity, trustwordsLanguage, new PEpProvider.ResultCallback<HandshakeData>() {
             @Override
             public void onLoaded(final HandshakeData handshakeData) {
                 fullTrustwords = handshakeData.getFullTrustwords();

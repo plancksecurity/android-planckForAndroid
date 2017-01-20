@@ -653,6 +653,24 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
+    public void obtainTrustwords(Identity self, Identity other, String lang, ResultCallback<HandshakeData> callback) {
+        threadExecutor.execute(() -> {
+            Engine engine = null;
+            try {
+                String longTrustwords = engine.get_trustwords(self, other, lang, true);
+                String shortTrustwords = engine.get_trustwords(self, other, lang, false);
+                notifyLoaded(new HandshakeData(longTrustwords, shortTrustwords, self, other), callback);
+            } catch (Exception e) {
+                notifyError(e, callback);
+            } finally {
+                if (engine != null) {
+                    engine.close();
+                }
+            }
+        });
+    }
+
+    @Override
     public void close() {
         if (engine != null) engine.close();
     }

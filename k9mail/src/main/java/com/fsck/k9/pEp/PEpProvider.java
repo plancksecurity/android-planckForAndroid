@@ -112,6 +112,9 @@ public interface PEpProvider {
     void trustwords(Identity myself, Identity partner, String lang,
                     ResultCallback<HandshakeData> callback);
 
+    void obtainTrustwords(Identity myself, Identity partner, String lang,
+                    ResultCallback<HandshakeData> callback);
+
     /**
      * Close the engine/session associated to the provider
      */
