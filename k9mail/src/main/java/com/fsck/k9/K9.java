@@ -676,11 +676,6 @@ public class K9 extends Application {
         });
 
         notifyObservers();
-
-        ensureCurrentAccountLoaded();
-        if (ispEpSyncEnabled && currentAccount.isPepSyncEnabled()) {
-            initSync();
-        }
     }
 
     private void pEpInitEnvironment() {
@@ -811,11 +806,6 @@ public class K9 extends Application {
                 break;
             }
         }
-    }
-
-    private void ensureCurrentAccountLoaded() {
-        if (currentAccount == null)
-            currentAccount = Preferences.getPreferences(K9.this).getDefaultAccount();
     }
 
     private void pEpSetupUiEngineSession() {
