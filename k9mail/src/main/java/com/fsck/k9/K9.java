@@ -20,6 +20,7 @@ import android.os.Looper;
 import android.os.StrictMode;
 import android.text.format.Time;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
@@ -201,6 +202,7 @@ public class K9 extends Application {
     private static boolean mConfirmDeleteStarred = false;
     private static boolean mConfirmSpam = false;
     private static boolean mConfirmDeleteFromNotification = true;
+    private static boolean mConfirmMarkAllRead = true;
 
     private static NotificationHideSubject sNotificationHideSubject = NotificationHideSubject.NEVER;
 
@@ -516,6 +518,7 @@ public class K9 extends Application {
         editor.putBoolean("confirmDeleteStarred", mConfirmDeleteStarred);
         editor.putBoolean("confirmSpam", mConfirmSpam);
         editor.putBoolean("confirmDeleteFromNotification", mConfirmDeleteFromNotification);
+        editor.putBoolean("confirmMarkAllRead", mConfirmMarkAllRead);
 
         editor.putString("sortTypeEnum", mSortType.name());
         editor.putBoolean("sortAscending", mSortAscending.get(mSortType));
@@ -559,9 +562,6 @@ public class K9 extends Application {
         filter.addAction("KEYSYNC_DISMISS");
         filter.setPriority(1);
         registerReceiver(receiver, filter);
-        if (ispEpSyncEnabled) {
-            initSync();
-        }
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
         }
@@ -675,6 +675,11 @@ public class K9 extends Application {
         });
 
         notifyObservers();
+
+        ensureCurrentAccountLoaded();
+        if (ispEpSyncEnabled && currentAccount.isPepSyncEnabled()) {
+            initSync();
+        }
     }
 
     private void pEpInitEnvironment() {
@@ -723,10 +728,13 @@ public class K9 extends Application {
                         break;
                     case SyncNotifyTimeout:
                         //Close handshake
+                        Toast.makeText(K9.this, R.string.import_dialog_error_title, Toast.LENGTH_SHORT).show();
                         break;
                     case SyncNotifyAcceptedDeviceAdded:
+                        Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show();
                         break;
                     case SyncNotifyAcceptedGroupCreated:
+                        Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -802,6 +810,9 @@ public class K9 extends Application {
                 break;
             }
         }
+    }
+
+    private void ensureCurrentAccountLoaded() {
         if (currentAccount == null)
             currentAccount = Preferences.getPreferences(K9.this).getDefaultAccount();
     }
@@ -884,6 +895,7 @@ public class K9 extends Application {
         mConfirmDeleteStarred = storage.getBoolean("confirmDeleteStarred", false);
         mConfirmSpam = storage.getBoolean("confirmSpam", false);
         mConfirmDeleteFromNotification = storage.getBoolean("confirmDeleteFromNotification", true);
+        mConfirmMarkAllRead = storage.getBoolean("confirmMarkAllRead", true);
 
         try {
             String value = storage.getString("sortTypeEnum", Account.DEFAULT_SORT_TYPE.name());
@@ -1373,6 +1385,14 @@ public class K9 extends Application {
 
     public static void setConfirmDeleteFromNotification(final boolean confirm) {
         mConfirmDeleteFromNotification = confirm;
+    }
+
+    public static boolean confirmMarkAllRead() {
+        return mConfirmMarkAllRead;
+    }
+
+    public static void setConfirmMarkAllRead(final boolean confirm) {
+        mConfirmMarkAllRead = confirm;
     }
 
     public static NotificationHideSubject getNotificationHideSubject() {

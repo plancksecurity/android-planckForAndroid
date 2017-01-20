@@ -2,10 +2,10 @@
 package com.fsck.k9.mail;
 
 import android.support.annotation.VisibleForTesting;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
+import android.text.TextUtils;
+import android.text.util.Rfc822Token;
+import android.text.util.Rfc822Tokenizer;
+import android.util.Log;
 
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.codec.EncoderUtil;
@@ -13,10 +13,10 @@ import org.apache.james.mime4j.dom.address.Mailbox;
 import org.apache.james.mime4j.dom.address.MailboxList;
 import org.apache.james.mime4j.field.address.AddressBuilder;
 
-import android.text.TextUtils;
-import android.text.util.Rfc822Token;
-import android.text.util.Rfc822Tokenizer;
-import android.util.Log;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import static com.fsck.k9.mail.K9MailLib.LOG_TAG;
 
@@ -134,7 +134,7 @@ public class Address implements Serializable {
      * @return An array of 0 or more Addresses.
      */
     public static Address[] parse(String addressList) {
-        if (TextUtils.isEmpty(addressList)) {
+        if (TextUtils.isEmpty(addressList) || addressList.length() <= 5) {
             return EMPTY_ADDRESS_ARRAY;
         }
         List<Address> addresses = new ArrayList<Address>();
@@ -173,7 +173,10 @@ public class Address implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = mAddress.hashCode();
+        int hash = 0;
+        if (mAddress != null) {
+            hash += mAddress.hashCode();
+        }
         if (mPersonal != null) {
             hash += 3 * mPersonal.hashCode();
         }

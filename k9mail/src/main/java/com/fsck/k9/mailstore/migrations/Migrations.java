@@ -66,6 +66,7 @@ public class Migrations {
                 MigrationTo55.createFtsSearchTable(db, migrationsHelper);
             case 55:
                 MigrationTo56.renamepEpRatingColumn(db);
+                MigrationTo56.cleanUpFtsTable(db);
         }
     }
 }

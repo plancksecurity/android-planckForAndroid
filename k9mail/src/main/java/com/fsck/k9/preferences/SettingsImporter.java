@@ -1,5 +1,26 @@
 package com.fsck.k9.preferences;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
+
+import com.fsck.k9.Account;
+import com.fsck.k9.Identity;
+import com.fsck.k9.K9;
+import com.fsck.k9.Preferences;
+import com.fsck.k9.mail.AuthType;
+import com.fsck.k9.mail.ConnectionSecurity;
+import com.fsck.k9.mail.ServerSettings;
+import com.fsck.k9.mail.Transport;
+import com.fsck.k9.mail.filter.Base64;
+import com.fsck.k9.mail.store.RemoteStore;
+import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.preferences.Settings.InvalidSettingValueException;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -9,30 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.util.Log;
-
-import com.fsck.k9.Account;
-import com.fsck.k9.Identity;
-import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
-import com.fsck.k9.mail.Address;
-import com.fsck.k9.mail.AuthType;
-import com.fsck.k9.mail.ConnectionSecurity;
-import com.fsck.k9.mail.ServerSettings;
-import com.fsck.k9.mail.Transport;
-import com.fsck.k9.mail.filter.Base64;
-import com.fsck.k9.mail.store.RemoteStore;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpProviderFactory;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.preferences.Settings.InvalidSettingValueException;
 
 public class SettingsImporter {
 
@@ -450,8 +447,16 @@ public class SettingsImporter {
 
         // Write account settings
         for (Map.Entry<String, String> setting : writeSettings.entrySet()) {
+            //TODO if map key identity and find map signature, then change k9 for pepe
             String key = accountKeyPrefix + setting.getKey();
-            String value = setting.getValue();
+            String value = "";
+            if (setting.getKey().equals("identity")) {
+                if(setting.getValue().contains("K-9")) {
+                    value = setting.getValue().replace("K-9", "p≡p");
+                }
+            } else {
+                value = setting.getValue();
+            }
             putString(editor, key, value);
         }
 
