@@ -42,8 +42,8 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
 
     public static final String ACTION_SHOW_PEP_TRUSTWORDS = "com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS";
     private static final String TRUSTWORDS = "trustwordsKey";
-    private static final String PARTNER_ADRESS = "partnerAdress";
-    private static final String PARTNER_USER_ID = "partnerUserUd";
+    private static final String MYSELF = "partnerAdress";
+    private static final String PARTNER = "partnerUserUd";
     private static final String MY_ADRESS = "myAddress";
 
     @Inject AddDevicePresenter presenter;
@@ -68,9 +68,8 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
         Intent intent = new Intent(context, PEpAddDevice.class);
         intent.setAction(ACTION_SHOW_PEP_TRUSTWORDS);
         intent.putExtra(TRUSTWORDS, trustwords);
-        intent.putExtra(PARTNER_USER_ID, partner.user_id);
-        intent.putExtra(PARTNER_ADRESS, partner.address);
-        intent.putExtra(MY_ADRESS, myself.address);
+        intent.putExtra(PARTNER, partner);
+        intent.putExtra(MYSELF, myself);
         return intent;
 
     }
@@ -89,14 +88,11 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
             if (intent.hasExtra(TRUSTWORDS)) {
                 tvTrustwords.setText(getIntent().getStringExtra(TRUSTWORDS));
             }
-            if (intent.hasExtra(PARTNER_ADRESS) && intent.hasExtra(PARTNER_USER_ID)) {
-                String partnerUserId = intent.getStringExtra(PARTNER_USER_ID);
-                String partnerAddress = intent.getStringExtra(PARTNER_ADRESS);
-                String myAddress = intent.getStringExtra(MY_ADRESS);
-                myIdentity = PEpUtils.createIdentity(new Address(myAddress), PEpAddDevice.this);
-                partnerIdentity = PEpUtils.createIdentity(new Address(partnerAddress), PEpAddDevice.this);
+            if (intent.hasExtra(MYSELF) && intent.hasExtra(PARTNER)) {
+                partnerIdentity = (Identity) intent.getSerializableExtra(PARTNER);
+                myIdentity = (Identity) intent.getSerializableExtra(MY_ADRESS);
                 List<Account> accounts = Preferences.getPreferences(PEpAddDevice.this).getAccounts();
-                presenter.initialize(this, getpEp(), partnerUserId, partnerAddress, accounts);
+                presenter.initialize(this, getpEp(), partnerIdentity, accounts);
             }
         }
     }
@@ -151,8 +147,8 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
     private void changeTrustwords(String language) {
         trustwordsLanguage = language;
 
-        myIdentity = getpEp().updateIdentity(myIdentity);
-        partnerIdentity = getpEp().updateIdentity(partnerIdentity);
+//        myIdentity = getpEp().updateIdentity(myIdentity);
+//        partnerIdentity = getpEp().updateIdentity(partnerIdentity);
 
         String partnerFullTrustwords = PEpUtils.getTrustWords(getpEp(), partnerIdentity, language);
         String myFullTrustwords = PEpUtils.getTrustWords(getpEp(), myIdentity, language);

@@ -23,14 +23,11 @@ public class AddDevicePresenter implements Presenter {
     AddDevicePresenter() {
     }
 
-    public void initialize(AddDeviceView view, PEpProvider pEpProvider, String partnerUserId, String partnerAddress, List<Account> accounts) {
+    public void initialize(AddDeviceView view, PEpProvider pEpProvider, Identity partnerId, List<Account> accounts) {
         this.view = view;
         this.pEpProvider = pEpProvider;
         this.accounts = accounts;
-        partner = new Identity();
-        partner.user_id = partnerUserId;
-        partner.address = partnerAddress;
-        partner = pEpProvider.updateIdentity(partner);
+        partner = partnerId;
         loadPartner(view);
     }
 
