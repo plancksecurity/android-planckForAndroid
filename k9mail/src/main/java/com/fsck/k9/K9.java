@@ -550,6 +550,9 @@ public class K9 extends Application {
 
     @Override
     public void onCreate() {
+        if (ispEpSyncEnabled) {
+            initSync();
+        }
         pEpInitEnvironment();
         receiver = new DismissKeysyncDialogReceiver();
         filter = new IntentFilter();
