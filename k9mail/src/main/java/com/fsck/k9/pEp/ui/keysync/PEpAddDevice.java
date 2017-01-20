@@ -90,7 +90,7 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
             }
             if (intent.hasExtra(MYSELF) && intent.hasExtra(PARTNER)) {
                 partnerIdentity = (Identity) intent.getSerializableExtra(PARTNER);
-                myIdentity = (Identity) intent.getSerializableExtra(MY_ADRESS);
+                myIdentity = (Identity) intent.getSerializableExtra(MYSELF);
                 List<Account> accounts = Preferences.getPreferences(PEpAddDevice.this).getAccounts();
                 presenter.initialize(this, getpEp(), partnerIdentity, accounts);
             }
