@@ -553,15 +553,16 @@ public class K9 extends Application {
 
     @Override
     public void onCreate() {
+        pEpInitEnvironment();
         if (ispEpSyncEnabled) {
             initSync();
         }
-        pEpInitEnvironment();
         receiver = new DismissKeysyncDialogReceiver();
         filter = new IntentFilter();
         filter.addAction("KEYSYNC_DISMISS");
         filter.setPriority(1);
         registerReceiver(receiver, filter);
+
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
         }
