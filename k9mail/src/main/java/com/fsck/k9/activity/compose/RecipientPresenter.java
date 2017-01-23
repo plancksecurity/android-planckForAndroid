@@ -71,9 +71,9 @@ public class RecipientPresenter implements PermissionPingCallback {
 
     // transient state, which is either obtained during construction and initialization, or cached
     private final Context context;
-    private final LoaderManager loaderManager;
-    private RecipientMvpView recipientMvpView;
+    private final RecipientMvpView recipientMvpView;
     private final ComposePgpInlineDecider composePgpInlineDecider;
+    private final RecipientsChangedListener listener;
     private Poller poller;
     private ReplyToParser replyToParser;
     private Account account;
@@ -99,13 +99,15 @@ public class RecipientPresenter implements PermissionPingCallback {
     private boolean dirty;
 
     public RecipientPresenter(Context context, LoaderManager loaderManager, RecipientMvpView recipientMvpView,
-                              Account account, ComposePgpInlineDecider composePgpInlineDecider, ReplyToParser replyToParser) {
+                              Account account, ComposePgpInlineDecider composePgpInlineDecider, ReplyToParser replyToParser,
+            RecipientsChangedListener recipientsChangedListener) {
         this.recipientMvpView = recipientMvpView;
         this.context = context;
         this.composePgpInlineDecider = composePgpInlineDecider;
         this.replyToParser = replyToParser;
-        this.loaderManager = loaderManager;
         pEp = ((K9) context.getApplicationContext()).getpEpProvider();
+        this.listener = recipientsChangedListener;
+
         recipientMvpView.setPresenter(this);
         recipientMvpView.setLoaderManager(loaderManager);
         onSwitchAccount(account);
@@ -431,42 +433,51 @@ public class RecipientPresenter implements PermissionPingCallback {
 
     void onToTokenAdded() {
         updateCryptoStatus();
+        listener.onRecipientsChanged();
     }
 
     void onToTokenRemoved() {
         updateCryptoStatus();
+        listener.onRecipientsChanged();
     }
 
     void onToTokenChanged() {
         updateCryptoStatus();
+        listener.onRecipientsChanged();
     }
 
     void onCcTokenAdded() {
         updateCryptoStatus();
+        listener.onRecipientsChanged();
     }
 
     void onCcTokenRemoved() {
         updateCryptoStatus();
+        listener.onRecipientsChanged();
     }
 
     void onCcTokenChanged() {
         updateCryptoStatus();
+        listener.onRecipientsChanged();
     }
 
     void onBccTokenAdded() {
         forceUnencrypted = true;
         updateCryptoStatus();
         dirty = true;
+        listener.onRecipientsChanged();
     }
 
     void onBccTokenRemoved() {
         forceUnencrypted = false;
         updateCryptoStatus();
         dirty = true;
+        listener.onRecipientsChanged();
     }
 
     void onBccTokenChanged() {
         updateCryptoStatus();
+        listener.onRecipientsChanged();
     }
 
     public void onCryptoModeChanged(CryptoMode cryptoMode) {
@@ -961,5 +972,9 @@ public class RecipientPresenter implements PermissionPingCallback {
 
     private boolean addressesChanged(List<Address> oldAdresses, List<Address> newAdresses) {
         return !oldAdresses.equals(newAdresses);
+    }
+
+    public static interface RecipientsChangedListener {
+        public void onRecipientsChanged();
     }
 }
