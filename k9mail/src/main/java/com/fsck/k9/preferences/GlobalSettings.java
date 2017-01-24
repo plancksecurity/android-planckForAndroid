@@ -57,8 +57,7 @@ public class GlobalSettings {
                         Environment.DIRECTORY_DOWNLOADS)))
             ));
         s.put("backgroundOperations", Settings.versions(
-                new V(1, new EnumSetting<>(
-                        K9.BACKGROUND_OPS.class, K9.BACKGROUND_OPS.WHEN_CHECKED_AUTO_SYNC))
+                new V(1, new EnumSetting<>(K9.BACKGROUND_OPS.class, K9.BACKGROUND_OPS.WHEN_CHECKED_AUTO_SYNC))
             ));
         s.put("changeRegisteredNameColor", Settings.versions(
                 new V(1, new BooleanSetting(false))
@@ -215,8 +214,7 @@ public class GlobalSettings {
                 new V(22, new BooleanSetting(false))
             ));
         s.put("notificationHideSubject", Settings.versions(
-                new V(12, new EnumSetting<>(
-                        NotificationHideSubject.class, NotificationHideSubject.NEVER))
+                new V(12, new EnumSetting<>(NotificationHideSubject.class, NotificationHideSubject.NEVER))
             ));
         s.put("useBackgroundAsUnreadIndicator", Settings.versions(
                 new V(19, new BooleanSetting(true))
@@ -277,8 +275,7 @@ public class GlobalSettings {
                 new V(38, new BooleanSetting(false))
             ));
         s.put("notificationQuickDelete", Settings.versions(
-                new V(38, new EnumSetting<>(NotificationQuickDelete.class,
-                        NotificationQuickDelete.NEVER))
+                new V(38, new EnumSetting<>(NotificationQuickDelete.class, NotificationQuickDelete.NEVER))
             ));
         s.put("notificationDuringQuietTimeEnabled", Settings.versions(
                 new V(39, new BooleanSetting(true))
