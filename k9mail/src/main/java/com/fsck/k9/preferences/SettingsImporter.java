@@ -18,6 +18,10 @@ import com.fsck.k9.mail.filter.Base64;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.preferences.Settings.InvalidSettingValueException;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -98,9 +102,9 @@ public class SettingsImporter {
 
         private ImportResults(boolean globalSettings, List<AccountDescriptionPair> importedAccounts,
                 List<AccountDescription> erroneousAccounts) {
-           this.globalSettings = globalSettings;
-           this.importedAccounts = importedAccounts;
-           this.erroneousAccounts = erroneousAccounts;
+            this.globalSettings = globalSettings;
+            this.importedAccounts = importedAccounts;
+            this.erroneousAccounts = erroneousAccounts;
         }
     }
 
@@ -116,7 +120,7 @@ public class SettingsImporter {
      *         settings file.
      *
      * @throws SettingsImportExportException
-     *          In case of an error.
+     *         In case of an error.
      */
     public static ImportContents getImportStreamContents(InputStream inputStream)
             throws SettingsImportExportException {
@@ -171,13 +175,12 @@ public class SettingsImporter {
      *         successfully imported accounts.
      *
      * @throws SettingsImportExportException
-     *          In case of an error.
+     *         In case of an error.
      */
     public static ImportResults importSettings(Context context, InputStream inputStream, boolean globalSettings,
             List<String> accountUuids, boolean overwrite) throws SettingsImportExportException {
 
-        try
-        {
+        try {
             boolean globalSettingsImported = false;
             List<AccountDescriptionPair> importedAccounts = new ArrayList<>();
             List<AccountDescription> erroneousAccounts = new ArrayList<>();
@@ -266,7 +269,7 @@ public class SettingsImporter {
                                 erroneousAccounts.add(new AccountDescription(account.name, account.uuid));
                             }
                         } else {
-                            Log.w(K9.LOG_TAG, "Was asked to import account with UUID " + accountUuid + 
+                            Log.w(K9.LOG_TAG, "Was asked to import account with UUID " + accountUuid +
                                     ". But this account wasn't found.");
                         }
                     }
@@ -478,7 +481,7 @@ public class SettingsImporter {
 
         // Validate folder settings
         Map<String, Object> validatedSettings =
-            FolderSettings.validate(contentVersion, folder.settings.settings, !overwrite);
+                FolderSettings.validate(contentVersion, folder.settings.settings, !overwrite);
 
         // Upgrade folder settings to current content version
         if (contentVersion != Settings.VERSION) {
@@ -674,7 +677,7 @@ public class SettingsImporter {
             Imported imported = null;
             int eventType = xpp.getEventType();
             while (eventType != XmlPullParser.END_DOCUMENT) {
-                if(eventType == XmlPullParser.START_TAG) {
+                if (eventType == XmlPullParser.START_TAG) {
                     if (SettingsExporter.ROOT_ELEMENT.equals(xpp.getName())) {
                         imported = parseRoot(xpp, globalSettings, accountUuids, overview);
                     } else {
@@ -722,7 +725,7 @@ public class SettingsImporter {
 
         int eventType = xpp.next();
         while (!(eventType == XmlPullParser.END_TAG && SettingsExporter.ROOT_ELEMENT.equals(xpp.getName()))) {
-            if(eventType == XmlPullParser.START_TAG) {
+            if (eventType == XmlPullParser.START_TAG) {
                 String element = xpp.getName();
                 if (SettingsExporter.GLOBAL_ELEMENT.equals(element)) {
                     if (overview || globalSettings) {
@@ -795,7 +798,7 @@ public class SettingsImporter {
         return version;
     }
 
-    private static ImportedSettings parseSettings(XmlPullParser xpp, String endTag) 
+    private static ImportedSettings parseSettings(XmlPullParser xpp, String endTag)
             throws XmlPullParserException, IOException {
 
         ImportedSettings result = null;
@@ -803,7 +806,7 @@ public class SettingsImporter {
         int eventType = xpp.next();
         while (!(eventType == XmlPullParser.END_TAG && endTag.equals(xpp.getName()))) {
 
-            if(eventType == XmlPullParser.START_TAG) {
+            if (eventType == XmlPullParser.START_TAG) {
                 String element = xpp.getName();
                 if (SettingsExporter.VALUE_ELEMENT.equals(element)) {
                     String key = xpp.getAttributeValue(null, SettingsExporter.KEY_ATTRIBUTE);
@@ -835,7 +838,7 @@ public class SettingsImporter {
 
         int eventType = xpp.next();
         while (!(eventType == XmlPullParser.END_TAG && SettingsExporter.ACCOUNTS_ELEMENT.equals(xpp.getName()))) {
-            if(eventType == XmlPullParser.START_TAG) {
+            if (eventType == XmlPullParser.START_TAG) {
                 String element = xpp.getName();
                 if (SettingsExporter.ACCOUNT_ELEMENT.equals(element)) {
                     if (accounts == null) {
@@ -880,7 +883,7 @@ public class SettingsImporter {
         if (overview || accountUuids.contains(uuid)) {
             int eventType = xpp.next();
             while (!(eventType == XmlPullParser.END_TAG && SettingsExporter.ACCOUNT_ELEMENT.equals(xpp.getName()))) {
-                if(eventType == XmlPullParser.START_TAG) {
+                if (eventType == XmlPullParser.START_TAG) {
                     String element = xpp.getName();
                     if (SettingsExporter.NAME_ELEMENT.equals(element)) {
                         account.name = getText(xpp);
@@ -937,7 +940,7 @@ public class SettingsImporter {
 
         int eventType = xpp.next();
         while (!(eventType == XmlPullParser.END_TAG && endTag.equals(xpp.getName()))) {
-            if(eventType == XmlPullParser.START_TAG) {
+            if (eventType == XmlPullParser.START_TAG) {
                 String element = xpp.getName();
                 if (SettingsExporter.HOST_ELEMENT.equals(element)) {
                     server.host = getText(xpp);
@@ -966,13 +969,13 @@ public class SettingsImporter {
         return server;
     }
 
-    private static List<ImportedIdentity> parseIdentities(XmlPullParser xpp) 
+    private static List<ImportedIdentity> parseIdentities(XmlPullParser xpp)
             throws XmlPullParserException, IOException {
         List<ImportedIdentity> identities = null;
 
         int eventType = xpp.next();
         while (!(eventType == XmlPullParser.END_TAG && SettingsExporter.IDENTITIES_ELEMENT.equals(xpp.getName()))) {
-            if(eventType == XmlPullParser.START_TAG) {
+            if (eventType == XmlPullParser.START_TAG) {
                 String element = xpp.getName();
                 if (SettingsExporter.IDENTITY_ELEMENT.equals(element)) {
                     if (identities == null) {
@@ -997,7 +1000,7 @@ public class SettingsImporter {
         int eventType = xpp.next();
         while (!(eventType == XmlPullParser.END_TAG && SettingsExporter.IDENTITY_ELEMENT.equals(xpp.getName()))) {
 
-            if(eventType == XmlPullParser.START_TAG) {
+            if (eventType == XmlPullParser.START_TAG) {
                 String element = xpp.getName();
                 if (SettingsExporter.NAME_ELEMENT.equals(element)) {
                     identity.name = getText(xpp);
@@ -1022,7 +1025,7 @@ public class SettingsImporter {
 
         int eventType = xpp.next();
         while (!(eventType == XmlPullParser.END_TAG && SettingsExporter.FOLDERS_ELEMENT.equals(xpp.getName()))) {
-            if(eventType == XmlPullParser.START_TAG) {
+            if (eventType == XmlPullParser.START_TAG) {
                 String element = xpp.getName();
                 if (SettingsExporter.FOLDER_ELEMENT.equals(element)) {
                     if (folders == null) {
@@ -1054,7 +1057,7 @@ public class SettingsImporter {
 
     private static String getAccountDisplayName(ImportedAccount account) {
         String name = account.name;
-        if (TextUtils.isEmpty(name) && account.identities != null && account.identities.size() > 0){
+        if (TextUtils.isEmpty(name) && account.identities != null && account.identities.size() > 0) {
             name = account.identities.get(0).email;
         }
         return name;
