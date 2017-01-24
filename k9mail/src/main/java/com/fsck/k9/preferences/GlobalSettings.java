@@ -419,14 +419,6 @@ public class GlobalSettings {
         }
     }
 
-    /**
-     * The language setting.
-     *
-     * <p>
-     * Valid values are read from {@code settings_language_values} in
-     * {@code res/values/arrays.xml}.
-     * </p>
-     */
     private static class LanguageSetting extends PseudoEnumSetting<String> {
         private final Map<String, String> mapping;
 
@@ -460,9 +452,6 @@ public class GlobalSettings {
         }
     }
 
-    /**
-     * The theme setting.
-     */
     static class ThemeSetting extends SettingsDescription<K9.Theme> {
         private static final String THEME_LIGHT = "light";
         private static final String THEME_DARK = "dark";
@@ -518,9 +507,6 @@ public class GlobalSettings {
         }
     }
 
-    /**
-     * The message view theme setting.
-     */
     private static class SubThemeSetting extends ThemeSetting {
         private static final String THEME_USE_GLOBAL = "use_global";
 
@@ -561,9 +547,6 @@ public class GlobalSettings {
         }
     }
 
-    /**
-     * A time setting.
-     */
     private static class TimeSetting extends SettingsDescription<String> {
         TimeSetting(String defaultValue) {
             super(defaultValue);
@@ -578,9 +561,6 @@ public class GlobalSettings {
         }
     }
 
-    /**
-     * A directory on the file system.
-     */
     private static class DirectorySetting extends SettingsDescription<String> {
         DirectorySetting(File defaultPath) {
             super(defaultPath.toString());
