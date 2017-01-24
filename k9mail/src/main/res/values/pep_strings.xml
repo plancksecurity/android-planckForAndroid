@@ -76,7 +76,7 @@
     <string name="pep_username">User Name</string>
     <string name="pep_userAddress">User Address</string>
     <string name="pep_secret_key_detected">Secret key detected</string>
-    <string name="pep_received_this_secret_key" translatable="false">The following secret key was received</string>
+    <string name="pep_received_this_secret_key" translatable="false">The following secret key was received. Are you sure you want to use it?</string>
     <string name="pep_from_format">from sender %1$s</string>
     <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Trust server and store mails unprotected</string>
     <string name="pep_mistrust_server_and_store_mails_encrypted">Store messages securely</string>
