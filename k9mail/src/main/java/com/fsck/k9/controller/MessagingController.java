@@ -1431,17 +1431,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     //// TODO: 22/12/16  message.getFrom()[0].getAddress() != null) should ne removed when ENGINE-160 is fixed
                     if (account.ispEpPrivacyProtected() && message.getFrom()[0].getAddress() != null) {
                         PEpProvider.DecryptResult tempResult;
-                        if (!account.isUntrustedSever()) { //trusted server
-                            Rating rating = PEpUtils.extractRating(message);
-                            if (rating.equals(Rating.pEpRatingUndefined)) {
-                                tempResult = decryptMessage((MimeMessage) message);
-
-                            } else {
-                                tempResult = new PEpProvider.DecryptResult((MimeMessage) message, rating, null, null);
-                            }
-                        } else {
-                            tempResult = decryptMessage((MimeMessage) message);
-                        }
+                        tempResult = decryptMessage((MimeMessage) message);
 
                         if (tempResult.flags != null) {
                             switch (tempResult.flags) {
