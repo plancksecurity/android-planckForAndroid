@@ -1,5 +1,13 @@
 package com.fsck.k9.preferences;
 
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.DeletePolicy;
 import com.fsck.k9.Account.Expunge;
@@ -22,15 +30,6 @@ import com.fsck.k9.preferences.Settings.SettingsDescription;
 import com.fsck.k9.preferences.Settings.SettingsUpgrader;
 import com.fsck.k9.preferences.Settings.StringSetting;
 import com.fsck.k9.preferences.Settings.V;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
-//TODO: pEp: do I need my keys here, too?
 
 public class AccountSettings {
     public static final Map<String, TreeMap<Integer, SettingsDescription>> SETTINGS;
@@ -287,7 +286,7 @@ public class AccountSettings {
         public IntegerResourceSetting(int defaultValue, int resId) {
             super(defaultValue);
 
-            Map<Integer, String> mapping = new HashMap<Integer, String>();
+            Map<Integer, String> mapping = new HashMap<>();
             String[] values = K9.app.getResources().getStringArray(resId);
             for (String value : values) {
                 int intValue = Integer.parseInt(value);
@@ -302,7 +301,7 @@ public class AccountSettings {
         }
 
         @Override
-        public Object fromString(String value) throws InvalidSettingValueException {
+        public Integer fromString(String value) throws InvalidSettingValueException {
             try {
                 return Integer.parseInt(value);
             } catch (NumberFormatException e) {
@@ -338,7 +337,7 @@ public class AccountSettings {
         }
 
         @Override
-        public Object fromString(String value) throws InvalidSettingValueException {
+        public String fromString(String value) throws InvalidSettingValueException {
             if (!mMapping.containsKey(value)) {
                 throw new InvalidSettingValueException();
             }
@@ -349,13 +348,13 @@ public class AccountSettings {
     /**
      * The notification ringtone setting.
      */
-    public static class RingtoneSetting extends SettingsDescription {
+    public static class RingtoneSetting extends SettingsDescription<String> {
         public RingtoneSetting(String defaultValue) {
             super(defaultValue);
         }
 
         @Override
-        public Object fromString(String value) {
+        public String fromString(String value) {
             //TODO: add validation
             return value;
         }
@@ -364,18 +363,18 @@ public class AccountSettings {
     /**
      * The storage provider setting.
      */
-    public static class StorageProviderSetting extends SettingsDescription {
+    public static class StorageProviderSetting extends SettingsDescription<String> {
         public StorageProviderSetting() {
             super(null);
         }
 
         @Override
-        public Object getDefaultValue() {
+        public String getDefaultValue() {
             return StorageManager.getInstance(K9.app).getDefaultProviderId();
         }
 
         @Override
-        public Object fromString(String value) {
+        public String fromString(String value) {
             StorageManager storageManager = StorageManager.getInstance(K9.app);
             Map<String, String> providers = storageManager.getAvailableProviders();
             if (providers.containsKey(value)) {
@@ -389,8 +388,8 @@ public class AccountSettings {
         private Map<Integer, String> mMapping;
 
         public DeletePolicySetting(DeletePolicy defaultValue) {
-            super(defaultValue);
-            Map<Integer, String> mapping = new HashMap<Integer, String>();
+            super(defaultValue.setting);
+            Map<Integer, String> mapping = new HashMap<>();
             mapping.put(DeletePolicy.NEVER.setting, "NEVER");
             mapping.put(DeletePolicy.ON_DELETE.setting, "DELETE");
             mapping.put(DeletePolicy.MARK_AS_READ.setting, "MARK_AS_READ");
@@ -403,7 +402,7 @@ public class AccountSettings {
         }
 
         @Override
-        public Object fromString(String value) throws InvalidSettingValueException {
+        public Integer fromString(String value) throws InvalidSettingValueException {
             try {
                 Integer deletePolicy = Integer.parseInt(value);
                 if (mMapping.containsKey(deletePolicy)) {
