@@ -17,7 +17,6 @@ import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
 import com.fsck.k9.pEp.ui.HandshakeData;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
-import org.pEp.jniadapter.AndroidHelper;
 import org.pEp.jniadapter.DecryptFlags;
 import org.pEp.jniadapter.Engine;
 import org.pEp.jniadapter.Identity;
@@ -653,10 +652,11 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void obtainTrustwords(Identity self, Identity other, String lang, ResultCallback<HandshakeData> callback) {
+    public void obtainTrustwords(Identity self, Identity other, String lang, Boolean areTrustwordsShort, ResultCallback<HandshakeData> callback) {
         threadExecutor.execute(() -> {
             Engine engine = null;
             try {
+                engine = getNewEngineSession();
                 String longTrustwords = engine.get_trustwords(self, other, lang, true);
                 String shortTrustwords = engine.get_trustwords(self, other, lang, false);
                 notifyLoaded(new HandshakeData(longTrustwords, shortTrustwords, self, other), callback);

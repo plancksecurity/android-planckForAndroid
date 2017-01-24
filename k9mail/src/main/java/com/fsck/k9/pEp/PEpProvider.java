@@ -113,7 +113,7 @@ public interface PEpProvider {
                     ResultCallback<HandshakeData> callback);
 
     void obtainTrustwords(Identity myself, Identity partner, String lang,
-                    ResultCallback<HandshakeData> callback);
+                          Boolean areTrustwordsShort, ResultCallback<HandshakeData> callback);
 
     /**
      * Close the engine/session associated to the provider

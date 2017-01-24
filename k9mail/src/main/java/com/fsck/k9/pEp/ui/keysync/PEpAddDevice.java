@@ -18,8 +18,6 @@ import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.MessageList;
-import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.UIUtils;
@@ -161,30 +159,54 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
 //        myIdentity = getpEp().updateIdentity(myIdentity);
 //        partnerIdentity = getpEp().updateIdentity(partnerIdentity);
 
-        String partnerFullTrustwords = PEpUtils.getTrustWords(getpEp(), partnerIdentity, language);
-        String myFullTrustwords = PEpUtils.getTrustWords(getpEp(), myIdentity, language);
-        String partnerShortTrustwords = PEpUtils.getShortTrustWords(getpEp(), partnerIdentity, language);
-        String myShortTrustWords = PEpUtils.getShortTrustWords(getpEp(), myIdentity, language);
+        getpEp().obtainTrustwords(myIdentity, partnerIdentity, language, areTrustwordsShort, new PEpProvider.ResultCallback<HandshakeData>() {
+            @Override
+            public void onLoaded(HandshakeData handshakeData) {
+                if (areTrustwordsShort) {
+                    shortTrustwords = handshakeData.getShortTrustwords();
+                    tvTrustwords.setText(shortTrustwords);
+                } else {
+                    fullTrustwords = handshakeData.getFullTrustwords();
+                    tvTrustwords.setText(fullTrustwords);
+                }
+            }
 
-        if (myIdentity.fpr.compareTo(partnerIdentity.fpr) > 0) {
-            fullTrustwords = partnerFullTrustwords + myFullTrustwords;
-            shortTrustwords = partnerShortTrustwords + myShortTrustWords;
-        } else {
-            fullTrustwords = myFullTrustwords + partnerFullTrustwords;
-            shortTrustwords = myShortTrustWords + partnerShortTrustwords;
-        }
-
-        if (areTrustwordsShort) {
-            tvTrustwords.setText(shortTrustwords);
-        } else {
-            tvTrustwords.setText(fullTrustwords);
-        }
+            @Override
+            public void onError(Throwable throwable) {
+                Toast.makeText(PEpAddDevice.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void changeTrustwordsLength(Boolean areShort) {
         areTrustwordsShort = areShort;
-        if (areShort) tvTrustwords.setText(shortTrustwords);
-        else tvTrustwords.setText(fullTrustwords);
+        if (areShort) {
+            getpEp().obtainTrustwords(myIdentity, partnerIdentity, trustwordsLanguage, areTrustwordsShort, new PEpProvider.ResultCallback<HandshakeData>() {
+                @Override
+                public void onLoaded(HandshakeData handshakeData) {
+                    shortTrustwords = handshakeData.getShortTrustwords();
+                    tvTrustwords.setText(shortTrustwords);
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                    Toast.makeText(PEpAddDevice.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            getpEp().obtainTrustwords(myIdentity, partnerIdentity, trustwordsLanguage, areTrustwordsShort, new PEpProvider.ResultCallback<HandshakeData>() {
+                @Override
+                public void onLoaded(HandshakeData handshakeData) {
+                    fullTrustwords = handshakeData.getFullTrustwords();
+                    tvTrustwords.setText(fullTrustwords);
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                    Toast.makeText(PEpAddDevice.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     @OnClick(R.id.confirmTrustWords)
@@ -266,7 +288,7 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
 
     private void loadTrustwords() {
         //Actually what is heavy is update identity and myself.
-        getpEp().obtainTrustwords(myIdentity, partnerIdentity, trustwordsLanguage, new PEpProvider.ResultCallback<HandshakeData>() {
+        getpEp().obtainTrustwords(myIdentity, partnerIdentity, trustwordsLanguage, areTrustwordsShort, new PEpProvider.ResultCallback<HandshakeData>() {
             @Override
             public void onLoaded(final HandshakeData handshakeData) {
                 fullTrustwords = handshakeData.getFullTrustwords();
