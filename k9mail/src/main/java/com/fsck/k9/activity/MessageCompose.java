@@ -1139,6 +1139,11 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 //  TODO> Review after rebase
         handlePEpState(false);       // fire once to get everything set up.
 
+        if (encrypted) {
+            menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_unprotected);
+        } else {
+            menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_protected);
+        }
         return true;
     }
 
