@@ -135,16 +135,16 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     public static final String EXTRA_MESSAGE_REFERENCE = "message_reference";
 
     public static final String EXTRA_PEP_RATING = "pEpRating";
-    public static final String EXTRA_MESSAGE_DECRYPTION_RESULT  = "message_decryption_result";
+    public static final String EXTRA_MESSAGE_DECRYPTION_RESULT = "message_decryption_result";
     public static final String EXTRA_MESSAGE_BODY  = "messageBody";
 
     private static final String STATE_KEY_SOURCE_MESSAGE_PROCED =
-        "com.fsck.k9.activity.MessageCompose.stateKeySourceMessageProced";
+            "com.fsck.k9.activity.MessageCompose.stateKeySourceMessageProced";
     private static final String STATE_KEY_DRAFT_ID = "com.fsck.k9.activity.MessageCompose.draftId";
     private static final String STATE_IDENTITY_CHANGED =
-        "com.fsck.k9.activity.MessageCompose.identityChanged";
+            "com.fsck.k9.activity.MessageCompose.identityChanged";
     private static final String STATE_IDENTITY =
-        "com.fsck.k9.activity.MessageCompose.identity";
+            "com.fsck.k9.activity.MessageCompose.identity";
     private static final String STATE_IN_REPLY_TO = "com.fsck.k9.activity.MessageCompose.inReplyTo";
     private static final String STATE_REFERENCES = "com.fsck.k9.activity.MessageCompose.references";
     private static final String STATE_KEY_READ_RECEIPT = "com.fsck.k9.activity.MessageCompose.messageReadReceipt";
@@ -158,10 +158,10 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     public static final int MSG_SAVED_DRAFT = 4;
     private static final int MSG_DISCARDED_DRAFT = 5;
 
-    private static final int REQUEST_MASK_RECIPIENT_PRESENTER = (1<<8);
-    private static final int REQUEST_MASK_LOADER_HELPER = (1<<9);
-    private static final int REQUEST_MASK_ATTACHMENT_PRESENTER = (1<<10);
-    private static final int REQUEST_MASK_MESSAGE_BUILDER = (1<<11);
+    private static final int REQUEST_MASK_RECIPIENT_PRESENTER = (1 << 8);
+    private static final int REQUEST_MASK_LOADER_HELPER = (1 << 9);
+    private static final int REQUEST_MASK_ATTACHMENT_PRESENTER = (1 << 10);
+    private static final int REQUEST_MASK_MESSAGE_BUILDER = (1 << 11);
 
     /**
      * Regular expression to remove the first localized "Re:" prefix in subjects.
@@ -283,8 +283,8 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         originalMessageRating = ((Rating) intent.getSerializableExtra(EXTRA_PEP_RATING));
 
         final String accountUuid = (relatedMessageReference != null) ?
-                                   relatedMessageReference.getAccountUuid() :
-                                   intent.getStringExtra(EXTRA_ACCOUNT);
+                relatedMessageReference.getAccountUuid() :
+                intent.getStringExtra(EXTRA_ACCOUNT);
 
         updateAccount(Preferences.getPreferences(this).getAccount(accountUuid));
 
@@ -322,17 +322,17 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         subjectView = (EditText) findViewById(R.id.subject);
         subjectView.getInputExtras(true).putBoolean("allowEmoji", true);
 
-        EolConvertingEditText upperSignature = (EolConvertingEditText)findViewById(R.id.upper_signature);
-        EolConvertingEditText lowerSignature = (EolConvertingEditText)findViewById(R.id.lower_signature);
+        EolConvertingEditText upperSignature = (EolConvertingEditText) findViewById(R.id.upper_signature);
+        EolConvertingEditText lowerSignature = (EolConvertingEditText) findViewById(R.id.lower_signature);
 
         QuotedMessageMvpView quotedMessageMvpView = new QuotedMessageMvpView(this);
         quotedMessagePresenter = new QuotedMessagePresenter(this, quotedMessageMvpView, account);
         attachmentPresenter = new AttachmentPresenter(getApplicationContext(), attachmentMvpView, getLoaderManager());
 
-        messageContentView = (EolConvertingEditText)findViewById(R.id.message_content);
+        messageContentView = (EolConvertingEditText) findViewById(R.id.message_content);
         messageContentView.getInputExtras(true).putBoolean("allowEmoji", true);
 
-        attachmentsView = (LinearLayout)findViewById(R.id.attachments);
+        attachmentsView = (LinearLayout) findViewById(R.id.attachments);
 
         TextWatcher draftNeedsChangingTextWatcher = new SimpleTextWatcher() {
             @Override
@@ -502,8 +502,9 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     public void onDestroy() {
         super.onDestroy();
 
-        if (recipientPresenter != null)
+        if (recipientPresenter != null) {
             recipientPresenter.onActivityDestroy();
+        }
     }
 
     @Override
@@ -678,7 +679,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         attachmentPresenter.onRestoreInstanceState(savedInstanceState);
 
         draftId = savedInstanceState.getLong(STATE_KEY_DRAFT_ID);
-        identity = (Identity)savedInstanceState.getSerializable(STATE_IDENTITY);
+        identity = (Identity) savedInstanceState.getSerializable(STATE_IDENTITY);
         identityChanged = savedInstanceState.getBoolean(STATE_IDENTITY_CHANGED);
         repliedToMessageId = savedInstanceState.getString(STATE_IN_REPLY_TO);
         referencedMessageIds = savedInstanceState.getString(STATE_REFERENCES);
@@ -701,7 +702,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 //        recipientPresenter.updateCryptoStatus();
         ComposeCryptoStatus cryptoStatus = recipientPresenter.getCurrentCryptoStatus();
         // TODO encrypt drafts for storage
-        if(!isDraft && cryptoStatus.shouldUsePgpMessageBuilder()) {
+        if (!isDraft && cryptoStatus.shouldUsePgpMessageBuilder()) {
             SendErrorState maybeSendErrorState = cryptoStatus.getSendErrorStateOrNull();
             if (maybeSendErrorState != null) {
                 recipientPresenter.showPgpSendError(maybeSendErrorState);
@@ -907,8 +908,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
                 if (previousDraftId != INVALID_DRAFT_ID) {
                     if (K9.DEBUG) {
-                        Log.v(K9.LOG_TAG, "Account switch, deleting draft from previous account: "
-                              + previousDraftId);
+                        Log.v(K9.LOG_TAG, "Account switch, deleting draft from previous account: " + previousDraftId);
                     }
                     MessagingController.getInstance(getApplication()).deleteDraft(previousAccount,
                             previousDraftId);
@@ -963,7 +963,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-        switch(v.getId()) {
+        switch (v.getId()) {
             case R.id.message_content:
             case R.id.subject:
                 if (hasFocus) {
@@ -1104,11 +1104,11 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        
+
         if (isFinishing()) {
             return false;
         }
-        
+
         getMenuInflater().inflate(R.menu.message_compose_option, menu);
 
         // Disable the 'Save' menu option if Drafts folder is set to -NONE-
@@ -1166,23 +1166,23 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         switch (id) {
             case DIALOG_SAVE_OR_DISCARD_DRAFT_MESSAGE:
                 return new AlertDialog.Builder(this)
-                       .setTitle(R.string.save_or_discard_draft_message_dlg_title)
-                       .setMessage(R.string.save_or_discard_draft_message_instructions_fmt)
-                .setPositiveButton(R.string.save_draft_action, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        dismissDialog(DIALOG_SAVE_OR_DISCARD_DRAFT_MESSAGE);
-                        checkToSaveDraftAndSave();
-                    }
-                })
-                .setNegativeButton(R.string.discard_action, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        dismissDialog(DIALOG_SAVE_OR_DISCARD_DRAFT_MESSAGE);
-                        onDiscard();
-                    }
-                })
-                .create();
+                        .setTitle(R.string.save_or_discard_draft_message_dlg_title)
+                        .setMessage(R.string.save_or_discard_draft_message_instructions_fmt)
+                        .setPositiveButton(R.string.save_draft_action, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                dismissDialog(DIALOG_SAVE_OR_DISCARD_DRAFT_MESSAGE);
+                                checkToSaveDraftAndSave();
+                            }
+                        })
+                        .setNegativeButton(R.string.discard_action, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                dismissDialog(DIALOG_SAVE_OR_DISCARD_DRAFT_MESSAGE);
+                                onDiscard();
+                            }
+                        })
+                        .create();
             case DIALOG_CONFIRM_DISCARD_ON_BACK:
                 return new AlertDialog.Builder(this)
                        .setTitle(R.string.confirm_discard_draft_message_title)
@@ -1197,7 +1197,8 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                     @Override
                     public void onClick(DialogInterface dialog, int whichButton) {
                         dismissDialog(DIALOG_CONFIRM_DISCARD_ON_BACK);
-                        FeedbackTools.showLongFeedback(getRootView(), getString(R.string.message_discarded_toast));
+                        FeedbackTools.showLongFeedback(getRootView(),
+                                       getString(R.string.message_discarded_toast));
                         onDiscard();
                     }
                 })
@@ -1205,8 +1206,8 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             case DIALOG_CHOOSE_IDENTITY:
                 Context context = new ContextThemeWrapper(this,
                         (K9.getK9Theme() == K9.Theme.LIGHT) ?
-                        R.style.Theme_K9_Dialog_Light :
-                        R.style.Theme_K9_Dialog_Dark);
+                                R.style.Theme_K9_Dialog_Light :
+                                R.style.Theme_K9_Dialog_Dark);
                 Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle(R.string.send_as);
                 final IdentityAdapter adapter = new IdentityAdapter(context);
@@ -1300,7 +1301,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                 }
             }
         } catch (MessagingException me) {
-            /**
+            /*
              * Let the user continue composing their message even if we have a problem processing
              * the source message. Log it as an error, though.
              */
@@ -1484,7 +1485,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         final MessageReference messageReference;
 
         SendMessageTask(Context context, Account account, Contacts contacts, Message message,
-                        Long draftId, MessageReference messageReference) {
+                Long draftId, MessageReference messageReference) {
             this.context = context;
             this.account = account;
             this.contacts = contacts;
@@ -1760,7 +1761,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     };
 
     AttachmentMvpView attachmentMvpView = new AttachmentMvpView() {
-        private HashMap<Uri,View> attachmentViews = new HashMap<>();
+        private HashMap<Uri, View> attachmentViews = new HashMap<>();
 
         @Override
         public void showWaitingForAttachmentDialog(WaitingAction waitingAction) {
@@ -1946,5 +1947,4 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             return titleResource;
         }
     }
-
 }
