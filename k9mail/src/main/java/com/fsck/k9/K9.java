@@ -35,7 +35,7 @@ import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.UpgradeDatabases;
 import com.fsck.k9.controller.MessagingController;
-import com.fsck.k9.controller.MessagingListener;
+import com.fsck.k9.controller.SimpleMessagingListener;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.K9MailLib;
@@ -610,7 +610,7 @@ public class K9 extends Application {
         setServicesEnabled(this);
         registerReceivers();
 
-        MessagingController.getInstance(this).addListener(new MessagingListener() {
+        MessagingController.getInstance(this).addListener(new SimpleMessagingListener() {
             private void broadcastIntent(String action, Account account, String folder, Message message) {
                 Uri uri = Uri.parse("email://messages/" + account.getAccountNumber() + "/" + Uri.encode(folder) + "/" + Uri.encode(message.getUid()));
                 Intent intent = new Intent(action, uri);
