@@ -363,17 +363,6 @@ public class MessagingControllerTest {
     }
 
     @Test
-    public void searchLocalMessagesSynchronous_shouldNotifyStartedListingLocalMessages()
-            throws Exception {
-        setAccountsInPreferences(Collections.singletonMap("1", account));
-        when(search.getAccountUuids()).thenReturn(new String[]{"allAccounts"});
-
-        controller.searchLocalMessagesSynchronous(search, listener);
-
-        verify(listener).listLocalMessagesStarted(account, null);
-    }
-
-    @Test
     public void searchLocalMessagesSynchronous_shouldCallSearchForMessagesOnLocalStore()
             throws Exception {
         setAccountsInPreferences(Collections.singletonMap("1", account));
@@ -382,18 +371,6 @@ public class MessagingControllerTest {
         controller.searchLocalMessagesSynchronous(search, listener);
 
         verify(localStore).searchForMessages(any(MessageRetrievalListener.class), eq(search));
-    }
-
-    @Test
-    public void searchLocalMessagesSynchronous_shouldNotifyFailureIfStoreThrowsException() throws Exception {
-        setAccountsInPreferences(Collections.singletonMap("1", account));
-        when(search.getAccountUuids()).thenReturn(new String[]{"allAccounts"});
-        when(localStore.searchForMessages(any(MessageRetrievalListener.class), eq(search)))
-                .thenThrow(new MessagingException("Test"));
-
-        controller.searchLocalMessagesSynchronous(search, listener);
-
-        verify(listener).listLocalMessagesFailed(account, null, "Test");
     }
 
     @Test
@@ -522,16 +499,6 @@ public class MessagingControllerTest {
 
         verify(remoteFolder, never()).fetch(eq(Collections.singletonList(remoteNewMessage1)),
                 fetchProfileCaptor.capture(), Matchers.<MessageRetrievalListener>eq(null));
-    }
-
-    @Test
-    public void searchRemoteMessagesSynchronous_shouldNotifyListenerOfNewMessages() throws Exception {
-        setupRemoteSearch();
-
-        controller.searchRemoteMessagesSynchronous("1", FOLDER_NAME, "query", reqFlags, forbiddenFlags, listener);
-
-        verify(listener).remoteSearchAddMessage(FOLDER_NAME, localNewMessage1, 1, 2);
-        verify(listener).remoteSearchAddMessage(FOLDER_NAME, localNewMessage2, 2, 2);
     }
 
     @Test
