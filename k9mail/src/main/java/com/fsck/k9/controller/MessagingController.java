@@ -881,6 +881,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             if (K9.DEBUG)
                 Log.v(K9.LOG_TAG, "SYNC: Remote message count for folder " + folder + " is " + remoteMessageCount);
             final Date earliestDate = account.getEarliestPollDate();
+            long earliestTimestamp = earliestDate != null ? earliestDate.getTime() : 0L;
 
 
             int remoteStart = 1;
@@ -910,9 +911,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     for (MessagingListener l : getListeners(listener)) {
                         l.synchronizeMailboxHeadersProgress(account, folder, headerProgress.get(), messageCount);
                     }
-                    Long localMessageDateRaw = localUidMap.get(thisMess.getUid());
-                    Date localMessageDate = localMessageDateRaw != null ? new Date(localMessageDateRaw) : null;
-                    if (localMessageDate == null || !localMessageDate.before(earliestDate)) {
+                    Long localMessageTimestamp = localUidMap.get(thisMess.getUid());
+                    if (localMessageTimestamp == null || localMessageTimestamp >= earliestTimestamp) {
                         remoteMessages.add(thisMess);
                         remoteUidMap.put(thisMess.getUid(), thisMess);
                     }
