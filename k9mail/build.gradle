@@ -64,7 +64,7 @@ dependencies {
     compile "com.android.support:support-v4:${project.supportLibraryVersion}"
     compile "com.android.support:support-vector-drawable:${project.supportLibraryVersion}"
     compile 'com.github.paolorotolo:appintro:4.1.0'
-    compile 'org.jsoup:jsoup:1.10.1'
+    compile 'org.jsoup:jsoup:1.10.2'
     compile "com.daimajia.swipelayout:library:1.2.0@aar"
 
     compile "com.android.support:recyclerview-v7:${project.supportLibraryVersion}"
