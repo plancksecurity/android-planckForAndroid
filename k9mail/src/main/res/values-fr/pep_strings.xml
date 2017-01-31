@@ -19,7 +19,7 @@
     <!--<string name="pep_add_key_to_blacklist">Add a key to blacklist</string>-->
     <!--<string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>-->
 
-    <string name="pep_confirm_trustwords">Confirmer les Trustwords</string>
+    <string name="pep_confirm_trustwords">Confirmer</string>
     <!--<string name="pep_wrong_trustwords">Trustwords incorrects</string>-->
     <!--<string name="pep_wrong_fingerprint">Wrong fingerprint</string>-->
     <string name="pep_ask_trustwords">Demandez à votre partenaire: Quel sont vos Trustwords ? Puis comparez sa réponse à celle affichée ci-dessous.</string>
@@ -42,6 +42,18 @@
     <!--<string name="pep_app_license">Licensed under the GNU General Public License v3</string>-->
     <!--<string name="pep_trust_server_description">Store serverside mails in a safe form.</string>-->
     <!--<string name="pep_account_privacy_protection_explanation">Enable privacy protection for this account </string>-->
+
+    <string name="key_list_title">Available keys</string>
+    <string name="pep_add_device_ask_trustwords">You are about to add a device to your pEp device group. Confirm by successfully verifying the following Trustwords.</string>
+    <string name="pep_device_group">Appareils liées par p≡p</string>
+    <string name="handshake_reset_dialog_message">Attention: Ce correspondant a auparavant été marqué comme suspect. Etes-vous certain de vouloir procéder a un nouveau Handshake?</string>
+    <string name="pep_gpg_compatibility">Compatibilité OpenPGP</string>
+    <string name="crash_toast_text">Oops, something went wrong</string>
+    <string name="advanced_options">Advanced options</string>
+    <string name="basic_options">Basic options</string>
+    <string name="pep_enable_decryption">Decrypt messages</string>
+    <string name="pep_enable_sync_account">Synchronize this account</string>
+    <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
 
     <string-array name="pep_title">
         <item>Indéterminé<!--pEpRatingUndefined--></item>

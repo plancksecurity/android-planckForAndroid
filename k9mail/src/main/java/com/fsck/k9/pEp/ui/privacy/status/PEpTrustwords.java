@@ -221,7 +221,6 @@ public class PEpTrustwords extends PepColoredActivity {
             case R.id.action_pgp_fingerprint:
                 if (item.getTitle().equals(getString(R.string.pep_pgp_fingerprint))){
                     item.setTitle(R.string.pEp_trustwords);
-                    wrongTrustWords.setText(R.string.pep_wrong_fingerprint);
                     menuItemTrustwordsLanguage.setVisible(false);
                     menuItemtrustwordsLength.setVisible(false);
                 }

@@ -17,8 +17,8 @@
     <string name="pep_add_key_to_blacklist">Add a key to blacklist</string>
     <string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>
 
-    <string name="pep_confirm_trustwords">Confirmar Trustwords</string>
-    <string name="pep_wrong_trustwords">Trustwords incorrectes</string>
+    <string name="pep_confirm_trustwords">Confirmar</string>
+    <string name="pep_wrong_trustwords">Incorrectes</string>
     <string name="pep_wrong_fingerprint">Empremta incorrecte</string>
     <string name="pep_ask_trustwords">PPregunta al teu interlocutor quines són les seves Trustwords. La resposta correcta es mostra a continuació.</string>
     <string name="pep_complete_partner_format">Company\n%1$s &lt;%2$s&gt;</string>
@@ -41,7 +41,18 @@
     <string name="pep_trust_server_description">Desa els correus al servidor de forma segura.</string>
     <string name="pep_account_privacy_protection_explanation">Protegeix la privacitat d\'aquest compte</string>
     <string name="pep_account_setup_generating_keys">Configurant la seva privacitat</string>
-    <string name="pEp_trustwords">Trustwords pEp</string>
+    <string name="pEp_trustwords">Trustwords pEp</string>f
+    <string name="key_list_title">Available keys</string>
+    <string name="pep_add_device_ask_trustwords">You are about to add a device to your pEp device group. Confirm by successfully verifying the following Trustwords.</string>
+    <string name="pep_device_group">Grup de dispositius de p≡p</string>
+    <string name="handshake_reset_dialog_message">Av’s: Aquesta comunicaci— sХhavia marcat prЏviament com a no confiable. Desitges realitzar un nou Handshake?</string>
+    <string name="pep_gpg_compatibility">Compatibilitat amb OpenPGP</string>
+    <string name="crash_toast_text">Oops, something went wrong</string>
+    <string name="advanced_options">Advanced options</string>
+    <string name="basic_options">Basic options</string>
+    <string name="pep_enable_decryption">Decrypt messages</string>
+    <string name="pep_enable_sync_account">f</string>
+    <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
     <string-array name="pep_title">
         <item>Desconegut<!--pEpRatingUndefined--></item>
         <item>No es pot desxifrar<!--pEpRatingCannotDecrypt--></item>
