@@ -2,6 +2,7 @@ package com.fsck.k9.pEp.ui.viewholders;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -36,7 +37,7 @@ public class IdentityViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void renderIdentity(final Identity keyItem) {
-        identityUserName.setText(keyItem.username);
+        identityUserName.setText(keyItem.address);
         identityAddress.setText(keyItem.address);
         boolean flagged = IdentityFlags.PEPIdfNotForSync.value != keyItem.flags;
         isBlacklistedCheckbox.setChecked(flagged);

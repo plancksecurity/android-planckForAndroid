@@ -35,7 +35,7 @@
             android:layout_gravity="center_vertical"
             android:textAppearance="?android:attr/textAppearanceSmall"
             tools:text="Medium Text"
-            tools:visibility="gone" />
+            android:visibility="gone" />
     </LinearLayout>
 
     <CheckBox
