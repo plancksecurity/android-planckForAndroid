@@ -98,4 +98,11 @@ class MigrationTo56 {
     static void cleanUpFtsTable(SQLiteDatabase db) {
         db.execSQL("DELETE FROM messages_fulltext WHERE docid NOT IN (SELECT id FROM messages WHERE deleted = 0)");
     }
+    
+    public static void migratePendingCommands(SQLiteDatabase db) {
+        // TODO actually migrate
+        db.execSQL("DROP TABLE IF EXISTS pending_commands");
+        db.execSQL("CREATE TABLE pending_commands " +
+                "(id INTEGER PRIMARY KEY, command TEXT, data TEXT)");
+    }
 }
