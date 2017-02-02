@@ -1487,18 +1487,16 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
         if (k9identity.containsKey(IdentityField.ORIGINAL_MESSAGE)) {
             relatedMessageReference = null;
-            try {
-                String originalMessage = k9identity.get(IdentityField.ORIGINAL_MESSAGE);
-                MessageReference messageReference = new MessageReference(originalMessage);
+            String originalMessage = k9identity.get(IdentityField.ORIGINAL_MESSAGE);
+            MessageReference messageReference = MessageReference.parse(originalMessage);
 
+            if (messageReference != null) {
                 // Check if this is a valid account in our database
                 Preferences prefs = Preferences.getPreferences(getApplicationContext());
                 Account account = prefs.getAccount(messageReference.getAccountUuid());
                 if (account != null) {
                     relatedMessageReference = messageReference;
                 }
-            } catch (MessagingException e) {
-                Log.e(K9.LOG_TAG, "Could not decode message reference in identity.", e);
             }
         }
 
