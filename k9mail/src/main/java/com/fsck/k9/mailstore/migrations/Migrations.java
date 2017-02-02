@@ -67,7 +67,6 @@ public class Migrations {
             case 55:
                 MigrationTo56.renamepEpRatingColumn(db);
                 MigrationTo56.cleanUpFtsTable(db);
-                MigrationTo56.migratePendingCommands(db);
             case 56:
                 MigrationTo57.fixDataLocationForMultipartParts(db);
             case 57:
@@ -75,6 +74,8 @@ public class Migrations {
                 MigrationTo58.createDeleteMessageTrigger(db);
             case 58:
                 MigrationTo59.addMissingIndexes(db);
+            case 60:
+                MigrationTo60.migratePendingCommands(db);
 
         }
     }
