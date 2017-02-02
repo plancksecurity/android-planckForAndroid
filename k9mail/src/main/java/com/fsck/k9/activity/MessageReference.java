@@ -1,5 +1,8 @@
 package com.fsck.k9.activity;
 
+
+import java.util.StringTokenizer;
+
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -10,11 +13,9 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.filter.Base64;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
-import com.fsck.k9.mail.filter.Base64;
-
-import java.util.StringTokenizer;
 
 public class MessageReference implements Parcelable {
     private final String accountUuid;
@@ -144,30 +145,6 @@ public class MessageReference implements Parcelable {
                '}';
     }
 
-    public LocalMessage restoreToLocalMessage(Context context) {
-        try {
-            Account account = Preferences.getPreferences(context).getAccount(accountUuid);
-            if (account != null) {
-                LocalFolder folder = account.getLocalStore().getFolder(folderName);
-                if (folder != null) {
-                    LocalMessage message = folder.getMessage(uid);
-                    if (message != null) {
-                        return message;
-                    } else {
-                        Log.d(K9.LOG_TAG, "Could not restore message, uid " + uid + " is unknown.");
-                    }
-                } else {
-                    Log.d(K9.LOG_TAG, "Could not restore message, folder " + folderName + " is unknown.");
-                }
-            } else {
-                Log.d(K9.LOG_TAG, "Could not restore message, account " + accountUuid + " is unknown.");
-            }
-        } catch (MessagingException e) {
-            Log.w(K9.LOG_TAG, "Could not retrieve message for reference.", e);
-        }
-
-        return null;
-    }
 
     public void saveLocalMessage(Context context, LocalMessage message) {
         if (message != null && !message.getUid().equals(uid)) {
@@ -178,10 +155,7 @@ public class MessageReference implements Parcelable {
             if (account != null) {
                 LocalFolder folder = account.getLocalStore().getFolder(folderName);
                 if (folder != null) {
-                    folder.storeSmallMessage(message, new Runnable() {
-                        @Override
-                        public void run() {
-                        }
+                    folder.storeSmallMessage(message, () -> {
                     });
                 } else {
                     Log.d(K9.LOG_TAG, "Could not restore message, folder " + folderName + " is unknown.");
@@ -245,11 +219,11 @@ public class MessageReference implements Parcelable {
         return flag;
     }
 
-    public MessageReference withModifiedUid(String newUid) {
+    MessageReference withModifiedUid(String newUid) {
         return new MessageReference(accountUuid, folderName, newUid, flag);
     }
 
-    public MessageReference withModifiedFlag(Flag newFlag) {
+    MessageReference withModifiedFlag(Flag newFlag) {
         return new MessageReference(accountUuid, folderName, uid, newFlag);
     }
 }
