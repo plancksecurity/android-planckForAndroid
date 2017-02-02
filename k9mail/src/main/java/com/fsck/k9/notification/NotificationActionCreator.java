@@ -9,7 +9,11 @@ import android.text.TextUtils;
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
-import com.fsck.k9.activity.*;
+import com.fsck.k9.activity.Accounts;
+import com.fsck.k9.activity.FolderList;
+import com.fsck.k9.activity.MessageList;
+import com.fsck.k9.activity.MessageReference;
+import com.fsck.k9.activity.NotificationDeleteConfirmation;
 import com.fsck.k9.activity.compose.MessageActions;
 import com.fsck.k9.search.LocalSearch;
 
