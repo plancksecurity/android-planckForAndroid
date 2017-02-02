@@ -280,7 +280,8 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
         final Intent intent = getIntent();
 
-        relatedMessageReference = intent.getParcelableExtra(EXTRA_MESSAGE_REFERENCE);
+        String messageReferenceString = intent.getStringExtra(EXTRA_MESSAGE_REFERENCE);
+        relatedMessageReference = MessageReference.parse(messageReferenceString);
         originalMessageRating = ((Rating) intent.getSerializableExtra(EXTRA_PEP_RATING));
 
         final String accountUuid = (relatedMessageReference != null) ?

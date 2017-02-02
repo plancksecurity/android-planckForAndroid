@@ -4,8 +4,6 @@ package com.fsck.k9.activity;
 import java.util.StringTokenizer;
 
 import android.content.Context;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -21,7 +19,7 @@ import com.fsck.k9.mailstore.LocalMessage;
 import static com.fsck.k9.helper.Preconditions.checkNotNull;
 
 
-public class MessageReference implements Parcelable {
+public class MessageReference {
     private static final char IDENTITY_VERSION_1 = '!';
     private static final String IDENTITY_SEPARATOR = ":";
 
@@ -149,41 +147,6 @@ public class MessageReference implements Parcelable {
         } catch (MessagingException e) {
             Log.w(K9.LOG_TAG, "Could not retrieve message for reference.", e);
         }
-    }
-
-    public static final Creator<MessageReference> CREATOR = new Creator<MessageReference>() {
-        @Override
-        public MessageReference createFromParcel(Parcel source) {
-            MessageReference ref;
-            String uid = source.readString();
-            String accountUuid = source.readString();
-            String folderName = source.readString();
-            String flag = source.readString();
-            if (flag != null) {
-                ref = new MessageReference(accountUuid, folderName, uid, Flag.valueOf(flag));
-            } else {
-                ref = new MessageReference(accountUuid, folderName, uid, null);
-            }
-            return ref;
-        }
-
-        @Override
-        public MessageReference[] newArray(int size) {
-            return new MessageReference[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(uid);
-        dest.writeString(accountUuid);
-        dest.writeString(folderName);
-        dest.writeString(flag == null ? null : flag.name());
     }
 
     public String getAccountUuid() {

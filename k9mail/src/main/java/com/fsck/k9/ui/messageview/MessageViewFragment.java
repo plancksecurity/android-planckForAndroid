@@ -110,7 +110,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         MessageViewFragment fragment = new MessageViewFragment();
 
         Bundle args = new Bundle();
-        args.putParcelable(ARG_REFERENCE, reference);
+        args.putString(ARG_REFERENCE, reference.toIdentityString());
         fragment.setArguments(args);
 
         return fragment;
@@ -215,6 +215,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         Activity activity = getActivity();
         boolean isChangingConfigurations = activity != null && activity.isChangingConfigurations();
         if (isChangingConfigurations) {
@@ -280,6 +281,12 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        Bundle arguments = getArguments();
+        String messageReferenceString = arguments.getString(ARG_REFERENCE);
+        MessageReference messageReference = MessageReference.parse(messageReferenceString);
+
+        displayMessage(messageReference);
     }
 
     private void displayMessage(MessageReference messageReference) {
@@ -486,7 +493,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         intent.putExtra(ChooseFolder.EXTRA_ACCOUNT, mAccount.getUuid());
         intent.putExtra(ChooseFolder.EXTRA_CUR_FOLDER, mMessageReference.getFolderName());
         intent.putExtra(ChooseFolder.EXTRA_SEL_FOLDER, mAccount.getLastSelectedFolderName());
-        intent.putExtra(ChooseFolder.EXTRA_MESSAGE, mMessageReference);
+        intent.putExtra(ChooseFolder.EXTRA_MESSAGE, mMessageReference.toIdentityString());
         startActivityForResult(intent, activity);
     }
 
@@ -496,6 +503,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             messageCryptoPresenter.onActivityResult(requestCode, resultCode, data);
             return;
         }
+
+        // Note: because fragments do not have a startIntentSenderForResult method, pending intent activities are
+        // launched through the MessageList activity, and delivered back via onPendingIntentResult()
 
         switch (requestCode) {
             case ACTIVITY_CHOOSE_DIRECTORY: {
@@ -518,7 +528,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 }
 
                 String destFolderName = data.getStringExtra(ChooseFolder.EXTRA_NEW_FOLDER);
-                MessageReference ref = data.getParcelableExtra(ChooseFolder.EXTRA_MESSAGE);
+                String messageReferenceString = data.getStringExtra(ChooseFolder.EXTRA_MESSAGE);
+                MessageReference ref = MessageReference.parse(messageReferenceString);
                 if (mMessageReference.equals(ref)) {
                     mAccount.setLastSelectedFolderName(destFolderName);
                     switch (requestCode) {
