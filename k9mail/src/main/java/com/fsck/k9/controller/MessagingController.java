@@ -1540,6 +1540,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                             final List<Message> syncFlagMessages,
                                             boolean flagSyncOnly) throws MessagingException {
         if (message.isSet(Flag.DELETED)) {
+            if (K9.DEBUG)
+                Log.v(K9.LOG_TAG, "Message with uid " + message.getUid() + " is marked as deleted");
             syncFlagMessages.add(message);
             return;
         }
@@ -1590,6 +1592,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 }
                 syncFlagMessages.add(message);
             }
+        } else {
+            if (K9.DEBUG)
+                Log.v(K9.LOG_TAG, "Local copy of message with uid " + message.getUid() + " is marked as deleted");
         }
     }
 
