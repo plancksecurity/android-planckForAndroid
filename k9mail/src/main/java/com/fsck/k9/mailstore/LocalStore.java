@@ -272,6 +272,10 @@ public class LocalStore extends Store implements Serializable {
         database.switchProvider(newStorageProviderId);
     }
 
+    Context getContext() {
+        return context;
+    }
+
     protected Account getAccount() {
         return mAccount;
     }
