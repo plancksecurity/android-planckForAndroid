@@ -728,7 +728,7 @@ public class Accounts extends PepPermissionActivity {
      * Show that account's inbox or folder-list
      * or return false if the account is not available.
      * @param account the account to open ({@link SearchAccount} or {@link Account})
-     * @return false if unsuccessfull
+     * @return false if unsuccessful
      */
     private boolean onOpenAccount(BaseAccount account) {
         if (account instanceof SearchAccount) {
