@@ -799,14 +799,6 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public void setSyncSendMessageCallback(Sync.MessageToSendCallback callback) {
         engine.setMessageToSendCallback(callback);
-        sendMessageSet = true;
-        if (areCallbackSet() && !keysyncStarted) {
-            engine.startSync();
-            keysyncStarted = true;
-            Log.e(TAG, "setstartSync: ");
-        }
-        Log.i(TAG, "setSyncSendMessageCallback: SEND");
-
     }
 
     private boolean areCallbackSet() {
@@ -816,13 +808,6 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public void setSyncHandshakeCallback(Sync.notifyHandshakeCallback activity) {
         engine.setnotifyHandshakeCallback(activity);
-        showHandshakeSet = true;
-        if (areCallbackSet() && !keysyncStarted) {
-            engine.startSync();
-            keysyncStarted = true;
-            Log.e(TAG, "setstartSync: ");
-        }
-        Log.i(TAG, "setSyncHandshakeCallback: SEND");
     }
 
     @Override
@@ -897,6 +882,11 @@ public class PEpProviderImpl implements PEpProvider {
                 }
             }
         });
+    }
+
+    @Override
+    public void setFastPollingCallback(Sync.NeedsFastPollCallback needsFastPollCallback) {
+        engine.setNeedsFastPollCallback(needsFastPollCallback);
     }
 
     private void notifyLoaded(final Object privacyState, final ResultCallback callback) {

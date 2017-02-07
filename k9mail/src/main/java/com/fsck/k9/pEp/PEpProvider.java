@@ -186,6 +186,8 @@ public interface PEpProvider {
 
     void unsetIdentityFlag(Identity identity, Integer flags, CompletedCallback completedCallback);
 
+    void setFastPollingCallback(Sync.NeedsFastPollCallback needsFastPollCallback);
+
     class KeyDetail {
         private final Address address;
         private final String detailMessage;
