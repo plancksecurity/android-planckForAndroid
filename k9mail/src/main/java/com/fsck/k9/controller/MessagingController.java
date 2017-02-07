@@ -1429,11 +1429,24 @@ public class MessagingController implements Sync.MessageToSendCallback {
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", (MimeMessage) message);
                     final PEpProvider.DecryptResult result;
                     //// TODO: 22/12/16  message.getFrom()[0].getAddress() != null) should ne removed when ENGINE-160 is fixed
+                    boolean alreadyDecrypted = false;
                     if (account.ispEpPrivacyProtected() && message.getFrom()[0].getAddress() != null) {
                         PEpProvider.DecryptResult tempResult;
-                        tempResult = decryptMessage((MimeMessage) message);
-
+                        if (!account.isUntrustedSever()) { //trusted server
+                            Rating rating = PEpUtils.extractRating(message);
+                            if (rating.equals(Rating.pEpRatingUndefined)) {
+                                tempResult = decryptMessage((MimeMessage) message);
+                            } else {
+                                // if we are on a trusted server and already had an EncStatus, then is already encrypted by someone else.
+                                alreadyDecrypted = true;
+                                tempResult = new PEpProvider.DecryptResult((MimeMessage) message, rating, null, null);
+                            }
+                        } else {
+                            tempResult = decryptMessage((MimeMessage) message);
+                        }
+                        if(tempResult.flags == null) Log.e("PEPJNI", "messageFinished: null");
                         if (tempResult.flags != null) {
+                            Log.e("PEPJNI", "messageFinished: " + tempResult.flags);
                             switch (tempResult.flags) {
                                 case PEPDecryptFlagConsumed:
                                     Log.v("pEpJNI", "messageFinished: Deleting");
@@ -1479,7 +1492,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         }
                     });
 
-                    if (!account.isUntrustedSever()) {
+                    if (!account.isUntrustedSever() && !alreadyDecrypted) {
                         appendMessageCommand(account, localMessage, localFolder);
                     }
                     Log.d("pep", "in download loop (nr=" + number + ") post pep");
