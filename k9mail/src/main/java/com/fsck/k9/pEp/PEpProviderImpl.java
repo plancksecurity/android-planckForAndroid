@@ -65,13 +65,11 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public void getPrivacyState(com.fsck.k9.mail.Message message, ResultCallback<Rating> callback) {
-        threadExecutor.execute(() -> {
-            Address from = message.getFrom()[0];                            // FIXME: From is an array?!
-            List<Address> to = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO));
-            List<Address> cc = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC));
-            List<Address> bcc = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC));
-            notifyLoaded(getPrivacyState(from, to, cc, bcc), callback);
-        });
+        Address from = message.getFrom()[0];                            // FIXME: From is an array?!
+        List<Address> to = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO));
+        List<Address> cc = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC));
+        List<Address> bcc = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC));
+        getPrivacyState(from, to, cc, bcc, callback);
     }
 
     private Rating getPrivacyState(Message message) {
@@ -257,8 +255,9 @@ public class PEpProviderImpl implements PEpProvider {
             Log.d(TAG, "decryptMessage() enter");
             Message srcMsg = null;
             Engine.decrypt_message_Return decReturn = null;
+            Engine engine = null;
             try {
-                if (engine == null) createEngineSession();
+                engine = getNewEngineSession();
 
                 srcMsg = new PEpMessageBuilder(source).createMessage(context);
                 srcMsg.setDir(Message.Direction.Incoming);
@@ -289,6 +288,9 @@ public class PEpProviderImpl implements PEpProvider {
             } finally {
                 if (srcMsg != null) srcMsg.close();
                 if (decReturn != null && decReturn.dst != srcMsg) decReturn.dst.close();
+                if (engine != null) {
+                    engine.close();
+                }
                 Log.d(TAG, "decryptMessage() exit");
             }
         });
@@ -367,24 +369,6 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void encryptMessage(MimeMessage source, String[] extraKeys, ResultCallback<List<MimeMessage>> callback) {
-        // TODO: 06/12/16 add unencrypted for some
-        Log.d(TAG, "encryptMessage() enter");
-        List<MimeMessage> resultMessages = new ArrayList<>();
-        Message message = new PEpMessageBuilder(source).createMessage(context);
-        try {
-            if (engine == null) createEngineSession();
-            resultMessages.add(getEncryptedCopy(source, message, extraKeys));
-            notifyLoaded(resultMessages, callback);
-        } catch (Throwable t) {
-            Log.e(TAG, "while encrypting message:", t);
-            notifyError(new RuntimeException("Could not encrypt", t), callback);
-        } finally {
-            Log.d(TAG, "encryptMessage() exit");
-        }
-    }
-
-    @Override
     public MimeMessage encryptMessageToSelf(MimeMessage source) throws MessagingException{
         if (source == null) {
             return source;
@@ -405,33 +389,6 @@ public class PEpProviderImpl implements PEpProvider {
         } catch (Exception exception) {
             Log.e(TAG, "encryptMessageToSelf: ", exception);
             return source;
-        } finally {
-            if (message != null) {
-                message.close();
-            }
-        }
-    }
-
-    @Override
-    public void encryptMessageToSelf(MimeMessage source, ResultCallback<MimeMessage> callback){
-        if (source == null) {
-            notifyLoaded(source, callback);
-        }
-        Message message = null;
-        try {
-            message = new PEpMessageBuilder(source).createMessage(context);
-            message.setDir(Message.Direction.Outgoing);
-            Log.d(TAG, "encryptMessage() before encrypt to self");
-            Identity from = message.getFrom();
-            from.user_id = PEP_OWN_USER_ID;
-            message.setFrom(from);
-            Message currentEnc = engine.encrypt_message_for_self(message.getFrom(), message);
-            if (currentEnc == null) currentEnc = message;
-            Log.d(TAG, "encryptMessage() after encrypt to self");
-            notifyLoaded(getMimeMessage(source, message), callback);
-        } catch (Exception exception) {
-            Log.e(TAG, "encryptMessageToSelf: ", exception);
-            notifyLoaded(source, callback);
         } finally {
             if (message != null) {
                 message.close();
@@ -566,14 +523,6 @@ public class PEpProviderImpl implements PEpProvider {
     public Rating identityRating(Address address) {
         Identity ident = PEpUtils.createIdentity(address, context);
         return identityRating(ident);
-    }
-
-    @Override
-    public void identityRating(Address address, ResultCallback<Rating> callback) {
-        threadExecutor.execute(() -> {
-            Identity ident = PEpUtils.createIdentity(address, context);
-            notifyLoaded(identityRating(ident), callback);
-        });
     }
 
     @Override
