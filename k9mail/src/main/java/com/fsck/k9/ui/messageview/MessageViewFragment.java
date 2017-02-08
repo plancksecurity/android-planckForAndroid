@@ -44,6 +44,7 @@ import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.internet.MessageExtractor;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
@@ -205,7 +206,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             public void onClick(View v) {
                 mMessageView.disableDownloadButton();
                 messageLoaderHelper.downloadCompleteMessage();
-                isMessageFullDownloaded = true;
             }
         });
         // onDownloadRemainder();;
@@ -232,7 +232,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         }
 
         mAccount = Preferences.getPreferences(getApplicationContext()).getAccount(mMessageReference.getAccountUuid());
-        isMessageFullDownloaded = mAccount.isPEpDownloadEnabled();
         messageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, null);
 
         mFragmentListener.updateMenu();
@@ -775,6 +774,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         @Override
         public void onMessageDataLoadFinished(LocalMessage message) {
             mMessage = message;
+            isMessageFullDownloaded = mMessage.isSet(Flag.X_DOWNLOADED_FULL) &&
+                    !MessageExtractor.hasMissingParts(mMessage);
 
             displayHeaderForLoadingMessage(message);
             mMessageView.setToLoadingState();
