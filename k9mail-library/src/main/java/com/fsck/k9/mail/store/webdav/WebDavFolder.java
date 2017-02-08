@@ -696,28 +696,8 @@ class WebDavFolder extends Folder<WebDavMessage> {
 
                 Log.i(LOG_TAG, "Uploading message as " + messageURL);
 
-                httpmethod = new HttpGeneric(messageURL);
-                httpmethod.setMethod("PUT");
-                httpmethod.setEntity(bodyEntity);
+                store.sendRequest(messageURL, "PUT", bodyEntity, null, true);
 
-                String mAuthString = store.getAuthString();
-
-                if (mAuthString != null) {
-                    httpmethod.setHeader("Authorization", mAuthString);
-                }
-
-                response = httpclient.executeOverride(httpmethod, store.getContext());
-                statusCode = response.getStatusLine().getStatusCode();
-
-                if (statusCode < 200 ||
-                        statusCode > 300) {
-
-                    //TODO: Could we handle a login timeout here?
-
-                    throw new IOException("Error with status code " + statusCode
-                            + " while sending/appending message.  Response = "
-                            + response.getStatusLine().toString() + " for message " + messageURL);
-                }
                 WebDavMessage retMessage = new WebDavMessage(message.getUid(), this);
 
                 retMessage.setUrl(messageURL);
