@@ -87,6 +87,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private Rating pEpRating;
     private PePUIArtefactCache pePUIArtefactCache;
+    private boolean isMessageFullDownloaded;
 
     public static MessageViewFragment newInstance(MessageReference reference) {
         MessageViewFragment fragment = new MessageViewFragment();
@@ -204,6 +205,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             public void onClick(View v) {
                 mMessageView.disableDownloadButton();
                 messageLoaderHelper.downloadCompleteMessage();
+                isMessageFullDownloaded = true;
             }
         });
         // onDownloadRemainder();;
@@ -230,6 +232,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         }
 
         mAccount = Preferences.getPreferences(getApplicationContext()).getAccount(mMessageReference.getAccountUuid());
+        isMessageFullDownloaded = mAccount.isPEpDownloadEnabled();
         messageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, null);
 
         mFragmentListener.updateMenu();
@@ -874,7 +877,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private boolean hasToBeDecrypted(LocalMessage message) {
         return mAccount.ispEpPrivacyProtected()
-                && EncryptionVerifier.isEncrypted(message);
+                && EncryptionVerifier.isEncrypted(message) && isMessageFullDownloaded;
     }
 
     private boolean canDecrypt() {
