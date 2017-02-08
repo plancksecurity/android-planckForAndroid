@@ -727,42 +727,6 @@ public class K9 extends Application {
                         break;
                 }
             }
-
-//            @Override
-            public void showHandshake(Identity myself, Identity partner/*, SyncHandshakeSignal signal*/) {
-
-//                switch (signal) {
-//                    //// TODO: 13/12/16 review
-//                    case SyncNotifyInitAddOtherDevice:
-//                        //3                Toast.makeText(getApplicationContext(), myself.fpr + "/n" + partner.fpr, Toast.LENGTH_LONG).show();
-//                        //startActivity(new Intent(getApplicationContext(), PEpTrustwords.class));
-//                        Log.e("PEPJNI", "showHandshake: " + myself.toString() + "\n::\n" + partner.toString());
-//
-//                        String myTrust = PEpUtils.getShortTrustWords(pEpSyncProvider, myself);
-//                        String theirTrust = PEpUtils.getShortTrustWords(pEpSyncProvider, partner);
-//                        String trust;
-//                        if (myself.fpr.compareTo(partner.fpr) > 0) {
-//                            trust = theirTrust + myTrust;
-//                        } else {
-//                            trust = myTrust + theirTrust;
-//                        }
-//
-//                        Context context = K9.this.getApplicationContext();
-//                        Intent syncTrustowordsActivity = PEpAddDevice.getActionRequestHandshake(context, trust, partner);
-//                        syncTrustowordsActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                        PendingIntent pendingIntent = PendingIntent.getActivity(context, 22, syncTrustowordsActivity, 0);
-//                        try {
-//                            pendingIntent.send();
-//                        }
-//                        catch (PendingIntent.CanceledException e) {
-//                            // TODO Auto-generated catch block
-//                            e.printStackTrace();
-//                        }
-//                        break;
-//                }
-
-            }
-
         });
 
         pEpSyncProvider.setSyncSendMessageCallback(new Sync.MessageToSendCallback() {
@@ -784,6 +748,13 @@ public class K9 extends Application {
                 } catch (MessagingException e) {
                     e.printStackTrace();
                 }
+            }
+        });
+
+        pEpSyncProvider.setFastPollingCallback(new Sync.NeedsFastPollCallback() {
+            @Override
+            public void needsFastPollCallFromC(Boolean fast_poll_needed) {
+
             }
         });
 
