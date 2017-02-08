@@ -38,6 +38,7 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.infrastructure.Poller;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
@@ -70,6 +71,9 @@ import java.util.concurrent.SynchronousQueue;
         mode = ReportingInteractionMode.TOAST,
         resToastText = R.string.crash_toast_text)
 public class K9 extends Application {
+    public static final int POLLING_INTERVAL = 200;
+    private Poller poller;
+    private boolean needsFastPoll;
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PEpProvider pEpProvider, pEpSyncProvider;
     final boolean ispEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
@@ -552,6 +556,7 @@ public class K9 extends Application {
         pEpInitEnvironment();
         if (ispEpSyncEnabled) {
             initSync();
+            setupFastPoller();
         }
 
         if (K9.DEVELOPER_MODE) {
@@ -690,6 +695,7 @@ public class K9 extends Application {
                     case SyncNotifyInitAddOurDevice:
                     case SyncNotifyInitAddOtherDevice:
                     case SyncNotifyInitFormGroup:
+                        needsFastPoll = false;
                         Log.i("PEPJNI", "showHandshake: " + signal.name() + " " + myself.toString() + "\n::\n" + partner.toString());
 
                         String myTrust = PEpUtils.getShortTrustWords(pEpSyncProvider, myself);
@@ -718,12 +724,15 @@ public class K9 extends Application {
                         Toast.makeText(K9.this, R.string.import_dialog_error_title, Toast.LENGTH_SHORT).show();
                         Intent broadcastIntent = new Intent();
                         K9.this.sendOrderedBroadcast(broadcastIntent, null);
+                        needsFastPoll = false;
                         break;
                     case SyncNotifyAcceptedDeviceAdded:
                         Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show();
+                        needsFastPoll = false;
                         break;
                     case SyncNotifyAcceptedGroupCreated:
                         Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show();
+                        needsFastPoll = false;
                         break;
                 }
             }
@@ -754,7 +763,10 @@ public class K9 extends Application {
         pEpSyncProvider.setFastPollingCallback(new Sync.NeedsFastPollCallback() {
             @Override
             public void needsFastPollCallFromC(Boolean fast_poll_needed) {
-
+                needsFastPoll = fast_poll_needed;
+                if (needsFastPoll) {
+                    poller.startPolling();
+                }
             }
         });
 
@@ -1661,5 +1673,27 @@ public class K9 extends Application {
 
     public ApplicationComponent getComponent() {
         return component;
+    }
+
+    private void setupFastPoller() {
+        if (poller == null) {
+            poller = new Poller(new Handler());
+            poller.init(POLLING_INTERVAL, this::polling);
+        } else {
+            poller.stopPolling();
+        }
+        poller.startPolling();
+    }
+
+    private void polling() {
+        if (needsFastPoll) {
+            MessagingController messagingController = MessagingController.getInstance(this);
+            if (currentAccount != null) {
+                messagingController.searchRemoteMessages(currentAccount.getUuid(), currentAccount.getInboxFolderName(), null, null, null, null);
+            }
+        } else {
+            needsFastPoll = false;
+            poller.stopPolling();
+        }
     }
 }
