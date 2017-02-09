@@ -65,8 +65,8 @@ public class PEpUtils {
 
     public static Identity createIdentity(Address adr, Context context) {
         Identity id = new Identity();
-        id.address = adr.getAddress();
-        id.username = adr.getAddress();
+        id.address = adr.getAddress().toLowerCase();
+        id.username = adr.getAddress().toLowerCase();
         if (adr.getPersonal() != null) {
             id.username = adr.getPersonal();
         }

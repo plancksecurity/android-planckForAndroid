@@ -201,6 +201,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     private void runInBackground() {
         Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+        Log.d("createIfNeeded", "messaging controller");
         pEpProvider = PEpProviderFactory.createAndSetupProvider(context);
         while (!stopped) {
             String commandDescription = null;
@@ -1434,12 +1435,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         PEpProvider.DecryptResult tempResult;
                         if (!account.isUntrustedSever()) { //trusted server
                             Rating rating = PEpUtils.extractRating(message);
+                            tempResult = decryptMessage((MimeMessage) message);
                             if (rating.equals(Rating.pEpRatingUndefined)) {
-                                tempResult = decryptMessage((MimeMessage) message);
+                             // no-op   tempResult = decryptMessage((MimeMessage) message);
                             } else {
                                 // if we are on a trusted server and already had an EncStatus, then is already encrypted by someone else.
                                 alreadyDecrypted = true;
-                                tempResult = new PEpProvider.DecryptResult((MimeMessage) message, rating, null, null);
+                                tempResult = new PEpProvider.DecryptResult((MimeMessage) tempResult.msg, rating, null, tempResult.flags);
                             }
                         } else {
                             tempResult = decryptMessage((MimeMessage) message);
@@ -1473,7 +1475,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         showImportKeyDialogIfNeeded(message, result, account);
                         deleteMessage(message, account, folder, localFolder);
                     }
-                    else if (store && (!account.ispEpPrivacyProtected() || account.ispEpPrivacyProtected() && (result.rating != Rating.pEpRatingUndefined || message.getFrom()[0].getAddress() == null))) {
+                    else if (store
+                            && (!account.ispEpPrivacyProtected()
+                            || account.ispEpPrivacyProtected() && (result.rating != Rating.pEpRatingUndefined || message.getFrom()[0].getAddress() == null))
+                            ) {
                         MimeMessage decryptedMessage =  result.msg;
                         if (message.getFolder().getName().equals(account.getSentFolderName())
                                 || message.getFolder().getName().equals(account.getDraftsFolderName())) {
@@ -1492,7 +1497,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         }
                     });
 
-                    if (!account.isUntrustedSever() && !alreadyDecrypted) {
+                    if (!account.isUntrustedSever() && !alreadyDecrypted && result.flags == null) {
                         appendMessageCommand(account, localMessage, localFolder);
                     }
                     Log.d("pep", "in download loop (nr=" + number + ") post pep");
@@ -4065,6 +4070,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         putBackground("checkMail", listener, new Runnable() {
             @Override
             public void run() {
+                Log.d("CHECKMAIL", Thread.currentThread().getId() + "::" + Thread.currentThread().getName());
 
                 try {
                     if (K9.DEBUG)

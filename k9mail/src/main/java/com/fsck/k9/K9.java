@@ -71,7 +71,7 @@ import java.util.concurrent.SynchronousQueue;
         mode = ReportingInteractionMode.TOAST,
         resToastText = R.string.crash_toast_text)
 public class K9 extends Application {
-    public static final int POLLING_INTERVAL = 200;
+    public static final int POLLING_INTERVAL = 1000;
     private Poller poller;
     private boolean needsFastPoll;
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
@@ -695,7 +695,6 @@ public class K9 extends Application {
                     case SyncNotifyInitAddOurDevice:
                     case SyncNotifyInitAddOtherDevice:
                     case SyncNotifyInitFormGroup:
-                        needsFastPoll = false;
                         Log.i("PEPJNI", "showHandshake: " + signal.name() + " " + myself.toString() + "\n::\n" + partner.toString());
 
                         String myTrust = PEpUtils.getShortTrustWords(pEpSyncProvider, myself);
@@ -721,18 +720,20 @@ public class K9 extends Application {
                         break;
                     case SyncNotifyTimeout:
                         //Close handshake
-                        Toast.makeText(K9.this, R.string.import_dialog_error_title, Toast.LENGTH_SHORT).show();
+                        new Handler().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(K9.this, R.string.import_dialog_error_title, Toast.LENGTH_SHORT).show();
+                            }
+                        });
                         Intent broadcastIntent = new Intent();
                         K9.this.sendOrderedBroadcast(broadcastIntent, null);
-                        needsFastPoll = false;
                         break;
                     case SyncNotifyAcceptedDeviceAdded:
-                        Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show();
-                        needsFastPoll = false;
+                        //Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show();
                         break;
                     case SyncNotifyAcceptedGroupCreated:
-                        Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show();
-                        needsFastPoll = false;
+                        //Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -766,6 +767,8 @@ public class K9 extends Application {
                 needsFastPoll = fast_poll_needed;
                 if (needsFastPoll) {
                     poller.startPolling();
+                } else {
+                    poller.stopPolling();
                 }
             }
         });
@@ -1688,9 +1691,7 @@ public class K9 extends Application {
     private void polling() {
         if (needsFastPoll) {
             MessagingController messagingController = MessagingController.getInstance(this);
-            if (currentAccount != null) {
-                messagingController.searchRemoteMessages(currentAccount.getUuid(), currentAccount.getInboxFolderName(), null, null, null, null);
-            }
+            messagingController.checkMail(K9.this, null, true, true, null);
         } else {
             needsFastPoll = false;
             poller.stopPolling();
