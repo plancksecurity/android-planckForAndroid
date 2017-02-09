@@ -204,6 +204,20 @@ public class PEpTrustwords extends PepColoredActivity {
 
         menuItemTrustwordsLanguage = menu.findItem(R.id.action_language);
         menuItemtrustwordsLength = menu.findItem(R.id.long_trustwords);
+
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem fingerprintItem = menu.findItem(R.id.action_pgp_fingerprint);
+
+        if (showingPgpFingerprint) {
+            fingerprintItem.setTitle(R.string.pEp_trustwords);
+            menuItemTrustwordsLanguage.setVisible(false);
+            menuItemtrustwordsLength.setVisible(false);
+        }
+
         return true;
     }
 
@@ -232,7 +246,7 @@ public class PEpTrustwords extends PepColoredActivity {
                 }
                 flipper.showNext();
                 showingPgpFingerprint = !showingPgpFingerprint;
-//                invalidateOptionsMenu();
+                invalidateOptionsMenu();
                 return true;
             case R.id.action_language:
                 showLanguageSelectionDialog();
