@@ -2038,6 +2038,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     localMessage.setUid(encryptedMessage.getUid());
                     localFolder.changeUid(localMessage);
                     if (localMessage.getFolder().getName().equals(account.getDraftsFolderName())) {
+                        localMessage.addHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(localMessage)));
                         localFolder.appendMessages(Collections.singletonList(localMessage));
                     }
                     for (MessagingListener l : getListeners()) {
