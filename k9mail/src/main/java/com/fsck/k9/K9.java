@@ -74,6 +74,7 @@ public class K9 extends Application {
     public static final int POLLING_INTERVAL = 1000;
     private Poller poller;
     private boolean needsFastPoll;
+    private boolean isPollingMessages;
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PEpProvider pEpProvider, pEpSyncProvider;
     final boolean ispEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
@@ -1685,12 +1686,20 @@ public class K9 extends Application {
     }
 
     private void polling() {
-        if (needsFastPoll) {
+        if (needsFastPoll && !isPollingMessages) {
+            isPollingMessages = true;
             MessagingController messagingController = MessagingController.getInstance(this);
-            messagingController.checkMail(K9.this, null, true, true, null);
-        } else {
-            needsFastPoll = false;
-            poller.stopPolling();
+            messagingController.checkMail(K9.this, true, true, new PEpProvider.CompletedCallback() {
+                @Override
+                public void onComplete() {
+                    isPollingMessages = false;
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                    isPollingMessages = false;
+                }
+            });
         }
     }
 }

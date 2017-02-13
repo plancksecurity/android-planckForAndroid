@@ -4117,6 +4117,63 @@ public class MessagingController implements Sync.MessageToSendCallback {
         });
     }
 
+    public void checkMail(final Context context,
+                          final boolean ignoreLastCheckedTime,
+                          final boolean useManualWakeLock,
+                          final PEpProvider.CompletedCallback completedCallback) {
+
+        TracingWakeLock twakeLock = null;
+        if (useManualWakeLock) {
+            TracingPowerManager pm = TracingPowerManager.getPowerManager(context);
+
+            twakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "K9 MessagingController.checkMail");
+            twakeLock.setReferenceCounted(false);
+            twakeLock.acquire(K9.MANUAL_WAKE_LOCK_TIMEOUT);
+        }
+        final TracingWakeLock wakeLock = twakeLock;
+
+        for (MessagingListener l : getListeners()) {
+            l.checkMailStarted(context, null);
+        }
+        putBackground("checkMail", null, new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (K9.DEBUG)
+                        Log.i(K9.LOG_TAG, "Starting mail check");
+                    Preferences prefs = Preferences.getPreferences(context);
+
+                    Collection<Account> accounts = prefs.getAvailableAccounts();
+
+                    for (final Account account : accounts) {
+                        checkMailForAccount(context, account, ignoreLastCheckedTime, null);
+                    }
+
+                } catch (Exception e) {
+                    Log.e(K9.LOG_TAG, "Unable to synchronize mail", e);
+                    completedCallback.onError(e);
+                }
+                putBackground("finalize sync", null, new Runnable() {
+                            @Override
+                            public void run() {
+
+                                if (K9.DEBUG)
+                                    Log.i(K9.LOG_TAG, "Finished mail sync");
+
+                                if (wakeLock != null) {
+                                    wakeLock.release();
+                                }
+                                for (MessagingListener l : getListeners()) {
+                                    l.checkMailFinished(context, null);
+                                }
+                                completedCallback.onComplete();
+                            }
+                        }
+                );
+            }
+        });
+    }
+
 
 
     private void checkMailForAccount(final Context context, final Account account,
