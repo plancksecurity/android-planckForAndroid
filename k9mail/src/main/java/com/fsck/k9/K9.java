@@ -720,22 +720,19 @@ public class K9 extends Application {
                         break;
                     case SyncNotifyTimeout:
                         //Close handshake
-                        new Handler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(K9.this, R.string.import_dialog_error_title, Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        new Handler(Looper.getMainLooper()).post(()
+                                -> Toast.makeText(K9.this, R.string.pep_keysync_timeout, Toast.LENGTH_SHORT).show());
                         Intent broadcastIntent = new Intent();
                         K9.this.sendOrderedBroadcast(broadcastIntent, null);
                         break;
                     case SyncNotifyAcceptedDeviceAdded:
-                        //Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show();
+                        new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show());
                         break;
                     case SyncNotifyAcceptedGroupCreated:
-                        //Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show();
+                        new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show());
                         break;
                 }
+
             }
         });
 
@@ -749,8 +746,7 @@ public class K9 extends Application {
 
                     loadCurrentAccount(pEpMessage, messagingController);
                     Message message = pEpSyncProvider.getMimeMessage(pEpMessage);
-                    message.setFlag(Flag.X_PEP_DISABLED, true);
-
+                    message.setFlag(Flag.X_PEP_SYNC_MESSAGE_TO_SEND, true);
                     messagingController.sendMessage(currentAccount, message, null);
 
                     Log.e("PEPJNI", "messageToSend: " + pEpMessage.getShortmsg());

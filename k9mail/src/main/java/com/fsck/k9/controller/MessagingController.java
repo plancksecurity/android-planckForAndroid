@@ -3197,7 +3197,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         // pEp the message to send...
                         Message encryptedMessage;
 //                        PEpUtils.dumpMimeMessage("beforeEncrypt", (MimeMessage) message);
-                        if (PEpUtils.ispEpDisabled(account, message, pEpProvider.getPrivacyState(message))) {
+                        if (message.isSet(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)
+                                || PEpUtils.ispEpDisabled(account, message, pEpProvider.getPrivacyState(message))) {
                             message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(Rating.pEpRatingUnencrypted));
                             sendMessage(transport, message);
                             encryptedMessage = message;
@@ -3210,7 +3211,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         for (MessagingListener l : getListeners()) {
                             l.synchronizeMailboxProgress(account, account.getSentFolderName(), progress, todo);
                         }
-                        if (!account.hasSentFolder()) {
+                        if (!account.hasSentFolder() || message.isSet(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)) {
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Account does not have a sent mail folder; deleting sent message");
                             message.setFlag(Flag.DELETED, true);
