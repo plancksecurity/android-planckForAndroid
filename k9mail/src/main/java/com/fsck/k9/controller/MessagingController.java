@@ -1433,18 +1433,14 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     boolean alreadyDecrypted = false;
                     if (account.ispEpPrivacyProtected() && message.getFrom()[0].getAddress() != null) {
                         PEpProvider.DecryptResult tempResult;
+                        tempResult = decryptMessage((MimeMessage) message);
                         if (!account.isUntrustedSever()) { //trusted server
                             Rating rating = PEpUtils.extractRating(message);
-                            tempResult = decryptMessage((MimeMessage) message);
-                            if (rating.equals(Rating.pEpRatingUndefined)) {
-                             // no-op   tempResult = decryptMessage((MimeMessage) message);
-                            } else {
+                            if (!rating.equals(Rating.pEpRatingUndefined)) {
                                 // if we are on a trusted server and already had an EncStatus, then is already encrypted by someone else.
                                 alreadyDecrypted = true;
                                 tempResult = new PEpProvider.DecryptResult((MimeMessage) tempResult.msg, rating, null, tempResult.flags);
                             }
-                        } else {
-                            tempResult = decryptMessage((MimeMessage) message);
                         }
                         if(tempResult.flags == null) Log.e("PEPJNI", "messageFinished: null");
                         if (tempResult.flags != null) {
@@ -1961,6 +1957,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Message remoteMessage = null;
             if (!localMessage.getUid().startsWith(K9.LOCAL_UID_PREFIX)) {
                 remoteMessage = remoteFolder.getMessage(localMessage.getUid());
+                String remoteuid = remoteMessage.getUid();
             }
 
             if (remoteMessage == null) {
@@ -2017,7 +2014,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 remoteFolder.fetch(Collections.singletonList(remoteMessage), fp, null);
                 Date localDate = localMessage.getInternalDate();
                 Date remoteDate = remoteMessage.getInternalDate();
-                if ((remoteDate != null && remoteDate.compareTo(localDate) > 0) || account.isUntrustedSever()) {
+                if ((remoteDate != null && remoteDate.compareTo(localDate) > 0)) {
                     /*
                      * If the remote message is newer than ours we'll just
                      * delete ours and move on. A sync will get the server message
@@ -2040,7 +2037,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     remoteFolder.appendMessages(Collections.singletonList(encryptedMessage));
                     localMessage.setUid(encryptedMessage.getUid());
                     localFolder.changeUid(localMessage);
-                    localFolder.appendMessages(Collections.singletonList(localMessage));
+                    if (localMessage.getFolder().getName().equals(account.getDraftsFolderName())) {
+                        localFolder.appendMessages(Collections.singletonList(localMessage));
+                    }
                     for (MessagingListener l : getListeners()) {
                         l.messageUidChanged(account, folder, oldUid, localMessage.getUid());
                     }
@@ -2085,7 +2084,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 throw ex;
             }
         } else { // Trusted
-            encryptedMessage = localMessage;
+           return localMessage;
         }
 
         encryptedMessage.setUid(localMessage.getUid());
@@ -3217,7 +3216,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             // no need to delete encmsg, has not seen db up to now...
                         } else {
                             LocalFolder localSentFolder = (LocalFolder) localStore.getFolder(account.getSentFolderName());
-                            boolean isUntrustedServer = account.isUntrustedSever();
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moving sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
@@ -3235,7 +3233,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moved sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
-                            appendMessageCommand(account, message, localSentFolder);
+                            Rating rating = PEpUtils.extractRating(message);
+                            if(!(!account.isUntrustedSever() && rating.equals(Rating.pEpRatingUndefined))) {
+                                appendMessageCommand(account, message, localSentFolder);
+                            }
 
 //                      if(encOnServer) {       // delete all traces, msg will be sync'ed again from server...
                         //Delete from outbox, the sent folder message is a new one (appended)
