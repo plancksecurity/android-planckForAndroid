@@ -7,6 +7,9 @@
     <color name="light_primary_color">#c8e6c9</color>
 
     <color name="message_list_item_footer_background">#eeeeee</color>
+    <color name="message_list_widget_header_background">#737373</color>
+    <color name="message_list_widget_header_text">#e4e4e4</color>
+    <color name="message_list_widget_divider">#e5e5e5</color>
     <color name="light_black">#444444</color>
     <color name="light_grey">#737373</color>
 
