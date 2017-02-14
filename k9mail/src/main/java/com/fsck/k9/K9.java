@@ -57,7 +57,7 @@ import com.fsck.k9.service.BootReceiver;
 import com.fsck.k9.service.MailService;
 import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
-import com.fsck.k9.widget.list.MailListViewWidgetProvider;
+import com.fsck.k9.widget.list.MessageListWidgetProvider;
 
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
@@ -644,7 +644,7 @@ public class K9 extends Application {
 
             private void updateMailListWidget() {
                 try {
-                    MailListViewWidgetProvider.updateMailViewList(K9.this);
+                    MessageListWidgetProvider.updateMailViewList(K9.this);
                 } catch (Exception e) {
                     if (BuildConfig.DEBUG) {
                         throw e;
