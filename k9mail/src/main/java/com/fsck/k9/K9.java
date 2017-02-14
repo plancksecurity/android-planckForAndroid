@@ -555,10 +555,6 @@ public class K9 extends Application {
     @Override
     public void onCreate() {
         pEpInitEnvironment();
-        if (ispEpSyncEnabled) {
-            initSync();
-            setupFastPoller();
-        }
 
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
@@ -677,6 +673,10 @@ public class K9 extends Application {
 
     private void pEpInitEnvironment() {
         AndroidHelper.setup(this);
+        if (ispEpSyncEnabled) {
+            initSync();
+            setupFastPoller();
+        }
     }
 
     public PEpProvider getpEpSyncProvider() {
