@@ -2,6 +2,7 @@ package com.fsck.k9.pEp;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -18,9 +19,7 @@ import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
-import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.internet.MimeUtility;
-import com.fsck.k9.mailstore.LocalMessage;
 
 import org.apache.commons.io.IOUtils;
 import org.pEp.jniadapter.Identity;
@@ -67,8 +66,8 @@ public class PEpUtils {
 
     public static Identity createIdentity(Address adr, Context context) {
         Identity id = new Identity();
-        id.address = adr.getAddress();
-        id.username = adr.getAddress();
+        id.address = adr.getAddress().toLowerCase();
+        id.username = adr.getAddress().toLowerCase();
         if (adr.getPersonal() != null) {
             id.username = adr.getPersonal();
         }
@@ -132,8 +131,21 @@ public class PEpUtils {
         return rv;
     }
 
+    static List<Address> createAddressesList(Vector<Identity> ids) {
+        if (ids == null) return Collections.emptyList();                // this should be consistent with pep api
+        List<Address> rv = new ArrayList<>(ids.size());
+        int idx = 0;
+        for (Identity i : ids)
+            rv.add(createAddress(i));
+
+        return rv;
+    }
+
     static Address createAddress(Identity id) {
-        Address adr = new Address(id.address, id.username);
+        Address adr = new Address("", id.username);
+        if (id.address != null) {
+            adr = new Address(id.address, id.username);
+        }
         // Address() parses the address, eventually not setting it, therefore just a little sanity...
         // TODO: pEp check what happens if id.address == null beforehand
         if (adr.getAddress() == null && id.address != null)
@@ -481,5 +493,56 @@ public class PEpUtils {
         return identities;
     }
 
+    public static String clobberVector(Vector<String> sv) {   // FIXME: how do revs come out of array? "<...>" or "...."?
+        String rt = "";
+        if (sv != null)
+            for (String cur : sv)
+                rt += cur + "; ";
+        return rt;
+    }
+
+    public static String getReplyTo(Address[] replyTo) {
+        List<String> addresses = new ArrayList<>(replyTo.length);
+        for (Address address : replyTo) {
+            addresses.add(address.toString());
+        }
+        return clobberVector(addresses);
+    }
+
+    private static String clobberVector(List<String> sv) {
+        String rt = "";
+        if (sv != null)
+            for (String cur : sv)
+                rt += cur + "; ";
+        return rt;
+    }
+
+    public static Drawable getDrawableForRating(Context context, Rating rating) {
+        if (rating.value != Rating.pEpRatingMistrust.value
+                && rating.value < Rating.pEpRatingReliable.value) {
+            return context.getResources().getDrawable(R.drawable.pep_status_gray);
+        }else if (rating.value == Rating.pEpRatingMistrust.value) {
+            return context.getResources().getDrawable(R.drawable.pep_status_red);
+        } else if (rating.value >= Rating.pEpRatingTrusted.value){
+            return context.getResources().getDrawable(R.drawable.pep_status_green);
+        } else if (rating.value == Rating.pEpRatingReliable.value){
+            return context.getResources().getDrawable(R.drawable.pep_status_yellow);
+        }
+        return context.getResources().getDrawable(R.drawable.pep_status_gray);
+    }
+
+    public static Drawable getDrawableForRatingRecipient(Context context, Rating rating) {
+        if (rating.value != Rating.pEpRatingMistrust.value
+                && rating.value < Rating.pEpRatingReliable.value) {
+            return context.getResources().getDrawable(R.drawable.pep_status_gray_white);
+        }else if (rating.value == Rating.pEpRatingMistrust.value) {
+            return context.getResources().getDrawable(R.drawable.pep_status_red_white);
+        } else if (rating.value >= Rating.pEpRatingTrusted.value){
+            return context.getResources().getDrawable(R.drawable.pep_status_green_white);
+        } else if (rating.value == Rating.pEpRatingReliable.value){
+            return context.getResources().getDrawable(R.drawable.pep_status_yellow_white);
+        }
+        return context.getResources().getDrawable(R.drawable.pep_status_gray_white);
+    }
 }
 

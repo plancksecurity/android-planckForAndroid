@@ -8,6 +8,7 @@ import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.pEp.ui.HandshakeData;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
+import org.pEp.jniadapter.DecryptFlags;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
 import org.pEp.jniadapter.Rating;
@@ -80,20 +81,8 @@ public interface PEpProvider {
      */
     List<MimeMessage> encryptMessage(MimeMessage source, String[] extraKeys);
 
-    void encryptMessage(MimeMessage source, String[] extraKeys, ResultCallback<List<MimeMessage>> callback);
-
     //TODO> When alias available check if it works correctly
     MimeMessage encryptMessageToSelf(MimeMessage source) throws MessagingException;
-
-    /**
-     * Helper for pEp setup. Smells funny to have it in an interface, but fits nowhere else.
-     * FIXME: How long can I use the context?
-     *
-     * @param c
-     */
-    void setup(Context c);
-
-    void identityRating(Address address, ResultCallback<Rating> callback);
 
     /**
      * Checks the trust status (Color) for a given identity
@@ -104,8 +93,6 @@ public interface PEpProvider {
     Rating identityRating(Identity identity);
 
     void identityRating(Identity identity, ResultCallback<Rating> callback);
-
-    void encryptMessageToSelf(MimeMessage source, ResultCallback<MimeMessage> callback);
 
     Rating identityRating(Address address);
 
@@ -118,6 +105,9 @@ public interface PEpProvider {
     String trustwords(Identity id, String language);
     void trustwords(Identity myself, Identity partner, String lang,
                     ResultCallback<HandshakeData> callback);
+
+    void obtainTrustwords(Identity myself, Identity partner, String lang,
+                          Boolean areTrustwordsShort, ResultCallback<HandshakeData> callback);
 
     /**
      * Close the engine/session associated to the provider
@@ -186,6 +176,18 @@ public interface PEpProvider {
 
     void resetTrust(Identity id, CompletedCallback completedCallback);
 
+    String getLog();
+
+    void printLog();
+
+    void loadOwnIdentities(ResultCallback<List<Identity>> callback);
+
+    void setIdentityFlag(Identity identity, Integer flags, CompletedCallback completedCallback);
+
+    void unsetIdentityFlag(Identity identity, Integer flags, CompletedCallback completedCallback);
+
+    void setFastPollingCallback(Sync.NeedsFastPollCallback needsFastPollCallback);
+
     class KeyDetail {
         private final Address address;
         private final String detailMessage;
@@ -212,11 +214,13 @@ public interface PEpProvider {
 
     class DecryptResult {
         public final KeyDetail keyDetails;
+        public final DecryptFlags flags;
 
-        public DecryptResult(MimeMessage msg, Rating rating, KeyDetail keyDetails) {
+        public DecryptResult(MimeMessage msg, Rating rating, KeyDetail keyDetails, DecryptFlags flags) {
             this.msg = msg;
             this.rating = rating;
             this.keyDetails = keyDetails;
+            this.flags = flags;
         }
 
         final public MimeMessage msg;

@@ -42,6 +42,18 @@
     <string name="pep_trust_server_description">Server tarafındaki e-postaları güvenli bir biçimde saklayın.</string>
     <string name="pep_account_privacy_protection_explanation">Bu hesap için gizlilik korumasını etkinleştir </string>
 
+    <string name="key_list_title">Available keys</string>
+    <string name="pep_add_device_ask_trustwords">You are about to add a device to your pEp device group. Confirm by successfully verifying the following Trustwords.</string>
+    <string name="pep_device_group">p≡p Aygхt grubu</string>
+    <string name="handshake_reset_dialog_message">Uyarх: Bu ileti?im orta?х daha љnceden gџvenilmez olarak i?aretlenmi?tir. Bir ba?ka handshake ile devam etmek istedi?inizden emin misiniz?</string>
+    <string name="pep_gpg_compatibility">OpenPGP Uyumlulu?u</string>
+    <string name="crash_toast_text">Oops, something went wrong</string>
+    <string name="advanced_options">Advanced options</string>
+    <string name="basic_options">Basic options</string>
+    <string name="pep_enable_auto_download">Decrypt messages</string>
+    <string name="pep_enable_sync_account">Synchronize this account</string>
+    <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
+
     <string-array name="pep_title">
         <item>Bilinmeyen<!--pEpRatingUndefined--></item>
         <item>Deşifre edilemez<!--pEpRatingCannotDecrypt--></item>

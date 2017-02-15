@@ -6,15 +6,21 @@ Created by Helm  23/03/16.
 package com.fsck.k9.pEp.ui.adapters;
 
 import android.content.Context;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.models.PEpIdentity;
 
@@ -83,6 +89,7 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
         public Button handshakeButton;
         public View container;
         public Context context;
+        private ImageView badge;
 
         public ViewHolder(View view) {
             super(view);
@@ -91,25 +98,33 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
             identityAdress = ((TextView) view.findViewById(R.id.tvAddress));
             handshakeButton = ((Button) view.findViewById(R.id.buttonHandshake));
             container = view.findViewById(R.id.recipientContainer);
+            badge = (ImageView) view.findViewById(R.id.status_badge);
         }
 
-        private void renderButton(Rating rating) {
+        private void renderRating(Rating rating) {
+            renderColor(rating);
             if (rating.value != Rating.pEpRatingMistrust.value
                     && rating.value < Rating.pEpRatingReliable.value) {
                 handshakeButton.setVisibility(View.GONE);
+                badge.setVisibility(View.GONE);
             }else if (rating.value == Rating.pEpRatingMistrust.value) {
                 handshakeButton.setVisibility(View.VISIBLE);
                 handshakeButton.setText(context.getString(R.string.pep_handshake));
                 handshakeButton.setOnClickListener(onResetRedClick);
+                badge.setVisibility(View.VISIBLE);
             } else if (rating.value >= Rating.pEpRatingTrusted.value){
                 handshakeButton.setVisibility(View.VISIBLE);
                 handshakeButton.setText(context.getString(R.string.pep_reset_trust));
                 handshakeButton.setOnClickListener(onResetGreenClick);
+                badge.setVisibility(View.VISIBLE);
             } else if (rating.value == Rating.pEpRatingReliable.value){
                 handshakeButton.setVisibility(View.VISIBLE);
                 handshakeButton.setText(context.getString(R.string.pep_handshake));
                 handshakeButton.setOnClickListener(onHandshakeClick);
+                badge.setVisibility(View.VISIBLE);
             }
+            Drawable drawableForRating = PEpUtils.getDrawableForRatingRecipient(context, rating);
+            badge.setImageDrawable(drawableForRating);
         }
 
         private void renderColor(Rating rating) {
@@ -124,8 +139,7 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
 
         public void render(int position, PEpIdentity identity) {
             Log.d("RENDER", String.valueOf(identity.getRating().value));
-            renderColor(identity.getRating());
-            renderButton(identity.getRating());
+            renderRating(identity.getRating());
             setPosition(position);
             renderIdentity(identity);
         }

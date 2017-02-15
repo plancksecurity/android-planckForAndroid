@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.fsck.k9.Account;
@@ -22,9 +23,6 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.Accounts;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.helper.Utility;
-import com.fsck.k9.mail.Address;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
 
 import org.pEp.jniadapter.Identity;
@@ -39,6 +37,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
     private Account mAccount;
 
     private Button mDoneButton;
+    private CheckBox pepSyncAccount;
 
     public static void actionSetNames(Context context, Account account) {
         Intent i = new Intent(context, AccountSetupNames.class);
@@ -56,6 +55,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
 
         mDescription = (EditText)findViewById(R.id.account_description);
         mName = (EditText)findViewById(R.id.account_name);
+        pepSyncAccount = (CheckBox)findViewById(R.id.pep_enable_sync_account);
         mDoneButton = (Button)findViewById(R.id.done);
         mDoneButton.setOnClickListener(this);
 
@@ -118,6 +118,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
             mAccount.setDescription(mDescription.getText().toString());
         }
         mAccount.setName(mName.getText().toString());
+        mAccount.setPEpSyncAccount(pepSyncAccount.isChecked());
         mAccount.save(Preferences.getPreferences(this));
         new pEpGenerateAccountKeysTask().execute();
     }

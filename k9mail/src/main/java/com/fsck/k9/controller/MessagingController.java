@@ -1,34 +1,6 @@
 package com.fsck.k9.controller;
 
 
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -61,7 +33,6 @@ import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.cache.EmailProviderCache;
 import com.fsck.k9.helper.Contacts;
-import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.AuthenticationFailedException;
 import com.fsck.k9.mail.CertificateValidationException;
@@ -80,6 +51,7 @@ import com.fsck.k9.mail.Pusher;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.internet.MessageExtractor;
+import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.internet.MimeMessageHelper;
 import com.fsck.k9.mail.internet.MimeUtility;
@@ -94,8 +66,8 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.mailstore.LocalStore.PendingCommand;
 import com.fsck.k9.mailstore.MessageRemovalListener;
 import com.fsck.k9.mailstore.UnavailableStorageException;
-import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.notification.NotificationController;
+import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
@@ -110,6 +82,34 @@ import com.fsck.k9.search.SqlQueryBuilder;
 import org.pEp.jniadapter.AndroidHelper;
 import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.Sync;
+
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Starts a long running (application) Thread that will run thr ough commands
@@ -201,7 +201,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     private void runInBackground() {
         Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-        pEpProvider = PEpProviderFactory.createProvider(context);
+        Log.d("createIfNeeded", "messaging controller");
+        pEpProvider = PEpProviderFactory.createAndSetupProvider(context);
         while (!stopped) {
             String commandDescription = null;
             try {
@@ -227,8 +228,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     queuedCommands.put(command);
                                 } catch (InterruptedException e) {
                                     Log.e(K9.LOG_TAG, "interrupted while putting a pending command for"
-                                            + " an unavailable account back into the queue."
-                                            + " THIS SHOULD NEVER HAPPEN.");
+                                          + " an unavailable account back into the queue."
+                                          + " THIS SHOULD NEVER HAPPEN.");
                                 }
                             }
                         } .start();
@@ -1354,18 +1355,19 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                 return;
                             }
 
-                            // commented out, we might need it again later...
-//                    if (account.getMaximumAutoDownloadMessageSize() > 0 &&
-//                    message.getSize() > account.getMaximumAutoDownloadMessageSize()) {
-//                        largeMessages.add(message);
-//                    } else {
-                            smallMessages.add(message);
-//                    }
-                        } catch (Exception e) {
-                            Log.e(K9.LOG_TAG, "Error while storing downloaded message.", e);
-                            addErrorMessage(account, null, e);
-                        }
+                    // commented out, we might need it again later...
+                    if (account.getMaximumAutoDownloadMessageSize() > 0 &&
+                    message.getSize() > account.getMaximumAutoDownloadMessageSize()
+                            || !account.isPEpDownloadEnabled()) {
+                        largeMessages.add(message);
+                    } else {
+                        smallMessages.add(message);
                     }
+                } catch (Exception e) {
+                    Log.e(K9.LOG_TAG, "Error while storing downloaded message.", e);
+                    addErrorMessage(account, null, e);
+                }
+            }
 
                     @Override
                     public void messageStarted(String uid, int number, int ofTotal) {}
@@ -1426,51 +1428,60 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                             Log.d("pep", "in download loop (nr="+number+") pre pep");
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", (MimeMessage) message);
-                            final PEpProvider.DecryptResult result;
-                            //// TODO: 22/12/16  message.getFrom()[0].getAddress() != null) should ne removed when ENGINE-160 is fixed
-                            if (account.ispEpPrivacyProtected() && message.getFrom()[0].getAddress() != null) {
-                                PEpProvider.DecryptResult tempResult;
-                                if (!account.isUntrustedSever()) { //trusted server
-                                    Rating rating = PEpUtils.extractRating(message);
-                                    if (rating.equals(Rating.pEpRatingUndefined)) {
-                                        result = decryptMessage((MimeMessage) message);
-
-                                    } else {
-                                        result = new PEpProvider.DecryptResult((MimeMessage) message, rating, null);
-                                    }
-                                } else {
-                                    result = decryptMessage((MimeMessage) message);
-                                }
-//                        catch (org.pEp.jniadapter.pEpMessageDiscarded pEpMessageDiscarded) {
-//                            Log.v("pEpJNI", "messageFinished: ", pEpMessageDiscarded);
-//                            tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null);
-//                            store = false;
-//                        }
-//                        catch (org.pEp.jniadapter.pEpMessageConsumed pEpMessageConsumed) {
-//                            Log.v("pEpJNI", "messageFinished: Deleting", pEpMessageConsumed);
-//                            tempResult = null;
-//                            store = false;
-//                        }
+                    final PEpProvider.DecryptResult result;
+                    //// TODO: 22/12/16  message.getFrom()[0].getAddress() != null) should ne removed when ENGINE-160 is fixed
+                    boolean alreadyDecrypted = false;
+                    if (account.ispEpPrivacyProtected() && message.getFrom()[0].getAddress() != null) {
+                        PEpProvider.DecryptResult tempResult;
+                        tempResult = decryptMessage((MimeMessage) message);
+                        if (!account.isUntrustedSever()) { //trusted server
+                            Rating rating = PEpUtils.extractRating(message);
+                            if (!rating.equals(Rating.pEpRatingUndefined)) {
+                                // if we are on a trusted server and already had an EncStatus, then is already encrypted by someone else.
+                                alreadyDecrypted = true;
+                                tempResult = new PEpProvider.DecryptResult((MimeMessage) tempResult.msg, rating, null, tempResult.flags);
                             }
-                            else {
-                                result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null);
+                        }
+                        if(tempResult.flags == null) Log.e("PEPJNI", "messageFinished: null");
+                        if (tempResult.flags != null) {
+                            Log.e("PEPJNI", "messageFinished: " + tempResult.flags);
+                            switch (tempResult.flags) {
+                                case PEPDecryptFlagConsumed:
+                                    Log.v("pEpJNI", "messageFinished: Deleting");
+                                    tempResult = null;
+                                    store = false;
+                                    break;
+                                case PEPDecryptFlagIgnored:
+                                    Log.v("pEpJNI", "messageFinished: ");
+                                    tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null, null);
+                                    store = false;
+                                    break;
                             }
+                        }
+                        result = tempResult;
+                    }
+                    else {
+                        result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null, null);
+                    }
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
-                            if (result == null) {
-                                deleteMessage(message, account, folder, localFolder);
-                            }
-                            else if (result.keyDetails != null) {
-                                showImportKeyDialogIfNeeded(message, result, account);
-                                deleteMessage(message, account, folder, localFolder);
-                            }
-                            else if (store && (!account.ispEpPrivacyProtected() || account.ispEpPrivacyProtected() && (result.rating != Rating.pEpRatingUndefined || message.getFrom()[0].getAddress() == null))) {
-                                MimeMessage decryptedMessage =  result.msg;
-                                if (message.getFolder().getName().equals(account.getSentFolderName())
-                                        || message.getFolder().getName().equals(account.getDraftsFolderName())) {
-                                    decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
-                                } else {
-                                    decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(result.rating));
-                                }
+                    if (result == null) {
+                        deleteMessage(message, account, folder, localFolder);
+                    }
+                    else if (result.keyDetails != null) {
+                        showImportKeyDialogIfNeeded(message, result, account);
+                        deleteMessage(message, account, folder, localFolder);
+                    }
+                    else if (store
+                            && (!account.ispEpPrivacyProtected()
+                            || account.ispEpPrivacyProtected() && (result.rating != Rating.pEpRatingUndefined || message.getFrom()[0].getAddress() == null))
+                            ) {
+                        MimeMessage decryptedMessage =  result.msg;
+                        if (message.getFolder().getName().equals(account.getSentFolderName())
+                                || message.getFolder().getName().equals(account.getDraftsFolderName())) {
+                            decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
+                        } else {
+                            decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(result.rating));
+                        }
 
                                 decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
 
@@ -1482,10 +1493,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     }
                                 });
 
-                                if (!account.isUntrustedSever()) {
-                                    appendMessageCommand(account, localMessage, localFolder);
-                                }
-                                Log.d("pep", "in download loop (nr=" + number + ") post pep");
+                    if (!account.isUntrustedSever() && !alreadyDecrypted && result.flags == null) {
+                        appendMessageCommand(account, localMessage, localFolder);
+                    }
+                    Log.d("pep", "in download loop (nr=" + number + ") post pep");
 
                                 // Increment the number of "new messages" if the newly downloaded message is
                                 // not marked as read.
@@ -1534,7 +1545,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         try {
             tempResult = pEpProvider.decryptMessage(message);
         } catch (AppCannotDecryptException error) {
-            tempResult = new PEpProvider.DecryptResult(message, Rating.pEpRatingUndefined, null);
+            tempResult = new PEpProvider.DecryptResult(message, Rating.pEpRatingUndefined, null, null);
         }
         return tempResult;
     }
@@ -1946,6 +1957,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Message remoteMessage = null;
             if (!localMessage.getUid().startsWith(K9.LOCAL_UID_PREFIX)) {
                 remoteMessage = remoteFolder.getMessage(localMessage.getUid());
+                String remoteuid = remoteMessage.getUid();
             }
 
             if (remoteMessage == null) {
@@ -2002,7 +2014,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 remoteFolder.fetch(Collections.singletonList(remoteMessage), fp, null);
                 Date localDate = localMessage.getInternalDate();
                 Date remoteDate = remoteMessage.getInternalDate();
-                if ((remoteDate != null && remoteDate.compareTo(localDate) > 0) || account.isUntrustedSever()) {
+                if ((remoteDate != null && remoteDate.compareTo(localDate) > 0)) {
                     /*
                      * If the remote message is newer than ours we'll just
                      * delete ours and move on. A sync will get the server message
@@ -2025,6 +2037,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     remoteFolder.appendMessages(Collections.singletonList(encryptedMessage));
                     localMessage.setUid(encryptedMessage.getUid());
                     localFolder.changeUid(localMessage);
+                    if (localMessage.getFolder().getName().equals(account.getDraftsFolderName())) {
+                        localMessage.addHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(localMessage)));
+                        localFolder.appendMessages(Collections.singletonList(localMessage));
+                    }
                     for (MessagingListener l : getListeners()) {
                         l.messageUidChanged(account, folder, oldUid, localMessage.getUid());
                     }
@@ -2069,7 +2085,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 throw ex;
             }
         } else { // Trusted
-            encryptedMessage = localMessage;
+           return localMessage;
         }
 
         encryptedMessage.setUid(localMessage.getUid());
@@ -3181,7 +3197,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         // pEp the message to send...
                         Message encryptedMessage;
 //                        PEpUtils.dumpMimeMessage("beforeEncrypt", (MimeMessage) message);
-                        if (PEpUtils.ispEpDisabled(account, message, pEpProvider.getPrivacyState(message))) {
+                        if (message.isSet(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)
+                                || PEpUtils.ispEpDisabled(account, message, pEpProvider.getPrivacyState(message))) {
                             message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(Rating.pEpRatingUnencrypted));
                             sendMessage(transport, message);
                             encryptedMessage = message;
@@ -3194,14 +3211,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         for (MessagingListener l : getListeners()) {
                             l.synchronizeMailboxProgress(account, account.getSentFolderName(), progress, todo);
                         }
-                        if (!account.hasSentFolder()) {
+                        if (!account.hasSentFolder() || message.isSet(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)) {
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Account does not have a sent mail folder; deleting sent message");
                             message.setFlag(Flag.DELETED, true);
                             // no need to delete encmsg, has not seen db up to now...
                         } else {
                             LocalFolder localSentFolder = (LocalFolder) localStore.getFolder(account.getSentFolderName());
-                            boolean isUntrustedServer = account.isUntrustedSever();
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moving sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
@@ -3219,7 +3235,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             if (K9.DEBUG)
                                 Log.i(K9.LOG_TAG, "Moved sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
 
-                            appendMessageCommand(account, message, localSentFolder);
+                            Rating rating = PEpUtils.extractRating(message);
+                            if(!(!account.isUntrustedSever() && rating.equals(Rating.pEpRatingUndefined))) {
+                                appendMessageCommand(account, message, localSentFolder);
+                            }
 
 //                      if(encOnServer) {       // delete all traces, msg will be sync'ed again from server...
                             //Delete from outbox, the sent folder message is a new one (appended)
@@ -4054,6 +4073,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         putBackground("checkMail", listener, new Runnable() {
             @Override
             public void run() {
+                Log.d("CHECKMAIL", Thread.currentThread().getId() + "::" + Thread.currentThread().getName());
 
                 try {
                     if (K9.DEBUG)
@@ -4090,6 +4110,63 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     l.checkMailFinished(context, account);
                                 }
 
+                            }
+                        }
+                );
+            }
+        });
+    }
+
+    public void checkMail(final Context context,
+                          final boolean ignoreLastCheckedTime,
+                          final boolean useManualWakeLock,
+                          final PEpProvider.CompletedCallback completedCallback) {
+
+        TracingWakeLock twakeLock = null;
+        if (useManualWakeLock) {
+            TracingPowerManager pm = TracingPowerManager.getPowerManager(context);
+
+            twakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "K9 MessagingController.checkMail");
+            twakeLock.setReferenceCounted(false);
+            twakeLock.acquire(K9.MANUAL_WAKE_LOCK_TIMEOUT);
+        }
+        final TracingWakeLock wakeLock = twakeLock;
+
+        for (MessagingListener l : getListeners()) {
+            l.checkMailStarted(context, null);
+        }
+        putBackground("checkMail", null, new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (K9.DEBUG)
+                        Log.i(K9.LOG_TAG, "Starting mail check");
+                    Preferences prefs = Preferences.getPreferences(context);
+
+                    Collection<Account> accounts = prefs.getAvailableAccounts();
+
+                    for (final Account account : accounts) {
+                        checkMailForAccount(context, account, ignoreLastCheckedTime, null);
+                    }
+
+                } catch (Exception e) {
+                    Log.e(K9.LOG_TAG, "Unable to synchronize mail", e);
+                    completedCallback.onError(e);
+                }
+                putBackground("finalize sync", null, new Runnable() {
+                            @Override
+                            public void run() {
+
+                                if (K9.DEBUG)
+                                    Log.i(K9.LOG_TAG, "Finished mail sync");
+
+                                if (wakeLock != null) {
+                                    wakeLock.release();
+                                }
+                                for (MessagingListener l : getListeners()) {
+                                    l.checkMailFinished(context, null);
+                                }
+                                completedCallback.onComplete();
                             }
                         }
                 );

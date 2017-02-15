@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
+
 import com.fsck.k9.Account.QuoteStyle;
 import com.fsck.k9.Identity;
 import com.fsck.k9.K9;
@@ -19,6 +20,7 @@ import com.fsck.k9.mail.BoundaryGenerator;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.filter.Base64;
 import com.fsck.k9.mail.internet.MessageIdGenerator;
 import com.fsck.k9.mail.internet.MimeBodyPart;
 import com.fsck.k9.mail.internet.MimeHeader;
@@ -27,13 +29,20 @@ import com.fsck.k9.mail.internet.MimeMessageHelper;
 import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.mail.internet.TextBody;
+import com.fsck.k9.mailstore.BinaryMemoryBody;
 import com.fsck.k9.mailstore.TempFileBody;
+import com.fsck.k9.pEp.PEpUtils;
+
 import org.apache.james.mime4j.codec.EncoderUtil;
 import org.apache.james.mime4j.util.MimeUtil;
+import org.pEp.jniadapter.Blob;
+import org.pEp.jniadapter.Message;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Vector;
 
 
 public abstract class MessageBuilder {
@@ -69,6 +78,8 @@ public abstract class MessageBuilder {
     private boolean isDraft;
     private boolean isPgpInlineEnabled;
     private boolean isForcedUnencrypted;
+    private Vector<Blob> blobAttachments;
+    private Message.EncFormat encondingFormat;
 
     protected MessageBuilder(Context context, MessageIdGenerator messageIdGenerator, BoundaryGenerator boundaryGenerator) {
         this.context = context;
@@ -91,7 +102,7 @@ public abstract class MessageBuilder {
         return message;
     }
 
-    private void buildHeader(MimeMessage message) throws MessagingException {
+    protected void buildHeader(MimeMessage message) throws MessagingException {
         message.addSentDate(sentDate, hideTimeZone);
         Address from = new Address(identity.getEmail(), identity.getName());
         message.setFrom(from);
@@ -132,12 +143,12 @@ public abstract class MessageBuilder {
         if (isForcedUnencrypted) message.setFlag(Flag.X_PEP_DISABLED, true);
     }
 
-    protected MimeMultipart createMimeMultipart() {
+    MimeMultipart createMimeMultipart() {
         String boundary = boundaryGenerator.generateBoundary();
         return new MimeMultipart(boundary);
     }
 
-    private void buildBody(MimeMessage message) throws MessagingException {
+    protected void buildBody(MimeMessage message) throws MessagingException {
         // Build the body.
         // TODO FIXME - body can be either an HTML or Text part, depending on whether we're in
         // HTML mode or not.  Should probably fix this so we don't mix up html and text parts.
@@ -146,7 +157,7 @@ public abstract class MessageBuilder {
         // text/plain part when messageFormat == MessageFormat.HTML
         TextBody bodyPlain = null;
 
-        final boolean hasAttachments = !attachments.isEmpty();
+        final boolean hasAttachments = !attachments.isEmpty() || (blobAttachments != null && !blobAttachments.isEmpty());
 
         if (messageFormat == SimpleMessageFormat.HTML) {
             // HTML message (with alternative text part)
@@ -263,6 +274,7 @@ public abstract class MessageBuilder {
 
             mp.addBodyPart(bp);
         }
+        addBlobAttachmentsToMessage(mp);
     }
 
     /**
@@ -603,6 +615,86 @@ public abstract class MessageBuilder {
                 queuedPendingIntent = null;
             }
             asyncCallback = null;
+        }
+    }
+
+    public MessageBuilder setIdentity(org.pEp.jniadapter.Identity from, Address[] replyTo) {
+        com.fsck.k9.Identity k9Identity = new com.fsck.k9.Identity();
+        k9Identity.setSignatureUse(false);
+        k9Identity.setSignature("");
+        k9Identity.setReplyTo(PEpUtils.getReplyTo(replyTo));
+        k9Identity.setName(from.username);
+        k9Identity.setDescription("");
+        k9Identity.setEmail(from.address);
+        return setIdentity(k9Identity);
+    }
+
+    public MessageBuilder setAttachments(Vector<Blob> attachments, Message.EncFormat encFormat) {
+        this.attachments = Collections.emptyList();
+        this.blobAttachments = attachments;
+        this.encondingFormat = encFormat;
+        return this;
+    }
+
+    private void addBlobAttachmentsToMessage(final MimeMultipart mp) throws MessagingException {
+        Body body;
+        Vector<Blob> attachments = blobAttachments;
+        if (attachments == null) return;
+
+        for (int i = 0; i < attachments.size(); i++) {
+            Blob attachment = attachments.get(i);
+            String contentType = attachment.mime_type;
+            String filename = attachment.filename;
+            Log.d("pep", "MimeMessageBuilder: BLOB #" + i + ":" + contentType + ":" + filename);
+            Log.d("pep", ">" + new String(attachment.data) + "<");
+
+            if (filename != null)
+                filename = EncoderUtil.encodeIfNecessary(filename, EncoderUtil.Usage.WORD_ENTITY, 7);
+
+            if (encondingFormat != Message.EncFormat.None) body = new BinaryMemoryBody(attachment.data, MimeUtil.ENC_8BIT);
+            else body = new BinaryMemoryBody(Base64.encodeBase64Chunked(attachment.data), MimeUtil.ENC_BASE64);
+
+            MimeBodyPart bp = new MimeBodyPart(body);
+
+            /*
+             * Correctly encode the filename here. Otherwise the whole
+             * header value (all parameters at once) will be encoded by
+             * MimeHeader.writeTo().
+             */
+            if (filename != null)
+                bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, String.format("%s;\r\n name=\"%s\"", contentType, filename));
+            else
+                bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, contentType);
+
+            // FIXME: the following lines lack clearness of flow...
+            /* if msg is plain text or if it's one of the non-special pgp attachments (Attachment #1 and #2 have special meaning,
+               see "else" branch then dont't treat special (means, use attachment disposition) */
+            if (encondingFormat == Message.EncFormat.None || i > 1) {
+
+                if (encondingFormat == Message.EncFormat.None) {
+                    bp.setEncoding(MimeUtil.ENC_BASE64);
+                }
+                else bp.setEncoding(MimeUtil.ENC_8BIT);
+
+                if (filename != null)
+                    bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
+                            "attachment;\r\n filename=\"%s\";\r\n size=%d",
+                            filename, attachment.data.length));
+                else
+                    bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
+                            "attachment;\r\n size=%d",
+                            attachment.data.length));
+            } else {                // we all live in pgp...
+                if (i == 0) {        // 1st. attachment is pgp version if encrypted.
+                    bp.addHeader(MimeHeader.HEADER_CONTENT_DESCRIPTION, "PGP/MIME version identification");
+                } else if (i == 1) {
+                    bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,    // 2nd field is enc'd content.
+                            "inline;\r\n filename=\"%s\";\r\n size=%d",
+                            filename, attachment.data.length));
+                }
+            }
+
+            mp.addBodyPart(bp);
         }
     }
 

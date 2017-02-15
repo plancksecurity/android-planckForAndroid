@@ -24,6 +24,7 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 import com.fsck.k9.view.RecipientSelectView;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.RecipientSelectView.TokenListener;
@@ -49,6 +50,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
     private static final int VIEW_INDEX_CRYPTO_SPECIAL_PGP_INLINE = 0;
     private static final int VIEW_INDEX_CRYPTO_SPECIAL_SIGN_ONLY = 1;
+    private static final int VIEW_INDEX_CRYPTO_SPECIAL_SIGN_ONLY_PGP_INLINE = 2;
 
     private static final int VIEW_INDEX_BCC_EXPANDER_VISIBLE = 0;
     private static final int VIEW_INDEX_BCC_EXPANDER_HIDDEN = 1;
@@ -489,7 +491,16 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
 //        mIgnoreOnPause = true;  // do *not* save state
         pEpUiCache.setRecipients(recipients);
-        PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom());
+
+        if (pEpRating.value == Rating.pEpRatingReliable.value) {
+            if (recipients.size() == 1) {
+                PEpTrustwords.actionRequestHandshake(activity, getFrom(), 0);
+            } else {
+                PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom());
+            }
+        } else {
+            PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom());
+        }
     }
 
     public void setMessageReference(MessageReference reference) {
@@ -569,7 +580,8 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     public enum CryptoSpecialModeDisplayType {
         NONE(VIEW_INDEX_HIDDEN),
         PGP_INLINE(VIEW_INDEX_CRYPTO_SPECIAL_PGP_INLINE),
-        SIGN_ONLY(VIEW_INDEX_CRYPTO_SPECIAL_SIGN_ONLY);
+        SIGN_ONLY(VIEW_INDEX_CRYPTO_SPECIAL_SIGN_ONLY),
+        SIGN_ONLY_PGP_INLINE(VIEW_INDEX_CRYPTO_SPECIAL_SIGN_ONLY_PGP_INLINE);
 
 
         final int childToDisplay;

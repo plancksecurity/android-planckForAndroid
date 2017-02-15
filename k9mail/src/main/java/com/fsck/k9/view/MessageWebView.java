@@ -15,6 +15,7 @@ import android.webkit.WebView;
 import com.fsck.k9.K9;
 import com.fsck.k9.K9.Theme;
 import com.fsck.k9.R;
+import com.fsck.k9.helper.HtmlConverter;
 import com.fsck.k9.mailstore.AttachmentResolver;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 

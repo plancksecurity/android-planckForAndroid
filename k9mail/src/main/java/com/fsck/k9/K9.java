@@ -19,6 +19,7 @@ import android.os.Looper;
 import android.os.StrictMode;
 import android.text.format.Time;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
@@ -37,10 +38,11 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.infrastructure.Poller;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
-import com.fsck.k9.pEp.ui.pEpAddDevice;
+import com.fsck.k9.pEp.ui.keysync.PEpAddDevice;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.UnreadWidgetProvider;
@@ -69,9 +71,13 @@ import java.util.concurrent.SynchronousQueue;
         mode = ReportingInteractionMode.TOAST,
         resToastText = R.string.crash_toast_text)
 public class K9 extends Application {
+    public static final int POLLING_INTERVAL = 1000;
+    private Poller poller;
+    private boolean needsFastPoll;
+    private boolean isPollingMessages;
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PEpProvider pEpProvider, pEpSyncProvider;
-    boolean ispEpSyncEnabled = false;
+    final boolean ispEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
     private Account currentAccount;
     private ApplicationComponent component;
 
@@ -197,6 +203,7 @@ public class K9 extends Application {
     private static boolean mConfirmDeleteStarred = false;
     private static boolean mConfirmSpam = false;
     private static boolean mConfirmDeleteFromNotification = true;
+    private static boolean mConfirmMarkAllRead = true;
 
     private static NotificationHideSubject sNotificationHideSubject = NotificationHideSubject.NEVER;
 
@@ -512,6 +519,7 @@ public class K9 extends Application {
         editor.putBoolean("confirmDeleteStarred", mConfirmDeleteStarred);
         editor.putBoolean("confirmSpam", mConfirmSpam);
         editor.putBoolean("confirmDeleteFromNotification", mConfirmDeleteFromNotification);
+        editor.putBoolean("confirmMarkAllRead", mConfirmMarkAllRead);
 
         editor.putString("sortTypeEnum", mSortType.name());
         editor.putBoolean("sortAscending", mSortAscending.get(mSortType));
@@ -546,9 +554,8 @@ public class K9 extends Application {
 
     @Override
     public void onCreate() {
-        if (ispEpSyncEnabled) {
-            initSync();
-        }
+        pEpInitEnvironment();
+
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
         }
@@ -664,6 +671,14 @@ public class K9 extends Application {
         notifyObservers();
     }
 
+    private void pEpInitEnvironment() {
+        AndroidHelper.setup(this);
+        if (ispEpSyncEnabled) {
+            initSync();
+            setupFastPoller();
+        }
+    }
+
     public PEpProvider getpEpSyncProvider() {
         if (ispEpSyncEnabled) return pEpSyncProvider;
         else return pEpProvider;
@@ -675,44 +690,51 @@ public class K9 extends Application {
 
             @Override
             public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
+                switch (signal) {
+                    case SyncNotifyUndefined:
+                        break;
+                    case SyncNotifyInitAddOurDevice:
+                    case SyncNotifyInitAddOtherDevice:
+                    case SyncNotifyInitFormGroup:
+                        Log.i("PEPJNI", "showHandshake: " + signal.name() + " " + myself.toString() + "\n::\n" + partner.toString());
+
+                        String myTrust = PEpUtils.getShortTrustWords(pEpSyncProvider, myself);
+                        String theirTrust = PEpUtils.getShortTrustWords(pEpSyncProvider, partner);
+                        String trust;
+                        if (myself.fpr.compareTo(partner.fpr) > 0) {
+                            trust = theirTrust + myTrust;
+                        } else {
+                            trust = myTrust + theirTrust;
+                        }
+
+                        Context context = K9.this.getApplicationContext();
+                        Intent syncTrustowordsActivity = PEpAddDevice.getActionRequestHandshake(context, trust, myself, partner);
+                        syncTrustowordsActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(context, 22, syncTrustowordsActivity, 0);
+                        try {
+                            pendingIntent.send();
+                        }
+                        catch (PendingIntent.CanceledException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        break;
+                    case SyncNotifyTimeout:
+                        //Close handshake
+                        new Handler(Looper.getMainLooper()).post(()
+                                -> Toast.makeText(K9.this, R.string.pep_keysync_timeout, Toast.LENGTH_SHORT).show());
+                        Intent broadcastIntent = new Intent();
+                        K9.this.sendOrderedBroadcast(broadcastIntent, null);
+                        break;
+                    case SyncNotifyAcceptedDeviceAdded:
+                        new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show());
+                        break;
+                    case SyncNotifyAcceptedGroupCreated:
+                        new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show());
+                        break;
+                }
 
             }
-
-//            @Override
-            public void showHandshake(Identity myself, Identity partner/*, SyncHandshakeSignal signal*/) {
-
-//                switch (signal) {
-//                    //// TODO: 13/12/16 review
-//                    case SyncNotifyInitAddOtherDevice:
-//                        //3                Toast.makeText(getApplicationContext(), myself.fpr + "/n" + partner.fpr, Toast.LENGTH_LONG).show();
-//                        //startActivity(new Intent(getApplicationContext(), PEpTrustwords.class));
-//                        Log.e("PEPJNI", "showHandshake: " + myself.toString() + "\n::\n" + partner.toString());
-//
-//                        String myTrust = PEpUtils.getShortTrustWords(pEpSyncProvider, myself);
-//                        String theirTrust = PEpUtils.getShortTrustWords(pEpSyncProvider, partner);
-//                        String trust;
-//                        if (myself.fpr.compareTo(partner.fpr) > 0) {
-//                            trust = theirTrust + myTrust;
-//                        } else {
-//                            trust = myTrust + theirTrust;
-//                        }
-//
-//                        Context context = K9.this.getApplicationContext();
-//                        Intent syncTrustowordsActivity = pEpAddDevice.getActionRequestHandshake(context, trust, partner);
-//                        syncTrustowordsActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                        PendingIntent pendingIntent = PendingIntent.getActivity(context, 22, syncTrustowordsActivity, 0);
-//                        try {
-//                            pendingIntent.send();
-//                        }
-//                        catch (PendingIntent.CanceledException e) {
-//                            // TODO Auto-generated catch block
-//                            e.printStackTrace();
-//                        }
-//                        break;
-//                }
-
-            }
-
         });
 
         pEpSyncProvider.setSyncSendMessageCallback(new Sync.MessageToSendCallback() {
@@ -725,14 +747,25 @@ public class K9 extends Application {
 
                     loadCurrentAccount(pEpMessage, messagingController);
                     Message message = pEpSyncProvider.getMimeMessage(pEpMessage);
-                    message.setFlag(Flag.X_PEP_DISABLED, true);
-
+                    message.setFlag(Flag.X_PEP_SYNC_MESSAGE_TO_SEND, true);
                     messagingController.sendMessage(currentAccount, message, null);
 
                     Log.e("PEPJNI", "messageToSend: " + pEpMessage.getShortmsg());
                     Log.e("PEPJNI", "messageToSend: " + pEpMessage.getLongmsg());
                 } catch (MessagingException e) {
                     e.printStackTrace();
+                }
+            }
+        });
+
+        pEpSyncProvider.setFastPollingCallback(new Sync.NeedsFastPollCallback() {
+            @Override
+            public void needsFastPollCallFromC(Boolean fast_poll_needed) {
+                needsFastPoll = fast_poll_needed;
+                if (needsFastPoll) {
+                    poller.startPolling();
+                } else {
+                    poller.stopPolling();
                 }
             }
         });
@@ -749,8 +782,6 @@ public class K9 extends Application {
                 break;
             }
         }
-        if (currentAccount == null)
-            currentAccount = Preferences.getPreferences(K9.this).getDefaultAccount();
     }
 
     private void pEpSetupUiEngineSession() {
@@ -831,6 +862,7 @@ public class K9 extends Application {
         mConfirmDeleteStarred = storage.getBoolean("confirmDeleteStarred", false);
         mConfirmSpam = storage.getBoolean("confirmSpam", false);
         mConfirmDeleteFromNotification = storage.getBoolean("confirmDeleteFromNotification", true);
+        mConfirmMarkAllRead = storage.getBoolean("confirmMarkAllRead", true);
 
         try {
             String value = storage.getString("sortTypeEnum", Account.DEFAULT_SORT_TYPE.name());
@@ -1322,6 +1354,14 @@ public class K9 extends Application {
         mConfirmDeleteFromNotification = confirm;
     }
 
+    public static boolean confirmMarkAllRead() {
+        return mConfirmMarkAllRead;
+    }
+
+    public static void setConfirmMarkAllRead(final boolean confirm) {
+        mConfirmMarkAllRead = confirm;
+    }
+
     public static NotificationHideSubject getNotificationHideSubject() {
         return sNotificationHideSubject;
     }
@@ -1635,4 +1675,31 @@ public class K9 extends Application {
         return component;
     }
 
+    private void setupFastPoller() {
+        if (poller == null) {
+            poller = new Poller(new Handler());
+            poller.init(POLLING_INTERVAL, this::polling);
+        } else {
+            poller.stopPolling();
+        }
+        poller.startPolling();
+    }
+
+    private void polling() {
+        if (needsFastPoll && !isPollingMessages) {
+            isPollingMessages = true;
+            MessagingController messagingController = MessagingController.getInstance(this);
+            messagingController.checkMail(K9.this, true, true, new PEpProvider.CompletedCallback() {
+                @Override
+                public void onComplete() {
+                    isPollingMessages = false;
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                    isPollingMessages = false;
+                }
+            });
+        }
+    }
 }

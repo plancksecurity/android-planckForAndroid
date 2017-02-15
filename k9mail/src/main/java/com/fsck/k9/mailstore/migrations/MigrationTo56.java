@@ -90,9 +90,12 @@ class MigrationTo56 {
                                 "message_part_id, " +
                                 "pep_color "+
                             "FROM messages_orig;");
-        
-        
-        db.execSQL("DROP TABLE messages_orig;");
 
+
+        db.execSQL("DROP TABLE messages_orig;");
+    }
+
+    static void cleanUpFtsTable(SQLiteDatabase db) {
+        db.execSQL("DELETE FROM messages_fulltext WHERE docid NOT IN (SELECT id FROM messages WHERE deleted = 0)");
     }
 }

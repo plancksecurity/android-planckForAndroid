@@ -47,6 +47,7 @@ import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.internet.MessageExtractor;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
@@ -94,6 +95,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private static final int DECODE_MESSAGE_LOADER_ID = 2;
     private Rating pEpRating;
     private PePUIArtefactCache pePUIArtefactCache;
+    private boolean isMessageFullDownloaded;
 
     public static MessageViewFragment newInstance(MessageReference reference) {
         MessageViewFragment fragment = new MessageViewFragment();
@@ -810,6 +812,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         @Override
         public void onMessageDataLoadFinished(LocalMessage message) {
             mMessage = message;
+            isMessageFullDownloaded = mMessage.isSet(Flag.X_DOWNLOADED_FULL) &&
+                    !MessageExtractor.hasMissingParts(mMessage);
 
             displayHeaderForLoadingMessage(message);
             mMessageView.setToLoadingState();
@@ -912,7 +916,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private boolean hasToBeDecrypted(LocalMessage message) {
         return mAccount.ispEpPrivacyProtected()
-                && EncryptionVerifier.isEncrypted(message);
+                && EncryptionVerifier.isEncrypted(message) && isMessageFullDownloaded;
     }
 
     private boolean canDecrypt() {
@@ -920,7 +924,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void decryptMessage(LocalMessage message) {
-        PEpProvider pEpProvider = PEpProviderFactory.createProvider(getActivity());
+        PEpProvider pEpProvider = PEpProviderFactory.createAndSetupProvider(getActivity());
         try {
             PEpProvider.DecryptResult decryptResult = pEpProvider.decryptMessage(mMessage);
             MimeMessage decryptedMessage = decryptResult.msg;

@@ -1,5 +1,6 @@
-def pEpEngineRevision = 1510
-def pEpJNIAdapterRevision = 274
+def pEpEngineRevision = 1575
+def pEpJNIAdapterRevision = 297
+def version = "0.9.9.6"
 
 
 buildscript {
@@ -90,15 +91,15 @@ android {
 //        applicationId "com.fsck.k9"
 //        testApplicationId "com.fsck.k9.tests"
 
-//        versionCode 23191
-//        versionName '5.200-RC2'
+//        versionCode 23230
+//        versionName '5.203'
 
         applicationId "pep.android.k9"
-        versionCode 43
-        versionName '0.9.9.2.withoutKeysync'
+        versionCode 50
+//        versionName '0.9.9.2'
         minSdkVersion 18
         targetSdkVersion 22
-
+        setProperty("archivesBaseName", "$version")
         generatedDensities = ['mdpi', 'hdpi', 'xhdpi']
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -112,9 +113,23 @@ android {
         buildConfigField "int", "ENGINE_REVISION", "${pEpEngineRevision}"
         buildConfigField "int", "ADAPTER_REVISION", "${pEpJNIAdapterRevision}"
     }
+    flavorDimensions 'playStore', 'none'
 
     productFlavors {
+        withkeysync {
+            buildConfigField "boolean", "WITH_KEY_SYNC", "true"
+            versionName "${version}" + '.withKeysync'
+            dimension 'playStore'
+
+        }
+        withthoutkeysync {
+            buildConfigField "boolean", "WITH_KEY_SYNC", "false"
+            versionName "${version}" + '.withoutKeysync'
+            dimension 'playStore'
+
+        }
         playStore {
+            dimension 'none'
         }
     }
         signingConfigs {
@@ -124,6 +139,7 @@ android {
         release {
             if (project.hasProperty('storeFile')) {
                 signingConfig signingConfigs.release
+
             }
 
             buildConfigField "boolean", "DEVELOPER_MODE", "false"
@@ -165,11 +181,19 @@ android {
         abi {
             enable true
             reset()
-            include 'armeabi'
+            include 'armeabi-v7a'
             universalApk false
         }
     }
     buildToolsVersion '25.0.0'
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            output.outputFile = new File(
+                    output.outputFile.parent,
+                    output.outputFile.name.replace("release.apk", "${variant.versionCode}.apk"))
+        }
+    }
 }
 
 if (project.hasProperty('keyAlias')) {

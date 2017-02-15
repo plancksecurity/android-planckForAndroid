@@ -21,4 +21,8 @@ public interface PEpStatusView {
     void setRating(Rating pEpRating);
 
     void showError(int status_loading_error);
+
+    void showBadge(Rating rating);
+
+    void hideBadge();
 }

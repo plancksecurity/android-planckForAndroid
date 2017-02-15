@@ -9,6 +9,15 @@
 
     <include layout="@layout/simple_toolbar_layout" />
 
+    <ImageView
+        android:id="@+id/title_status_badge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        tools:src="@drawable/pep_status_gray"
+        tools:visibility="visible" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,20 +36,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif"
-        android:text="New Text"
         android:id="@+id/pEpSuggestion"
         android:layout_gravity="left"
         android:layout_marginBottom="16dp"
         android:gravity="left"
         android:textColor="@color/text_for_white_background"
         android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"/>
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:text="New Text" />
 
     <android.support.v7.widget.RecyclerView
-            android:id="@+id/my_recycler_view"
-            android:scrollbars="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="invisible"
-            />
+        android:id="@+id/my_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        android:visibility="invisible" />
 </LinearLayout>

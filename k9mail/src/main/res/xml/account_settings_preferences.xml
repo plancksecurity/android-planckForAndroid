@@ -508,5 +508,15 @@
             android:title="@string/pep_enable_privacy_protection"
             android:defaultValue="false"
             android:summary="@string/pep_account_privacy_protection_explanation" />
+        <CheckBoxPreference
+            android:persistent="false"
+            android:key="pep_disable_auto_download"
+            android:title="@string/pep_enable_auto_download"
+            android:defaultValue="false" />
+        <CheckBoxPreference
+            android:persistent="false"
+            android:key="pep_enable_sync_account"
+            android:title="@string/pep_enable_sync_account"
+            android:defaultValue="false" />
     </PreferenceScreen>
 </PreferenceScreen>

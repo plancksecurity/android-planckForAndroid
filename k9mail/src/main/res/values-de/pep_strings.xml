@@ -19,8 +19,8 @@
     <string name="pep_add_key_to_blacklist">Einen Schlüssel auf die schwarze Liste setzen</string>
     <string name="pep_remove_key_from_blacklist">Einen Schlüssel von der schwarzen Liste löschen</string>
 
-    <string name="pep_confirm_trustwords">Trustwords bestätigen</string>
-    <string name="pep_wrong_trustwords">Falsche Trustwords</string>
+    <string name="pep_confirm_trustwords">Bestätigen</string>
+    <string name="pep_wrong_trustwords">Falsche</string>
     <string name="pep_wrong_fingerprint">Falscher Fingerprint</string>
     <string name="pep_ask_trustwords">Bitten Sie Ihren Kommunikationspartner, seine Trustwords persönlich oder telefonisch vorzulesen. Diese sollten mit den untenstehenden übereinstimmen.</string>
     <string name="pep_complete_partner_format">Partner\n%1$s &lt;%2$s&gt;</string>
@@ -42,6 +42,17 @@
     <string name="pep_app_license">Lizenziert unter GNU General Public License v3</string>
     <string name="pep_trust_server_description">Emails auf dem Server geschützt speichern.</string>
     <string name="pep_account_privacy_protection_explanation">Datenschutz für dieses Konto aktivieren </string>
+    <string name="key_list_title">Available keys</string>
+    <string name="pep_add_device_ask_trustwords">You are about to add a device to your pEp device group. Confirm by successfully verifying the following Trustwords.</string>
+    <string name="pep_device_group">p≡p-GerЉtegruppe</string>
+    <string name="handshake_reset_dialog_message">Warnung: Dieser Kommunikationspartner wurde bereits als nicht vertrauenswџrdig eingestuft. Sind Sie sicher, dass trotzdem erneut ein Handshake durchgefџhrt werden soll?</string>
+    <string name="pep_gpg_compatibility">OpenPGP-KompatibilitЉt</string>
+    <string name="crash_toast_text">Oops, something went wrong</string>
+    <string name="advanced_options">Advanced options</string>
+    <string name="basic_options">Basic options</string>
+    <string name="pep_enable_auto_download">Decrypt messages</string>
+    <string name="pep_enable_sync_account">Synchronize this account</string>
+    <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
 
     <string-array name="pep_title">
         <item>Unbekannt<!--pEpRatingUndefined--></item>

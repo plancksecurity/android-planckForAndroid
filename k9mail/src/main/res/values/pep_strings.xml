@@ -64,8 +64,8 @@
     <string name="pep_add_key_to_blacklist">Add a key to blacklist</string>
     <string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>
 
-    <string name="pep_confirm_trustwords">Confirm Trustwords</string>
-    <string name="pep_wrong_trustwords">Wrong Trustwords</string>
+    <string name="pep_confirm_trustwords">Confirm</string>
+    <string name="pep_wrong_trustwords">Wrong</string>
     <string name="pep_wrong_fingerprint">Wrong fingerprint</string>
     <string name="pep_ask_trustwords">Ask your partner in person or over the phone: What are your trustwords? Then compare to the correct answer shown below.</string>
     <string name="pep_complete_partner_format">Partner\n%1$s &lt;%2$s&gt;</string>
@@ -78,7 +78,7 @@
     <string name="pep_username">User Name</string>
     <string name="pep_userAddress">User Address</string>
     <string name="pep_secret_key_detected">Secret key detected</string>
-    <string name="pep_received_this_secret_key" translatable="false">The following secret key was received</string>
+    <string name="pep_received_this_secret_key" translatable="false">The following secret key was received. Are you sure you want to use it?</string>
     <string name="pep_from_format">from sender %1$s</string>
     <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Trust server and store mails unprotected</string>
     <string name="pep_mistrust_server_and_store_mails_encrypted">Store messages securely</string>
@@ -103,6 +103,12 @@
     <string name="handshake_reset_dialog_message">Warning: This communication partner was previously marked as mistrusted. Are you sure you want to continue with another handshake?</string>
     <string name="pep_gpg_compatibility">OpenPGP Compatibility</string>
     <string name="crash_toast_text">Oops, something went wrong</string>
+    <string name="advanced_options">Advanced options</string>
+    <string name="basic_options">Basic options</string>
+    <string name="pep_enable_auto_download">AutoDownload messages</string>
+    <string name="pep_enable_sync_account">Synchronize this account</string>
+    <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
+    <string name="pep_keysync_timeout">p≡p sync timeout</string>
 
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>

@@ -128,6 +128,8 @@ public class AccountSettings extends K9PreferenceActivity {
 
     private static final String PREFERENCE_PEP_SAVE_ENCRYPTED_ON_SERVER = "pep_save_encrypted";
     private static final String PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION = "pep_disable_privacy_protection";
+    private static final String PEP_ENABLE_SYNC_ACCOUNT = "pep_enable_sync_account";
+    private static final String PREFERENCE_PEP_DISABLE_DECRYPTION = "pep_disable_auto_download";
 
     private Account mAccount;
     private boolean mIsMoveCapable = false;
@@ -186,6 +188,8 @@ public class AccountSettings extends K9PreferenceActivity {
     // flag: save mails only encrypted on server side
     private CheckBoxPreference mPEpSaveEncrypted;
     private CheckBoxPreference mPEpDisablePrivacyProtection;
+    private CheckBoxPreference mPEpDisableDecryption;
+    private CheckBoxPreference mPEpSyncAccount;
 
     private PreferenceScreen mSearchScreen;
     private CheckBoxPreference mCloudSearchEnabled;
@@ -705,13 +709,14 @@ public class AccountSettings extends K9PreferenceActivity {
             }
         });
 
-//        mHasCrypto = false;
+//        mHasCrypto = OpenPgpUtils.isAvailable(this);
 //        if (mHasCrypto) {
 //            mCryptoApp = (OpenPgpAppPreference) findPreference(PREFERENCE_CRYPTO_APP);
 //            mCryptoKey = (OpenPgpKeyPreference) findPreference(PREFERENCE_CRYPTO_KEY);
+//            mCryptoSupportSignOnly = (CheckBoxPreference) findPreference(PREFERENCE_CRYPTO_SUPPORT_SIGN_ONLY);
 //
 //            mCryptoApp.setValue(String.valueOf(mAccount.getCryptoApp()));
-//            mCryptoApp.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+//            mCryptoApp.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 //                public boolean onPreferenceChange(Preference preference, Object newValue) {
 //                    String value = newValue.toString();
 //                    mCryptoApp.setValue(value);
@@ -725,13 +730,15 @@ public class AccountSettings extends K9PreferenceActivity {
 //            mCryptoKey.setOpenPgpProvider(mCryptoApp.getValue());
 //            // TODO: other identities?
 //            mCryptoKey.setDefaultUserId(OpenPgpApiHelper.buildUserId(mAccount.getIdentity(0)));
-//            mCryptoKey.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+//            mCryptoKey.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 //                public boolean onPreferenceChange(Preference preference, Object newValue) {
 //                    long value = (Long) newValue;
 //                    mCryptoKey.setValue(value);
 //                    return false;
 //                }
 //            });
+//
+//            mCryptoSupportSignOnly.setChecked(mAccount.getCryptoSupportSignOnly());
 //        } else {
 //            final Preference mCryptoMenu = findPreference(PREFERENCE_CRYPTO);
 //            mCryptoMenu.setEnabled(false);
@@ -743,6 +750,12 @@ public class AccountSettings extends K9PreferenceActivity {
 
         mPEpDisablePrivacyProtection = (CheckBoxPreference) findPreference(PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION);
         mPEpDisablePrivacyProtection.setChecked(mAccount.ispEpPrivacyProtected());
+
+        mPEpDisableDecryption = (CheckBoxPreference) findPreference(PREFERENCE_PEP_DISABLE_DECRYPTION);
+        mPEpDisableDecryption.setChecked(mAccount.isPEpDownloadEnabled());
+
+        mPEpSyncAccount = (CheckBoxPreference) findPreference(PEP_ENABLE_SYNC_ACCOUNT);
+        mPEpSyncAccount.setChecked(mAccount.isPepSyncEnabled());
     }
 
     private void removeListEntry(ListPreference listPreference, String remove) {
@@ -874,6 +887,8 @@ public class AccountSettings extends K9PreferenceActivity {
         // pEp:
         mAccount.setPEpStoreEncryptedOnServer(mPEpSaveEncrypted.isChecked());
         mAccount.setpEpPrivacyProtection(mPEpDisablePrivacyProtection.isChecked());
+        mAccount.setpEpDownload(mPEpDisableDecryption.isChecked());
+        mAccount.setPEpSyncAccount(mPEpSyncAccount.isChecked());
 
         // TODO: refresh folder list here
         mAccount.save(Preferences.getPreferences(this));

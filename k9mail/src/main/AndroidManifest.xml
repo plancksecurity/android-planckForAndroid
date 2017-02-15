@@ -431,7 +431,7 @@
 
         </activity>
         <activity
-            android:name=".pEp.ui.pEpAddDevice"
+            android:name=".pEp.ui.keysync.PEpAddDevice"
             android:label="@string/pep_device_group"
             android:parentActivityName=".pEp.ui.privacy.status.PEpStatus">
 
@@ -443,7 +443,14 @@
 
         <receiver android:name=".activity.K9ActivityCommon$PrivateKeyReceiver">
             <intent-filter>
-                <action android:name="PRIVATE_KEY"/>
+                <action android:name="PRIVATE_KEY">
+                </action>
+            </intent-filter>
+        </receiver>
+        <receiver android:name="K9$DismissKeysyncDialogReceiver">
+            <intent-filter>
+                <action android:name="KEYSYNC_DISMISS">
+                </action>
             </intent-filter>
         </receiver>
 

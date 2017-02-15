@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.util.Log;
+
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.Address;
@@ -63,6 +64,9 @@ public class Account implements BaseAccount, StoreConfig {
      * This local folder is used to store messages to be sent.
      */
     public static final String OUTBOX = "K9MAIL_INTERNAL_OUTBOX";
+    private final boolean DEFAULT_PEP_SYNC_ENABLED = true;
+    private boolean pEpSyncEnabled;
+    private boolean pEpDownload;
 
     public boolean ispEpPrivacyProtected() {
         return pEpPrivacyProtectected;
@@ -71,6 +75,22 @@ public class Account implements BaseAccount, StoreConfig {
 
     public void setpEpPrivacyProtection(boolean privacyProtection) {
          this.pEpPrivacyProtectected = privacyProtection;
+    }
+
+    public void setpEpDownload(boolean pEpDownload) {
+        this.pEpDownload = pEpDownload;
+    }
+
+    public Boolean isPEpDownloadEnabled() {
+        return pEpDownload;
+    }
+
+    public Boolean isPepSyncEnabled() {
+        return pEpSyncEnabled;
+    }
+
+    public void setPEpSyncAccount(Boolean pEpSyncEnabled) {
+        this.pEpSyncEnabled = pEpSyncEnabled;
     }
 
     public enum Expunge {
@@ -125,6 +145,7 @@ public class Account implements BaseAccount, StoreConfig {
 
     public static final boolean DEFAULT_PEP_ENC_ON_SERVER = true;
     public static final boolean DEFAULT_PEP_PRIVACY_PROTECTED = true;
+    public static final boolean DEFAULT_PEP_DECRYPT_ENABLED = true;
     /*
      * http://developer.android.com/design/style/color.html
      * Note: Order does matter, it's the order in which they will be picked.
@@ -359,6 +380,8 @@ public class Account implements BaseAccount, StoreConfig {
 
         pEpUntrustedServer = DEFAULT_PEP_ENC_ON_SERVER;
         pEpPrivacyProtectected = DEFAULT_PEP_PRIVACY_PROTECTED;
+        pEpSyncEnabled = DEFAULT_PEP_SYNC_ENABLED;
+        pEpDownload = DEFAULT_PEP_DECRYPT_ENABLED;
         cacheChips();
     }
 
@@ -494,6 +517,8 @@ public class Account implements BaseAccount, StoreConfig {
         mAlwaysShowCcBcc = storage.getBoolean(mUuid + ".alwaysShowCcBcc", false);
         pEpUntrustedServer = storage.getBoolean(mUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
         pEpPrivacyProtectected = storage.getBoolean(mUuid + ".pEpPrivacyProtected", DEFAULT_PEP_PRIVACY_PROTECTED);
+        pEpDownload = storage.getBoolean(mUuid + ".pEpDownload", DEFAULT_PEP_DECRYPT_ENABLED);
+        pEpSyncEnabled = storage.getBoolean(mUuid + ".pEpSync", DEFAULT_PEP_SYNC_ENABLED);
         cacheChips();
 
         // Use email address as account description if necessary
@@ -773,6 +798,8 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putInt(mUuid + ".ledColor", mNotificationSetting.getLedColor());
         editor.putBoolean(mUuid + ".pEpStoreEncryptedOnServer", pEpUntrustedServer);
         editor.putBoolean(mUuid + ".pEpPrivacyProtected", pEpPrivacyProtectected);
+        editor.putBoolean(mUuid + ".pEpDownload", pEpDownload);
+        editor.putBoolean(mUuid + ".pEpSync", pEpSyncEnabled);
 
         for (NetworkType type : NetworkType.values()) {
             Boolean useCompression = compressionMap.get(type);
