@@ -218,6 +218,12 @@ public class PEpTrustwords extends PepColoredActivity {
             menuItemtrustwordsLength.setVisible(false);
         }
 
+        if(areTrustwordsShort) {
+            menuItemtrustwordsLength.setTitle(getString(R.string.pep_menu_long_trustwords));
+        } else {
+            menuItemtrustwordsLength.setTitle(R.string.pep_menu_short_trustwords);
+        }
+
         return true;
     }
 
