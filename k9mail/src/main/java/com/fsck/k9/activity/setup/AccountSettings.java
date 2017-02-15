@@ -1,11 +1,6 @@
 
 package com.fsck.k9.activity.setup;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -47,6 +42,11 @@ import com.fsck.k9.service.MailService;
 
 import org.openintents.openpgp.util.OpenPgpAppPreference;
 import org.openintents.openpgp.util.OpenPgpKeyPreference;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 
 public class AccountSettings extends K9PreferenceActivity {
@@ -751,6 +751,29 @@ public class AccountSettings extends K9PreferenceActivity {
 
         mPEpSyncAccount = (CheckBoxPreference) findPreference(PEP_ENABLE_SYNC_ACCOUNT);
         mPEpSyncAccount.setChecked(mAccount.isPepSyncEnabled());
+
+        mPEpDisablePrivacyProtection.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                final boolean value = (Boolean) newValue;
+                if (!value) {
+                    mPEpSaveEncrypted.setEnabled(false);
+                    mPEpDisableDecryption.setEnabled(false);
+                    mPEpSyncAccount.setEnabled(false);
+                } else {
+                    mPEpSaveEncrypted.setEnabled(true);
+                    mPEpDisableDecryption.setEnabled(true);
+                    mPEpSyncAccount.setEnabled(true);
+                }
+                return true;
+            }
+        });
+
+        if (!mPEpDisablePrivacyProtection.isChecked()) {
+            mPEpSaveEncrypted.setEnabled(false);
+            mPEpDisableDecryption.setEnabled(false);
+            mPEpSyncAccount.setEnabled(false);
+        }
     }
 
     private void removeListEntry(ListPreference listPreference, String remove) {

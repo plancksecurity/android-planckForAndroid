@@ -49,7 +49,7 @@
     <string name="crash_toast_text">Oops, something went wrong</string>
     <string name="advanced_options">Advanced options</string>
     <string name="basic_options">Basic options</string>
-    <string name="pep_enable_auto_download">Decrypt messages</string>
+    <string name="pep_enable_auto_download">Descarga automática de mensajes</string>
     <string name="pep_enable_sync_account">Synchronize this account</string>
     <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
 
