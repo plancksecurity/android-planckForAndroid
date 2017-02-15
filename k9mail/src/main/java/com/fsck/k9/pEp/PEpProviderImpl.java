@@ -64,7 +64,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized void getPrivacyState(com.fsck.k9.mail.Message message, ResultCallback<Rating> callback) {
+    public void getPrivacyState(com.fsck.k9.mail.Message message, ResultCallback<Rating> callback) {
         Address from = message.getFrom()[0];                            // FIXME: From is an array?!
         List<Address> to = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO));
         List<Address> cc = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC));
@@ -149,7 +149,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized void getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback) {
+    public void getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback) {
         threadExecutor.execute(() -> {
             if (bccAddresses.size()  > 0) {
                 notifyLoaded(Rating.pEpRatingUnencrypted, callback);
@@ -250,7 +250,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized void decryptMessage(MimeMessage source, ResultCallback<DecryptResult> callback) {
+    public void decryptMessage(MimeMessage source, ResultCallback<DecryptResult> callback) {
         threadExecutor.execute(() -> {
             Log.d(TAG, "decryptMessage() enter");
             Message srcMsg = null;
@@ -538,7 +538,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized void identityRating(final Identity identity, final ResultCallback<Rating> callback) {
+    public void identityRating(final Identity identity, final ResultCallback<Rating> callback) {
         threadExecutor.execute(() -> {
             Engine engine1 = null;
             try {
@@ -563,7 +563,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized void trustwords(Identity self, Identity other, String lang, ResultCallback<HandshakeData> callback) {
+    public void trustwords(Identity self, Identity other, String lang, ResultCallback<HandshakeData> callback) {
         threadExecutor.execute(() -> {
             Engine engine = null;
             try {
@@ -601,7 +601,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized void obtainTrustwords(Identity self, Identity other, String lang, Boolean areTrustwordsShort, ResultCallback<HandshakeData> callback) {
+    public void obtainTrustwords(Identity self, Identity other, String lang, Boolean areTrustwordsShort, ResultCallback<HandshakeData> callback) {
         threadExecutor.execute(() -> {
             Engine engine = null;
             try {
@@ -649,7 +649,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized void resetTrust(Identity id, CompletedCallback completedCallback) {
+    public void resetTrust(Identity id, CompletedCallback completedCallback) {
         threadExecutor.execute(() -> {
             Engine engine = null;
             try {
@@ -832,7 +832,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized void loadOwnIdentities(ResultCallback<List<Identity>> callback) {
+    public void loadOwnIdentities(ResultCallback<List<Identity>> callback) {
         threadExecutor.execute(() -> {
             Engine engine = null;
             try {
@@ -850,7 +850,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized void setIdentityFlag(Identity identity, Integer flags, CompletedCallback completedCallback) {
+    public void setIdentityFlag(Identity identity, Integer flags, CompletedCallback completedCallback) {
         threadExecutor.execute(() -> {
             Engine engine = null;
             try {
@@ -868,7 +868,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized void unsetIdentityFlag(Identity identity, Integer flags, CompletedCallback completedCallback) {
+    public void unsetIdentityFlag(Identity identity, Integer flags, CompletedCallback completedCallback) {
         threadExecutor.execute(() -> {
             Engine engine = null;
             try {
@@ -886,7 +886,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized void setFastPollingCallback(Sync.NeedsFastPollCallback needsFastPollCallback) {
+    public void setFastPollingCallback(Sync.NeedsFastPollCallback needsFastPollCallback) {
         engine.setNeedsFastPollCallback(needsFastPollCallback);
     }
 
