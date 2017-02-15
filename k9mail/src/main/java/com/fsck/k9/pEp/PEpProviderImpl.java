@@ -570,25 +570,15 @@ public class PEpProviderImpl implements PEpProvider {
                 Identity myself = self;
                 Identity partner = other;
                 engine = getNewEngineSession();
+
                 myself.lang = PEpUtils.obtainTrustwordsLang(lang);
                 myself.user_id = PEP_OWN_USER_ID;
                 myself = engine.myself(myself);
                 partner.lang = PEpUtils.obtainTrustwordsLang(lang);
                 partner = engine.updateIdentity(partner);
-                String myTrust = engine.trustwords(myself);
-                String theirTrust = engine.trustwords(partner);
-                String myTrustShort = PEpUtils.getShortTrustwords(myTrust);
-                String theirTrustShort = PEpUtils.getShortTrustwords(theirTrust);
 
-                String trust = "";
-                String shortTrust = "";
-                if (myself.fpr.compareTo(partner.fpr) > 0) {
-                    trust = theirTrust + myTrust;
-                    shortTrust = theirTrustShort + myTrustShort;
-                } else {
-                    trust = myTrust + theirTrust;
-                    shortTrust = myTrustShort + theirTrustShort;
-                }
+                String trust = engine.get_trustwords(myself, partner, lang, true);
+                String shortTrust = engine.get_trustwords(myself, partner, lang, false);
                 notifyLoaded(new HandshakeData(trust, shortTrust, myself, partner), callback);
             } catch (Exception e) {
                 notifyError(e, callback);
@@ -598,6 +588,16 @@ public class PEpProviderImpl implements PEpProvider {
                 }
             }
         });
+    }
+
+    @Override
+    public String trustwords(Identity myself, Identity partner, String lang, boolean isShort) {
+        try {
+            return engine.get_trustwords(myself, partner, lang, !isShort);
+        } catch (pEpException e) {
+            Log.e(TAG, "trustwords: ");
+            return null;
+        }
     }
 
     @Override
