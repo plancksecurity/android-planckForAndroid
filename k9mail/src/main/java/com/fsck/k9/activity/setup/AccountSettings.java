@@ -25,6 +25,7 @@ import com.fsck.k9.Account.MessageFormat;
 import com.fsck.k9.Account.QuoteStyle;
 import com.fsck.k9.Account.Searchable;
 import com.fsck.k9.Account.ShowPictures;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.NotificationSetting;
 import com.fsck.k9.Preferences;
@@ -750,7 +751,13 @@ public class AccountSettings extends K9PreferenceActivity {
         mPEpDisableDecryption.setChecked(mAccount.isPEpDownloadEnabled());
 
         mPEpSyncAccount = (CheckBoxPreference) findPreference(PEP_ENABLE_SYNC_ACCOUNT);
-        mPEpSyncAccount.setChecked(mAccount.isPepSyncEnabled());
+
+        if (BuildConfig.WITH_KEY_SYNC) {
+            mPEpSyncAccount.setChecked(mAccount.isPepSyncEnabled());
+        } else {
+            mPEpSyncAccount.setChecked(false);
+            mPEpSyncAccount.setEnabled(false);
+        }
 
         mPEpDisablePrivacyProtection.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
@@ -759,11 +766,15 @@ public class AccountSettings extends K9PreferenceActivity {
                 if (!value) {
                     mPEpSaveEncrypted.setEnabled(false);
                     mPEpDisableDecryption.setEnabled(false);
-                    mPEpSyncAccount.setEnabled(false);
+                    if (BuildConfig.WITH_KEY_SYNC) {
+                        mPEpSyncAccount.setEnabled(false);
+                    }
                 } else {
                     mPEpSaveEncrypted.setEnabled(true);
                     mPEpDisableDecryption.setEnabled(true);
-                    mPEpSyncAccount.setEnabled(true);
+                    if (BuildConfig.WITH_KEY_SYNC) {
+                        mPEpSyncAccount.setEnabled(true);
+                    }
                 }
                 return true;
             }
