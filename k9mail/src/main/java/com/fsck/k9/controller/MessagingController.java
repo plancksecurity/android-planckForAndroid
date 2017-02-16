@@ -910,8 +910,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 }
 
                 if (K9.DEBUG) {
-                    Log.v(K9.LOG_TAG, "SYNC: About to get messages " + remoteStart + " through " + remoteMessageCount
-                            + " for folder " + folder);
+                    Log.v(K9.LOG_TAG, "SYNC: About to get messages " + remoteStart + " through " + remoteMessageCount +
+                            " for folder " + folder);
                 }
 
                 final AtomicInteger headerProgress = new AtomicInteger(0);
