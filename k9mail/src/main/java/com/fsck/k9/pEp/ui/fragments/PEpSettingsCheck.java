@@ -114,7 +114,7 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
 
     private void checkOutgoing() throws MessagingException {
         // TODO: 07/06/17 CHECK if this checker can/should be used on other app places like AccountSetupCheckSettings
-        Transport transport = TransportProvider.getInstance().getInstance(K9.app, account, K9.oAuth2TokenStore);
+        Transport transport = TransportProvider.getInstance().getTransport(K9.app, account, K9.oAuth2TokenStore);
         transport.close();
         try {
             transport.open();

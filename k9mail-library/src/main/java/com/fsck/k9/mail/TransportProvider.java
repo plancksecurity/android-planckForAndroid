@@ -16,7 +16,7 @@ public class TransportProvider {
         return transportProvider;
     }
 
-    public synchronized Transport getInstance(Context context, StoreConfig storeConfig, OAuth2TokenProvider oauth2TokenProvider)
+    public synchronized Transport getTransport(Context context, StoreConfig storeConfig, OAuth2TokenProvider oauth2TokenProvider)
             throws MessagingException {
         String uri = storeConfig.getTransportUri();
         if (uri.startsWith("smtp")) {

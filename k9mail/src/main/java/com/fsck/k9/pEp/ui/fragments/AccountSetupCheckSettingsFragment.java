@@ -531,7 +531,7 @@ public class AccountSetupCheckSettingsFragment extends Fragment implements Confi
             if (!(account.getRemoteStore() instanceof WebDavStore)) {
                 publishProgress(R.string.account_setup_check_settings_check_outgoing_msg);
             }
-            Transport transport = TransportProvider.getInstance().getInstance(K9.app, account, K9.oAuth2TokenStore);
+            Transport transport = TransportProvider.getInstance().getTransport(K9.app, account, K9.oAuth2TokenStore);
             transport.close();
             try {
                 transport.open();

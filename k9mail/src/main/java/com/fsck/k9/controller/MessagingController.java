@@ -3271,7 +3271,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         + "' (" + localFolder.getId() + ") for messages to send");
             }
 
-            Transport transport = transportProvider.getInstance(K9.app, account, K9.oAuth2TokenStore);
+            Transport transport = transportProvider.getTransport(K9.app, account, K9.oAuth2TokenStore);
 
             for (LocalMessage message : localMessages) {
                 if (message.isSet(Flag.DELETED)) {
@@ -5221,7 +5221,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void sendpEpSyncMessage(Account account, Message message) throws MessagingException {
-        Transport transport = transportProvider.getInstance(K9.app, account, K9.oAuth2TokenStore);
+        Transport transport = transportProvider.getTransport(K9.app, account, K9.oAuth2TokenStore);
         sendMessage(transport, message);
     }
 
