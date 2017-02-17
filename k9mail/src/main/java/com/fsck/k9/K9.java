@@ -77,7 +77,7 @@ public class K9 extends Application {
     private boolean isPollingMessages;
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PEpProvider pEpProvider, pEpSyncProvider;
-    final boolean ispEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
+    private boolean ispEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
     private Account currentAccount;
     private ApplicationComponent component;
 
@@ -1693,5 +1693,13 @@ public class K9 extends Application {
                 }
             });
         }
+    }
+
+    public boolean ispEpSyncEnabled() {
+        return ispEpSyncEnabled;
+    }
+
+    public void setIspEpSyncEnabled(boolean ispEpSyncEnabled) {
+        this.ispEpSyncEnabled = ispEpSyncEnabled;
     }
 }

@@ -785,6 +785,9 @@ public class AccountSettings extends K9PreferenceActivity {
             mPEpDisableDecryption.setEnabled(false);
             mPEpSyncAccount.setEnabled(false);
         }
+
+        boolean ispEpSyncEnabled = ((K9) getApplication()).ispEpSyncEnabled();
+        mPEpSyncAccount.setEnabled(!ispEpSyncEnabled);
     }
 
     private void removeListEntry(ListPreference listPreference, String remove) {

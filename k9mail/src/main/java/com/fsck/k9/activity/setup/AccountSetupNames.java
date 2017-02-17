@@ -18,6 +18,7 @@ import android.widget.EditText;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.BuildConfig;
+import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.Accounts;
@@ -36,6 +37,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
 
     private Button mDoneButton;
     private CheckBox pepSyncAccount;
+    private boolean ispEpSyncEnabled;
 
     public static void actionSetNames(Context context, Account account) {
         Intent i = new Intent(context, AccountSetupNames.class);
@@ -84,7 +86,9 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
             mDoneButton.setEnabled(false);
         }
 
-        if (!BuildConfig.WITH_KEY_SYNC) {
+        ispEpSyncEnabled = ((K9) getApplication()).ispEpSyncEnabled();
+
+        if (!BuildConfig.WITH_KEY_SYNC || ispEpSyncEnabled) {
             pepSyncAccount.setVisibility(View.GONE);
         }
     }
@@ -99,7 +103,11 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
             mAccount.setDescription(mDescription.getText().toString());
         }
         mAccount.setName(mName.getText().toString());
-        mAccount.setPEpSyncAccount(pepSyncAccount.isChecked());
+        if (ispEpSyncEnabled) {
+            mAccount.setPEpSyncAccount(true);
+        } else {
+            mAccount.setPEpSyncAccount(pepSyncAccount.isChecked());
+        }
         mAccount.save(Preferences.getPreferences(this));
         new pEpGenerateAccountKeysTask().execute();
     }
