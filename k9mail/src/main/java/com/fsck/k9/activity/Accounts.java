@@ -152,6 +152,7 @@ public class Accounts extends PepPermissionActivity {
 
 
     private static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
+    private static final int ACTIVITY_REQUEST_SAVE_SETTINGS_FILE = 2;
     private NestedListView accountsList;
     private View addAccountButton;
     private NestedListView foldersList;
@@ -613,7 +614,10 @@ public class Accounts extends PepPermissionActivity {
                 createSpecialAccounts();
             }
 
-            newAccounts = new ArrayList<BaseAccount>(accounts.size());
+            newAccounts = new ArrayList<BaseAccount>(accounts.size() +
+                    SPECIAL_ACCOUNTS_COUNT);
+            newAccounts.add(mUnifiedInboxAccount);
+            newAccounts.add(mAllMessagesAccount);
         } else {
             newAccounts = new ArrayList<BaseAccount>(accounts.size());
         }
@@ -1398,7 +1402,7 @@ public class Accounts extends PepPermissionActivity {
 //                              getString(R.string.app_revision_url) +
 //                              "</a>"))
         .append("</p><hr/><p>")
-        .append(String.format(getString(R.string.app_copyright_fmt), year, year))
+        .append(String.format(getString(R.string.app_copyright_fmt), Integer.toString(year), Integer.toString(year)))
         .append("</p><hr/><p>")
         .append(getString(R.string.pep_app_license))
         .append("</p><hr/><p>")
@@ -1531,9 +1535,12 @@ public class Accounts extends PepPermissionActivity {
             return;
         }
         switch (requestCode) {
-        case ACTIVITY_REQUEST_PICK_SETTINGS_FILE:
-            onImport(data.getData());
-            break;
+            case ACTIVITY_REQUEST_PICK_SETTINGS_FILE:
+                onImport(data.getData());
+                break;
+            case ACTIVITY_REQUEST_SAVE_SETTINGS_FILE:
+                onExport(data);
+                break;
         }
     }
 
@@ -1993,21 +2000,54 @@ public class Accounts extends PepPermissionActivity {
 
     }
 
+    public static final String EXTRA_INC_GLOBALS = "include_globals";
+    public static final String EXTRA_ACCOUNTS = "accountUuids";
+
     public void onExport(final boolean includeGlobals, final Account account) {
+
         createStoragePermissionListeners();
-        if (hasWriteExternalPermission()) {
-            // TODO, prompt to allow a user to choose which accounts to export
-            Set<String> accountUuids = null;
+        if (hasWriteExternalPermission()) {        // TODO, prompt to allow a user to choose which accounts to export
+            ArrayList<String> accountUuids = null;
             if (account != null) {
-                accountUuids = new HashSet<String>();
+                accountUuids = new ArrayList<>();
                 accountUuids.add(account.getUuid());
             }
 
-            ExportAsyncTask asyncTask = new ExportAsyncTask(this, includeGlobals, accountUuids);
-            setNonConfigurationInstance(asyncTask);
-            asyncTask.execute();
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TITLE, SettingsExporter.EXPORT_FILENAME);
+                intent.putStringArrayListExtra(EXTRA_ACCOUNTS, accountUuids);
+                intent.putExtra(EXTRA_INC_GLOBALS, includeGlobals);
+
+                PackageManager packageManager = getPackageManager();
+                List<ResolveInfo> infos = packageManager.queryIntentActivities(intent, 0);
+
+                if (infos.size() > 0) {
+                    startActivityForResult(Intent.createChooser(intent, null), ACTIVITY_REQUEST_SAVE_SETTINGS_FILE);
+                } else {
+                    showDialog(DIALOG_NO_FILE_MANAGER);
+                }
+            } else {
+                //Pre-Kitkat
+                ExportAsyncTask asyncTask = new ExportAsyncTask(this, includeGlobals, accountUuids, null);
+                setNonConfigurationInstance(asyncTask);
+                asyncTask.execute();
+            }
         }
     }
+
+    public void onExport(Intent intent) {
+        boolean includeGlobals = intent.getBooleanExtra(EXTRA_INC_GLOBALS, false);
+        ArrayList<String> accountUuids = intent.getStringArrayListExtra(EXTRA_ACCOUNTS);
+
+        ExportAsyncTask asyncTask = new ExportAsyncTask(this, includeGlobals, accountUuids, intent.getData());
+        setNonConfigurationInstance(asyncTask);
+        asyncTask.execute();
+    }
+
 
     private boolean hasWriteExternalPermission() {
         int res = getApplicationContext().checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -2021,13 +2061,17 @@ public class Accounts extends PepPermissionActivity {
         private boolean mIncludeGlobals;
         private Set<String> mAccountUuids;
         private String mFileName;
+        private Uri mUri;
 
 
         private ExportAsyncTask(Accounts activity, boolean includeGlobals,
-                                Set<String> accountUuids) {
+                                List<String> accountUuids, Uri uri) {
             super(activity);
             mIncludeGlobals = includeGlobals;
-            mAccountUuids = accountUuids;
+            mUri = uri;
+            if (accountUuids != null) {
+                mAccountUuids = new HashSet<>(accountUuids);
+            }
         }
 
         @Override
@@ -2040,8 +2084,13 @@ public class Accounts extends PepPermissionActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                mFileName = SettingsExporter.exportToFile(mContext, mIncludeGlobals,
+                if (mUri == null) {
+                    mFileName = SettingsExporter.exportToFile(mContext, mIncludeGlobals,
                             mAccountUuids);
+                } else {
+                    SettingsExporter.exportToUri(mContext, mIncludeGlobals, mAccountUuids, mUri);
+                }
+
             } catch (SettingsImportExportException e) {
                 Timber.w(e, "Exception during export");
                 return false;
@@ -2059,8 +2108,13 @@ public class Accounts extends PepPermissionActivity {
             removeProgressDialog();
 
             if (success) {
-                activity.showSimpleDialog(R.string.settings_export_success_header,
-                                          R.string.settings_export_success, mFileName);
+                if (mFileName != null) {
+                    activity.showSimpleDialog(R.string.settings_export_success_header,
+                            R.string.settings_export_success, mFileName);
+                } else {
+                    activity.showSimpleDialog(R.string.settings_export_success_header,
+                            R.string.settings_export_success_generic);
+                }
             } else {
                 //TODO: better error messages
                 activity.showSimpleDialog(R.string.settings_export_failed_header,
