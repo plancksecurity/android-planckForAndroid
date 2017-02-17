@@ -65,13 +65,13 @@ public class PEpUtils {
 
     public static Identity createIdentity(Address adr, Context context) {
         Identity id = new Identity();
-        id.address = adr.getAddress().toLowerCase();
-        id.username = adr.getAddress().toLowerCase();
+        if (adr.getAddress() != null) {
+            id.address = adr.getAddress().toLowerCase();
+            id.username = adr.getAddress().toLowerCase();
+        }
         if (adr.getPersonal() != null) {
             id.username = adr.getPersonal();
         }
-
-
         if (isMyself(context, adr)) {
             id.user_id = PEpProvider.PEP_OWN_USER_ID;
             return id;
