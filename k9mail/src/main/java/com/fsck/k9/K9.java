@@ -696,6 +696,7 @@ public class K9 extends Application {
                     case SyncNotifyInitAddOurDevice:
                     case SyncNotifyInitAddOtherDevice:
                     case SyncNotifyInitFormGroup:
+                    case SyncNotifyInitMoveOurDevice:
                         Log.i("PEPJNI", "showHandshake: " + signal.name() + " " + myself.toString() + "\n::\n" + partner.toString());
 
                         String trust = pEpSyncProvider.trustwords(myself, partner, language, true);
@@ -719,10 +720,9 @@ public class K9 extends Application {
                         K9.this.sendOrderedBroadcast(broadcastIntent, null);
                         break;
                     case SyncNotifyAcceptedDeviceAdded:
-                        new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show());
-                        break;
                     case SyncNotifyAcceptedGroupCreated:
-                        new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_SHORT).show());
+                    case SyncNotifyAcceptedDeviceMoved:
+                        new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_LONG).show());
                         break;
                 }
 
