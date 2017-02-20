@@ -3369,7 +3369,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         int worstRatingValue = Rating.pEpRatingFullyAnonymous.value;
         worstThreadRating = Rating.pEpRatingFullyAnonymous;
         for (int i = 0; i < cursor.getCount(); i++) {
-            Rating messageRating = Rating.valueOf(cursor.getString(PEP_RATING_COLUMN));
+            Rating messageRating = PEpUtils.stringToRating(cursor.getString(PEP_RATING_COLUMN));
             int messageRatingValue = messageRating.value;
             if (messageRatingValue <= worstRatingValue) {
                 worstRatingValue = messageRatingValue;
