@@ -96,6 +96,8 @@ import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 
+import org.pEp.jniadapter.Rating;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -484,6 +486,7 @@ public class Accounts extends K9Activity {
     private void initializeActionBar() {
         setUpToolbar(false);
         View customView = getToolbar().findViewById(R.id.actionbar_custom);
+        setStatusBarPepColor(Rating.pEpRatingFullyAnonymous);
 
         mActionBarTitle = (TextView) customView.findViewById(R.id.actionbar_title_first);
         mActionBarSubTitle = (TextView) customView.findViewById(R.id.actionbar_title_sub);
