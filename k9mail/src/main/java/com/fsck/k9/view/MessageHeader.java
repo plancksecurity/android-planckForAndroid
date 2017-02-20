@@ -48,6 +48,7 @@ import com.fsck.k9.ui.messageview.OnCryptoClickListener;
 
 import org.pEp.jniadapter.Rating;
 
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,6 +65,7 @@ import org.pEp.jniadapter.Rating;
 public class MessageHeader extends LinearLayout implements OnClickListener, OnLongClickListener {
     private Context mContext;
     private TextView mFromView;
+    private TextView mSenderView;
     private TextView mDateView;
     private TextView mToView;
     private TextView mToLabel;
@@ -130,6 +132,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         mAnsweredIcon = findViewById(R.id.answered);
         mForwardedIcon = findViewById(R.id.forwarded);
         mFromView = (TextView) findViewById(R.id.from);
+        mSenderView = (TextView) findViewById(R.id.sender);
         mToView = (TextView) findViewById(R.id.to);
         mToLabel = (TextView) findViewById(R.id.to_label);
         mCcView = (TextView) findViewById(R.id.cc);
@@ -348,6 +351,10 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         /* We hide the subject by default for each new message, and MessageTitleView might show
          * it later by calling showSubjectLine(). */
         boolean newMessageShown = mMessage == null || mMessage.getId() != message.getId();
+        // TODO: 08/06/17 Review
+        if (newMessageShown) {
+            mSubjectView.setVisibility(GONE);
+        }
 
         mMessage = message;
         mAccount = account;
@@ -357,6 +364,15 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
             mContactsPictureLoader = ContactPicture.getContactPictureLoader(mContext);
         }  else {
             mContactBadge.setVisibility(View.GONE);
+        }
+
+        if (shouldShowSender(message)) {
+            mSenderView.setVisibility(VISIBLE);
+            String sender = getResources().getString(R.string.message_view_sender_label,
+                    MessageHelper.toFriendly(message.getSender(), contacts));
+            mSenderView.setText(sender);
+        } else {
+            mSenderView.setVisibility(View.GONE);
         }
 
         final String subject = message.getSubject();
@@ -404,6 +420,16 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         } else {
             hideAdditionalHeaders();
         }
+    }
+
+    public static boolean shouldShowSender(Message message) {
+        Address[] from = message.getFrom();
+        Address[] sender = message.getSender();
+
+        if (sender == null || sender.length == 0) {
+            return false;
+        }
+        return !Arrays.equals(from, sender);
     }
 
     public void hideCryptoStatus() {
