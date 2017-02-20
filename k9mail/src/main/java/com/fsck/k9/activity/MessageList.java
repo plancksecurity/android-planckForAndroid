@@ -64,9 +64,6 @@ import com.fsck.k9.pEp.ui.renderers.AccountRenderer;
 import com.fsck.k9.pEp.ui.renderers.FolderRenderer;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.StorageEditor;
-import com.fsck.k9.mailstore.LocalMessage;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification;
@@ -86,14 +83,6 @@ import com.pedrogomez.renderers.RendererBuilder;
 import org.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.pEp.jniadapter.Rating;
-
-import java.util.Collection;
-import java.util.List;
-
 import java.util.Collection;
 import java.util.List;
 
@@ -2149,8 +2138,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     private void showMessageList() {
-        PEpUtils.colorToolbar(PePUIArtefactCache.getInstance(getApplicationContext()), getToolbar(), Rating.pEpRatingUnencrypted);
-        setStatusBarPepColor(Rating.pEpRatingUnencrypted);
         mMessageListWasDisplayed = true;
         mDisplayMode = DisplayMode.MESSAGE_LIST;
         mViewSwitcher.showFirstView();
