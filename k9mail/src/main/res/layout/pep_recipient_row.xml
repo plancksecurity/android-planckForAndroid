@@ -55,14 +55,29 @@
         </LinearLayout>
 
     </LinearLayout>
-    <Button
+
+    <FrameLayout
         android:id="@+id/buttonHandshake"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
-        android:text="@string/pep_handshake" />
+        android:background="?android:selectableItemBackground"
+        android:clickable="true">
+
+        <TextView android:id="@+id/handshake_button_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="@string/pep_handshake"
+            android:textAllCaps="true"
+            android:textColor="@color/openpgp_black" />
+
+    </FrameLayout>
 
 </RelativeLayout>

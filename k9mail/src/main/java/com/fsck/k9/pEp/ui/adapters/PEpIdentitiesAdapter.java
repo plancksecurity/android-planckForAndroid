@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -86,7 +87,8 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
         public TextView identityUserName;
         public TextView identityAdress;
 
-        public Button handshakeButton;
+        public FrameLayout handshakeButton;
+        private TextView handshakeText;
         public View container;
         public Context context;
         private ImageView badge;
@@ -96,7 +98,8 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
             context = view.getContext();
             identityUserName = ((TextView) view.findViewById(R.id.tvUsername));
             identityAdress = ((TextView) view.findViewById(R.id.tvAddress));
-            handshakeButton = ((Button) view.findViewById(R.id.buttonHandshake));
+            handshakeButton = ((FrameLayout) view.findViewById(R.id.buttonHandshake));
+            handshakeText = ((TextView) view.findViewById(R.id.handshake_button_text));
             container = view.findViewById(R.id.recipientContainer);
             badge = (ImageView) view.findViewById(R.id.status_badge);
         }
@@ -109,17 +112,17 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
                 badge.setVisibility(View.GONE);
             }else if (rating.value == Rating.pEpRatingMistrust.value) {
                 handshakeButton.setVisibility(View.VISIBLE);
-                handshakeButton.setText(context.getString(R.string.pep_handshake));
+                handshakeText.setText(context.getString(R.string.pep_handshake));
                 handshakeButton.setOnClickListener(onResetRedClick);
                 badge.setVisibility(View.VISIBLE);
             } else if (rating.value >= Rating.pEpRatingTrusted.value){
                 handshakeButton.setVisibility(View.VISIBLE);
-                handshakeButton.setText(context.getString(R.string.pep_reset_trust));
+                handshakeText.setText(context.getString(R.string.pep_reset_trust));
                 handshakeButton.setOnClickListener(onResetGreenClick);
                 badge.setVisibility(View.VISIBLE);
             } else if (rating.value == Rating.pEpRatingReliable.value){
                 handshakeButton.setVisibility(View.VISIBLE);
-                handshakeButton.setText(context.getString(R.string.pep_handshake));
+                handshakeText.setText(context.getString(R.string.pep_handshake));
                 handshakeButton.setOnClickListener(onHandshakeClick);
                 badge.setVisibility(View.VISIBLE);
             }
