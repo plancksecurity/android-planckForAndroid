@@ -759,23 +759,34 @@ public class AccountSettings extends K9PreferenceActivity {
             mPEpSyncAccount.setEnabled(false);
         }
 
+        boolean ispEpSyncEnabled = ((K9) getApplication()).ispEpSyncEnabled();
+
         mPEpDisablePrivacyProtection.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 final boolean value = (Boolean) newValue;
                 if (!value) {
+                    mPEpSaveEncrypted.setChecked(false);
+                    mPEpDisableDecryption.setChecked(false);
                     mPEpSaveEncrypted.setEnabled(false);
                     mPEpDisableDecryption.setEnabled(false);
                     if (BuildConfig.WITH_KEY_SYNC) {
                         mPEpSyncAccount.setEnabled(false);
                     }
+                    if (!ispEpSyncEnabled) {
+                        mPEpSyncAccount.setChecked(false);
+                    }
                 } else {
+                    mPEpSaveEncrypted.setChecked(true);
+                    mPEpDisableDecryption.setChecked(true);
                     mPEpSaveEncrypted.setEnabled(true);
                     mPEpDisableDecryption.setEnabled(true);
                     if (BuildConfig.WITH_KEY_SYNC) {
+                        mPEpSyncAccount.setChecked(true);
                         mPEpSyncAccount.setEnabled(true);
                     }
                 }
+                mPEpSyncAccount.setEnabled(!ispEpSyncEnabled);
                 return true;
             }
         });
@@ -786,7 +797,6 @@ public class AccountSettings extends K9PreferenceActivity {
             mPEpSyncAccount.setEnabled(false);
         }
 
-        boolean ispEpSyncEnabled = ((K9) getApplication()).ispEpSyncEnabled();
         mPEpSyncAccount.setEnabled(!ispEpSyncEnabled);
     }
 
