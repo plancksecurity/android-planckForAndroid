@@ -83,6 +83,12 @@
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:uiOptions="splitActionBarWhenNarrow">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
         <activity
             android:name=".activity.setup.Prefs"
@@ -400,13 +406,11 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/decrypted_file_provider_paths" />
         </provider>
-
         <provider
             android:name=".provider.AttachmentTempFileProvider"
             android:authorities="${applicationId}.tempfileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
-
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/temp_file_provider_paths" />
@@ -414,13 +418,11 @@
 
         <activity
             android:name=".pEp.ui.privacy.status.PEpStatus"
-            android:label="@string/pep_title_activity_privacy_status">
-        </activity>
+            android:label="@string/pep_title_activity_privacy_status"></activity>
         <activity
             android:name=".pEp.ui.blacklist.PepBlacklist"
             android:label="Blacklist"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        </activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
         <activity
             android:name=".pEp.ui.privacy.status.PEpTrustwords"
             android:label="@string/pep_title_activity_trustwords"
@@ -428,29 +430,26 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".pEp.ui.privacy.status.PEpStatus" />
-
         </activity>
         <activity
             android:name=".pEp.ui.keysync.PEpAddDevice"
             android:label="@string/pep_device_group"
             android:parentActivityName=".pEp.ui.privacy.status.PEpStatus">
-
             <intent-filter>
                 <action android:name="com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
         <receiver android:name=".activity.K9ActivityCommon$PrivateKeyReceiver">
             <intent-filter>
-                <action android:name="PRIVATE_KEY">
-                </action>
+                <action android:name="PRIVATE_KEY"></action>
             </intent-filter>
         </receiver>
-        <receiver android:name="K9$DismissKeysyncDialogReceiver">
+        <receiver android:name=".K9$DismissKeysyncDialogReceiver">
             <intent-filter>
-                <action android:name="KEYSYNC_DISMISS">
-                </action>
+                <action android:name="KEYSYNC_DISMISS"></action>
             </intent-filter>
         </receiver>
 
@@ -463,5 +462,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".pEp.ui.keysync.KeysyncManagement"></activity>
     </application>
+
 </manifest>

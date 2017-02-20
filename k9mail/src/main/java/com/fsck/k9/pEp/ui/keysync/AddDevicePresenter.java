@@ -32,11 +32,7 @@ public class AddDevicePresenter implements Presenter {
     }
 
     private void loadPartner(AddDeviceView view) {
-        if (!partner.username.equals(partner.address)) {
-            view.showCompletePartnerFormat(partner);
-        } else {
-            view.showPartnerFormat(partner);
-        }
+        view.showPartnerFormat(partner);
     }
 
     void acceptHandshake() {

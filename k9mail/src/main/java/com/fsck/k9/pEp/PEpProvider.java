@@ -105,6 +105,7 @@ public interface PEpProvider {
     String trustwords(Identity id, String language);
     void trustwords(Identity myself, Identity partner, String lang,
                     ResultCallback<HandshakeData> callback);
+    String trustwords(Identity myself, Identity partner, String lang, boolean isShort);
 
     void obtainTrustwords(Identity myself, Identity partner, String lang,
                           Boolean areTrustwordsShort, ResultCallback<HandshakeData> callback);

@@ -925,35 +925,42 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private void decryptMessage(LocalMessage message) {
         PEpProvider pEpProvider = PEpProviderFactory.createAndSetupProvider(getActivity());
-        try {
-            PEpProvider.DecryptResult decryptResult = pEpProvider.decryptMessage(mMessage);
-            MimeMessage decryptedMessage = decryptResult.msg;
-            if (message.getFolder().getName().equals(mAccount.getSentFolderName())
-                    || message.getFolder().getName().equals(mAccount.getDraftsFolderName())) {
-                decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
-            }
+        pEpProvider.decryptMessage(mMessage, new PEpProvider.ResultCallback<PEpProvider.DecryptResult>() {
+            @Override
+            public void onLoaded(PEpProvider.DecryptResult decryptResult) {
+                try {
 
-            decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
+                    MimeMessage decryptedMessage = decryptResult.msg;
+                    if (message.getFolder().getName().equals(mAccount.getSentFolderName())
+                            || message.getFolder().getName().equals(mAccount.getDraftsFolderName())) {
+                        decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
+                    }
 
-            // Store the updated message locally
-            LocalFolder folder = mMessage.getFolder();
-            LocalMessage localMessage = null;
+                    decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
 
-            localMessage = folder.storeSmallMessage(decryptedMessage, new Runnable() {
-                @Override
-                public void run() {
+                    // Store the updated message locally
+                    LocalFolder folder = mMessage.getFolder();
+                    LocalMessage localMessage = null;
+
+                    localMessage = folder.storeSmallMessage(decryptedMessage, () -> {
+                    });
+                    mMessage = localMessage;
+                    if (Rating.pEpRatingHaveNoKey.value == decryptResult.rating.value
+                            || !canDecrypt()) {
+                        showKeyNotFoundFeedback();
+                    } else {
+                        refreshMessage();
+                    }
+                } catch (MessagingException e) {
+                    Log.e("pEp", "decryptMessage: view", e);
                 }
-            });
-            mMessage = localMessage;
-            if (Rating.pEpRatingHaveNoKey.value == decryptResult.rating.value
-                    || !canDecrypt()) {
-                showKeyNotFoundFeedback();
-            } else {
-                refreshMessage();
             }
-        } catch (MessagingException e) {
-            Log.e("pEp", "decryptMessage: view", e);
-        }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+        });
     }
 
     private void refreshMessage() {
