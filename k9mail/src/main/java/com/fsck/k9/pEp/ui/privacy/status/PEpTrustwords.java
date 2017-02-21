@@ -95,6 +95,7 @@ public class PEpTrustwords extends PepColoredActivity {
         setContentView(R.layout.pep_trustwords);
         ButterKnife.bind(this);
         setUpToolbar(true);
+        PEpUtils.colorToolbar(getToolbar(), getResources().getColor(R.color.light_primary_color));
         context = getApplicationContext();
 
         //TODO> View threadfactory to use only one engine
