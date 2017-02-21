@@ -364,6 +364,7 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
                         getString(R.string.account_setup_failed_dlg_edit_details_action),
                         getString(R.string.account_setup_failed_dlg_continue_action)
                 );
+                fragment.setTargetFragment(fragment, 0);
                 break;
             }
             default: {

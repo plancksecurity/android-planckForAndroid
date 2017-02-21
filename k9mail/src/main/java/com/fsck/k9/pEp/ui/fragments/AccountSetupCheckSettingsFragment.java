@@ -47,7 +47,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
-public class AccountSetupCheckSettingsFragment extends Fragment {
+import static android.app.Activity.RESULT_OK;
+
+public class AccountSetupCheckSettingsFragment extends Fragment implements ConfirmationDialogFragment.ConfirmationDialogFragmentListener {
 
     public static final int ACTIVITY_REQUEST_CODE = 1;
 
@@ -365,6 +367,7 @@ public class AccountSetupCheckSettingsFragment extends Fragment {
                         getString(R.string.account_setup_failed_dlg_edit_details_action),
                         getString(R.string.account_setup_failed_dlg_continue_action)
                 );
+                fragment.setTargetFragment(this, 0);
                 break;
             }
             default: {
@@ -394,6 +397,33 @@ public class AccountSetupCheckSettingsFragment extends Fragment {
             case Unknown:
             default: return "";
         }
+    }
+
+    @Override
+    public void doPositiveClick(int dialogId) {
+        switch (dialogId) {
+            case R.id.dialog_account_setup_error: {
+                getFragmentManager().popBackStack();
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void doNegativeClick(int dialogId) {
+        switch (dialogId) {
+            case R.id.dialog_account_setup_error: {
+                mCanceled = false;
+                getActivity().setResult(RESULT_OK);
+                getActivity().finish();
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void dialogCancelled(int dialogId) {
+        // nothing to do here...
     }
 
     /**
