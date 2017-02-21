@@ -90,6 +90,8 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
 
         setContentView(R.layout.pep_add_device);
         ButterKnife.bind(this);
+        setUpToolbar(true);
+        PEpUtils.colorToolbar(getToolbar(), getResources().getColor(R.color.pep_green));
         if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
         initPep();
 

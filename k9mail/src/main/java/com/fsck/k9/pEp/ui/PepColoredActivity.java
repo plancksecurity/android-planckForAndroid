@@ -90,8 +90,7 @@ public abstract class PepColoredActivity extends K9Activity {
 
     protected abstract void initializeInjector(ApplicationComponent applicationComponent);
 
-
-    private void setStatusBarPepColor() {
+    public void setStatusBarPepColor() {
         Window window = this.getWindow();
 
         // clear FLAG_TRANSLUCENT_STATUS flag:

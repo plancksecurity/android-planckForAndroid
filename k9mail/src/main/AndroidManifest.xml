@@ -433,8 +433,7 @@
         </activity>
         <activity
             android:name=".pEp.ui.keysync.PEpAddDevice"
-            android:label="@string/pep_device_group"
-            android:parentActivityName=".pEp.ui.privacy.status.PEpStatus">
+            android:label="@string/pep_device_group">
             <intent-filter>
                 <action android:name="com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS" />
 

@@ -1,101 +1,110 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:clipToPadding="false"
-    tools:context=".pEp.ui.privacy.status.PEpTrustwords">
+    tools:context=".pEp.ui.keysync.PEpAddDevice">
 
-    <LinearLayout
+    <include layout="@layout/simple_toolbar_layout"/>
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        tools:context=".pEp.ui.keysync.PEpAddDevice">
 
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="48dp">
+            android:orientation="vertical">
+
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp">
+
+                <TextView
+                    android:id="@+id/tvPartner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_toLeftOf="@+id/call"
+                    android:gravity="center_vertical"
+                    android:padding="8dp"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:text="Partner:" />
+
+            </RelativeLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Partner:"
-                android:textStyle="bold"
-                android:textSize="14sp"
                 android:padding="8dp"
-                android:gravity="center_vertical"
-                android:layout_toLeftOf="@+id/call"
-                android:layout_alignParentStart="true"
-                android:id="@+id/tvPartner"/>
-
-        </RelativeLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/pep_add_device_ask_trustwords"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:padding="8dp"/>
+                android:text="@string/pep_add_device_ask_trustwords"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
 
-        <TextView
-            android:id="@+id/trustwords"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="IMPORTUNER METAPHOR ARNO DIABETES SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET"
-            android:textSize="24sp"
-            android:ellipsize="none"
-            android:padding="8dp"/>
+            <TextView
+                android:id="@+id/trustwords"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="none"
+                android:padding="8dp"
+                android:textSize="24sp"
+                tools:text="IMPORTUNER METAPHOR ARNO DIABETES SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET" />
 
-        <Button
-            android:id="@+id/confirmTrustWords"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="8dp"
-            android:background="@color/pep_green"
-            android:elevation="4dp"
-            android:text="@string/pep_confirm_trustwords"
-            android:textColor="@android:color/white" />
+            <Button
+                android:id="@+id/confirmTrustWords"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="8dp"
+                android:background="@color/pep_green"
+                android:elevation="4dp"
+                android:text="@string/pep_confirm_trustwords"
+                android:textColor="@android:color/white" />
 
-        <Button
-            android:id="@+id/wrongTrustwords"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="8dp"
-            android:background="@color/pep_red"
-            android:elevation="4dp"
-            android:text="@string/pep_wrong_trustwords"
-            android:textColor="@android:color/white"
+            <Button
+                android:id="@+id/wrongTrustwords"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="8dp"
+                android:background="@color/pep_red"
+                android:elevation="4dp"
+                android:text="@string/pep_wrong_trustwords"
+                android:textColor="@android:color/white"
 
-            />
+                />
 
-        <TextView
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:text="@string/synchronize_these_accounts_between_my_devices"
-            android:id="@+id/advenced_keys_title"
-            android:paddingBottom="8dp"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:visibility="gone"
-            />
+            <TextView
+                android:id="@+id/advenced_keys_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="8dp"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:text="@string/synchronize_these_accounts_between_my_devices"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/advanced_options_key_list"
-            android:scrollbars="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="invisible"
-            />
-    </LinearLayout>
-</ScrollView>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/advanced_options_key_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"
+                android:visibility="invisible" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
