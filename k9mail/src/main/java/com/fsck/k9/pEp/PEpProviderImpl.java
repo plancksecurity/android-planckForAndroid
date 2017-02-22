@@ -693,7 +693,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void startKeyserverLookup() {
+    public synchronized void startKeyserverLookup() {
         createEngineInstanceIfNeeded();
         engine.startKeyserverLookup();
     }
@@ -706,7 +706,6 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public synchronized KeyDetail getOwnKeyDetails(Message message) {
-//        createEngineInstanceIfNeeded();
         Identity id;
         try {
             id = engine.own_message_private_key_details(message);
@@ -717,7 +716,7 @@ public class PEpProviderImpl implements PEpProvider {
         return null;
     }
 
-    private void createEngineInstanceIfNeeded() {
+    private synchronized void createEngineInstanceIfNeeded() {
         if (engine == null) {
             try {
                 createEngineSession();
