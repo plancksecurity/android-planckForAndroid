@@ -84,10 +84,10 @@
             android:launchMode="singleTop"
             android:uiOptions="splitActionBarWhenNarrow">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
@@ -99,8 +99,8 @@
         <activity
             android:name=".activity.setup.WelcomeMessage"
             android:configChanges="locale"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
-            android:label="@string/welcome_message_title" />
+            android:label="@string/welcome_message_title"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
         <activity
             android:name=".activity.setup.FontSizeSettings"
             android:configChanges="locale"
@@ -418,11 +418,11 @@
 
         <activity
             android:name=".pEp.ui.privacy.status.PEpStatus"
-            android:label="@string/pep_title_activity_privacy_status"></activity>
+            android:label="@string/pep_title_activity_privacy_status" />
         <activity
             android:name=".pEp.ui.blacklist.PepBlacklist"
             android:label="Blacklist"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".pEp.ui.privacy.status.PEpTrustwords"
             android:label="@string/pep_title_activity_trustwords"
@@ -443,12 +443,12 @@
 
         <receiver android:name=".activity.K9ActivityCommon$PrivateKeyReceiver">
             <intent-filter>
-                <action android:name="PRIVATE_KEY"></action>
+                <action android:name="PRIVATE_KEY" />
             </intent-filter>
         </receiver>
         <receiver android:name=".K9$DismissKeysyncDialogReceiver">
             <intent-filter>
-                <action android:name="KEYSYNC_DISMISS"></action>
+                <action android:name="KEYSYNC_DISMISS" />
             </intent-filter>
         </receiver>
 
@@ -457,12 +457,13 @@
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".pEp.ui.keysync.KeysyncManagement"></activity>
+        <activity android:name=".pEp.ui.keysync.KeysyncManagement" />
+        <activity android:name=".pEp.ui.About"></activity>
     </application>
 
 </manifest>

@@ -80,6 +80,7 @@ import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
+import com.fsck.k9.pEp.ui.About;
 import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -1309,7 +1310,7 @@ public class Accounts extends K9Activity {
             onCompose();
             break;
         case R.id.about:
-            onAbout();
+            startActivity(About.onAbout(Accounts.this));
             break;
         case R.id.search:
             showSearchView();
@@ -1326,7 +1327,7 @@ public class Accounts extends K9Activity {
         return true;
     }
 
-    private static String[][] USED_LIBRARIES = new String[][] {
+    public static String[][] USED_LIBRARIES = new String[][] {
         new String[] {"jutf7", "http://jutf7.sourceforge.net/"},
         new String[] {"JZlib", "http://www.jcraft.com/jzlib/"},
         new String[] {"Commons IO", "http://commons.apache.org/io/"},

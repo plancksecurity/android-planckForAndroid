@@ -47,6 +47,11 @@ public abstract class PepColoredActivity extends K9Activity {
         }
     }
 
+    public void setToolbarTitle(String title) {
+        if (getSupportActionBar() != null) {
+            setTitle(title);
+        }
+    }
     protected void loadPepRating() {
         final Intent intent = getIntent();
         String ratingString;
