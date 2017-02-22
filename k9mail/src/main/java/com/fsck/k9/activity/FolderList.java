@@ -123,10 +123,10 @@ public class FolderList extends K9ListActivity {
                     String operation = mAdapter.mListener.getOperation(FolderList.this);
                     if (operation.length() < 1) {
                         mActionBarSubTitle.setText(mAccount.getEmail());
-                        mActionBarSubTitle.setVisibility(View.VISIBLE);
+                        mActionBarTitle.setText(getString(R.string.folders_title));
                     } else {
                         mActionBarSubTitle.setText(operation);
-                        mActionBarSubTitle.setVisibility(View.VISIBLE);
+                        mActionBarTitle.setText(getString(R.string.folders_title) + " (" + mAccount.getEmail() + ")");
                     }
                 }
             });
