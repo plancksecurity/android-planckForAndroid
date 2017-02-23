@@ -35,6 +35,7 @@ import com.fsck.k9.activity.setup.WelcomeMessage;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.helper.SizeFormatter;
 import com.fsck.k9.mail.AuthType;
+import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
@@ -1019,6 +1020,8 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
                         .deleteAccount(realAccount);
                         K9.setServicesEnabled(Accounts.this);
                         refresh();
+
+                        refreshAccountsStats(realAccount);
                     }
                 }
             });
@@ -1089,6 +1092,15 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         }
 
         return super.onCreateDialog(id);
+    }
+
+    private void refreshAccountsStats(Account realAccount) {
+        AccountStats oldStats = accountStats.get(realAccount.getUuid());
+        if (oldStats != null) {
+            int oldUnreadMessageCount = oldStats.unreadMessageCount;
+            mUnreadMessageCount -= oldUnreadMessageCount;
+        }
+        mHandler.setViewTitle();
     }
 
     @Override
