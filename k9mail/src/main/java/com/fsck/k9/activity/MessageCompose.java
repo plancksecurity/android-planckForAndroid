@@ -576,7 +576,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             ShortcutInfo composeShortcut = new ShortcutInfo.Builder(this, SHORTCUT_COMPOSE)
                     .setShortLabel(getResources().getString(R.string.compose_action))
                     .setLongLabel(getResources().getString(R.string.compose_action))
-                    .setIcon(Icon.createWithResource(this, R.drawable.ic_add_account))
+                    .setIcon(Icon.createWithResource(this, R.drawable.ic_shortcut_compose))
                     .setIntent(composeIntent)
                     .build();
 
