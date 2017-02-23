@@ -12,6 +12,9 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
+import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -93,6 +96,7 @@ import com.fsck.k9.ui.compose.QuotedMessagePresenter;
 
 import org.pEp.jniadapter.Rating;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -159,6 +163,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
      * - "Aw:" (german: abbreviation for "Antwort")
      */
     private static final Pattern PREFIX = Pattern.compile("^AW[:\\s]\\s*", Pattern.CASE_INSENSITIVE);
+    public static final String SHORTCUT_COMPOSE = "shortcut_compose";
 
     private QuotedMessagePresenter quotedMessagePresenter;
     private MessageLoaderHelper messageLoaderHelper;
@@ -337,7 +342,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        createDynamicShortcut();
         if (UpgradeDatabases.actionUpgradeDatabases(this, getIntent())) {
             finish();
             return;
@@ -559,6 +564,24 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.ACCOUNT, mAccount.ispEpPrivacyProtected());
 
         setUpToolbar(true);
+    }
+
+    private void createDynamicShortcut() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
+            Intent composeIntent = new Intent(MessageCompose.this, MessageCompose.class);
+            composeIntent.putExtra(MessageCompose.EXTRA_ACCOUNT, getAccount().getUuid());
+            composeIntent.setAction(MessageCompose.ACTION_COMPOSE);
+
+            ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+            ShortcutInfo composeShortcut = new ShortcutInfo.Builder(this, SHORTCUT_COMPOSE)
+                    .setShortLabel(getResources().getString(R.string.compose_action))
+                    .setLongLabel(getResources().getString(R.string.compose_action))
+                    .setIcon(Icon.createWithResource(this, R.drawable.ic_add_account))
+                    .setIntent(composeIntent)
+                    .build();
+
+            shortcutManager.setDynamicShortcuts(Collections.singletonList(composeShortcut));
+        }
     }
 
     @Override
