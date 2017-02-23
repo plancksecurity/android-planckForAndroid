@@ -380,6 +380,7 @@ public class AccountSetupBasicsFragment extends Fragment
                     .beginTransaction()
                     .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
                     .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
+                    .addToBackStack(null)
                     .commit();
         } catch (URISyntaxException use) {
             /*

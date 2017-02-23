@@ -302,7 +302,7 @@ public class AccountSetupCheckSettingsFragment extends Fragment implements Confi
                                 getString(R.string.account_setup_failed_dlg_invalid_certificate_reject),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-                                        getActivity().finish();
+                                        getFragmentManager().popBackStack();
                                     }
                                 })
                         .show();
@@ -403,7 +403,22 @@ public class AccountSetupCheckSettingsFragment extends Fragment implements Confi
     public void doPositiveClick(int dialogId) {
         switch (dialogId) {
             case R.id.dialog_account_setup_error: {
-                getFragmentManager().popBackStack();
+                if (mDirection.equals(AccountSetupCheckSettings.CheckDirection.INCOMING)) {
+                    AccountSetupIncomingFragment accountSetupIncomingFragment = (AccountSetupIncomingFragment)getFragmentManager().findFragmentByTag("accountSetupIncomingFragment");
+                    getFragmentManager()
+                            .beginTransaction()
+                            .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                            .replace(R.id.account_setup_container, accountSetupIncomingFragment, "accountSetupIncomingFragment")
+                            .commit();
+                } else {
+                    AccountSetupOutgoingFragment accountSetupOutgoingFragment = AccountSetupOutgoingFragment.actionOutgoingSettings(mAccount, false);
+                    getFragmentManager()
+                            .beginTransaction()
+                            .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                            .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
+                            .commit();
+                }
+
                 break;
             }
         }
@@ -415,7 +430,7 @@ public class AccountSetupCheckSettingsFragment extends Fragment implements Confi
             case R.id.dialog_account_setup_error: {
                 mCanceled = false;
                 getActivity().setResult(RESULT_OK);
-                getActivity().finish();
+                getFragmentManager().popBackStack();
                 break;
             }
         }
