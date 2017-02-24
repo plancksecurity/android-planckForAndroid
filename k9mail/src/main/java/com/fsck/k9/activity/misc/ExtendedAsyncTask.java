@@ -92,7 +92,9 @@ public abstract class ExtendedAsyncTask<Params, Progress, Result>
     protected abstract void showProgressDialog();
 
     protected void removeProgressDialog() {
-        mProgressDialog.dismiss();
+        if ((mProgressDialog != null) && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
         mProgressDialog = null;
     }
 
