@@ -375,14 +375,17 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
         switch (view.getId()) {
             case R.id.to: {
+                activity.createPermissionListeners();
                 presenter.onToFocused();
                 break;
             }
             case R.id.cc: {
+                activity.createPermissionListeners();
                 presenter.onCcFocused();
                 break;
             }
             case R.id.bcc: {
+                activity.createPermissionListeners();
                 presenter.onBccFocused();
                 break;
             }

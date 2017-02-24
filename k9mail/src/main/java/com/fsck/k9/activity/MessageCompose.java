@@ -574,7 +574,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.ACCOUNT, mAccount.ispEpPrivacyProtected());
 
         setUpToolbar(true);
-        createPermissionListeners();
     }
 
     private void createDynamicShortcut() {
@@ -1919,7 +1918,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     }
 
 
-    private void createPermissionListeners() {
+    public void createPermissionListeners() {
         PermissionListener feedbackViewPermissionListener = new ActivityPermissionListener(this);
 
         String explanation = getResources().getString(R.string.read_permission_first_explanation);
