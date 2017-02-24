@@ -50,6 +50,7 @@ import com.fsck.k9.service.BootReceiver;
 import com.fsck.k9.service.MailService;
 import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
+import com.karumi.dexter.Dexter;
 
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
@@ -669,6 +670,7 @@ public class K9 extends Application {
         });
 
         notifyObservers();
+        Dexter.initialize(this);
     }
 
     private void pEpInitEnvironment() {

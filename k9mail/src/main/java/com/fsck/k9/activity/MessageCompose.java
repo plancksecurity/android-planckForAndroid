@@ -1,6 +1,7 @@
 package com.fsck.k9.activity;
 
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -89,10 +90,16 @@ import com.fsck.k9.message.SimpleMessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.ui.listeners.ActivityPermissionListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.single.CompositePermissionListener;
+import com.karumi.dexter.listener.single.PermissionListener;
+import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener;
 
 import org.pEp.jniadapter.Rating;
 
@@ -169,6 +176,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private MessageLoaderHelper messageLoaderHelper;
     private AttachmentPresenter attachmentPresenter;
     private boolean encrypted = true;
+    private CompositePermissionListener contactPermissionListener;
+    private LinearLayout rootView;
 
     public Account getAccount() {
         String accountUuid = (mMessageReference != null) ?
@@ -395,6 +404,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
         mContacts = Contacts.getInstance(MessageCompose.this);
 
+        rootView = (LinearLayout) findViewById(R.id.content);
         mChooseIdentityButton = (TextView) findViewById(R.id.identity);
         mChooseIdentityButton.setOnClickListener(this);
 
@@ -564,6 +574,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.ACCOUNT, mAccount.ispEpPrivacyProtected());
 
         setUpToolbar(true);
+        createPermissionListeners();
     }
 
     private void createDynamicShortcut() {
@@ -1908,4 +1919,38 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     }
 
 
+    private void createPermissionListeners() {
+        PermissionListener feedbackViewPermissionListener = new ActivityPermissionListener(this);
+
+        String explanation = getResources().getString(R.string.read_permission_first_explanation);
+        contactPermissionListener = new CompositePermissionListener(feedbackViewPermissionListener,
+                SnackbarOnDeniedPermissionListener.Builder.with(rootView, explanation)
+                        .withOpenSettingsButton(R.string.button_settings)
+                        .build());
+        Dexter.checkPermission(contactPermissionListener, Manifest.permission.READ_CONTACTS);
+    }
+
+    public void showPermissionGranted(String permissionName) {
+    }
+
+    public void showPermissionDenied(String permissionName, boolean permanentlyDenied) {
+        String permissionDenied = getResources().getString(R.string.read_snackbar_permission_permanently_denied);
+        FeedbackTools.showLongFeedback(getRootView(),  permissionDenied);
+    }
+
+    public void showPermissionRationale(PermissionToken token) {
+        String rationaleExplanation = getResources().getString(R.string.read_snackbar_permission_rationale);
+        new AlertDialog.Builder(this).setTitle(R.string.read_permission_rationale_title)
+                .setMessage(rationaleExplanation)
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+                    dialog.dismiss();
+                    token.cancelPermissionRequest();
+                })
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    dialog.dismiss();
+                    token.continuePermissionRequest();
+                })
+                .setOnDismissListener(dialog -> token.cancelPermissionRequest())
+                .show();
+    }
 }

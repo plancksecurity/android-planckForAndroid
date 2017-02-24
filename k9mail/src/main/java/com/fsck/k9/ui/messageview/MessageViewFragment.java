@@ -1,5 +1,6 @@
 package com.fsck.k9.ui.messageview;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
@@ -12,6 +13,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -61,6 +63,7 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
+import com.fsck.k9.pEp.ui.listeners.FragmentPermissionListener;
 import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -68,6 +71,10 @@ import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
 import com.fsck.k9.view.MessageHeader;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.single.CompositePermissionListener;
+import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener;
 
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
@@ -96,6 +103,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private Rating pEpRating;
     private PePUIArtefactCache pePUIArtefactCache;
     private boolean isMessageFullDownloaded;
+    private CompositePermissionListener storagePermissionListener;
 
     public static MessageViewFragment newInstance(MessageReference reference) {
         MessageViewFragment fragment = new MessageViewFragment();
@@ -981,8 +989,10 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     @Override
     public void onSaveAttachment(AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
-
-        getAttachmentController(attachment).saveAttachment();
+        createPermissionListeners();
+        if (hasWriteExternalPermission()) {
+            getAttachmentController(attachment).saveAttachment();
+        }
     }
 
     @Override
@@ -1006,5 +1016,45 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private AttachmentController getAttachmentController(AttachmentViewInfo attachment) {
         return new AttachmentController(mController, downloadManager, this, attachment);
+    }
+
+    private boolean hasWriteExternalPermission() {
+        int res = getActivity().getApplicationContext().checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        return (res == PackageManager.PERMISSION_GRANTED);
+    }
+
+    private void createPermissionListeners() {
+        FragmentPermissionListener feedbackViewPermissionListener = new FragmentPermissionListener(this);
+
+        String explanation = getResources().getString(R.string.download_permission_first_explanation);
+        storagePermissionListener = new CompositePermissionListener(feedbackViewPermissionListener,
+                SnackbarOnDeniedPermissionListener.Builder.with(mMessageView, explanation)
+                        .withOpenSettingsButton(R.string.button_settings)
+                        .build());
+        Dexter.checkPermission(storagePermissionListener, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    public void showPermissionGranted(String permissionName) {
+    }
+
+    public void showPermissionDenied(String permissionName, boolean permanentlyDenied) {
+        String permissionDenied = getResources().getString(R.string.download_snackbar_permission_permanently_denied);
+        FeedbackTools.showLongFeedback(mMessageView,  permissionDenied);
+    }
+
+    public void showPermissionRationale(PermissionToken token) {
+        String rationaleExplanation = getResources().getString(R.string.download_snackbar_permission_rationale);
+        new AlertDialog.Builder(getActivity()).setTitle(R.string.download_permission_rationale_title)
+                .setMessage(rationaleExplanation)
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+                    dialog.dismiss();
+                    token.cancelPermissionRequest();
+                })
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    dialog.dismiss();
+                    token.continuePermissionRequest();
+                })
+                .setOnDismissListener(dialog -> token.cancelPermissionRequest())
+                .show();
     }
 }
