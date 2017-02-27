@@ -46,6 +46,7 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
     private static final String MYSELF = "partnerAdress";
     private static final String PARTNER = "partnerUserUd";
     private static final String MY_ADRESS = "myAddress";
+    private static final String EXPLANATION = "explanation";
 
     @Inject AddDevicePresenter presenter;
 
@@ -55,6 +56,8 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
     TextView partnerView;
     @Bind(R.id.advenced_keys_title)
     TextView advancedKeysTextView;
+    @Bind(R.id.explanation)
+    TextView explanationTextView;
     @Bind(R.id.advanced_options_key_list)
     RecyclerView identitiesList;
     private MenuItem advancedOptionsMenuItem;
@@ -67,12 +70,13 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
     private DismissKeysyncDialogReceiver receiver;
     private IntentFilter filter;
 
-    public static Intent getActionRequestHandshake(Context context, String trustwords, Identity myself, Identity partner) {
+    public static Intent getActionRequestHandshake(Context context, String trustwords, Identity myself, Identity partner, String explanation) {
         Intent intent = new Intent(context, PEpAddDevice.class);
         intent.setAction(ACTION_SHOW_PEP_TRUSTWORDS);
         intent.putExtra(TRUSTWORDS, trustwords);
         intent.putExtra(PARTNER, partner);
         intent.putExtra(MYSELF, myself);
+        intent.putExtra(EXPLANATION, explanation);
         return intent;
 
     }
@@ -96,6 +100,7 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
         initPep();
 
         if (getIntent() != null) {
+            explanationTextView.setText(intent.getStringExtra(EXPLANATION));
             if (intent.hasExtra(TRUSTWORDS)) {
                 tvTrustwords.setText(getIntent().getStringExtra(TRUSTWORDS));
             }

@@ -779,8 +779,8 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putBoolean(mUuid + ".defaultQuotedTextShown", mDefaultQuotedTextShown);
         editor.putBoolean(mUuid + ".replyAfterQuote", mReplyAfterQuote);
         editor.putBoolean(mUuid + ".stripSignature", mStripSignature);
-        editor.putString(mUuid + ".cryptoApp", mCryptoApp);
-        editor.putLong(mUuid + ".cryptoKey", mCryptoKey);
+        editor.putString(mUuid + ".cryptoApp", NO_OPENPGP_PROVIDER);
+        editor.putLong(mUuid + ".cryptoKey", NO_OPENPGP_KEY);
         editor.putBoolean(mUuid + ".cryptoSupportSignOnly", mCryptoSupportSignOnly);
         editor.putBoolean(mUuid + ".allowRemoteSearch", mAllowRemoteSearch);
         editor.putBoolean(mUuid + ".remoteSearchFullText", mRemoteSearchFullText);
@@ -1655,11 +1655,11 @@ public class Account implements BaseAccount, StoreConfig {
     }
 
     public void setCryptoApp(String cryptoApp) {
-        if (cryptoApp == null || cryptoApp.equals("apg")) {
+        //if (cryptoApp == null || cryptoApp.equals("apg")) {
             mCryptoApp = NO_OPENPGP_PROVIDER;
-        } else {
-            mCryptoApp = cryptoApp;
-        }
+        //} else {
+        //    mCryptoApp = cryptoApp;
+        //}
     }
 
     public long getCryptoKey() {
@@ -1667,7 +1667,8 @@ public class Account implements BaseAccount, StoreConfig {
     }
 
     public void setCryptoKey(long keyId) {
-        mCryptoKey = keyId;
+        //mCryptoKey = keyId;
+        mCryptoKey = NO_OPENPGP_KEY;
     }
 
     public boolean getCryptoSupportSignOnly() {

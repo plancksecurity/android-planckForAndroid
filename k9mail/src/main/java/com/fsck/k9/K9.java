@@ -679,6 +679,11 @@ public class K9 extends Application {
             initSync();
             setupFastPoller();
         }
+        else {
+            //UGLY PATCH /~Create a session to force create trustdb at very beggining
+            new Thread(() -> PEpProviderFactory.createAndSetupProvider(K9.this).close()).start();
+
+        }
     }
 
     public PEpProvider getpEpSyncProvider() {
@@ -698,21 +703,9 @@ public class K9 extends Application {
                     case SyncNotifyInitAddOurDevice:
                     case SyncNotifyInitAddOtherDevice:
                     case SyncNotifyInitFormGroup:
+                        goToAddDevice(myself, partner, signal, getString(R.string.pep_add_device_ask_trustwords));
                     case SyncNotifyInitMoveOurDevice:
-                        Log.i("PEPJNI", "showHandshake: " + signal.name() + " " + myself.toString() + "\n::\n" + partner.toString());
-
-                        String trust = pEpSyncProvider.trustwords(myself, partner, language, true);
-                        Context context = K9.this.getApplicationContext();
-                        Intent syncTrustowordsActivity = PEpAddDevice.getActionRequestHandshake(context, trust, myself, partner);
-                        syncTrustowordsActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        PendingIntent pendingIntent = PendingIntent.getActivity(context, 22, syncTrustowordsActivity, 0);
-                        try {
-                            pendingIntent.send();
-                        }
-                        catch (PendingIntent.CanceledException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
+                        goToAddDevice(myself, partner, signal, getString(R.string.pep_add_device_ask_move_trustwords));
                         break;
                     case SyncNotifyTimeout:
                         //Close handshake
@@ -765,6 +758,23 @@ public class K9 extends Application {
         });
 
         pEpSyncProvider.startSync();
+    }
+
+    private void goToAddDevice(Identity myself, Identity partner, SyncHandshakeSignal signal, String explanation) {
+        Log.i("PEPJNI", "showHandshake: " + signal.name() + " " + myself.toString() + "\n::\n" + partner.toString());
+
+        String trust = pEpSyncProvider.trustwords(myself, partner, language, true);
+        Context context = K9.this.getApplicationContext();
+        Intent syncTrustowordsActivity = PEpAddDevice.getActionRequestHandshake(context, trust, myself, partner, explanation);
+        syncTrustowordsActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 22, syncTrustowordsActivity, 0);
+        try {
+            pendingIntent.send();
+        }
+        catch (PendingIntent.CanceledException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     private void loadCurrentAccount(org.pEp.jniadapter.Message pEpMessage, MessagingController messagingController) {

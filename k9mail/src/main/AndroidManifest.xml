@@ -425,7 +425,7 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".pEp.ui.privacy.status.PEpTrustwords"
-            android:label="@string/pep_title_activity_trustwords"
+            android:label="@string/pep_handshake"
             android:parentActivityName=".pEp.ui.privacy.status.PEpStatus">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
