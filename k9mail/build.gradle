@@ -1,6 +1,6 @@
-def pEpEngineRevision = 1603
-def pEpJNIAdapterRevision = 302
-def version = "0.9.9.11"
+def pEpEngineRevision = 1604
+def pEpJNIAdapterRevision = 305
+def version = "0.9.9.13"
 
 
 buildscript {
@@ -89,7 +89,7 @@ android {
 //        versionName '5.203'
 
         applicationId "pep.android.k9"
-        versionCode 55
+        versionCode 57
 //        versionName '0.9.9.2'
         minSdkVersion 18
         targetSdkVersion 22
