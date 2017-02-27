@@ -1,6 +1,8 @@
 package com.fsck.k9.pEp.ui.blacklist;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +23,7 @@ import android.widget.TextView;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
+import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 
@@ -146,7 +150,6 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
         return true;
     }
 
-
     @Override
     public boolean onQueryTextSubmit(String query) {
         final List<KeyListItem> filteredModelList = filter(keys, query);
@@ -181,6 +184,28 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
                 return true;
             case R.id.action_search:
                 showSearchView();
+                return true;
+            case R.id.action_add_fpr:
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+                LayoutInflater inflater = this.getLayoutInflater();
+                final View dialogView = inflater.inflate(R.layout.fpr_dialog, null);
+                dialogBuilder.setView(dialogView);
+
+                final EditText fpr = (EditText) dialogView.findViewById(R.id.fpr_text);
+                final EditText address = (EditText) dialogView.findViewById(R.id.fpr_address);
+
+                dialogBuilder.setTitle("Add FPR");
+                dialogBuilder.setPositiveButton("Done", (dialog, whichButton) -> {
+                    Address newAddress = new Address(address.getText().toString());
+                    KeyListItem newFRP = new KeyListItem(fpr.getText().toString(), newAddress.toString());
+                    recipientsAdapter.add(newFRP);
+                    recipientsAdapter.notifyDataSetChanged();
+                    //Add to the engine
+                });
+                dialogBuilder.setNegativeButton("Cancel", (dialog, whichButton) -> {
+                });
+                AlertDialog b = dialogBuilder.create();
+                b.show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

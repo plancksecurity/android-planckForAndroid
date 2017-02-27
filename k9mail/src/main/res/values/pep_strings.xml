@@ -119,6 +119,7 @@
     <string name="download_snackbar_permission_rationale">We need your permission to download files on your mobile phone</string>
     <string name="download_snackbar_permission_permanently_denied">Don\'t allowing us download files may cause unexpected behaviours</string>
     <string name="download_permission_rationale_title">Download files</string>
+    <string name="add_fpr">ADD FPR</string>
 
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>
