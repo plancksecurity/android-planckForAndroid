@@ -17,16 +17,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -41,6 +45,8 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
     RecyclerView recipientsView;
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+    @Bind(R.id.pep_blacklist_layout)
+    LinearLayout container;
 
 
 
@@ -207,13 +213,19 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
 
     private void addFingerprintToBlacklist(EditText fpr) {
         String fingerprint = fpr.getText().toString().toUpperCase().replaceAll(" ", "");
-        for (KeyListItem key : keys) {
-            if (key.fpr.equals(fingerprint)) {
-                pEp.addToBlacklist(fingerprint);
+        Pattern pattern = Pattern.compile("^[0-9A-F]+$");
+        Matcher matcher = pattern.matcher(fingerprint);
+        if (matcher.find() && fingerprint.length() >= 40) {
+            for (KeyListItem key : keys) {
+                if (key.fpr.equals(fingerprint)) {
+                    pEp.addToBlacklist(fingerprint);
+                }
             }
+            keys = pEp.getAvailableKey();
+            initializeKeysView();
+        } else {
+            FeedbackTools.showShortFeedback(container, "Wrong FPR");
         }
-        keys = pEp.getAvailableKey();
-        initializeKeysView();
     }
 
     public void showSearchView() {
