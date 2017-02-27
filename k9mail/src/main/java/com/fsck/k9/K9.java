@@ -677,11 +677,6 @@ public class K9 extends Application {
             initSync();
             setupFastPoller();
         }
-        else {
-            //UGLY PATCH /~Create a session to force create trustdb at very beggining
-            new Thread(() -> PEpProviderFactory.createAndSetupProvider(K9.this).close()).start();
-
-        }
     }
 
     public PEpProvider getpEpSyncProvider() {
