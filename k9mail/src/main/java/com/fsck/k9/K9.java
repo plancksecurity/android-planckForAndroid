@@ -690,6 +690,7 @@ public class K9 extends Application {
 
             @Override
             public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
+                Log.e("pEp", "notifyHandshake: " + signal.name());
                 switch (signal) {
                     case SyncNotifyUndefined:
                         break;
