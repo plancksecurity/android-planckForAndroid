@@ -698,6 +698,7 @@ public class K9 extends Application {
                     case SyncNotifyInitAddOtherDevice:
                     case SyncNotifyInitFormGroup:
                         goToAddDevice(myself, partner, signal, getString(R.string.pep_add_device_ask_trustwords));
+                        break;
                     case SyncNotifyInitMoveOurDevice:
                         goToAddDevice(myself, partner, signal, getString(R.string.pep_add_device_ask_move_trustwords));
                         break;
