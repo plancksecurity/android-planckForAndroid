@@ -27,7 +27,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.text.format.Time;
-import android.util.Log;
+import timber.log.Timber;
 import android.widget.Toast;
 
 import com.fsck.k9.Account.SortType;
@@ -58,6 +58,11 @@ import com.fsck.k9.service.MailService;
 import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
 import com.fsck.k9.widget.list.MessageListWidgetProvider;
+import timber.log.Timber;
+
+import static timber.log.Timber.i;
+import static timber.log.Timber.v;
+
 
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
@@ -463,7 +468,7 @@ public class K9 extends Application {
                 try {
                     queue.put(new Handler());
                 } catch (InterruptedException e) {
-                    Log.e(K9.LOG_TAG, "", e);
+                    Timber.e("", e);
                 }
                 Looper.loop();
             }
@@ -473,13 +478,13 @@ public class K9 extends Application {
         try {
             final Handler storageGoneHandler = queue.take();
             registerReceiver(receiver, filter, null, storageGoneHandler);
-            Log.i(K9.LOG_TAG, "Registered: unmount receiver");
+            i("Registered: unmount receiver");
         } catch (InterruptedException e) {
-            Log.e(K9.LOG_TAG, "Unable to register unmount receiver", e);
+            Timber.e("Unable to register unmount receiver", e);
         }
 
         registerReceiver(new ShutdownReceiver(), new IntentFilter(Intent.ACTION_SHUTDOWN));
-        Log.i(K9.LOG_TAG, "Registered: shutdown receiver");
+        i("Registered: shutdown receiver");
     }
 
     public static void save(StorageEditor editor) {
@@ -625,11 +630,10 @@ public class K9 extends Application {
                 intent.putExtra(K9.Intents.EmailReceived.EXTRA_FROM_SELF, account.isAnIdentity(message.getFrom()));
                 K9.this.sendBroadcast(intent);
                 if (K9.DEBUG)
-                    Log.d(K9.LOG_TAG, "Broadcasted: action=" + action
-                          + " account=" + account.getDescription()
-                          + " folder=" + folder
-                          + " message uid=" + message.getUid()
-                         );
+                    Timber.d("Broadcasted: action=" + action
+                            + " account=" + account.getDescription()
+                            + " folder=" + folder
+                            + " message uid=" + message.getUid());
             }
 
             private void updateUnreadWidget() {
@@ -637,7 +641,7 @@ public class K9 extends Application {
                     UnreadWidgetProvider.updateUnreadCount(K9.this);
                 } catch (Exception e) {
                     if (K9.DEBUG) {
-                        Log.e(LOG_TAG, "Error while updating unread widget(s)", e);
+                        Timber.e("Error while updating unread widget(s)", e);
                     }
                 }
             }
@@ -649,7 +653,7 @@ public class K9 extends Application {
                     if (BuildConfig.DEBUG) {
                         throw e;
                     } else if (K9.DEBUG) {
-                        Log.e(LOG_TAG, "Error while updating message list widget", e);
+                        Timber.e("Error while updating message list widget", e);
                     }
                 }
             }
@@ -714,7 +718,7 @@ public class K9 extends Application {
 
             @Override
             public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
-                Log.e("pEp", "notifyHandshake: " + signal.name());
+                Timber.e("pEp", "notifyHandshake: " + signal.name());
                 switch (signal) {
                     case SyncNotifyUndefined:
                         break;
@@ -761,7 +765,7 @@ public class K9 extends Application {
     }
 
     private void goToAddDevice(Identity myself, Identity partner, SyncHandshakeSignal signal, String explanation) {
-        Log.i("PEPJNI", "showHandshake: " + signal.name() + " " + myself.toString() + "\n::\n" + partner.toString());
+        Timber.i("PEPJNI", "showHandshake: " + signal.name() + " " + myself.toString() + "\n::\n" + partner.toString());
 
         String trust = pEpSyncProvider.trustwords(myself, partner, language, true);
         Context context = K9.this.getApplicationContext();
@@ -949,12 +953,12 @@ public class K9 extends Application {
         synchronized (observers) {
             for (final ApplicationAware aware : observers) {
                 if (K9.DEBUG) {
-                    Log.v(K9.LOG_TAG, "Initializing observer: " + aware);
+                    v("Initializing observer: " + aware);
                 }
                 try {
                     aware.initializeComponent(this);
                 } catch (Exception e) {
-                    Log.w(K9.LOG_TAG, "Failure when notifying " + aware, e);
+                    Timber.w("Failure when notifying " + aware, e);
                 }
             }
 

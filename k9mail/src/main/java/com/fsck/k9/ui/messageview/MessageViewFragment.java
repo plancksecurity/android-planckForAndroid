@@ -19,7 +19,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.text.TextUtils;
-import android.util.Log;
+import timber.log.Timber;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -287,7 +287,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private void displayMessage(MessageReference messageReference) {
         mMessageReference = messageReference;
         if (K9.DEBUG) {
-            Log.d(K9.LOG_TAG, "MessageView displaying message " + mMessageReference);
+            Timber.d("MessageView displaying message " + mMessageReference);
         }
 
         mAccount = Preferences.getPreferences(getApplicationContext()).getAccount(mMessageReference.getAccountUuid());
@@ -801,7 +801,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         pePUIArtefactCache.setRecipients(mAccount, addresses);
         for (String s : mMessage.getHeaderNames()) {
             for (String s1 : mMessage.getHeader(s)) {
-                Log.i("MessageHeader", "onClick " + s + " " + s1);
+                Timber.i("MessageHeader", "onClick " + s + " " + s1);
             }
         }
 
@@ -905,7 +905,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 getActivity().startIntentSenderForResult(
                         si, requestCode, fillIntent, flagsMask, flagValues, extraFlags);
             } catch (SendIntentException e) {
-                Log.e(K9.LOG_TAG, "Irrecoverable error calling PendingIntent!", e);
+                Timber.e("Irrecoverable error calling PendingIntent!", e);
             }
         }
     };
@@ -973,7 +973,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                         refreshMessage();
                     }
                 } catch (MessagingException e) {
-                    Log.e("pEp", "decryptMessage: view", e);
+                    Timber.e("pEp", "decryptMessage: view", e);
                 }
             }
 

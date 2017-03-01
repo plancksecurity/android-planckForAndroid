@@ -14,7 +14,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.util.Log;
+import timber.log.Timber;
 import android.view.View;
 import android.widget.Toast;
 
@@ -60,7 +60,7 @@ class DownloadImageTask extends AsyncTask<String, Void, String> {
 
             return fileName;
         } catch (Exception e) {
-            Log.e(K9.LOG_TAG, "Error while downloading image", e);
+            Timber.e("Error while downloading image", e);
             return null;
         }
     }

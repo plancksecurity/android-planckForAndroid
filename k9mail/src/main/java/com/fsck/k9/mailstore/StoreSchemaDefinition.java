@@ -3,7 +3,7 @@ package com.fsck.k9.mailstore;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
+import timber.log.Timber;
 import com.fsck.k9.Account;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
@@ -15,6 +15,10 @@ import com.fsck.k9.preferences.Storage;
 
 import java.util.List;
 import java.util.Locale;
+
+import static com.fsck.k9.mailstore.LocalStore.DB_VERSION;
+import static java.lang.String.format;
+import static java.util.Locale.US;
 
 
 class StoreSchemaDefinition implements LockableDatabase.SchemaDefinition {
@@ -39,15 +43,15 @@ class StoreSchemaDefinition implements LockableDatabase.SchemaDefinition {
                 throw new Error("Exception while upgrading database", e);
             }
 
-            Log.e(K9.LOG_TAG, "Exception while upgrading database. Resetting the DB to v0", e);
+            Timber.e("Exception while upgrading database. Resetting the DB to v0", e);
             db.setVersion(0);
             upgradeDatabase(db);
         }
     }
 
     private void upgradeDatabase(final SQLiteDatabase db) {
-        Log.i(K9.LOG_TAG, String.format(Locale.US, "Upgrading database from version %d to version %d",
-                db.getVersion(), LocalStore.DB_VERSION));
+        Timber.i(format(US, "Upgrading database from version %d to version %d",
+                db.getVersion(), DB_VERSION));
 
         db.beginTransaction();
         try {

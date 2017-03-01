@@ -9,7 +9,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import timber.log.Timber;
 import com.fsck.k9.*;
 import com.fsck.k9.activity.FolderInfoHolder;
 import com.fsck.k9.activity.K9PreferenceActivity;
@@ -64,7 +64,7 @@ public class FolderSettings extends K9PreferenceActivity {
             mFolder = localStore.getFolder(folderName);
             mFolder.open(Folder.OPEN_MODE_RW);
         } catch (MessagingException me) {
-            Log.e(K9.LOG_TAG, "Unable to edit folder " + folderName + " preferences", me);
+            Timber.e("Unable to edit folder " + folderName + " preferences", me);
             return;
         }
 
@@ -73,7 +73,7 @@ public class FolderSettings extends K9PreferenceActivity {
             Store store = mAccount.getRemoteStore();
             isPushCapable = store.isPushCapable();
         } catch (Exception e) {
-            Log.e(K9.LOG_TAG, "Could not get remote store", e);
+            Timber.e("Could not get remote store", e);
         }
 
         addPreferencesFromResource(R.xml.folder_settings_preferences);
@@ -169,7 +169,7 @@ public class FolderSettings extends K9PreferenceActivity {
         try {
             saveSettings();
         } catch (MessagingException e) {
-            Log.e(K9.LOG_TAG, "Saving folder settings failed", e);
+            Timber.e("Saving folder settings failed", e);
         }
 
         super.onPause();

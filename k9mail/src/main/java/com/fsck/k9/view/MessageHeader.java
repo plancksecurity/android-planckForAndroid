@@ -10,7 +10,7 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.style.StyleSpan;
 import android.util.AttributeSet;
-import android.util.Log;
+import timber.log.Timber;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -252,7 +252,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
                 final Address senderEmail = mMessage.getFrom()[0];
                 mContacts.createContact(senderEmail);
             } catch (Exception e) {
-                Log.e(K9.LOG_TAG, "Couldn't create contact", e);
+                Timber.e("Couldn't create contact", e);
             }
         }
     }
@@ -324,7 +324,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     public void populate(final Message message, final Account account) {
         pEpRating = PEpUtils.extractRating(message);
 
-        Log.i("pEp", "got color " + pEpRating + " " + pEpRating.value);
+        Timber.i("pEp", "got color " + pEpRating + " " + pEpRating.value);
         mContactBadge.setPepRating(pEpRating, account.ispEpPrivacyProtected());
 
         final Contacts contacts = K9.showContactName() ? mContacts : null;

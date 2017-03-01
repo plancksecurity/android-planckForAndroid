@@ -16,7 +16,7 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import timber.log.Timber;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.DeletePolicy;
@@ -237,7 +237,7 @@ public class AccountSettings extends K9PreferenceActivity {
             mIsExpungeCapable = store.isExpungeCapable();
             mIsSeenFlagSupported = store.isSeenFlagSupported();
         } catch (Exception e) {
-            Log.e(K9.LOG_TAG, "Could not get remote store", e);
+            Timber.e("Could not get remote store", e);
         }
 
         addPreferencesFromResource(R.xml.account_settings_preferences);

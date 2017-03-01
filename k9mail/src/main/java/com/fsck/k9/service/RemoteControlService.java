@@ -16,6 +16,17 @@ import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.remotecontrol.K9RemoteControl;
+import com.fsck.k9.Preferences;
+import com.fsck.k9.R;
+import com.fsck.k9.Account.FolderMode;
+import com.fsck.k9.K9.BACKGROUND_OPS;
+
+import static com.fsck.k9.remotecontrol.K9RemoteControl.*;
+
+import android.content.Context;
+import android.content.Intent;
+import timber.log.Timber;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -49,21 +60,21 @@ public class RemoteControlService extends CoreService {
     @Override
     public int startService(final Intent intent, final int startId) {
         if (K9.DEBUG)
-            Log.i(K9.LOG_TAG, "RemoteControlService started with startId = " + startId);
+            Timber.i("RemoteControlService started with startId = " + startId);
         final Preferences preferences = Preferences.getPreferences(this);
 
         if (RESCHEDULE_ACTION.equals(intent.getAction())) {
             if (K9.DEBUG)
-                Log.i(K9.LOG_TAG, "RemoteControlService requesting MailService poll reschedule");
+                Timber.i("RemoteControlService requesting MailService poll reschedule");
             MailService.actionReschedulePoll(this, null);
         }
         if (PUSH_RESTART_ACTION.equals(intent.getAction())) {
             if (K9.DEBUG)
-                Log.i(K9.LOG_TAG, "RemoteControlService requesting MailService push restart");
+                Timber.i("RemoteControlService requesting MailService push restart");
             MailService.actionRestartPushers(this, null);
         } else if (RemoteControlService.SET_ACTION.equals(intent.getAction())) {
             if (K9.DEBUG)
-                Log.i(K9.LOG_TAG, "RemoteControlService got request to change settings");
+                Timber.i("RemoteControlService got request to change settings");
             execute(getApplication(), new Runnable() {
                 public void run() {
                     try {
@@ -73,9 +84,9 @@ public class RemoteControlService extends CoreService {
                         boolean allAccounts = intent.getBooleanExtra(K9_ALL_ACCOUNTS, false);
                         if (K9.DEBUG) {
                             if (allAccounts) {
-                                Log.i(K9.LOG_TAG, "RemoteControlService changing settings for all accounts");
+                                Timber.i("RemoteControlService changing settings for all accounts");
                             } else {
-                                Log.i(K9.LOG_TAG, "RemoteControlService changing settings for account with UUID " + uuid);
+                                Timber.i("RemoteControlService changing settings for account with UUID " + uuid);
                             }
                         }
                         List<Account> accounts = preferences.getAccounts();
@@ -84,7 +95,8 @@ public class RemoteControlService extends CoreService {
                             if (allAccounts || account.getUuid().equals(uuid)) {
 
                                 if (K9.DEBUG)
-                                    Log.i(K9.LOG_TAG, "RemoteControlService changing settings for account " + account.getDescription());
+                                    Timber.i("RemoteControlService changing settings for account " +
+                                            account.getDescription());
 
                                 String notificationEnabled = intent.getStringExtra(K9_NOTIFICATION_ENABLED);
                                 String ringEnabled = intent.getStringExtra(K9_RING_ENABLED);
@@ -121,7 +133,7 @@ public class RemoteControlService extends CoreService {
                             }
                         }
                         if (K9.DEBUG)
-                            Log.i(K9.LOG_TAG, "RemoteControlService changing global settings");
+                            Timber.i("RemoteControlService changing global settings");
 
                         String backgroundOps = intent.getStringExtra(K9_BACKGROUND_OPERATIONS);
                         if (K9RemoteControl.K9_BACKGROUND_OPERATIONS_ALWAYS.equals(backgroundOps)
@@ -157,7 +169,7 @@ public class RemoteControlService extends CoreService {
                             BootReceiver.scheduleIntent(RemoteControlService.this, nextTime, i);
                         }
                     } catch (Exception e) {
-                        Log.e(K9.LOG_TAG, "Could not handle K9_SET", e);
+                        Timber.e("Could not handle K9_SET", e);
                         FeedbackTools.showLongFeedback(getRootView(getBaseContext()), e.getMessage());
                     }
                 }

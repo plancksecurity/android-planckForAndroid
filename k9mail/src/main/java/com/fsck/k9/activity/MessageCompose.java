@@ -31,7 +31,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
+import timber.log.Timber;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -396,7 +396,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                 this.action = Action.EDIT_DRAFT;
             } else {
                 // This shouldn't happen
-                Log.w(K9.LOG_TAG, "MessageCompose was started with an unsupported action");
+                Timber.w("MessageCompose was started with an unsupported action");
                 this.action = Action.COMPOSE;
             }
         }
@@ -857,7 +857,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         if ((requestCode & REQUEST_MASK_MESSAGE_BUILDER) == REQUEST_MASK_MESSAGE_BUILDER) {
             requestCode ^= REQUEST_MASK_MESSAGE_BUILDER;
             if (currentMessageBuilder == null) {
-                Log.e(K9.LOG_TAG, "Got a message builder activity result for no message builder, " +
+                Timber.e("Got a message builder activity result for no message builder, " +
                         "this is an illegal state!");
                 return;
             }
@@ -886,7 +886,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     private void onAccountChosen(Account account, Identity identity) {
         if (!this.account.equals(account)) {
             if (K9.DEBUG) {
-                Log.v(K9.LOG_TAG, "Switching account from " + this.account + " to " + account);
+                Timber.v("Switching account from " + this.account + " to " + account);
             }
 
             // on draft edit, make sure we don't keep previous message UID
@@ -906,13 +906,13 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                 updateAccount(account);
 
                 if (K9.DEBUG) {
-                    Log.v(K9.LOG_TAG, "Account switch, saving new draft in new account");
+                    Timber.v("Account switch, saving new draft in new account");
                 }
                 checkToSaveDraftImplicitly();
 
                 if (previousDraftId != INVALID_DRAFT_ID) {
                     if (K9.DEBUG) {
-                        Log.v(K9.LOG_TAG, "Account switch, deleting draft from previous account: " + previousDraftId);
+                        Timber.v("Account switch, deleting draft from previous account: " + previousDraftId);
                     }
                     MessagingController.getInstance(getApplication()).deleteDraft(previousAccount,
                             previousDraftId);
@@ -1333,7 +1333,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                     break;
                 }
                 default: {
-                    Log.w(K9.LOG_TAG, "processSourceMessage() called with unsupported action");
+                    Timber.w("processSourceMessage() called with unsupported action");
                     break;
                 }
             }
@@ -1342,7 +1342,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
              * Let the user continue composing their message even if we have a problem processing
              * the source message. Log it as an error, though.
              */
-            Log.e(K9.LOG_TAG, "Error while processing source message: ", me);
+            Timber.e("Error while processing source message: ", me);
         } finally {
             relatedMessageProcessed = true;
             changesMadeSinceLastSave = false;
@@ -1385,7 +1385,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
         } else {
             if (K9.DEBUG) {
-                Log.d(K9.LOG_TAG, "could not get Message-ID.");
+                Timber.d("could not get Message-ID.");
             }
         }
 
@@ -1421,7 +1421,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             referencedMessageIds = repliedToMessageId;
         } else {
             if (K9.DEBUG) {
-                Log.d(K9.LOG_TAG, "could not get Message-ID.");
+                Timber.d("could not get Message-ID.");
             }
         }
 
@@ -1537,7 +1537,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                 contacts.markAsContacted(message.getRecipients(RecipientType.BCC));
                 updateReferencedMessage();
             } catch (Exception e) {
-                Log.e(K9.LOG_TAG, "Failed to mark contact as contacted.", e);
+                Timber.e("Failed to mark contact as contacted.", e);
             }
 
             MessagingController.getInstance(context).sendMessage(account, message, null);
@@ -1555,7 +1555,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         private void updateReferencedMessage() {
             if (messageReference != null && messageReference.getFlag() != null) {
                 if (K9.DEBUG) {
-                    Log.d(K9.LOG_TAG, "Setting referenced message (" +
+                    Timber.d("Setting referenced message (" +
                             messageReference.getFolderName() + ", " +
                             messageReference.getUid() + ") flag to " +
                             messageReference.getFlag());
@@ -1666,7 +1666,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
     @Override
     public void onMessageBuildException(MessagingException me) {
-        Log.e(K9.LOG_TAG, "Error sending message", me);
+        Timber.e("Error sending message", me);
         FeedbackTools.showLongFeedback(getRootView(), getString(R.string.send_failed_reason, me.getLocalizedMessage()));
         currentMessageBuilder = null;
         setProgressBarIndeterminateVisibility(false);
@@ -1678,7 +1678,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         try {
             startIntentSenderForResult(pendingIntent.getIntentSender(), requestCode, null, 0, 0, 0);
         } catch (SendIntentException e) {
-            Log.e(K9.LOG_TAG, "Error starting pending intent from builder!", e);
+            Timber.e("Error starting pending intent from builder!", e);
         }
     }
 
@@ -1702,7 +1702,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             } catch (MessagingException e) {
                 // Hm, if we couldn't populate the UI after source reprocessing, let's just delete it?
                 quotedMessagePresenter.showOrHideQuotedText(QuotedTextMode.HIDE);
-                Log.e(K9.LOG_TAG, "Could not re-process source message; deleting quoted text to be safe.", e);
+                Timber.e("Could not re-process source message; deleting quoted text to be safe.", e);
             }
             updateMessageFormat();
         } else {
@@ -1747,7 +1747,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                 requestCode |= REQUEST_MASK_LOADER_HELPER;
                 startIntentSenderForResult(si, requestCode, fillIntent, flagsMask, flagValues, extraFlags);
             } catch (SendIntentException e) {
-                Log.e(K9.LOG_TAG, "Irrecoverable error calling PendingIntent!", e);
+                Timber.e("Irrecoverable error calling PendingIntent!", e);
             }
         }
 
