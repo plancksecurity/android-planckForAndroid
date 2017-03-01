@@ -123,7 +123,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     @Override
     protected View getViewForObject(Recipient recipient) {
         uiCache = PePUIArtefactCache.getInstance(getContext());
-        account = uiCache.getComposingAccount()
+        account = uiCache.getComposingAccount();
 
         View view = inflateLayout();
 
