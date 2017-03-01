@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 
+import com.fsck.k9.Account;
 import com.fsck.k9.R;
 
 import org.pEp.jniadapter.Identity;
@@ -38,6 +39,7 @@ public class PePUIArtefactCache
     private static PePUIArtefactCache instance = null;
     private ArrayList<Identity> recipients;
     private Resources resources;
+    private Account composingAccount;
 
     public synchronized static PePUIArtefactCache getInstance(Context context) {
         if (instance == null) {
@@ -100,5 +102,13 @@ public class PePUIArtefactCache
 
     public void setRecipients(ArrayList<Identity> recipients) {
         this.recipients = PEpUtils.filterRecipients(context, recipients);
+    }
+
+    public void setComposingAccount(Account account) {
+        this.composingAccount = account;
+    }
+
+    public Account getComposingAccount() {
+        return composingAccount;
     }
 }
