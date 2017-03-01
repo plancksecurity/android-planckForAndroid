@@ -8,6 +8,7 @@ import android.util.Log;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
@@ -343,10 +344,12 @@ public class PEpProviderImpl implements PEpProvider {
 
 
         MimeMessage mimeMessage = builder.parseMessage(message);
-
-        String[] alwaysSecureHeader = source.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE);
-        if (alwaysSecureHeader.length>0) {
-            mimeMessage.addHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE, alwaysSecureHeader[0]);
+        if (mimeMessage.isSet(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)) {
+            //don't modify sync messages
+            String[] alwaysSecureHeader = source.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE);
+            if (alwaysSecureHeader.length > 0) {
+                mimeMessage.addHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE, alwaysSecureHeader[0]);
+            }
         }
         return mimeMessage;
     }
