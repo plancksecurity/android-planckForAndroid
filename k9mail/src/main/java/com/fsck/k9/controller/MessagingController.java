@@ -1434,7 +1434,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     if (account.ispEpPrivacyProtected() && message.getFrom()[0].getAddress() != null) {
                         PEpProvider.DecryptResult tempResult;
                         tempResult = decryptMessage((MimeMessage) message);
-                        if (!account.isUntrustedSever()) { //trusted server
+                        if (!account.isUntrustedSever() && !message.isSet(Flag.X_PEP_NEVER_UNSECURE)) { //trusted server
                             Rating rating = PEpUtils.extractRating(message);
                             if (!rating.equals(Rating.pEpRatingUndefined)) {
                                 // if we are on a trusted server and already had an EncStatus, then is already encrypted by someone else.
@@ -1493,7 +1493,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         }
                     });
 
-                    if (!account.isUntrustedSever() && !alreadyDecrypted && result.flags == null) {
+                    if (!account.isUntrustedSever() && !alreadyDecrypted && result.flags == null && !message.isSet(Flag.X_PEP_NEVER_UNSECURE)) {
                         appendMessageCommand(account, localMessage, localFolder);
                     }
                     Log.d("pep", "in download loop (nr=" + number + ") post pep");
@@ -3205,6 +3205,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         } else {
                             encryptedMessage = processWithpEpAndSend(transport, message);
                             encryptedMessage.setFlags(message.getFlags(), true);
+                        }
+
+                        if (message.isSet(Flag.X_PEP_NEVER_UNSECURE)) {
+                            message.setHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE, String.valueOf(1));
                         }
 
                         progress++;

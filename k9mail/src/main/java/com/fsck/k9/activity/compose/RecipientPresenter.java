@@ -57,6 +57,7 @@ public class RecipientPresenter implements PermissionPingCallback {
     private static final String STATE_KEY_CURRENT_CRYPTO_MODE = "state:currentCryptoMode";
     private static final String STATE_KEY_CRYPTO_ENABLE_PGP_INLINE = "state:cryptoEnablePgpInline";
     private static final String STATE_FORCE_UNENCRYPTED = "forceUnencrypted";
+    private static final String STATE_ALWAYS_SECURE = "alwaysSecure";
 
     private static final int CONTACT_PICKER_TO = 1;
     private static final int CONTACT_PICKER_CC = 2;
@@ -89,6 +90,7 @@ public class RecipientPresenter implements PermissionPingCallback {
     private CryptoMode currentCryptoMode = CryptoMode.OPPORTUNISTIC;
     private boolean cryptoEnablePgpInline = false;
     private boolean forceUnencrypted = false;
+    private boolean isAlwaysSecure = false;
     private List<Address> toAdresses;
     private List<Address> ccAdresses;
     private List<Address> bccAdresses;
@@ -214,6 +216,7 @@ public class RecipientPresenter implements PermissionPingCallback {
         currentCryptoMode = CryptoMode.valueOf(savedInstanceState.getString(STATE_KEY_CURRENT_CRYPTO_MODE));
         cryptoEnablePgpInline = savedInstanceState.getBoolean(STATE_KEY_CRYPTO_ENABLE_PGP_INLINE);
         forceUnencrypted = savedInstanceState.getBoolean(STATE_FORCE_UNENCRYPTED);
+        isAlwaysSecure = savedInstanceState.getBoolean(STATE_ALWAYS_SECURE);
         privacyState = (Rating) savedInstanceState.getSerializable(STATE_RATING);
         updateRecipientExpanderVisibility();
         recipientMvpView.setpEpRating(privacyState);
@@ -228,6 +231,7 @@ public class RecipientPresenter implements PermissionPingCallback {
         outState.putString(STATE_KEY_CURRENT_CRYPTO_MODE, currentCryptoMode.toString());
         outState.putBoolean(STATE_KEY_CRYPTO_ENABLE_PGP_INLINE, cryptoEnablePgpInline);
         outState.putBoolean(STATE_FORCE_UNENCRYPTED, forceUnencrypted);
+        outState.putBoolean(STATE_ALWAYS_SECURE, isAlwaysSecure);
         outState.putSerializable(STATE_RATING, privacyState);
     }
 
@@ -851,6 +855,10 @@ public class RecipientPresenter implements PermissionPingCallback {
         return forceUnencrypted;
     }
 
+    public boolean isAlwaysSecure() {
+        return isAlwaysSecure;
+    }
+
     public void onResume() {
         toAdresses = getToAddresses();
         ccAdresses = getCcAddresses();
@@ -886,6 +894,10 @@ public class RecipientPresenter implements PermissionPingCallback {
     void setOpenPgpServiceConnection(OpenPgpServiceConnection openPgpServiceConnection, String cryptoProvider) {
         this.openPgpServiceConnection = openPgpServiceConnection;
         this.cryptoProvider = cryptoProvider;
+    }
+
+    public void setAlwaysSecure(Boolean alwaysSecure) {
+        isAlwaysSecure = alwaysSecure && privacyState.value >= 5;
     }
 
     public enum CryptoProviderState {
@@ -928,6 +940,7 @@ public class RecipientPresenter implements PermissionPingCallback {
                 pEp.getPrivacyState(fromAddress, toAdresses, ccAdresses, bccAdresses, new PEpProvider.ResultCallback<Rating>() {
                     @Override
                     public void onLoaded(Rating rating) {
+                        privacyState = rating;
                         showRatingFeedback(rating);
                     }
 

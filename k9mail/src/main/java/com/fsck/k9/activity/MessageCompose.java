@@ -175,6 +175,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private MessageLoaderHelper messageLoaderHelper;
     private AttachmentPresenter attachmentPresenter;
     private boolean encrypted = true;
+    private MenuItem alwaysSecureMenuItem;
 
     public Account getAccount() {
         String accountUuid = (mMessageReference != null) ?
@@ -818,7 +819,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 .setMessageReference(mMessageReference)
                 .setDraft(isDraft)
                 .setIsPgpInlineEnabled(cryptoStatus.isPgpInlineModeEnabled())
-                .setForcedUnencrypted(recipientPresenter.isForceUnencrypted());
+                .setForcedUnencrypted(recipientPresenter.isForceUnencrypted())
+                .setAlwaysSecure(recipientPresenter.isAlwaysSecure());
 
         quotedMessagePresenter.builderSetProperties(builder);
 
@@ -1103,6 +1105,15 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 encrypted = !encrypted;
                 forceUnencrypted();
                 break;
+            case R.id.is_always_secure:
+                if (alwaysSecureMenuItem.getTitle().toString().equals(getString(R.string.is_always_secure))) {
+                    recipientPresenter.setAlwaysSecure(true);
+                    alwaysSecureMenuItem.setTitle(R.string.is_not_always_secure);
+                } else {
+                    recipientPresenter.setAlwaysSecure(false);
+                    alwaysSecureMenuItem.setTitle(R.string.is_always_secure);
+                }
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -1144,6 +1155,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         } else {
             menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_protected);
         }
+        alwaysSecureMenuItem = menu.findItem(R.id.is_always_secure);
         return true;
     }
 

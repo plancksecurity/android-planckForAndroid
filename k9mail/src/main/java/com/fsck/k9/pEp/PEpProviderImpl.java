@@ -9,6 +9,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
@@ -340,7 +341,14 @@ public class PEpProviderImpl implements PEpProvider {
         //.setIsPgpInlineEnabled(cryptoStatus.isPgpInlineModeEnabled())
         //.setForcedUnencrypted(recipientPresenter.isForceUnencrypted());
 
-        return builder.parseMessage(message);
+
+        MimeMessage mimeMessage = builder.parseMessage(message);
+
+        String[] alwaysSecureHeader = source.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE);
+        if (alwaysSecureHeader.length>0) {
+            mimeMessage.addHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE, alwaysSecureHeader[0]);
+        }
+        return mimeMessage;
     }
 
     private boolean isUsablePrivateKey(Engine.decrypt_message_Return result) {

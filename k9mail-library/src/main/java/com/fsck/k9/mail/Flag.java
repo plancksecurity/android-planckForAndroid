@@ -72,4 +72,9 @@ public enum Flag {
      * This flag is used for mark messages send through sendMessageCallback
      */
     X_PEP_SYNC_MESSAGE_TO_SEND,
+
+    /**
+     * This flag is used for mark messages that always will be sent encrypted
+     */
+    X_PEP_NEVER_UNSECURE,
 }

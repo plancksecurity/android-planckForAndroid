@@ -75,4 +75,10 @@
         android:title="@string/disable_sign_only"
         android:showAsAction="never"
         />
+    <item
+        android:id="@+id/is_always_secure"
+        android:alphabeticShortcut="g"
+        android:title="@string/is_always_secure"
+        android:showAsAction="never"
+        />
 </menu>

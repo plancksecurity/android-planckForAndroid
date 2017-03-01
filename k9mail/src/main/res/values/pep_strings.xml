@@ -101,6 +101,8 @@
     <string name="pep_enable_sync_account">Synchronize this account</string>
     <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
     <string name="pep_keysync_timeout">p≡p sync timeout</string>
+    <string name="is_always_secure">TOP SECRET</string>
+    <string name="is_not_always_secure">REGULAR MODE</string>
 
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>
