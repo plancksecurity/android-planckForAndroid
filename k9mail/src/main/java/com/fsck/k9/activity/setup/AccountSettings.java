@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.CheckBoxPreference;
@@ -770,9 +771,7 @@ public class AccountSettings extends K9PreferenceActivity {
                     mPEpDisableDecryption.setChecked(false);
                     mPEpSaveEncrypted.setEnabled(false);
                     mPEpDisableDecryption.setEnabled(false);
-                    if (BuildConfig.WITH_KEY_SYNC) {
-                        mPEpSyncAccount.setEnabled(false);
-                    }
+                    mPEpSyncAccount.setEnabled(false);
                     if (!ispEpSyncEnabled) {
                         mPEpSyncAccount.setChecked(false);
                     }
@@ -786,7 +785,7 @@ public class AccountSettings extends K9PreferenceActivity {
                         mPEpSyncAccount.setEnabled(true);
                     }
                 }
-                mPEpSyncAccount.setEnabled(!ispEpSyncEnabled);
+                //mPEpSyncAccount.setEnabled(ispEpSyncEnabled && BuildConfig.WITH_KEY_SYNC);
                 return true;
             }
         });
@@ -797,7 +796,7 @@ public class AccountSettings extends K9PreferenceActivity {
             mPEpSyncAccount.setEnabled(false);
         }
 
-        mPEpSyncAccount.setEnabled(!ispEpSyncEnabled);
+        mPEpSyncAccount.setEnabled(ispEpSyncEnabled && BuildConfig.WITH_KEY_SYNC);
     }
 
     private void removeListEntry(ListPreference listPreference, String remove) {
