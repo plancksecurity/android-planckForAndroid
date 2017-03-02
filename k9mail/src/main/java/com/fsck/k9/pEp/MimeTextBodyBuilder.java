@@ -9,6 +9,8 @@ import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.message.html.HtmlConverter;
 import com.fsck.k9.message.quote.InsertableHtmlContent;
 
+import timber.log.Timber;
+
 // FIXME: make this part of MimeMessageBuilder
 
 class MimeTextBodyBuilder {
@@ -47,9 +49,8 @@ class MimeTextBodyBuilder {
         if (mIncludeQuotedText) {
             InsertableHtmlContent quotedHtmlContent = getQuotedTextHtml();
 
-            if (K9.DEBUG) {
-                Log.d(K9.LOG_TAG, "insertable: " + quotedHtmlContent.toDebugString());
-            }
+            Timber.d(K9.LOG_TAG, "insertable: " + quotedHtmlContent.toDebugString());
+
 
             if (mAppendSignature) {
                 // Append signature to the reply

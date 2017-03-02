@@ -626,18 +626,19 @@ public class K9 extends Application {
                 intent.putExtra(K9.Intents.EmailReceived.EXTRA_SUBJECT, message.getSubject());
                 intent.putExtra(K9.Intents.EmailReceived.EXTRA_FROM_SELF, account.isAnIdentity(message.getFrom()));
                 K9.this.sendBroadcast(intent);
-                if (K9.isDebug())
-                    Timber.d("Broadcasted: action=%s account=%s folder=%s message uid=%s",
-                            action, account.getDescription(), folder, message.getUid());
+
+                Timber.d("Broadcasted: action=%s account=%s folder=%s message uid=%s",
+                        action,
+                        account.getDescription(),
+                        folder,
+                        message.getUid());
             }
 
             private void updateUnreadWidget() {
                 try {
                     UnreadWidgetProvider.updateUnreadCount(K9.this);
                 } catch (Exception e) {
-                    if (K9.isDebug()) {
-                        Timber.e(e, "Error while updating unread widget(s)");
-                    }
+                    Timber.e(e, "Error while updating unread widget(s)");
                 }
             }
 
@@ -647,7 +648,7 @@ public class K9 extends Application {
                 } catch (RuntimeException e) {
                     if (BuildConfig.DEBUG) {
                         throw e;
-                    } else if (K9.isDebug()) {
+                    } else {
                         Timber.e(e, "Error while updating message list widget");
                     }
                 }
@@ -947,9 +948,8 @@ public class K9 extends Application {
     protected void notifyObservers() {
         synchronized (observers) {
             for (final ApplicationAware aware : observers) {
-                if (K9.isDebug()) {
-                    Timber.v("Initializing observer: %s", aware);
-                }
+                Timber.v("Initializing observer: %s", aware);
+
                 try {
                     aware.initializeComponent(this);
                 } catch (Exception e) {

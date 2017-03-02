@@ -885,9 +885,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
     private void onAccountChosen(Account account, Identity identity) {
         if (!this.account.equals(account)) {
-            if (K9.DEBUG) {
-                Timber.v("Switching account from %s to %s", this.account, account);
-            }
+            Timber.v("Switching account from %s to %s", this.account, account);
 
             // on draft edit, make sure we don't keep previous message UID
             if (action == Action.EDIT_DRAFT) {
@@ -905,15 +903,12 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                 // actual account switch
                 updateAccount(account);
 
-                if (K9.DEBUG) {
-                    Timber.v("Account switch, saving new draft in new account");
-                }
+                Timber.v("Account switch, saving new draft in new account");
                 checkToSaveDraftImplicitly();
 
                 if (previousDraftId != INVALID_DRAFT_ID) {
-                    if (K9.DEBUG) {
-                        Timber.v("Account switch, deleting draft from previous account: %d", previousDraftId);
-                    }
+                    Timber.v("Account switch, deleting draft from previous account: %d", previousDraftId);
+
                     MessagingController.getInstance(getApplication()).deleteDraft(previousAccount,
                             previousDraftId);
                 }
@@ -1384,9 +1379,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             }
 
         } else {
-            if (K9.DEBUG) {
-                Timber.d("could not get Message-ID.");
-            }
+            Timber.d("could not get Message-ID.");
         }
 
         // Quote the message and setup the UI.
@@ -1420,9 +1413,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             repliedToMessageId = message.getMessageId();
             referencedMessageIds = repliedToMessageId;
         } else {
-            if (K9.DEBUG) {
-                Timber.d("could not get Message-ID.");
-            }
+            Timber.d("could not get Message-ID.");
         }
 
         // Quote the message and setup the UI.
@@ -1554,12 +1545,11 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
          **/
         private void updateReferencedMessage() {
             if (messageReference != null && messageReference.getFlag() != null) {
-                if (K9.DEBUG) {
-                    Timber.d("Setting referenced message (%s, %s) flag to %s",
-                            messageReference.getFolderName(),
-                            messageReference.getUid(),
-                            messageReference.getFlag());
-                }
+                Timber.d("Setting referenced message (%s, %s) flag to %s",
+                        messageReference.getFolderName(),
+                        messageReference.getUid(),
+                        messageReference.getFlag());
+
                 final Account account = Preferences.getPreferences(context)
                         .getAccount(messageReference.getAccountUuid());
                 final String folderName = messageReference.getFolderName();

@@ -187,14 +187,10 @@ public class SettingsImporter {
                         Timber.w("Was asked to import global settings but none found.");
                     }
                     if (editor.commit()) {
-                        if (K9.isDebug()) {
-                            Timber.v("Committed global settings to the preference storage.");
-                        }
+                        Timber.v("Committed global settings to the preference storage.");
                         globalSettingsImported = true;
                     } else {
-                        if (K9.isDebug()) {
-                            Timber.v("Failed to commit global settings to the preference storage");
-                        }
+                        Timber.v("Failed to commit global settings to the preference storage");
                     }
                 } catch (Exception e) {
                     Timber.e(e, "Exception while importing global settings");
@@ -213,10 +209,8 @@ public class SettingsImporter {
                                         imported.contentVersion, account, overwrite);
 
                                 if (editor.commit()) {
-                                    if (K9.isDebug()) {
-                                        Timber.v("Committed settings for account \"%s\" to the settings database.",
-                                                importResult.imported.name);
-                                    }
+                                    Timber.v("Committed settings for account \"%s\" to the settings database.",
+                                            importResult.imported.name);
 
                                     // Add UUID of the account we just imported to the list of
                                     // account UUIDs
@@ -240,17 +234,15 @@ public class SettingsImporter {
 
                                     importedAccounts.add(importResult);
                                 } else {
-                                    if (K9.isDebug()) {
-                                        Timber.w("Error while committing settings for account \"%s\" to the settings " +
-                                                "database.", importResult.original.name);
-                                    }
+                                    Timber.w("Error while committing settings for account \"%s\" to the settings " +
+                                            "database.", importResult.original.name);
+
                                     erroneousAccounts.add(importResult.original);
                                 }
                             } catch (InvalidSettingValueException e) {
-                                if (K9.isDebug()) {
-                                    Timber.e(e, "Encountered invalid setting while importing account \"%s\"",
-                                            account.name);
-                                }
+                                Timber.e(e, "Encountered invalid setting while importing account \"%s\"",
+                                        account.name);
+
                                 erroneousAccounts.add(new AccountDescription(account.name, account.uuid));
                             } catch (Exception e) {
                                 Timber.e(e, "Exception while importing account \"%s\"", account.name);
