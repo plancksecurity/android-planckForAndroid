@@ -135,7 +135,7 @@ public abstract class MessageBuilder {
             message.setReferences(references);
         }
 
-        String messageId = messageIdGenerator.generateMessageId(message);
+        String messageId = messageIdGenerator.generateMessageId();
         message.setMessageId(messageId);
 
         if (isDraft && isPgpInlineEnabled) {
