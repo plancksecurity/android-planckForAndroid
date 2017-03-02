@@ -50,8 +50,7 @@ class StoreSchemaDefinition implements LockableDatabase.SchemaDefinition {
     }
 
     private void upgradeDatabase(final SQLiteDatabase db) {
-        Timber.i(format(US, "Upgrading database from version %d to version %d",
-                db.getVersion(), DB_VERSION));
+        Timber.i("Upgrading database from version %d to version %d", db.getVersion(), DB_VERSION);
 
         db.beginTransaction();
         try {

@@ -79,7 +79,7 @@ public class LocalMessage extends MimeMessage {
 
                 catch (Exception e) {
                     if (!"X_BAD_FLAG".equals(flag)) {
-                        Timber.w("Unable to parse flag " + flag);
+                        Timber.w("Unable to parse flag %s", flag);
                     }
                 }
             }

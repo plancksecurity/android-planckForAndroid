@@ -266,7 +266,7 @@ public class LocalStore extends Store implements Serializable {
         try {
             removeInstance(account);
         } catch (Exception e) {
-            Timber.e(e, "Failed to reset local store for account " + account.getUuid());
+            Timber.e(e, "Failed to reset local store for account %s", account.getUuid());
         }
     }
 
@@ -319,7 +319,7 @@ public class LocalStore extends Store implements Serializable {
 
     public void compact() throws MessagingException {
         if (K9.DEBUG)
-            Timber.i("Before compaction size = " + getSize());
+            Timber.i("Before compaction size = %d", getSize());
 
         database.execute(false, new DbCallback<Void>() {
             @Override
@@ -329,22 +329,22 @@ public class LocalStore extends Store implements Serializable {
             }
         });
         if (K9.DEBUG)
-            Timber.i("After compaction size = " + getSize());
+            Timber.i("After compaction size = %d", getSize());
     }
 
 
     public void clear() throws MessagingException {
         if (K9.DEBUG)
-            Timber.i("Before prune size = " + getSize());
+            Timber.i("Before prune size = %d", getSize());
 
         deleteAllMessageDataFromDisk();
         if (K9.DEBUG) {
-            Timber.i("After prune / before compaction size = " + getSize());
+            Timber.i("After prune / before compaction size = %d", getSize());
 
-            Timber.i("Before clear folder count = " + getFolderCount());
-            Timber.i("Before clear message count = " + getMessageCount());
+            Timber.i("Before clear folder count = %d", getFolderCount());
+            Timber.i("Before clear message count = %d", getMessageCount());
 
-            Timber.i("After prune / before clear size = " + getSize());
+            Timber.i("After prune / before clear size = %d", getSize());
         }
 
         database.execute(false, new DbCallback<Void>() {
@@ -367,9 +367,9 @@ public class LocalStore extends Store implements Serializable {
         compact();
 
         if (K9.DEBUG) {
-            Timber.i("After clear message count = " + getMessageCount());
+            Timber.i("After clear message count = %d", getMessageCount());
 
-            Timber.i("After clear size = " + getSize());
+            Timber.i("After clear size = %d", getSize());
         }
     }
 
@@ -604,7 +604,7 @@ public class LocalStore extends Store implements Serializable {
                 " ORDER BY date DESC";
 
         if (K9.DEBUG) {
-            Timber.d("Query = " + sqlQuery);
+            Timber.d("Query = %s", sqlQuery);
         }
 
         return getMessages(retrievalListener, null, sqlQuery, selectionArgs);

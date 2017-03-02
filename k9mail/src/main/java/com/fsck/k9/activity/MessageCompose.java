@@ -886,7 +886,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     private void onAccountChosen(Account account, Identity identity) {
         if (!this.account.equals(account)) {
             if (K9.DEBUG) {
-                Timber.v("Switching account from " + this.account + " to " + account);
+                Timber.v("Switching account from %s to %s", this.account, account);
             }
 
             // on draft edit, make sure we don't keep previous message UID
@@ -912,7 +912,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
                 if (previousDraftId != INVALID_DRAFT_ID) {
                     if (K9.DEBUG) {
-                        Timber.v("Account switch, deleting draft from previous account: " + previousDraftId);
+                        Timber.v("Account switch, deleting draft from previous account: %d", previousDraftId);
                     }
                     MessagingController.getInstance(getApplication()).deleteDraft(previousAccount,
                             previousDraftId);
@@ -1555,9 +1555,9 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         private void updateReferencedMessage() {
             if (messageReference != null && messageReference.getFlag() != null) {
                 if (K9.DEBUG) {
-                    Timber.d("Setting referenced message (" +
-                            messageReference.getFolderName() + ", " +
-                            messageReference.getUid() + ") flag to " +
+                    Timber.d("Setting referenced message (%s, %s) flag to %s",
+                            messageReference.getFolderName(),
+                            messageReference.getUid(),
                             messageReference.getFlag());
                 }
                 final Account account = Preferences.getPreferences(context)
