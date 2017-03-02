@@ -178,14 +178,16 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private boolean encrypted = true;
     private CompositePermissionListener contactPermissionListener;
     private LinearLayout rootView;
+    private MenuItem alwaysSecureMenuItem;
+    private PePUIArtefactCache uiCache;
 
     public Account getAccount() {
         String accountUuid = (mMessageReference != null) ?
                 mMessageReference.getAccountUuid() :
                 getIntent().getStringExtra(EXTRA_ACCOUNT);
-        mAccount = Preferences.getPreferences(MessageCompose.this).getAccount(accountUuid);
+        updateAccount(Preferences.getPreferences(MessageCompose.this).getAccount(accountUuid));
         if (mAccount == null) {
-            mAccount = Preferences.getPreferences(MessageCompose.this).getDefaultAccount();
+            updateAccount(Preferences.getPreferences(MessageCompose.this).getDefaultAccount());
         }
         return mAccount;
     }
@@ -220,7 +222,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
      */
     private boolean mSourceMessageProcessed = false;
 
-    private PePUIArtefactCache pEpUiCache;
     private PEpProvider pEp;
 
     private RecipientPresenter recipientPresenter;
@@ -352,6 +353,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         createDynamicShortcut();
+        uiCache = PePUIArtefactCache.getInstance(MessageCompose.this);
+
         if (UpgradeDatabases.actionUpgradeDatabases(this, getIntent())) {
             finish();
             return;
@@ -385,10 +388,10 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                                    mMessageReference.getAccountUuid() :
                                    intent.getStringExtra(EXTRA_ACCOUNT);
 
-        mAccount = Preferences.getPreferences(this).getAccount(accountUuid);
+        updateAccount(Preferences.getPreferences(this).getAccount(accountUuid));
 
         if (mAccount == null || accountUuid == null) {
-            mAccount = getAccount();
+            updateAccount(getAccount());
         }
 
         if (mAccount == null) {
@@ -831,7 +834,8 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 .setMessageReference(mMessageReference)
                 .setDraft(isDraft)
                 .setIsPgpInlineEnabled(cryptoStatus.isPgpInlineModeEnabled())
-                .setForcedUnencrypted(recipientPresenter.isForceUnencrypted());
+                .setForcedUnencrypted(recipientPresenter.isForceUnencrypted())
+                .setAlwaysSecure(recipientPresenter.isAlwaysSecure());
 
         quotedMessagePresenter.builderSetProperties(builder);
 
@@ -992,7 +996,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 mDraftId = INVALID_DRAFT_ID;
 
                 // actual account switch
-                mAccount = account;
+                updateAccount(account);
 
                 if (K9.DEBUG) {
                     Log.v(K9.LOG_TAG, "Account switch, saving new draft in new account");
@@ -1008,7 +1012,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                             previousDraftId);
                 }
             } else {
-                mAccount = account;
+                updateAccount(account);
             }
 
             // Show CC/BCC text input field when switching to an account that always wants them
@@ -1022,6 +1026,14 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
 
         switchToIdentity(identity);
+    }
+
+    private void updateAccount(Account account) {
+        if (uiCache == null) {
+            uiCache = PePUIArtefactCache.getInstance(MessageCompose.this);
+        }
+        mAccount = account;
+        uiCache.setComposingAccount(mAccount);
     }
 
     private void switchToIdentity(Identity identity) {
@@ -1111,6 +1123,15 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 encrypted = !encrypted;
                 forceUnencrypted();
                 break;
+            case R.id.is_always_secure:
+                if (alwaysSecureMenuItem.getTitle().toString().equals(getString(R.string.is_always_secure))) {
+                    recipientPresenter.setAlwaysSecure(true);
+                    alwaysSecureMenuItem.setTitle(R.string.is_not_always_secure);
+                } else {
+                    recipientPresenter.setAlwaysSecure(false);
+                    alwaysSecureMenuItem.setTitle(R.string.is_always_secure);
+                }
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -1170,6 +1191,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         } else {
             menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_protected);
         }
+        alwaysSecureMenuItem = menu.findItem(R.id.is_always_secure);
         return true;
     }
 

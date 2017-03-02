@@ -35,6 +35,7 @@ import com.fsck.k9.activity.compose.RecipientAdapter;
 import com.fsck.k9.activity.compose.RecipientLoader;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.tokenautocomplete.TokenCompleteTextView;
@@ -72,6 +73,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private PEpProvider pEp;
     private Context context;
     private Account account;
+    private PePUIArtefactCache uiCache;
 
 
     public RecipientSelectView(Context context) {
@@ -92,7 +94,8 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private void initView(Context context) {
         // TODO: validator?
         this.context = context;
-        account = ((MessageCompose) context).getAccount();
+        uiCache = PePUIArtefactCache.getInstance(context);
+        account = uiCache.getComposingAccount();
         alternatesPopup = new ListPopupWindow(context);
         alternatesAdapter = new AlternateRecipientAdapter(context, this, account);
         alternatesPopup.setAdapter(alternatesAdapter);
@@ -113,7 +116,8 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     @Override
     protected View getViewForObject(Recipient recipient) {
-        account = ((MessageCompose) getContext()).getAccount();
+        uiCache = PePUIArtefactCache.getInstance(getContext());
+        account = uiCache.getComposingAccount();
 
         View view = inflateLayout();
 

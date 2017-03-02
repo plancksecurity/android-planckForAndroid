@@ -63,4 +63,22 @@
         android:title="@string/disable_inline_pgp"
         app:showAsAction="never"
         />
+    <item
+        android:id="@+id/openpgp_sign_only"
+        android:alphabeticShortcut="g"
+        android:title="@string/enable_sign_only"
+        android:showAsAction="never"
+        />
+    <item
+        android:id="@+id/openpgp_sign_only_disable"
+        android:alphabeticShortcut="g"
+        android:title="@string/disable_sign_only"
+        android:showAsAction="never"
+        />
+    <item
+        android:id="@+id/is_always_secure"
+        android:alphabeticShortcut="g"
+        android:title="@string/is_always_secure"
+        android:showAsAction="never"
+        />
 </menu>

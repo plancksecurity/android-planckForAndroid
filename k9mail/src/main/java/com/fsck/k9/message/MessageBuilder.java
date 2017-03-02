@@ -80,6 +80,7 @@ public abstract class MessageBuilder {
     private boolean isForcedUnencrypted;
     private Vector<Blob> blobAttachments;
     private Message.EncFormat encondingFormat;
+    private boolean isAlwaysSecure;
 
     protected MessageBuilder(Context context, MessageIdGenerator messageIdGenerator, BoundaryGenerator boundaryGenerator) {
         this.context = context;
@@ -141,6 +142,11 @@ public abstract class MessageBuilder {
             message.setFlag(Flag.X_DRAFT_OPENPGP_INLINE, true);
         }
         if (isForcedUnencrypted) message.setFlag(Flag.X_PEP_DISABLED, true);
+
+        if (isAlwaysSecure) {
+            message.setFlag(Flag.X_PEP_NEVER_UNSECURE, true);
+            message.setHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE, String.valueOf(1));
+        }
     }
 
     MimeMultipart createMimeMultipart() {
@@ -489,6 +495,12 @@ public abstract class MessageBuilder {
         isForcedUnencrypted = forcedUnencrypted;
         return this;
     }
+
+    public MessageBuilder setAlwaysSecure(boolean alwaysSecure) {
+        isAlwaysSecure = alwaysSecure;
+        return this;
+    }
+
     public boolean isDraft() {
         return isDraft;
     }

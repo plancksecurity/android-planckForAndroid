@@ -679,11 +679,6 @@ public class K9 extends Application {
             initSync();
             setupFastPoller();
         }
-        else {
-            //UGLY PATCH /~Create a session to force create trustdb at very beggining
-            new Thread(() -> PEpProviderFactory.createAndSetupProvider(K9.this).close()).start();
-
-        }
     }
 
     public PEpProvider getpEpSyncProvider() {
@@ -697,6 +692,7 @@ public class K9 extends Application {
 
             @Override
             public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
+                Log.e("pEp", "notifyHandshake: " + signal.name());
                 switch (signal) {
                     case SyncNotifyUndefined:
                         break;
@@ -704,6 +700,7 @@ public class K9 extends Application {
                     case SyncNotifyInitAddOtherDevice:
                     case SyncNotifyInitFormGroup:
                         goToAddDevice(myself, partner, signal, getString(R.string.pep_add_device_ask_trustwords));
+                        break;
                     case SyncNotifyInitMoveOurDevice:
                         goToAddDevice(myself, partner, signal, getString(R.string.pep_add_device_ask_move_trustwords));
                         break;
