@@ -34,9 +34,9 @@ public class MessageIdGeneratorTest {
         message.setFrom(new Address("alice@example.org"));
         message.setReplyTo(Address.parse("bob@example.com"));
         
-        String result = messageIdGenerator.generateMessageId(message);
+        String result = messageIdGenerator.generateMessageId();
         
-        assertEquals("<00000000-0000-4000-0000-000000000000@example.org>", result);
+        assertEquals("<00000000-0000-4000-0000-000000000000@pretty.Easy.privacy>", result);
     }
 
     @Test
@@ -44,17 +44,17 @@ public class MessageIdGeneratorTest {
         Message message = new MimeMessage();
         message.setReplyTo(Address.parse("bob@example.com"));
         
-        String result = messageIdGenerator.generateMessageId(message);
+        String result = messageIdGenerator.generateMessageId();
         
-        assertEquals("<00000000-0000-4000-0000-000000000000@example.com>", result);
+        assertEquals("<00000000-0000-4000-0000-000000000000@pretty.Easy.privacy>", result);
     }
 
     @Test
     public void generateMessageId_withoutRelevantHeaders() throws Exception {
         Message message = new MimeMessage();
         
-        String result = messageIdGenerator.generateMessageId(message);
+        String result = messageIdGenerator.generateMessageId();
         
-        assertEquals("<00000000-0000-4000-0000-000000000000@email.android.com>", result);
+        assertEquals("<00000000-0000-4000-0000-000000000000@pretty.Easy.privacy>", result);
     }
 }
