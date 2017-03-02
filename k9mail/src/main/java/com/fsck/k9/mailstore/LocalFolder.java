@@ -1036,7 +1036,7 @@ public class LocalFolder extends Folder<LocalMessage> implements Serializable {
 
                             String oldUID = message.getUid();
 
-                            if (K9.DEBUG) {
+                            if (K9.isDebug()) {
                                 Timber.d("Updating folder_id to %s for message with UID %s, " +
                                         "id %d currently in folder %s",
                                         lDestFolder.getId(),
@@ -1896,7 +1896,7 @@ public class LocalFolder extends Folder<LocalMessage> implements Serializable {
                 String messagePartId = cursor.getString(0);
                 File file = localStore.getAttachmentFile(messagePartId);
                 if (file.exists()) {
-                    if (!file.delete() && K9.DEBUG) {
+                    if (!file.delete() && K9.isDebug()) {
                         Timber.d("Couldn't delete message part file: %s", file.getAbsolutePath());
                     }
                 }
@@ -1956,7 +1956,7 @@ public class LocalFolder extends Folder<LocalMessage> implements Serializable {
                 return null;
             }
         });
-        if (K9.DEBUG)
+        if (K9.isDebug())
             Timber.d("Updated last UID for folder %s to %s", mName, lastUid);
         mLastUid = lastUid;
     }

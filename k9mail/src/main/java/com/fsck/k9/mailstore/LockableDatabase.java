@@ -75,7 +75,7 @@ public class LockableDatabase {
                 return;
             }
 
-            if (K9.DEBUG) {
+            if (K9.isDebug()) {
                 Timber.d("LockableDatabase: Closing DB %s due to unmount event on StorageProvider: %s",
                         uUid, providerId);
             }
@@ -98,7 +98,7 @@ public class LockableDatabase {
                 return;
             }
 
-            if (K9.DEBUG) {
+            if (K9.isDebug()) {
                 Timber.d("LockableDatabase: Opening DB %s due to mount event on StorageProvider: %s",
                         uUid, providerId);
             }
@@ -271,7 +271,7 @@ public class LockableDatabase {
         lockRead();
         final boolean doTransaction = transactional && inTransaction.get() == null;
         try {
-            final boolean debug = K9.DEBUG;
+            final boolean debug = K9.isDebug();
             if (doTransaction) {
                 inTransaction.set(Boolean.TRUE);
                 mDb.beginTransaction();
@@ -465,7 +465,7 @@ public class LockableDatabase {
             try {
                 mDb.close();
             } catch (Exception e) {
-                if (K9.DEBUG)
+                if (K9.isDebug())
                     Timber.d("Exception caught in DB close: %s", e.getMessage());
             }
             final StorageManager storageManager = getStorageManager();
@@ -475,19 +475,19 @@ public class LockableDatabase {
                 for (File attachment : attachments) {
                     if (attachment.exists()) {
                         boolean attachmentWasDeleted = attachment.delete();
-                        if (!attachmentWasDeleted && K9.DEBUG) {
+                        if (!attachmentWasDeleted && K9.isDebug()) {
                             Timber.d("Attachment was not deleted!");
                         }
                     }
                 }
                 if (attachmentDirectory.exists()) {
                     boolean attachmentDirectoryWasDeleted = attachmentDirectory.delete();
-                    if (!attachmentDirectoryWasDeleted && K9.DEBUG) {
+                    if (!attachmentDirectoryWasDeleted && K9.isDebug()) {
                         Timber.d("Attachment directory was not deleted!");
                     }
                 }
             } catch (Exception e) {
-                if (K9.DEBUG)
+                if (K9.isDebug())
                     Timber.d("Exception caught in clearing attachments: %s", e.getMessage());
             }
             try {

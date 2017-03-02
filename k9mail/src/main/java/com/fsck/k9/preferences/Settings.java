@@ -166,7 +166,7 @@ public class Settings {
         T defaultValue = setting.getDefaultValue();
         validatedSettingsMutable.put(settingName, defaultValue);
 
-        if (K9.DEBUG) {
+        if (K9.isDebug()) {
             String prettyValue = setting.toPrettyString(defaultValue);
             Timber.v("Added new setting \"%s\" with default value \"%s\"", settingName, prettyValue);
         }
@@ -177,7 +177,7 @@ public class Settings {
         validatedSettingsMutable.remove(settingName);
         deletedSettingsMutable.add(settingName);
 
-        if (K9.DEBUG) {
+        if (K9.isDebug()) {
             Timber.v("Removed setting \"%s\"", settingName);
         }
     }
@@ -211,7 +211,7 @@ public class Settings {
 
                 serializedSettings.put(settingName, stringValue);
             } else {
-                if (K9.DEBUG) {
+                if (K9.isDebug()) {
                     Timber.w("Settings.convert() called with a setting that should have been removed: %s", settingName);
                 }
             }

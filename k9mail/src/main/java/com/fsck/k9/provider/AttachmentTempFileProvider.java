@@ -106,7 +106,7 @@ public class AttachmentTempFileProvider extends FileProvider {
                     allFilesDeleted = false;
                 }
             } else {
-                if (K9.DEBUG) {
+                if (K9.isDebug()) {
                     String timeLeftStr = String.format(
                             Locale.ENGLISH, "%.2f", (lastModified - deletionThreshold) / 1000 / 60.0);
                     Timber.e("Not deleting temp file (for another %s minutes)", timeLeftStr);
@@ -167,7 +167,7 @@ public class AttachmentTempFileProvider extends FileProvider {
                 return;
             }
 
-            if (K9.DEBUG) {
+            if (K9.isDebug()) {
                 Timber.d("Unregistering temp file cleanup receiver");
             }
             context.unregisterReceiver(cleanupReceiver);
@@ -180,7 +180,7 @@ public class AttachmentTempFileProvider extends FileProvider {
             if (cleanupReceiver != null) {
                 return;
             }
-            if (K9.DEBUG) {
+            if (K9.isDebug()) {
                 Timber.d("Registering temp file cleanup receiver");
             }
             cleanupReceiver = new AttachmentTempFileProviderCleanupReceiver();
@@ -199,7 +199,7 @@ public class AttachmentTempFileProvider extends FileProvider {
                 throw new IllegalArgumentException("onReceive called with action that isn't screen off!");
             }
 
-            if (K9.DEBUG) {
+            if (K9.isDebug()) {
                 Timber.d("Cleaning up temp files");
             }
 

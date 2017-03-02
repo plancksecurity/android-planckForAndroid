@@ -187,12 +187,12 @@ public class SettingsImporter {
                         Timber.w("Was asked to import global settings but none found.");
                     }
                     if (editor.commit()) {
-                        if (K9.DEBUG) {
+                        if (K9.isDebug()) {
                             Timber.v("Committed global settings to the preference storage.");
                         }
                         globalSettingsImported = true;
                     } else {
-                        if (K9.DEBUG) {
+                        if (K9.isDebug()) {
                             Timber.v("Failed to commit global settings to the preference storage");
                         }
                     }
@@ -213,7 +213,7 @@ public class SettingsImporter {
                                         imported.contentVersion, account, overwrite);
 
                                 if (editor.commit()) {
-                                    if (K9.DEBUG) {
+                                    if (K9.isDebug()) {
                                         Timber.v("Committed settings for account \"%s\" to the settings database.",
                                                 importResult.imported.name);
                                     }
@@ -240,14 +240,14 @@ public class SettingsImporter {
 
                                     importedAccounts.add(importResult);
                                 } else {
-                                    if (K9.DEBUG) {
+                                    if (K9.isDebug()) {
                                         Timber.w("Error while committing settings for account \"%s\" to the settings " +
                                                 "database.", importResult.original.name);
                                     }
                                     erroneousAccounts.add(importResult.original);
                                 }
                             } catch (InvalidSettingValueException e) {
-                                if (K9.DEBUG) {
+                                if (K9.isDebug()) {
                                     Timber.e(e, "Encountered invalid setting while importing account \"%s\"",
                                             account.name);
                                 }
@@ -636,7 +636,7 @@ public class SettingsImporter {
      *         The new value for the preference.
      */
     private static void putString(StorageEditor editor, String key, String value) {
-        if (K9.DEBUG) {
+        if (K9.isDebug()) {
             String outputValue = value;
             if (!K9.DEBUG_SENSITIVE && (key.endsWith(".transportUri") || key.endsWith(".storeUri"))) {
                 outputValue = "*sensitive*";
