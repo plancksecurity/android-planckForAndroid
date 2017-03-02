@@ -300,6 +300,8 @@ public class PEpProviderImpl implements PEpProvider {
 
     @NonNull
     private MimeMessage getMimeMessage(MimeMessage source, Message message) throws MessagingException {
+        Boolean isRequestedFromPEpMessage = source == null;
+
         MimeMessageBuilder builder = new MimeMessageBuilder(message).newInstance();
 
         String text = message.getLongmsgFormatted();
@@ -344,8 +346,7 @@ public class PEpProviderImpl implements PEpProvider {
 
 
         MimeMessage mimeMessage = builder.parseMessage(message);
-        if (mimeMessage.isSet(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)) {
-            //don't modify sync messages
+        if (!isRequestedFromPEpMessage) {
             String[] alwaysSecureHeader = source.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE);
             if (alwaysSecureHeader.length > 0) {
                 mimeMessage.addHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE, alwaysSecureHeader[0]);
