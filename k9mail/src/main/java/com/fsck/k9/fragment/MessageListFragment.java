@@ -1394,7 +1394,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                         LocalFolder firstMsgFolder = getFolder(firstMsg.getFolderName(), account);
                         firstMsgFolder.setLastSelectedFolderName(destFolderName);
                     } catch (MessagingException e) {
-                        Timber.e("Error getting folder for setLastSelectedFolderName()", e);
+                        Timber.e(e, "Error getting folder for setLastSelectedFolderName()");
                     }
                 }
 
@@ -2989,7 +2989,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                 mListener.remoteSearchFinished(mCurrentFolder.name, 0, searchAccount.getRemoteSearchNumResults(), null);
             } catch (Exception e) {
                 // Since the user is going back, log and squash any exceptions.
-                Timber.e("Could not abort remote search before going back", e);
+                Timber.e(e, "Could not abort remote search before going back");
             }
         }
         super.onStop();

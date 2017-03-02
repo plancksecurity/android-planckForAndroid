@@ -64,7 +64,7 @@ public class FolderSettings extends K9PreferenceActivity {
             mFolder = localStore.getFolder(folderName);
             mFolder.open(Folder.OPEN_MODE_RW);
         } catch (MessagingException me) {
-            Timber.e("Unable to edit folder " + folderName + " preferences", me);
+            Timber.e(me, "Unable to edit folder " + folderName + " preferences");
             return;
         }
 
@@ -73,7 +73,7 @@ public class FolderSettings extends K9PreferenceActivity {
             Store store = mAccount.getRemoteStore();
             isPushCapable = store.isPushCapable();
         } catch (Exception e) {
-            Timber.e("Could not get remote store", e);
+            Timber.e(e, "Could not get remote store");
         }
 
         addPreferencesFromResource(R.xml.folder_settings_preferences);
@@ -169,7 +169,7 @@ public class FolderSettings extends K9PreferenceActivity {
         try {
             saveSettings();
         } catch (MessagingException e) {
-            Timber.e("Saving folder settings failed", e);
+            Timber.e(e, "Saving folder settings failed");
         }
 
         super.onPause();

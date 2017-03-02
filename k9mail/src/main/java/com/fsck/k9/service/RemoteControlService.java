@@ -169,7 +169,7 @@ public class RemoteControlService extends CoreService {
                             BootReceiver.scheduleIntent(RemoteControlService.this, nextTime, i);
                         }
                     } catch (Exception e) {
-                        Timber.e("Could not handle K9_SET", e);
+                        Timber.e(e, "Could not handle K9_SET");
                         FeedbackTools.showLongFeedback(getRootView(getBaseContext()), e.getMessage());
                     }
                 }

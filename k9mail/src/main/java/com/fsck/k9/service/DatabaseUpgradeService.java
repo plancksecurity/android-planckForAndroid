@@ -201,7 +201,7 @@ public class DatabaseUpgradeService extends Service {
             } catch (UnavailableStorageException e) {
                 Timber.e("Database unavailable");
             } catch (Exception e) {
-                Timber.e("Error while upgrading database", e);
+                Timber.e(e, "Error while upgrading database");
             }
 
             mProgress++;

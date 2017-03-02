@@ -148,7 +148,7 @@ public class MessageWebView extends RigidWebView {
             shiftPressEvent.dispatch(this, null, null);
             FeedbackTools.showLongFeedback(getRootView(), getContext().getString(R.string.select_text_now));
         } catch (Exception e) {
-            Timber.e("Exception in emulateShiftHeld()", e);
+            Timber.e(e, "Exception in emulateShiftHeld()");
         }
     }
 
