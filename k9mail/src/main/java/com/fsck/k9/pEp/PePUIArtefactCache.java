@@ -100,8 +100,8 @@ public class PePUIArtefactCache
         return recipients;
     }
 
-    public void setRecipients(ArrayList<Identity> recipients) {
-        this.recipients = PEpUtils.filterRecipients(context, recipients);
+    public void setRecipients(Account account, ArrayList<Identity> recipients) {
+        this.recipients = PEpUtils.filterRecipients(account, recipients);
     }
 
     public void setComposingAccount(Account account) {

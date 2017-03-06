@@ -474,7 +474,7 @@ public class PEpUtils {
         pEp.close();
     }
 
-    public static ArrayList<Identity> filterRecipients(Context context, ArrayList<Identity> recipients) {
+    public static ArrayList<Identity> filterRecipients(Account account, ArrayList<Identity> recipients) {
         ArrayList<Identity> identities = new ArrayList<>();
 
         Collections.sort(recipients, new Comparator<Identity>() {
@@ -486,7 +486,7 @@ public class PEpUtils {
 
         for (int i = 0; i < recipients.size(); i++) {
             Identity identity = recipients.get(i);
-            if (!isMyself(context, identity)) {
+            if (!identity.address.equals(account.getEmail())) {
                 if (identities.size() == 0) {
                     identities.add(identity);
                 } else {

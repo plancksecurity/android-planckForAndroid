@@ -486,7 +486,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         recipients.addAll(PEpUtils.createIdentities(getBccAddresses(), activity.getApplicationContext()));
 
 //        mIgnoreOnPause = true;  // do *not* save state
-        pEpUiCache.setRecipients(recipients);
+        pEpUiCache.setRecipients(mAccount, recipients);
 
         if (pEpRating.value == Rating.pEpRatingReliable.value) {
             if (recipients.size() == 1) {
