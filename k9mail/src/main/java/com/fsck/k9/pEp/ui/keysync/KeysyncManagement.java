@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Toast;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
@@ -17,6 +16,7 @@ import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.ui.adapters.IdentitiesAdapter;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
 import org.pEp.jniadapter.Identity;
 
@@ -75,6 +75,6 @@ public class KeysyncManagement extends PepColoredActivity implements KeysyncMana
 
     @Override
     public void showError() {
-        Toast.makeText(this, R.string.openpgp_unknown_error, Toast.LENGTH_SHORT).show();
+        FeedbackTools.showShortFeedback(getRootView() ,getResources().getString(R.string.openpgp_unknown_error));
     }
 }

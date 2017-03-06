@@ -31,6 +31,7 @@ import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.models.PEpIdentity;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.ui.adapters.PEpIdentitiesAdapter;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
 import org.pEp.jniadapter.Rating;
 
@@ -201,7 +202,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
     @Override
     public void showError(int status_loading_error) {
-        Toast.makeText(getApplicationContext(), R.string.status_loading_error, Toast.LENGTH_LONG).show();
+        FeedbackTools.showLongFeedback(getRootView() ,getResources().getString(R.string.status_loading_error));
     }
 
     @Override

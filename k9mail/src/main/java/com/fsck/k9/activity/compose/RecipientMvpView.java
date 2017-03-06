@@ -332,7 +332,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     }
 
     public void showErrorIsSignOnly() {
-        Toast.makeText(activity, R.string.error_sign_only_no_encryption, Toast.LENGTH_LONG).show();
+        FeedbackTools.showShortFeedback(activity.getRootView() , activity.getResources().getString(R.string.error_sign_only_no_encryption));
     }
 
     public void showErrorContactNoAddress() {

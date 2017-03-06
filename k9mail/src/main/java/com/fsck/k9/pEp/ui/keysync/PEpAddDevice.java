@@ -28,6 +28,7 @@ import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.HandshakeData;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.ui.adapters.IdentitiesAdapter;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
 import org.pEp.jniadapter.Identity;
 
@@ -180,7 +181,7 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
 
             @Override
             public void onError(Throwable throwable) {
-                Toast.makeText(PEpAddDevice.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                FeedbackTools.showShortFeedback(getRootView(), throwable.getMessage());
             }
         });
     }
@@ -197,7 +198,7 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
 
                 @Override
                 public void onError(Throwable throwable) {
-                    Toast.makeText(PEpAddDevice.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    FeedbackTools.showShortFeedback(getRootView(), throwable.getMessage());
                 }
             });
         } else {
@@ -210,7 +211,7 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
 
                 @Override
                 public void onError(Throwable throwable) {
-                    Toast.makeText(PEpAddDevice.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    FeedbackTools.showShortFeedback(getRootView(), throwable.getMessage());
                 }
             });
         }
@@ -278,7 +279,7 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
 
     @Override
     public void showError() {
-        Toast.makeText(this, R.string.openpgp_unknown_error, Toast.LENGTH_SHORT).show();
+        FeedbackTools.showShortFeedback(getRootView(), getResources().getString(R.string.openpgp_unknown_error));
     }
 
     @Override

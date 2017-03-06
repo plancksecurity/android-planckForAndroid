@@ -71,6 +71,7 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
 import com.fsck.k9.search.ConditionsTreeNode;
@@ -1570,7 +1571,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_ADDRESS, result.keyDetails.getAddress().getAddress());
                     broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_USERNAME, result.keyDetails.getAddress().getPersonal());
                     context.getApplicationContext().sendOrderedBroadcast(broadcastIntent, null);
-                    Toast.makeText(context.getApplicationContext(), "Private key", Toast.LENGTH_LONG).show();
                 }
             });
         }
