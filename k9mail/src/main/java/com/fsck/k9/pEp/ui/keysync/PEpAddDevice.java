@@ -53,8 +53,6 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
 
     @Bind(R.id.trustwords)
     TextView tvTrustwords;
-    @Bind(R.id.tvPartner)
-    TextView partnerView;
     @Bind(R.id.advenced_keys_title)
     TextView advancedKeysTextView;
     @Bind(R.id.explanation)
@@ -250,12 +248,11 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
 
     @Override
     public void showPartnerFormat(Identity partner) {
-        partnerView.setText(String.format(getString(R.string.pep_partner_format),partner.address));
+
     }
 
     @Override
     public void showCompletePartnerFormat(Identity partner) {
-        partnerView.setText(String.format(getString(R.string.pep_complete_partner_format), partner.username, partner.address));
     }
 
     @Override

@@ -95,7 +95,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
 
         ispEpSyncEnabled = ((K9) getApplication()).ispEpSyncEnabled();
 
-        if (!BuildConfig.WITH_KEY_SYNC || ispEpSyncEnabled) {
+        if (!BuildConfig.WITH_KEY_SYNC) {
             pepSyncAccount.setVisibility(View.GONE);
         }
     }

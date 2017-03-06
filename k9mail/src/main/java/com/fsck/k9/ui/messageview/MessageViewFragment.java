@@ -972,10 +972,13 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void refreshMessage() {
-        MessageViewFragment fragment = MessageViewFragment.newInstance(mMessageReference);
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.message_view_container, fragment);
-        ft.commit();
+        //If get support manager is null, it means that you don't have a fragment to refresh
+        if (getFragmentManager() != null) {
+            MessageViewFragment fragment = MessageViewFragment.newInstance(mMessageReference);
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.replace(R.id.message_view_container, fragment);
+            ft.commit();
+        }
     }
 
 

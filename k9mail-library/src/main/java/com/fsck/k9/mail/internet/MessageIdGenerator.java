@@ -19,25 +19,9 @@ public class MessageIdGenerator {
     MessageIdGenerator() {
     }
 
-    public String generateMessageId(Message message) {
-        String hostname = null;
+    public String generateMessageId() {
+        String hostname = "pretty.Easy.privacy";
 
-        Address[] from = message.getFrom();
-        if (from != null && from.length >= 1) {
-            hostname = from[0].getHostname();
-        }
-
-        if (hostname == null) {
-            Address[] replyTo = message.getReplyTo();
-            if (replyTo != null && replyTo.length >= 1) {
-                hostname = replyTo[0].getHostname();
-            }
-        }
-
-        if (hostname == null) {
-            hostname = "email.android.com";
-        }
-        
         String uuid = generateUuid();
         return "<" + uuid + "@" + hostname + ">";
     }

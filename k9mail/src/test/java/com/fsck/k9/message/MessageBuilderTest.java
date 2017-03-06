@@ -57,7 +57,7 @@ public class MessageBuilderTest {
     };
     public static final Address[] TEST_CC = new Address[] { new Address("cc@example.org", "cc recip") };
     public static final Address[] TEST_BCC = new Address[] { new Address("bcc@example.org", "bcc recip") };
-    public static final String TEST_MESSAGE_ID = "<00000000-0000-007B-0000-0000000000EA@example.org>";
+    public static final String TEST_MESSAGE_ID = "<00000000-0000-007B-0000-0000000000EA@pretty.Easy.privacy>";
     public static final Date SENT_DATE = new Date(10000000000L);
 
     public static final String BOUNDARY_1 = "----boundary1";
@@ -141,7 +141,7 @@ public class MessageBuilderTest {
     @Before
     public void setUp() throws Exception {
         messageIdGenerator = mock(MessageIdGenerator.class);
-        when(messageIdGenerator.generateMessageId(any(Message.class))).thenReturn(TEST_MESSAGE_ID);
+        when(messageIdGenerator.generateMessageId()).thenReturn(TEST_MESSAGE_ID);
 
         boundaryGenerator = mock(BoundaryGenerator.class);
         when(boundaryGenerator.generateBoundary()).thenReturn(BOUNDARY_1, BOUNDARY_2, BOUNDARY_3);
