@@ -551,5 +551,17 @@ public class PEpUtils {
         }
         return context.getResources().getDrawable(R.drawable.pep_status_gray_white);
     }
+
+    public static String addressesToString(Address[] addresses) {
+        String addressesText = "";
+        for (int i = 0; i < addresses.length; i++) {
+            if(i < addresses.length - 1) {
+                addressesText += addresses[i].getAddress() + ",";
+            } else {
+                addressesText += addresses[i].getAddress();
+            }
+        }
+        return addressesText;
+    }
 }
 
