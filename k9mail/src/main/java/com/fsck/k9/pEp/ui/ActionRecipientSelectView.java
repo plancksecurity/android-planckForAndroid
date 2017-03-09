@@ -14,17 +14,10 @@ public class ActionRecipientSelectView extends RecipientSelectView {
 
     private OnCutCopyPasteListener mOnCutCopyPasteListener;
 
-    /**
-     * Set a OnCutCopyPasteListener.
-     * @param listener
-     */
     public void setOnCutCopyPasteListener(OnCutCopyPasteListener listener) {
         mOnCutCopyPasteListener = listener;
     }
 
-    /*
-        Just the constructors to create a new EditText...
-     */
     public ActionRecipientSelectView(Context context) {
         super(context);
     }
@@ -45,34 +38,28 @@ public class ActionRecipientSelectView extends RecipientSelectView {
      */
     @Override
     public boolean onTextContextMenuItem(int id) {
-        // Do your thing:
-        boolean consumed = super.onTextContextMenuItem(id);
         // React:
         switch (id){
             case android.R.id.cut:
                 onCut();
                 break;
             case android.R.id.copy:
+                super.onTextContextMenuItem(id);
                 onCopy();
                 break;
             case android.R.id.paste:
+            case android.R.id.selectAll:
                 super.onTextContextMenuItem(id);
                 break;
         }
-        return consumed;
+        return true;
     }
 
-    /**
-     * Text was cut from this EditText.
-     */
     public void onCut(){
         if(mOnCutCopyPasteListener!=null)
             mOnCutCopyPasteListener.onCut();
     }
 
-    /**
-     * Text was copied from this EditText.
-     */
     public void onCopy(){
         if(mOnCutCopyPasteListener!=null)
             mOnCutCopyPasteListener.onCopy();

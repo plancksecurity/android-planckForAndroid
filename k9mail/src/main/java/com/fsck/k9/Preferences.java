@@ -12,8 +12,10 @@ import java.util.Map;
 import android.content.Context;
 import android.util.Log;
 
+import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mailstore.LocalStore;
+import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.preferences.Storage;
 
@@ -35,6 +37,7 @@ public class Preferences {
     private List<Account> accountsInOrder = null;
     private Account newAccount;
     private Context mContext;
+    private List<String> keysInOrder = null;
 
     private Preferences(Context context) {
         mStorage = Storage.getStorage(context);
@@ -182,5 +185,64 @@ public class Preferences {
                 return defaultEnum;
             }
         }
+    }
+
+    public void setAccounts(List<Account> reorderedAccounts) {
+        accountsInOrder = reorderedAccounts;
+        List<String> uuids = new ArrayList<>(reorderedAccounts.size());
+        for (Account account : reorderedAccounts) {
+            uuids.add(account.getUuid());
+        }
+        String accountUuids = Utility.combine(uuids.toArray(), ',');
+
+        StorageEditor editor = getStorage().edit();
+        editor.putString("accountUuids", accountUuids);
+        editor.commit();
+    }
+
+    public synchronized List<String> loadKeys(String uid) {
+        keysInOrder = new LinkedList<>();
+        String keysFRPs = getStorage().getString(uid, null);
+        if ((keysFRPs != null) && (keysFRPs.length() != 0)) {
+            String[] fprs = keysFRPs.split(",");
+            for (String fpr : fprs) {
+                keysInOrder.add(fpr);
+            }
+        }
+        return keysInOrder;
+    }
+
+    public synchronized String[] getKeys(String uid) {
+        keysInOrder = loadKeys(uid);
+        String[] keysArray = new String[keysInOrder.size()];
+        for (int i = 0; i < keysArray.length; i++) {
+            keysArray[i] = keysInOrder.get(i);
+        }
+        return keysArray;
+    }
+
+    public void setKeys(String accountUuid, List<KeyListItem> keys) {
+        List<String> fprs = new ArrayList<>(keys.size());
+        for (KeyListItem keyListItem : keys) {
+            fprs.add(keyListItem.getFpr());
+        }
+        keysInOrder = fprs;
+        String accountUuids = Utility.combine(fprs.toArray(), ',');
+
+        StorageEditor editor = getStorage().edit();
+        editor.putString(accountUuid, accountUuids);
+        editor.commit();
+    }
+
+    public void setKeysFPRs(String accountUuid, List<String> keys) {
+        List<String> fprs = new ArrayList<>(keys.size());
+        for (String fpr : keys) {
+            fprs.add(fpr);
+        }
+        String accountUuids = Utility.combine(fprs.toArray(), ',');
+
+        StorageEditor editor = getStorage().edit();
+        editor.putString(accountUuid, accountUuids);
+        editor.commit();
     }
 }

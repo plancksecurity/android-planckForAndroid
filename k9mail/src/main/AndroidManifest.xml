@@ -452,6 +452,7 @@
         </receiver>
 
         <activity android:name=".pEp.ui.keysync.KeysyncManagement"></activity>
+        <activity android:name="com.fsck.k9.pEp.ui.keys.PepExtraKeys" />
     </application>
 
 </manifest>

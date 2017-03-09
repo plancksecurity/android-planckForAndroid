@@ -57,6 +57,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
     private static final int VIEW_INDEX_BCC_EXPANDER_VISIBLE = 0;
     private static final int VIEW_INDEX_BCC_EXPANDER_HIDDEN = 1;
+    public static final String COPIED_RECIPIENT = "copied_recipient";
 
     private final MessageCompose activity;
     private final View ccWrapper;
@@ -103,39 +104,9 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         ccView.setOnFocusChangeListener(this);
         bccView.setOnFocusChangeListener(this);
 
-        toView.setOnCutCopyPasteListener(new ActionRecipientSelectView.OnCutCopyPasteListener() {
-            @Override
-            public void onCut() {
-            }
-
-            @Override
-            public void onCopy() {
-                copyAdressesToClipboard(PEpUtils.addressesToString(toView.getAddresses()));
-            }
-        });
-
-        ccView.setOnCutCopyPasteListener(new ActionRecipientSelectView.OnCutCopyPasteListener() {
-            @Override
-            public void onCut() {
-
-            }
-
-            @Override
-            public void onCopy() {
-                copyAdressesToClipboard(PEpUtils.addressesToString(ccView.getAddresses()));
-            }
-        });
-
-        bccView.setOnCutCopyPasteListener(new ActionRecipientSelectView.OnCutCopyPasteListener() {
-            @Override
-            public void onCut() {
-            }
-
-            @Override
-            public void onCopy() {
-                copyAdressesToClipboard(PEpUtils.addressesToString(bccView.getAddresses()));
-            }
-        });
+        setOnCutCopyPasteListenerToView(toView);
+        setOnCutCopyPasteListenerToView(ccView);
+        setOnCutCopyPasteListenerToView(bccView);
 
         View recipientExpander = activity.findViewById(R.id.recipient_expander);
         recipientExpander.setOnClickListener(this);
@@ -150,9 +121,32 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         pEpUiCache = PePUIArtefactCache.getInstance(activity.getApplicationContext());
     }
 
+    private void setOnCutCopyPasteListenerToView(ActionRecipientSelectView view) {
+        view.setOnCutCopyPasteListener(new ActionRecipientSelectView.OnCutCopyPasteListener() {
+            @Override
+            public void onCut() {
+                cutFromView(RecipientMvpView.this.toView);
+            }
+
+            @Override
+            public void onCopy() {
+                copyFromView(PEpUtils.addressesToString(RecipientMvpView.this.toView.getAddresses()));
+            }
+        });
+    }
+
+    private void copyFromView(String text) {
+        copyAdressesToClipboard(text);
+    }
+
+    private void cutFromView(ActionRecipientSelectView view) {
+        copyFromView(PEpUtils.addressesToString(view.getAddresses()));
+        view.emptyAddresses();
+    }
+
     private void copyAdressesToClipboard(String text) {
         ClipboardManager clipboard = (ClipboardManager) toView.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText("Copied Recipient", text);
+        ClipData clip = ClipData.newPlainText(COPIED_RECIPIENT, text);
         clipboard.setPrimaryClip(clip);
     }
 

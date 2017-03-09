@@ -46,10 +46,10 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
     private static final String ACTION_SHOW_PEP_STATUS = "com.fsck.k9.intent.action.SHOW_PEP_STATUS";
     private static final String SENDER = "isComposedKey";
-    private static final String MYSELF = "mySelf";
+    private static final String MYSELF = "myself";
     private static final String RATING = "rating";
-    private static final String MESSAGE_REFERENCE = "message_reference";
-    private static final String MESSAGE_DIRECTION = "message_direction";
+    private static final String MESSAGE_REFERENCE = "messageReference";
+    private static final String MESSAGE_DIRECTION = "messageDirection";
     public static final int REQUEST_STATUS = 2;
 
     @Inject PEpUtils pEpUtils;

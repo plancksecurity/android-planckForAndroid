@@ -1,7 +1,6 @@
 package com.fsck.k9.activity;
 
 
-import android.content.ClipData;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff.Mode;
@@ -22,13 +21,10 @@ import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.RecipientAdapter;
-import com.fsck.k9.helper.ClipboardManager;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.ThemeUtils;
-
-import java.util.List;
 
 import java.util.List;
 
@@ -166,12 +162,6 @@ public class AlternateRecipientAdapter extends BaseAdapter {
             holder.itemAddressLabel.setVisibility(View.GONE);
         }
 
-        holder.itemCopy.setOnClickListener(v -> {
-            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-            android.content.ClipData clip = android.content.ClipData.newPlainText("Copied Recipient", address);
-            clipboard.setPrimaryClip(clip);
-        });
-
         boolean isCurrent = currentRecipient == recipient;
         holder.itemAddress.setTypeface(null, isCurrent ? Typeface.BOLD : Typeface.NORMAL);
         holder.itemAddressLabel.setTypeface(null, isCurrent ? Typeface.BOLD : Typeface.NORMAL);
@@ -230,7 +220,6 @@ public class AlternateRecipientAdapter extends BaseAdapter {
         public final PEpContactBadge headerPhoto;
         public final View headerRemove;
         public final TextView itemAddress;
-        public final View itemCopy;
         public final TextView itemAddressLabel;
         public final View itemCryptoStatus;
         public final ImageView itemCryptoStatusIcon;
@@ -247,7 +236,6 @@ public class AlternateRecipientAdapter extends BaseAdapter {
 
             itemAddress = (TextView) view.findViewById(R.id.alternate_address);
             itemAddressLabel = (TextView) view.findViewById(R.id.alternate_address_label);
-            itemCopy = (View) view.findViewById(R.id.alternate_container_copy);
             itemCryptoStatus = view.findViewById(R.id.alternate_crypto_status);
             itemCryptoStatusIcon = (ImageView) view.findViewById(R.id.alternate_crypto_status_icon);
         }

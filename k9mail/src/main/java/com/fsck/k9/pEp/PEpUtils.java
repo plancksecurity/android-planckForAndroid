@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -476,6 +477,24 @@ public class PEpUtils {
         pEp.close();
     }
 
+    public static void colorToolbar(PePUIArtefactCache uiCache, Toolbar toolbar, Rating pEpRating) {
+        if (toolbar != null) {
+            toolbar.setBackgroundColor(uiCache.getColor(pEpRating));
+        }
+    }
+
+    public static void colorToolbar(PePUIArtefactCache uiCache, ActionBar supportActionBar, Rating pEpRating) {
+        ColorDrawable colorDrawable = new ColorDrawable(uiCache.getColor(pEpRating));
+        supportActionBar.setBackgroundDrawable(colorDrawable);
+    }
+
+    public static void colorToolbar(Toolbar toolbar, int colorResource) {
+        if (toolbar != null) {
+            toolbar.setBackgroundColor(colorResource);
+        }
+    }
+
+
     public static ArrayList<Identity> filterRecipients(Account account, ArrayList<Identity> recipients) {
         ArrayList<Identity> identities = new ArrayList<>();
 
@@ -558,7 +577,7 @@ public class PEpUtils {
         String addressesText = "";
         for (int i = 0; i < addresses.length; i++) {
             if(i < addresses.length - 1) {
-                addressesText += addresses[i].getAddress() + ",";
+                addressesText += addresses[i].getAddress() + ", ";
             } else {
                 addressesText += addresses[i].getAddress();
             }
