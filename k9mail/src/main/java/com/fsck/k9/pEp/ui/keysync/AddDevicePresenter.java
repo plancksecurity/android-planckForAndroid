@@ -32,7 +32,6 @@ public class AddDevicePresenter implements Presenter {
     }
 
     private void loadPartner(AddDeviceView view) {
-        view.showPartnerFormat(partner);
     }
 
     void acceptHandshake() {

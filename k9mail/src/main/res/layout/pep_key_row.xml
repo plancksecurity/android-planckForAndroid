@@ -34,8 +34,7 @@
             android:layout_below="@id/tvUsername"
             android:layout_gravity="center_vertical"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            tools:text="Medium Text"
-            android:visibility="gone" />
+            tools:text="Medium Text" />
     </LinearLayout>
 
     <CheckBox

@@ -3,6 +3,9 @@ package com.fsck.k9.activity.compose;
 
 import android.app.LoaderManager;
 import android.app.PendingIntent;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +25,7 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.ui.ActionRecipientSelectView;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 import com.fsck.k9.view.RecipientSelectView;
@@ -59,9 +63,9 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     private final View ccDivider;
     private final View bccWrapper;
     private final View bccDivider;
-    private final RecipientSelectView toView;
-    private final RecipientSelectView ccView;
-    private final RecipientSelectView bccView;
+    private final ActionRecipientSelectView toView;
+    private final ActionRecipientSelectView ccView;
+    private final ActionRecipientSelectView bccView;
     private final TextView fromView;
     private final ViewAnimator cryptoStatusView;
     private final ViewAnimator recipientExpanderContainer;
@@ -82,9 +86,9 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         this.activity = activity;
         this.mAccount = activity.getAccount();
         fromView = (TextView) activity.findViewById(R.id.identity);
-        toView = (RecipientSelectView) activity.findViewById(R.id.to);
-        ccView = (RecipientSelectView) activity.findViewById(R.id.cc);
-        bccView = (RecipientSelectView) activity.findViewById(R.id.bcc);
+        toView = (ActionRecipientSelectView) activity.findViewById(R.id.to);
+        ccView = (ActionRecipientSelectView) activity.findViewById(R.id.cc);
+        bccView = (ActionRecipientSelectView) activity.findViewById(R.id.bcc);
         ccWrapper = activity.findViewById(R.id.cc_wrapper);
         ccDivider = activity.findViewById(R.id.cc_divider);
         bccWrapper = activity.findViewById(R.id.bcc_wrapper);
@@ -99,6 +103,40 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         ccView.setOnFocusChangeListener(this);
         bccView.setOnFocusChangeListener(this);
 
+        toView.setOnCutCopyPasteListener(new ActionRecipientSelectView.OnCutCopyPasteListener() {
+            @Override
+            public void onCut() {
+            }
+
+            @Override
+            public void onCopy() {
+                copyAdressesToClipboard(PEpUtils.addressesToString(toView.getAddresses()));
+            }
+        });
+
+        ccView.setOnCutCopyPasteListener(new ActionRecipientSelectView.OnCutCopyPasteListener() {
+            @Override
+            public void onCut() {
+
+            }
+
+            @Override
+            public void onCopy() {
+                copyAdressesToClipboard(PEpUtils.addressesToString(ccView.getAddresses()));
+            }
+        });
+
+        bccView.setOnCutCopyPasteListener(new ActionRecipientSelectView.OnCutCopyPasteListener() {
+            @Override
+            public void onCut() {
+            }
+
+            @Override
+            public void onCopy() {
+                copyAdressesToClipboard(PEpUtils.addressesToString(bccView.getAddresses()));
+            }
+        });
+
         View recipientExpander = activity.findViewById(R.id.recipient_expander);
         recipientExpander.setOnClickListener(this);
 
@@ -110,6 +148,12 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         bccLabel.setOnClickListener(this);
 
         pEpUiCache = PePUIArtefactCache.getInstance(activity.getApplicationContext());
+    }
+
+    private void copyAdressesToClipboard(String text) {
+        ClipboardManager clipboard = (ClipboardManager) toView.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("Copied Recipient", text);
+        clipboard.setPrimaryClip(clip);
     }
 
     public void setPresenter(final RecipientPresenter presenter) {
@@ -486,7 +530,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         recipients.addAll(PEpUtils.createIdentities(getBccAddresses(), activity.getApplicationContext()));
 
 //        mIgnoreOnPause = true;  // do *not* save state
-        pEpUiCache.setRecipients(recipients);
+        pEpUiCache.setRecipients(mAccount, recipients);
 
         if (pEpRating.value == Rating.pEpRatingReliable.value) {
             if (recipients.size() == 1) {

@@ -297,6 +297,16 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         return address;
     }
 
+    public String[] getAddressesText() {
+        List<Recipient> recipients = getObjects();
+        String[] address = new String[recipients.size()];
+        for (int i = 0; i < address.length; i++) {
+            address[i] = recipients.get(i).address.toString();
+        }
+
+        return address;
+    }
+
     private void showAlternates(Recipient recipient) {
         if (loaderManager == null) {
             return;
