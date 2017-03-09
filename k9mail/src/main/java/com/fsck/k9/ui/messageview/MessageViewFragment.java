@@ -787,7 +787,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         addresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.CC)), getApplicationContext()));
 
         String myAdress = mAccount.getEmail();
-        pePUIArtefactCache.setRecipients(addresses);
+        pePUIArtefactCache.setRecipients(mAccount, addresses);
         for (String s : mMessage.getHeaderNames()) {
             for (String s1 : mMessage.getHeader(s)) {
                 Log.i("MessageHeader", "onClick " + s + " " + s1);

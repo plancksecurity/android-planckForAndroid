@@ -463,7 +463,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".pEp.ui.keysync.KeysyncManagement" />
-        <activity android:name=".pEp.ui.About"></activity>
+        <activity android:name=".pEp.ui.About" />
+        <activity android:name=".pEp.ui.keys.PepExtraKeys"></activity>
     </application>
 
 </manifest>

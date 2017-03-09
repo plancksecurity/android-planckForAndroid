@@ -3,7 +3,7 @@ Created by Helm  23/03/16.
 */
 
 
-package com.fsck.k9.pEp.ui.blacklist;
+package com.fsck.k9.pEp.ui.keys;
 
 import android.content.Context;
 import android.support.v7.util.SortedList;
@@ -18,11 +18,12 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
 import java.util.Comparator;
 import java.util.List;
 
-public class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ViewHolder> {
+public class KeyItemAdapter extends RecyclerView.Adapter<KeyItemAdapter.ViewHolder> {
 
     private static final Comparator<KeyListItem> ALPHABETICAL_COMPARATOR = new Comparator<KeyListItem>() {
         @Override
@@ -34,13 +35,14 @@ public class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ViewHolder> {
     private final Context context;
 //    private final List<KeyListItem> identities;
     private final SortedList<KeyListItem> dataSet;
+    private final OnKeyClickListener onKeyClickListener;
     private ViewHolder viewHolder;
     private PEpProvider pEp;
     private Comparator <KeyListItem> comparator;
 
 
-    public KeysAdapter(Context context,
-                       List<KeyListItem> identities) {
+    public KeyItemAdapter(Context context,
+                          List<KeyListItem> identities, OnKeyClickListener onKeyClickListener) {
 //        this.identities = identities;
         this.context = context;
         pEp = ((K9) context.getApplicationContext()).getpEpProvider();
@@ -49,6 +51,7 @@ public class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ViewHolder> {
         if (identities != null) {
             dataSet.addAll(identities);
         }
+        this.onKeyClickListener = onKeyClickListener;
     }
 
     @Override
@@ -109,18 +112,12 @@ public class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ViewHolder> {
                 @Override
                 public void onClick(View v) {
                     boolean checked = ((CheckBox) v).isChecked();
-                    if (checked) {
-                        pEp.addToBlacklist(fpr);
-                    } else {
-                        pEp.deleteFromBlacklist(fpr);
-                    }
                     keyItem.setSelected(checked);
                     int position = dataSet.indexOf(keyItem);
                     dataSet.get(position).setSelected(checked);
+                    onKeyClickListener.onClick(keyItem, checked);
                 }
             });
-
-
         }
     }
 
@@ -130,22 +127,22 @@ public class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ViewHolder> {
 
         @Override
         public void onInserted(int position, int count) {
-            KeysAdapter.this.notifyItemRangeInserted(position, count);
+            KeyItemAdapter.this.notifyItemRangeInserted(position, count);
         }
 
         @Override
         public void onRemoved(int position, int count) {
-            KeysAdapter.this.notifyItemRangeRemoved(position, count);
+            KeyItemAdapter.this.notifyItemRangeRemoved(position, count);
         }
 
         @Override
         public void onMoved(int fromPosition, int toPosition) {
-            KeysAdapter.this.notifyItemMoved(fromPosition, toPosition);
+            KeyItemAdapter.this.notifyItemMoved(fromPosition, toPosition);
         }
 
         @Override
         public void onChanged(int position, int count) {
-            KeysAdapter.this.notifyItemRangeChanged(position, count);
+            KeyItemAdapter.this.notifyItemRangeChanged(position, count);
         }
 
         @Override
@@ -160,7 +157,7 @@ public class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ViewHolder> {
 
         @Override
         public boolean areItemsTheSame(KeyListItem item1, KeyListItem item2) {
-            return item1.fpr.equals(item2.getFpr());
+            return item1.getFpr().equals(item2.getFpr());
         }
     };
 

@@ -7,6 +7,7 @@ import android.util.Log;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mailstore.LocalStore;
+import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 
@@ -36,6 +37,7 @@ public class Preferences {
     private List<Account> accountsInOrder = null;
     private Account newAccount;
     private Context mContext;
+    private List<String> keysInOrder = null;
 
     private Preferences(Context context) {
         mStorage = Storage.getStorage(context);
@@ -195,6 +197,43 @@ public class Preferences {
 
         StorageEditor editor = getStorage().edit();
         editor.putString("accountUuids", accountUuids);
+        editor.commit();
+    }
+
+    public synchronized List<String> loadKeys(String uid) {
+        keysInOrder = new LinkedList<>();
+        String keysFRPs = getStorage().getString(uid, null);
+        if ((keysFRPs != null) && (keysFRPs.length() != 0)) {
+            String[] fprs = keysFRPs.split(",");
+            for (String fpr : fprs) {
+                keysInOrder.add(fpr);
+            }
+        }
+        return keysInOrder;
+    }
+
+    public void setKeys(String accountUuid, List<KeyListItem> keys) {
+        List<String> fprs = new ArrayList<>(keys.size());
+        for (KeyListItem keyListItem : keys) {
+            fprs.add(keyListItem.getFpr());
+        }
+        keysInOrder = fprs;
+        String accountUuids = Utility.combine(fprs.toArray(), ',');
+
+        StorageEditor editor = getStorage().edit();
+        editor.putString(accountUuid, accountUuids);
+        editor.commit();
+    }
+
+    public void setKeysFPRs(String accountUuid, List<String> keys) {
+        List<String> fprs = new ArrayList<>(keys.size());
+        for (String fpr : keys) {
+            fprs.add(fpr);
+        }
+        String accountUuids = Utility.combine(fprs.toArray(), ',');
+
+        StorageEditor editor = getStorage().edit();
+        editor.putString(accountUuid, accountUuids);
         editor.commit();
     }
 }
