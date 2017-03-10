@@ -212,6 +212,15 @@ public class Preferences {
         return keysInOrder;
     }
 
+    public synchronized String[] getKeys(String uid) {
+        keysInOrder = loadKeys(uid);
+        String[] keysArray = new String[keysInOrder.size()];
+        for (int i = 0; i < keysArray.length; i++) {
+            keysArray[i] = keysInOrder.get(i);
+        }
+        return keysArray;
+    }
+
     public void setKeys(String accountUuid, List<KeyListItem> keys) {
         List<String> fprs = new ArrayList<>(keys.size());
         for (KeyListItem keyListItem : keys) {

@@ -2077,7 +2077,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 } else if (account.getDraftsFolderName().equals(localMessage.getFolder().getName())) {
                     encryptedMessage = pEpProvider.encryptMessageToSelf(localMessage);
                 } else {
-                    encryptedMessage = pEpProvider.encryptMessage(localMessage, null).get(0);
+                    Preferences preferences = Preferences.getPreferences(context);
+                    String[] keys = preferences.getKeys(account.getUuid());
+                    encryptedMessage = pEpProvider.encryptMessage(localMessage, keys).get(0);
                 }
 
             } catch (Exception ex) {
@@ -3203,7 +3205,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             sendMessage(transport, message);
                             encryptedMessage = message;
                         } else {
-                            encryptedMessage = processWithpEpAndSend(transport, message);
+                            encryptedMessage = processWithpEpAndSend(transport, message, account);
                             encryptedMessage.setFlags(message.getFlags(), true);
                         }
 
@@ -3324,8 +3326,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
         processPendingCommands(account);
     }
 
-    private Message processWithpEpAndSend(Transport transport, LocalMessage message) throws MessagingException {
-        List<MimeMessage> encryptedMessages = pEpProvider.encryptMessage(message, null); // TODO: Extra keys
+    private Message processWithpEpAndSend(Transport transport, LocalMessage message, Account account) throws MessagingException {
+        Preferences preferences = Preferences.getPreferences(context);
+        String[] keys = preferences.getKeys(account.getUuid());
+        List<MimeMessage> encryptedMessages = pEpProvider.encryptMessage(message, keys);
         Message encryptedMessageToSave = encryptedMessages.get(PEpProvider.ENCRYPTED_MESSAGE_POSITION); //
 
         for (Message encryptedMessage : encryptedMessages) {
