@@ -59,7 +59,9 @@ public class PEpUtils {
     public static Vector<Identity> createIdentities(List<Address> addressList, Context context) {
         Vector<Identity> rv = new Vector<>(addressList.size());
         for (Address adr : addressList)
-            rv.add(createIdentity(adr, context));
+            if(adr.getAddress() != null) {
+                rv.add(createIdentity(adr, context));
+            }
         return rv;
     }
 
