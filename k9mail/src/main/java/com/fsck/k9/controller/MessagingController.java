@@ -4906,6 +4906,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 return  account;
             }
         }
-        return null;
+        return Preferences.getPreferences(context).getDefaultAccount();
     }
 }

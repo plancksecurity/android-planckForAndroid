@@ -289,7 +289,7 @@
             android:textColor="#aaa"
             style="@style/ComposeEditTextLarge" />
 
-        <com.fsck.k9.view.RecipientSelectView
+        <com.fsck.k9.pEp.ui.ActionRecipientSelectView
             android:id="@+id/to"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
@@ -365,7 +365,7 @@
             android:text="@string/recipient_cc"
             style="@style/ComposeTextLabel" />
 
-        <com.fsck.k9.view.RecipientSelectView
+        <com.fsck.k9.pEp.ui.ActionRecipientSelectView
             android:id="@+id/cc"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
@@ -410,7 +410,7 @@
             android:text="@string/recipient_bcc"
             style="@style/ComposeTextLabel" />
 
-        <com.fsck.k9.view.RecipientSelectView
+        <com.fsck.k9.pEp.ui.ActionRecipientSelectView
             android:id="@+id/bcc"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"

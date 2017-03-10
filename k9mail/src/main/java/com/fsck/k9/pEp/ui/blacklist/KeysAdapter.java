@@ -27,7 +27,7 @@ class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ViewHolder> {
     private static final Comparator<KeyListItem> ALPHABETICAL_COMPARATOR = new Comparator<KeyListItem>() {
         @Override
         public int compare(KeyListItem a, KeyListItem b) {
-            return a.getFpr().compareTo(b.getFpr());
+            return a.getGpgUid().compareTo(b.getGpgUid());
         }
     };
 

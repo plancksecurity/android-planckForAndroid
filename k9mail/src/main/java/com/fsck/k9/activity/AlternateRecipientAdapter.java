@@ -143,7 +143,9 @@ public class AlternateRecipientAdapter extends BaseAdapter {
 
         RecipientAdapter.setContactPhotoOrPlaceholder(context, holder.headerPhoto, recipient);
         holder.headerPhoto.assignContactUri(recipient.getContactLookupUri());
-        holder.headerPhoto.setPepRating(pEp.identityRating(recipient.address), account.ispEpPrivacyProtected());
+        if (account != null) {
+            holder.headerPhoto.setPepRating(pEp.identityRating(recipient.address), account.ispEpPrivacyProtected());
+        }
 
         holder.headerRemove.setOnClickListener(new OnClickListener() {
             @Override
