@@ -45,21 +45,21 @@ public class ActionRecipientSelectView extends RecipientSelectView {
      */
     @Override
     public boolean onTextContextMenuItem(int id) {
-        // Do your thing:
-        boolean consumed = super.onTextContextMenuItem(id);
         // React:
         switch (id){
             case android.R.id.cut:
                 onCut();
-                break;
+                return false;
             case android.R.id.copy:
+                super.onTextContextMenuItem(id);
                 onCopy();
                 break;
             case android.R.id.paste:
+            case android.R.id.selectAll:
                 super.onTextContextMenuItem(id);
                 break;
         }
-        return consumed;
+        return true;
     }
 
     /**
