@@ -1494,7 +1494,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     }
                                 });
 
-                    if (!account.isUntrustedSever() && !alreadyDecrypted && result.flags == null && !message.isSet(Flag.X_PEP_NEVER_UNSECURE)) {
+                    if (account.ispEpPrivacyProtected() && !account.isUntrustedSever() && !alreadyDecrypted && result.flags == null && !message.isSet(Flag.X_PEP_NEVER_UNSECURE)) {
                         appendMessageCommand(account, localMessage, localFolder);
                     }
                     Log.d("pep", "in download loop (nr=" + number + ") post pep");
