@@ -164,7 +164,9 @@ class PEpMessageBuilder {
 
     private void addHeaders(Message m, Context context) {
         // headers
-        m.setFrom(PEpUtils.createIdentity(mm.getFrom()[0], context));
+        if (mm.getFrom()[0].getAddress() != null) {
+            m.setFrom(PEpUtils.createIdentity(mm.getFrom()[0], context));
+        }
         m.setTo(PEpUtils.createIdentities(Arrays.asList(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO)), context));
         m.setCc(PEpUtils.createIdentities(Arrays.asList(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC)), context));
         m.setBcc(PEpUtils.createIdentities(Arrays.asList(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC)), context));

@@ -7,6 +7,8 @@ import android.text.util.Rfc822Token;
 import android.text.util.Rfc822Tokenizer;
 import android.util.Log;
 
+import com.fsck.k9.mail.filter.Base64;
+
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.codec.EncoderUtil;
 import org.apache.james.mime4j.dom.address.Mailbox;
@@ -201,10 +203,29 @@ public class Address implements Serializable {
 
     public String toEncodedString() {
         if (!TextUtils.isEmpty(mPersonal)) {
+            mPersonal = convertFromUTF8(mPersonal);
             return EncoderUtil.encodeAddressDisplayName(mPersonal) + " <" + mAddress + ">";
         } else {
             return mAddress;
         }
+    }
+
+    public String convertFromUTF8(String string) {
+        String out = null;
+        out = string;
+        out = out.replace("=?", "");
+        out = out.replace("?=", "");
+        String[] split = out.split("\\?");
+        if (split != null && split.length > 2) {
+            if (split[1].equals("B")) {
+                byte[] bytesEncoded = Base64.encodeBase64(split[2].getBytes());
+                byte[] valueDecoded= Base64.decodeBase64(bytesEncoded);
+                return new String(valueDecoded);
+            } else {
+                return split[2];
+            }
+        }
+        return "";
     }
 
     public static String toEncodedString(Address[] addresses) {

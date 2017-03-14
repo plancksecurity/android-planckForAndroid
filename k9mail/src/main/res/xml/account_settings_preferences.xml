@@ -52,6 +52,11 @@
             android:title="@string/account_settings_color_label"
             android:summary="@string/account_settings_color_summary" />
 
+        <CheckBoxPreference
+            android:persistent="false"
+            android:key="pep_disable_auto_download"
+            android:title="@string/pep_enable_auto_download"
+            android:defaultValue="false" />
     </PreferenceScreen>
 
     <PreferenceScreen
@@ -508,11 +513,6 @@
             android:key="pep_save_encrypted"
             android:title="@string/pep_mistrust_server_and_store_mails_encrypted"
             android:defaultValue="true" />
-        <CheckBoxPreference
-            android:persistent="false"
-            android:key="pep_disable_auto_download"
-            android:title="@string/pep_enable_auto_download"
-            android:defaultValue="false" />
         <CheckBoxPreference
             android:persistent="false"
             android:key="pep_enable_sync_account"
