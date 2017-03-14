@@ -877,8 +877,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     private boolean hasToBeDecrypted(LocalMessage message) {
-        return mAccount.ispEpPrivacyProtected()
-                && EncryptionVerifier.isEncrypted(message) && isMessageFullDownloaded;
+        return EncryptionVerifier.isEncrypted(message) && isMessageFullDownloaded;
     }
 
     private boolean canDecrypt() {

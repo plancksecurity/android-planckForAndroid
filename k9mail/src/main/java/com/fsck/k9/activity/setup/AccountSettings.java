@@ -768,18 +768,12 @@ public class AccountSettings extends K9PreferenceActivity {
                 final boolean value = (Boolean) newValue;
                 if (!value) {
                     mPEpSaveEncrypted.setChecked(false);
-                    mPEpDisableDecryption.setChecked(false);
-                    mPEpSaveEncrypted.setEnabled(false);
-                    mPEpDisableDecryption.setEnabled(false);
                     mPEpSyncAccount.setEnabled(false);
                     if (!ispEpSyncEnabled) {
                         mPEpSyncAccount.setChecked(false);
                     }
                 } else {
                     mPEpSaveEncrypted.setChecked(true);
-                    mPEpDisableDecryption.setChecked(true);
-                    mPEpSaveEncrypted.setEnabled(true);
-                    mPEpDisableDecryption.setEnabled(true);
                     if (BuildConfig.WITH_KEY_SYNC) {
                         mPEpSyncAccount.setChecked(true);
                         mPEpSyncAccount.setEnabled(true);
@@ -792,7 +786,6 @@ public class AccountSettings extends K9PreferenceActivity {
 
         if (!mPEpDisablePrivacyProtection.isChecked()) {
             mPEpSaveEncrypted.setEnabled(false);
-            mPEpDisableDecryption.setEnabled(false);
             mPEpSyncAccount.setEnabled(false);
         }
 
