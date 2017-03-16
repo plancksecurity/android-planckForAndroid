@@ -53,7 +53,7 @@
             android:padding="8dp"
             android:layout_gravity="center_vertical"
             android:id="@+id/pgp_inline_indicator"
-            android:src="@drawable/compatibility"
+            custom:srcCompat="@drawable/compatibility"
             android:tint="@color/light_black"
             android:visibility="gone"
             tools:visibility="visible"
@@ -76,7 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="8dp"
-                android:src="@drawable/compatibility"
+                custom:srcCompat="@drawable/compatibility"
                 android:tint="@color/light_black"
                 />
 
@@ -106,7 +106,7 @@
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_gravity="right|bottom"
-                    android:src="@drawable/compatibility"
+                    custom:srcCompat="@drawable/compatibility"
                     android:tint="@color/light_black"
                     />
             </FrameLayout>
