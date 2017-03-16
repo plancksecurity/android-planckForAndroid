@@ -726,7 +726,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             @Override
             public void onClick(View v) {
                 drawerLayout.closeDrawers();
-                AccountSetupBasics.actionNewAccount(getBaseContext());
+                AccountSetupBasics.actionNewAccount(MessageList.this);
             }
         });
     }
