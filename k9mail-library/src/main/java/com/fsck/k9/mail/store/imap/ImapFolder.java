@@ -18,7 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.FetchProfile;
@@ -35,8 +34,8 @@ import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessageHelper;
 import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.mail.internet.MimeUtility;
+import timber.log.Timber;
 
-import static com.fsck.k9.mail.K9MailLib.LOG_TAG;
 import static com.fsck.k9.mail.store.imap.ImapUtility.getLastResponse;
 
 
@@ -163,7 +162,7 @@ class ImapFolder extends Folder<ImapMessage> {
         } catch (IOException ioe) {
             throw ioExceptionHandler(connection, ioe);
         } catch (MessagingException me) {
-            Log.e(LOG_TAG, "Unable to open connection for " + getLogId(), me);
+            Timber.e(me, "Unable to open connection for " + getLogId(), me);
             throw me;
         }
     }
@@ -212,7 +211,7 @@ class ImapFolder extends Folder<ImapMessage> {
         synchronized (this) {
             // If we are mid-search and we get a close request, we gotta trash the connection.
             if (inSearch && connection != null) {
-                Log.i(LOG_TAG, "IMAP search was aborted, shutting down connection.");
+                Timber.i("IMAP search was aborted, shutting down connection.");
                 connection.close();
             } else {
                 store.releaseConnection(connection);
@@ -355,7 +354,7 @@ class ImapFolder extends Folder<ImapMessage> {
             //      operation fails. This will save a roundtrip if the folder already exists.
             if (!exists(escapedDestinationFolderName)) {
                 if (K9MailLib.isDebug()) {
-                    Log.i(LOG_TAG, "ImapFolder.copyMessages: attempting to create remote folder '" +
+                    Timber.i("ImapFolder.copyMessages: attempting to create remote folder '" +
                             escapedDestinationFolderName + "' for " + getLogId());
                 }
 
@@ -408,7 +407,7 @@ class ImapFolder extends Folder<ImapMessage> {
 
             if (!exists(escapedTrashFolderName)) {
                 if (K9MailLib.isDebug()) {
-                    Log.i(LOG_TAG, "IMAPMessage.delete: attempting to create remote '" + trashFolderName + "' folder " +
+                    Timber.i("IMAPMessage.delete: attempting to create remote '" + trashFolderName + "' folder " +
                             "for " + getLogId());
                 }
                 remoteTrashFolder.create(FolderType.HOLDS_MESSAGES);
@@ -416,7 +415,7 @@ class ImapFolder extends Folder<ImapMessage> {
 
             if (exists(escapedTrashFolderName)) {
                 if (K9MailLib.isDebug()) {
-                    Log.d(LOG_TAG, "IMAPMessage.delete: copying remote " + messages.size() + " messages to '" +
+                    Timber.d("IMAPMessage.delete: copying remote " + messages.size() + " messages to '" +
                             trashFolderName + "' for " + getLogId());
                 }
 
@@ -729,17 +728,17 @@ class ImapFolder extends Folder<ImapMessage> {
                             try {
                                 msgSeqUidMap.put(msgSeq, uid);
                                 if (K9MailLib.isDebug()) {
-                                    Log.v(LOG_TAG, "Stored uid '" + uid + "' for msgSeq " + msgSeq + " into map");
+                                    Timber.v("Stored uid '" + uid + "' for msgSeq " + msgSeq + " into map");
                                 }
                             } catch (Exception e) {
-                                Log.e(LOG_TAG, "Unable to store uid '" + uid + "' for msgSeq " + msgSeq);
+                                Timber.e("Unable to store uid '" + uid + "' for msgSeq " + msgSeq);
                             }
                         }
 
                         Message message = messageMap.get(uid);
                         if (message == null) {
                             if (K9MailLib.isDebug()) {
-                                Log.d(LOG_TAG, "Do not have message in messageMap for UID " + uid + " for " +
+                                Timber.d("Do not have message in messageMap for UID " + uid + " for " +
                                         getLogId());
                             }
 
@@ -814,7 +813,7 @@ class ImapFolder extends Folder<ImapMessage> {
 
                     if (!message.getUid().equals(uid)) {
                         if (K9MailLib.isDebug()) {
-                            Log.d(LOG_TAG, "Did not ask for UID " + uid + " for " + getLogId());
+                            Timber.d("Did not ask for UID " + uid + " for " + getLogId());
                         }
 
                         handleUntaggedResponse(response);
@@ -903,7 +902,7 @@ class ImapFolder extends Folder<ImapMessage> {
                     parseBodyStructure(bs, message, "TEXT");
                 } catch (MessagingException e) {
                     if (K9MailLib.isDebug()) {
-                        Log.d(LOG_TAG, "Error handling message for " + getLogId(), e);
+                        Timber.d(e, "Error handling message for " + getLogId(), e);
                     }
                     message.setBody(null);
                 }
@@ -950,7 +949,7 @@ class ImapFolder extends Folder<ImapMessage> {
                         if ("UIDNEXT".equalsIgnoreCase(key)) {
                             uidNext = bracketed.getLong(1);
                             if (K9MailLib.isDebug()) {
-                                Log.d(LOG_TAG, "Got UidNext = " + uidNext + " for " + getLogId());
+                                Timber.d("Got UidNext = " + uidNext + " for " + getLogId());
                             }
                         }
                     }
@@ -967,7 +966,7 @@ class ImapFolder extends Folder<ImapMessage> {
             if (ImapResponseParser.equalsIgnoreCase(response.get(1), "EXISTS")) {
                 messageCount = response.getNumber(0);
                 if (K9MailLib.isDebug()) {
-                    Log.d(LOG_TAG, "Got untagged EXISTS with value " + messageCount + " for " + getLogId());
+                    Timber.d("Got untagged EXISTS with value " + messageCount + " for " + getLogId());
                 }
             }
 
@@ -976,7 +975,7 @@ class ImapFolder extends Folder<ImapMessage> {
             if (ImapResponseParser.equalsIgnoreCase(response.get(1), "EXPUNGE") && messageCount > 0) {
                 messageCount--;
                 if (K9MailLib.isDebug()) {
-                    Log.d(LOG_TAG, "Got untagged EXPUNGE with messageCount " + messageCount + " for " + getLogId());
+                    Timber.d("Got untagged EXPUNGE with messageCount " + messageCount + " for " + getLogId());
                 }
             }
         }
@@ -1205,7 +1204,7 @@ class ImapFolder extends Folder<ImapMessage> {
                  */
                 String newUid = getUidFromMessageId(message);
                 if (K9MailLib.isDebug()) {
-                    Log.d(LOG_TAG, "Got UID " + newUid + " for message for " + getLogId());
+                    Timber.d("Got UID " + newUid + " for message for " + getLogId());
                 }
 
                 if (!TextUtils.isEmpty(newUid)) {
@@ -1251,14 +1250,14 @@ class ImapFolder extends Folder<ImapMessage> {
 
             if (messageIdHeader.length == 0) {
                 if (K9MailLib.isDebug()) {
-                    Log.d(LOG_TAG, "Did not get a message-id in order to search for UID  for " + getLogId());
+                    Timber.d("Did not get a message-id in order to search for UID  for " + getLogId());
                 }
                 return null;
             }
 
             String messageId = messageIdHeader[0];
             if (K9MailLib.isDebug()) {
-                Log.d(LOG_TAG, "Looking for UID for message with message-id " + messageId + " for " + getLogId());
+                Timber.d("Looking for UID for message with message-id " + messageId + " for " + getLogId());
             }
 
             String command = String.format("UID SEARCH HEADER MESSAGE-ID %s", ImapUtility.encodeString(messageId));
@@ -1339,7 +1338,7 @@ class ImapFolder extends Folder<ImapMessage> {
                 return null;
             }
         } catch (Exception e) {
-            Log.e(LOG_TAG, "Exception while updated push state for " + getLogId(), e);
+            Timber.e(e, "Exception while updated push state for " + getLogId());
             return null;
         }
     }
@@ -1371,7 +1370,7 @@ class ImapFolder extends Folder<ImapMessage> {
     }
 
     private MessagingException ioExceptionHandler(ImapConnection connection, IOException ioe) {
-        Log.e(LOG_TAG, "IOException for " + getLogId(), ioe);
+        Timber.e(ioe, "IOException for " + getLogId());
 
         if (connection != null) {
             connection.close();
