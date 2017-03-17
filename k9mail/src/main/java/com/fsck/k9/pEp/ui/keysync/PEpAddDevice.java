@@ -39,6 +39,7 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnLongClick;
 
 public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
 
@@ -315,6 +316,13 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
 
             }
         });
+    }
+
+    @OnLongClick(R.id.trustwords)
+    public boolean onTrustwordsLongClick() {
+        areTrustwordsShort = !areTrustwordsShort;
+        changeTrustwordsLength(areTrustwordsShort);
+        return true;
     }
 
     public class DismissKeysyncDialogReceiver extends BroadcastReceiver {
