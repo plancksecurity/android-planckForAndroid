@@ -41,14 +41,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
-import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.daimajia.swipe.SwipeLayout;
+import com.daimajia.swipe.adapters.CursorSwipeAdapter;
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.FontSizes;
@@ -93,7 +93,6 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageSwipeDirection;
-import com.fsck.k9.pEp.ui.listeners.SwipeToDismissTouchListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.EmailProvider;
@@ -106,7 +105,6 @@ import com.fsck.k9.search.SearchSpecification;
 import com.fsck.k9.search.SearchSpecification.SearchCondition;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.search.SqlQueryBuilder;
-import com.hudomju.swipe.adapter.ListViewAdapter;
 
 import org.pEp.jniadapter.Rating;
 
@@ -153,6 +151,10 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
         SpecialColumns.THREAD_COUNT,
     };
+
+    private enum Swipe {
+        NO_SWIPE, LEFT, RIGHT
+    }
 
     private static final int ID_COLUMN = 0;
     private static final int UID_COLUMN = 1;
@@ -1136,56 +1138,13 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         mListView.setFastScrollEnabled(true);
         mListView.setScrollingCacheEnabled(false);
 
-        final SwipeToDismissTouchListener<ListViewAdapter> touchListener =
-                new SwipeToDismissTouchListener<>(
-                        new ListViewAdapter(mListView),
-                        new SwipeToDismissTouchListener.DismissCallbacks<ListViewAdapter>() {
-                            @Override
-                            public boolean canDismiss(int position) {
-                                return true;
-                            }
 
-                            @Override
-                            public void onPendingDismiss(ListViewAdapter recyclerView, int position) {
 
-                            }
 
-                            @Override
-                            public void onDismiss(ListViewAdapter view, int position) {
-                                int adapterPosition = listViewToAdapterPosition(position);
-                                MessageReference messageReference = getMessageAtPosition(adapterPosition);
-                                onDelete(messageReference);
-                                mAdapter.notifyDataSetChanged();
-                            }
-                        });
-
-        touchListener.setDismissDelay(3000);
-
-        mListView.setOnTouchListener(touchListener);
-        mListView.setOnScrollListener((AbsListView.OnScrollListener) touchListener.makeScrollListener(new SwipeToDismissTouchListener.ScrollCallback() {
-
-            @Override
-            public void onScrollUp() {
-                if (!mIsThreadDisplay) {
-                    fab.show();
-                }
-            }
-
-            @Override
-            public void onScrollDown() {
-                if (!mIsThreadDisplay) {
-                    fab.hide();
-                }
-            }
-        }));
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (touchListener.existPendingDismisses()) {
-                    touchListener.undoPendingDismiss();
-                } else {
-                    onMessageClick(parent, view, position, id);
-                }
+                onMessageClick(parent, view, position, id);
             }
         });
     }
@@ -1649,7 +1608,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     }
 
 
-    class MessageListAdapter extends CursorAdapter {
+    class MessageListAdapter extends CursorSwipeAdapter {
 
 //        private Drawable mAttachmentIcon;
         private Drawable mForwardedIcon;
@@ -1788,6 +1747,67 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             boolean flagged = (cursor.getInt(FLAGGED_COLUMN) == 1);
             boolean answered = (cursor.getInt(ANSWERED_COLUMN) == 1);
             boolean forwarded = (cursor.getInt(FORWARDED_COLUMN) == 1);
+
+            SwipeLayout swipeView = (SwipeLayout) view.findViewById(R.id.swipe_container);
+            swipeView.addDrag(SwipeLayout.DragEdge.Left, swipeView.findViewById(R.id.archive_email_container));
+            swipeView.addDrag(SwipeLayout.DragEdge.Right, swipeView.findViewById(R.id.delete_email_container));
+
+            final Swipe[] swipe = {Swipe.NO_SWIPE};
+            swipeView.findViewById(R.id.delete_email_container).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    swipe[0] = Swipe.LEFT;
+                    swipeView.close();
+                }
+            });
+
+            swipeView.findViewById(R.id.archive_email_container).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    swipe[0] = Swipe.RIGHT;
+                    swipeView.close();
+                }
+            });
+
+            swipeView.addSwipeListener(new SwipeLayout.SwipeListener() {
+                @Override
+                public void onStartOpen(SwipeLayout layout) {
+                }
+
+                @Override
+                public void onOpen(SwipeLayout layout) {
+
+                }
+
+                @Override
+                public void onStartClose(SwipeLayout layout) {
+
+                }
+
+                @Override
+                public void onClose(SwipeLayout layout) {
+                    if (swipe[0].equals(Swipe.LEFT)) {
+                        int position = mListView.getPositionForView(layout);
+                        MessageReference messageReference = getMessageAtPosition(position);
+                        onDelete(messageReference);
+                        mAdapter.notifyDataSetChanged();
+                    } else if (swipe[0].equals(Swipe.RIGHT)) {
+                        int position = mListView.getPositionForView(layout);
+                        MessageReference messageReference = getMessageAtPosition(position);
+                        onArchive(messageReference);
+                    }
+                }
+
+                @Override
+                public void onUpdate(SwipeLayout layout, int leftOffset, int topOffset) {
+
+                }
+
+                @Override
+                public void onHandRelease(SwipeLayout layout, float xvel, float yvel) {
+
+                }
+            });
 
             View readView = view.findViewById(R.id.message_read_container);
             View unreadView = view.findViewById(R.id.message_unread_container);
@@ -2016,6 +2036,15 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             }
 
             throw new AssertionError("Unknown preview type: " + previewType);
+        }
+
+        @Override
+        public int getSwipeLayoutResourceId(int position) {
+            return R.id.swipe_container;
+        }
+
+        @Override
+        public void closeAllItems() {
         }
     }
 
