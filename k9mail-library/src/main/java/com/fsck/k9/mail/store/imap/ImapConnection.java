@@ -177,13 +177,13 @@ class ImapConnection {
         try {
             Security.setProperty("networkaddress.cache.ttl", "0");
         } catch (Exception e) {
-            Timber.w(e, "Could not set DNS ttl to 0 for " + getLogId());
+            Timber.w(e, "Could not set DNS ttl to 0 for %s", getLogId());
         }
 
         try {
             Security.setProperty("networkaddress.cache.negative.ttl", "0");
         } catch (Exception e) {
-            Timber.w(e, "Could not set DNS negative ttl to 0 for " + getLogId());
+            Timber.w(e, "Could not set DNS negative ttl to 0 for %s", getLogId());
         }
     }
 
@@ -195,7 +195,7 @@ class ImapConnection {
             try {
                 return connectToAddress(address);
             } catch (IOException e) {
-                Timber.w(e, "Could not connect to " + address);
+                Timber.w(e, "Could not connect to %s", address);
                 connectException = e;
             }
         }
@@ -211,7 +211,7 @@ class ImapConnection {
         String clientCertificateAlias = settings.getClientCertificateAlias();
 
         if (K9MailLib.isDebug() && DEBUG_PROTOCOL_IMAP) {
-            Timber.d("Connecting to " + host + " as " + address);
+            Timber.d("Connecting to %s as %s", host, address);
         }
 
         SocketAddress socketAddress = new InetSocketAddress(address, port);
@@ -246,7 +246,7 @@ class ImapConnection {
         ImapResponse initialResponse = responseParser.readResponse();
 
         if (K9MailLib.isDebug() && DEBUG_PROTOCOL_IMAP) {
-            Timber.v(getLogId() + "<<<" + initialResponse);
+            Timber.v("%s <<< %s", getLogId(), initialResponse);
         }
 
         extractCapabilities(Collections.singletonList(initialResponse));
@@ -259,7 +259,7 @@ class ImapConnection {
             Set<String> receivedCapabilities = capabilityResponse.getCapabilities();
 
             if (K9MailLib.isDebug()) {
-                Timber.d("Saving " + receivedCapabilities + " capabilities for " + getLogId());
+                Timber.d("Saving %s capabilities for %s", receivedCapabilities, getLogId());
             }
 
             capabilities = receivedCapabilities;
@@ -274,7 +274,7 @@ class ImapConnection {
         }
 
         if (K9MailLib.isDebug()) {
-            Timber.i("Did not get capabilities in banner, requesting CAPABILITY for " + getLogId());
+            Timber.i("Did not get capabilities in banner, requesting CAPABILITY for %s", getLogId());
         }
 
         requestCapabilities();
@@ -321,7 +321,7 @@ class ImapConnection {
 
         // Per RFC 2595 (3.1):  Once TLS has been started, reissue CAPABILITY command
         if (K9MailLib.isDebug()) {
-            Timber.i("Updating capabilities after STARTTLS for " + getLogId());
+            Timber.i("Updating capabilities after STARTTLS for %s", getLogId());
         }
 
         requestCapabilities();
@@ -549,7 +549,7 @@ class ImapConnection {
         if (networkInfo != null) {
             int type = networkInfo.getType();
             if (K9MailLib.isDebug()) {
-                Timber.d("On network type " + type);
+                Timber.d("On network type %s", type);
             }
 
             NetworkType networkType = NetworkType.fromConnectivityManagerType(type);
@@ -567,7 +567,7 @@ class ImapConnection {
         try {
             executeSimpleCommand(Commands.COMPRESS_DEFLATE);
         } catch (NegativeImapResponseException e) {
-            Timber.d(e, "Unable to negotiate compression: " + e.getMessage());
+            Timber.d(e, "Unable to negotiate compression: ");
             return;
         }
 
@@ -579,7 +579,7 @@ class ImapConnection {
             setUpStreamsAndParser(input, output);
 
             if (K9MailLib.isDebug()) {
-                Timber.i("Compression enabled for " + getLogId());
+                Timber.i("Compression enabled for %s", getLogId());
             }
         } catch (IOException e) {
             close();
@@ -618,7 +618,7 @@ class ImapConnection {
             settings.setCombinedPrefix(null);
 
             if (K9MailLib.isDebug()) {
-                Timber.d("Got path '" + prefix + "' and separator '" + hierarchyDelimiter + "'");
+                Timber.d("Got path '%s' and separator '%s'", prefix, hierarchyDelimiter);
             }
         }
     }
@@ -645,7 +645,7 @@ class ImapConnection {
                 settings.setCombinedPrefix(null);
 
                 if (K9MailLib.isDebug()) {
-                    Timber.d("Got path delimiter '" + settings.getPathDelimiter() + "' for " + getLogId());
+                    Timber.d("Got path delimiter '%s' for %s", settings.getPathDelimiter(), getLogId());
                 }
 
                 break;
@@ -671,7 +671,7 @@ class ImapConnection {
 
     protected boolean isIdleCapable() {
         if (K9MailLib.isDebug()) {
-            Timber.v("Connection " + getLogId() + " has " + capabilities.size() + " capabilities");
+            Timber.v("Connection %s has %d capabilities", getLogId(), capabilities.size());
         }
 
         return capabilities.contains(Capabilities.IDLE);
@@ -737,9 +737,9 @@ class ImapConnection {
 
             if (K9MailLib.isDebug() && DEBUG_PROTOCOL_IMAP) {
                 if (sensitive && !K9MailLib.isDebugSensitive()) {
-                    Timber.v(getLogId() + ">>> [Command Hidden, Enable Sensitive Debug Logging To Show]");
+                    Timber.v("%s>>> [Command Hidden, Enable Sensitive Debug Logging To Show]", getLogId());
                 } else {
-                    Timber.v(getLogId() + ">>> " + tag + " " + command + " " + initialClientResponse);
+                    Timber.v("%s>>> %s %s %s", getLogId(), tag, command, initialClientResponse);
                 }
             }
 
@@ -761,9 +761,9 @@ class ImapConnection {
 
             if (K9MailLib.isDebug() && DEBUG_PROTOCOL_IMAP) {
                 if (sensitive && !K9MailLib.isDebugSensitive()) {
-                    Timber.v(getLogId() + ">>> [Command Hidden, Enable Sensitive Debug Logging To Show]");
+                    Timber.v("%s>>> [Command Hidden, Enable Sensitive Debug Logging To Show]", getLogId());
                 } else {
-                    Timber.v(getLogId() + ">>> " + tag + " " + command);
+                    Timber.v("%s>>> %s %s", getLogId(), tag, command);
                 }
             }
 
@@ -781,7 +781,7 @@ class ImapConnection {
         outputStream.flush();
 
         if (K9MailLib.isDebug() && DEBUG_PROTOCOL_IMAP) {
-            Timber.v(getLogId() + ">>> " + continuation);
+            Timber.v("%s>>> %s", getLogId(), continuation);
         }
     }
 
@@ -794,7 +794,7 @@ class ImapConnection {
             ImapResponse response = responseParser.readResponse(callback);
 
             if (K9MailLib.isDebug() && DEBUG_PROTOCOL_IMAP) {
-                Timber.v(getLogId() + "<<<" + response);
+                Timber.v("%s<<<%s", getLogId(), response);
             }
 
             return response;
@@ -821,8 +821,8 @@ class ImapConnection {
                 if (responseTag.equalsIgnoreCase(tag)) {
                     throw new MessagingException("Command continuation aborted: " + response);
                 } else {
-                    Timber.w("After sending tag " + tag + ", got tag response from previous command " +
-                            response + " for " + getLogId());
+                    Timber.w("After sending tag %s, got tag response from previous command %s for %s",
+                            tag, response, getLogId());
                 }
             }
         } while (!response.isContinuationRequested());
