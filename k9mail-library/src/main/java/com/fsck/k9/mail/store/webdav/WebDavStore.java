@@ -46,7 +46,6 @@ import org.apache.http.protocol.HttpContext;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-
 import timber.log.Timber;
 
 import static com.fsck.k9.mail.K9MailLib.DEBUG_PROTOCOL_WEBDAV;
@@ -524,7 +523,7 @@ public class WebDavStore extends RemoteStore {
                 performFormBasedAuthentication(null);
             }
         } catch (IOException ioe) {
-            Timber.e(ioe,"Error during authentication: ");
+            Timber.e(ioe, "Error during authentication");
             throw new MessagingException("Error during authentication", ioe);
         }
 
@@ -588,7 +587,7 @@ public class WebDavStore extends RemoteStore {
         } catch (SSLException e) {
             throw new CertificateValidationException(e.getMessage(), e);
         } catch (IOException ioe) {
-            Timber.e(ioe, "IOException: ");
+            Timber.e(ioe, "IOException during initial connection");
             throw new MessagingException("IOException", ioe);
         }
 
@@ -687,7 +686,7 @@ public class WebDavStore extends RemoteStore {
                     response = httpClient.executeOverride(request, httpContext);
                     authenticated = testAuthenticationResponse(response);
                 } catch (URISyntaxException e) {
-                    Timber.e(e, "URISyntaxException caught ");
+                    Timber.e(e, "URISyntaxException caught");
                     throw new MessagingException("URISyntaxException caught", e);
                 }
             } else {
@@ -777,7 +776,7 @@ public class WebDavStore extends RemoteStore {
                         }
                     }
                 } catch (URISyntaxException e) {
-                    Timber.e(e, "URISyntaxException caught");
+                    Timber.e(e, "URISyntaxException");
                     throw new MessagingException("URISyntaxException caught", e);
                 }
             }
@@ -814,11 +813,11 @@ public class WebDavStore extends RemoteStore {
                 Scheme s = new Scheme("https", new WebDavSocketFactory(hostname, 443), 443);
                 reg.register(s);
             } catch (NoSuchAlgorithmException nsa) {
-                Timber.e(nsa, "NoSuchAlgorithmException in getHttpClient");
-                throw new MessagingException("NoSuchAlgorithmException in getHttpClient: " + nsa);
+                Timber.e(nsa, "NoSuchAlgorithmException in getHttpClient: ");
+                throw new MessagingException("NoSuchAlgorithmException in getHttpClient: ", nsa);
             } catch (KeyManagementException kme) {
-                Timber.e(kme, "KeyManagementException in getHttpClient");
-                throw new MessagingException("KeyManagementException in getHttpClient: " + kme);
+                Timber.e(kme, "KeyManagementException in getHttpClient: " + kme);
+                throw new MessagingException("KeyManagementException in getHttpClient: ", kme);
             }
         }
         return httpClient;
@@ -884,10 +883,10 @@ public class WebDavStore extends RemoteStore {
                 return WebDavHttpClient.getUngzippedContent(entity);
             }
         } catch (UnsupportedEncodingException uee) {
-            Timber.e(uee, "UnsupportedEncodingException:");
+            Timber.e(uee, "UnsupportedEncodingException: ");
             throw new MessagingException("UnsupportedEncodingException", uee);
         } catch (IOException ioe) {
-            Timber.e(ioe, "IOException");
+            Timber.e(ioe, "IOException: ");
             throw new MessagingException("IOException", ioe);
         }
 
@@ -960,7 +959,7 @@ public class WebDavStore extends RemoteStore {
                 } catch (SAXException se) {
                     Timber.e(se,
                             "SAXException in processRequest()");
-                    throw new MessagingException("SAXException in processRequest()", se);
+                    throw new MessagingException("SAXException in processRequest() ", se);
                 } catch (ParserConfigurationException pce) {
                     Timber.e(pce, "ParserConfigurationException in processRequest()");
                     throw new MessagingException("ParserConfigurationException in processRequest() ", pce);
@@ -969,10 +968,10 @@ public class WebDavStore extends RemoteStore {
                 istream.close();
             }
         } catch (UnsupportedEncodingException uee) {
-            Timber.e(uee, "UnsupportedEncodingException");
+            Timber.e(uee, "UnsupportedEncodingException: ");
             throw new MessagingException("UnsupportedEncodingException in processRequest() ", uee);
         } catch (IOException ioe) {
-            Timber.e(ioe, "IOException");
+            Timber.e(ioe, "IOException: ");
             throw new MessagingException("IOException in processRequest() ", ioe);
         }
 

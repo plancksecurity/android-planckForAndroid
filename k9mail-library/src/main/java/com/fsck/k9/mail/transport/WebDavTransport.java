@@ -1,6 +1,8 @@
 
 package com.fsck.k9.mail.transport;
 
+import android.util.Log;
+
 import com.fsck.k9.mail.K9MailLib;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
@@ -9,10 +11,9 @@ import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.StoreConfig;
 import com.fsck.k9.mail.store.webdav.WebDavHttpClient;
 import com.fsck.k9.mail.store.webdav.WebDavStore;
+import timber.log.Timber;
 
 import java.util.Collections;
-
-import timber.log.Timber;
 
 public class WebDavTransport extends Transport {
 
@@ -53,7 +54,7 @@ public class WebDavTransport extends Transport {
     @Override
     public void open() throws MessagingException {
         if (K9MailLib.isDebug())
-            Timber.d(">>> open called on WebDavTransport ");
+            Timber.d( ">>> open called on WebDavTransport ");
 
         store.getHttpClient();
     }

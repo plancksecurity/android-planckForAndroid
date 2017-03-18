@@ -20,6 +20,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.james.mime4j.codec.Base64InputStream;
 import org.apache.james.mime4j.codec.QuotedPrintableInputStream;
 import org.apache.james.mime4j.util.MimeUtil;
+import timber.log.Timber;
 
 import timber.log.Timber;
 

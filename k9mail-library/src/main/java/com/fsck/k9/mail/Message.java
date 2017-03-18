@@ -11,6 +11,8 @@ import android.support.annotation.NonNull;
 
 import com.fsck.k9.mail.filter.CountingOutputStream;
 import com.fsck.k9.mail.filter.EOLConvertingOutputStream;
+import timber.log.Timber;
+
 
 import timber.log.Timber;
 
