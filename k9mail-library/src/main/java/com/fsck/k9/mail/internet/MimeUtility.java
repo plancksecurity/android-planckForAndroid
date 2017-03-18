@@ -1050,7 +1050,7 @@ public class MimeUtility {
                     }
                 };
             } else {
-                Timber.w("Unsupported encoding: " + encoding);
+                Timber.w("Unsupported encoding: %s", encoding);
                 inputStream = rawInputStream;
             }
         } else {
