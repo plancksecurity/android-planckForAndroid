@@ -118,7 +118,7 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
         searchInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (!searchInput.getText().toString().isEmpty()) {
+                if (searchInput!= null && !searchInput.getText().toString().isEmpty()) {
                     onQueryTextSubmit(searchInput.getText().toString());
                 }
                 return true;

@@ -341,7 +341,7 @@ public class FolderList extends K9ListActivity {
         searchInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (!searchInput.getText().toString().isEmpty()) {
+                if (searchInput!= null && !searchInput.getText().toString().isEmpty()) {
                     search(searchInput.getText().toString());
                 }
                 return true;
