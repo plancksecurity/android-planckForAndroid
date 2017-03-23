@@ -88,7 +88,8 @@ android {
 //        versionCode 23230
 //        versionName '5.203'
 
-        applicationId "pep.android.k9"
+        //applicationId "pep.android.k9"
+        applicationId "${appId}"
         versionCode 60
 //        versionName '0.9.9.2'
         minSdkVersion 18
