@@ -9,17 +9,22 @@ import java.util.Map;
 import android.content.AsyncTaskLoader;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.Contacts.Data;
+import android.support.v4.content.ContextCompat;
 
+import com.fsck.k9.Manifest;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.RecipientSelectView.RecipientCryptoStatus;
+
+import static android.Manifest.permission.WRITE_CONTACTS;
 
 
 public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
@@ -183,7 +188,12 @@ public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
         String selection = Contacts.DISPLAY_NAME_PRIMARY + " LIKE ? " +
                 " OR (" + Email.ADDRESS + " LIKE ? AND " + Data.MIMETYPE + " = '" + Email.CONTENT_ITEM_TYPE + "')";
         String[] selectionArgs = { query, query };
-        Cursor cursor = contentResolver.query(queryUri, PROJECTION, selection, selectionArgs, SORT_ORDER);
+        Cursor cursor = null;
+        int permissionCheck = ContextCompat.checkSelfPermission(getContext(),
+                WRITE_CONTACTS);
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            cursor = contentResolver.query(queryUri, PROJECTION, selection, selectionArgs, SORT_ORDER);
+        }
 
         if (cursor == null) {
             return;
