@@ -41,10 +41,5 @@
                 android:title="@string/settings_import"/>
         </menu>
     </item>
-    <item
-        android:id="@+id/edit_prefs"
-        android:icon="?attr/iconActionSettings"
-        android:showAsAction="never"
-        android:title="@string/preferences_action"/>
 
 </menu>
