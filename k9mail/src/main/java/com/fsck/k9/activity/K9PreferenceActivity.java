@@ -1,6 +1,7 @@
 package com.fsck.k9.activity;
 
 import android.app.Dialog;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -14,6 +15,8 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
@@ -75,9 +78,33 @@ public class K9PreferenceActivity extends PreferenceActivity {
             }
         });
         bar.setTitleTextColor(getResources().getColor(R.color.white));
+        bar.setBackgroundColor(getResources().getColor(R.color.pep_green));
+        setStatusBarPepColor();
         toolbar = bar;
     }
 
+    public void setStatusBarPepColor() {
+        Window window = this.getWindow();
+
+        // clear FLAG_TRANSLUCENT_STATUS flag:
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+        // finally change the color
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            int color = (getResources().getColor(R.color.pep_green) & 0x00FFFFFF);
+            int red = Color.red(color);
+            int green = Color.green(color);
+            int blue = Color.blue(color);
+            float[] hsv = new float[3];
+            Color.RGBToHSV(red, green, blue, hsv);
+            hsv[2] = hsv[2]*0.9f;
+            color = Color.HSVToColor(hsv);
+            window.setStatusBarColor(color);
+        }
+    }
     /**
      * Set up the {@link ListPreference} instance identified by {@code key}.
      *
