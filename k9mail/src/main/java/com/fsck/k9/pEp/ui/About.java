@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.webkit.WebView;
 
 import com.fsck.k9.R;
@@ -111,5 +112,17 @@ public class About extends PepColoredActivity {
             //Log.e(TAG, "Package name not found", e);
         }
         return version;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        switch (itemId) {
+            case android.R.id.home: {
+                finish();
+                break;
+            }
+        }
+        return true;
     }
 }
