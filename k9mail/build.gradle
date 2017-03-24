@@ -2,7 +2,6 @@ def pEpEngineRevision = 1686
 def pEpJNIAdapterRevision = 307
 def version = "0.9.10.1"
 
-
 buildscript {
     repositories {
         mavenCentral()
