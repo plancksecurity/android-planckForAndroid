@@ -33,6 +33,8 @@ public interface PEpProvider {
     String PEP_PRIVATE_KEY_USERNAME = "pEpDetailsUsername";
     String PEP_PRIVATE_KEY_FROM = "pEpDetailsFrom";
 
+    String PEP_ALWAYS_SECURE_TRUE = "1";
+
     /**
      * checks the privacy level of the addresses supplied. This method creates a pEp message and
      * calls the jni adapter to obtain the info. According to fdik, this check returns fast (all

@@ -31,6 +31,7 @@ import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
 import com.fsck.k9.mailstore.TempFileBody;
+import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 
 import org.apache.james.mime4j.codec.EncoderUtil;
@@ -145,7 +146,7 @@ public abstract class MessageBuilder {
 
         if (isAlwaysSecure) {
             message.setFlag(Flag.X_PEP_NEVER_UNSECURE, true);
-            message.setHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE, String.valueOf(1));
+            message.setHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE, PEpProvider.PEP_ALWAYS_SECURE_TRUE);
         }
     }
 
