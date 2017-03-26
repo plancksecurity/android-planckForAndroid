@@ -269,14 +269,10 @@ class ImapConnection {
         CapabilityResponse capabilityResponse = CapabilityResponse.parse(responses);
         if (capabilityResponse != null) {
             Set<String> receivedCapabilities = capabilityResponse.getCapabilities();
-            if (K9MailLib.isDebug()) {
-                Log.d(LOG_TAG, "Saving " + receivedCapabilities + " capabilities for " + getLogId());
-            }
+            Timber.d("Saving %s capabilities for %s", receivedCapabilities, getLogId());
             capabilities = receivedCapabilities;
         } else {
-            if (K9MailLib.isDebug()) {
-                Log.i(LOG_TAG, "Did not get capabilities in post-auth banner, requesting CAPABILITY for " + getLogId());
-            }
+            Timber.i("Did not get capabilities in post-auth banner, requesting CAPABILITY for %s", getLogId());
             requestCapabilities();
         }
 
@@ -466,6 +462,7 @@ class ImapConnection {
             return responseParser.readStatusResponse(tag, command, getLogId(), null);
         } catch (NegativeImapResponseException e) {
             handleAuthenticationFailure(e);
+            throw e;
         }
     }
 
@@ -499,6 +496,7 @@ class ImapConnection {
             return responseParser.readStatusResponse(tag, command, getLogId(), null);
         } catch (NegativeImapResponseException e) {
             handleAuthenticationFailure(e);
+            throw e;
         }
     }
 
@@ -520,6 +518,7 @@ class ImapConnection {
             return executeSimpleCommand(command, true);
         } catch (NegativeImapResponseException e) {
             handleAuthenticationFailure(e);
+            throw e;
         }
     }
 
