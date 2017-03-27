@@ -6,9 +6,6 @@ Created by Helm  23/03/16.
 package com.fsck.k9.pEp.ui.adapters;
 
 import android.content.Context;
-import android.graphics.ColorFilter;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -19,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.fsck.k9.Account;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
@@ -27,21 +25,32 @@ import com.fsck.k9.pEp.models.PEpIdentity;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdapter.ViewHolder> {
     private List<PEpIdentity> identities;
 
     private View.OnClickListener onHandshakeClick;
+    private List<String> addressesOnDevice;
     private View.OnClickListener onResetGreenClick;
     private View.OnClickListener onResetRedClick;
 
-    public PEpIdentitiesAdapter(View.OnClickListener onResetGreenClick,
+    public PEpIdentitiesAdapter(List<Account> accounts, View.OnClickListener onResetGreenClick,
                                 View.OnClickListener onResetRedClick,
                                 View.OnClickListener onHandshakeClick) {
+        initializeAddressesOnDevice(accounts);
         this.onResetGreenClick = onResetGreenClick;
         this.onResetRedClick = onResetRedClick;
         this.onHandshakeClick = onHandshakeClick;
+    }
+
+    private void initializeAddressesOnDevice(List<Account> accounts) {
+        addressesOnDevice = new ArrayList<>(accounts.size());
+        for (Account account : accounts) {
+            String email = account.getEmail();
+            addressesOnDevice.add(email);
+        }
     }
 
     @Override
@@ -101,30 +110,35 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
             badge = (ImageView) view.findViewById(R.id.status_badge);
         }
 
-        private void renderRating(Rating rating) {
+        private void renderRating(String address, Rating rating) {
             renderColor(rating);
             if (rating.value != Rating.pEpRatingMistrust.value
                     && rating.value < Rating.pEpRatingReliable.value) {
-                handshakeButton.setVisibility(View.GONE);
+                setHandshakeButtonVisibility(address, View.GONE);
                 badge.setVisibility(View.GONE);
             }else if (rating.value == Rating.pEpRatingMistrust.value) {
-                handshakeButton.setVisibility(View.VISIBLE);
-                handshakeButton.setText(context.getString(R.string.pep_handshake));
+                setHandshakeButtonVisibility(address, View.VISIBLE);
                 handshakeButton.setOnClickListener(onResetRedClick);
                 badge.setVisibility(View.VISIBLE);
             } else if (rating.value >= Rating.pEpRatingTrusted.value){
-                handshakeButton.setVisibility(View.VISIBLE);
-                handshakeButton.setText(context.getString(R.string.pep_reset_trust));
+                setHandshakeButtonVisibility(address, View.VISIBLE);
                 handshakeButton.setOnClickListener(onResetGreenClick);
                 badge.setVisibility(View.VISIBLE);
             } else if (rating.value == Rating.pEpRatingReliable.value){
-                handshakeButton.setVisibility(View.VISIBLE);
-                handshakeButton.setText(context.getString(R.string.pep_handshake));
+                setHandshakeButtonVisibility(address, View.VISIBLE);
                 handshakeButton.setOnClickListener(onHandshakeClick);
                 badge.setVisibility(View.VISIBLE);
             }
             Drawable drawableForRating = PEpUtils.getDrawableForRatingRecipient(context, rating);
             badge.setImageDrawable(drawableForRating);
+        }
+
+        private void setHandshakeButtonVisibility(String address, int visibility) {
+            if (addressesOnDevice.contains(address)) {
+                handshakeButton.setVisibility(View.GONE);
+            } else {
+                handshakeButton.setVisibility(visibility);
+            }
         }
 
         private void renderColor(Rating rating) {
@@ -139,7 +153,7 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
 
         public void render(int position, PEpIdentity identity) {
             Log.d("RENDER", String.valueOf(identity.getRating().value));
-            renderRating(identity.getRating());
+            renderRating(identity.address, identity.getRating());
             setPosition(position);
             renderIdentity(identity);
         }
