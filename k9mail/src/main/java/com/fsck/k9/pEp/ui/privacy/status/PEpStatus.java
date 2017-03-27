@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
@@ -130,12 +131,12 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
     @Override
     public void setupRecipients(List<PEpIdentity> pEpIdentities) {
-        final Activity activity = this;
+        Preferences preferences = Preferences.getPreferences(PEpStatus.this);
         recipientsLayoutManager = new LinearLayoutManager(this);
         ((LinearLayoutManager) recipientsLayoutManager).setOrientation(LinearLayoutManager.VERTICAL);
         recipientsView.setLayoutManager(recipientsLayoutManager);
         recipientsView.setVisibility(View.VISIBLE);
-        recipientsAdapter = new PEpIdentitiesAdapter(getOnResetGreenClickListener(), getOnResetRedClickListener(), getOnHandshakeClickListener());
+        recipientsAdapter = new PEpIdentitiesAdapter(preferences.getAccounts(), getOnResetGreenClickListener(), getOnResetRedClickListener(), getOnHandshakeClickListener());
         recipientsAdapter.setIdentities(pEpIdentities);
         recipientsView.setAdapter(recipientsAdapter);
         recipientsView.addItemDecoration(new SimpleDividerItemDecoration(this));
