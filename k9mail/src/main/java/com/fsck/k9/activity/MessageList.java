@@ -777,6 +777,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     private void changeFolder(final LocalFolder folder) {
+        mFolderName = folder.getName();
         mMessageListFragment.showLoadingMessages();
         drawerCloseListener = new DrawerLayout.DrawerListener() {
             @Override
