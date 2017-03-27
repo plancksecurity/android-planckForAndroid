@@ -123,6 +123,7 @@
     <string name="add_fpr">ADD FPR</string>
     <string name="is_always_secure">TOP SECRET</string>
     <string name="is_not_always_secure">REGULAR MODE</string>
+    <string name="error_parsing_fingerprint">Error parsing fingerprint!</string>
 
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>

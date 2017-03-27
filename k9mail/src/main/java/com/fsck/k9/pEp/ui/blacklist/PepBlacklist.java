@@ -224,7 +224,7 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
             keys = pEp.getAvailableKey();
             initializeKeysView();
         } else {
-            FeedbackTools.showShortFeedback(container, "Wrong FPR");
+            FeedbackTools.showShortFeedback(container, getString(R.string.error_parsing_fingerprint));
         }
     }
 
