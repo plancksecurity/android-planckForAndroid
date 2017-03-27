@@ -365,7 +365,7 @@ public class Account implements BaseAccount, StoreConfig {
         notificationSetting.setVibrate(false);
         notificationSetting.setVibratePattern(0);
         notificationSetting.setVibrateTimes(5);
-        notificationSetting.setRing(true);
+        notificationSetting.setRingEnabled(true);
         notificationSetting.setRingtone("content://settings/system/notification_sound");
         notificationSetting.setLedColor(chipColor);
 
@@ -476,7 +476,7 @@ public class Account implements BaseAccount, StoreConfig {
         notificationSetting.setVibrate(storage.getBoolean(accountUuid + ".vibrate", false));
         notificationSetting.setVibratePattern(storage.getInt(accountUuid + ".vibratePattern", 0));
         notificationSetting.setVibrateTimes(storage.getInt(accountUuid + ".vibrateTimes", 5));
-        notificationSetting.setRing(storage.getBoolean(accountUuid + ".ring", true));
+        notificationSetting.setRingEnabled(storage.getBoolean(accountUuid + ".ring", true));
         notificationSetting.setRingtone(storage.getString(accountUuid + ".ringtone",
                                          "content://settings/system/notification_sound"));
         notificationSetting.setLed(storage.getBoolean(accountUuid + ".led", true));
@@ -778,12 +778,12 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putString(accountUuid + ".cryptoApp", NO_OPENPGP_PROVIDER);
         editor.putBoolean(accountUuid + ".cryptoSupportSignOnly", mCryptoSupportSignOnly);
 
-        editor.putBoolean(accountUuid + ".vibrate", notificationSetting.shouldVibrate());
+        editor.putBoolean(accountUuid + ".vibrate", notificationSetting.isVibrateEnabled());
         editor.putInt(accountUuid + ".vibratePattern", notificationSetting.getVibratePattern());
         editor.putInt(accountUuid + ".vibrateTimes", notificationSetting.getVibrateTimes());
-        editor.putBoolean(accountUuid + ".ring", notificationSetting.shouldRing());
+        editor.putBoolean(accountUuid + ".ring", notificationSetting.isRingEnabled());
         editor.putString(accountUuid + ".ringtone", notificationSetting.getRingtone());
-        editor.putBoolean(accountUuid + ".led", notificationSetting.isLed());
+        editor.putBoolean(accountUuid + ".led", notificationSetting.isLedEnabled());
         editor.putInt(accountUuid + ".ledColor", notificationSetting.getLedColor());
         editor.putBoolean(accountUuid + ".pEpStoreEncryptedOnServer", pEpUntrustedServer);
         editor.putBoolean(accountUuid + ".pEpPrivacyProtected", pEpPrivacyProtectected);
