@@ -134,30 +134,4 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="?android:listPreferredItemHeight"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:background="?android:selectableItemBackground"
-        android:id="@+id/alternate_container_copy"
-        >
-
-        <TextView
-            android:id="@+id/alternate_copy"
-            android:textColor="?attr/textColorSecondaryRecipientDropdown"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingLeft="6dip"
-            android:paddingRight="6dip"
-            android:singleLine="true"
-            android:ellipsize="end"
-            android:text="@string/copy_action"
-            />
-
-    </LinearLayout>
-
 </LinearLayout>

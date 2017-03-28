@@ -551,7 +551,7 @@ public class PEpUtils {
         String addressesText = "";
         for (int i = 0; i < addresses.length; i++) {
             if(i < addresses.length - 1) {
-                addressesText += addresses[i].getAddress() + ",";
+                addressesText += addresses[i].getAddress() + ", ";
             } else {
                 addressesText += addresses[i].getAddress();
             }

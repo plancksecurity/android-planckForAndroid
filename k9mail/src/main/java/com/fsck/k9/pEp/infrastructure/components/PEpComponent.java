@@ -4,6 +4,7 @@ import com.fsck.k9.pEp.infrastructure.PerActivity;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.About;
+import com.fsck.k9.pEp.ui.keys.PepExtraKeys;
 import com.fsck.k9.pEp.ui.keysync.KeysyncManagement;
 import com.fsck.k9.pEp.ui.keysync.PEpAddDevice;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
@@ -25,4 +26,6 @@ import dagger.Component;
     void inject(KeysyncManagement pEpStatus);
 
     void inject(About about);
+
+    void inject(PepExtraKeys pepExtraKeys);
 }

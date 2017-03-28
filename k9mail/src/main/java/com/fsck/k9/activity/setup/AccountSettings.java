@@ -41,6 +41,7 @@ import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
+import com.fsck.k9.pEp.ui.keys.PepExtraKeys;
 import com.fsck.k9.service.MailService;
 
 import org.openintents.openpgp.util.OpenPgpAppPreference;
@@ -132,6 +133,7 @@ public class AccountSettings extends K9PreferenceActivity {
     private static final String PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION = "pep_disable_privacy_protection";
     private static final String PEP_ENABLE_SYNC_ACCOUNT = "pep_enable_sync_account";
     private static final String PREFERENCE_PEP_DISABLE_DECRYPTION = "pep_disable_auto_download";
+    private static final String PEP_EXTRA_KEYS = "pep_extra_keys";
 
     private Account mAccount;
     private boolean mIsMoveCapable = false;
@@ -192,6 +194,7 @@ public class AccountSettings extends K9PreferenceActivity {
     private CheckBoxPreference mPEpDisablePrivacyProtection;
     private CheckBoxPreference mPEpDisableDecryption;
     private CheckBoxPreference mPEpSyncAccount;
+    private Preference mPepExtraKeys;
 
     private PreferenceScreen mSearchScreen;
     private CheckBoxPreference mCloudSearchEnabled;
@@ -757,6 +760,7 @@ public class AccountSettings extends K9PreferenceActivity {
         mPEpDisableDecryption.setChecked(mAccount.isPEpDownloadEnabled());
 
         mPEpSyncAccount = (CheckBoxPreference) findPreference(PEP_ENABLE_SYNC_ACCOUNT);
+        mPepExtraKeys = findPreference(PEP_EXTRA_KEYS);
 
         if (BuildConfig.WITH_KEY_SYNC) {
             mPEpSyncAccount.setChecked(mAccount.isPepSyncEnabled());
@@ -795,6 +799,14 @@ public class AccountSettings extends K9PreferenceActivity {
         }
 
         mPEpSyncAccount.setEnabled(ispEpSyncEnabled && BuildConfig.WITH_KEY_SYNC);
+
+        mPepExtraKeys.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                PepExtraKeys.actionShowBlacklist(AccountSettings.this, mAccount);
+                return true;
+            }
+        });
     }
 
     private void removeListEntry(ListPreference listPreference, String remove) {
