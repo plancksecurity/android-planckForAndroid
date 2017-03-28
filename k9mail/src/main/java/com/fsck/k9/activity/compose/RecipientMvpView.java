@@ -26,8 +26,8 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.ActionRecipientSelectView;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.RecipientSelectView.TokenListener;
 
@@ -99,41 +99,9 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         ccView.setOnFocusChangeListener(this);
         bccView.setOnFocusChangeListener(this);
 
-        toView.setOnCutCopyPasteListener(new ActionRecipientSelectView.OnCutCopyPasteListener() {
-            @Override
-            public void onCut() {
-                cutFromView(toView);
-            }
-
-            @Override
-            public void onCopy() {
-                copyFromView(PEpUtils.addressesToString(toView.getAddresses()));
-            }
-        });
-
-        ccView.setOnCutCopyPasteListener(new ActionRecipientSelectView.OnCutCopyPasteListener() {
-            @Override
-            public void onCut() {
-                cutFromView(ccView);
-            }
-
-            @Override
-            public void onCopy() {
-                copyFromView(PEpUtils.addressesToString(ccView.getAddresses()));
-            }
-        });
-
-        bccView.setOnCutCopyPasteListener(new ActionRecipientSelectView.OnCutCopyPasteListener() {
-            @Override
-            public void onCut() {
-                cutFromView(bccView);
-            }
-
-            @Override
-            public void onCopy() {
-                copyFromView(PEpUtils.addressesToString(bccView.getAddresses()));
-            }
-        });
+        setOnCutCopyPasteListenerToView(toView);
+        setOnCutCopyPasteListenerToView(ccView);
+        setOnCutCopyPasteListenerToView(bccView);
 
         View recipientExpander = activity.findViewById(R.id.recipient_expander);
         recipientExpander.setOnClickListener(this);
@@ -146,6 +114,20 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         bccLabel.setOnClickListener(this);
 
         pEpUiCache = PePUIArtefactCache.getInstance(activity.getApplicationContext());
+    }
+
+    private void setOnCutCopyPasteListenerToView(ActionRecipientSelectView view) {
+        view.setOnCutCopyPasteListener(new ActionRecipientSelectView.OnCutCopyPasteListener() {
+            @Override
+            public void onCut() {
+                cutFromView(RecipientMvpView.this.toView);
+            }
+
+            @Override
+            public void onCopy() {
+                copyFromView(PEpUtils.addressesToString(RecipientMvpView.this.toView.getAddresses()));
+            }
+        });
     }
 
     private void copyFromView(String text) {
