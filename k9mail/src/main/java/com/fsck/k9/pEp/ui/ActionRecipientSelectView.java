@@ -2,6 +2,9 @@ package com.fsck.k9.pEp.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.ContextMenu;
+import android.view.MenuItem;
+import android.view.View;
 
 import com.fsck.k9.view.RecipientSelectView;
 
@@ -49,7 +52,7 @@ public class ActionRecipientSelectView extends RecipientSelectView {
         switch (id){
             case android.R.id.cut:
                 onCut();
-                return false;
+                break;
             case android.R.id.copy:
                 super.onTextContextMenuItem(id);
                 onCopy();

@@ -103,6 +103,8 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         toView.setOnCutCopyPasteListener(new ActionRecipientSelectView.OnCutCopyPasteListener() {
             @Override
             public void onCut() {
+                copyAdressesToClipboard(PEpUtils.addressesToString(toView.getAddresses()));
+                toView.emptyAddresses();
             }
 
             @Override
@@ -114,7 +116,8 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         ccView.setOnCutCopyPasteListener(new ActionRecipientSelectView.OnCutCopyPasteListener() {
             @Override
             public void onCut() {
-
+                copyAdressesToClipboard(PEpUtils.addressesToString(ccView.getAddresses()));
+                ccView.emptyAddresses();
             }
 
             @Override
@@ -126,6 +129,8 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         bccView.setOnCutCopyPasteListener(new ActionRecipientSelectView.OnCutCopyPasteListener() {
             @Override
             public void onCut() {
+                copyAdressesToClipboard(PEpUtils.addressesToString(bccView.getAddresses()));
+                bccView.emptyAddresses();
             }
 
             @Override
