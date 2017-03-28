@@ -46,7 +46,6 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
     LinearLayout container;
 
 
-
     KeyItemAdapter recipientsAdapter;
     RecyclerView.LayoutManager recipientsLayoutManager;
 
@@ -184,7 +183,8 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
         return false;
     }
 
-    @Override public boolean onOptionsItemSelected(MenuItem item) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();

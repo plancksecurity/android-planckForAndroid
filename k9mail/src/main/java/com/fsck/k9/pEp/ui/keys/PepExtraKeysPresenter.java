@@ -13,7 +13,8 @@ public class PepExtraKeysPresenter implements Presenter {
     private PEpProvider pEp;
     private PepExtraKeysView view;
 
-    @Inject  public PepExtraKeysPresenter() {
+    @Inject
+    public PepExtraKeysPresenter() {
     }
 
     public void initialize(PepExtraKeysView view, PEpProvider pEp) {

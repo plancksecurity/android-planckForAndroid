@@ -29,8 +29,10 @@ import butterknife.ButterKnife;
 public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
 
     public static final String ACCOUNT_UUID = "accountUuid";
-    @Inject PepExtraKeysPresenter presenter;
-    @Bind(R.id.extra_keys_view) RecyclerView keysView;
+    @Inject
+    PepExtraKeysPresenter presenter;
+    @Bind(R.id.extra_keys_view)
+    RecyclerView keysView;
     private PEpProvider pEp;
     private KeyItemAdapter keysAdapter;
     private LinearLayoutManager keysViewManager;
@@ -78,10 +80,10 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
         keysAdapter = new KeyItemAdapter(availableKeys, (item, checked) -> {
             if (checked) {
                 keys.add(item.getFpr());
-                preferences.setKeysFPRs(account,keys);
+                preferences.setKeysFPRs(account, keys);
             } else {
                 keys.remove(item.getFpr());
-                preferences.setKeysFPRs(account,keys);
+                preferences.setKeysFPRs(account, keys);
             }
         });
         keysView.setVisibility(View.VISIBLE);
