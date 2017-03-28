@@ -133,7 +133,7 @@ public class AccountSettings extends K9PreferenceActivity {
     private static final String PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION = "pep_disable_privacy_protection";
     private static final String PEP_ENABLE_SYNC_ACCOUNT = "pep_enable_sync_account";
     private static final String PREFERENCE_PEP_DISABLE_DECRYPTION = "pep_disable_auto_download";
-    public static final String PEP_EXTRA_KEYS = "extra_keys";
+    public static final String PEP_EXTRA_KEYS = "pep_extra_keys";
 
     private Account mAccount;
     private boolean mIsMoveCapable = false;
