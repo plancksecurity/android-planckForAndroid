@@ -24,6 +24,7 @@ import android.widget.TextView;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.ui.keys.KeyItemAdapter;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 
@@ -34,10 +35,6 @@ import java.util.regex.Pattern;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-
-/**
- * Created by huss on 31/08/16.
- */
 
 public class PepBlacklist extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
@@ -50,7 +47,7 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
 
 
 
-    KeysAdapter recipientsAdapter;
+    KeyItemAdapter recipientsAdapter;
     RecyclerView.LayoutManager recipientsLayoutManager;
 
     PEpProvider pEp;
@@ -82,7 +79,13 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private void initializeKeysView() {
-        recipientsAdapter = new KeysAdapter(this, keys);
+        recipientsAdapter = new KeyItemAdapter(keys, (item, checked) -> {
+            if (checked) {
+                pEp.addToBlacklist(item.fpr);
+            } else {
+                pEp.deleteFromBlacklist(item.fpr);
+            }
+        });
         recipientsView.setAdapter(recipientsAdapter);
         recipientsAdapter.notifyDataSetChanged();
     }

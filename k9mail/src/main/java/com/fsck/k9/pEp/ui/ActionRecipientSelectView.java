@@ -2,9 +2,6 @@ package com.fsck.k9.pEp.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.ContextMenu;
-import android.view.MenuItem;
-import android.view.View;
 
 import com.fsck.k9.view.RecipientSelectView;
 
@@ -17,17 +14,10 @@ public class ActionRecipientSelectView extends RecipientSelectView {
 
     private OnCutCopyPasteListener mOnCutCopyPasteListener;
 
-    /**
-     * Set a OnCutCopyPasteListener.
-     * @param listener
-     */
     public void setOnCutCopyPasteListener(OnCutCopyPasteListener listener) {
         mOnCutCopyPasteListener = listener;
     }
 
-    /*
-        Just the constructors to create a new EditText...
-     */
     public ActionRecipientSelectView(Context context) {
         super(context);
     }
@@ -65,17 +55,11 @@ public class ActionRecipientSelectView extends RecipientSelectView {
         return true;
     }
 
-    /**
-     * Text was cut from this EditText.
-     */
     public void onCut(){
         if(mOnCutCopyPasteListener!=null)
             mOnCutCopyPasteListener.onCut();
     }
 
-    /**
-     * Text was copied from this EditText.
-     */
     public void onCopy(){
         if(mOnCutCopyPasteListener!=null)
             mOnCutCopyPasteListener.onCopy();

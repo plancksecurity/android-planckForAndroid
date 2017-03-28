@@ -14,9 +14,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.fsck.k9.K9;
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
@@ -32,20 +30,12 @@ public class KeyItemAdapter extends RecyclerView.Adapter<KeyItemAdapter.ViewHold
         }
     };
 
-    private final Context context;
-//    private final List<KeyListItem> identities;
     private final SortedList<KeyListItem> dataSet;
     private final OnKeyClickListener onKeyClickListener;
-    private ViewHolder viewHolder;
-    private PEpProvider pEp;
     private Comparator <KeyListItem> comparator;
 
 
-    public KeyItemAdapter(Context context,
-                          List<KeyListItem> identities, OnKeyClickListener onKeyClickListener) {
-//        this.identities = identities;
-        this.context = context;
-        pEp = ((K9) context.getApplicationContext()).getpEpProvider();
+    public KeyItemAdapter(List<KeyListItem> identities, OnKeyClickListener onKeyClickListener) {
         this.comparator = ALPHABETICAL_COMPARATOR;
         dataSet = new SortedList<>(KeyListItem.class, sortedListCallback);
         if (identities != null) {
@@ -59,9 +49,7 @@ public class KeyItemAdapter extends RecyclerView.Adapter<KeyItemAdapter.ViewHold
                                          int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.pep_key_row, parent, false);
-
-        viewHolder = new ViewHolder(v);
-        return viewHolder;
+        return new ViewHolder(v);
     }
 
     @Override
@@ -76,16 +64,15 @@ public class KeyItemAdapter extends RecyclerView.Adapter<KeyItemAdapter.ViewHold
         return dataSet.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
-        public TextView identityUserName;
-        public TextView identityAddress;
+    class ViewHolder extends RecyclerView.ViewHolder {
+        TextView identityUserName;
+        TextView identityAddress;
 
-        public CheckBox isBlacklistedCheckbox;
-        public View container;
-        public Context context;
+        CheckBox isBlacklistedCheckbox;
+        View container;
+        Context context;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             context = view.getContext();
             identityUserName = ((TextView) view.findViewById(R.id.tvUsername));
@@ -96,8 +83,7 @@ public class KeyItemAdapter extends RecyclerView.Adapter<KeyItemAdapter.ViewHold
 
         }
 
-        public void render(KeyListItem identity) {
-
+        void render(KeyListItem identity) {
             renderIdentity(identity);
         }
 
@@ -108,15 +94,12 @@ public class KeyItemAdapter extends RecyclerView.Adapter<KeyItemAdapter.ViewHold
             String formattedFpr = PEpUtils.formatFpr(fpr);
             identityAddress.setText(formattedFpr);
             isBlacklistedCheckbox.setChecked(keyItem.isSelected());
-            isBlacklistedCheckbox.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    boolean checked = ((CheckBox) v).isChecked();
-                    keyItem.setSelected(checked);
-                    int position = dataSet.indexOf(keyItem);
-                    dataSet.get(position).setSelected(checked);
-                    onKeyClickListener.onClick(keyItem, checked);
-                }
+            isBlacklistedCheckbox.setOnClickListener(v -> {
+                boolean checked = ((CheckBox) v).isChecked();
+                keyItem.setSelected(checked);
+                int position = dataSet.indexOf(keyItem);
+                dataSet.get(position).setSelected(checked);
+                onKeyClickListener.onClick(keyItem, checked);
             });
         }
     }

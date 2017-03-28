@@ -41,10 +41,10 @@ public abstract class PepActivity extends K9Activity {
     }
 
     private ApplicationComponent getApplicationComponent() {
-        return getAndroidApplication().getComponent();
+        return getK9().getComponent();
     }
 
-    public K9 getAndroidApplication() {
+    public K9 getK9() {
         return (K9) getApplication();
     }
 

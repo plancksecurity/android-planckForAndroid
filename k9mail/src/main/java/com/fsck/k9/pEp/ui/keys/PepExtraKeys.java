@@ -3,17 +3,14 @@ package com.fsck.k9.pEp.ui.keys;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.CheckBox;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
@@ -21,8 +18,6 @@ import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
-import com.fsck.k9.pEp.ui.blacklist.KeysAdapter;
-import com.fsck.k9.pEp.ui.blacklist.PepBlacklist;
 
 import java.util.List;
 
@@ -80,7 +75,7 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
 
     @Override
     public void showKeys(List<KeyListItem> availableKeys) {
-        keysAdapter = new KeyItemAdapter(this, availableKeys, new OnKeyClickListener() {
+        keysAdapter = new KeyItemAdapter(availableKeys, new OnKeyClickListener() {
             @Override
             public void onClick(KeyListItem item, Boolean checked) {
                 if (checked) {
