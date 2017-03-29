@@ -197,7 +197,12 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
     @Override
     public void saveLocalMessage(LocalMessage localMessage) {
-        messageReference.saveLocalMessage(this, localMessage);
+        try {
+            messageReference.saveLocalMessage(this, localMessage);
+        } catch (Exception e) {
+            Toast.makeText(PEpStatus.this, R.string.status_loading_error, Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
     }
 
     @Override
