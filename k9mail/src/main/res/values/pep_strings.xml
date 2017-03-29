@@ -103,6 +103,7 @@
     <string name="pep_keysync_timeout">p≡p sync timeout</string>
     <string name="is_always_secure">Store protected on server</string>
     <string name="is_not_always_secure">STORE</string>
+    <string name="master_key_management">Master Key management</string>
 
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>
