@@ -404,11 +404,11 @@ public class AccountSetupCheckSettingsFragment extends Fragment implements Confi
         switch (dialogId) {
             case R.id.dialog_account_setup_error: {
                 if (mDirection.equals(AccountSetupCheckSettings.CheckDirection.INCOMING)) {
-                    AccountSetupIncomingFragment accountSetupIncomingFragment = (AccountSetupIncomingFragment)getFragmentManager().findFragmentByTag("accountSetupIncomingFragment");
+                    AccountSetupBasicsFragment accountSetupBasicsFragment = new AccountSetupBasicsFragment();
                     getFragmentManager()
                             .beginTransaction()
-                            .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                            .replace(R.id.account_setup_container, accountSetupIncomingFragment, "accountSetupIncomingFragment")
+                            .setCustomAnimations(R.animator.fade_in_right, R.animator.fade_out_left)
+                            .replace(R.id.account_setup_container, accountSetupBasicsFragment, "accountSetupBasicsFragment")
                             .commit();
                 } else {
                     AccountSetupOutgoingFragment accountSetupOutgoingFragment = AccountSetupOutgoingFragment.actionOutgoingSettings(mAccount, false);
