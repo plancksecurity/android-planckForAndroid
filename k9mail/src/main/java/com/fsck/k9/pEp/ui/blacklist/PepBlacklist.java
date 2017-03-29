@@ -24,6 +24,11 @@ import android.widget.TextView;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PepActivity;
+import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
+import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
+import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
+import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.keys.KeyItemAdapter;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
@@ -36,12 +41,10 @@ import java.util.regex.Pattern;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class PepBlacklist extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class PepBlacklist extends PepActivity implements SearchView.OnQueryTextListener {
 
     @Bind(R.id.my_recycler_view)
     RecyclerView recipientsView;
-    @Bind(R.id.toolbar)
-    Toolbar toolbar;
     @Bind(R.id.pep_blacklist_layout)
     LinearLayout container;
 
@@ -73,8 +76,19 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
         recipientsView.setVisibility(View.VISIBLE);
         keys = pEp.getAvailableKey();
         initializeKeysView();
-        setSupportActionBar(toolbar);
+        initializeToolbar(true, R.string.pep);
         initializeSearchBar();
+    }
+
+    @Override
+    protected void initializeInjector(ApplicationComponent applicationComponent) {
+        applicationComponent.inject(this);
+        DaggerPEpComponent.builder()
+                .applicationComponent(applicationComponent)
+                .activityModule(new ActivityModule(this))
+                .pEpModule(new PEpModule(this, getLoaderManager(), getFragmentManager()))
+                .build()
+                .inject(this);
     }
 
     private void initializeKeysView() {
@@ -140,7 +154,7 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
 
     public void hideSearchView() {
         if (searchLayout != null) {
-            toolbar.setVisibility(View.VISIBLE);
+            getToolbar().setVisibility(View.VISIBLE);
             searchLayout.setVisibility(View.GONE);
         }
     }
@@ -233,7 +247,7 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
 
     public void showSearchView() {
         if (searchLayout != null) {
-            toolbar.setVisibility(View.GONE);
+            getToolbar().setVisibility(View.GONE);
             searchLayout.setVisibility(View.VISIBLE);
             setFocusOnKeyboard();
         }

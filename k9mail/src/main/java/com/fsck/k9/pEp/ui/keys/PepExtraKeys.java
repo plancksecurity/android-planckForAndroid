@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.fsck.k9.Account;
@@ -61,7 +62,7 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
         account = getIntent().getStringExtra(ACCOUNT_UUID);
         keys = preferences.loadKeys(account);
         presenter.initialize(this, pEp);
-        setUpToolbar(true);
+        initializeToolbar(true, R.string.key_list_title);
     }
 
     @Override
@@ -89,5 +90,16 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
         keysView.setVisibility(View.VISIBLE);
         keysView.setAdapter(keysAdapter);
         keysAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

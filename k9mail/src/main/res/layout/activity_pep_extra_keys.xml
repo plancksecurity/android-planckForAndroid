@@ -7,7 +7,7 @@
     android:layout_height="fill_parent"
     android:id="@+id/pep_extra_key_layout">
 
-    <include layout="@layout/toolbar_layout" />
+    <include layout="@layout/simple_toolbar_layout" />
 
     <TextView
         android:paddingTop="@dimen/activity_vertical_margin"

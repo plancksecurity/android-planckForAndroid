@@ -464,7 +464,8 @@
         </activity>
         <activity android:name=".pEp.ui.keysync.KeysyncManagement" />
         <activity android:name=".pEp.ui.About" />
-        <activity android:name=".pEp.ui.keys.PepExtraKeys"></activity>
+        <activity android:name=".pEp.ui.keys.PepExtraKeys"
+            android:label="Extra keys"/>
     </application>
 
 </manifest>
