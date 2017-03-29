@@ -14,10 +14,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
@@ -191,7 +189,12 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
     @Override
     public void saveLocalMessage(LocalMessage localMessage) {
-        messageReference.saveLocalMessage(this, localMessage);
+        try {
+            messageReference.saveLocalMessage(this, localMessage);
+        } catch (RuntimeException e) {
+            FeedbackTools.showShortFeedback(getRootView(), getString(R.string.status_loading_error));
+            e.printStackTrace();
+        }
     }
 
     @Override
