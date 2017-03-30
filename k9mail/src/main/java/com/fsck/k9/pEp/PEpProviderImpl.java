@@ -228,7 +228,9 @@ public class PEpProviderImpl implements PEpProvider {
             Log.d(TAG, "decryptMessage() after decrypt");
             Message message = decReturn.dst;
             MimeMessage decMsg = getMimeMessage(source, message);
-
+            boolean neverUnprotected = decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE).length > 0
+                    && decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE)[0].equals(PEP_ALWAYS_SECURE_TRUE);
+            decMsg.setFlag(Flag.X_PEP_NEVER_UNSECURE, neverUnprotected);
             if (isUsablePrivateKey(decReturn)) {
                 return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg), null);
             }

@@ -1,7 +1,6 @@
-def pEpEngineRevision = 1604
-def pEpJNIAdapterRevision = 306
-def version = "0.9.10"
-
+def pEpEngineRevision = 1686
+def pEpJNIAdapterRevision = 307
+def version = "0.9.10.1"
 
 buildscript {
     repositories {
@@ -93,8 +92,9 @@ android {
 //        versionCode 23230
 //        versionName '5.203'
 
-        applicationId "pep.android.k9"
-        versionCode 59
+        //applicationId "pep.android.k9"
+        applicationId "${appId}"
+        versionCode 60
 //        versionName '0.9.9.2'
         minSdkVersion 18
         targetSdkVersion 25

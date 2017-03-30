@@ -120,17 +120,14 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
                 badge.setVisibility(View.GONE);
             }else if (rating.value == Rating.pEpRatingMistrust.value) {
                 setHandshakeButtonVisibility(address, View.VISIBLE);
-                handshakeText.setText(context.getString(R.string.pep_handshake));
                 handshakeButton.setOnClickListener(onResetRedClick);
                 badge.setVisibility(View.VISIBLE);
             } else if (rating.value >= Rating.pEpRatingTrusted.value){
                 setHandshakeButtonVisibility(address, View.VISIBLE);
-                handshakeText.setText(context.getString(R.string.pep_reset_trust));
                 handshakeButton.setOnClickListener(onResetGreenClick);
                 badge.setVisibility(View.VISIBLE);
             } else if (rating.value == Rating.pEpRatingReliable.value){
                 setHandshakeButtonVisibility(address, View.VISIBLE);
-                handshakeText.setText(context.getString(R.string.pep_handshake));
                 handshakeButton.setOnClickListener(onHandshakeClick);
                 badge.setVisibility(View.VISIBLE);
             }

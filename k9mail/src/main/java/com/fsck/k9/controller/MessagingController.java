@@ -1494,7 +1494,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     }
                                 });
 
-                    if (account.ispEpPrivacyProtected() && !account.isUntrustedSever() && !alreadyDecrypted && result.flags == null && !message.isSet(Flag.X_PEP_NEVER_UNSECURE)) {
+                    if (account.ispEpPrivacyProtected()
+                            && !account.isUntrustedSever()
+                            && !alreadyDecrypted && result.flags == null
+                            && !decryptedMessage.isSet(Flag.X_PEP_NEVER_UNSECURE)) {
                         appendMessageCommand(account, localMessage, localFolder);
                     }
                     Log.d("pep", "in download loop (nr=" + number + ") post pep");
@@ -3210,7 +3213,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         }
 
                         if (message.isSet(Flag.X_PEP_NEVER_UNSECURE)) {
-                            message.setHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE, String.valueOf(1));
+                            message.setHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE, PEpProvider.PEP_ALWAYS_SECURE_TRUE);
                         }
 
                         progress++;
