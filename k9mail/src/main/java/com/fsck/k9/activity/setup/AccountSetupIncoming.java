@@ -4,7 +4,6 @@ package com.fsck.k9.activity.setup;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
-import android.accounts.AuthenticatorException;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +20,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.fsck.k9.*;
 import com.fsck.k9.Account.FolderMode;
-import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.mail.NetworkType;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
@@ -37,6 +35,7 @@ import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mail.store.imap.ImapStoreSettings;
 import com.fsck.k9.mail.store.webdav.WebDavStoreSettings;
 import com.fsck.k9.account.AccountCreator;
+import com.fsck.k9.pEp.EmailValidator;
 import com.fsck.k9.service.MailService;
 import com.fsck.k9.view.ClientCertificateSpinner;
 import com.fsck.k9.view.ClientCertificateSpinner.OnClientCertificateChangedListener;
@@ -620,35 +619,40 @@ public class AccountSetupIncoming extends K9Activity implements OnClickListener 
         }
 
         String host = mServerView.getText().toString();
-        int port = Integer.parseInt(mPortView.getText().toString());
 
-        Map<String, String> extra = null;
-        if (Type.IMAP == mStoreType) {
-            extra = new HashMap<String, String>();
-            extra.put(ImapStoreSettings.AUTODETECT_NAMESPACE_KEY,
-                    Boolean.toString(mImapAutoDetectNamespaceView.isChecked()));
-            extra.put(ImapStoreSettings.PATH_PREFIX_KEY,
-                    mImapPathPrefixView.getText().toString());
-        } else if (Type.WebDAV == mStoreType) {
-            extra = new HashMap<String, String>();
-            extra.put(WebDavStoreSettings.PATH_KEY,
-                    mWebdavPathPrefixView.getText().toString());
-            extra.put(WebDavStoreSettings.AUTH_PATH_KEY,
-                    mWebdavAuthPathView.getText().toString());
-            extra.put(WebDavStoreSettings.MAILBOX_PATH_KEY,
-                    mWebdavMailboxPathView.getText().toString());
+        if (EmailValidator.isEmailValid(host)) {
+            int port = Integer.parseInt(mPortView.getText().toString());
+
+            Map<String, String> extra = null;
+            if (Type.IMAP == mStoreType) {
+                extra = new HashMap<String, String>();
+                extra.put(ImapStoreSettings.AUTODETECT_NAMESPACE_KEY,
+                        Boolean.toString(mImapAutoDetectNamespaceView.isChecked()));
+                extra.put(ImapStoreSettings.PATH_PREFIX_KEY,
+                        mImapPathPrefixView.getText().toString());
+            } else if (Type.WebDAV == mStoreType) {
+                extra = new HashMap<String, String>();
+                extra.put(WebDavStoreSettings.PATH_KEY,
+                        mWebdavPathPrefixView.getText().toString());
+                extra.put(WebDavStoreSettings.AUTH_PATH_KEY,
+                        mWebdavAuthPathView.getText().toString());
+                extra.put(WebDavStoreSettings.MAILBOX_PATH_KEY,
+                        mWebdavMailboxPathView.getText().toString());
+            }
+
+            mAccount.deleteCertificate(host, port, CheckDirection.INCOMING);
+            ServerSettings settings = new ServerSettings(mStoreType, host, port,
+                    connectionSecurity, authType, username, password, clientCertificateAlias, extra);
+
+            mAccount.setStoreUri(RemoteStore.createStoreUri(settings));
+
+            mAccount.setCompression(NetworkType.MOBILE, mCompressionMobile.isChecked());
+            mAccount.setCompression(NetworkType.WIFI, mCompressionWifi.isChecked());
+            mAccount.setCompression(NetworkType.OTHER, mCompressionOther.isChecked());
+            mAccount.setSubscribedFoldersOnly(mSubscribedFoldersOnly.isChecked());
+        } else {
+            mServerView.setError(getResources().getString(R.string.recipient_error_parse_failed));
         }
-
-        mAccount.deleteCertificate(host, port, CheckDirection.INCOMING);
-        ServerSettings settings = new ServerSettings(mStoreType, host, port,
-                connectionSecurity, authType, username, password, clientCertificateAlias, extra);
-
-        mAccount.setStoreUri(RemoteStore.createStoreUri(settings));
-
-        mAccount.setCompression(NetworkType.MOBILE, mCompressionMobile.isChecked());
-        mAccount.setCompression(NetworkType.WIFI, mCompressionWifi.isChecked());
-        mAccount.setCompression(NetworkType.OTHER, mCompressionOther.isChecked());
-        mAccount.setSubscribedFoldersOnly(mSubscribedFoldersOnly.isChecked());
     }
 
     public void onClick(View v) {
