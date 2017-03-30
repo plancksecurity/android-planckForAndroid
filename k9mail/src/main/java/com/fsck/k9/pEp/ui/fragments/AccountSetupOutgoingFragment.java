@@ -35,6 +35,7 @@ import com.fsck.k9.mail.AuthType;
 import com.fsck.k9.mail.ConnectionSecurity;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
+import com.fsck.k9.pEp.EmailValidator;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.view.ClientCertificateSpinner;
 
@@ -501,17 +502,22 @@ public class AccountSetupOutgoingFragment extends Fragment {
         }
 
         String newHost = mServerView.getText().toString();
-        int newPort = Integer.parseInt(mPortView.getText().toString());
-        ServerSettings server = new ServerSettings(ServerSettings.Type.SMTP, newHost, newPort, securityType, authType, username, password, clientCertificateAlias);
-        uri = Transport.createTransportUri(server);
-        mAccount.deleteCertificate(newHost, newPort, AccountSetupCheckSettings.CheckDirection.OUTGOING);
-        mAccount.setTransportUri(uri);
-        AccountSetupCheckSettingsFragment accountSetupOutgoingFragment = AccountSetupCheckSettingsFragment.actionCheckSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, mMakeDefault, AccountSetupCheckSettingsFragment.OUTGOING);
-        getFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
-                .commit();
+
+        if (EmailValidator.isEmailValid(newHost)) {
+            int newPort = Integer.parseInt(mPortView.getText().toString());
+            ServerSettings server = new ServerSettings(ServerSettings.Type.SMTP, newHost, newPort, securityType, authType, username, password, clientCertificateAlias);
+            uri = Transport.createTransportUri(server);
+            mAccount.deleteCertificate(newHost, newPort, AccountSetupCheckSettings.CheckDirection.OUTGOING);
+            mAccount.setTransportUri(uri);
+            AccountSetupCheckSettingsFragment accountSetupOutgoingFragment = AccountSetupCheckSettingsFragment.actionCheckSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, mMakeDefault, AccountSetupCheckSettingsFragment.OUTGOING);
+            getFragmentManager()
+                    .beginTransaction()
+                    .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                    .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
+                    .commit();
+        } else {
+            mServerView.setError(getResources().getString(R.string.recipient_error_parse_failed));
+        }
     }
 
     private void failure(Exception use) {

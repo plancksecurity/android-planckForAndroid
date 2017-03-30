@@ -40,6 +40,7 @@ import com.fsck.k9.mail.ConnectionSecurity;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
+import com.fsck.k9.pEp.EmailValidator;
 import com.fsck.k9.view.ClientCertificateSpinner;
 
 import java.io.Serializable;
@@ -405,23 +406,28 @@ public class AccountSetupBasicsFragment extends Fragment
         } else {
             email = mAccountSpinner.getSelectedItem().toString();
         }
-        String[] emailParts = splitEmail(email);
-        String domain = emailParts[1];
-        mProvider = findProviderForDomain(domain);
-        if (mProvider == null) {
+
+        if (EmailValidator.isEmailValid(email)) {
+            String[] emailParts = splitEmail(email);
+            String domain = emailParts[1];
+            mProvider = findProviderForDomain(domain);
+            if (mProvider == null) {
             /*
              * We don't have default settings for this account, start the manual
              * setup process.
              */
-            onManualSetup();
-            return;
-        }
-        Log.i(K9.LOG_TAG, "Provider found, using automatic set-up");
+                onManualSetup();
+                return;
+            }
+            Log.i(K9.LOG_TAG, "Provider found, using automatic set-up");
 
-        if (mProvider.note != null) {
-            onCreateDialog(DIALOG_NOTE);
+            if (mProvider.note != null) {
+                onCreateDialog(DIALOG_NOTE);
+            } else {
+                finishAutoSetup();
+            }
         } else {
-            finishAutoSetup();
+            mEmailView.setError(getResources().getString(R.string.recipient_error_parse_failed));
         }
     }
 
