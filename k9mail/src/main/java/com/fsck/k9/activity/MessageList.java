@@ -1886,7 +1886,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     @Override
     public void onReply(MessageReference messageReference,
                         Rating pEpRating) {
-        onReply(messageReference, pEpRating);
+        onReply(messageReference, null,  pEpRating);
     }
 
     @Override
