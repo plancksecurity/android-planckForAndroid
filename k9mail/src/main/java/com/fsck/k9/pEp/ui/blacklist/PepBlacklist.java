@@ -1,5 +1,6 @@
 package com.fsck.k9.pEp.ui.blacklist;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,7 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.SearchView;
 
 import com.fsck.k9.K9;
@@ -17,6 +22,8 @@ import com.fsck.k9.pEp.ui.keys.KeyItemAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -96,5 +103,53 @@ public class PepBlacklist extends AppCompatActivity implements SearchView.OnQuer
         return false;
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_pep_search, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            case R.id.action_add_fpr:
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+                LayoutInflater inflater = this.getLayoutInflater();
+                final View dialogView = inflater.inflate(R.layout.fpr_dialog, null);
+                dialogBuilder.setView(dialogView);
+                final EditText fpr = (EditText) dialogView.findViewById(R.id.fpr_text);
+                dialogBuilder.setTitle("Add FPR");
+                dialogBuilder.setPositiveButton("Done", (dialog, whichButton) -> {
+                    addFingerprintToBlacklist(fpr);
+                });
+                dialogBuilder.setNegativeButton("Cancel", (dialog, whichButton) -> {
+                });
+                AlertDialog b = dialogBuilder.create();
+                b.show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void addFingerprintToBlacklist(EditText fpr) {
+        String fingerprint = fpr.getText().toString().toUpperCase().replaceAll(" ", "");
+        Pattern pattern = Pattern.compile("^[0-9A-F]+$");
+        Matcher matcher = pattern.matcher(fingerprint);
+        if (matcher.find() && fingerprint.length() >= 40) {
+            for (KeyListItem key : keys) {
+                if (key.fpr.equals(fingerprint)) {
+                    pEp.addToBlacklist(fingerprint);
+                }
+            }
+            keys = pEp.getAvailableKey();
+            initializeKeysView();
+        } else {
+            //FeedbackTools.showShortFeedback(container, getString(R.string.error_parsing_fingerprint));
+        }
+    }
 
 }
