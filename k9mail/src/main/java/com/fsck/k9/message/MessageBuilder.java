@@ -659,7 +659,6 @@ public abstract class MessageBuilder {
             String contentType = attachment.mime_type;
             String filename = attachment.filename;
             Log.d("pep", "MimeMessageBuilder: BLOB #" + i + ":" + contentType + ":" + filename);
-            Log.d("pep", ">" + new String(attachment.data) + "<");
 
             if (filename != null)
                 filename = EncoderUtil.encodeIfNecessary(filename, EncoderUtil.Usage.WORD_ENTITY, 7);
