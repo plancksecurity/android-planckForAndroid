@@ -10,6 +10,8 @@ import com.fsck.k9.pEp.UIUtils;
 
 public class PEpLanguageSelector {
 
+    public static final String PEP_DEFAULT_LANGUAGE = "en";
+
     public static void showLanguageSelector(Context context, CharSequence[] pEpLanguages,
                                             String trustwordsLanguage,
                                             DialogInterface.OnClickListener onClickListener) {
@@ -38,7 +40,7 @@ public class PEpLanguageSelector {
     @NonNull
     private static String ensureTrustwordsLanguage(String trustwordsLanguage) {
         if (trustwordsLanguage == null) {
-            trustwordsLanguage = "en";
+            trustwordsLanguage = PEP_DEFAULT_LANGUAGE;
         }
         return trustwordsLanguage;
     }

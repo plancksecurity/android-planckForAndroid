@@ -147,8 +147,8 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
 
     private void showLanguageSelectionDialog() {
         final CharSequence[] pEpLanguages = PEpUtils.getPEpLanguages();
-        PEpLanguageSelector.showLanguageSelector(PEpAddDevice.this, pEpLanguages, trustwordsLanguage, (dialog, which) -> {
-            String language = pEpLanguages[which].toString();
+        PEpLanguageSelector.showLanguageSelector(PEpAddDevice.this, pEpLanguages, trustwordsLanguage, (dialog, languagePositon) -> {
+            String language = pEpLanguages[languagePositon].toString();
             changeTrustwords(language);
         });
     }
