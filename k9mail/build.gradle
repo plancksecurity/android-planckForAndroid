@@ -74,6 +74,8 @@ dependencies {
 
     compile 'com.karumi:dexter:2.2.2'
 
+    compile 'com.hudomju:swipe-to-dismiss-undo:1.0'
+
     // Arch dependencies
     provided 'org.glassfish:javax.annotation:10.0-b28'
     annotationProcessor "com.google.dagger:dagger-compiler:2.4"

@@ -125,6 +125,7 @@
     <string name="is_always_secure">Store protected on server</string>
     <string name="is_not_always_secure">STORE</string>
     <string name="master_key_management">Master Key management</string>
+    <string name="message_saving_error">Message saving error</string>
 
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>

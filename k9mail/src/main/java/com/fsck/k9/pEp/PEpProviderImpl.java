@@ -773,8 +773,12 @@ public class PEpProviderImpl implements PEpProvider {
         try {
             List<KeyListItem> identites = new ArrayList<>();
             ArrayList<Pair<String, String>> keys = engine.OpenPGP_list_keyinfo("");
-            for (Pair<String, String> key : keys) {
-                identites.add(new KeyListItem(key.first, key.second, engine.blacklist_is_listed(key.first)));
+            if (keys != null) {
+                for (Pair<String, String> key : keys) {
+                    identites.add(
+                            new KeyListItem(key.first, key.second,
+                                    engine.blacklist_is_listed(key.first)));
+                }
             }
             return identites;
         } catch (pEpException e) {

@@ -1,6 +1,5 @@
 package com.fsck.k9.pEp.ui.keysync;
 
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -20,7 +18,6 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.UIUtils;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
@@ -28,6 +25,7 @@ import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.HandshakeData;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.ui.adapters.IdentitiesAdapter;
+import com.fsck.k9.pEp.ui.keysync.languages.PEpLanguageSelector;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
 import org.pEp.jniadapter.Identity;
@@ -152,12 +150,10 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
 
     private void showLanguageSelectionDialog() {
         final CharSequence[] pEpLanguages = PEpUtils.getPEpLanguages();
-        CharSequence[] displayLanguages = UIUtils.prettifyLanguages(pEpLanguages);
-        new AlertDialog.Builder(PEpAddDevice.this).setTitle(getResources().getString(R.string.settings_language_label))
-                .setItems(displayLanguages, (dialogInterface, i) -> {
-                    String language = pEpLanguages[i].toString();
-                    changeTrustwords(language);
-                }).create().show();
+        PEpLanguageSelector.showLanguageSelector(PEpAddDevice.this, pEpLanguages, trustwordsLanguage, (dialog, languagePositon) -> {
+            String language = pEpLanguages[languagePositon].toString();
+            changeTrustwords(language);
+        });
     }
 
     private void changeTrustwords(String language) {
