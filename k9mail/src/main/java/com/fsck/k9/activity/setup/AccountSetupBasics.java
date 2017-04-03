@@ -39,7 +39,6 @@ import com.fsck.k9.mail.ConnectionSecurity;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
-import com.fsck.k9.pEp.EmailValidator;
 import com.fsck.k9.view.ClientCertificateSpinner;
 import com.fsck.k9.view.ClientCertificateSpinner.OnClientCertificateChangedListener;
 
@@ -397,27 +396,23 @@ public class AccountSetupBasics extends K9Activity
         } else {
             email = mAccountSpinner.getSelectedItem().toString();
         }
-        if (EmailValidator.isEmailValid(email)) {
-            String[] emailParts = splitEmail(email);
-            String domain = emailParts[1];
-            mProvider = findProviderForDomain(domain);
-            if (mProvider == null) {
+        String[] emailParts = splitEmail(email);
+        String domain = emailParts[1];
+        mProvider = findProviderForDomain(domain);
+        if (mProvider == null) {
             /*
              * We don't have default settings for this account, start the manual
              * setup process.
              */
-                onManualSetup();
-                return;
-            }
-            Log.i(K9.LOG_TAG, "Provider found, using automatic set-up");
+            onManualSetup();
+            return;
+        }
+        Log.i(K9.LOG_TAG, "Provider found, using automatic set-up");
 
-            if (mProvider.note != null) {
-                showDialog(DIALOG_NOTE);
-            } else {
-                finishAutoSetup();
-            }
+        if (mProvider.note != null) {
+            showDialog(DIALOG_NOTE);
         } else {
-            mEmailView.setError(getResources().getString(R.string.recipient_error_parse_failed));
+            finishAutoSetup();
         }
     }
 

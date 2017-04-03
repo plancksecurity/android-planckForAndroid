@@ -11,31 +11,20 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.fsck.k9.Account;
-import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
-import com.fsck.k9.R;
+import com.fsck.k9.*;
 import com.fsck.k9.account.AccountCreator;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.AuthType;
+import com.fsck.k9.mail.ServerSettings.Type;
 import com.fsck.k9.mail.ConnectionSecurity;
 import com.fsck.k9.mail.ServerSettings;
-import com.fsck.k9.mail.ServerSettings.Type;
 import com.fsck.k9.mail.Transport;
-import com.fsck.k9.pEp.EmailValidator;
 import com.fsck.k9.view.ClientCertificateSpinner;
 import com.fsck.k9.view.ClientCertificateSpinner.OnClientCertificateChangedListener;
 
@@ -488,17 +477,12 @@ public class AccountSetupOutgoing extends K9Activity implements OnClickListener,
         }
 
         String newHost = mServerView.getText().toString();
-
-        if (EmailValidator.isEmailValid(newHost)) {
-            int newPort = Integer.parseInt(mPortView.getText().toString());
-            ServerSettings server = new ServerSettings(Type.SMTP, newHost, newPort, securityType, authType, username, password, clientCertificateAlias);
-            uri = Transport.createTransportUri(server);
-            mAccount.deleteCertificate(newHost, newPort, CheckDirection.OUTGOING);
-            mAccount.setTransportUri(uri);
-            AccountSetupCheckSettings.actionCheckSettings(this, mAccount, CheckDirection.OUTGOING);
-        } else{
-            mServerView.setError(getResources().getString(R.string.recipient_error_parse_failed));
-        }
+        int newPort = Integer.parseInt(mPortView.getText().toString());
+        ServerSettings server = new ServerSettings(Type.SMTP, newHost, newPort, securityType, authType, username, password, clientCertificateAlias);
+        uri = Transport.createTransportUri(server);
+        mAccount.deleteCertificate(newHost, newPort, CheckDirection.OUTGOING);
+        mAccount.setTransportUri(uri);
+        AccountSetupCheckSettings.actionCheckSettings(this, mAccount, CheckDirection.OUTGOING);
     }
 
     public void onClick(View v) {
