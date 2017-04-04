@@ -34,6 +34,9 @@ public class Address implements Serializable {
 
     private String mPersonal;
 
+    private static final String UTF_8_Q = "=?utf-8?Q?";
+    private static final String UTF_8_B = "=?utf-8?B?";
+    private static final String UTF_ENDING = "?=";
 
     public Address(Address address) {
         mAddress = address.mAddress;
@@ -72,6 +75,12 @@ public class Address implements Serializable {
         } else {
             mAddress = address;
             mPersonal = personal;
+        }
+        if (mPersonal != null && mPersonal.contains(UTF_8_Q)) {
+            mPersonal = mPersonal.replace(UTF_8_Q, "").replace(UTF_ENDING, "");
+        }
+        if (mPersonal != null && mPersonal.contains(UTF_8_B)) {
+            mPersonal = mPersonal.replace(UTF_8_B, "").replace(UTF_ENDING, "");
         }
     }
 
