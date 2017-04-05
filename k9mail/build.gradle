@@ -98,7 +98,7 @@ android {
         applicationId "${appId}"
         versionCode 60
 //        versionName '0.9.9.2'
-        minSdkVersion 18
+        minSdkVersion 21
         targetSdkVersion 25
         setProperty("archivesBaseName", "$version")
         generatedDensities = ['mdpi', 'hdpi', 'xhdpi']

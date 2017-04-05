@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<restrictions xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <restriction
+        android:defaultValue="true"
+        android:description="@string/pep_enable_privacy_protection"
+        android:key="pep_disable_privacy_protection"
+        android:restrictionType="bool"
+        android:title="@string/pep_enable_privacy_protection"/>
+
+</restrictions>
