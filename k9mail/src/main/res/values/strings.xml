@@ -1232,4 +1232,5 @@
 
     <string name="mail_list_widget_text">K-9 Message List</string>
     <string name="mail_list_widget_loading">Loading messages…</string>
+    <string name="fetching_folders_failed">Fetching folder list failed</string>
 </resources>
