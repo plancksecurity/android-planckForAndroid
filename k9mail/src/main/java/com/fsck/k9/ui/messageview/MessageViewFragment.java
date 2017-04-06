@@ -902,11 +902,14 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private void showKeyNotFoundFeedback() {
         String title = pePUIArtefactCache.getTitle(Rating.pEpRatingHaveNoKey);
         String message = pePUIArtefactCache.getSuggestion(Rating.pEpRatingHaveNoKey);
-        new AlertDialog.Builder(getActivity())
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton(getString(R.string.okay_action), null)
-                .create().show();
+        Activity activity = getActivity();
+        if (activity != null) {
+            new AlertDialog.Builder(activity)
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton(getString(R.string.okay_action), null)
+                    .create().show();
+        }
     }
 
     private void showNeedsDecryptionFeedback(final LocalMessage message) {
