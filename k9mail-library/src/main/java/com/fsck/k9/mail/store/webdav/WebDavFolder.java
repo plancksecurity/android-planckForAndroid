@@ -1,5 +1,6 @@
 package com.fsck.k9.mail.store.webdav;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.fsck.k9.mail.FetchProfile;
@@ -27,6 +28,7 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -637,8 +639,24 @@ class WebDavFolder extends Folder<WebDavMessage> {
 
     @Override
     public Map<String, String> appendMessages(List<? extends Message> messages) throws MessagingException {
-        appendWebDavMessages(messages);
+        List<Message> filteredMessages = filterAppendingMessages(messages);
+        appendWebDavMessages(filteredMessages);
         return null;
+    }
+
+    @NonNull
+    private List<Message> filterAppendingMessages(List<? extends Message> messages) {
+        List<Message> filteredMessages = new ArrayList<>();
+        List<Long> messageUids = new ArrayList<>();
+        for (int i = messages.size() -1 ; i >= 0; i--) {
+            Message message = messages.get(i);
+            if (!messageUids.contains(message.getId())) {
+                messageUids.add(message.getId());
+                filteredMessages.add(message);
+            }
+        }
+        Collections.reverse(filteredMessages);
+        return filteredMessages;
     }
 
     public List<? extends Message> appendWebDavMessages(List<? extends Message> messages) throws MessagingException {
