@@ -246,7 +246,8 @@ public class AccountSetupBasics extends K9Activity
                         && !mAccountSpinner.getSelectedItem().toString().isEmpty()) ||
                 ( Utility.requiredFieldValid(mEmailView)
                 && ((!clientCertificateChecked && Utility.requiredFieldValid(mPasswordView))
-                        || (clientCertificateChecked && clientCertificateAlias != null)));
+                        || (clientCertificateChecked && clientCertificateAlias != null)))
+                && mEmailValidator.isValidAddressOnly(email);
 
         mNextButton.setEnabled(valid);
         mManualSetupButton.setEnabled(valid);
