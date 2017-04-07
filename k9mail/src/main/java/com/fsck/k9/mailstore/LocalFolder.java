@@ -1142,7 +1142,23 @@ public class LocalFolder extends Folder<LocalMessage> implements Serializable {
      */
     @Override
     public Map<String, String> appendMessages(List<? extends Message> messages) throws MessagingException {
-        return appendMessages(messages, false);
+        List<Message> filteredMessages = filterAppendingMessages(messages);
+        return appendMessages(filteredMessages, false);
+    }
+
+    @NonNull
+    private List<Message> filterAppendingMessages(List<? extends Message> messages) {
+        List<Message> filteredMessages = new ArrayList<>();
+        List<Long> messageUids = new ArrayList<>();
+        for (int i = messages.size() -1 ; i >= 0; i--) {
+            Message message = messages.get(i);
+            if (!messageUids.contains(message.getId())) {
+                messageUids.add(message.getId());
+                filteredMessages.add(message);
+            }
+        }
+        Collections.reverse(filteredMessages);
+        return filteredMessages;
     }
 
     public void destroyMessages(final List<? extends Message> messages) {

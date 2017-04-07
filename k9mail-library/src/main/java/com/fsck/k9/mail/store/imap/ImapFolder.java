@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -1146,10 +1147,10 @@ class ImapFolder extends Folder<ImapMessage> {
     public Map<String, String> appendMessages(List<? extends Message> messages) throws MessagingException {
         open(OPEN_MODE_RW);
         checkOpen();
-
+        List<Message> filteredMessages = filterAppendingMessages(messages);
         try {
             Map<String, String> uidMap = new HashMap<>();
-            for (Message message : messages) {
+            for (Message message : filteredMessages) {
                 long messageSize = message.calculateSize();
 
                 String encodeFolderName = folderNameCodec.encode(getPrefixedName());
@@ -1222,6 +1223,21 @@ class ImapFolder extends Folder<ImapMessage> {
         } catch (IOException ioe) {
             throw ioExceptionHandler(connection, ioe);
         }
+    }
+
+    @NonNull
+    private List<Message> filterAppendingMessages(List<? extends Message> messages) {
+        List<Message> filteredMessages = new ArrayList<>();
+        List<Long> messageUids = new ArrayList<>();
+        for (int i = messages.size() -1 ; i >= 0; i--) {
+            Message message = messages.get(i);
+            if (!messageUids.contains(message.getId())) {
+                messageUids.add(message.getId());
+                filteredMessages.add(message);
+            }
+        }
+        Collections.reverse(filteredMessages);
+        return filteredMessages;
     }
 
     @Override
