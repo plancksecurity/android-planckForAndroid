@@ -237,7 +237,7 @@ public class AccountSetupBasics extends K9Activity
         boolean clientCertificateChecked = mClientCertificateCheckBox.isChecked();
         boolean oauth2Checked = mOAuth2CheckBox.isChecked();
         String clientCertificateAlias = mClientCertificateSpinner.getAlias();
-        String email = mEmailView.getText().toString();
+        String email = mEmailView.getText().toString().trim();
 
         boolean valid =
                 (oauth2Checked
@@ -311,7 +311,7 @@ public class AccountSetupBasics extends K9Activity
         if (usingXOAuth2)
             email = mAccountSpinner.getSelectedItem().toString();
         else
-            email = mEmailView.getText().toString();
+            email = mEmailView.getText().toString().trim();
         String password = mPasswordView.getText().toString();
         String[] emailParts = splitEmail(email);
         String user = emailParts[0];
@@ -393,7 +393,7 @@ public class AccountSetupBasics extends K9Activity
         String email;
 
         if (mEmailView.getVisibility() == View.VISIBLE) {
-            email = mEmailView.getText().toString();
+            email = mEmailView.getText().toString().trim();
         } else {
             email = mAccountSpinner.getSelectedItem().toString();
         }
@@ -440,7 +440,7 @@ public class AccountSetupBasics extends K9Activity
         if(mOAuth2CheckBox.isChecked()) {
             email = mAccountSpinner.getSelectedItem().toString();
         } else {
-            email = mEmailView.getText().toString();
+            email = mEmailView.getText().toString().trim();
         }
         String[] emailParts = splitEmail(email);
         String user = email;
