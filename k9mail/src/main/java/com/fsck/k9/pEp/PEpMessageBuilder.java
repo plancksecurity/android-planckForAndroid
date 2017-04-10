@@ -105,11 +105,6 @@ class PEpMessageBuilder {
                 Log.e("pep", "mbp_body==null!");
                 continue;
             }
-            try {
-                Log.d("pep", "Bodypart #" + part + ":" + mbp.toString() + "mime type:" + mbp.getMimeType() + "  Body:" + mbp_body.toString());
-            } catch (Exception e) {
-                Log.e("pep", "nope",e);
-            }
             if (mbp_body instanceof MimeMultipart) {
                 handleMultipart(pEpMsg, (MimeMultipart) mbp_body, attachments);
                 continue;

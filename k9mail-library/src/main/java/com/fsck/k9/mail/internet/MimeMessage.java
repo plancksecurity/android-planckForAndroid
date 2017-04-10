@@ -617,7 +617,10 @@ public class MimeMessage extends Message {
 
     @Override
     public long getId() {
-        return Long.parseLong(mUid); //or maybe .mMessageId?
+        if (mUid != null) {
+            return Long.parseLong(mUid); //or maybe .mMessageId?
+        }
+        return 0L;
     }
 
     @Override

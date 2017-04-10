@@ -1431,7 +1431,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     final PEpProvider.DecryptResult result;
                     //// TODO: 22/12/16  message.getFrom()[0].getAddress() != null) should ne removed when ENGINE-160 is fixed
                     boolean alreadyDecrypted = false;
-                    if (message.getFrom()[0].getAddress() != null) {
+                    if (message.getFrom() != null
+                            && message.getFrom().length > 0
+                            && message.getFrom()[0].getAddress() != null) {
                         PEpProvider.DecryptResult tempResult;
                         tempResult = decryptMessage((MimeMessage) message);
                         if (!account.isUntrustedSever() && !message.isSet(Flag.X_PEP_NEVER_UNSECURE)) { //trusted server
@@ -1473,7 +1475,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     }
                     else if (store
                             && (!account.ispEpPrivacyProtected()
-                            || account.ispEpPrivacyProtected() && (result.rating != Rating.pEpRatingUndefined || message.getFrom()[0].getAddress() == null))
+                            || account.ispEpPrivacyProtected() && (result.rating != Rating.pEpRatingUndefined
+                            || message.getFrom().length > 0 && message.getFrom()[0].getAddress() == null))
                             ) {
                         MimeMessage decryptedMessage =  result.msg;
                         if (message.getFolder().getName().equals(account.getSentFolderName())
