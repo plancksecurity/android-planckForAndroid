@@ -648,8 +648,8 @@
         <outgoing uri="smtp+tls+://mail.syhosting.ch" username="$email" />
     </provider>
     <provider id="pepSecurity" label="pEp Security" domain="pep-security.net">
-        <incoming uri="imap+ssl+://mail.pep-security.net" username="$user@pep-security.intranet" />
-        <outgoing uri="smtp+tls+://mail.pep-security.net" username="$user@pep-security.intranet" />
+        <incoming uri="imap+ssl+://mail.pep-security.net" username="$user@pep-security.net" />
+        <outgoing uri="smtp+tls+://mail.pep-security.net" username="$user@pep-security.net" />
     </provider>
     <provider id="pepProject" label="pEp Project" domain="pep-project.org">
         <incoming uri="imap+ssl+://dragon.pibit.ch" username="$user" />
