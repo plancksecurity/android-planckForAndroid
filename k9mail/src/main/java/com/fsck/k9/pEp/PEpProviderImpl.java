@@ -353,8 +353,6 @@ public class PEpProviderImpl implements PEpProvider {
             if (alwaysSecureHeader.length > 0) {
                 mimeMessage.addHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE, alwaysSecureHeader[0]);
             }
-        }
-        if (source != null) {
             mimeMessage.setFlags(source.getFlags(), true);
         }
         return mimeMessage;
