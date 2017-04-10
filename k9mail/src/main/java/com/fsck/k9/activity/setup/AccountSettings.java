@@ -132,7 +132,6 @@ public class AccountSettings extends K9PreferenceActivity {
     private static final String PREFERENCE_PEP_SAVE_ENCRYPTED_ON_SERVER = "pep_save_encrypted";
     private static final String PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION = "pep_disable_privacy_protection";
     private static final String PEP_ENABLE_SYNC_ACCOUNT = "pep_enable_sync_account";
-    private static final String PREFERENCE_PEP_DISABLE_DECRYPTION = "pep_disable_auto_download";
     private static final String PEP_EXTRA_KEYS = "pep_extra_keys";
 
     private Account mAccount;
@@ -750,9 +749,6 @@ public class AccountSettings extends K9PreferenceActivity {
 
         mPEpDisablePrivacyProtection = (CheckBoxPreference) findPreference(PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION);
         mPEpDisablePrivacyProtection.setChecked(mAccount.ispEpPrivacyProtected());
-
-        mPEpDisableDecryption = (CheckBoxPreference) findPreference(PREFERENCE_PEP_DISABLE_DECRYPTION);
-        mPEpDisableDecryption.setChecked(mAccount.isPEpDownloadEnabled());
 
         mPEpSyncAccount = (CheckBoxPreference) findPreference(PEP_ENABLE_SYNC_ACCOUNT);
         mPepExtraKeys = findPreference(PEP_EXTRA_KEYS);
