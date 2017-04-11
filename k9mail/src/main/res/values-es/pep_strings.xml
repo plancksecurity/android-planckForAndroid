@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <resources>
     <!--<string name="pep_account_setup_generating_keys">Setting your Privacy by Default </string>-->
     <string name="pep_reset_trust">Desconfiar</string>
@@ -7,7 +7,7 @@
     <string name="pep_account_setup_generating_keys">Configurando su privacidad </string>
     <string name="pep_dialog_weaker_forward_warning_message">Esta a punto de reenviar un mensaje seguro como no seguro. Si continua, información confidencial podrías ser filtrada, poniéndole a usted y las personas implicadas en esta comunicación en peligro ¿Seguro que desea continuar? </string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Continuar</string>
-    <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancel</string>
+    <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancelar</string>
     <string name="pep_dialog_confirm_forward_title">Confirmar reenvio</string>
 
     <string name="pep_title_activity_privacy_status">Grado de privacidad</string>
@@ -42,17 +42,17 @@
     <string name="pep_trust_server_description">Guardar los correos en el servidor de forma segura.</string>
     <string name="pep_account_privacy_protection_explanation">Protege la privacidad de esta cuenta</string>
     <string name="configure_account_action">Administrar cuentas</string>
-    <string name="key_list_title">Available keys</string>
+    <string name="key_list_title">Claves disponibles</string>
     <string name="pep_add_device_ask_trustwords">You are about to add a device to your pEp device group. Confirm by successfully verifying the following Trustwords.</string>
     <string name="pep_device_group">Grupo de dispositivos de p≡p</string>
-    <string name="handshake_reset_dialog_message">Advertencia: Has desconfiado de este interlocutor anteriormente. Por favor, indica si deseas realizar un nuevo Handshake.</string>
+    <string name="handshake_reset_dialog_message">Advertencia: Has desconfiado de este interlocutor anteriormente. ¿Seguro que quieres realizar un nuevo Handshake?</string>
     <string name="pep_gpg_compatibility">Compatibilidad con OpenPGP</string>
-    <string name="crash_toast_text">Oops, something went wrong</string>
-    <string name="advanced_options">Advanced options</string>
-    <string name="basic_options">Basic options</string>
+    <string name="crash_toast_text">Oops, algo salió mal</string>
+    <string name="advanced_options">Opciones avanzadas</string>
+    <string name="basic_options">Opciones básicas</string>
     <string name="pep_enable_auto_download">Descarga automática de mensajes</string>
-    <string name="pep_enable_sync_account">Synchronize this account</string>
-    <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
+    <string name="pep_enable_sync_account">Sincroniza esta cuenta</string>
+    <string name="synchronize_these_accounts_between_my_devices">sincroniza estas cuentas entre mis dispositivos</string>
 
     <string-array name="pep_title">
         <item>Desconocido<!--pEpRatingUndefined--></item>
@@ -103,4 +103,40 @@
     </string-array>
 
     <string name="pep_forward_warning_description">Mostrar un aviso si un mensaje pierde seguridad al responder o reenviar.</string>
-</resources>
+<string name="navigation_drawer_open">Abrir el panel lateral</string>
+    <string name="navigation_drawer_close">Cerrar el panes de navegación</string>
+    <string name="pep_extra_addresses">Ids de Extra key:</string>
+    <string name="pep_add_key_to_blacklist">Añadir clave a la lista negra</string>
+    <string name="pep_remove_key_from_blacklist">Eliminar claves de la lista negra</string>
+
+    <string name="pep_force_protected">Habilitar protección</string>
+    <string name="pep_forward_warning">Advertencia de respuesta insegura</string>
+    <string name="message_list_item_removed">Eliminado</string>
+    <string name="message_list_item_undo">DESHACER</string>
+    <string name="available_accounts_title">Cuentas disponibles</string>
+    <string name="pep_app_description">p≡p es un potente cliente de correo para Android con pretty Easy privacy.</string>
+    <string name="app_k9_pep_name">"p≡p "</string>
+    <string name="global_settings_title">Configuración global</string>
+    <string name="pep_add_device_ask_move_trustwords">Estás a punto de mover un dispositivo a otro grupo de dispositivos de p≡p. Confirma verificando las siguientes Trustwords.</string>
+    <string name="pep_keysync_timeout">Timeout de sincronización p≡p</string>
+    <string name="read_permission_first_explanation">Necesitamos tu permiso para leer los contactos almacenados en tu móvil</string>
+    <string name="button_settings">Configuración</string>
+    <string name="read_snackbar_permission_rationale">Necesitamos tu permiso para leer los contactos almacenados en tu móvil</string>
+    <string name="read_snackbar_permission_permanently_denied">No permitir la lectura de contactos puede provocar que la app se comporte de manera inesperada</string>
+    <string name="read_permission_rationale_title">"Leer  contactos"</string>
+
+    <string name="download_permission_first_explanation">Necesitamos tu permiso para descargar archivos</string>
+    <string name="download_snackbar_permission_rationale">Necesitamos tu permiso para descargar archivos</string>
+    <string name="download_snackbar_permission_permanently_denied">No permitir la descarga de archivos puede provocar comportamientos inesperados</string>
+    <string name="download_permission_rationale_title">Descargar archivos</string>
+    <string name="add_fpr">Añadir FPR</string>
+    <string name="error_parsing_fingerprint">Error analizando la huella!</string>
+    <string name="is_always_secure">Almacenar protegido en el servidor</string>
+    <string name="is_not_always_secure">ALMACENAR</string>
+    <string name="master_key_management">Administración de la Clave Maestra</string>
+    <string name="message_saving_error">Error guardando el mensaje</string>
+    <string name="intro_first_text">Automáticamente encripta y anonimiza tu e-mail</string>
+    <string name="intro_second_text">Previene la suplantación de identidad. Acaba con el spam y el phising.</string>
+    <string name="intro_third_text">Muestra la seguridad en tu comunicación usando los colores del semáforo.</string>
+
+    </resources>
