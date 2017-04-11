@@ -11,6 +11,8 @@ import com.fsck.k9.pEp.ui.fragments.intro.IntroSecondFragment;
 import com.fsck.k9.pEp.ui.fragments.intro.IntroThirdFragment;
 import com.github.paolorotolo.appintro.AppIntro;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 public class WelcomeMessage extends AppIntro {
 
     public static void showWelcomeMessage(Context context) {
@@ -47,5 +49,11 @@ public class WelcomeMessage extends AppIntro {
     @Override
     public void onSlideChanged(@Nullable Fragment oldFragment, @Nullable Fragment newFragment) {
         super.onSlideChanged(oldFragment, newFragment);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+
     }
 }

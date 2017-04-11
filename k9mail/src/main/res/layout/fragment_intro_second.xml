@@ -5,15 +5,32 @@
     tools:context="com.fsck.k9.pEp.ui.fragments.intro.IntroSecondFragment"
     android:background="@color/pep_yellow">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Here should be the second explanation" />
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal"
-        android:src="@mipmap/icon"/>
+        android:orientation="vertical"
+        android:gravity="center">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+            <ImageView android:id="@+id/intro_image"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="16dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/intro_second_slide"/>
+        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:gravity="center"
+            fontPath="fonts/UniversLTStd.otf"
+            android:text="@string/intro_second_text" />
+    </LinearLayout>
 
 </FrameLayout>

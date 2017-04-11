@@ -2,17 +2,49 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.fsck.k9.pEp.ui.fragments.intro.IntroFirstFragment"
-    android:background="@color/pep_green">
+    android:background="@color/pep_green"
+    tools:context="com.fsck.k9.pEp.ui.fragments.intro.IntroFirstFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Here should be the fist explanation" />
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal"
-        android:src="@mipmap/icon"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <LinearLayout
+                android:id="@+id/intro_images"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="8dp"
+                    android:src="@drawable/first_intro_icon" />
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="8dp"
+                    android:src="@drawable/second_intro_icon" />
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="8dp"
+                    android:src="@drawable/third_intro_icon" />
+            </LinearLayout>
+
+            <TextView
+                fontPath="fonts/UniversLTStd.otf"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/intro_images"
+                android:layout_margin="16dp"
+                android:gravity="center"
+                android:text="@string/intro_first_text"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+        </RelativeLayout>
 </FrameLayout>
