@@ -126,9 +126,9 @@
     <string name="is_not_always_secure">STORE</string>
     <string name="master_key_management">Master Key management</string>
     <string name="message_saving_error">Message saving error</string>
-    <string name="intro_first_text">p≡p Automatically encrypts and anonymizes your e-mail</string>
-    <string name="intro_second_text">p≡p Prevents Identity Theft. Kills Spam. Stops Phishing.</string>
-    <string name="intro_third_text">p≡p tells you how secure your communication is based on traffic lights.</string>
+    <string name="intro_first_text">Automatically encrypts and anonymizes your e-mail</string>
+    <string name="intro_second_text">Prevents Identity Theft. Kills Spam. Stops Phishing.</string>
+    <string name="intro_third_text">Tells you how secure your communication is based on traffic lights.</string>
 
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>

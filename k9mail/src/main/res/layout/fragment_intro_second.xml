@@ -22,10 +22,18 @@
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/intro_second_slide"/>
         </LinearLayout>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_marginTop="16dp"
+            android:tint="@color/white"
+            android:src="@drawable/ic_peplogo" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="8dp"
             android:textSize="18sp"
             android:textColor="@color/white"
             android:gravity="center"
