@@ -1,13 +1,6 @@
 package com.fsck.k9.activity;
 
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Pattern;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -39,7 +32,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.Window;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -67,9 +59,6 @@ import com.fsck.k9.activity.compose.RecipientPresenter;
 import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
 import com.fsck.k9.activity.compose.SaveMessageTask;
 import com.fsck.k9.activity.misc.Attachment;
-import org.pEp.jniadapter.Color;
-
-import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.fragment.ProgressDialogFragment;
@@ -83,7 +72,6 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.Message.RecipientType;
-import com.fsck.k9.mail.internet.MessageExtractor;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mailstore.LocalMessage;
@@ -1086,12 +1074,12 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 recipientPresenter.onMenuSetPgpInline(false);
                 updateMessageFormat();
                 break;
-            case R.id.openpgp_sign_only:
-                recipientPresenter.onMenuSetSignOnly(true);
-                break;
-            case R.id.openpgp_sign_only_disable:
-                recipientPresenter.onMenuSetSignOnly(false);
-                break;
+            //case R.id.openpgp_sign_only:
+            //    recipientPresenter.onMenuSetSignOnly(true);
+            //    break;
+            //case R.id.openpgp_sign_only_disable:
+            //    recipientPresenter.onMenuSetSignOnly(false);
+            //    break;
             case R.id.add_attachment:
                 attachmentPresenter.onClickAddAttachment(recipientPresenter);
                 break;

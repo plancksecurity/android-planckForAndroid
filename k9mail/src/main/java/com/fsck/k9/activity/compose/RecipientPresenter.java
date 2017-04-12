@@ -288,8 +288,8 @@ public class RecipientPresenter implements PermissionPingCallback {
 
         boolean showSignOnly = isCryptoConfigured && account.getCryptoSupportSignOnly();
         boolean isSignOnly = cachedCryptoStatus.isSignOnly();
-        menu.findItem(R.id.openpgp_sign_only).setVisible(showSignOnly && !isSignOnly);
-        menu.findItem(R.id.openpgp_sign_only_disable).setVisible(showSignOnly && isSignOnly);
+        //menu.findItem(R.id.openpgp_sign_only).setVisible(showSignOnly && !isSignOnly);
+        //menu.findItem(R.id.openpgp_sign_only_disable).setVisible(showSignOnly && isSignOnly);
 
         boolean noContactPickerAvailable = !hasContactPicker();
         if (noContactPickerAvailable) {
