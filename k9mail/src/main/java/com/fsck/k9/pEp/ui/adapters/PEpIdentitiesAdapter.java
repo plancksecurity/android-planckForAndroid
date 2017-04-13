@@ -120,18 +120,18 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
                 badge.setVisibility(View.GONE);
             }else if (rating.value == Rating.pEpRatingMistrust.value) {
                 setHandshakeButtonVisibility(address, View.VISIBLE);
-                handshakeButton.setText(context.getString(R.string.pep_handshake));
+                handshakeText.setText(context.getString(R.string.pep_handshake));
                 handshakeButton.setOnClickListener(onResetRedClick);
                 badge.setVisibility(View.VISIBLE);
             } else if (rating.value >= Rating.pEpRatingTrusted.value){
                 setHandshakeButtonVisibility(address, View.VISIBLE);
                 handshakeButton.setOnClickListener(onResetGreenClick);
-                handshakeButton.setText(context.getString(R.string.pep_reset_trust));
+                handshakeText.setText(context.getString(R.string.pep_reset_trust));
                 badge.setVisibility(View.VISIBLE);
             } else if (rating.value == Rating.pEpRatingReliable.value){
                 setHandshakeButtonVisibility(address, View.VISIBLE);
                 handshakeButton.setOnClickListener(onHandshakeClick);
-                handshakeButton.setText(context.getString(R.string.pep_handshake));
+                handshakeText.setText(context.getString(R.string.pep_handshake));
                 badge.setVisibility(View.VISIBLE);
             }
             Drawable drawableForRating = PEpUtils.getDrawableForRatingRecipient(context, rating);

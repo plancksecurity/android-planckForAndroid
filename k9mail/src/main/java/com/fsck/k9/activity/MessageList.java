@@ -355,9 +355,6 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             appData.putString(EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
             appData.putString(EXTRA_SEARCH_FOLDER, mFolderName);
             triggerSearch(query, appData);
-        } else {
-            // TODO Handle the case where we're searching from within a search result.
-            startSearch(null, false, null, false);
         }
     }
 
