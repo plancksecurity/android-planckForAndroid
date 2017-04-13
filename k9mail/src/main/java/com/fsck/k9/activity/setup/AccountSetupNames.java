@@ -26,8 +26,7 @@ import com.fsck.k9.activity.Accounts;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.pEp.PEpUtils;
-
-import org.pEp.jniadapter.Identity;
+import com.fsck.k9.pEp.UIUtils;
 
 public class AccountSetupNames extends K9Activity implements OnClickListener {
     private static final String EXTRA_ACCOUNT = "account";
@@ -98,6 +97,8 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
         if (!BuildConfig.WITH_KEY_SYNC) {
             pepSyncAccount.setVisibility(View.GONE);
         }
+
+        UIUtils.removeCredentialsInPreferences(AccountSetupNames.this);
     }
 
     @Override

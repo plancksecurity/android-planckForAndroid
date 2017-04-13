@@ -40,6 +40,7 @@ import com.fsck.k9.mail.ConnectionSecurity;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
+import com.fsck.k9.pEp.UIUtils;
 import com.fsck.k9.view.ClientCertificateSpinner;
 
 import java.io.Serializable;
@@ -102,6 +103,13 @@ public class AccountSetupBasicsFragment extends Fragment
 
         initializeViewListeners();
         validateFields();
+
+        String email = UIUtils.getEmailInPreferences(getActivity());
+        String password = UIUtils.getPasswordInPreferences(getActivity());
+        if (email != null && password != null) {
+            mEmailView.setText(email);
+            mPasswordView.setText(password);
+        }
         return rootView;
     }
 
@@ -376,6 +384,7 @@ public class AccountSetupBasicsFragment extends Fragment
             mAccount.setDeletePolicy(AccountCreator.getDefaultDeletePolicy(incomingSettings.type));
 
             // Check incoming here.  Then check outgoing in onActivityResult()
+            saveCredentialsInPreferences();
             AccountSetupCheckSettingsFragment accountSetupOutgoingFragment = AccountSetupCheckSettingsFragment.actionCheckSettings(mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, false, AccountSetupCheckSettingsFragment.LOGIN);
             getFragmentManager()
                     .beginTransaction()
@@ -390,6 +399,10 @@ public class AccountSetupBasicsFragment extends Fragment
              */
             onManualSetup();
         }
+    }
+
+    private void saveCredentialsInPreferences() {
+        UIUtils.saveCredentialsInPreferences(getActivity(),  mEmailView.getText().toString(), mPasswordView.getText().toString());
     }
 
     private void onNext() {
@@ -429,6 +442,7 @@ public class AccountSetupBasicsFragment extends Fragment
             if (!mCheckedIncoming) {
                 //We've successfully checked incoming.  Now check outgoing.
                 mCheckedIncoming = true;
+                saveCredentialsInPreferences();
                 AccountSetupCheckSettingsFragment accountSetupOutgoingFragment = AccountSetupCheckSettingsFragment.actionCheckSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, false, AccountSetupCheckSettingsFragment.LOGIN);
                 getFragmentManager()
                         .beginTransaction()
@@ -496,6 +510,7 @@ public class AccountSetupBasicsFragment extends Fragment
 
         setupFolderNames(domain);
 
+        saveCredentialsInPreferences();
         ChooseAccountTypeFragment chooseAccountTypeFragment = ChooseAccountTypeFragment.actionSelectAccountType(mAccount, false);
         getFragmentManager()
                 .beginTransaction()
