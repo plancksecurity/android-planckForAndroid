@@ -37,7 +37,6 @@ import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
-import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.Poller;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
@@ -50,7 +49,6 @@ import com.fsck.k9.service.BootReceiver;
 import com.fsck.k9.service.MailService;
 import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
-import com.karumi.dexter.Dexter;
 
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
@@ -670,7 +668,6 @@ public class K9 extends Application {
         });
 
         notifyObservers();
-        Dexter.initialize(this);
     }
 
     private void pEpInitEnvironment() {

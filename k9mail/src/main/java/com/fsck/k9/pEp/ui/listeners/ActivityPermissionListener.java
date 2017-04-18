@@ -25,6 +25,5 @@ public class ActivityPermissionListener implements PermissionListener {
 
     @Override public void onPermissionRationaleShouldBeShown(PermissionRequest permission,
                                                              PermissionToken token) {
-        activity.showPermissionRationale(token);
     }
 }

@@ -23,6 +23,7 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -90,6 +91,7 @@ import com.fsck.k9.message.SimpleMessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.ui.PermissionErrorListener;
 import com.fsck.k9.pEp.ui.listeners.ActivityPermissionListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.EolConvertingEditText;
@@ -180,6 +182,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     private LinearLayout rootView;
     private MenuItem alwaysSecureMenuItem;
     private PePUIArtefactCache uiCache;
+    private boolean permissionAsked;
 
     public Account getAccount() {
         String accountUuid = (mMessageReference != null) ?
@@ -437,6 +440,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 draftNeedsSaving = true;
+                askForPermissions();
             }
         };
 
@@ -1940,15 +1944,34 @@ public class MessageCompose extends K9Activity implements OnClickListener,
     }
 
 
-    public void createPermissionListeners() {
-        PermissionListener feedbackViewPermissionListener = new ActivityPermissionListener(this);
+    public void askForPermissions() {
+        if(!permissionAsked) {
+            permissionAsked = true;
+            PermissionListener feedbackViewPermissionListener = new ActivityPermissionListener(this);
 
-        String explanation = getResources().getString(R.string.read_permission_first_explanation);
-        contactPermissionListener = new CompositePermissionListener(feedbackViewPermissionListener,
-                SnackbarOnDeniedPermissionListener.Builder.with(rootView, explanation)
-                        .withOpenSettingsButton(R.string.button_settings)
-                        .build());
-        Dexter.checkPermission(contactPermissionListener, Manifest.permission.READ_CONTACTS);
+            String explanation = getResources().getString(R.string.read_permission_first_explanation);
+
+            contactPermissionListener = new CompositePermissionListener(feedbackViewPermissionListener,
+                    SnackbarOnDeniedPermissionListener.Builder.with(rootView,
+                            explanation)
+                            .withOpenSettingsButton(R.string.button_settings)
+                            .withCallback(new Snackbar.Callback() {
+                                @Override public void onShown(Snackbar snackbar) {
+                                    super.onShown(snackbar);
+                                }
+
+                                @Override public void onDismissed(Snackbar snackbar, int event) {
+                                    super.onDismissed(snackbar, event);
+                                }
+                            })
+                            .build());
+            Dexter.withActivity(MessageCompose.this)
+                    .withPermission(Manifest.permission.WRITE_CONTACTS)
+                    .withListener(contactPermissionListener)
+                    .withErrorListener(new PermissionErrorListener())
+                    .onSameThread()
+                    .check();
+        }
     }
 
     public void showPermissionGranted(String permissionName) {
