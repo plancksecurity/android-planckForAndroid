@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.CheckBoxPreference;
@@ -191,7 +190,6 @@ public class AccountSettings extends K9PreferenceActivity {
     // flag: save mails only encrypted on server side
     private CheckBoxPreference mPEpSaveEncrypted;
     private CheckBoxPreference mPEpDisablePrivacyProtection;
-    private CheckBoxPreference mPEpDisableDecryption;
     private CheckBoxPreference mPEpSyncAccount;
     private Preference mPepExtraKeys;
 
@@ -934,7 +932,6 @@ public class AccountSettings extends K9PreferenceActivity {
         // pEp:
         mAccount.setPEpStoreEncryptedOnServer(mPEpSaveEncrypted.isChecked());
         mAccount.setpEpPrivacyProtection(mPEpDisablePrivacyProtection.isChecked());
-        mAccount.setpEpDownload(mPEpDisableDecryption.isChecked());
         mAccount.setPEpSyncAccount(mPEpSyncAccount.isChecked());
 
         // TODO: refresh folder list here

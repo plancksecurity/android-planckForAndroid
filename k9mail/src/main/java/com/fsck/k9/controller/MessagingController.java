@@ -1358,8 +1358,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                     // commented out, we might need it again later...
                     if (account.getMaximumAutoDownloadMessageSize() > 0 &&
-                    message.getSize() > account.getMaximumAutoDownloadMessageSize()
-                            || !account.isPEpDownloadEnabled()) {
+                    message.getSize() > account.getMaximumAutoDownloadMessageSize()) {
                         largeMessages.add(message);
                     } else {
                         smallMessages.add(message);
