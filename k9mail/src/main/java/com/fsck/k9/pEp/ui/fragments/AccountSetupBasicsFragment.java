@@ -249,7 +249,7 @@ public class AccountSetupBasicsFragment extends Fragment
         boolean clientCertificateChecked = mClientCertificateCheckBox.isChecked();
         boolean oauth2Checked = mOAuth2CheckBox.isChecked();
         String clientCertificateAlias = mClientCertificateSpinner.getAlias();
-        String email = mEmailView.getText().toString();
+        String email = mEmailView.getText().toString().trim();
 
         boolean valid =
                 (oauth2Checked
@@ -322,7 +322,7 @@ public class AccountSetupBasicsFragment extends Fragment
         if (usingXOAuth2)
             email = mAccountSpinner.getSelectedItem().toString();
         else
-            email = mEmailView.getText().toString();
+            email = mEmailView.getText().toString().trim();
         String password = mPasswordView.getText().toString();
         String[] emailParts = splitEmail(email);
         String user = emailParts[0];
@@ -465,7 +465,7 @@ public class AccountSetupBasicsFragment extends Fragment
         if (mOAuth2CheckBox.isChecked()) {
             email = mAccountSpinner.getSelectedItem().toString();
         } else {
-            email = mEmailView.getText().toString();
+            email = mEmailView.getText().toString().trim();
         }
         String[] emailParts = splitEmail(email);
         String user = email;
