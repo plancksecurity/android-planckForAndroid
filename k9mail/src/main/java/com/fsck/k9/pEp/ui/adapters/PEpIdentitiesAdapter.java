@@ -123,16 +123,25 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
                 handshakeText.setText(context.getString(R.string.pep_handshake));
                 handshakeButton.setOnClickListener(onResetRedClick);
                 badge.setVisibility(View.VISIBLE);
+                identityUserName.setTextColor(context.getResources().getColor(R.color.white));
+                identityAdress.setTextColor(context.getResources().getColor(R.color.white));
+                handshakeText.setTextColor(context.getResources().getColor(R.color.white));
             } else if (rating.value >= Rating.pEpRatingTrusted.value){
                 setHandshakeButtonVisibility(address, View.VISIBLE);
                 handshakeButton.setOnClickListener(onResetGreenClick);
                 handshakeText.setText(context.getString(R.string.pep_reset_trust));
                 badge.setVisibility(View.VISIBLE);
+                identityUserName.setTextColor(context.getResources().getColor(R.color.white));
+                identityAdress.setTextColor(context.getResources().getColor(R.color.white));
+                        handshakeText.setTextColor(context.getResources().getColor(R.color.white));
             } else if (rating.value == Rating.pEpRatingReliable.value){
                 setHandshakeButtonVisibility(address, View.VISIBLE);
                 handshakeButton.setOnClickListener(onHandshakeClick);
                 handshakeText.setText(context.getString(R.string.pep_handshake));
                 badge.setVisibility(View.VISIBLE);
+                identityUserName.setTextColor(context.getResources().getColor(R.color.openpgp_black));
+                identityAdress.setTextColor(context.getResources().getColor(R.color.openpgp_black));
+                handshakeText.setTextColor(context.getResources().getColor(R.color.openpgp_black));
             }
             Drawable drawableForRating = PEpUtils.getDrawableForRatingRecipient(context, rating);
             badge.setImageDrawable(drawableForRating);
