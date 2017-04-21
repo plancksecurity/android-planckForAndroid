@@ -40,7 +40,7 @@
                 android:layout_height="match_parent"
                 android:fontFamily="sans-serif-medium"
                 android:text="Large Text"
-                android:textColor="@color/text_for_white_background"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textStyle="bold" />
 
             <TextView
@@ -50,7 +50,7 @@
                 android:id="@+id/pEpSuggestion"
                 android:layout_gravity="left"
                 android:gravity="left"
-                android:textColor="@color/text_for_white_background"
+                android:textColor="?android:attr/textColorPrimary"
                 android:text="New Text" />
         </LinearLayout>
     </LinearLayout>

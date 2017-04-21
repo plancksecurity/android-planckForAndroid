@@ -229,9 +229,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        Context context = new ContextThemeWrapper(inflater.getContext(),
-                K9.getK9ThemeResourceId(K9.getK9MessageViewTheme()));
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService
+                (Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.message, container, false);
 
         mMessageView = (MessageTopView) view.findViewById(R.id.message_view);

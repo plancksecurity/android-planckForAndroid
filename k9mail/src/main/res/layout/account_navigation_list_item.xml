@@ -40,7 +40,7 @@
         android:layout_marginRight="8dp"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@+id/account_image"
-        android:textColor="@android:color/black"
+        android:textColor="?android:attr/textColorPrimary"
         android:layout_marginStart="16dp" />
 
     <TextView
@@ -50,7 +50,7 @@
         android:paddingEnd="16dp"
         android:fontFamily="sans-serif"
         tools:text="20"
-        android:textColor="@android:color/black"
+        android:textColor="?android:attr/textColorPrimary"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true" />
 </RelativeLayout>

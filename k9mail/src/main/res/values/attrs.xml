@@ -38,6 +38,7 @@
         <attr name="iconActionExpand" format="reference" />
         <attr name="iconActionCollapse" format="reference" />
         <attr name="textColorPrimaryRecipientDropdown" format="reference" />
+        <attr name="recipientTokenBackground" format="reference" />
         <attr name="textColorSecondaryRecipientDropdown" format="reference" />
         <attr name="backgroundColorChooseAccountHeader" format="color" />
         <attr name="messageListSelectedBackgroundColor" format="reference|color"/>

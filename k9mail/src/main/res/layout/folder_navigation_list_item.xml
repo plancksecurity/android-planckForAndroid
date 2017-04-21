@@ -22,7 +22,7 @@
         android:layout_marginLeft="72dp"
         android:fontFamily="sans-serif-medium"
         android:layout_centerVertical="true"
-        android:textColor="@android:color/black"
+        android:textColor="?android:attr/textColorPrimary"
         tools:text="Folder name"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"

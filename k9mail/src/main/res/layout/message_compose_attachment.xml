@@ -9,7 +9,7 @@
         android:id="@+id/attachment_layout"
         android:layout_width="match_parent"
         android:layout_height="42dip"
-        android:background="#F8F8F8"
+        android:background="?messageViewAttachmentBackground"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -22,7 +22,7 @@
             android:ellipsize="start"
             android:fontFamily="sans-serif"
             android:singleLine="true"
-            android:textColor="#222222"
+            android:textColor="?android:textColorPrimary"
             tools:text="attachment.png" />
 
         <ProgressBar

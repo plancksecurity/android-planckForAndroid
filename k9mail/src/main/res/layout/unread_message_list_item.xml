@@ -79,7 +79,7 @@
             android:fontFamily="sans-serif-light"
             android:gravity="top"
             android:longClickable="false"
-            android:singleLine="false"
+            android:maxLines="1"
             android:textColor="?android:attr/textColorSecondary"
             android:textSize="14sp"
             tools:text="Preview"

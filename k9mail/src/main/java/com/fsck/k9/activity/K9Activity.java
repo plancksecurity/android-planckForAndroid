@@ -19,6 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 
+import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
@@ -86,6 +87,9 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             setSupportActionBar(toolbar);
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(showUpButton);
+            }
+            if (K9.getK9Theme() == K9.Theme.DARK) {
+                toolbar.setPopupTheme(R.style.PEpThemeOverlay);
             }
         }
     }

@@ -110,6 +110,9 @@ public class K9ListActivity extends AppCompatActivity implements K9ActivityMagic
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(showUpButton);
             }
+            if (K9.getK9Theme() == K9.Theme.DARK) {
+                toolbar.setPopupTheme(R.style.PEpThemeOverlay);
+            }
         }
     }
 

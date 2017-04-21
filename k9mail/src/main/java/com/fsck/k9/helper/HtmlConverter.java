@@ -1340,7 +1340,7 @@ public class HtmlConverter {
     private static String cssStyleTheme() {
         if (K9.getK9MessageViewTheme() == K9.Theme.DARK)  {
             return "<style type=\"text/css\">" +
-                    "* { background: black ! important; color: #F3F3F3 !important }" +
+                    "* { background: #303030 ! important; color: #F3F3F3 !important }" +
                     ":link, :link * { color: #CCFF33 !important }" +
                     ":visited, :visited * { color: #551A8B !important }</style> ";
         } else {

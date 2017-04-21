@@ -34,4 +34,9 @@
 
     <color name="dark_red">#d32f2f</color>
 
+    <color name="attachment_background_light">#F8F8F8</color>
+    <color name="attachment_background_dark">#070707</color>
+    <color name="recipient_token_background_light">#F6F6F6</color>
+    <color name="recipient_token_background_dark">#090909</color>
+
 </resources>

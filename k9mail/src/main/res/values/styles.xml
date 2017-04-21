@@ -89,16 +89,16 @@
 
     <style name="ToolbarTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:textColorPrimary">#FFFFFF</item>
-        <item name="actionMenuTextColor">#FFFFFF</item>
-        <item name="android:textColorSecondary">#FFFFFF</item>
-        <item name="android:actionMenuTextAppearance">@color/white</item>
+        <item name="actionMenuTextColor">?actionMenuTextColor</item>
+        <item name="android:textColorSecondary">@color/white</item>
+        <item name="android:actionMenuTextAppearance">?actionMenuTextAppearance</item>
     </style>
 
     <style name="ToolbarWhiteTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:textColorPrimary">@color/white</item>
-        <item name="actionMenuTextColor">@color/white</item>
+        <item name="actionMenuTextColor">?actionMenuTextColor</item>
         <item name="android:textColorSecondary">@color/white</item>
-        <item name="android:actionMenuTextAppearance">@color/white</item>
+        <item name="android:actionMenuTextAppearance">?actionMenuTextAppearance</item>
     </style>
 
     <style name="PEpStyleButton" parent="Theme.AppCompat.Light">
@@ -111,6 +111,9 @@
         <item name="android:textColor">@color/white</item>
         <item name="colorControlHighlight">@color/dark_red</item>
         <item name="colorButtonNormal">@color/pep_red</item>
+    </style>
+
+    <style name="PEpThemeOverlay" parent="ThemeOverlay.AppCompat.Dark">
     </style>
 </resources>
 

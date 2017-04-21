@@ -30,7 +30,7 @@
             android:layout_toEndOf="@+id/add_account_icon"
             android:fontFamily="sans-serif-medium"
             android:paddingLeft="36dp"
-            android:textColor="@android:color/black"
+            android:textColor="?android:attr/textColorPrimary"
             android:text="@string/add_account_action" />
 
     </RelativeLayout>
@@ -56,7 +56,7 @@
             android:layout_toEndOf="@+id/configure_account_icon"
             android:fontFamily="sans-serif-medium"
             android:paddingLeft="36dp"
-            android:textColor="@android:color/black"
+            android:textColor="?android:attr/textColorPrimary"
             android:text="@string/configure_account_action" />
 
     </RelativeLayout>

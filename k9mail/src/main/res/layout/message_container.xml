@@ -9,7 +9,7 @@
     <com.fsck.k9.view.MessageWebView
         android:id="@+id/message_content"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent" />
+        android:layout_width="match_parent"/>
 
     <!-- Unsigned content area -->
     <LinearLayout
@@ -18,8 +18,7 @@
         android:orientation="vertical"
         android:id="@+id/message_unsigned_container"
         android:visibility="gone"
-        tools:visibility="visible"
-        >
+        tools:visibility="visible" >
 
         <LinearLayout
             android:id="@+id/message_unsigned_divider"
