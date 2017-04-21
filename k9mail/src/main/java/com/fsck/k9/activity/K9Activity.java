@@ -76,11 +76,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 //        Log.i("pEp", "showHandshake: " + myself.fpr + "/n" + partner.fpr);
 //    }
 
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
 
-    }
 
     public void setUpToolbar(boolean showUpButton) {
         if (toolbar != null) {
