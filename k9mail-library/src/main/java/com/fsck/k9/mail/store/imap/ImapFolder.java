@@ -1228,11 +1228,11 @@ class ImapFolder extends Folder<ImapMessage> {
     @NonNull
     private List<Message> filterAppendingMessages(List<? extends Message> messages) {
         List<Message> filteredMessages = new ArrayList<>();
-        List<Long> messageUids = new ArrayList<>();
+        List<String> messageUids = new ArrayList<>();
         for (int i = messages.size() -1 ; i >= 0; i--) {
             Message message = messages.get(i);
-            if (!messageUids.contains(message.getId())) {
-                messageUids.add(message.getId());
+            if (!messageUids.contains(message.getUid())) {
+                messageUids.add(message.getUid());
                 filteredMessages.add(message);
             }
         }
