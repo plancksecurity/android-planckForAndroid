@@ -110,6 +110,14 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         }
     }
 
+    public void initializeToolbar(Boolean showUpButton, String title) {
+        setUpToolbar(showUpButton);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(true);
+            getSupportActionBar().setTitle(title);
+        }
+    }
+
     public void setStatusBarPepColor(Rating pEpRating) {
         Window window = this.getWindow();
 

@@ -10,6 +10,7 @@ import android.webkit.WebView;
 
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
@@ -23,7 +24,7 @@ import butterknife.ButterKnife;
 import static com.fsck.k9.activity.Accounts.USED_LIBRARIES;
 
 
-public class About extends PepColoredActivity {
+public class About extends PepActivity {
 
     @Bind(R.id.about_text) WebView aboutText;
 
@@ -39,7 +40,7 @@ public class About extends PepColoredActivity {
         setUpToolbar(true);
         PEpUtils.colorToolbar(getToolbar(), getResources().getColor(R.color.pep_green));
         String about = getString(R.string.about_action) + " " + getString(R.string.app_name);
-        setToolbarTitle(about);
+        initializeToolbar(true, about);
         onAbout();
     }
 
