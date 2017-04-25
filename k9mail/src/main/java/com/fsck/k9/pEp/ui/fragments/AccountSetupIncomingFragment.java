@@ -3,7 +3,6 @@ package com.fsck.k9.pEp.ui.fragments;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -44,6 +43,10 @@ import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mail.store.imap.ImapStoreSettings;
 import com.fsck.k9.mail.store.webdav.WebDavStoreSettings;
+import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
+import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
+import com.fsck.k9.pEp.infrastructure.modules.FragmentModule;
+import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.service.MailService;
 import com.fsck.k9.view.ClientCertificateSpinner;
@@ -53,9 +56,11 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import static android.app.Activity.RESULT_OK;
 
-public class AccountSetupIncomingFragment extends Fragment {
+public class AccountSetupIncomingFragment extends PEpFragment {
 
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_ACTION = "action";
@@ -63,6 +68,8 @@ public class AccountSetupIncomingFragment extends Fragment {
     private static final String STATE_SECURITY_TYPE_POSITION = "stateSecurityTypePosition";
     private static final String STATE_AUTH_TYPE_POSITION = "authTypePosition";
     private static final String GMAIL_AUTH_TOKEN_TYPE = "oauth2:https://mail.google.com/";
+
+    @Inject PEpSettingsChecker pEpSettingsChecker;
 
     private ServerSettings.Type mStoreType;
     private EditText mUsernameView;
@@ -327,6 +334,17 @@ public class AccountSetupIncomingFragment extends Fragment {
     }
 
     @Override
+    protected void initializeInjector(ApplicationComponent applicationComponent) {
+        applicationComponent.inject(this);
+        DaggerPEpComponent.builder()
+                .applicationComponent(applicationComponent)
+                .fragmentModule(new FragmentModule(this))
+                .pEpModule(new PEpModule(getActivity(), getLoaderManager(), getFragmentManager()))
+                .build()
+                .inject(this);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         switch (itemId) {
@@ -574,16 +592,30 @@ public class AccountSetupIncomingFragment extends Fragment {
                      */
                 }
 
-
-                AccountSetupCheckSettingsFragment accountSetupOutgoingFragment = AccountSetupCheckSettingsFragment.actionCheckSettings(
-                        mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, mMakeDefault, AccountSetupCheckSettingsFragment.INCOMING);
-                getFragmentManager()
-                        .beginTransaction()
-                        .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                        .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
-                        .commit();
+                checkSettings();
             }
         }
+    }
+
+    private void checkSettings() {
+        pEpSettingsChecker.checkSettings(mAccount.getUuid(), AccountSetupCheckSettings.CheckDirection.INCOMING, mMakeDefault, AccountSetupCheckSettingsFragment.INCOMING,
+                false,
+                new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
+                    @Override
+                    public void onError(String customMessage) {
+                        showDialogFragment(customMessage);
+                    }
+
+                    @Override
+                    public void onLoaded(PEpSettingsChecker.Redirection redirection) {
+                        AccountSetupOutgoingFragment accountSetupOutgoingFragment = AccountSetupOutgoingFragment.actionOutgoingSettings(mAccount, false);
+                        getFragmentManager()
+                                .beginTransaction()
+                                .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                                .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
+                                .commit();
+                    }
+                });
     }
 
     protected void onNext() {
@@ -594,14 +626,7 @@ public class AccountSetupIncomingFragment extends Fragment {
                         @Override
                         public void success() {
                             updateAccountSettings("");
-                            AccountSetupCheckSettingsFragment accountSetupOutgoingFragment = AccountSetupCheckSettingsFragment.actionCheckSettings(
-                                    mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, mMakeDefault, AccountSetupCheckSettingsFragment.INCOMING);
-                            getFragmentManager()
-                                    .beginTransaction()
-                                    .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                                    .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
-                                    .addToBackStack(null)
-                                    .commit();
+                            checkSettings();
                         }
 
                         @Override
@@ -612,13 +637,7 @@ public class AccountSetupIncomingFragment extends Fragment {
             return;
         }
         updateAccountSettings(mPasswordView.getText().toString());
-        AccountSetupCheckSettingsFragment accountSetupOutgoingFragment = AccountSetupCheckSettingsFragment.actionCheckSettings(
-                mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, mMakeDefault, AccountSetupCheckSettingsFragment.INCOMING);
-        getFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
-                .commit();
+        checkSettings();
     }
 
     private void fail(Exception use) {

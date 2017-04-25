@@ -2,7 +2,6 @@ package com.fsck.k9.pEp.ui.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.XmlResourceParser;
@@ -41,6 +40,10 @@ import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.pEp.UIUtils;
+import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
+import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
+import com.fsck.k9.pEp.infrastructure.modules.FragmentModule;
+import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.view.ClientCertificateSpinner;
 
 import java.io.Serializable;
@@ -48,9 +51,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 import static android.app.Activity.RESULT_OK;
 
-public class AccountSetupBasicsFragment extends Fragment
+public class AccountSetupBasicsFragment extends PEpFragment
         implements View.OnClickListener, TextWatcher, CompoundButton.OnCheckedChangeListener, ClientCertificateSpinner.OnClientCertificateChangedListener {
     private final static String EXTRA_ACCOUNT = "com.fsck.k9.AccountSetupBasics.account";
     private final static int DIALOG_NOTE = 1;
@@ -79,6 +84,8 @@ public class AccountSetupBasicsFragment extends Fragment
         return mCheckedIncoming;
     }
     private CheckBox mShowPasswordCheckBox;
+
+    @Inject PEpSettingsChecker pEpSettingsChecker;
 
     @Nullable
     @Override
@@ -385,13 +392,20 @@ public class AccountSetupBasicsFragment extends Fragment
 
             // Check incoming here.  Then check outgoing in onActivityResult()
             saveCredentialsInPreferences();
-            AccountSetupCheckSettingsFragment accountSetupOutgoingFragment = AccountSetupCheckSettingsFragment.actionCheckSettings(mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, false, AccountSetupCheckSettingsFragment.LOGIN);
-            getFragmentManager()
-                    .beginTransaction()
-                    .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                    .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
-                    .addToBackStack(null)
-                    .commit();
+            pEpSettingsChecker.checkSettings(mAccount.getUuid(), AccountSetupCheckSettings.CheckDirection.OUTGOING, false, AccountSetupCheckSettingsFragment.LOGIN,
+                    false,
+                    new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
+                        @Override
+                        public void onLoaded(PEpSettingsChecker.Redirection redirection) {
+                            AccountSetupNames.actionSetNames(getActivity(), mAccount);
+                            getActivity().finish();
+                        }
+
+                        @Override
+                        public void onError(String customMessage) {
+                            showDialogFragment(customMessage);
+                        }
+                    });
         } catch (URISyntaxException use) {
             /*
              * If there is some problem with the URI we give up and go on to
@@ -443,12 +457,24 @@ public class AccountSetupBasicsFragment extends Fragment
                 //We've successfully checked incoming.  Now check outgoing.
                 mCheckedIncoming = true;
                 saveCredentialsInPreferences();
-                AccountSetupCheckSettingsFragment accountSetupOutgoingFragment = AccountSetupCheckSettingsFragment.actionCheckSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, false, AccountSetupCheckSettingsFragment.LOGIN);
-                getFragmentManager()
-                        .beginTransaction()
-                        .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                        .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
-                        .commit();
+                pEpSettingsChecker.checkSettings(mAccount.getUuid(), AccountSetupCheckSettings.CheckDirection.OUTGOING, false, AccountSetupCheckSettingsFragment.LOGIN,
+                        false,
+                        new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
+                            @Override
+                            public void onError(String customMessage) {
+                                showDialogFragment(customMessage);
+                            }
+
+                            @Override
+                            public void onLoaded(PEpSettingsChecker.Redirection redirection) {
+                                ChooseAccountTypeFragment chooseAccountTypeFragment = ChooseAccountTypeFragment.actionSelectAccountType(mAccount, false);
+                                getFragmentManager()
+                                        .beginTransaction()
+                                        .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                                        .replace(R.id.account_setup_container, chooseAccountTypeFragment, "chooseAccountTypeFragment")
+                                        .commit();
+                            }
+                        });
             } else {
                 //We've successfully checked outgoing as well.
                 mAccount.setDescription(mAccount.getEmail());
@@ -604,6 +630,17 @@ public class AccountSetupBasicsFragment extends Fragment
         retParts[0] = (emailParts.length > 0) ? emailParts[0] : "";
         retParts[1] = (emailParts.length > 1) ? emailParts[1] : "";
         return retParts;
+    }
+
+    @Override
+    protected void initializeInjector(ApplicationComponent applicationComponent) {
+        applicationComponent.inject(this);
+        DaggerPEpComponent.builder()
+                .applicationComponent(applicationComponent)
+                .fragmentModule(new FragmentModule(this))
+                .pEpModule(new PEpModule(getActivity(), getLoaderManager(), getFragmentManager()))
+                .build()
+                .inject(this);
     }
 
     static class Provider implements Serializable {

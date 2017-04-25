@@ -50,8 +50,7 @@
                 android:layout_below="@id/tvUsername"
                 android:layout_gravity="center_vertical"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                tools:text="Medium Text"
-                tools:visibility="gone" />
+                tools:text="Medium Text" />
         </LinearLayout>
 
     </LinearLayout>

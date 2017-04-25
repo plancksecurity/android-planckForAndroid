@@ -174,7 +174,12 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
         private void renderIdentity(Identity identity) {
             if (identity.username != null && !identity.address.equals(identity.username)) {
                 identityUserName.setText(identity.username);
-                if (identity.address != null) identityAdress.setText(identity.address);
+                if (identity.address != null) {
+                    identityAdress.setVisibility(View.VISIBLE);
+                    identityAdress.setText(identity.address);
+                } else {
+                    identityAdress.setVisibility(View.VISIBLE);
+                }
 
             } else {
                 identityAdress.setVisibility(View.GONE);

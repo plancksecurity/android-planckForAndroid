@@ -1,6 +1,5 @@
 package com.fsck.k9.pEp.ui.fragments;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -25,6 +24,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.account.AccountCreator;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
+import com.fsck.k9.activity.setup.AccountSetupNames;
 import com.fsck.k9.activity.setup.AccountSetupOptions;
 import com.fsck.k9.activity.setup.AuthTypeAdapter;
 import com.fsck.k9.activity.setup.AuthTypeHolder;
@@ -35,15 +35,21 @@ import com.fsck.k9.mail.AuthType;
 import com.fsck.k9.mail.ConnectionSecurity;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
+import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
+import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
+import com.fsck.k9.pEp.infrastructure.modules.FragmentModule;
+import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.view.ClientCertificateSpinner;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.inject.Inject;
+
 import static android.app.Activity.RESULT_OK;
 
-public class AccountSetupOutgoingFragment extends Fragment {
+public class AccountSetupOutgoingFragment extends PEpFragment {
 
     private static final String EXTRA_ACCOUNT = "account";
 
@@ -73,6 +79,8 @@ public class AccountSetupOutgoingFragment extends Fragment {
 
     private View rootView;
     private boolean mEdit;
+
+    @Inject PEpSettingsChecker pEpSettingsChecker;
 
     public static AccountSetupOutgoingFragment actionOutgoingSettings(Account account, boolean makeDefault) {
         AccountSetupOutgoingFragment fragment = new AccountSetupOutgoingFragment();
@@ -105,13 +113,7 @@ public class AccountSetupOutgoingFragment extends Fragment {
         try {
             if (new URI(mAccount.getStoreUri()).getScheme().startsWith("webdav")) {
                 mAccount.setTransportUri(mAccount.getStoreUri());
-                AccountSetupCheckSettingsFragment accountSetupOutgoingFragment = AccountSetupCheckSettingsFragment.actionCheckSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, mMakeDefault, AccountSetupCheckSettingsFragment.OUTGOING);
-                getFragmentManager()
-                        .beginTransaction()
-                        .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                        .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
-                        .addToBackStack(null)
-                        .commit();
+                checkSettings();
             }
         } catch (URISyntaxException e) {
             // TODO Auto-generated catch block
@@ -228,6 +230,22 @@ public class AccountSetupOutgoingFragment extends Fragment {
         initializeViewListeners();
         validateFields();
         return rootView;
+    }
+
+    private void checkSettings() {
+        pEpSettingsChecker.checkSettings(mAccount.getUuid(), AccountSetupCheckSettings.CheckDirection.OUTGOING, mMakeDefault, AccountSetupCheckSettingsFragment.OUTGOING,
+                false,
+                new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
+                    @Override
+                    public void onError(String customMessage) {
+                        showDialogFragment(customMessage);
+                    }
+
+                    @Override
+                    public void onLoaded(PEpSettingsChecker.Redirection redirection) {
+                        AccountSetupNames.actionSetNames(getActivity(), mAccount);
+                    }
+                });
     }
 
     @Override
@@ -504,12 +522,7 @@ public class AccountSetupOutgoingFragment extends Fragment {
         uri = Transport.createTransportUri(server);
         mAccount.deleteCertificate(newHost, newPort, AccountSetupCheckSettings.CheckDirection.OUTGOING);
         mAccount.setTransportUri(uri);
-        AccountSetupCheckSettingsFragment accountSetupOutgoingFragment = AccountSetupCheckSettingsFragment.actionCheckSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, mMakeDefault, AccountSetupCheckSettingsFragment.OUTGOING);
-        getFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
-                .commit();
+        checkSettings();
     }
 
     private void failure(Exception use) {
@@ -550,5 +563,16 @@ public class AccountSetupOutgoingFragment extends Fragment {
     private ConnectionSecurity getSelectedSecurity() {
         ConnectionSecurityHolder holder = (ConnectionSecurityHolder) mSecurityTypeView.getSelectedItem();
         return holder.connectionSecurity;
+    }
+
+    @Override
+    protected void initializeInjector(ApplicationComponent applicationComponent) {
+        applicationComponent.inject(this);
+        DaggerPEpComponent.builder()
+                .applicationComponent(applicationComponent)
+                .fragmentModule(new FragmentModule(this))
+                .pEpModule(new PEpModule(getActivity(), getLoaderManager(), getFragmentManager()))
+                .build()
+                .inject(this);
     }
 }

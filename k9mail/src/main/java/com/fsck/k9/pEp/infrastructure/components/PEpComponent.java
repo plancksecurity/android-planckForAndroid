@@ -2,9 +2,13 @@ package com.fsck.k9.pEp.infrastructure.components;
 
 import com.fsck.k9.pEp.infrastructure.PerActivity;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
+import com.fsck.k9.pEp.infrastructure.modules.FragmentModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.About;
 import com.fsck.k9.pEp.ui.blacklist.PepBlacklist;
+import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
+import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
+import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys;
 import com.fsck.k9.pEp.ui.keysync.KeysyncManagement;
 import com.fsck.k9.pEp.ui.keysync.PEpAddDevice;
@@ -15,7 +19,7 @@ import dagger.Component;
 
 @PerActivity
 @Component(dependencies = ApplicationComponent.class, modules = {
-        ActivityModule.class, PEpModule.class
+        ActivityModule.class, FragmentModule.class, PEpModule.class
 }) public interface PEpComponent extends ActivityComponent {
 
     void inject(PEpStatus pEpStatus);
@@ -31,4 +35,10 @@ import dagger.Component;
     void inject(PepExtraKeys pepExtraKeys);
 
     void inject(PepBlacklist pepBlacklist);
+
+    void inject(AccountSetupBasicsFragment accountSetupBasicsFragment);
+
+    void inject(AccountSetupIncomingFragment accountSetupIncomingFragment);
+
+    void inject(AccountSetupOutgoingFragment accountSetupOutgoingFragment);
 }
