@@ -21,12 +21,6 @@ public abstract class PepActivity extends K9Activity {
         /* no-op */
     }
 
-    public void setToolbarTitle(String title) {
-        if (getSupportActionBar() != null) {
-            setTitle(title);
-        }
-    }
-
     protected void initPep() {
         uiCache = PePUIArtefactCache.getInstance(getApplicationContext());
         pEp = ((K9) getApplication()).getpEpProvider();

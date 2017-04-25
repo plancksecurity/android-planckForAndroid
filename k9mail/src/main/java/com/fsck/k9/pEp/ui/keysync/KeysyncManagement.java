@@ -5,16 +5,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
-import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.ui.adapters.IdentitiesAdapter;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
@@ -28,7 +29,7 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class KeysyncManagement extends PepColoredActivity implements KeysyncManagementView {
+public class KeysyncManagement extends PepActivity implements KeysyncManagementView {
 
     @Inject
     KeysyncManagerPresenter presenter;
@@ -47,6 +48,7 @@ public class KeysyncManagement extends PepColoredActivity implements KeysyncMana
         ButterKnife.bind(this);
         initPep();
         initializePresenter();
+        initializeToolbar(true, R.string.master_key_management);
     }
 
     private void initializePresenter() {
@@ -76,5 +78,14 @@ public class KeysyncManagement extends PepColoredActivity implements KeysyncMana
     @Override
     public void showError() {
         FeedbackTools.showShortFeedback(getRootView() ,getResources().getString(R.string.openpgp_unknown_error));
+    }
+
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return true;
     }
 }
