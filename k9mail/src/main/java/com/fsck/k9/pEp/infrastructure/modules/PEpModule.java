@@ -5,6 +5,8 @@ import android.app.LoaderManager;
 import android.content.Context;
 
 import com.fsck.k9.pEp.ui.SimpleMessageLoaderHelper;
+import com.fsck.k9.pEp.ui.fragments.PEpSettingsCheck;
+import com.fsck.k9.pEp.ui.fragments.PEpSettingsChecker;
 
 import dagger.Module;
 import dagger.Provides;
@@ -24,5 +26,10 @@ public class PEpModule {
     @Provides
     public SimpleMessageLoaderHelper providesSimpleMessageLoaderHelper() {
         return new SimpleMessageLoaderHelper(context, loaderManager, fragmentManager);
+    }
+
+    @Provides
+    public PEpSettingsChecker providePEpSettingsCheck() {
+        return new PEpSettingsCheck(context.getApplicationContext());
     }
 }

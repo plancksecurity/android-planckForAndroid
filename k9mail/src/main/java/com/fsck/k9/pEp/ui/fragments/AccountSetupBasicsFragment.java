@@ -42,7 +42,6 @@ import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.pEp.UIUtils;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
-import com.fsck.k9.pEp.infrastructure.modules.FragmentModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.view.ClientCertificateSpinner;
 
@@ -637,7 +636,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
         applicationComponent.inject(this);
         DaggerPEpComponent.builder()
                 .applicationComponent(applicationComponent)
-                .fragmentModule(new FragmentModule(this))
                 .pEpModule(new PEpModule(getActivity(), getLoaderManager(), getFragmentManager()))
                 .build()
                 .inject(this);

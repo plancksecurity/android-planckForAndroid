@@ -45,7 +45,6 @@ import com.fsck.k9.mail.store.imap.ImapStoreSettings;
 import com.fsck.k9.mail.store.webdav.WebDavStoreSettings;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
-import com.fsck.k9.pEp.infrastructure.modules.FragmentModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.service.MailService;
@@ -338,7 +337,6 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         applicationComponent.inject(this);
         DaggerPEpComponent.builder()
                 .applicationComponent(applicationComponent)
-                .fragmentModule(new FragmentModule(this))
                 .pEpModule(new PEpModule(getActivity(), getLoaderManager(), getFragmentManager()))
                 .build()
                 .inject(this);
