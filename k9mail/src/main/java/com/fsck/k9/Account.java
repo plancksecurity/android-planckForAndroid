@@ -330,7 +330,7 @@ public class Account implements BaseAccount, StoreConfig {
         goToUnreadMessageSearch = false;
         subscribedFoldersOnly = false;
         maximumPolledMessageAge = -1;
-        maximumAutoDownloadMessageSize = 32768;
+        maximumAutoDownloadMessageSize = 0;
         mMessageFormat = DEFAULT_MESSAGE_FORMAT;
         mMessageFormatAuto = DEFAULT_MESSAGE_FORMAT_AUTO;
         mMessageReadReceipt = DEFAULT_MESSAGE_READ_RECEIPT;
