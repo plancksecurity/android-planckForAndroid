@@ -208,9 +208,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
         messageCryptoPresenter.onSaveInstanceState(outState);
+
+        super.onSaveInstanceState(outState);
     }
 
     @Override
