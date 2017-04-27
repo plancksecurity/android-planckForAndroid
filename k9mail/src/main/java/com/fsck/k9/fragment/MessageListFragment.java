@@ -2976,7 +2976,10 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     }
 
     public boolean isFirst(MessageReference messageReference) {
-        return mAdapter.isEmpty() || messageReference.equals(getReferenceForPosition(0));
+        return mAdapter.isEmpty() ||
+                (messageReference != null &&
+                        messageReference.equals(
+                                getReferenceForPosition(0)));
     }
 
     public boolean isLast(MessageReference messageReference) {
