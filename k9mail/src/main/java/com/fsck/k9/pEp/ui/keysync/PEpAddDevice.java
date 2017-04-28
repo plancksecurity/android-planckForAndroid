@@ -121,6 +121,9 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.home:
+                finish();
+                break;
             case R.id.action_advanced_options:
                 if (advancedOptionsMenuItem.getTitle().equals(getResources().getString(R.string.advanced_options))) {
                     advancedOptionsMenuItem.setTitle(R.string.basic_options);
