@@ -222,8 +222,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             messageLoaderHelper.onDestroyChangingConfigurations();
             return;
         }
-
-        messageLoaderHelper.onDestroy();
+        if (messageLoaderHelper != null) {
+            messageLoaderHelper.onDestroy();
+        }
     }
 
     @Override
