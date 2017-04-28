@@ -171,10 +171,15 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     }
 
     public void showSearchView() {
-        if (toolbarSearchContainer != null && toolbar != null) {
-            toolbarSearchContainer.setVisibility(View.VISIBLE);
-            toolbar.setVisibility(View.GONE);
-            setFocusOnKeyboard();
+        if(Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP ||
+                Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1) {
+            onSearchRequested();
+        } else {
+            if (toolbarSearchContainer != null && toolbar != null) {
+                toolbarSearchContainer.setVisibility(View.VISIBLE);
+                toolbar.setVisibility(View.GONE);
+                setFocusOnKeyboard();
+            }
         }
     }
 
