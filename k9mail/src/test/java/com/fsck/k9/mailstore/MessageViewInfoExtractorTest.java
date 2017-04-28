@@ -29,14 +29,17 @@ import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mail.internet.Viewable;
 import com.fsck.k9.mail.internet.Viewable.MessageHeader;
 import com.fsck.k9.mailstore.MessageViewInfoExtractor.ViewableExtractedText;
+import com.fsck.k9.message.html.HtmlProcessor;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertSame;
-import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -58,10 +61,8 @@ public class MessageViewInfoExtractorTest {
 
         GlobalsHelper.setContext(context);
 
-        HtmlSanitizer dummyHtmlSanitizer = HtmlSanitizerHelper.getDummyHtmlSanitizer();
-
-        messageViewInfoExtractor = new MessageViewInfoExtractor(context,
-                null, dummyHtmlSanitizer);
+        HtmlProcessor htmlProcessor = createFakeHtmlProcessor();
+        messageViewInfoExtractor = new MessageViewInfoExtractor(context,null, htmlProcessor);
     }
 
     @Test
@@ -75,11 +76,11 @@ public class MessageViewInfoExtractorTest {
         message.setHeader(MimeHeader.HEADER_CONTENT_TYPE, "text/plain; format=flowed");
 
         // Prepare fixture
-        HtmlSanitizer htmlSanitizer = mock(HtmlSanitizer.class);
+        HtmlProcessor htmlProcessor = mock(HtmlProcessor.class);
         MessageViewInfoExtractor messageViewInfoExtractor =
-                new MessageViewInfoExtractor(context, null, htmlSanitizer);
+                new MessageViewInfoExtractor(context, null, htmlProcessor);
         String value = "--sanitized html--";
-        when(htmlSanitizer.sanitize(any(String.class))).thenReturn(value);
+        when(htmlProcessor.processForDisplay(anyString())).thenReturn(value);
 
         // Extract text
         List<Part> outputNonViewableParts = new ArrayList<>();
@@ -114,7 +115,7 @@ public class MessageViewInfoExtractorTest {
                 "</pre>";
 
         assertEquals(expectedText, container.text);
-        assertEquals(expectedHtml, getHtmlBodyText(container.html));
+        assertEquals(expectedHtml, container.html);
     }
 
     @Test
@@ -141,7 +142,7 @@ public class MessageViewInfoExtractorTest {
                         "</pre>";
 
         assertEquals(expectedText, container.text);
-        assertEquals(expectedHtml, getHtmlBodyText(container.html));
+        assertEquals(expectedHtml, container.html);
     }
 
     @Test
@@ -167,7 +168,7 @@ public class MessageViewInfoExtractorTest {
                 bodyText;
 
         assertEquals(expectedText, container.text);
-        assertEquals(expectedHtml, getHtmlBodyText(container.html));
+        assertEquals(expectedHtml, container.html);
     }
 
     @Test
@@ -212,12 +213,11 @@ public class MessageViewInfoExtractorTest {
 
 
         assertEquals(expectedText, container.text);
-        assertEquals(expectedHtml, getHtmlBodyText(container.html));
+        assertEquals(expectedHtml, container.html);
     }
 
     @Test
     public void testTextPlusRfc822Message() throws MessagingException {
-        K9ActivityCommon.setLanguage(context, "en");
         Locale.setDefault(Locale.US);
         TimeZone.setDefault(TimeZone.getTimeZone("GMT+01:00"));
 
@@ -231,7 +231,7 @@ public class MessageViewInfoExtractorTest {
 
         // Create message/rfc822 body
         MimeMessage innerMessage = new MimeMessage();
-        innerMessage.addSentDate(new Date(112, 02, 17), false);
+        innerMessage.addSentDate(new Date(112, 2, 17), false);
         innerMessage.setRecipients(RecipientType.TO, new Address[] { new Address("to@example.com") });
         innerMessage.setSubject("Subject");
         innerMessage.setFrom(new Address("from@example.com"));
@@ -292,7 +292,7 @@ public class MessageViewInfoExtractorTest {
                 "</pre>";
 
         assertEquals(expectedText, container.text);
-        assertEquals(expectedHtml, getHtmlBodyText(container.html));
+        assertEquals(expectedHtml, container.html);
     }
 
     @Test
@@ -357,13 +357,19 @@ public class MessageViewInfoExtractorTest {
         ViewableExtractedText firstMessageExtractedText =
                 messageViewInfoExtractor.extractTextFromViewables(outputViewableParts);
         assertEquals(expectedExtractedText, firstMessageExtractedText.text);
-        assertEquals(expectedHtmlText, getHtmlBodyText(firstMessageExtractedText.html));
+        assertEquals(expectedHtmlText, firstMessageExtractedText.html);
     }
 
-    private static String getHtmlBodyText(String htmlText) {
-        htmlText = htmlText.substring(htmlText.indexOf("<body>") +6);
-        htmlText = htmlText.substring(0, htmlText.indexOf("</body>"));
-        return htmlText;
-    }
+    HtmlProcessor createFakeHtmlProcessor() {
+        HtmlProcessor htmlProcessor = mock(HtmlProcessor.class);
 
+        when(htmlProcessor.processForDisplay(anyString())).thenAnswer(new Answer<String>() {
+            @Override
+            public String answer(InvocationOnMock invocation) throws Throwable {
+                return (String) invocation.getArguments()[0];
+            }
+        });
+
+        return htmlProcessor;
+    }
 }
