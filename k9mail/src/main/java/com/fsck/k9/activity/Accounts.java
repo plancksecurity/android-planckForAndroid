@@ -1357,7 +1357,6 @@ public class Accounts extends PepPermissionActivity {
         new String[] {"JZlib", "http://www.jcraft.com/jzlib/"},
         new String[] {"Commons IO", "http://commons.apache.org/io/"},
         new String[] {"Mime4j", "http://james.apache.org/mime4j/"},
-        new String[] {"HtmlCleaner", "http://htmlcleaner.sourceforge.net/"},
         new String[] {"Android-PullToRefresh", "https://github.com/chrisbanes/Android-PullToRefresh"},
 //        new String[] {"ckChangeLog", "https://github.com/cketti/ckChangeLog"},
         new String[] {"HoloColorPicker", "https://github.com/LarsWerkman/HoloColorPicker"},
@@ -1423,8 +1422,7 @@ public class Accounts extends PepPermissionActivity {
                               "<div>TypePad \u7d75\u6587\u5b57\u30a2\u30a4\u30b3\u30f3\u753b\u50cf " +
                               "(<a href=\"http://typepad.jp/\">Six Apart Ltd</a>) / " +
                               "<a href=\"http://creativecommons.org/licenses/by/2.1/jp/\">CC BY 2.1</a></div>"))
-        .append("</p><hr/><p>")
-        .append(getString(R.string.app_htmlcleaner_license));
+        .append("</p>");
 
 
         wv.loadDataWithBaseURL("file:///android_res/drawable/", html.toString(), "text/html", "utf-8", null);
