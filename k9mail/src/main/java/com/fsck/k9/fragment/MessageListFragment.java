@@ -1021,6 +1021,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                     checkMail();
                 }
                 mSwipeRefreshLayout.setRefreshing(false);
+                mSwipeRefreshLayout.setEnabled(false);
             }
         });
     }
@@ -1501,6 +1502,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     class MessageListActivityListener extends ActivityListener {
         @Override
         public void remoteSearchFailed(String folder, final String err) {
+            mSwipeRefreshLayout.setEnabled(true);
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -1534,7 +1536,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                 mHandler.updateFooter(null);
             }
             mFragmentListener.setMessageListProgress(Window.PROGRESS_END);
-
+            mSwipeRefreshLayout.setEnabled(true);
         }
 
         @Override
@@ -1571,6 +1573,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                 mHandler.progress(false);
                 mHandler.folderLoading(folder, false);
             }
+            mSwipeRefreshLayout.setEnabled(true);
             super.synchronizeMailboxFinished(account, folder, totalMessagesInMailbox, numNewMessages);
         }
 
@@ -1581,6 +1584,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                 mHandler.progress(false);
                 mHandler.folderLoading(folder, false);
             }
+            mSwipeRefreshLayout.setEnabled(true);
             super.synchronizeMailboxFailed(account, folder, message);
         }
 
