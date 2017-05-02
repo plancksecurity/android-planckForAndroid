@@ -20,6 +20,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -27,6 +28,7 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.account.AccountCreator;
 import com.fsck.k9.activity.K9Activity;
+import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.activity.setup.AuthTypeAdapter;
 import com.fsck.k9.activity.setup.AuthTypeHolder;
@@ -330,6 +332,8 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        View.OnClickListener onClickListener = v -> Preferences.getPreferences(getActivity()).deleteAccount(mAccount);
+        ((AccountSetupBasics) getActivity()).setHomeButtonListener(onClickListener);
     }
 
     @Override
@@ -347,7 +351,8 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         int itemId = item.getItemId();
         switch (itemId) {
             case android.R.id.home: {
-                getActivity().finish();
+                Toast.makeText(getActivity(), "PITA", Toast.LENGTH_SHORT).show();
+                //getActivity().finish();
                 return true;
             }
         }

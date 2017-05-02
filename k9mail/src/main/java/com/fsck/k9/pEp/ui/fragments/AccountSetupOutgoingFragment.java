@@ -23,6 +23,7 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.account.AccountCreator;
 import com.fsck.k9.activity.K9Activity;
+import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.activity.setup.AccountSetupNames;
 import com.fsck.k9.activity.setup.AccountSetupOptions;
@@ -229,6 +230,13 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         initializeViewListeners();
         validateFields();
         return rootView;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ((AccountSetupBasics) getActivity()).setHomeButtonListener(v -> {
+        });
     }
 
     private void checkSettings() {

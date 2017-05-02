@@ -402,6 +402,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
                         @Override
                         public void onError(String customMessage) {
+                            Preferences.getPreferences(getActivity()).deleteAccount(mAccount);
                             showDialogFragment(customMessage);
                         }
                     });

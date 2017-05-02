@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
@@ -23,6 +24,7 @@ import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
 public class AccountSetupBasics extends K9Activity {
 
     private AccountSetupBasicsFragment accountSetupBasicsFragment;
+    private View.OnClickListener homeButtonListener;
 
     public static void actionNewAccount(Context context) {
         Intent i = new Intent(context, AccountSetupBasics.class);
@@ -61,10 +63,17 @@ public class AccountSetupBasics extends K9Activity {
         int itemId = item.getItemId();
         switch (itemId) {
             case android.R.id.home: {
+                if (homeButtonListener != null) {
+                    homeButtonListener.onClick(item.getActionView());
+                }
                 finish();
                 return true;
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void setHomeButtonListener(View.OnClickListener onClickListener) {
+        this.homeButtonListener = onClickListener;
     }
 }
