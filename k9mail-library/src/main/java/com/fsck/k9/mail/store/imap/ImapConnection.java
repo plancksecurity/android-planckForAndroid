@@ -378,6 +378,7 @@ class ImapConnection {
         try {
             attemptXOAuth2();
         } catch (NegativeImapResponseException e) {
+            //TODO: Check response code so we don't needlessly invalidate the token.
             oauthTokenProvider.invalidateToken(settings.getUsername());
 
             if (!retryXoauth2WithNewToken) {
@@ -458,7 +459,7 @@ class ImapConnection {
         try {
             extractCapabilities(responseParser.readStatusResponse(tag, command, getLogId(), null));
         } catch (NegativeImapResponseException e) {
-            throw new AuthenticationFailedException(e.getMessage());
+            handleAuthenticationFailure(e);
         }
     }
 
@@ -491,11 +492,7 @@ class ImapConnection {
         try {
             extractCapabilities(responseParser.readStatusResponse(tag, command, getLogId(), null));
         } catch (NegativeImapResponseException e) {
-            if (e.wasByeResponseReceived()) {
-                close();
-            }
-            
-            throw new AuthenticationFailedException(e.getMessage());
+            handleAuthenticationFailure(e);
         }
     }
 
@@ -516,7 +513,7 @@ class ImapConnection {
             String command = String.format(Commands.LOGIN + " \"%s\" \"%s\"", username, password);
             extractCapabilities(executeSimpleCommand(command, true));
         } catch (NegativeImapResponseException e) {
-            throw new AuthenticationFailedException(e.getMessage());
+            handleAuthenticationFailure(e);
         }
     }
 
@@ -533,6 +530,23 @@ class ImapConnection {
              * AccountSetupCheckSettings.
              */
             throw new CertificateValidationException(e.getMessage());
+        }
+    }
+
+    private void handleAuthenticationFailure(NegativeImapResponseException e) throws MessagingException {
+        ImapResponse lastResponse = e.getLastResponse();
+        String responseCode = ResponseCodeExtractor.getResponseCode(lastResponse);
+
+        // If there's no response code we simply assume it was an authentication failure.
+        if (responseCode == null || responseCode.equals(ResponseCodeExtractor.AUTHENTICATION_FAILED)) {
+            if (e.wasByeResponseReceived()) {
+                close();
+            }
+
+            throw new AuthenticationFailedException(e.getMessage());
+        } else {
+            close();
+            throw e;
         }
     }
 

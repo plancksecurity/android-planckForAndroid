@@ -20,7 +20,7 @@ class NegativeImapResponseException extends MessagingException {
 
     public String getAlertText() {
         if (alertText == null) {
-            ImapResponse lastResponse = responses.get(responses.size() - 1);
+            ImapResponse lastResponse = getLastResponse();
             alertText = AlertResponse.getAlertText(lastResponse);
         }
 
@@ -35,5 +35,9 @@ class NegativeImapResponseException extends MessagingException {
         }
 
         return false;
+    }
+
+    public ImapResponse getLastResponse() {
+        return responses.get(responses.size() - 1);
     }
 }
