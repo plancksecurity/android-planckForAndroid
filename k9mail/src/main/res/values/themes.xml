@@ -74,7 +74,7 @@
         <item name="openpgp_grey">#bbb</item>
         <item name="openpgp_dark_grey">#888</item>
 
-        <item name="android:background">@android:color/background_light</item>
+        <item name="background">@android:color/background_light</item>
         <item name="recipientTokenBackground">@color/recipient_token_background_light</item>
     </style>
 
@@ -150,7 +150,7 @@
         <item name="openpgp_grey">#bbb</item>
         <item name="openpgp_dark_grey">#888</item>
 
-        <item name="android:background">@android:color/background_dark</item>
+        <item name="background">@android:color/background_dark</item>
         <item name="recipientTokenBackground">@color/recipient_token_background_dark</item>
     </style>
 
