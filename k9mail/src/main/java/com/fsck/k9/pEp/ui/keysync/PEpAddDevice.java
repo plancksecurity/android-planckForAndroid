@@ -324,6 +324,13 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
         return true;
     }
 
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(receiver);
+    }
+
     public class DismissKeysyncDialogReceiver extends BroadcastReceiver {
         public DismissKeysyncDialogReceiver() {
         }
