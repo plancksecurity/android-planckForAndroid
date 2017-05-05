@@ -5,6 +5,7 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
@@ -18,6 +19,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -100,6 +102,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     private AuthTypeAdapter mAuthTypeAdapter;
     private ConnectionSecurity[] mConnectionSecurityChoices = ConnectionSecurity.values();
     private View rootView;
+    private ContentLoadingProgressBar nextProgressBar;
 
     public static AccountSetupIncomingFragment actionIncomingSettings(Account account, boolean makeDefault) {
         AccountSetupIncomingFragment fragment = new AccountSetupIncomingFragment();
@@ -143,6 +146,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         mWebdavAuthPathView = (EditText)rootView.findViewById(R.id.webdav_auth_path);
         mWebdavMailboxPathView = (EditText)rootView.findViewById(R.id.webdav_mailbox_path);
         mNextButton = (Button)rootView.findViewById(R.id.next);
+        nextProgressBar = (ContentLoadingProgressBar) rootView.findViewById(R.id.next_progressbar);
         mCompressionMobile = (CheckBox)rootView.findViewById(R.id.compression_mobile);
         mCompressionWifi = (CheckBox)rootView.findViewById(R.id.compression_wifi);
         mCompressionOther = (CheckBox)rootView.findViewById(R.id.compression_other);
@@ -606,6 +610,9 @@ public class AccountSetupIncomingFragment extends PEpFragment {
                 new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
                     @Override
                     public void onError(String customMessage) {
+                        nextProgressBar.hide();
+                        mNextButton.setVisibility(View.VISIBLE);
+                        rootView.setEnabled(true);
                         showDialogFragment(customMessage);
                     }
 
@@ -622,6 +629,9 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     }
 
     protected void onNext() {
+        nextProgressBar.show();
+        mNextButton.setVisibility(View.GONE);
+        rootView.setEnabled(false);
         AuthType authType = getSelectedAuthType();
         if (authType == AuthType.XOAUTH2) {
             K9.oAuth2TokenStore.authorizeAPI(mAccount.getEmail(), getActivity(),

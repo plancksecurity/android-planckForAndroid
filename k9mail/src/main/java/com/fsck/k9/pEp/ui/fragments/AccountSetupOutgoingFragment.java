@@ -2,6 +2,7 @@ package com.fsck.k9.pEp.ui.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
@@ -81,6 +82,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     private boolean mEdit;
 
     @Inject PEpSettingsChecker pEpSettingsChecker;
+    private ContentLoadingProgressBar nextProgressBar;
 
     public static AccountSetupOutgoingFragment actionOutgoingSettings(Account account, boolean makeDefault) {
         AccountSetupOutgoingFragment fragment = new AccountSetupOutgoingFragment();
@@ -133,6 +135,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         mSecurityTypeView = (Spinner)rootView.findViewById(R.id.account_security_type);
         mAuthTypeView = (Spinner)rootView.findViewById(R.id.account_auth_type);
         mNextButton = (Button)rootView.findViewById(R.id.next);
+        nextProgressBar = (ContentLoadingProgressBar) rootView.findViewById(R.id.next_progressbar);
 
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -245,6 +248,9 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
                 new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
                     @Override
                     public void onError(String customMessage) {
+                        nextProgressBar.hide();
+                        mNextButton.setVisibility(View.VISIBLE);
+                        rootView.setEnabled(true);
                         showDialogFragment(customMessage);
                     }
 
@@ -508,6 +514,9 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     }
 
     protected void onNext() {
+        nextProgressBar.show();
+        mNextButton.setVisibility(View.GONE);
+        rootView.setEnabled(false);
         ConnectionSecurity securityType = getSelectedSecurity();
         String uri;
         String username = null;

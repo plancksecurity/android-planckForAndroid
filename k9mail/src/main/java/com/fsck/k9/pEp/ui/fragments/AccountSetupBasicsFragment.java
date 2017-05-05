@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -20,6 +21,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import com.fsck.k9.Account;
@@ -78,6 +80,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private EmailAddressValidator mEmailValidator = new EmailAddressValidator();
 
     private boolean mCheckedIncoming = false;
+    private ContentLoadingProgressBar nextProgressBar;
+    private View rootView;
 
     public boolean ismCheckedIncoming() {
         return mCheckedIncoming;
@@ -89,7 +93,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_account_login, container, false);
+        rootView = inflater.inflate(R.layout.fragment_account_login, container, false);
         setupToolbar();
         mEmailView = (EditText) rootView.findViewById(R.id.account_email);
         mPasswordView = (EditText) rootView.findViewById(R.id.account_password);
@@ -102,6 +106,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
                 getActivity(), R.layout.simple_spinner_item, accountTokenStore.getAccounts());
         mAccountSpinner.setAdapter(adapter);
         mNextButton = (Button) rootView.findViewById(R.id.next);
+        nextProgressBar = (ContentLoadingProgressBar) rootView.findViewById(R.id.next_progressbar);
         mManualSetupButton = (Button) rootView.findViewById(R.id.manual_setup);
         mShowPasswordCheckBox = (CheckBox) rootView.findViewById(R.id.show_password);
         mNextButton.setOnClickListener(this);
@@ -402,6 +407,9 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
                         @Override
                         public void onError(String customMessage) {
+                            nextProgressBar.hide();
+                            mNextButton.setVisibility(View.VISIBLE);
+                            enableViewGroup(true, (ViewGroup) rootView);
                             Preferences.getPreferences(getActivity()).deleteAccount(mAccount);
                             showDialogFragment(customMessage);
                         }
@@ -420,6 +428,9 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void onNext() {
+        nextProgressBar.show();
+        mNextButton.setVisibility(View.GONE);
+        enableViewGroup(false, (ViewGroup) rootView);
         if (mClientCertificateCheckBox.isChecked() || mOAuth2CheckBox.isChecked()) {
             // Auto-setup doesn't support client certificates.
             onManualSetup();
@@ -450,6 +461,18 @@ public class AccountSetupBasicsFragment extends PEpFragment
         }
     }
 
+    private void enableViewGroup(boolean enable, ViewGroup viewGroup) {
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            View child = viewGroup.getChildAt(i);
+            if (child instanceof ViewGroup) {
+                enableViewGroup(enable, ((ViewGroup) child));
+            } else {
+                child.setEnabled(enable);
+            }
+        }
+
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
@@ -462,6 +485,9 @@ public class AccountSetupBasicsFragment extends PEpFragment
                         new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
                             @Override
                             public void onError(String customMessage) {
+                                nextProgressBar.hide();
+                                mNextButton.setVisibility(View.VISIBLE);
+                                enableViewGroup(getAllowEnterTransitionOverlap(), (ViewGroup) rootView);
                                 showDialogFragment(customMessage);
                             }
 
