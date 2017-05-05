@@ -411,6 +411,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
                             mNextButton.setVisibility(View.VISIBLE);
                             enableViewGroup(true, (ViewGroup) rootView);
                             Preferences.getPreferences(getActivity()).deleteAccount(mAccount);
+                            mAccount = null;
                             showDialogFragment(customMessage);
                         }
                     });
@@ -485,6 +486,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
                         new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
                             @Override
                             public void onError(String customMessage) {
+                                mAccount = null;
                                 nextProgressBar.hide();
                                 mNextButton.setVisibility(View.VISIBLE);
                                 enableViewGroup(getAllowEnterTransitionOverlap(), (ViewGroup) rootView);
