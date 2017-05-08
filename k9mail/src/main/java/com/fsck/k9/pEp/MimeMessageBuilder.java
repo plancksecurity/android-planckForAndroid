@@ -195,7 +195,7 @@ class MimeMessageBuilder extends MessageBuilder {
             Blob attachment = attachments.get(i);
             String contentType = attachment.mime_type;
             String filename = attachment.filename;
-            Log.d("pep", "MimeMessageBuilder: BLOB #" + i + ":" + contentType + ":" + filename);
+//            Log.d("pep", "MimeMessageBuilder: BLOB #" + i + ":" + contentType + ":" + filename);
 
             if (filename != null)
                 filename = EncoderUtil.encodeIfNecessary(filename, EncoderUtil.Usage.WORD_ENTITY, 7);

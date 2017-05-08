@@ -151,7 +151,7 @@ class PEpMessageBuilder {
         blob.mime_type = mimeType;
         blob.data = data;
         attachments.add(blob);
-        Log.d("pep", "PePMessageBuilder: BLOB #" + attachments.size() + ":" + mimeType + ":" + filename);
+//        Log.d("pep", "PePMessageBuilder: BLOB #" + attachments.size() + ":" + mimeType + ":" + filename);
 
 
     }
