@@ -8,7 +8,6 @@ package com.fsck.k9.pEp.ui.adapters;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -172,7 +171,8 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
         }
 
         private void renderIdentity(Identity identity) {
-            if (identity.username != null && !identity.address.equals(identity.username)) {
+            if (identity.username != null && !identity.address.equals(identity.username) && !
+                    identity.username.isEmpty()) {
                 identityUserName.setText(identity.username);
                 if (identity.address != null) {
                     identityAdress.setVisibility(View.VISIBLE);
@@ -182,9 +182,9 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
                 }
 
             } else {
-                identityAdress.setVisibility(View.GONE);
-                if (identity.address != null) identityUserName.setText(identity.address);
-
+                identityUserName.setVisibility(View.GONE);
+                identityAdress.setVisibility(View.VISIBLE);
+                identityAdress.setText(identity.address);
             }
         }
     }
