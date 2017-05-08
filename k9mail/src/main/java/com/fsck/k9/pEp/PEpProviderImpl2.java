@@ -724,7 +724,6 @@ public class PEpProviderImpl2 implements PEpProvider {
         engine.blacklist_delete(fpr);
     }
 
-    @Override
     public synchronized com.fsck.k9.mail.Message getMimeMessage(Message message) {
         try {
             return getMimeMessage(null, message);

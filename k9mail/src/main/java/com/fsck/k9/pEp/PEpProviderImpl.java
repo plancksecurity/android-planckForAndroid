@@ -301,7 +301,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @NonNull
-    private MimeMessage getMimeMessage(MimeMessage source, Message message) throws MessagingException {
+    private static MimeMessage getMimeMessage(MimeMessage source, Message message) throws MessagingException {
         Boolean isRequestedFromPEpMessage = source == null;
 
         MimeMessageBuilder builder = new MimeMessageBuilder(message).newInstance();
@@ -800,8 +800,7 @@ public class PEpProviderImpl implements PEpProvider {
         engine.blacklist_delete(fpr);
     }
 
-    @Override
-    public synchronized com.fsck.k9.mail.Message getMimeMessage(Message message) {
+    public static com.fsck.k9.mail.Message getMimeMessage(Message message) {
         try {
             return getMimeMessage(null, message);
         } catch (MessagingException e) {

@@ -100,7 +100,7 @@ public class K9 extends Application {
     public static Application app = null;
     public static AndroidAccountOAuth2TokenStore oAuth2TokenStore = null;
     public static File tempDirectory;
-    public static final String LOG_TAG = "k9";
+    public static final String LOG_TAG = "k9pEp";
 
     /**
      * Name of the {@link SharedPreferences} file used to store the last known version of the
@@ -718,26 +718,7 @@ public class K9 extends Application {
             }
         });
 
-        pEpSyncProvider.setSyncSendMessageCallback(new Sync.MessageToSendCallback() {
-            @Override
-            public void messageToSend(org.pEp.jniadapter.Message pEpMessage) {
-                try {
-
-                    MessagingController messagingController = MessagingController.getInstance(K9.this);
-                    Log.i(AndroidHelper.TAG, "messageToSend: ");
-
-                    loadCurrentAccount(pEpMessage, messagingController);
-                    Message message = pEpSyncProvider.getMimeMessage(pEpMessage);
-                    message.setFlag(Flag.X_PEP_SYNC_MESSAGE_TO_SEND, true);
-                    messagingController.sendMessage(currentAccount, message, null);
-
-                    Log.e("PEPJNI", "messageToSend: " + pEpMessage.getShortmsg());
-                    Log.e("PEPJNI", "messageToSend: " + pEpMessage.getLongmsg());
-                } catch (MessagingException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        pEpSyncProvider.setSyncSendMessageCallback(MessagingController.getInstance(K9.this));
 
         pEpSyncProvider.setFastPollingCallback(new Sync.NeedsFastPollCallback() {
             @Override
@@ -768,17 +749,6 @@ public class K9 extends Application {
         catch (PendingIntent.CanceledException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }
-    }
-
-    private void loadCurrentAccount(org.pEp.jniadapter.Message pEpMessage, MessagingController messagingController) {
-        List<Account> accounts = Preferences.getPreferences(K9.this).getAccounts();
-        currentAccount = null;
-        for (Account account : accounts) {
-            currentAccount = messagingController.checkAccount(pEpMessage, account);
-            if (currentAccount != null) {
-                break;
-            }
         }
     }
 
@@ -1687,7 +1657,7 @@ public class K9 extends Application {
         if (needsFastPoll && !isPollingMessages) {
             isPollingMessages = true;
             MessagingController messagingController = MessagingController.getInstance(this);
-            messagingController.checkMail(K9.this, true, true, new PEpProvider.CompletedCallback() {
+            messagingController.checkpEpSyncMail(K9.this, new PEpProvider.CompletedCallback() {
                 @Override
                 public void onComplete() {
                     isPollingMessages = false;

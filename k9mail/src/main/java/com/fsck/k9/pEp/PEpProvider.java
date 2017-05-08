@@ -163,7 +163,7 @@ public interface PEpProvider {
 
     void deleteFromBlacklist(String fpr);
 
-    com.fsck.k9.mail.Message getMimeMessage(Message message);
+    //com.fsck.k9.mail.Message getMimeMessage(Message message);
 
     void setSyncSendMessageCallback(Sync.MessageToSendCallback callback);
 
