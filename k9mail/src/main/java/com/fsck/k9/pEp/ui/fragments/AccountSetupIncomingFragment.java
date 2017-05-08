@@ -337,7 +337,11 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         super.onCreate(savedInstanceState);
 
         View.OnClickListener onClickListener = v -> Preferences.getPreferences(getActivity()).deleteAccount(mAccount);
-        ((AccountSetupBasics) getActivity()).setHomeButtonListener(onClickListener);
+
+        if(getActivity() instanceof  AccountSetupBasics) {
+            ((AccountSetupBasics) getActivity()).setHomeButtonListener(onClickListener);
+        }
+
     }
 
     @Override

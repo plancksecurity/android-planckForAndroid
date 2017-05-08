@@ -238,8 +238,10 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((AccountSetupBasics) getActivity()).setHomeButtonListener(v -> {
-        });
+        if(getActivity() instanceof  AccountSetupBasics) {
+            ((AccountSetupBasics) getActivity()).setHomeButtonListener(v -> {
+            });
+        }
     }
 
     private void checkSettings() {
