@@ -36,7 +36,7 @@ public class K9AlarmManager {
 
     @TargetApi(Build.VERSION_CODES.M)
     public void setAndAllowWhileIdle(int type, long triggerAtMillis, PendingIntent operation) {
-        alarmManager.setAndAllowWhileIdle(type, triggerAtMillis, operation);
+        alarmManager.setExactAndAllowWhileIdle(type, triggerAtMillis, operation);
     }
 
     public void cancel(PendingIntent operation) {

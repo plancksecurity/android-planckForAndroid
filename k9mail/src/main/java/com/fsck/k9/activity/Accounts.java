@@ -81,6 +81,7 @@ import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.About;
 import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
@@ -458,6 +459,7 @@ public class Accounts extends K9Activity {
 
         setupAddAccountButton();
         setupSettingsButton();
+        PEpUtils.askForBatteryOptimizationWhiteListing(getApplicationContext());
     }
 
     @Override

@@ -1,11 +1,18 @@
 package com.fsck.k9.activity.setup;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import com.fsck.k9.helper.K9AlarmManager;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.fragments.intro.IntroFirstFragment;
 import com.fsck.k9.pEp.ui.fragments.intro.IntroSecondFragment;
 import com.fsck.k9.pEp.ui.fragments.intro.IntroThirdFragment;
@@ -30,6 +37,8 @@ public class WelcomeMessage extends AppIntro {
 
         showSkipButton(true);
         setProgressButtonEnabled(true);
+
+        PEpUtils.askForBatteryOptimizationWhiteListing(getApplicationContext());
     }
 
     @Override

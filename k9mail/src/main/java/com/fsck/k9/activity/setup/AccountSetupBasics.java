@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
 
@@ -40,6 +41,7 @@ public class AccountSetupBasics extends K9Activity {
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.add(R.id.account_setup_container, accountSetupBasicsFragment).commit();
         }
+        PEpUtils.askForBatteryOptimizationWhiteListing(getApplicationContext());
     }
 
     @Override
