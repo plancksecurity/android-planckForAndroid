@@ -10,20 +10,21 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.HandshakeData;
-import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.ui.adapters.IdentitiesAdapter;
 import com.fsck.k9.pEp.ui.keysync.languages.PEpLanguageSelector;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -39,7 +40,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 
-public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
+public class PEpAddDevice extends PepActivity implements AddDeviceView {
 
     public static final String ACTION_SHOW_PEP_TRUSTWORDS = "com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS";
     private static final String TRUSTWORDS = "trustwordsKey";
@@ -92,9 +93,7 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
 
         setContentView(R.layout.pep_add_device);
         ButterKnife.bind(this);
-        setUpToolbar(true);
-        PEpUtils.colorToolbar(getToolbar(), getResources().getColor(R.color.pep_green));
-        if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
+        setUpToolbar(false);
         initPep();
 
         if (getIntent() != null) {
@@ -109,6 +108,11 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
                 presenter.initialize(this, getpEp(), partnerIdentity, accounts);
             }
         }
+    }
+
+    @Override
+    public void search(String query) {
+
     }
 
     @Override
@@ -228,11 +232,6 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
     @Override
     public void onBackPressed() {
         presenter.cancelHandshake();
-    }
-
-    @Override
-    public PEpProvider getpEp() {
-        return ((K9)getApplication()).getpEpSyncProvider();
     }
 
     @Override
