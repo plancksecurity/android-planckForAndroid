@@ -62,7 +62,7 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
         account = getIntent().getStringExtra(ACCOUNT_UUID);
         keys = preferences.loadKeys(account);
         presenter.initialize(this, pEp);
-        initializeToolbar(true, R.string.pep);
+        initializeToolbar(true, R.string.master_key_management);
     }
 
     @Override

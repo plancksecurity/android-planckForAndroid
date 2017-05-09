@@ -48,7 +48,7 @@ public class KeysyncManagement extends PepActivity implements KeysyncManagementV
         ButterKnife.bind(this);
         initPep();
         initializePresenter();
-        initializeToolbar(true, R.string.master_key_management);
+        initializeToolbar(true, R.string.manage_identities_title);
     }
 
     private void initializePresenter() {

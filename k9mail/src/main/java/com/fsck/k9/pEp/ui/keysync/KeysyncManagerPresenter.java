@@ -1,5 +1,7 @@
 package com.fsck.k9.pEp.ui.keysync;
 
+import android.util.Log;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.Presenter;
@@ -63,6 +65,7 @@ public class KeysyncManagerPresenter implements Presenter {
 
     public void identityCheckStatusChanged(Identity identity, Boolean checked) {
         Identity updatedIdentity = pEpProvider.updateIdentity(identity);
+
         if (!checked) {
             pEpProvider.setIdentityFlag(updatedIdentity, IdentityFlags.PEPIdfNotForSync.value, new PEpProvider.CompletedCallback() {
                 @Override
