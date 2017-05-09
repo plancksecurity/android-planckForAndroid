@@ -5,6 +5,7 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
@@ -39,6 +40,18 @@ public class AccountSetupOutgoing extends K9Activity {
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.add(R.id.account_setup_container, accountSetupIncomingFragment).commit();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        switch (itemId) {
+            case android.R.id.home: {
+                finish();
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
