@@ -1,6 +1,7 @@
 package com.fsck.k9.pEp;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -565,7 +566,7 @@ public class PEpUtils {
         return addressesText;
     }
 
-    public static void askForBatteryOptimizationWhiteListing(Context context) {
+    public static void askForBatteryOptimizationWhiteListing(Activity context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             //TODO Probably is a good idea to first explain to the user why we need this
             //and  if the user rejects it, give the option to don't ask again and again

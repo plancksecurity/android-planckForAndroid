@@ -38,7 +38,7 @@ public class WelcomeMessage extends AppIntro {
         showSkipButton(true);
         setProgressButtonEnabled(true);
 
-        PEpUtils.askForBatteryOptimizationWhiteListing(getApplicationContext());
+        PEpUtils.askForBatteryOptimizationWhiteListing(this);
     }
 
     @Override
