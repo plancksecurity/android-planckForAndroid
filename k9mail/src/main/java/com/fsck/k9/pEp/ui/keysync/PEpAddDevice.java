@@ -4,12 +4,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -108,6 +111,8 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
                 presenter.initialize(this, getpEp(), partnerIdentity, accounts);
             }
         }
+
+        setupFloatingWindow();
     }
 
     @Override
@@ -323,11 +328,9 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
         return true;
     }
 
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(receiver);
+    @OnClick(R.id.add_device_background)
+    public void onClickOutside() {
+        presenter.cancelHandshake();
     }
 
     public class DismissKeysyncDialogReceiver extends BroadcastReceiver {
@@ -338,5 +341,9 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
         public void onReceive(final Context context, Intent intent) {
             PEpAddDevice.this.finish();
         }
+    }
+
+    protected void setupFloatingWindow() {
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 }
