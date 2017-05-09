@@ -1,19 +1,6 @@
 package com.fsck.k9.activity;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import android.app.ActionBar;
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Application;
@@ -75,14 +62,17 @@ import com.fsck.k9.activity.setup.WelcomeMessage;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.helper.SizeFormatter;
 import com.fsck.k9.mail.AuthType;
-import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.PepPermissionActivity;
+import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.ui.About;
+import com.fsck.k9.pEp.ui.PermissionErrorListener;
+import com.fsck.k9.pEp.ui.listeners.ActivityPermissionListener;
 import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -98,6 +88,9 @@ import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.listener.single.CompositePermissionListener;
+import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener;
 
 import org.pEp.jniadapter.Rating;
 
@@ -115,7 +108,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 
-public class Accounts extends K9Activity {
+public class Accounts extends PepPermissionActivity {
 
     /**
      * URL used to open Android Market application
@@ -168,6 +161,7 @@ public class Accounts extends K9Activity {
     private View addAccountButton;
     private NestedListView foldersList;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private CompositePermissionListener storagePermissionListener;
 
     class AccountsHandler extends Handler {
         private void setViewTitle() {
@@ -465,6 +459,22 @@ public class Accounts extends K9Activity {
     @Override
     public void search(String query) {
         triggerSearch(query, null);
+    }
+
+    @Override
+    protected void initializeInjector(ApplicationComponent applicationComponent) {
+
+    }
+
+    @Override
+    public void showPermissionGranted(String permissionName) {
+
+    }
+
+    @Override
+    public void showPermissionDenied(String permissionName, boolean permanentlyDenied) {
+        String permissionDenied = getResources().getString(R.string.download_snackbar_permission_permanently_denied);
+        FeedbackTools.showLongFeedback(getRootView(),  permissionDenied);
     }
 
     private void setupSettingsButton() {
@@ -1988,16 +1998,40 @@ public class Accounts extends K9Activity {
 
     public void onExport(final boolean includeGlobals, final Account account) {
 
-        // TODO, prompt to allow a user to choose which accounts to export
-        Set<String> accountUuids = null;
-        if (account != null) {
-            accountUuids = new HashSet<String>();
-            accountUuids.add(account.getUuid());
-        }
+        createPermissionListeners();
+        if (hasWriteExternalPermission()) {
+            // TODO, prompt to allow a user to choose which accounts to export
+            Set<String> accountUuids = null;
+            if (account != null) {
+                accountUuids = new HashSet<String>();
+                accountUuids.add(account.getUuid());
+            }
 
-        ExportAsyncTask asyncTask = new ExportAsyncTask(this, includeGlobals, accountUuids);
-        setNonConfigurationInstance(asyncTask);
-        asyncTask.execute();
+            ExportAsyncTask asyncTask = new ExportAsyncTask(this, includeGlobals, accountUuids);
+            setNonConfigurationInstance(asyncTask);
+            asyncTask.execute();
+        }
+    }
+
+    private boolean hasWriteExternalPermission() {
+        int res = getApplicationContext().checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        return (res == PackageManager.PERMISSION_GRANTED);
+    }
+
+    private void createPermissionListeners() {
+        ActivityPermissionListener feedbackViewPermissionListener = new ActivityPermissionListener(Accounts.this);
+
+        String explanation = getResources().getString(R.string.download_permission_first_explanation);
+        storagePermissionListener = new CompositePermissionListener(feedbackViewPermissionListener,
+                SnackbarOnDeniedPermissionListener.Builder.with(getRootView(), explanation)
+                        .withOpenSettingsButton(R.string.button_settings)
+                        .build());
+        Dexter.withActivity(Accounts.this)
+                .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .withListener(storagePermissionListener)
+                .withErrorListener(new PermissionErrorListener())
+                .onSameThread()
+                .check();
     }
 
     /**

@@ -1,6 +1,6 @@
 package com.fsck.k9.pEp.ui.listeners;
 
-import com.fsck.k9.activity.MessageCompose;
+import com.fsck.k9.pEp.PepPermissionActivity;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionGrantedResponse;
@@ -9,9 +9,9 @@ import com.karumi.dexter.listener.single.PermissionListener;
 
 public class ActivityPermissionListener implements PermissionListener {
 
-    private final MessageCompose activity;
+    private final PepPermissionActivity activity;
 
-    public ActivityPermissionListener(MessageCompose activity) {
+    public ActivityPermissionListener(PepPermissionActivity activity) {
         this.activity = activity;
     }
 

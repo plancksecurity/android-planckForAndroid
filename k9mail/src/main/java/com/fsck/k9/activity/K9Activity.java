@@ -165,9 +165,8 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             window.setStatusBarColor(color);
         }
     }
-    public View getRootView() {
-        return ((ViewGroup) this
-                .findViewById(android.R.id.content)).getChildAt(0);
+    public ViewGroup getRootView() {
+        return (ViewGroup) ((ViewGroup) this.findViewById(android.R.id.content)).getChildAt(0);
     }
 
     public void showSearchView() {

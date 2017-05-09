@@ -91,6 +91,8 @@ import com.fsck.k9.message.SimpleMessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.PepPermissionActivity;
+import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.ui.PermissionErrorListener;
 import com.fsck.k9.pEp.ui.listeners.ActivityPermissionListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -115,7 +117,7 @@ import java.util.regex.Pattern;
 
 
 @SuppressWarnings("deprecation")
-public class MessageCompose extends K9Activity implements OnClickListener,
+public class MessageCompose extends PepPermissionActivity implements OnClickListener,
         CancelListener, OnFocusChangeListener, OnCryptoModeChangedListener,
         OnOpenPgpInlineChangeListener, PgpSignOnlyDialog.OnOpenPgpSignOnlyChangeListener, MessageBuilder.Callback {
 
@@ -611,6 +613,11 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
     @Override
     public void search(String query) {
+
+    }
+
+    @Override
+    protected void initializeInjector(ApplicationComponent applicationComponent) {
 
     }
 
