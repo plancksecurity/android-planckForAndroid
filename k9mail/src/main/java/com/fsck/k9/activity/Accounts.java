@@ -453,7 +453,7 @@ public class Accounts extends PepPermissionActivity {
 
         setupAddAccountButton();
         setupSettingsButton();
-        PEpUtils.askForBatteryOptimizationWhiteListing(getApplicationContext());
+        PEpUtils.askForBatteryOptimizationWhiteListing(this);
     }
 
     @Override

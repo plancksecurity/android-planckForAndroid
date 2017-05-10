@@ -41,7 +41,7 @@ public class AccountSetupBasics extends K9Activity {
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.add(R.id.account_setup_container, accountSetupBasicsFragment).commit();
         }
-        PEpUtils.askForBatteryOptimizationWhiteListing(getApplicationContext());
+        PEpUtils.askForBatteryOptimizationWhiteListing(this);
     }
 
     @Override
