@@ -1115,6 +1115,12 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                 recipientPresenter.onMenuSetPgpInline(false);
                 updateMessageFormat();
                 break;
+            //case R.id.openpgp_sign_only:
+            //    recipientPresenter.onMenuSetSignOnly(true);
+            //    break;
+            //case R.id.openpgp_sign_only_disable:
+            //    recipientPresenter.onMenuSetSignOnly(false);
+            //    break;
             case R.id.add_attachment:
                 attachmentPresenter.onClickAddAttachment(recipientPresenter);
                 break;
