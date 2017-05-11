@@ -1742,7 +1742,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             int threadCount = (mThreadedList) ? cursor.getInt(THREAD_COUNT_COLUMN) : 0;
 
             String subject = cursor.getString(SUBJECT_COLUMN);
-            if (TextUtils.isEmpty(subject)) {
+            if (subject == null || TextUtils.isEmpty(subject.trim())) {
                 subject = getString(R.string.general_no_subject);
             } else if (threadCount > 1) {
                 // If this is a thread, strip the RE/FW from the subject.  "Be like Outlook."
