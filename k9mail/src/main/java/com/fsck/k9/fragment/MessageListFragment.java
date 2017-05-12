@@ -465,7 +465,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                 case ACTION_PROGRESS: {
                     boolean progress = (msg.arg1 == 1);
                     fragment.progress(progress);
-                    fragment.enableSwipeToRefresh(!progress);
                     break;
                 }
                 case ACTION_GO_BACK: {
@@ -483,10 +482,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                 }
             }
         }
-    }
-
-    private void enableSwipeToRefresh(boolean enable) {
-        mSwipeRefreshLayout.setEnabled(enable);
     }
 
     /**
@@ -1025,8 +1020,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                     // "Pull to refresh"
                     checkMail();
                 }
-                mSwipeRefreshLayout.setRefreshing(false);
-                mSwipeRefreshLayout.setEnabled(false);
             }
         });
     }
@@ -1513,7 +1506,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                     Activity activity = getActivity();
                     if (activity != null) {
                         FeedbackTools.showLongFeedback(getView(), getString(R.string.remote_search_error));
-                        mSwipeRefreshLayout.setEnabled(true);
+                        mSwipeRefreshLayout.setRefreshing(false);
                     }
                 }
             });
