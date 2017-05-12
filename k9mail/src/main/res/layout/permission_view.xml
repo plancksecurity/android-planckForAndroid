@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.fsck.k9.pEp.ui.PEpPermissionView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/permissions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@+id/check_permission"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <TextView android:id="@+id/permission_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Nombre del permiso"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+                <TextView android:id="@+id/permission_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Descripcion"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+            </LinearLayout>
+
+            <CheckBox
+                android:id="@+id/check_permission"
+                android:layout_width="48dp"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/permissions"
+                android:layout_alignParentEnd="true"
+                android:layout_alignTop="@id/permissions"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_file_folder" />
+        </RelativeLayout>
+    </LinearLayout>
+    aA
+</com.fsck.k9.pEp.ui.PEpPermissionView>

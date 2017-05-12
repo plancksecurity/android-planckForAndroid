@@ -128,6 +128,7 @@
     <string name="intro_first_text">Automatically encrypts and anonymizes your e-mail</string>
     <string name="intro_second_text">Prevents Identity Theft. Kills Spam. Stops Phishing.</string>
     <string name="intro_third_text">Tells you how secure your communication is based on traffic lights.</string>
+    <string name="action_continue">Continue</string>
 
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>
