@@ -440,7 +440,8 @@
         <activity
             android:name=".pEp.ui.keysync.PEpAddDevice"
             android:label="@string/pep_device_group"
-            android:theme="@style/OverlayTheme">
+            android:theme="@style/OverlayTheme"
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS" />
 
