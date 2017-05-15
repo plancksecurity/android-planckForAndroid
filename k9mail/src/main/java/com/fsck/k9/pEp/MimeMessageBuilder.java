@@ -6,13 +6,13 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 
 import com.fsck.k9.Globals;
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.BoundaryGenerator;
 import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.filter.Base64;
 import com.fsck.k9.mail.internet.MessageIdGenerator;
 import com.fsck.k9.mail.internet.MimeBodyPart;
 import com.fsck.k9.mail.internet.MimeHeader;
@@ -201,7 +201,7 @@ class MimeMessageBuilder extends MessageBuilder {
                 filename = EncoderUtil.encodeIfNecessary(filename, EncoderUtil.Usage.WORD_ENTITY, 7);
 
             if (pEpMessage.getEncFormat() != Message.EncFormat.None) body = new BinaryMemoryBody(attachment.data, MimeUtil.ENC_8BIT);
-            else body = new BinaryMemoryBody(Base64.encodeBase64Chunked(attachment.data), MimeUtil.ENC_BASE64);
+            else body = new BinaryMemoryBody(Base64.encode(attachment.data, Base64.DEFAULT), MimeUtil.ENC_BASE64);
 
             MimeBodyPart bp = new MimeBodyPart(body);
 
