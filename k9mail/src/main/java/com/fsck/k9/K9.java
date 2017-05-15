@@ -1678,4 +1678,8 @@ public class K9 extends Application {
     public void setIspEpSyncEnabled(boolean ispEpSyncEnabled) {
         this.ispEpSyncEnabled = ispEpSyncEnabled;
     }
+
+    public boolean needsFastPoll() {
+        return needsFastPoll;
+    }
 }

@@ -486,7 +486,13 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void enableSwipeToRefresh(boolean enable) {
-        mSwipeRefreshLayout.setRefreshing(enable);
+        if (!isFastPolling()) {
+            mSwipeRefreshLayout.setRefreshing(enable);
+        }
+    }
+
+    private boolean isFastPolling() {
+        return ((K9) getActivity().getApplication()).needsFastPoll();
     }
 
     /**
