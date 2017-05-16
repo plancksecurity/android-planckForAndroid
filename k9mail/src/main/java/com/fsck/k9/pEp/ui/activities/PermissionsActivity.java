@@ -39,12 +39,16 @@ public class PermissionsActivity extends PepPermissionActivity {
         contactsPermissionView.initialize(getResources().getString(R.string.read_permission_rationale_title),
                 getResources().getString(R.string.read_permission_first_explanation),
                 (buttonView, isChecked) -> {
-                    createContactsPermissionListeners();
+                    if (isChecked) {
+                        createContactsPermissionListeners();
+                    }
                 });
         storagePermissionView.initialize(getResources().getString(R.string.download_permission_rationale_title),
                 getResources().getString(R.string.download_snackbar_permission_rationale),
                 (buttonView, isChecked) -> {
-                    createStoragePermissionListeners();
+                    if (isChecked) {
+                        createStoragePermissionListeners();
+                    }
                 });
     }
 
@@ -63,6 +67,8 @@ public class PermissionsActivity extends PepPermissionActivity {
     public void showPermissionGranted(String permissionName) {
         contactsPermissionView.setChecked(PEpPermissionChecker.hasContactsPermission(this));
         storagePermissionView.setChecked(PEpPermissionChecker.hasWriteExternalPermission(this));
+        contactsPermissionView.enable(!PEpPermissionChecker.hasContactsPermission(this));
+        storagePermissionView.enable(!PEpPermissionChecker.hasWriteExternalPermission(this));
         continueButton.setEnabled(PEpPermissionChecker.hasBasicPermission(this));
     }
 
@@ -70,16 +76,20 @@ public class PermissionsActivity extends PepPermissionActivity {
     public void showPermissionDenied(String permissionName, boolean permanentlyDenied) {
         contactsPermissionView.setChecked(PEpPermissionChecker.hasContactsPermission(this));
         storagePermissionView.setChecked(PEpPermissionChecker.hasWriteExternalPermission(this));
+        contactsPermissionView.enable(!PEpPermissionChecker.hasContactsPermission(this));
+        storagePermissionView.enable(!PEpPermissionChecker.hasWriteExternalPermission(this));
         continueButton.setEnabled(PEpPermissionChecker.hasBasicPermission(this));
     }
 
     @OnClick(R.id.action_cancel)
     public void onCancelClicked() {
         AccountSetupBasics.actionNewAccount(this);
+        finish();
     }
 
     @OnClick(R.id.action_continue)
     public void onContinueClicked() {
         AccountSetupBasics.actionNewAccount(this);
+        finish();
     }
 }

@@ -30,16 +30,14 @@
             android:padding="16dp"
             android:text="NEEDS YOUR PERMISSION TO WORK" />
 
-        <include
+        <com.fsck.k9.pEp.ui.PEpPermissionView
             android:id="@+id/permission_contacts"
-            layout="@layout/permission_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/explanation" />
 
-        <include
+        <com.fsck.k9.pEp.ui.PEpPermissionView
             android:id="@+id/permission_storage"
-            layout="@layout/permission_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/permission_contacts" />
@@ -56,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="@string/cancel_action"
+                android:text="@string/skip_button"
                 android:textColor="@color/pep_red"
                 android:background="@color/white" />
 
