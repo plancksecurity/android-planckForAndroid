@@ -20,7 +20,6 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -35,7 +34,6 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.ChooseFolder;
 import com.fsck.k9.activity.K9Activity;
-import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.MessageLoaderHelper;
 import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderCallbacks;
@@ -58,6 +56,7 @@ import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.message.extractors.EncryptionVerifier;
+import com.fsck.k9.pEp.PEpPermissionChecker;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
@@ -997,7 +996,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     public void onSaveAttachment(AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
         createPermissionListeners();
-        if (hasWriteExternalPermission()) {
+        if (PEpPermissionChecker.hasWriteExternalPermission(getActivity())) {
             getAttachmentController(attachment).saveAttachment();
         }
     }
@@ -1023,11 +1022,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private AttachmentController getAttachmentController(AttachmentViewInfo attachment) {
         return new AttachmentController(mController, downloadManager, this, attachment);
-    }
-
-    private boolean hasWriteExternalPermission() {
-        int res = getActivity().getApplicationContext().checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        return (res == PackageManager.PERMISSION_GRANTED);
     }
 
     private void createPermissionListeners() {
