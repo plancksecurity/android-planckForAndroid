@@ -91,13 +91,11 @@ public class ContactPictureLoader {
         mDefaultBackgroundColor = defaultBackgroundColor;
         if (PEpPermissionChecker.hasContactsPermission(context)) {
             mContentResolver = appContext.getContentResolver();
-            mResources = appContext.getResources();
             mContactsHelper = Contacts.getInstance(appContext);
-
-            float scale = mResources.getDisplayMetrics().density;
-            mPictureSizeInPx = (int) (PICTURE_SIZE * scale);
         }
-
+        mResources = appContext.getResources();
+        float scale = mResources.getDisplayMetrics().density;
+        mPictureSizeInPx = (int) (PICTURE_SIZE * scale);
         ActivityManager activityManager =
                 (ActivityManager) appContext.getSystemService(Context.ACTIVITY_SERVICE);
         int memClass = activityManager.getMemoryClass();
@@ -303,7 +301,10 @@ public class ContactPictureLoader {
         @Override
         protected Bitmap doInBackground(Void... args) {
             final String email = mAddress.getAddress();
-            final Uri photoUri = mContactsHelper.getPhotoUri(email);
+            Uri photoUri = null;
+            if (mContactsHelper != null) {
+                photoUri = mContactsHelper.getPhotoUri(email);
+            }
             Bitmap bitmap = null;
             if (photoUri != null) {
                 try {
