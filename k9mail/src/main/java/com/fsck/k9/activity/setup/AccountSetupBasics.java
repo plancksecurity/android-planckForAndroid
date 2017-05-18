@@ -78,4 +78,12 @@ public class AccountSetupBasics extends K9Activity {
     public void setHomeButtonListener(View.OnClickListener onClickListener) {
         this.homeButtonListener = onClickListener;
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (homeButtonListener != null) {
+            homeButtonListener.onClick(getRootView());
+        }
+    }
 }
