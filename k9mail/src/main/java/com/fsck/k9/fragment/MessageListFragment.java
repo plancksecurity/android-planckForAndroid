@@ -2092,7 +2092,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
     private void updateFooterView() {
         if (!mSearch.isManualSearch() && mCurrentFolder != null && mAccount != null) {
-            if (mCurrentFolder.loading) {
+            if (mCurrentFolder.loading && mListView.getCount() > 1) {
                 updateFooter(mContext.getString(R.string.status_loading_more));
             } else if (!mCurrentFolder.moreMessages) {
                 updateFooter(null);
