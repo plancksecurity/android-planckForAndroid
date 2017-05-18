@@ -20,7 +20,6 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -35,7 +34,6 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.ChooseFolder;
 import com.fsck.k9.activity.K9Activity;
-import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.MessageLoaderHelper;
 import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderCallbacks;
@@ -151,7 +149,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        mContext = activity.getApplicationContext();
+        mContext = activity;
 
         try {
             mFragmentListener = (MessageViewFragmentListener) activity;
@@ -710,7 +708,11 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public Context getApplicationContext() {
-        return mContext;
+        return (K9) getActivity().getApplication();
+    }
+
+    public View rootView() {
+        return ((MessageList) getActivity()).getRootView();
     }
 
     public void disableAttachmentButtons(AttachmentViewInfo attachment) {
