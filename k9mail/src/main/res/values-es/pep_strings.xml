@@ -18,8 +18,8 @@
     <!--<string name="pep_add_key_to_blacklist">Add a key to blacklist</string>-->
     <!--<string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>-->
 
-    <string name="pep_confirm_trustwords">Confirmar</string>
-    <string name="pep_wrong_trustwords">Incorrectas</string>
+    <string name="pep_confirm_trustwords">Aceptar</string>
+    <string name="pep_wrong_trustwords">Rechazar</string>
     <string name="pep_wrong_fingerprint">Huella incorrecta</string>
     <string name="pep_ask_trustwords">Pregunta a tu interlocutor cuáles son las trustwords. Después compáralas con las que se muestran a continuación.</string>
     <string name="pep_complete_partner_format">Compañero\n%1$s &lt;%2$s&gt;</string>

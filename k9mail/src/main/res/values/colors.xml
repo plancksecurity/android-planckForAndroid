@@ -39,4 +39,5 @@
     <color name="recipient_token_background_light">#F6F6F6</color>
     <color name="recipient_token_background_dark">#090909</color>
 
+    <color name="translucent_background">#003E4447</color>
 </resources>

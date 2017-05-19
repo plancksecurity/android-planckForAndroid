@@ -12,7 +12,27 @@
         android:id="@+id/action_language"
         android:orderInCategory="100"
         android:title="@string/settings_language_label"
-        app:showAsAction="never" />
+        android:icon="@drawable/ic_language"
+        app:showAsAction="always" >
+        <item
+            android:id="@+id/catalan"
+            android:title="Catalan"/>
+        <item
+            android:id="@+id/german"
+            android:title="German"/>
+        <item
+            android:id="@+id/spanish"
+            android:title="Spanish"/>
+        <item
+            android:id="@+id/french"
+            android:title="French"/>
+        <item
+            android:id="@+id/turkish"
+            android:title="Turkish"/>
+        <item
+            android:id="@+id/english"
+            android:title="English"/>
+    </item>
 
     <item
         android:id="@+id/long_trustwords"

@@ -4,28 +4,29 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.HandshakeData;
-import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.ui.adapters.IdentitiesAdapter;
-import com.fsck.k9.pEp.ui.keysync.languages.PEpLanguageSelector;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
 import org.pEp.jniadapter.Identity;
@@ -39,7 +40,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 
-public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
+public class PEpAddDevice extends PepActivity implements AddDeviceView {
 
     public static final String ACTION_SHOW_PEP_TRUSTWORDS = "com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS";
     private static final String TRUSTWORDS = "trustwordsKey";
@@ -58,6 +59,8 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
     TextView explanationTextView;
     @Bind(R.id.advanced_options_key_list)
     RecyclerView identitiesList;
+    @Bind(R.id.show_long_trustwords)
+    ImageView showLongTrustwords;
     private MenuItem advancedOptionsMenuItem;
     private String trustwordsLanguage;
     private Boolean areTrustwordsShort = true;
@@ -92,9 +95,8 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
 
         setContentView(R.layout.pep_add_device);
         ButterKnife.bind(this);
-        setUpToolbar(true);
-        PEpUtils.colorToolbar(getToolbar(), getResources().getColor(R.color.pep_green));
-        if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
+        setUpToolbar(false);
+        getToolbar().setOverflowIcon(getResources().getDrawable(R.drawable.ic_language));
         initPep();
 
         if (getIntent() != null) {
@@ -109,6 +111,13 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
                 presenter.initialize(this, getpEp(), partnerIdentity, accounts);
             }
         }
+
+        setupFloatingWindow();
+    }
+
+    @Override
+    public void search(String query) {
+
     }
 
     @Override
@@ -133,9 +142,6 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
                     presenter.basicOptionsClicked();
                 }
                 break;
-            case R.id.action_language:
-                showLanguageSelectionDialog();
-                return true;
             case R.id.long_trustwords:
                 if (item.getTitle().equals(getString(R.string.pep_menu_long_trustwords))){
                     item.setTitle(R.string.pep_menu_short_trustwords);
@@ -147,16 +153,27 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
                 }
 
                 return true;
+            case R.id.catalan:
+                return changeTrustwordsLanguage(0);
+            case R.id.german:
+                return changeTrustwordsLanguage(1);
+            case R.id.spanish:
+                return changeTrustwordsLanguage(2);
+            case R.id.french:
+                return changeTrustwordsLanguage(3);
+            case R.id.turkish:
+                return changeTrustwordsLanguage(4);
+            case R.id.english:
+                return changeTrustwordsLanguage(5);
         }
         return true;
     }
 
-    private void showLanguageSelectionDialog() {
+    private boolean changeTrustwordsLanguage(Integer languagePosition) {
         final CharSequence[] pEpLanguages = PEpUtils.getPEpLanguages();
-        PEpLanguageSelector.showLanguageSelector(PEpAddDevice.this, pEpLanguages, trustwordsLanguage, (dialog, languagePositon) -> {
-            String language = pEpLanguages[languagePositon].toString();
-            changeTrustwords(language);
-        });
+        String language = pEpLanguages[languagePosition].toString();
+        changeTrustwords(language);
+        return true;
     }
 
     private void changeTrustwords(String language) {
@@ -228,11 +245,6 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
     @Override
     public void onBackPressed() {
         presenter.cancelHandshake();
-    }
-
-    @Override
-    public PEpProvider getpEp() {
-        return ((K9)getApplication()).getpEpSyncProvider();
     }
 
     @Override
@@ -320,15 +332,25 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
     @OnLongClick(R.id.trustwords)
     public boolean onTrustwordsLongClick() {
         areTrustwordsShort = !areTrustwordsShort;
+        if (areTrustwordsShort) {
+            showLongTrustwords.setVisibility(View.VISIBLE);
+        } else {
+            showLongTrustwords.setVisibility(View.GONE);
+        }
         changeTrustwordsLength(areTrustwordsShort);
         return true;
     }
 
+    @OnClick(R.id.add_device_background)
+    public void onClickOutside() {
+        presenter.cancelHandshake();
+    }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(receiver);
+    @OnClick(R.id.show_long_trustwords)
+    public void onClickShowLongTrustwords() {
+        showLongTrustwords.setVisibility(View.GONE);
+        areTrustwordsShort = !areTrustwordsShort;
+        changeTrustwordsLength(areTrustwordsShort);
     }
 
     public class DismissKeysyncDialogReceiver extends BroadcastReceiver {
@@ -339,5 +361,9 @@ public class PEpAddDevice extends PepColoredActivity implements AddDeviceView {
         public void onReceive(final Context context, Intent intent) {
             PEpAddDevice.this.finish();
         }
+    }
+
+    protected void setupFloatingWindow() {
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 }
