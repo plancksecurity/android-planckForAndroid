@@ -465,7 +465,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                 case ACTION_PROGRESS: {
                     boolean progress = (msg.arg1 == 1);
                     fragment.progress(progress);
-                    fragment.enableSwipeToRefresh(!progress);
+                    fragment.enableSwipeToRefresh(progress);
                     break;
                 }
                 case ACTION_GO_BACK: {
@@ -486,7 +486,13 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void enableSwipeToRefresh(boolean enable) {
-        mSwipeRefreshLayout.setEnabled(enable);
+        if (!isFastPolling()) {
+            mSwipeRefreshLayout.setRefreshing(enable);
+        }
+    }
+
+    private boolean isFastPolling() {
+        return ((K9) getActivity().getApplication()).needsFastPoll();
     }
 
     /**
@@ -1015,6 +1021,9 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void initializePullToRefresh() {
+        mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.pep_green),
+                getResources().getColor(R.color.pep_yellow),
+                getResources().getColor(R.color.pep_red));
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -1025,8 +1034,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                     // "Pull to refresh"
                     checkMail();
                 }
-                mSwipeRefreshLayout.setRefreshing(false);
-                mSwipeRefreshLayout.setEnabled(false);
             }
         });
     }
@@ -1513,7 +1520,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                     Activity activity = getActivity();
                     if (activity != null) {
                         FeedbackTools.showLongFeedback(getView(), getString(R.string.remote_search_error));
-                        mSwipeRefreshLayout.setEnabled(true);
                     }
                 }
             });
@@ -3613,10 +3619,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
     private boolean isCheckMailAllowed() {
         return (!isManualSearch() && isCheckMailSupported());
-    }
-
-    private boolean isPullToRefreshAllowed() {
-        return (isRemoteSearchAllowed() || isCheckMailAllowed());
     }
 
     class SelectedItemActionModeCallback implements ActionMode.Callback {
