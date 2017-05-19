@@ -391,7 +391,9 @@ public class Accounts extends PepPermissionActivity {
         super.onCreate(icicle);
         bindViews(R.layout.accounts);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.message_swipe);
-
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.pep_green),
+                getResources().getColor(R.color.pep_yellow),
+                getResources().getColor(R.color.pep_red));
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

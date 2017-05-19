@@ -1021,6 +1021,9 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void initializePullToRefresh() {
+        mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.pep_green),
+                getResources().getColor(R.color.pep_yellow),
+                getResources().getColor(R.color.pep_red));
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -3616,10 +3619,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
     private boolean isCheckMailAllowed() {
         return (!isManualSearch() && isCheckMailSupported());
-    }
-
-    private boolean isPullToRefreshAllowed() {
-        return (isRemoteSearchAllowed() || isCheckMailAllowed());
     }
 
     class SelectedItemActionModeCallback implements ActionMode.Callback {
