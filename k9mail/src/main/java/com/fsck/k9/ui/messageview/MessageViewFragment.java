@@ -708,10 +708,10 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public Context getApplicationContext() {
-        return (K9) getActivity().getApplication();
+        return getActivity().getApplication();
     }
 
-    public View rootView() {
+    public View getRootView() {
         return ((MessageList) getActivity()).getRootView();
     }
 

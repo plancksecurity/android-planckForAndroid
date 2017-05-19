@@ -271,7 +271,7 @@ public class AttachmentController {
         return resolveInfos.size();
     }
 
-    public void displayAttachmentNotSavedMessage() {
+    private void displayAttachmentNotSavedMessage() {
         String message = context.getString(R.string.message_view_status_attachment_not_saved);
         displayMessageToUser(message);
     }
@@ -281,7 +281,7 @@ public class AttachmentController {
     }
 
     private View getRootView() {
-        return messageViewFragment.rootView();
+        return messageViewFragment.getRootView();
     }
 
     private static class IntentAndResolvedActivitiesCount {
