@@ -897,7 +897,7 @@ public class RecipientPresenter implements PermissionPingCallback {
     }
 
     public void setAlwaysSecure(Boolean alwaysSecure) {
-        isAlwaysSecure = alwaysSecure && privacyState.value >= 5;
+        isAlwaysSecure = alwaysSecure && privacyState.value >= Rating.pEpRatingUnreliable.value;
     }
 
     public enum CryptoProviderState {
