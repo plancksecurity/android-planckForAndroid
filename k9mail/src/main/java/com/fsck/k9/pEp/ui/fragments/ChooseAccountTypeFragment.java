@@ -78,6 +78,18 @@ public class ChooseAccountTypeFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        View.OnClickListener onClickListener = v -> Preferences.getPreferences(getActivity()).deleteAccount(mAccount);
+
+        if(getActivity() instanceof  AccountSetupBasics) {
+            ((AccountSetupBasics) getActivity()).setHomeButtonListener(onClickListener);
+        }
+
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         switch (itemId) {
