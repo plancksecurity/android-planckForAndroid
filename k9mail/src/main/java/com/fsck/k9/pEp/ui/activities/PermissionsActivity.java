@@ -8,12 +8,15 @@ import android.widget.Button;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.pEp.PEpPermissionChecker;
+import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PepPermissionActivity;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.PEpPermissionView;
+import com.karumi.dexter.listener.multi.CompositeMultiplePermissionsListener;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -39,16 +42,14 @@ public class PermissionsActivity extends PepPermissionActivity {
         contactsPermissionView.initialize(getResources().getString(R.string.read_permission_rationale_title),
                 getResources().getString(R.string.read_permission_first_explanation),
                 (buttonView, isChecked) -> {
-                    if (isChecked) {
-                        createContactsPermissionListeners();
-                    }
+                    createContactsPermissionListeners();
+                    updateViews();
                 });
         storagePermissionView.initialize(getResources().getString(R.string.download_permission_rationale_title),
                 getResources().getString(R.string.download_snackbar_permission_rationale),
                 (buttonView, isChecked) -> {
-                    if (isChecked) {
-                        createStoragePermissionListeners();
-                    }
+                    createStoragePermissionListeners();
+                    updateViews();
                 });
     }
 
@@ -78,7 +79,6 @@ public class PermissionsActivity extends PepPermissionActivity {
         storagePermissionView.setChecked(PEpPermissionChecker.hasWriteExternalPermission(this));
         contactsPermissionView.enable(!PEpPermissionChecker.hasContactsPermission(this));
         storagePermissionView.enable(!PEpPermissionChecker.hasWriteExternalPermission(this));
-        continueButton.setEnabled(PEpPermissionChecker.hasBasicPermission(this));
     }
 
     @OnClick(R.id.action_cancel)
@@ -89,7 +89,18 @@ public class PermissionsActivity extends PepPermissionActivity {
 
     @OnClick(R.id.action_continue)
     public void onContinueClicked() {
-        AccountSetupBasics.actionNewAccount(this);
-        finish();
+        createBasicPermissionsActivity(new PEpProvider.CompletedCallback() {
+            @Override
+            public void onComplete() {
+                updateViews();
+                AccountSetupBasics.actionNewAccount(PermissionsActivity.this);
+                finish();
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                updateViews();
+            }
+        });
     }
 }

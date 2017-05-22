@@ -11,9 +11,15 @@ import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.ui.PermissionErrorListener;
 import com.fsck.k9.pEp.ui.listeners.ActivityPermissionListener;
 import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.karumi.dexter.listener.single.CompositePermissionListener;
 import com.karumi.dexter.listener.single.PermissionListener;
 import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener;
+
+import java.util.List;
 
 public abstract class PepPermissionActivity extends K9Activity {
     PePUIArtefactCache uiCache;
@@ -79,7 +85,6 @@ public abstract class PepPermissionActivity extends K9Activity {
         PermissionListener feedbackViewPermissionListener = new ActivityPermissionListener(this);
 
         String explanation = getResources().getString(R.string.read_permission_first_explanation);
-
         contactPermissionListener = new CompositePermissionListener(feedbackViewPermissionListener,
                 SnackbarOnDeniedPermissionListener.Builder.with(getRootView(),
                         explanation)
@@ -100,5 +105,20 @@ public abstract class PepPermissionActivity extends K9Activity {
                 .withErrorListener(new PermissionErrorListener())
                 .onSameThread()
                 .check();
+    }
+
+    public void createBasicPermissionsActivity(PEpProvider.CompletedCallback completedCallback) {
+        Dexter.withActivity(this)
+                .withPermissions(
+                        Manifest.permission.WRITE_CONTACTS,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ).withListener(new MultiplePermissionsListener() {
+            @Override public void onPermissionsChecked(MultiplePermissionsReport report) {
+                completedCallback.onComplete();
+            }
+            @Override public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+                completedCallback.onError(new Throwable(token.toString()));
+            }
+        }).check();
     }
 }
