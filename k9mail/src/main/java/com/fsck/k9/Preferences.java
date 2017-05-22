@@ -221,19 +221,6 @@ public class Preferences {
         return keysArray;
     }
 
-    public void setKeys(String accountUuid, List<KeyListItem> keys) {
-        List<String> fprs = new ArrayList<>(keys.size());
-        for (KeyListItem keyListItem : keys) {
-            fprs.add(keyListItem.getFpr());
-        }
-        keysInOrder = fprs;
-        String accountUuids = Utility.combine(fprs.toArray(), ',');
-
-        StorageEditor editor = getStorage().edit();
-        editor.putString(accountUuid, accountUuids);
-        editor.commit();
-    }
-
     public void setKeysFPRs(String accountUuid, List<String> keys) {
         List<String> fprs = new ArrayList<>(keys.size());
         for (String fpr : keys) {
