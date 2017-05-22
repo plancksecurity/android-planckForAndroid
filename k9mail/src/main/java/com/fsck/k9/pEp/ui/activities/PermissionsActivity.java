@@ -35,7 +35,7 @@ public class PermissionsActivity extends PepPermissionActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_permissions);
         ButterKnife.bind(this);
-        continueButton.setEnabled(PEpPermissionChecker.hasBasicPermission(this));
+        updateViews();
         contactsPermissionView.initialize(getResources().getString(R.string.read_permission_rationale_title),
                 getResources().getString(R.string.read_permission_first_explanation),
                 (buttonView, isChecked) -> {
@@ -65,15 +65,15 @@ public class PermissionsActivity extends PepPermissionActivity {
 
     @Override
     public void showPermissionGranted(String permissionName) {
-        contactsPermissionView.setChecked(PEpPermissionChecker.hasContactsPermission(this));
-        storagePermissionView.setChecked(PEpPermissionChecker.hasWriteExternalPermission(this));
-        contactsPermissionView.enable(!PEpPermissionChecker.hasContactsPermission(this));
-        storagePermissionView.enable(!PEpPermissionChecker.hasWriteExternalPermission(this));
-        continueButton.setEnabled(PEpPermissionChecker.hasBasicPermission(this));
+        updateViews();
     }
 
     @Override
     public void showPermissionDenied(String permissionName, boolean permanentlyDenied) {
+        updateViews();
+    }
+
+    private void updateViews() {
         contactsPermissionView.setChecked(PEpPermissionChecker.hasContactsPermission(this));
         storagePermissionView.setChecked(PEpPermissionChecker.hasWriteExternalPermission(this));
         contactsPermissionView.enable(!PEpPermissionChecker.hasContactsPermission(this));
