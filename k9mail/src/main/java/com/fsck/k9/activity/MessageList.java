@@ -1184,6 +1184,11 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 setMessageViewVisible(false);
             }
             if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
+                if (mAccount == null) {
+                    Preferences prefs = Preferences.getPreferences(getApplicationContext());
+                    List<Account> accounts = prefs.getAccounts();
+                    mAccount = accounts.get(0);
+                }
                 Router.onOpenAccount(this, mAccount);
             } else if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
                 updateToolbarColorToOriginal();
