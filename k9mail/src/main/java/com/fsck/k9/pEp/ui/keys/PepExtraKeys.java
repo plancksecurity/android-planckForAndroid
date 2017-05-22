@@ -35,7 +35,7 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
     @Bind(R.id.extra_keys_view)
     RecyclerView keysView;
     private PEpProvider pEp;
-    private ExtraKeysAdapter keysAdapter;
+    private KeyItemAdapter keysAdapter;
     private LinearLayoutManager keysViewManager;
     private Preferences preferences;
     private List<String> keys;
@@ -61,7 +61,7 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
         preferences = Preferences.getPreferences(PepExtraKeys.this);
         account = getIntent().getStringExtra(ACCOUNT_UUID);
         keys = preferences.getMasterKeys(account);
-        presenter.initialize(this, pEp);
+        presenter.initialize(this, pEp, keys);
         initializeToolbar(true, R.string.master_key_management);
     }
 
@@ -78,7 +78,7 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
 
     @Override
     public void showKeys(List<KeyListItem> availableKeys) {
-        keysAdapter = new ExtraKeysAdapter(availableKeys, keys,(item, checked) -> {
+        keysAdapter = new KeyItemAdapter(availableKeys,(item, checked) -> {
             if (checked) {
                 keys.add(item.getFpr());
                 preferences.setMasterKeysFPRs(account, keys);
