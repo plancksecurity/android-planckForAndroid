@@ -7,7 +7,6 @@ import android.util.Log;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mailstore.LocalStore;
-import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 
@@ -200,7 +199,7 @@ public class Preferences {
         editor.commit();
     }
 
-    public synchronized List<String> loadKeys(String uid) {
+    public synchronized List<String> getMasterKeys(String uid) {
         keysInOrder = new LinkedList<>();
         String keysFRPs = getStorage().getString(uid, null);
         if ((keysFRPs != null) && (keysFRPs.length() != 0)) {
@@ -212,8 +211,8 @@ public class Preferences {
         return keysInOrder;
     }
 
-    public synchronized String[] getKeys(String uid) {
-        keysInOrder = loadKeys(uid);
+    public synchronized String[] getMasterKeysArray(String uid) {
+        keysInOrder = getMasterKeys(uid);
         String[] keysArray = new String[keysInOrder.size()];
         for (int i = 0; i < keysArray.length; i++) {
             keysArray[i] = keysInOrder.get(i);
@@ -221,7 +220,7 @@ public class Preferences {
         return keysArray;
     }
 
-    public void setKeysFPRs(String accountUuid, List<String> keys) {
+    public void setMasterKeysFPRs(String accountUuid, List<String> keys) {
         List<String> fprs = new ArrayList<>(keys.size());
         for (String fpr : keys) {
             fprs.add(fpr);

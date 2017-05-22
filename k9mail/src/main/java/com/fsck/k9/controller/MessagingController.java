@@ -17,8 +17,6 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
-import android.util.TimingLogger;
-import android.widget.Toast;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.DeletePolicy;
@@ -73,7 +71,6 @@ import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpProviderImpl;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
 import com.fsck.k9.search.ConditionsTreeNode;
@@ -82,7 +79,6 @@ import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification;
 import com.fsck.k9.search.SqlQueryBuilder;
 
-import org.pEp.jniadapter.AndroidHelper;
 import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.Sync;
 
@@ -2362,7 +2358,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     encryptedMessage = pEpProvider.encryptMessageToSelf(localMessage);
                 } else {
                     Preferences preferences = Preferences.getPreferences(context);
-                    String[] keys = preferences.getKeys(account.getUuid());
+                    String[] keys = preferences.getMasterKeysArray(account.getUuid());
                     encryptedMessage = pEpProvider.encryptMessage(localMessage, keys).get(0);
                 }
 
@@ -3612,7 +3608,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     private Message processWithpEpAndSend(Transport transport, LocalMessage message, Account account) throws MessagingException {
         Preferences preferences = Preferences.getPreferences(context);
-        String[] keys = preferences.getKeys(account.getUuid());
+        String[] keys = preferences.getMasterKeysArray(account.getUuid());
         List<MimeMessage> encryptedMessages = pEpProvider.encryptMessage(message, keys);
         Message encryptedMessageToSave = encryptedMessages.get(PEpProvider.ENCRYPTED_MESSAGE_POSITION); //
 
