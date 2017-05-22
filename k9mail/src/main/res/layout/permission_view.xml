@@ -15,7 +15,6 @@
             android:id="@+id/permissions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toStartOf="@+id/check_permission"
             android:orientation="vertical"
             android:padding="8dp">
 
@@ -33,16 +32,5 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
                 tools:text="Descripcion" />
         </LinearLayout>
-
-        <CheckBox
-            android:id="@+id/check_permission"
-            android:layout_width="48dp"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/permissions"
-            android:layout_alignParentEnd="true"
-            android:layout_alignTop="@id/permissions"
-            android:layout_centerVertical="true"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_file_folder" />
     </RelativeLayout>
 </LinearLayout>
