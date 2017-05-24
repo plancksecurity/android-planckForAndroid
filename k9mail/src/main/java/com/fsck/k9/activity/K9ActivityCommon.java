@@ -187,7 +187,7 @@ public class K9ActivityCommon {
 //        TextView textView = (TextView) dialog.findViewById(android.R.id.message);
 //        Typeface face=Typeface.createFromAsset(getAssets(),"fonts/CourierNew.ttf");
 //        textView.setTypeface(face);
-        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_TOAST);
         dialog.show();
     }
 
