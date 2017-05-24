@@ -96,7 +96,7 @@ android {
 
         //applicationId "pep.android.k9"
         applicationId "${appId}"
-        versionCode 63
+        versionCode 64
 //        versionName '0.9.9.2'
         minSdkVersion 21
         targetSdkVersion 25
@@ -105,14 +105,14 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        jackOptions {
-            enabled true
-        }
+
         vectorDrawables.useSupportLibrary = true
 
 
         buildConfigField "int", "ENGINE_REVISION", "${pEpEngineRevision}"
         buildConfigField "int", "ADAPTER_REVISION", "${pEpJNIAdapterRevision}"
+
+        javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true
     }
     flavorDimensions 'playStore', 'none'
 
@@ -188,13 +188,12 @@ android {
     }
     buildToolsVersion '25.0.2'
 
-    applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            output.outputFile = new File(
-                    output.outputFile.parent,
-                    output.outputFile.name.replace("release.apk", "${variant.versionCode}.apk"))
-        }
-    }
+//  Not compatible with gradle 4 and android studio 3.0
+//    applicationVariants.all { variant ->
+//        variant.outputs.all { output ->
+//            outputFileName = "${variant.versionName}-${variant.versionCode}.apk"
+//        }
+//    }
 }
 
 if (project.hasProperty('keyAlias')) {
