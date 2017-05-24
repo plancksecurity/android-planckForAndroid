@@ -1,9 +1,9 @@
 package com.fsck.k9.activity;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -49,7 +49,7 @@ public class EditIdentity extends K9Activity {
 
         setContentView(R.layout.edit_identity);
         ButterKnife.bind(EditIdentity.this);
-        initializeToolbar(false, R.string.manage_identities_title);
+        initializeToolbar(true, R.string.manage_identities_title);
         /*
          * If we're being reloaded we override the original account with the one
          * we saved
@@ -77,14 +77,12 @@ public class EditIdentity extends K9Activity {
         mSignatureUse = (CheckBox)findViewById(R.id.signature_use);
         mSignatureView = (EditText)findViewById(R.id.signature);
         mSignatureUse.setChecked(mIdentity.getSignatureUse());
-        mSignatureUse.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    mSignatureLayout.setVisibility(View.VISIBLE);
-                    mSignatureView.setText(mIdentity.getSignature());
-                } else {
-                    mSignatureLayout.setVisibility(View.GONE);
-                }
+        mSignatureUse.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                mSignatureLayout.setVisibility(View.VISIBLE);
+                mSignatureView.setText(mIdentity.getSignature());
+            } else {
+                mSignatureLayout.setVisibility(View.GONE);
             }
         });
 
@@ -126,6 +124,19 @@ public class EditIdentity extends K9Activity {
         mAccount.save(Preferences.getPreferences(getApplication().getApplicationContext()));
 
         finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                saveIdentity();
+                finish();
+                return true;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
