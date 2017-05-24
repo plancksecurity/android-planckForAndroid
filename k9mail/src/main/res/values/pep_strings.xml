@@ -128,6 +128,9 @@
     <string name="intro_first_text">Automatically encrypts and anonymizes your e-mail</string>
     <string name="intro_second_text">Prevents Identity Theft. Kills Spam. Stops Phishing.</string>
     <string name="intro_third_text">Tells you how secure your communication is based on traffic lights.</string>
+    <string name="action_continue">Continue</string>
+    <string name="battery_optimization_rationale_title">Disable battery optimizations</string>
+    <string name="battery_optimiazation_explanation">In order to synchronize your email properly is needed to disable Android battery optimization</string>
 
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>

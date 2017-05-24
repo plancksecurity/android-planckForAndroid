@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context="com.fsck.k9.pEp.ui.activities.PermissionsActivity"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        >
+
+
+        <ImageView
+            android:id="@+id/pep_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="64dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_peplogo" />
+
+        <TextView
+            android:id="@+id/explanation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pep_logo"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="NEEDS YOUR PERMISSION TO WORK" />
+
+        <com.fsck.k9.pEp.ui.PEpPermissionView
+            android:id="@+id/permission_contacts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/explanation" />
+
+        <com.fsck.k9.pEp.ui.PEpPermissionView
+            android:id="@+id/permission_storage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/permission_contacts" />
+
+        <com.fsck.k9.pEp.ui.PEpPermissionView
+            android:id="@+id/permission_battery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/permission_storage" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/permission_battery"
+            android:layout_centerHorizontal="true"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/action_continue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/action_continue"
+                android:textColor="@color/white"
+                android:background="@drawable/pep_button_selector" />
+
+        </LinearLayout>
+    </RelativeLayout>
+
+</ScrollView>

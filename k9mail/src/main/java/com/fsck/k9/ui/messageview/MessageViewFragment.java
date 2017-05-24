@@ -56,6 +56,7 @@ import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.message.extractors.EncryptionVerifier;
+import com.fsck.k9.pEp.PEpPermissionChecker;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
@@ -999,7 +1000,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     public void onSaveAttachment(AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
         createPermissionListeners();
-        if (hasWriteExternalPermission()) {
+        if (PEpPermissionChecker.hasWriteExternalPermission(getActivity())) {
             getAttachmentController(attachment).saveAttachment();
         }
     }
@@ -1025,11 +1026,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private AttachmentController getAttachmentController(AttachmentViewInfo attachment) {
         return new AttachmentController(mController, downloadManager, this, attachment);
-    }
-
-    private boolean hasWriteExternalPermission() {
-        int res = getActivity().getApplicationContext().checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        return (res == PackageManager.PERMISSION_GRANTED);
     }
 
     private void createPermissionListeners() {
