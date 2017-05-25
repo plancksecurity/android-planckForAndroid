@@ -1,14 +1,6 @@
 package com.fsck.k9.ui.messageview;
 
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-
-import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -21,7 +13,6 @@ import android.os.Environment;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -38,9 +29,16 @@ import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalPart;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
-
 import com.fsck.k9.provider.AttachmentTempFileProvider;
+
 import org.apache.commons.io.IOUtils;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
 
 
 public class AttachmentController {
@@ -279,11 +277,11 @@ public class AttachmentController {
     }
 
     private void displayMessageToUser(String message) {
-        FeedbackTools.showLongFeedback(getRootView(context), message);
+        FeedbackTools.showLongFeedback(getRootView(), message);
     }
 
-    private View getRootView(Context context) {
-        return ((Activity) context).getWindow().getDecorView().getRootView();
+    private View getRootView() {
+        return messageViewFragment.getRootView();
     }
 
     private static class IntentAndResolvedActivitiesCount {

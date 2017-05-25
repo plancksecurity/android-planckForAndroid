@@ -38,6 +38,7 @@ public class ChooseIdentity extends K9ListActivity {
         setContentView(R.layout.list_content_simple);
 
         setUpToolbar(false);
+        getToolbar().setTitle(getResources().getString(R.string.manage_identities_title));
         getListView().setTextFilterEnabled(true);
         getListView().setItemsCanFocus(false);
         getListView().setChoiceMode(ListView.CHOICE_MODE_NONE);

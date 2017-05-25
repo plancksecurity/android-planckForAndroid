@@ -2353,7 +2353,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
         */
         Message encryptedMessage;
 
-        if (account.isUntrustedSever()) { //Untrusted server
+        if (account.isUntrustedSever() ||
+                localMessage.getFlags().contains(Flag.X_PEP_NEVER_UNSECURE)) { //Untrusted server
             try {
                 if (PEpUtils.ispEpDisabled(account, localMessage, null)) {
                     encryptedMessage = localMessage;

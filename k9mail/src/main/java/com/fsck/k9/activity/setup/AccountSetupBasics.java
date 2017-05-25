@@ -12,6 +12,8 @@ import android.view.View;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.PepPermissionActivity;
+import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
 
@@ -22,7 +24,7 @@ import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
  * activity. If no settings are found the settings are handed off to the
  * AccountSetupAccountType activity.
  */
-public class AccountSetupBasics extends K9Activity {
+public class AccountSetupBasics extends PepPermissionActivity {
 
     private AccountSetupBasicsFragment accountSetupBasicsFragment;
     private View.OnClickListener homeButtonListener;
@@ -47,6 +49,21 @@ public class AccountSetupBasics extends K9Activity {
     @Override
     public void search(String query) {
 
+    }
+
+    @Override
+    protected void initializeInjector(ApplicationComponent applicationComponent) {
+
+    }
+
+    @Override
+    public void showPermissionGranted(String permissionName) {
+        accountSetupBasicsFragment.contactsPermissionGranted();
+    }
+
+    @Override
+    public void showPermissionDenied(String permissionName, boolean permanentlyDenied) {
+        accountSetupBasicsFragment.contactsPermissionDenied();
     }
 
     @Override

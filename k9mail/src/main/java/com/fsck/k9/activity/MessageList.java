@@ -1101,7 +1101,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             //when returning from search results
             Search.setActive(false);
         }
-
+        hideSearchView();
         if (mAccount != null && !mAccount.isAvailable(this)) {
             onAccountUnavailable();
             return;

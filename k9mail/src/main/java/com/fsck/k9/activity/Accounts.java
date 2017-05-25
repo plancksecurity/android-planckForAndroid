@@ -71,8 +71,6 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PepPermissionActivity;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.ui.About;
-import com.fsck.k9.pEp.ui.PermissionErrorListener;
-import com.fsck.k9.pEp.ui.listeners.ActivityPermissionListener;
 import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -88,9 +86,7 @@ import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
-import com.karumi.dexter.Dexter;
 import com.karumi.dexter.listener.single.CompositePermissionListener;
-import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener;
 
 import org.pEp.jniadapter.Rating;
 
@@ -1999,8 +1995,7 @@ public class Accounts extends PepPermissionActivity {
     }
 
     public void onExport(final boolean includeGlobals, final Account account) {
-
-        createPermissionListeners();
+        createStoragePermissionListeners();
         if (hasWriteExternalPermission()) {
             // TODO, prompt to allow a user to choose which accounts to export
             Set<String> accountUuids = null;
@@ -2018,22 +2013,6 @@ public class Accounts extends PepPermissionActivity {
     private boolean hasWriteExternalPermission() {
         int res = getApplicationContext().checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         return (res == PackageManager.PERMISSION_GRANTED);
-    }
-
-    private void createPermissionListeners() {
-        ActivityPermissionListener feedbackViewPermissionListener = new ActivityPermissionListener(Accounts.this);
-
-        String explanation = getResources().getString(R.string.download_permission_first_explanation);
-        storagePermissionListener = new CompositePermissionListener(feedbackViewPermissionListener,
-                SnackbarOnDeniedPermissionListener.Builder.with(getRootView(), explanation)
-                        .withOpenSettingsButton(R.string.button_settings)
-                        .build());
-        Dexter.withActivity(Accounts.this)
-                .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .withListener(storagePermissionListener)
-                .withErrorListener(new PermissionErrorListener())
-                .onSameThread()
-                .check();
     }
 
     /**

@@ -1,7 +1,6 @@
 package com.fsck.k9.activity;
 
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -23,7 +22,6 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -93,17 +91,11 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepPermissionActivity;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
-import com.fsck.k9.pEp.ui.PermissionErrorListener;
-import com.fsck.k9.pEp.ui.listeners.ActivityPermissionListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.single.CompositePermissionListener;
-import com.karumi.dexter.listener.single.PermissionListener;
-import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener;
 
 import org.pEp.jniadapter.Rating;
 
@@ -1960,30 +1952,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     public void askForPermissions() {
         if(!permissionAsked) {
             permissionAsked = true;
-            PermissionListener feedbackViewPermissionListener = new ActivityPermissionListener(this);
-
-            String explanation = getResources().getString(R.string.read_permission_first_explanation);
-
-            contactPermissionListener = new CompositePermissionListener(feedbackViewPermissionListener,
-                    SnackbarOnDeniedPermissionListener.Builder.with(rootView,
-                            explanation)
-                            .withOpenSettingsButton(R.string.button_settings)
-                            .withCallback(new Snackbar.Callback() {
-                                @Override public void onShown(Snackbar snackbar) {
-                                    super.onShown(snackbar);
-                                }
-
-                                @Override public void onDismissed(Snackbar snackbar, int event) {
-                                    super.onDismissed(snackbar, event);
-                                }
-                            })
-                            .build());
-            Dexter.withActivity(MessageCompose.this)
-                    .withPermission(Manifest.permission.WRITE_CONTACTS)
-                    .withListener(contactPermissionListener)
-                    .withErrorListener(new PermissionErrorListener())
-                    .onSameThread()
-                    .check();
+            createContactsPermissionListeners();
         }
     }
 
@@ -1995,19 +1964,4 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         FeedbackTools.showLongFeedback(getRootView(),  permissionDenied);
     }
 
-    public void showPermissionRationale(PermissionToken token) {
-        String rationaleExplanation = getResources().getString(R.string.read_snackbar_permission_rationale);
-        new AlertDialog.Builder(this).setTitle(R.string.read_permission_rationale_title)
-                .setMessage(rationaleExplanation)
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
-                    dialog.dismiss();
-                    token.cancelPermissionRequest();
-                })
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                    dialog.dismiss();
-                    token.continuePermissionRequest();
-                })
-                .setOnDismissListener(dialog -> token.cancelPermissionRequest())
-                .show();
-    }
 }
