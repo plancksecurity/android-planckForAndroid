@@ -3360,7 +3360,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         }
     }
 
-    LayoutInflater getLayoutInflater() {
+    LayoutInflater getK9LayoutInflater() {
         return layoutInflater;
     }
     private boolean isPullToRefreshAllowed() {
