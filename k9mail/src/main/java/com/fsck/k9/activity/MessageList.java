@@ -145,6 +145,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private boolean messageViewVisible;
     private boolean isThreadDisplayed;
     private MessageSwipeDirection direction;
+    private Account lastUsedAccount;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
             boolean noThreading, boolean newTask) {
@@ -1184,6 +1185,10 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 setMessageViewVisible(false);
             }
             if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
+                Account lastUsedAccount = PePUIArtefactCache.getInstance(MessageList.this).getLastUsedAccount();
+                if (lastUsedAccount != null) {
+                    Router.onOpenAccount(this, lastUsedAccount);
+                }
                 if (mAccount == null) {
                     Preferences prefs = Preferences.getPreferences(getApplicationContext());
                     List<Account> accounts = prefs.getAccounts();
@@ -1474,6 +1479,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 return true;
             }
             case R.id.search: {
+                PePUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
                 showSearchView();
                 return true;
             }
