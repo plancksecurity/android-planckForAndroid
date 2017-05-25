@@ -72,7 +72,7 @@ public class PepBlacklist extends PepActivity implements SearchView.OnQueryTextL
         ((LinearLayoutManager) recipientsLayoutManager).setOrientation(LinearLayoutManager.VERTICAL);
         recipientsView.setLayoutManager(recipientsLayoutManager);
         recipientsView.setVisibility(View.VISIBLE);
-        keys = pEp.getAvailableKey();
+        keys = pEp.getBlacklistInfo();
         initializeKeysView();
         initializeToolbar(true, R.string.pep);
         initializeSearchBar();
@@ -236,7 +236,7 @@ public class PepBlacklist extends PepActivity implements SearchView.OnQueryTextL
                     pEp.addToBlacklist(fingerprint);
                 }
             }
-            keys = pEp.getAvailableKey();
+            keys = pEp.getBlacklistInfo();
             initializeKeysView();
         } else {
             FeedbackTools.showShortFeedback(container, getString(R.string.error_parsing_fingerprint));

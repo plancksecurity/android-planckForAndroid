@@ -770,7 +770,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized List<KeyListItem> getAvailableKey() {
+    public synchronized List<KeyListItem> getBlacklistInfo() {
         try {
             List<KeyListItem> identites = new ArrayList<>();
             ArrayList<Pair<String, String>> keys = engine.OpenPGP_list_keyinfo("");
@@ -783,7 +783,27 @@ public class PEpProviderImpl implements PEpProvider {
             }
             return identites;
         } catch (pEpException e) {
-            Log.e(TAG, "getAvailableKey", e);
+            Log.e(TAG, "getBlacklistInfo", e);
+        }
+
+        return null;
+
+    }
+
+    @Override
+    public synchronized List<KeyListItem> getMasterKeysInfo() {
+        try {
+            List<KeyListItem> identites = new ArrayList<>();
+            ArrayList<Pair<String, String>> keys = engine.OpenPGP_list_keyinfo("");
+            if (keys != null) {
+                for (Pair<String, String> key : keys) {
+                    identites.add(
+                            new KeyListItem(key.first, key.second));
+                }
+            }
+            return identites;
+        } catch (pEpException e) {
+            Log.e(TAG, "getBlacklistInfo", e);
         }
 
         return null;
