@@ -116,7 +116,7 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
             if (rating.value != Rating.pEpRatingMistrust.value
                     && rating.value < Rating.pEpRatingReliable.value) {
                 setHandshakeButtonVisibility(address, View.GONE);
-                badge.setVisibility(View.GONE);
+                badge.setVisibility(View.VISIBLE);
             }else if (rating.value == Rating.pEpRatingMistrust.value) {
                 setHandshakeButtonVisibility(address, View.VISIBLE);
                 handshakeText.setText(context.getString(R.string.pep_handshake));
