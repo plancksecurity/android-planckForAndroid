@@ -1,7 +1,5 @@
 package com.fsck.k9.pEp;
 
-import android.content.Context;
-
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeMessage;
@@ -106,12 +104,11 @@ public interface PEpProvider {
      * @return trustwords string
      */
     String trustwords(Identity id, String language);
-    void trustwords(Identity myself, Identity partner, String lang,
-                    ResultCallback<HandshakeData> callback);
+
     String trustwords(Identity myself, Identity partner, String lang, boolean isShort);
 
-    void obtainTrustwords(Identity myself, Identity partner, String lang,
-                          Boolean areTrustwordsShort, ResultCallback<HandshakeData> callback);
+    void obtainTrustwords(Identity myself, Identity partner, String lang, Boolean areKeysyncTrustwords,
+                          ResultCallback<HandshakeData> callback);
 
     /**
      * Close the engine/session associated to the provider

@@ -541,37 +541,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public synchronized String trustwords(Identity id, String language) {
-        id.lang = language;
-        createEngineInstanceIfNeeded();
-        return engine.trustwords(id);
-    }
-
-    @Override
-    public void trustwords(Identity self, Identity other, String lang, ResultCallback<HandshakeData> callback) {
-        threadExecutor.execute(() -> {
-            Engine engine = null;
-            try {
-                Identity myself = self;
-                Identity partner = other;
-                engine = getNewEngineSession();
-
-                myself.lang = PEpUtils.obtainTrustwordsLang(lang);
-                myself.user_id = PEP_OWN_USER_ID;
-                myself = engine.myself(myself);
-                partner.lang = PEpUtils.obtainTrustwordsLang(lang);
-                partner = engine.updateIdentity(partner);
-
-                String trust = engine.get_trustwords(myself, partner, lang, true);
-                String shortTrust = engine.get_trustwords(myself, partner, lang, false);
-                notifyLoaded(new HandshakeData(trust, shortTrust, myself, partner), callback);
-            } catch (Exception e) {
-                notifyError(e, callback);
-            } finally {
-                if (engine != null) {
-                    engine.close();
-                }
-            }
-        });
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -585,14 +555,25 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void obtainTrustwords(Identity self, Identity other, String lang, Boolean areTrustwordsShort, ResultCallback<HandshakeData> callback) {
+    public void obtainTrustwords(Identity self, Identity other, String lang,
+                                 Boolean areKeysyncTrustwords,
+                                 ResultCallback<HandshakeData> callback) {
         threadExecutor.execute(() -> {
             Engine engine = null;
             try {
+
                 engine = getNewEngineSession();
-                String longTrustwords = engine.get_trustwords(self, other, lang, true);
-                String shortTrustwords = engine.get_trustwords(self, other, lang, false);
-                notifyLoaded(new HandshakeData(longTrustwords, shortTrustwords, self, other), callback);
+                if (!areKeysyncTrustwords) {
+                    Identity myself = engine.myself(self);
+                    Identity another = engine.updateIdentity(other);
+                    String longTrustwords = engine.get_trustwords(myself, another, lang, true);
+                    String shortTrustwords = engine.get_trustwords(myself, another, lang, false);
+                    notifyLoaded(new HandshakeData(longTrustwords, shortTrustwords, myself, another), callback);
+                } else {
+                    String longTrustwords = engine.get_trustwords(self, other, lang, true);
+                    String shortTrustwords = engine.get_trustwords(self, other, lang, false);
+                    notifyLoaded(new HandshakeData(longTrustwords, shortTrustwords, self, other), callback);
+                }
             } catch (Exception e) {
                 notifyError(e, callback);
             } finally {

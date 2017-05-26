@@ -16,7 +16,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.helper.Contacts;
@@ -241,46 +240,6 @@ public class PEpUtils {
             }
         }
         return builder.toString();
-    }
-
-    public static String getShortTrustWords(PEpProvider pEp, Identity id, String... languages) {
-        if (languages.length == 0) {
-            String k9Language = K9.getK9Language();
-            return obtainTrustwords(pEp, id, k9Language, true);
-        } else {
-            String language = languages[0];
-            return obtainTrustwords(pEp, id, language, true);
-        }
-    }
-
-    public static String getTrustWords(PEpProvider pEp, Identity id, String... languages) {
-        if (languages.length == 0) {
-            String k9Language = K9.getK9Language();
-            return obtainTrustwords(pEp, id, k9Language, false);
-        } else {
-            String language = languages[0];
-            return obtainTrustwords(pEp, id, language, false);
-        }
-    }
-
-    @NonNull
-    private static String obtainTrustwords(PEpProvider pEp, Identity id, String language, Boolean shouldBeShorten) {
-        if (language == null || language.equals("")) {
-            language = Locale.getDefault().getLanguage();
-        }
-        if (isLanguageInPEPLanguages(language)) {
-            if (shouldBeShorten) {
-                return getShortTrustwords(pEp.trustwords(id, language));
-            } else {
-                return pEp.trustwords(id, language);
-            }
-        } else {
-            if (shouldBeShorten) {
-                return getShortTrustwords(pEp.trustwords(id, "en"));
-            } else {
-                return pEp.trustwords(id, "en");
-            }
-        }
     }
 
 

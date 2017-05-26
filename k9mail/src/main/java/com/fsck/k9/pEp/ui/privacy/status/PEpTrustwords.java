@@ -22,6 +22,7 @@ import com.fsck.k9.pEp.ui.keysync.languages.PEpLanguageSelector;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
+import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -140,6 +141,7 @@ public class PEpTrustwords extends PepColoredActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        trustwordsLanguage = Locale.getDefault().getLanguage();
         loadTrustwords();
     }
 
@@ -160,7 +162,9 @@ public class PEpTrustwords extends PepColoredActivity {
 
     private void loadTrustwords() {
         //Actually what is heavy is update identity and myself.
-        getpEp().trustwords(myself, partner, trustwordsLanguage, new PEpProvider.ResultCallback<HandshakeData>() {
+        getpEp().obtainTrustwords(myself, partner, trustwordsLanguage,
+                false,
+                new PEpProvider.ResultCallback<HandshakeData>() {
             @Override
             public void onLoaded(final HandshakeData handshakeData) {
                 showTrustwords(handshakeData);
