@@ -21,7 +21,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import com.fsck.k9.Account;
@@ -41,6 +40,8 @@ import com.fsck.k9.mail.ConnectionSecurity;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
+import com.fsck.k9.pEp.PEpPermissionChecker;
+import com.fsck.k9.pEp.PepPermissionActivity;
 import com.fsck.k9.pEp.UIUtils;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
@@ -212,12 +213,16 @@ public class AccountSetupBasicsFragment extends PEpFragment
      */
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        updateViewVisibility(mClientCertificateCheckBox.isChecked(), mOAuth2CheckBox.isChecked());
-        validateFields();
+        if (!PEpPermissionChecker.hasContactsPermission(getActivity())) {
+            ((PepPermissionActivity) getActivity()).createContactsPermissionListeners();
+        } else {
+            updateViewVisibility(mClientCertificateCheckBox.isChecked(), mOAuth2CheckBox.isChecked());
+            validateFields();
 
-        // Have the user select (or confirm) the client certificate
-        if (buttonView.equals(mClientCertificateCheckBox) && isChecked) {
-            mClientCertificateSpinner.chooseCertificate();
+            // Have the user select (or confirm) the client certificate
+            if (buttonView.equals(mClientCertificateCheckBox) && isChecked) {
+                mClientCertificateSpinner.chooseCertificate();
+            }
         }
     }
 
@@ -668,6 +673,15 @@ public class AccountSetupBasicsFragment extends PEpFragment
                 .pEpModule(new PEpModule(getActivity(), getLoaderManager(), getFragmentManager()))
                 .build()
                 .inject(this);
+    }
+
+    public void contactsPermissionDenied() {
+        mOAuth2CheckBox.setChecked(false);
+    }
+
+    public void contactsPermissionGranted() {
+        updateViewVisibility(mClientCertificateCheckBox.isChecked(), mOAuth2CheckBox.isChecked());
+        validateFields();
     }
 
     static class Provider implements Serializable {

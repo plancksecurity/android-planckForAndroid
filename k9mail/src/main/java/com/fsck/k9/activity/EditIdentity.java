@@ -14,6 +14,8 @@ import com.fsck.k9.R;
 
 import java.util.List;
 
+import butterknife.ButterKnife;
+
 public class EditIdentity extends K9Activity {
 
     public static final String EXTRA_IDENTITY = "com.fsck.k9.EditIdentity_identity";
@@ -46,7 +48,8 @@ public class EditIdentity extends K9Activity {
         }
 
         setContentView(R.layout.edit_identity);
-        setUpToolbar(false);
+        ButterKnife.bind(EditIdentity.this);
+        initializeToolbar(false, R.string.manage_identities_title);
         /*
          * If we're being reloaded we override the original account with the one
          * we saved

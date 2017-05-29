@@ -234,7 +234,7 @@ public class Address implements Serializable {
                 return split[2];
             }
         }
-        return "";
+        return out;
     }
 
     public static String toEncodedString(Address[] addresses) {

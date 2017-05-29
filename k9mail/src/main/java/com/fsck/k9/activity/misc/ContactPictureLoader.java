@@ -21,6 +21,7 @@ import android.widget.ImageView;
 
 import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.pEp.PEpPermissionChecker;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -87,15 +88,14 @@ public class ContactPictureLoader {
      */
     public ContactPictureLoader(Context context, int defaultBackgroundColor) {
         Context appContext = context.getApplicationContext();
-        mContentResolver = appContext.getContentResolver();
+        mDefaultBackgroundColor = defaultBackgroundColor;
+        if (PEpPermissionChecker.hasContactsPermission(context)) {
+            mContentResolver = appContext.getContentResolver();
+            mContactsHelper = Contacts.getInstance(appContext);
+        }
         mResources = appContext.getResources();
-        mContactsHelper = Contacts.getInstance(appContext);
-
         float scale = mResources.getDisplayMetrics().density;
         mPictureSizeInPx = (int) (PICTURE_SIZE * scale);
-
-        mDefaultBackgroundColor = defaultBackgroundColor;
-
         ActivityManager activityManager =
                 (ActivityManager) appContext.getSystemService(Context.ACTIVITY_SERVICE);
         int memClass = activityManager.getMemoryClass();
@@ -301,7 +301,10 @@ public class ContactPictureLoader {
         @Override
         protected Bitmap doInBackground(Void... args) {
             final String email = mAddress.getAddress();
-            final Uri photoUri = mContactsHelper.getPhotoUri(email);
+            Uri photoUri = null;
+            if (mContactsHelper != null) {
+                photoUri = mContactsHelper.getPhotoUri(email);
+            }
             Bitmap bitmap = null;
             if (photoUri != null) {
                 try {

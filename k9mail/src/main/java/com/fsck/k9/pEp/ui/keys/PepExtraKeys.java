@@ -60,8 +60,8 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
 
         preferences = Preferences.getPreferences(PepExtraKeys.this);
         account = getIntent().getStringExtra(ACCOUNT_UUID);
-        keys = preferences.loadKeys(account);
-        presenter.initialize(this, pEp);
+        keys = preferences.getMasterKeys(account);
+        presenter.initialize(this, pEp, keys);
         initializeToolbar(true, R.string.master_key_management);
     }
 
@@ -78,13 +78,13 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
 
     @Override
     public void showKeys(List<KeyListItem> availableKeys) {
-        keysAdapter = new KeyItemAdapter(availableKeys, (item, checked) -> {
+        keysAdapter = new KeyItemAdapter(availableKeys,(item, checked) -> {
             if (checked) {
                 keys.add(item.getFpr());
-                preferences.setKeysFPRs(account, keys);
+                preferences.setMasterKeysFPRs(account, keys);
             } else {
                 keys.remove(item.getFpr());
-                preferences.setKeysFPRs(account, keys);
+                preferences.setMasterKeysFPRs(account, keys);
             }
         });
         keysView.setVisibility(View.VISIBLE);

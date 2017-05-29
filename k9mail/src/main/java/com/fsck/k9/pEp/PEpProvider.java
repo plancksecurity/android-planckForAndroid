@@ -157,7 +157,9 @@ public interface PEpProvider {
 
     void setSubjectUnprotected(boolean enabled);
 
-    List<KeyListItem> getAvailableKey();
+    List<KeyListItem> getBlacklistInfo();
+
+    List<KeyListItem> getMasterKeysInfo();
 
     void addToBlacklist(String fpr);
 
