@@ -9,10 +9,6 @@ import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PepPermissionActivity;
-import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
-import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
-import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
-import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.PEpPermissionView;
 
 import butterknife.Bind;
@@ -48,22 +44,16 @@ public class PermissionsActivity extends PepPermissionActivity {
     }
 
     @Override
-    protected void initializeInjector(ApplicationComponent applicationComponent) {
-        applicationComponent.inject(this);
-        DaggerPEpComponent.builder()
-                .applicationComponent(applicationComponent)
-                .activityModule(new ActivityModule(this))
-                .pEpModule(new PEpModule(this, getLoaderManager(), getFragmentManager()))
-                .build()
-                .inject(this);
-    }
-
-    @Override
     public void showPermissionGranted(String permissionName) {
     }
 
     @Override
     public void showPermissionDenied(String permissionName, boolean permanentlyDenied) {
+    }
+
+    @Override
+    public void inject() {
+        getpEpComponent().inject(this);
     }
 
     @OnClick(R.id.action_continue)

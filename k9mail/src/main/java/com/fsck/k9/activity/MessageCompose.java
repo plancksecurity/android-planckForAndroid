@@ -90,7 +90,6 @@ import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepPermissionActivity;
-import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
@@ -605,11 +604,6 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
     @Override
     public void search(String query) {
-
-    }
-
-    @Override
-    protected void initializeInjector(ApplicationComponent applicationComponent) {
 
     }
 
@@ -1962,6 +1956,11 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     public void showPermissionDenied(String permissionName, boolean permanentlyDenied) {
         String permissionDenied = getResources().getString(R.string.read_snackbar_permission_permanently_denied);
         FeedbackTools.showLongFeedback(getRootView(),  permissionDenied);
+    }
+
+    @Override
+    public void inject() {
+
     }
 
 }

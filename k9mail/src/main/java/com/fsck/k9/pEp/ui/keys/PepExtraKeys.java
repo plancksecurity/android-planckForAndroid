@@ -14,10 +14,6 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PepActivity;
-import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
-import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
-import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
-import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
 import java.util.List;
@@ -66,14 +62,8 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
     }
 
     @Override
-    protected void initializeInjector(ApplicationComponent applicationComponent) {
-        applicationComponent.inject(this);
-        DaggerPEpComponent.builder()
-                .applicationComponent(applicationComponent)
-                .activityModule(new ActivityModule(this))
-                .pEpModule(new PEpModule(this, getLoaderManager(), getFragmentManager()))
-                .build()
-                .inject(this);
+    public void inject() {
+        getpEpComponent().inject(this);
     }
 
     @Override

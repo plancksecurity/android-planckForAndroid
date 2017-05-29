@@ -43,9 +43,6 @@ import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.pEp.PEpPermissionChecker;
 import com.fsck.k9.pEp.PepPermissionActivity;
 import com.fsck.k9.pEp.UIUtils;
-import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
-import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
-import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.view.ClientCertificateSpinner;
 
 import java.io.Serializable;
@@ -666,13 +663,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     @Override
-    protected void initializeInjector(ApplicationComponent applicationComponent) {
-        applicationComponent.inject(this);
-        DaggerPEpComponent.builder()
-                .applicationComponent(applicationComponent)
-                .pEpModule(new PEpModule(getActivity(), getLoaderManager(), getFragmentManager()))
-                .build()
-                .inject(this);
+    protected void inject() {
+        getpEpComponent().inject(this);
     }
 
     public void contactsPermissionDenied() {

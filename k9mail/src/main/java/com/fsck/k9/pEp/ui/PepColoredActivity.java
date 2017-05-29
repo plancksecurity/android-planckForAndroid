@@ -19,6 +19,10 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
+import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
+import com.fsck.k9.pEp.infrastructure.components.PEpComponent;
+import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
+import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 
 import org.pEp.jniadapter.Rating;
 
@@ -28,12 +32,16 @@ public abstract class PepColoredActivity extends K9Activity {
     protected Rating pEpRating = Rating.pEpRatingUndefined;
     PePUIArtefactCache uiCache;
     private PEpProvider pEp;
+    private PEpComponent pEpComponent;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initializeInjector(getApplicationComponent());
+        inject();
     }
+
+    protected abstract void inject();
 
     @Override
     public void search(String query) {
@@ -93,7 +101,14 @@ public abstract class PepColoredActivity extends K9Activity {
         return (K9) getApplication();
     }
 
-    protected abstract void initializeInjector(ApplicationComponent applicationComponent);
+    private void initializeInjector(ApplicationComponent applicationComponent) {
+        applicationComponent.inject(this);
+        pEpComponent = DaggerPEpComponent.builder()
+                .applicationComponent(applicationComponent)
+                .activityModule(new ActivityModule(this))
+                .pEpModule(new PEpModule(this, getLoaderManager(), getFragmentManager()))
+                .build();
+    }
 
     public void setStatusBarPepColor() {
         Window window = this.getWindow();
@@ -116,5 +131,9 @@ public abstract class PepColoredActivity extends K9Activity {
             color = Color.HSVToColor(hsv);
             window.setStatusBarColor(color);
         }
+    }
+
+    public PEpComponent getpEpComponent() {
+        return pEpComponent;
     }
 }

@@ -12,10 +12,6 @@ import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PepActivity;
-import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
-import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
-import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
-import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.adapters.IdentitiesAdapter;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
@@ -51,20 +47,14 @@ public class KeysyncManagement extends PepActivity implements KeysyncManagementV
         initializeToolbar(true, R.string.manage_identities_title);
     }
 
+    @Override
+    public void inject() {
+        getpEpComponent().inject(this);
+    }
+
     private void initializePresenter() {
         List<Account> accounts = Preferences.getPreferences(KeysyncManagement.this).getAccounts();
         presenter.initialize(this, getpEp(), accounts);
-    }
-
-    @Override
-    protected void initializeInjector(ApplicationComponent applicationComponent) {
-        applicationComponent.inject(this);
-        DaggerPEpComponent.builder()
-                .applicationComponent(applicationComponent)
-                .activityModule(new ActivityModule(this))
-                .pEpModule(new PEpModule(this, getLoaderManager(), getFragmentManager()))
-                .build()
-                .inject(this);
     }
 
     @Override

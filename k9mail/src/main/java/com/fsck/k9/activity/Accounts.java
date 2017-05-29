@@ -69,7 +69,6 @@ import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PepPermissionActivity;
-import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.ui.About;
 import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
@@ -460,11 +459,6 @@ public class Accounts extends PepPermissionActivity {
     }
 
     @Override
-    protected void initializeInjector(ApplicationComponent applicationComponent) {
-
-    }
-
-    @Override
     public void showPermissionGranted(String permissionName) {
 
     }
@@ -473,6 +467,11 @@ public class Accounts extends PepPermissionActivity {
     public void showPermissionDenied(String permissionName, boolean permanentlyDenied) {
         String permissionDenied = getResources().getString(R.string.download_snackbar_permission_permanently_denied);
         FeedbackTools.showLongFeedback(getRootView(),  permissionDenied);
+    }
+
+    @Override
+    public void inject() {
+
     }
 
     private void setupSettingsButton() {
