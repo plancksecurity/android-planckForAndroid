@@ -10,7 +10,7 @@
   <string name="remote_control_desc">Позволява на К-9 Mail да контролира активността и настройките</string>
   <!--Used in the about dialog-->
   <string name="app_authors">Google, The K-9 Dog Walkers.</string>
-  <string name="app_copyright_fmt">Правата запазени 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Част от правата 2006-<xliff:g>%s</xliff:g> на Android Open Source Project.</string>
+  <string name="app_copyright_fmt">Правата запазени 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Част от правата 2006-<xliff:g>%2$s</xliff:g> на Android Open Source Project.</string>
   <string name="app_license">Лицензиран под Апачи Лиценз, Версия 2.0.</string>
   <!--Welcome message-->
   <string name="welcome_message_title">Добре дошли в K-9 Mail</string>
