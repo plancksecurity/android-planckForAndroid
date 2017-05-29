@@ -102,6 +102,7 @@ public class PEpTrustwords extends PepColoredActivity {
             if (intent.hasExtra(PARTNER_POSITION)) {
                 partnerPosition = intent.getIntExtra(PARTNER_POSITION, DEFAULT_POSITION);
                 partner = getUiCache().getRecipients().get(partnerPosition);
+                partner = getpEp().updateIdentity(partner);
                 if (!partner.username.equals(partner.address)) {
                     partnerView.setText(String.format(getString(R.string.pep_complete_partner_format), partner.username, partner.address));
                     partnerLabel.setText(String.format(getString(R.string.pep_complete_partner_format), partner.username, partner.address));
@@ -160,21 +161,7 @@ public class PEpTrustwords extends PepColoredActivity {
         getpEp().trustwords(myself, partner, trustwordsLanguage, new PEpProvider.ResultCallback<HandshakeData>() {
             @Override
             public void onLoaded(final HandshakeData handshakeData) {
-                fullTrustwords = handshakeData.getFullTrustwords();
-                shortTrustwords = handshakeData.getShortTrustwords();
-                if (areTrustwordsShort) {
-                    tvTrustwords.setText(shortTrustwords);
-                } else {
-                    tvTrustwords.setText(fullTrustwords);
-                }
-
-                myself = handshakeData.getMyself();
-                partner = handshakeData.getPartner();
-                myselfFpr.setText(PEpUtils.formatFpr(myself.fpr));
-                partnerFpr.setText(PEpUtils.formatFpr(partner.fpr));
-                loading.setVisibility(View.GONE);
-                wrongTrustWords.setVisibility(View.VISIBLE);
-                confirmTrustWords.setVisibility(View.VISIBLE);
+                showTrustwords(handshakeData);
             }
 
             @Override
@@ -182,6 +169,28 @@ public class PEpTrustwords extends PepColoredActivity {
 
             }
         });
+    }
+
+    private void showTrustwords(HandshakeData handshakeData) {
+        fullTrustwords = handshakeData.getFullTrustwords();
+        shortTrustwords = handshakeData.getShortTrustwords();
+        if (areTrustwordsShort) {
+            tvTrustwords.setText(shortTrustwords);
+        } else {
+            tvTrustwords.setText(fullTrustwords);
+        }
+
+        myself = handshakeData.getMyself();
+        partner = handshakeData.getPartner();
+        myselfFpr.setText(PEpUtils.formatFpr(myself.fpr));
+        partnerFpr.setText(PEpUtils.formatFpr(partner.fpr));
+        loading.setVisibility(View.GONE);
+        wrongTrustWords.setVisibility(View.VISIBLE);
+        confirmTrustWords.setVisibility(View.VISIBLE);
+
+        if (!PEpUtils.isPEpUser(partner)) {
+            showFingerprints();
+        }
     }
 
     @Override
@@ -237,9 +246,7 @@ public class PEpTrustwords extends PepColoredActivity {
                     menuItemTrustwordsLanguage.setVisible(true);
                     menuItemtrustwordsLength.setVisible(true);
                 }
-                flipper.showNext();
-                showingPgpFingerprint = !showingPgpFingerprint;
-                invalidateOptionsMenu();
+                showFingerprints();
                 return true;
             case R.id.action_language:
                 showLanguageSelectionDialog();
@@ -259,6 +266,12 @@ public class PEpTrustwords extends PepColoredActivity {
         //noinspection SimplifiableIfStatement
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showFingerprints() {
+        flipper.showNext();
+        showingPgpFingerprint = !showingPgpFingerprint;
+        invalidateOptionsMenu();
     }
 
     private void changeTrustwordsLength(Boolean areShort) {
