@@ -38,17 +38,17 @@
   <string name="accounts_title">账户</string>
   <string name="folders_title">文件夹</string>
   <string name="advanced">高级</string>
-  <string name="message_list_title"><xliff:g id="account">%s</xliff:g>：<xliff:g id="folder">%s</xliff:g></string>
+  <string name="message_list_title"><xliff:g id="account">%1$s</xliff:g>：<xliff:g id="folder">%2$s</xliff:g></string>
   <string name="compose_title_compose">新邮件</string>
   <string name="compose_title_reply">回复</string>
   <string name="compose_title_reply_all">全部回复</string>
   <string name="compose_title_forward">转发</string>
   <string name="choose_folder_title">选择文件夹</string>
-  <string name="status_loading_account_folder">正在接收 <xliff:g id="folder">%s:</xliff:g>: <xliff:g id="progress">%s</xliff:g>, <xliff:g id="account">%s</xliff:g></string>
-  <string name="status_loading_account_folder_headers">正在接收邮件头: <xliff:g id="folder">%s</xliff:g>: <xliff:g id="progress">%s</xliff:g>, <xliff:g id="account">%s</xliff:g></string>
-  <string name="status_sending_account">正在发送 <xliff:g id="progress">%s</xliff:g>: <xliff:g id="account">%s</xliff:g></string>
-  <string name="status_processing_account">正在处理 <xliff:g id="command">%s</xliff:g>: <xliff:g id="progress">%s</xliff:g>: <xliff:g id="account">%s</xliff:g></string>
-  <string name="folder_progress">\u0020<xliff:g id="completed">%d</xliff:g>/<xliff:g id="total">%d</xliff:g></string>
+  <string name="status_loading_account_folder">正在接收 <xliff:g id="folder">%1$s:</xliff:g>: <xliff:g id="progress">%2$s</xliff:g>, <xliff:g id="account">%3$s</xliff:g></string>
+  <string name="status_loading_account_folder_headers">正在接收邮件头: <xliff:g id="folder">%1$s</xliff:g>: <xliff:g id="progress">%2$s</xliff:g>, <xliff:g id="account">%3$s</xliff:g></string>
+  <string name="status_sending_account">正在发送 <xliff:g id="progress">%1$s</xliff:g>: <xliff:g id="account">%2$s</xliff:g></string>
+  <string name="status_processing_account">正在处理 <xliff:g id="command">%1$s</xliff:g>: <xliff:g id="progress">%2$s</xliff:g>: <xliff:g id="account">%3$s</xliff:g></string>
+  <string name="folder_progress">\u0020<xliff:g id="completed">%1$d</xliff:g>/<xliff:g id="total">%2$d</xliff:g></string>
   <string name="status_next_poll">下次接收 <xliff:g id="nexttime">%s</xliff:g></string>
   <string name="status_syncing_off">同步已禁用</string>
   <string name="actionbar_selected">已选择 <xliff:g id="selection_count">%d</xliff:g> 个</string>
@@ -127,7 +127,7 @@
   <string name="abbrev_megabytes">MB</string>
   <string name="abbrev_kilobytes">KB</string>
   <string name="abbrev_bytes">B</string>
-  <string name="account_size_changed">账户“<xliff:g id="account">%s</xliff:g>”已从<xliff:g id="oldSize">%s</xliff:g>缩小到<xliff:g id="newSize">%s</xliff:g></string>
+  <string name="account_size_changed">账户“<xliff:g id="account">%1$s</xliff:g>”已从<xliff:g id="oldSize">%2$s</xliff:g>缩小到<xliff:g id="newSize">%3$s</xliff:g></string>
   <string name="compacting_account">正在压缩账户“<xliff:g id="account">%s</xliff:g>”</string>
   <string name="clearing_account">正在清理账户“<xliff:g id="account">%s</xliff:g>”</string>
   <string name="recreating_account">正在重建账户“<xliff:g id="account">%s</xliff:g>”</string>
@@ -135,7 +135,7 @@
   <plurals name="notification_new_messages_title">
     <item quantity="other"><xliff:g id="new_message_count">%d</xliff:g> 条新消息</item>
   </plurals>
-  <string name="notification_new_one_account_fmt">您有<xliff:g id="unread_message_count">%d</xliff:g>封未读邮件（<xliff:g id="account">%s</xliff:g>）</string>
+  <string name="notification_new_one_account_fmt">您有<xliff:g id="unread_message_count">%1$d</xliff:g>封未读邮件（<xliff:g id="account">%2$s</xliff:g>）</string>
   <string name="notification_action_reply">回复</string>
   <string name="notification_action_mark_as_read">标记为已读</string>
   <string name="notification_action_mark_all_as_read">全部标记为已读</string>
@@ -147,7 +147,7 @@
   <string name="notification_certificate_error_title"><xliff:g id="account">%s</xliff:g> 认证错误</string>
   <string name="notification_certificate_error_text">请检查您的服务器设置</string>
   <string name="notification_authentication_error_title">身份验证失败</string>
-  <string name="notification_bg_sync_ticker">正在检查邮件：<xliff:g id="account">%s</xliff:g>：<xliff:g id="folder">%s</xliff:g></string>
+  <string name="notification_bg_sync_ticker">正在检查邮件：<xliff:g id="account">%1$s</xliff:g>：<xliff:g id="folder">%2$s</xliff:g></string>
   <string name="notification_bg_sync_title">正在检查邮件</string>
   <string name="notification_bg_send_ticker">正在发送邮件：<xliff:g id="account">%s</xliff:g></string>
   <string name="notification_bg_send_title">发送邮件</string>
@@ -189,7 +189,7 @@
   <string name="message_compose_show_quoted_text_action">引用消息</string>
   <string name="message_compose_description_delete_quoted_text">删除引用文本</string>
   <string name="message_compose_description_edit_quoted_text">编辑引用文本</string>
-  <string name="message_view_from_format">发件人：<xliff:g id="name">%s</xliff:g> &lt;<xliff:g id="email">%s</xliff:g>&gt;</string>
+  <string name="message_view_from_format">发件人：<xliff:g id="name">%1$s</xliff:g> &lt;<xliff:g id="email">%2$s</xliff:g>&gt;</string>
   <string name="message_to_label">收件人：</string>
   <string name="message_view_cc_label">抄送：</string>
   <string name="message_view_attachment_view_action">打开</string>
@@ -655,7 +655,7 @@
   <string name="count_search_summary">关闭该功能以便加快显示速度</string>
   <string name="hide_special_accounts_title">隐藏特殊帐户</string>
   <string name="hide_special_accounts_summary">隐藏统一的收件箱以及所有邮件帐户</string>
-  <string name="search_title"><xliff:g id="search_name">%s</xliff:g> <xliff:g id="modifier">%s</xliff:g></string>
+  <string name="search_title"><xliff:g id="search_name">%1$s</xliff:g> <xliff:g id="modifier">%2$s</xliff:g></string>
   <string name="flagged_modifier"> - 星标</string>
   <string name="unread_modifier"> - 未读</string>
   <string name="search_all_messages_title">所有邮件</string>
@@ -740,7 +740,7 @@
   <string name="settings_import_scanning_file">正在扫描文件…</string>
   <string name="settings_export_success">设置已导出到<xliff:g id="filename">%s</xliff:g></string>
   <string name="settings_import_global_settings_success">全局设置已自<xliff:g id="filename">%s</xliff:g>导入</string>
-  <string name="settings_import_success">账户<xliff:g id="accounts">%s</xliff:g>已自<xliff:g id="filename">%s</xliff:g>导入</string>
+  <string name="settings_import_success">账户<xliff:g id="accounts">%1$s</xliff:g>已自<xliff:g id="filename">%1$s</xliff:g>导入</string>
   <plurals name="settings_import_accounts">
     <item quantity="other"><xliff:g id="numAccounts">%s</xliff:g> 个账户</item>
   </plurals>
@@ -751,7 +751,7 @@
   <string name="settings_import_success_header">导入成功</string>
   <string name="settings_import_failed_header">导入失败</string>
   <string name="settings_import_activate_account_header">激活账户</string>
-  <string name="settings_import_activate_account_intro">使用账户\"<xliff:g id="account">%s</xliff:g>\"，您需要提供<xliff:g id="server_passwords">%s</xliff:g></string>
+  <string name="settings_import_activate_account_intro">使用账户\"<xliff:g id="account">%1$s</xliff:g>\"，您需要提供<xliff:g id="server_passwords">%1$s</xliff:g></string>
   <plurals name="settings_import_server_passwords">
     <item quantity="other">服务器密码</item>
   </plurals>
