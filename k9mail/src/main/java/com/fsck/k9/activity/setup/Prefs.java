@@ -468,7 +468,8 @@ public class Prefs extends K9PreferenceActivity {
         });
 
 
-        mSplitViewMode = (ListPreference) findPreference(PREFERENCE_SPLITVIEW_MODE);
+        //mSplitViewMode = (ListPreference) findPreference(PREFERENCE_SPLITVIEW_MODE);
+        mSplitViewMode = new ListPreference(getApplicationContext());
         initListPreference(mSplitViewMode, K9.getSplitViewMode().name(),
                 mSplitViewMode.getEntries(), mSplitViewMode.getEntryValues());
 
