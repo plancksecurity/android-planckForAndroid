@@ -37,9 +37,6 @@ import com.fsck.k9.mail.AuthType;
 import com.fsck.k9.mail.ConnectionSecurity;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
-import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
-import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
-import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.view.ClientCertificateSpinner;
 
@@ -242,6 +239,11 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
             ((AccountSetupBasics) getActivity()).setHomeButtonListener(v -> {
             });
         }
+    }
+
+    @Override
+    protected void inject() {
+        getpEpComponent().inject(this);
     }
 
     private void checkSettings() {
@@ -581,15 +583,5 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     private ConnectionSecurity getSelectedSecurity() {
         ConnectionSecurityHolder holder = (ConnectionSecurityHolder) mSecurityTypeView.getSelectedItem();
         return holder.connectionSecurity;
-    }
-
-    @Override
-    protected void initializeInjector(ApplicationComponent applicationComponent) {
-        applicationComponent.inject(this);
-        DaggerPEpComponent.builder()
-                .applicationComponent(applicationComponent)
-                .pEpModule(new PEpModule(getActivity(), getLoaderManager(), getFragmentManager()))
-                .build()
-                .inject(this);
     }
 }

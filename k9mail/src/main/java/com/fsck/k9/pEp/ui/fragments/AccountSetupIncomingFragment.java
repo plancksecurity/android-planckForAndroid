@@ -19,7 +19,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,9 +46,6 @@ import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mail.store.imap.ImapStoreSettings;
 import com.fsck.k9.mail.store.webdav.WebDavStoreSettings;
-import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
-import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
-import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.service.MailService;
 import com.fsck.k9.view.ClientCertificateSpinner;
@@ -345,13 +341,8 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     }
 
     @Override
-    protected void initializeInjector(ApplicationComponent applicationComponent) {
-        applicationComponent.inject(this);
-        DaggerPEpComponent.builder()
-                .applicationComponent(applicationComponent)
-                .pEpModule(new PEpModule(getActivity(), getLoaderManager(), getFragmentManager()))
-                .build()
-                .inject(this);
+    protected void inject() {
+        getpEpComponent().inject(this);
     }
 
     @Override

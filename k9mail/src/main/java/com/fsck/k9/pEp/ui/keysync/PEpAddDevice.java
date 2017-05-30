@@ -21,10 +21,6 @@ import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PepActivity;
-import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
-import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
-import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
-import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.HandshakeData;
 import com.fsck.k9.pEp.ui.adapters.IdentitiesAdapter;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -118,6 +114,11 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
     @Override
     public void search(String query) {
 
+    }
+
+    @Override
+    public void inject() {
+        getpEpComponent().inject(this);
     }
 
     @Override
@@ -245,17 +246,6 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
     @Override
     public void onBackPressed() {
         presenter.cancelHandshake();
-    }
-
-    @Override
-    protected void initializeInjector(ApplicationComponent applicationComponent) {
-        applicationComponent.inject(this);
-        DaggerPEpComponent.builder()
-                .applicationComponent(applicationComponent)
-                .activityModule(new ActivityModule(this))
-                .pEpModule(new PEpModule(this, getLoaderManager(), getFragmentManager()))
-                .build()
-                .inject(this);
     }
 
     @Override

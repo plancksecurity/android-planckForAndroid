@@ -52,11 +52,6 @@ public class AccountSetupBasics extends PepPermissionActivity {
     }
 
     @Override
-    protected void initializeInjector(ApplicationComponent applicationComponent) {
-
-    }
-
-    @Override
     public void showPermissionGranted(String permissionName) {
         accountSetupBasicsFragment.contactsPermissionGranted();
     }
@@ -64,6 +59,11 @@ public class AccountSetupBasics extends PepPermissionActivity {
     @Override
     public void showPermissionDenied(String permissionName, boolean permanentlyDenied) {
         accountSetupBasicsFragment.contactsPermissionDenied();
+    }
+
+    @Override
+    public void inject() {
+
     }
 
     @Override

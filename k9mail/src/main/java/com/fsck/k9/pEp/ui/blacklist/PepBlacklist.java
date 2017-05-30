@@ -23,10 +23,6 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PepActivity;
-import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
-import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
-import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
-import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.keys.KeyItemAdapter;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
@@ -79,14 +75,8 @@ public class PepBlacklist extends PepActivity implements SearchView.OnQueryTextL
     }
 
     @Override
-    protected void initializeInjector(ApplicationComponent applicationComponent) {
-        applicationComponent.inject(this);
-        DaggerPEpComponent.builder()
-                .applicationComponent(applicationComponent)
-                .activityModule(new ActivityModule(this))
-                .pEpModule(new PEpModule(this, getLoaderManager(), getFragmentManager()))
-                .build()
-                .inject(this);
+    public void inject() {
+        getpEpComponent().inject(this);
     }
 
     private void initializeKeysView() {

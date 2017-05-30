@@ -8,6 +8,10 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
+import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
+import com.fsck.k9.pEp.infrastructure.components.PEpComponent;
+import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
+import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.PermissionErrorListener;
 import com.fsck.k9.pEp.ui.listeners.ActivityPermissionListener;
 import com.karumi.dexter.Dexter;
@@ -26,6 +30,7 @@ public abstract class PepPermissionActivity extends K9Activity {
     private PEpProvider pEp;
     private CompositePermissionListener storagePermissionListener;
     private CompositePermissionListener contactPermissionListener;
+    private PEpComponent pEpComponent;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,7 +64,14 @@ public abstract class PepPermissionActivity extends K9Activity {
         return (K9) getApplication();
     }
 
-    protected abstract void initializeInjector(ApplicationComponent applicationComponent);
+    private void initializeInjector(ApplicationComponent applicationComponent) {
+        applicationComponent.inject(this);
+        pEpComponent = DaggerPEpComponent.builder()
+                .applicationComponent(applicationComponent)
+                .activityModule(new ActivityModule(this))
+                .pEpModule(new PEpModule(this, getLoaderManager(), getFragmentManager()))
+                .build();
+    }
 
     public abstract void showPermissionGranted(String permissionName);
 
@@ -120,5 +132,11 @@ public abstract class PepPermissionActivity extends K9Activity {
                 completedCallback.onError(new Throwable(token.toString()));
             }
         }).check();
+    }
+
+    public abstract void inject();
+
+    public PEpComponent getpEpComponent() {
+        return pEpComponent;
     }
 }

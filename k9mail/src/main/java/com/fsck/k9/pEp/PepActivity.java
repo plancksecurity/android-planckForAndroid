@@ -5,15 +5,21 @@ import android.os.Bundle;
 import com.fsck.k9.K9;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
+import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
+import com.fsck.k9.pEp.infrastructure.components.PEpComponent;
+import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
+import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 
 public abstract class PepActivity extends K9Activity {
     PePUIArtefactCache uiCache;
     private PEpProvider pEp;
+    private PEpComponent pEpComponent;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initializeInjector(getApplicationComponent());
+        inject();
     }
 
     @Override
@@ -42,5 +48,18 @@ public abstract class PepActivity extends K9Activity {
         return (K9) getApplication();
     }
 
-    protected abstract void initializeInjector(ApplicationComponent applicationComponent);
+    private void initializeInjector(ApplicationComponent applicationComponent) {
+        applicationComponent.inject(this);
+        pEpComponent = DaggerPEpComponent.builder()
+                .applicationComponent(applicationComponent)
+                .activityModule(new ActivityModule(this))
+                .pEpModule(new PEpModule(this, getLoaderManager(), getFragmentManager()))
+                .build();
+    }
+
+    public abstract void inject();
+
+    public PEpComponent getpEpComponent() {
+        return pEpComponent;
+    }
 }
