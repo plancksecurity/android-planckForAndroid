@@ -1,80 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:id="@+id/container"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:baselineAligned="false"
+    android:orientation="horizontal" >
 
-    <android.support.v4.widget.DrawerLayout
-        android:id="@+id/drawer_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        tools:openDrawer="start">
+    <FrameLayout
+        android:id="@+id/message_list_container"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="5" />
 
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+    <View
+        android:id="@+id/message_list_divider"
+        android:layout_width="1px"
+        android:layout_height="fill_parent"
+        android:background="?attr/messageListDividerColor"
+        tools:ignore="PxUsage" />
 
-            <include layout="@layout/toolbar_layout" />
+    <FrameLayout
+        android:id="@+id/message_view_container"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="3" />
 
-            <com.fsck.k9.view.ViewSwitcher
-                android:id="@+id/container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-
-                <FrameLayout
-                    android:id="@+id/message_list_container"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_weight="5" />
-
-                <View
-                    android:id="@+id/message_list_divider"
-                    android:layout_width="1px"
-                    android:layout_height="fill_parent"
-                    android:background="?attr/messageListDividerColor"
-                    tools:ignore="PxUsage" />
-
-                <FrameLayout
-                    android:id="@+id/message_view_container"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_weight="3" />
-            </com.fsck.k9.view.ViewSwitcher>
-
-        </LinearLayout>
-
-        <android.support.design.widget.NavigationView
-            android:id="@+id/nav_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:fitsSystemWindows="true">
-
-            <android.support.v4.widget.NestedScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <include layout="@layout/nav_header_main" />
-
-                    <include
-                        android:id="@+id/navigation_bar_folders_layout"
-                        layout="@layout/navigation_bar_folders" />
-
-                    <include
-                        android:id="@+id/navigation_bar_accounts_layout"
-                        layout="@layout/navigation_bar_accounts" />
-                </LinearLayout>
-            </android.support.v4.widget.NestedScrollView>
-        </android.support.design.widget.NavigationView>
-    </android.support.v4.widget.DrawerLayout>
-
-</android.support.design.widget.CoordinatorLayout>
+</LinearLayout>
