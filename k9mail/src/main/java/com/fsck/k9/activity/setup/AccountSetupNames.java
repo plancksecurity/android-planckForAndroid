@@ -161,7 +161,9 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            dialog.dismiss();
+            if ((dialog != null) && dialog.isShowing()){
+                dialog.dismiss();
+            }
             Accounts.listAccounts(AccountSetupNames.this);
             AccountSetupNames.this.finish();
         }
