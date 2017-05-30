@@ -606,7 +606,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public String trustwords(Identity myself, Identity partner, String lang, boolean isShort) {
+    public synchronized String trustwords(Identity myself, Identity partner, String lang, boolean isShort) {
         try {
             return engine.get_trustwords(myself, partner, lang, !isShort);
         } catch (pEpException e) {
