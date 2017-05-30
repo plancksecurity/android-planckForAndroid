@@ -18,7 +18,6 @@ import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.Contacts.Data;
 import android.support.v4.content.ContextCompat;
 
-import com.fsck.k9.Manifest;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
