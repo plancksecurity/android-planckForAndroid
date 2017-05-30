@@ -16,7 +16,7 @@
 
     <!-- Used in the about dialog -->
     <string name="app_authors">Google, The K-9 Dog Walkers, p≡p Security S.A.</string>
-    <string name="app_copyright_fmt">Copyright 2016  p≡p Security S.A. Copyright 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%s</xliff:g> the Android Open Source Project.</string>
+    <string name="app_copyright_fmt">Copyright 2016  p≡p Security S.A. Copyright 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
     <string name="app_license">Licensed under the Apache License, Version 2.0.</string>
 
 
@@ -89,7 +89,7 @@
     <string name="folders_title">Folders</string>
     <string name="advanced">Advanced</string>
 
-    <string name="message_list_title"><xliff:g id="account">%s</xliff:g>:<xliff:g id="folder">%s</xliff:g> </string>
+    <string name="message_list_title"><xliff:g id="account">%1$s</xliff:g>:<xliff:g id="folder">%2$s</xliff:g> </string>
 
     <string name="compose_title_compose">Compose</string>
     <string name="compose_title_reply">Reply</string>
@@ -98,11 +98,11 @@
 
     <string name="choose_folder_title">Choose Folder</string>
 
-    <string name="status_loading_account_folder">Poll <xliff:g id="account">%s</xliff:g>:<xliff:g id="folder">%s</xliff:g><xliff:g id="progress">%s</xliff:g></string>
-    <string name="status_loading_account_folder_headers">Fetching headers <xliff:g id="account">%s</xliff:g>:<xliff:g id="folder">%s</xliff:g><xliff:g id="progress">%s</xliff:g></string>
-    <string name="status_sending_account">Sending <xliff:g id="account">%s</xliff:g><xliff:g id="progress">%s</xliff:g></string>
-    <string name="status_processing_account">Proc <xliff:g id="account">%s</xliff:g>:<xliff:g id="command">%s</xliff:g><xliff:g id="progress">%s</xliff:g></string>
-    <string name="folder_progress">\u0020<xliff:g id="completed">%d</xliff:g>/<xliff:g id="total">%d</xliff:g></string>
+    <string name="status_loading_account_folder">Poll <xliff:g id="account">%1$s</xliff:g>:<xliff:g id="folder">%2$s</xliff:g><xliff:g id="progress">%3$s</xliff:g></string>
+    <string name="status_loading_account_folder_headers">Fetching headers <xliff:g id="account">%1$s</xliff:g>:<xliff:g id="folder">%2$s</xliff:g><xliff:g id="progress">%3$s</xliff:g></string>
+    <string name="status_sending_account">Sending <xliff:g id="account">%1$s</xliff:g><xliff:g id="progress">%2$s</xliff:g></string>
+    <string name="status_processing_account">Proc <xliff:g id="account">%1$s</xliff:g>:<xliff:g id="command">%2$s</xliff:g><xliff:g id="progress">%3$s</xliff:g></string>
+    <string name="folder_progress">\u0020<xliff:g id="completed">%1$d</xliff:g>/<xliff:g id="total">%2$d</xliff:g></string>
 
     <string name="status_next_poll">Next poll <xliff:g id="nexttime">%s</xliff:g></string>
     <string name="status_syncing_off">Syncing disabled</string>
@@ -195,7 +195,7 @@
     <string name="abbrev_kilobytes">KB</string>
     <string name="abbrev_bytes">B</string>
 
-    <string name="account_size_changed">Account \"<xliff:g id="account">%s</xliff:g>\" shrunk from <xliff:g id="oldSize">%s</xliff:g> to <xliff:g id="newSize">%s</xliff:g></string>
+    <string name="account_size_changed">Account \"<xliff:g id="account">%1$s</xliff:g>\" shrunk from <xliff:g id="oldSize">%2$s</xliff:g> to <xliff:g id="newSize">%3$s</xliff:g></string>
 
     <string name="compacting_account">Compacting account \"<xliff:g id="account">%s</xliff:g>\"</string>
     <string name="clearing_account">Clearing account \"<xliff:g id="account">%s</xliff:g>\"</string>
@@ -206,7 +206,7 @@
         <item quantity="one"><xliff:g id="new_message_count">%d</xliff:g> new message</item>
         <item quantity="other"><xliff:g id="new_message_count">%d</xliff:g> new messages</item>
     </plurals>
-    <string name="notification_new_one_account_fmt"><xliff:g id="unread_message_count">%d</xliff:g> Unread (<xliff:g id="account">%s</xliff:g>)</string>
+    <string name="notification_new_one_account_fmt"><xliff:g id="unread_message_count">%1$d</xliff:g> Unread (<xliff:g id="account">%2$s</xliff:g>)</string>
     <string name="notification_additional_messages">+ <xliff:g id="additional_messages">%1$d</xliff:g> more on <xliff:g id="account">%2$s</xliff:g></string>
 
     <string name="notification_action_reply">Reply</string>
@@ -223,7 +223,7 @@
     <string name="notification_authentication_error_title">Authentication failed</string>
     <string name="notification_authentication_error_text">Authentication failed for <xliff:g id="account">%s</xliff:g>. Update your server settings.</string>
 
-    <string name="notification_bg_sync_ticker">Checking mail: <xliff:g id="account">%s</xliff:g>:<xliff:g id="folder">%s</xliff:g></string>
+    <string name="notification_bg_sync_ticker">Checking mail: <xliff:g id="account">%1$s</xliff:g>:<xliff:g id="folder">%2$s</xliff:g></string>
     <string name="notification_bg_sync_title">Checking mail</string>
     <string name="notification_bg_send_ticker">Sending mail: <xliff:g id="account">%s</xliff:g></string>
     <string name="notification_bg_send_title">Sending mail</string>
@@ -273,7 +273,7 @@
     <string name="message_compose_description_delete_quoted_text">Remove quoted text</string>
     <string name="message_compose_description_edit_quoted_text">Edit quoted text</string>
 
-    <string name="message_view_from_format">From: <xliff:g id="name">%s</xliff:g> &lt;<xliff:g id="email">%s</xliff:g>&gt;</string>
+    <string name="message_view_from_format">From: <xliff:g id="name">%1$s</xliff:g> &lt;<xliff:g id="email">%2$s</xliff:g>&gt;</string>
     <string name="message_to_label">To:</string>
     <string name="message_view_cc_label">Cc:</string>
     <string name="message_view_attachment_view_action">Open</string>
@@ -856,7 +856,7 @@
     <string name="hide_special_accounts_title">Hide special accounts</string>
     <string name="hide_special_accounts_summary">Hide the unified inbox and all messages accounts</string>
 
-    <string name="search_title"><xliff:g id="search_name">%s</xliff:g> <xliff:g id="modifier">%s</xliff:g></string>
+    <string name="search_title"><xliff:g id="search_name">%1$s</xliff:g> <xliff:g id="modifier">%2$s</xliff:g></string>
     <string name="flagged_modifier"> - Starred</string>
     <string name="unread_modifier"> - Unread</string>
 
@@ -973,7 +973,7 @@
     <string name="settings_import_scanning_file">Scanning file…</string>
     <string name="settings_export_success">Saved exported settings to <xliff:g id="filename">%s</xliff:g></string>
     <string name="settings_import_global_settings_success">Imported global settings from <xliff:g id="filename">%s</xliff:g></string>
-    <string name="settings_import_success">Imported <xliff:g id="accounts">%s</xliff:g> from <xliff:g id="filename">%s</xliff:g></string>
+    <string name="settings_import_success">Imported <xliff:g id="accounts">%1$s</xliff:g> from <xliff:g id="filename">%2$s</xliff:g></string>
     <plurals name="settings_import_accounts">
         <item quantity="one">1 account</item>
         <item quantity="other"><xliff:g id="numAccounts">%s</xliff:g> accounts</item>
@@ -985,7 +985,7 @@
     <string name="settings_import_success_header">Import succeeded</string>
     <string name="settings_import_failed_header">Import failed</string>
     <string name="settings_import_activate_account_header">Activate account</string>
-    <string name="settings_import_activate_account_intro">To be able to use the account \"<xliff:g id="account">%s</xliff:g>\" you need to provide the <xliff:g id="server_passwords">%s</xliff:g>.</string>
+    <string name="settings_import_activate_account_intro">To be able to use the account \"<xliff:g id="account">%1$s</xliff:g>\" you need to provide the <xliff:g id="server_passwords">%2$s</xliff:g>.</string>
     <plurals name="settings_import_server_passwords">
         <item quantity="one">server password</item>
         <item quantity="other">server passwords</item>

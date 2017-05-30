@@ -36,16 +36,16 @@
   <string name="accounts_title">Contas</string>
   <string name="folders_title">Cartafoles</string>
   <string name="advanced">Avanzado</string>
-  <string name="message_list_title"><xliff:g id="account">%s</xliff:g>:<xliff:g id="folder">%s</xliff:g> </string>
+  <string name="message_list_title"><xliff:g id="account">%1$s</xliff:g>:<xliff:g id="folder">%2$s</xliff:g> </string>
   <string name="compose_title_compose">Redactar</string>
   <string name="compose_title_reply">Responder</string>
   <string name="compose_title_reply_all">Responder a todos</string>
   <string name="choose_folder_title">Seleccionar carpeta</string>
-  <string name="status_loading_account_folder">Poll <xliff:g id="account">%s</xliff:g>:<xliff:g id="folder">%s</xliff:g><xliff:g id="progress">%s</xliff:g></string>
-  <string name="status_loading_account_folder_headers">Recuperando encabezados <xliff:g id="account">%s</xliff:g>:<xliff:g id="folder">%s</xliff:g><xliff:g id="progress">%s</xliff:g></string>
-  <string name="status_sending_account">Enviando <xliff:g id="account">%s</xliff:g><xliff:g id="progress">%s</xliff:g></string>
-  <string name="status_processing_account">Proc <xliff:g id="account">%s</xliff:g>:<xliff:g id="command">%s</xliff:g><xliff:g id="progress">%s</xliff:g></string>
-  <string name="folder_progress">\u0020<xliff:g id="completed">%d</xliff:g>/<xliff:g id="total">%d</xliff:g></string>
+  <string name="status_loading_account_folder">Poll <xliff:g id="account">%1$s</xliff:g>:<xliff:g id="folder">%2$s</xliff:g><xliff:g id="progress">%3$s</xliff:g></string>
+  <string name="status_loading_account_folder_headers">Recuperando encabezados <xliff:g id="account">%1$s</xliff:g>:<xliff:g id="folder">%2$s</xliff:g><xliff:g id="progress">%3$s</xliff:g></string>
+  <string name="status_sending_account">Enviando <xliff:g id="account">%1$s</xliff:g><xliff:g id="progress">%2$s</xliff:g></string>
+  <string name="status_processing_account">Proc <xliff:g id="account">%1$s</xliff:g>:<xliff:g id="command">%2$s</xliff:g><xliff:g id="progress">%3$s</xliff:g></string>
+  <string name="folder_progress">\u0020<xliff:g id="completed">%1$d</xliff:g>/<xliff:g id="total">%2$d</xliff:g></string>
   <string name="status_next_poll">Próxima comprobación <xliff:g id="nexttime">%s</xliff:g></string>
   <string name="status_syncing_off">Comprobación rematada</string>
   <string name="actionbar_selected"><xliff:g id="selection_count">%d</xliff:g> seleccionada</string>
@@ -114,15 +114,15 @@
   <string name="abbrev_megabytes">MB</string>
   <string name="abbrev_kilobytes">KB</string>
   <string name="abbrev_bytes">B</string>
-  <string name="account_size_changed">Conta \"<xliff:g id="account">%s</xliff:g>\" reducida dende <xliff:g id="oldSize">%s</xliff:g> a <xliff:g id="newSize">%s</xliff:g></string>
+  <string name="account_size_changed">Conta \"<xliff:g id="account">%1$s</xliff:g>\" reducida dende <xliff:g id="oldSize">%2$s</xliff:g> a <xliff:g id="newSize">%3$s</xliff:g></string>
   <string name="compacting_account">Compactando conta \"<xliff:g id="account">%s</xliff:g>\"</string>
   <string name="clearing_account">Limpando conta \"<xliff:g id="account">%s</xliff:g>\"</string>
   <string name="recreating_account">Creando conta \"<xliff:g id="account">%s</xliff:g>\"</string>
   <string name="notification_new_title">Correo novo</string>
-  <string name="notification_new_one_account_fmt"><xliff:g id="unread_message_count">%d</xliff:g> Sin Ler (<xliff:g id="account">%s</xliff:g>)</string>
+  <string name="notification_new_one_account_fmt"><xliff:g id="unread_message_count">%1$d</xliff:g> Sin Ler (<xliff:g id="account">%2$s</xliff:g>)</string>
   <string name="notification_action_reply">Responder</string>
   <string name="notification_action_delete">Eliminar</string>
-  <string name="notification_bg_sync_ticker">Comprobando correo: <xliff:g id="account">%s</xliff:g>:<xliff:g id="folder">%s</xliff:g></string>
+  <string name="notification_bg_sync_ticker">Comprobando correo: <xliff:g id="account">%1$s</xliff:g>:<xliff:g id="folder">%2$s</xliff:g></string>
   <string name="notification_bg_sync_title">Comprobando correo</string>
   <string name="notification_bg_send_ticker">Enviando correo: <xliff:g id="account">%s</xliff:g></string>
   <string name="notification_bg_send_title">Enviando correo</string>
@@ -160,7 +160,7 @@
   <string name="message_compose_error_no_recipients">Debes engadir un destinatario</string>
   <string name="error_contact_address_not_found">Non atopo enderezo electrónico.</string>
   <string name="message_compose_attachments_skipped_toast">Algúns adxuntos non poden reenviarse porque non foron descargados.</string>
-  <string name="message_view_from_format">Dende: <xliff:g id="name">%s</xliff:g> &lt;<xliff:g id="email">%s</xliff:g>&gt;</string>
+  <string name="message_view_from_format">Dende: <xliff:g id="name">%1$s</xliff:g> &lt;<xliff:g id="email">%2$s</xliff:g>&gt;</string>
   <string name="message_to_label">Para:</string>
   <string name="message_view_cc_label">Cc:</string>
   <string name="message_view_attachment_view_action">Abrir</string>
@@ -549,7 +549,7 @@
   <string name="count_search_summary">Desactivar para mellorar rendimento</string>
   <string name="hide_special_accounts_title">Agachar contas especiais</string>
   <string name="hide_special_accounts_summary">Agacha a bandexa de entrada unificada e todas as contas das mensaxes</string>
-  <string name="search_title"><xliff:g id="search_name">%s</xliff:g> <xliff:g id="modifier">%s</xliff:g></string>
+  <string name="search_title"><xliff:g id="search_name">%1$s</xliff:g> <xliff:g id="modifier">%2$s</xliff:g></string>
   <string name="flagged_modifier"> - Estrelas</string>
   <string name="unread_modifier"> - Sin ler</string>
   <string name="search_all_messages_title">Todas as mensaxes</string>

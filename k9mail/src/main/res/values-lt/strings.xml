@@ -37,17 +37,17 @@
   <string name="accounts_title">Paskyros</string>
   <string name="folders_title">Aplankai</string>
   <string name="advanced">Išplėstinis</string>
-  <string name="message_list_title"><xliff:g id="account">%s</xliff:g>:<xliff:g id="folder">%s</xliff:g> </string>
+  <string name="message_list_title"><xliff:g id="account">%1$s</xliff:g>:<xliff:g id="folder">%2$s</xliff:g> </string>
   <string name="compose_title_compose">Sukurti</string>
   <string name="compose_title_reply">Atsakyti</string>
   <string name="compose_title_reply_all">Atsakyti visiems</string>
   <string name="compose_title_forward">Persiųsti</string>
   <string name="choose_folder_title">Pasirinkite aplanką</string>
-  <string name="status_loading_account_folder">Užklausiama <xliff:g id="account">%s</xliff:g>:<xliff:g id="folder">%s</xliff:g><xliff:g id="progress">%s</xliff:g></string>
-  <string name="status_loading_account_folder_headers">Gaunamos antraštės <xliff:g id="account">%s</xliff:g>:<xliff:g id="folder">%s</xliff:g><xliff:g id="progress">%s</xliff:g></string>
-  <string name="status_sending_account">Siunčiama <xliff:g id="account">%s</xliff:g><xliff:g id="progress">%s</xliff:g></string>
-  <string name="status_processing_account">Apdorojama <xliff:g id="account">%s</xliff:g>:<xliff:g id="command">%s</xliff:g><xliff:g id="progress">%s</xliff:g></string>
-  <string name="folder_progress">\u0020<xliff:g id="completed">%d</xliff:g>/<xliff:g id="total">%d</xliff:g></string>
+  <string name="status_loading_account_folder">Užklausiama <xliff:g id="account">%1$s</xliff:g>:<xliff:g id="folder">%2$s</xliff:g><xliff:g id="progress">%3$s</xliff:g></string>
+  <string name="status_loading_account_folder_headers">Gaunamos antraštės <xliff:g id="account">%1$s</xliff:g>:<xliff:g id="folder">%2$s</xliff:g><xliff:g id="progress">%3$s</xliff:g></string>
+  <string name="status_sending_account">Siunčiama <xliff:g id="account">%1$s</xliff:g><xliff:g id="progress">%2$s</xliff:g></string>
+  <string name="status_processing_account">Apdorojama <xliff:g id="account">%1$s</xliff:g>:<xliff:g id="command">%2$s</xliff:g><xliff:g id="progress">%3$s</xliff:g></string>
+  <string name="folder_progress">\u0020<xliff:g id="completed">%1$d</xliff:g>/<xliff:g id="total">%2$d</xliff:g></string>
   <string name="status_next_poll">Sekantis tikrinimas <xliff:g id="nexttime">%s</xliff:g></string>
   <string name="status_syncing_off">Sinchronizavimas išjungtas</string>
   <string name="actionbar_selected"><xliff:g id="selection_count">%d</xliff:g> pasirinkta</string>
@@ -121,18 +121,18 @@
   <string name="abbrev_megabytes">MB</string>
   <string name="abbrev_kilobytes">KB</string>
   <string name="abbrev_bytes">B</string>
-  <string name="account_size_changed"> Paskyra \"<xliff:g id="account">%s</xliff:g>\" sumažinta nuo <xliff:g id="oldSize">%s</xliff:g> iki <xliff:g id="newSize">%s</xliff:g> </string>
+  <string name="account_size_changed"> Paskyra \"<xliff:g id="account">%1$s</xliff:g>\" sumažinta nuo <xliff:g id="oldSize">%2$s</xliff:g> iki <xliff:g id="newSize">%3$s</xliff:g> </string>
   <string name="compacting_account">Suspaudžiama paskyra  \"<xliff:g id="account">%s</xliff:g>\"</string>
   <string name="clearing_account">Išvaloma paskyra  \"<xliff:g id="account">%s</xliff:g>\"</string>
   <string name="recreating_account">Iš naujo kuriama paskyra  \"<xliff:g id="account">%s</xliff:g>\"</string>
   <string name="notification_new_title">Naujas laiškas</string>
-  <string name="notification_new_one_account_fmt"><xliff:g id="unread_message_count">%d</xliff:g> Neskaitytų (<xliff:g id="account">%s</xliff:g>)</string>
+  <string name="notification_new_one_account_fmt"><xliff:g id="unread_message_count">%1$d</xliff:g> Neskaitytų (<xliff:g id="account">%2$s</xliff:g>)</string>
   <string name="notification_action_reply">Atsakyti</string>
   <string name="notification_action_mark_as_read">Pažymėti kaip skaitytą</string>
   <string name="notification_action_delete">Šalinti</string>
   <string name="notification_certificate_error_title">Sertifikato klaida <xliff:g id="account">%s</xliff:g></string>
   <string name="notification_certificate_error_text">Patikrinkite serverio nustatymus</string>
-  <string name="notification_bg_sync_ticker">Tikrinamas paštas: <xliff:g id="account">%s</xliff:g>:<xliff:g id="folder">%s</xliff:g></string>
+  <string name="notification_bg_sync_ticker">Tikrinamas paštas: <xliff:g id="account">%1$s</xliff:g>:<xliff:g id="folder">%2$s</xliff:g></string>
   <string name="notification_bg_sync_title">Tikrinamas paštas</string>
   <string name="notification_bg_send_ticker">Siunčiamas paštas: <xliff:g id="account">%s</xliff:g></string>
   <string name="notification_bg_send_title">Siunčiamas paštas</string>
@@ -174,7 +174,7 @@
   <string name="message_compose_show_quoted_text_action">Cituoti laišką</string>
   <string name="message_compose_description_delete_quoted_text">Pašalinti cituojamą tekstą</string>
   <string name="message_compose_description_edit_quoted_text">Redaguoti cituojamą tekstą</string>
-  <string name="message_view_from_format">Nuo: <xliff:g id="name">%s</xliff:g> &lt;<xliff:g id="email">%s</xliff:g>&gt;</string>
+  <string name="message_view_from_format">Nuo: <xliff:g id="name">%1$s</xliff:g> &lt;<xliff:g id="email">%2$s</xliff:g>&gt;</string>
   <string name="message_to_label">Kam:</string>
   <string name="message_view_cc_label">Cc:</string>
   <string name="message_view_attachment_view_action">Atverti</string>
@@ -602,7 +602,7 @@
   <string name="count_search_summary">Išjungus bus greičiau rodoma</string>
   <string name="hide_special_accounts_title">Slėpti specialias paskyras</string>
   <string name="hide_special_accounts_summary">Slėpti suvestinį gautųjų aplanką ir visas paskyras</string>
-  <string name="search_title"><xliff:g id="search_name">%s</xliff:g> <xliff:g id="modifier">%s</xliff:g></string>
+  <string name="search_title"><xliff:g id="search_name">%1$s</xliff:g> <xliff:g id="modifier">%2$s</xliff:g></string>
   <string name="flagged_modifier">- Su žvaigždute</string>
   <string name="unread_modifier">- Neskaityta</string>
   <string name="search_all_messages_title">Visos žinutės</string>
@@ -682,7 +682,7 @@
   <string name="settings_import_scanning_file">Skenuojamas failas…</string>
   <string name="settings_export_success">Eksportuoti nustatymai išsaugoti <xliff:g id="filename">%s</xliff:g></string>
   <string name="settings_import_global_settings_success">Importuoti globalius nustatymus iš <xliff:g id="filename">%s</xliff:g></string>
-  <string name="settings_import_success">Importuota <xliff:g id="accounts">%s</xliff:g> iš <xliff:g id="filename">%s</xliff:g></string>
+  <string name="settings_import_success">Importuota <xliff:g id="accounts">%1$s</xliff:g> iš <xliff:g id="filename">%2$s</xliff:g></string>
   <string name="settings_export_failure">Eksportuoti nustatymų nepavyko</string>
   <string name="settings_import_failure">Nustatymų iš <xliff:g id="filename">%s</xliff:g> importuoti nepavyko</string>
   <string name="settings_export_success_header">Eksportuota sėkmingai</string>
@@ -690,7 +690,7 @@
   <string name="settings_import_success_header">Sėkmingai importuota</string>
   <string name="settings_import_failed_header">Importuoti nepavyko</string>
   <string name="settings_import_activate_account_header">Aktyvuoti paskyrą</string>
-  <string name="settings_import_activate_account_intro">Norint naudoti paskyrą \"<xliff:g id="account">%s</xliff:g>\" turite suteikti <xliff:g id="server_passwords">%s</xliff:g>.</string>
+  <string name="settings_import_activate_account_intro">Norint naudoti paskyrą \"<xliff:g id="account">%1$s</xliff:g>\" turite suteikti <xliff:g id="server_passwords">%2$s</xliff:g>.</string>
   <plurals name="settings_import_server_passwords">
     <item quantity="one">serverio slaptažodis</item>
     <item quantity="few">serverio slaptažodžiai</item>

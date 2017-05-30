@@ -153,7 +153,7 @@
   <string name="message_compose_show_quoted_text_action">اعلام کردن پیام</string>
   <string name="message_compose_description_delete_quoted_text">حذف متن اعلام شده</string>
   <string name="message_compose_description_edit_quoted_text">ویرایش متن اعلام شده</string>
-  <string name="message_view_from_format">از: <xliff:g id="name">%s</xliff:g> &lt;<xliff:g id="email">%s</xliff:g>&gt;</string>
+  <string name="message_view_from_format">از: <xliff:g id="name">%1$s</xliff:g> &lt;<xliff:g id="email">%2$s</xliff:g>&gt;</string>
   <string name="message_to_label">به</string>
   <string name="message_view_cc_label">کپی</string>
   <string name="message_view_attachment_view_action">باز</string>
