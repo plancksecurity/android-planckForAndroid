@@ -1762,58 +1762,62 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                                 decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
 
-                                // Store the updated message locally
-                                final LocalMessage localMessage = localFolder.storeSmallMessage(decryptedMessage, new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        progress.incrementAndGet();
-                                    }
-                                });
+                        if (!alreadyDecrypted) {
+                            // Store the updated message locally
+                            final LocalMessage localMessage = localFolder.storeSmallMessage(decryptedMessage, new Runnable() {
+                                @Override
+                                public void run() {
+                                    progress.incrementAndGet();
+                                }
+                            });
 
-                    if (account.ispEpPrivacyProtected()
-                            && !account.isUntrustedSever()
-                            && !alreadyDecrypted && result.flags == null
-                            && !decryptedMessage.isSet(Flag.X_PEP_NEVER_UNSECURE)) {
-                        appendMessageCommand(account, localMessage, localFolder);
-                    }
-                    Log.d("pep", "in download loop (nr=" + number + ") post pep");
+                            if (account.ispEpPrivacyProtected()
+                                    && !account.isUntrustedSever()
+                                    && result.flags == null
+                                    && !decryptedMessage.isSet(Flag.X_PEP_NEVER_UNSECURE)) {
+                                appendMessageCommand(account, localMessage, localFolder);
+                            }
+                            Log.d("pep", "in download loop (nr=" + number + ") post pep");
 
-                                // Increment the number of "new messages" if the newly downloaded message is
-                                // not marked as read.
+                            // Increment the number of "new messages" if the newly downloaded message is
+                            // not marked as read.
+                            if (!localMessage.isSet(Flag.SEEN)) {
+                                newMessages.incrementAndGet();
+                            }
+
+                            if (K9.DEBUG)
+                                Log.v(K9.LOG_TAG, "About to notify listeners that we got a new small message "
+                                        + account + ":" + folder + ":" + message.getUid());
+
+                            // Update the listener with what we've found
+                            for (MessagingListener l : getListeners()) {
+                                l.synchronizeMailboxAddOrUpdateMessage(account, folder, localMessage);
+                                l.synchronizeMailboxProgress(account, folder, progress.get(), todo);
                                 if (!localMessage.isSet(Flag.SEEN)) {
-                                    newMessages.incrementAndGet();
-                                }
-
-                                if (K9.DEBUG)
-                                    Log.v(K9.LOG_TAG, "About to notify listeners that we got a new small message "
-                                            + account + ":" + folder + ":" + message.getUid());
-
-                                // Update the listener with what we've found
-                                for (MessagingListener l : getListeners()) {
-                                    l.synchronizeMailboxAddOrUpdateMessage(account, folder, localMessage);
-                                    l.synchronizeMailboxProgress(account, folder, progress.get(), todo);
-                                    if (!localMessage.isSet(Flag.SEEN)) {
-                                        l.synchronizeMailboxNewMessage(account, folder, localMessage);
-                                    }
-                                }
-                                // Send a notification of this message
-
-                                if (shouldNotifyForMessage(account, localFolder, message)) {
-                                    // Notify with the localMessage so that we don't have to recalculate the content preview.
-                                    notificationController.addNewMailNotification(account, localMessage, unreadBeforeStart);
+                                    l.synchronizeMailboxNewMessage(account, folder, localMessage);
                                 }
                             }
-                        }  catch (MessagingException | RuntimeException me) {
+                            // Send a notification of this message
+
+                            if (shouldNotifyForMessage(account, localFolder, message)) {
+                                // Notify with the localMessage so that we don't have to recalculate the content preview.
+                                notificationController.addNewMailNotification(account, localMessage, unreadBeforeStart);
+                            }
+                        }
+                    }
+                        } catch (MessagingException | RuntimeException me) {
                             addErrorMessage(account, null, me);
                             Log.e(K9.LOG_TAG, "SYNC: fetch small messages", me);
                         }
                     }
 
                     @Override
-                    public void messageStarted(String uid, int number, int ofTotal) {}
+                    public void messageStarted(String uid, int number, int ofTotal) {
+                    }
 
                     @Override
-                    public void messagesFinished(int total) {}
+                    public void messagesFinished(int total) {
+                    }
                 });
 
         if (K9.DEBUG)
