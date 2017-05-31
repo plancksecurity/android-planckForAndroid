@@ -126,8 +126,7 @@ public class AccountSetupComposition extends K9Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                saveSettings();
-                finish();
+                onBackPressed();
                 return true;
             default:
                 break;
