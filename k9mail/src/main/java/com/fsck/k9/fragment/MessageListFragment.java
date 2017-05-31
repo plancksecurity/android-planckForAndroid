@@ -1137,12 +1137,19 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                                 break;
                             }
                         }
+                        mSelected.clear();
+                        if (mActionMode == null) {
+                            startAndPrepareActionMode();
+                        }
+                        mActionMode.finish();
+                        mActionMode = null;
                         return true;
                     }
 
                     @Override
                     public void onDestroyActionMode(android.view.ActionMode mode) {
-
+                        mActionMode = null;
+                        setSelectionState(false);
                     }
                 });
                 return true;
