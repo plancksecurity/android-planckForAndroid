@@ -45,26 +45,22 @@
             android:layout_gravity="start"
             android:fitsSystemWindows="true">
 
-            <android.support.v4.widget.NestedScrollView
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                <include layout="@layout/nav_header_main" />
 
-                    <include layout="@layout/nav_header_main" />
+                <include
+                    android:id="@+id/navigation_bar_folders_layout"
+                    layout="@layout/navigation_bar_folders" />
 
-                    <include
-                        android:id="@+id/navigation_bar_folders_layout"
-                        layout="@layout/navigation_bar_folders" />
-
-                    <include
-                        android:id="@+id/navigation_bar_accounts_layout"
-                        layout="@layout/navigation_bar_accounts" />
-                </LinearLayout>
-            </android.support.v4.widget.NestedScrollView>
+                <include
+                    android:id="@+id/navigation_bar_accounts_layout"
+                    layout="@layout/navigation_bar_accounts" />
+            </LinearLayout>
         </android.support.design.widget.NavigationView>
     </android.support.v4.widget.DrawerLayout>
 
