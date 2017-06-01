@@ -2145,6 +2145,9 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
         showDefaultTitleView();
         configureMenu(mMenu);
+        if (drawerLayout != null) {
+            setDrawerEnabled(true);
+        }
     }
 
     private void showMessageView() {
