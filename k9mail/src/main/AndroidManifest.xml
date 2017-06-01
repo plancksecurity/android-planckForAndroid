@@ -112,6 +112,7 @@
         <activity
             android:name=".activity.setup.AccountSetupBasics"
             android:configChanges="locale"
+            android:windowSoftInputMode="adjustPan"
             android:label="@string/account_setup_basics_title" />
         <activity
             android:name=".activity.setup.AccountSetupAccountType"
@@ -452,7 +453,7 @@
                 <action android:name="PRIVATE_KEY" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".K9$DismissKeysyncDialogReceiver">
+        <receiver android:name=".pEp.ui.keysync.PEpAddDevice$DismissKeysyncDialogReceiver">
             <intent-filter>
                 <action android:name="KEYSYNC_DISMISS" />
             </intent-filter>
