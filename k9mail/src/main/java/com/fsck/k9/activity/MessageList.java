@@ -664,6 +664,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             public void onClick(final Account account) {
                 mMessageListFragment.showLoadingMessages();
                 mAccount = account;
+                PePUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
                 drawerCloseListener = new DrawerLayout.DrawerListener() {
                     @Override
                     public void onDrawerSlide(View drawerView, float slideOffset) {
