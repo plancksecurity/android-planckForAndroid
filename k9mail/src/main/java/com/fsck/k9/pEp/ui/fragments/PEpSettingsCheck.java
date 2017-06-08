@@ -14,6 +14,7 @@ import com.fsck.k9.mail.CertificateValidationException;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.Transport;
+import com.fsck.k9.mail.TransportProvider;
 import com.fsck.k9.pEp.infrastructure.threading.JobExecutor;
 import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
@@ -112,7 +113,8 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
     }
 
     private void checkOutgoing() throws MessagingException {
-        Transport transport = Transport.getInstance(K9.app, account);
+        // TODO: 07/06/17 CHECK if this checker can/should be used on other app places like AccountSetupCheckSettings
+        Transport transport = TransportProvider.getInstance().getInstance(K9.app, account, K9.oAuth2TokenStore);
         transport.close();
         try {
             transport.open();

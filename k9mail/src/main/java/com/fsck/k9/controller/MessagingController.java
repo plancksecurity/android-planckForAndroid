@@ -57,6 +57,7 @@ import com.fsck.k9.mail.PushReceiver;
 import com.fsck.k9.mail.Pusher;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.Transport;
+import com.fsck.k9.mail.TransportProvider;
 import com.fsck.k9.mail.internet.MessageExtractor;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
@@ -118,7 +119,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Starts a long running (application) Thread that will run thr ough commands
+ * Starts a long running (application) Thread that will run through commands
  * that require remote mailbox access. This class is used to serialize and
  * prioritize these commands. Each method that will submit a command requires a
  * MessagingListener instance to be provided. It is expected that that listener
@@ -153,6 +154,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     private final ConcurrentHashMap<Account, Pusher> pushers = new ConcurrentHashMap<>();
     private final ExecutorService threadPool = Executors.newCachedThreadPool();
     private final MemorizingMessagingListener memorizingMessagingListener = new MemorizingMessagingListener();
+    private final TransportProvider transportProvider;
 
 
     private MessagingListener checkMailListener = null;
@@ -164,17 +166,20 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Context appContext = context.getApplicationContext();
             NotificationController notificationController = NotificationController.newInstance(appContext);
             Contacts contacts = Contacts.getInstance(context);
-            inst = new MessagingController(appContext, notificationController, contacts);
+            TransportProvider transportProvider = TransportProvider.getInstance();
+            inst = new MessagingController(appContext, notificationController, contacts, transportProvider);
         }
         return inst;
     }
 
 
     @VisibleForTesting
-    MessagingController(Context context, NotificationController notificationController, Contacts contacts) {
+    MessagingController(Context context, NotificationController notificationController,
+                        Contacts contacts, TransportProvider transportProvider) {
         this.context = context;
         this.notificationController = notificationController;
         this.contacts = contacts;
+        this.transportProvider = transportProvider;
 
         controllerThread = new Thread(new Runnable() {
             @Override
@@ -323,7 +328,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void setFlagInCache(final Account account, final List<Long> messageIds,
-                                final Flag flag, final boolean newState) {
+            final Flag flag, final boolean newState) {
 
         EmailProviderCache cache = EmailProviderCache.getCache(account.getUuid(), context);
         String columnName = LocalStore.getColumnNameForFlag(flag);
@@ -332,7 +337,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void removeFlagFromCache(final Account account, final List<Long> messageIds,
-                                     final Flag flag) {
+            final Flag flag) {
 
         EmailProviderCache cache = EmailProviderCache.getCache(account.getUuid(), context);
         String columnName = LocalStore.getColumnNameForFlag(flag);
@@ -340,7 +345,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void setFlagForThreadsInCache(final Account account, final List<Long> threadRootIds,
-                                          final Flag flag, final boolean newState) {
+            final Flag flag, final boolean newState) {
 
         EmailProviderCache cache = EmailProviderCache.getCache(account.getUuid(), context);
         String columnName = LocalStore.getColumnNameForFlag(flag);
@@ -349,7 +354,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void removeFlagForThreadsFromCache(final Account account, final List<Long> messageIds,
-                                               final Flag flag) {
+            final Flag flag) {
 
         EmailProviderCache cache = EmailProviderCache.getCache(account.getUuid(), context);
         String columnName = LocalStore.getColumnNameForFlag(flag);
@@ -576,13 +581,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public Future<?> searchRemoteMessages(final String acctUuid, final String folderName, final String query,
-                                          final Set<Flag> requiredFlags, final Set<Flag> forbiddenFlags, final MessagingListener listener) {
+            final Set<Flag> requiredFlags, final Set<Flag> forbiddenFlags, final MessagingListener listener) {
         if (K9.DEBUG) {
             String msg = "searchRemoteMessages ("
-                    + "acct=" + acctUuid
-                    + ", folderName = " + folderName
-                    + ", query = " + query
-                    + ")";
+                         + "acct=" + acctUuid
+                         + ", folderName = " + folderName
+                         + ", query = " + query
+                         + ")";
             Log.i(K9.LOG_TAG, msg);
         }
 
@@ -596,7 +601,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     @VisibleForTesting
     void searchRemoteMessagesSynchronous(final String acctUuid, final String folderName, final String query,
-                                         final Set<Flag> requiredFlags, final Set<Flag> forbiddenFlags, final MessagingListener listener) {
+            final Set<Flag> requiredFlags, final Set<Flag> forbiddenFlags, final MessagingListener listener) {
         final Account acct = Preferences.getPreferences(context).getAccount(acctUuid);
 
         if (listener != null) {
@@ -662,7 +667,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void loadSearchResults(final Account account, final String folderName, final List<Message> messages,
-                                  final MessagingListener listener) {
+            final MessagingListener listener) {
         threadPool.execute(new Runnable() {
             @Override
             public void run() {
@@ -697,7 +702,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void loadSearchResultsSynchronous(List<Message> messages, LocalFolder localFolder, Folder remoteFolder,
-                                              MessagingListener listener) throws MessagingException {
+            MessagingListener listener) throws MessagingException {
         final FetchProfile header = new FetchProfile();
         header.add(FetchProfile.Item.FLAGS);
         header.add(FetchProfile.Item.ENVELOPE);
@@ -743,7 +748,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
      * Start background synchronization of the specified folder.
      */
     public void synchronizeMailbox(final Account account, final String folder, final MessagingListener listener,
-                                   final Folder providedRemoteFolder) {
+            final Folder providedRemoteFolder) {
         putBackground("synchronizeMailbox", listener, new Runnable() {
             @Override
             public void run() {
@@ -760,7 +765,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
      */
     @VisibleForTesting
     void synchronizeMailboxSynchronous(final Account account, final String folder, final MessagingListener listener,
-                                       Folder providedRemoteFolder) {
+            Folder providedRemoteFolder) {
         Folder remoteFolder = null;
         LocalFolder tLocalFolder = null;
 
@@ -973,7 +978,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
             if (K9.DEBUG)
                 Log.d(K9.LOG_TAG, "Done synchronizing folder " + account.getDescription() + ":" + folder +
-                        " @ " + new Date() + " with " + newMessages + " new messages");
+                      " @ " + new Date() + " with " + newMessages + " new messages");
 
             for (MessagingListener l : getListeners(listener)) {
                 l.synchronizeMailboxFinished(account, folder, remoteMessageCount, newMessages);
@@ -983,7 +988,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             if (commandException != null) {
                 String rootMessage = getRootCauseMessage(commandException);
                 Log.e(K9.LOG_TAG, "Root cause failure in " + account.getDescription() + ":" +
-                        tLocalFolder.getName() + " was '" + rootMessage + "'");
+                      tLocalFolder.getName() + " was '" + rootMessage + "'");
                 localFolder.setStatus(rootMessage);
                 for (MessagingListener l : getListeners(listener)) {
                     l.synchronizeMailboxFailed(account, folder, rootMessage);
@@ -1010,7 +1015,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     tLocalFolder.setLastChecked(System.currentTimeMillis());
                 } catch (MessagingException me) {
                     Log.e(K9.LOG_TAG, "Could not set last checked on folder " + account.getDescription() + ":" +
-                            tLocalFolder.getName(), e);
+                          tLocalFolder.getName(), e);
                 }
             }
 
@@ -1336,7 +1341,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
      * to treat Pop3 and Imap the same in this code.
      */
     private boolean verifyOrCreateRemoteSpecialFolder(Account account, String folder, Folder remoteFolder,
-                                                      MessagingListener listener) throws MessagingException {
+            MessagingListener listener) throws MessagingException {
         if (folder.equals(account.getTrashFolderName()) ||
                 folder.equals(account.getSentFolderName()) ||
                 folder.equals(account.getDraftsFolderName())) {
@@ -1377,8 +1382,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
      * @throws MessagingException
      */
     private int downloadMessages(final Account account, final Folder remoteFolder,
-                                 final LocalFolder localFolder, List<Message> inputMessages,
-                                 boolean flagSyncOnly, boolean purgeToVisibleLimit) throws MessagingException {
+            final LocalFolder localFolder, List<Message> inputMessages,
+            boolean flagSyncOnly, boolean purgeToVisibleLimit) throws MessagingException {
 
         final Date earliestDate = account.getEarliestPollDate();
         Date downloadStarted = new Date(); // now
@@ -1461,9 +1466,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
         }
         if (K9.DEBUG)
             Log.d(K9.LOG_TAG, "SYNC: Have "
-                    + largeMessages.size() + " large messages and "
-                    + smallMessages.size() + " small messages out of "
-                    + unsyncedMessages.size() + " unsynced messages");
+                  + largeMessages.size() + " large messages and "
+                  + smallMessages.size() + " small messages out of "
+                  + unsyncedMessages.size() + " unsynced messages");
 
         unsyncedMessages.clear();
         /*
@@ -1578,7 +1583,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             if (!localMessage.isSet(Flag.X_DOWNLOADED_FULL) && !localMessage.isSet(Flag.X_DOWNLOADED_PARTIAL)) {
                 if (K9.DEBUG)
                     Log.v(K9.LOG_TAG, "Message with uid " + message.getUid()
-                            + " is not downloaded, even partially; trying again");
+                          + " is not downloaded, even partially; trying again");
 
                 unsyncedMessages.add(message);
             } else {
@@ -1595,39 +1600,38 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private <T extends Message> void fetchUnsyncedMessages(final Account account, final Folder<T> remoteFolder,
-                                                           List<T> unsyncedMessages,
-                                                           final List<Message> smallMessages,
-                                                           final List<Message> largeMessages,
-                                                           final AtomicInteger progress,
-                                                           final int todo,
-                                                           FetchProfile fp) throws MessagingException {
+                                       List<T> unsyncedMessages,
+                                       final List<Message> smallMessages,
+                                       final List<Message> largeMessages,
+                                       final AtomicInteger progress,
+                                       final int todo,
+                                       FetchProfile fp) throws MessagingException {
         final String folder = remoteFolder.getName();
 
         final Date earliestDate = account.getEarliestPollDate();
         remoteFolder.fetch(unsyncedMessages, fp,
-                new MessageRetrievalListener<T>() {
-                    @Override
-                    public void messageFinished(T message, int number, int ofTotal) {
-                        try {
-                            if (message.isSet(Flag.DELETED) || message.olderThan(earliestDate)) {
-                                if (K9.DEBUG) {
-                                    if (message.isSet(Flag.DELETED)) {
-                                        Log.v(K9.LOG_TAG, "Newly downloaded message " + account + ":" + folder + ":" + message.getUid()
-                                                + " was marked deleted on server, skipping");
-                                    } else {
-                                        Log.d(K9.LOG_TAG, "Newly downloaded message " + message.getUid() + " is older than "
-                                                + earliestDate + ", skipping");
-                                    }
-                                }
-                                progress.incrementAndGet();
-                                for (MessagingListener l : getListeners()) {
-                                    //TODO: This might be the source of poll count errors in the UI. Is todo always the same as ofTotal
-                                    l.synchronizeMailboxProgress(account, folder, progress.get(), todo);
-                                }
-                                return;
+        new MessageRetrievalListener<T>() {
+            @Override
+            public void messageFinished(T message, int number, int ofTotal) {
+                try {
+                    if (message.isSet(Flag.DELETED) || message.olderThan(earliestDate)) {
+                        if (K9.DEBUG) {
+                            if (message.isSet(Flag.DELETED)) {
+                                Log.v(K9.LOG_TAG, "Newly downloaded message " + account + ":" + folder + ":" + message.getUid()
+                                      + " was marked deleted on server, skipping");
+                            } else {
+                                Log.d(K9.LOG_TAG, "Newly downloaded message " + message.getUid() + " is older than "
+                                      + earliestDate + ", skipping");
                             }
+                        }
+                        progress.incrementAndGet();
+                        for (MessagingListener l : getListeners()) {
+                            //TODO: This might be the source of poll count errors in the UI. Is todo always the same as ofTotal
+                            l.synchronizeMailboxProgress(account, folder, progress.get(), todo);
+                        }
+                        return;
+                    }
 
-                    // commented out, we might need it again later...
                     if (account.getMaximumAutoDownloadMessageSize() > 0 &&
                     message.getSize() > account.getMaximumAutoDownloadMessageSize()) {
                         largeMessages.add(message);
@@ -1640,24 +1644,24 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 }
             }
 
-                    @Override
-                    public void messageStarted(String uid, int number, int ofTotal) {}
+            @Override
+            public void messageStarted(String uid, int number, int ofTotal) {}
 
-                    @Override
-                    public void messagesFinished(int total) {
-                        // FIXME this method is almost never invoked by various Stores! Don't rely on it unless fixed!!
-                    }
+            @Override
+            public void messagesFinished(int total) {
+                // FIXME this method is almost never invoked by various Stores! Don't rely on it unless fixed!!
+            }
 
-                });
+        });
     }
 
     private boolean shouldImportMessage(final Account account, final Message message,
-                                        final Date earliestDate) {
+            final Date earliestDate) {
 
         if (account.isSearchByDateCapable() && message.olderThan(earliestDate)) {
             if (K9.DEBUG) {
                 Log.d(K9.LOG_TAG, "Message " + message.getUid() + " is older than "
-                        + earliestDate + ", hence not saving");
+                      + earliestDate + ", hence not saving");
             }
             return false;
         }
@@ -1665,16 +1669,17 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private <T extends Message> void downloadSmallMessages(final Account account, final Folder<T> remoteFolder,
-                                                           final LocalFolder localFolder,
-                                                           List<T> smallMessages,
-                                                           final AtomicInteger progress,
-                                                           final int unreadBeforeStart,
-                                                           final AtomicInteger newMessages,
-                                                           final int todo,
-                                                           FetchProfile fp) throws MessagingException {
+                                       final LocalFolder localFolder,
+                                       List<T> smallMessages,
+                                       final AtomicInteger progress,
+                                       final int unreadBeforeStart,
+                                       final AtomicInteger newMessages,
+                                       final int todo,
+                                       FetchProfile fp) throws MessagingException {
         final String folder = remoteFolder.getName();
 
         final Date earliestDate = account.getEarliestPollDate();
+
         if (K9.DEBUG)
             Log.d(K9.LOG_TAG, "SYNC: Fetching " + smallMessages.size() + " small messages for folder " + folder);
 
@@ -1861,13 +1866,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private <T extends Message> void downloadLargeMessages(final Account account, final Folder<T> remoteFolder,
-                                                           final LocalFolder localFolder,
-                                                           List<T> largeMessages,
-                                                           final AtomicInteger progress,
-                                                           final int unreadBeforeStart,
-                                                           final AtomicInteger newMessages,
-                                                           final int todo,
-                                                           FetchProfile fp) throws MessagingException {
+                                       final LocalFolder localFolder,
+                                       List<T> largeMessages,
+                                       final AtomicInteger progress,
+                                       final int unreadBeforeStart,
+                                       final AtomicInteger newMessages,
+                                       final int todo,
+                                       FetchProfile fp) throws MessagingException {
         final String folder = remoteFolder.getName();
 
         final Date earliestDate = account.getEarliestPollDate();
@@ -1952,7 +1957,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             }
             if (K9.DEBUG)
                 Log.v(K9.LOG_TAG, "About to notify listeners that we got a new large message "
-                        + account + ":" + folder + ":" + message.getUid());
+                      + account + ":" + folder + ":" + message.getUid());
 
             // Update the listener with what we've found
             progress.incrementAndGet();
@@ -1990,13 +1995,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                           List<Message> syncFlagMessages,
                                           final AtomicInteger progress,
                                           final int todo
-    ) throws MessagingException {
+                                         ) throws MessagingException {
 
         final String folder = remoteFolder.getName();
         if (remoteFolder.supportsFetchingFlags()) {
             if (K9.DEBUG)
                 Log.d(K9.LOG_TAG, "SYNC: About to sync flags for "
-                        + syncFlagMessages.size() + " remote messages for folder " + folder);
+                      + syncFlagMessages.size() + " remote messages for folder " + folder);
 
             FetchProfile fp = new FetchProfile();
             fp.add(FetchProfile.Item.FLAGS);
@@ -2076,8 +2081,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
             // Remove the namespace on the exception so we have a fighting chance of seeing more of the error in the
             // notification.
             return (rootCause.getLocalizedMessage() != null)
-                    ? (rootCause.getClass().getSimpleName() + ": " + rootCause.getLocalizedMessage())
-                    : rootCause.getClass().getSimpleName();
+                ? (rootCause.getClass().getSimpleName() + ": " + rootCause.getLocalizedMessage())
+                : rootCause.getClass().getSimpleName();
         }
     }
 
@@ -2229,12 +2234,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
             if (remoteMessage == null) {
                 if (localMessage.isSet(Flag.X_REMOTE_COPY_STARTED)) {
                     Log.w(K9.LOG_TAG, "Local message with uid " + localMessage.getUid() +
-                            " has flag " + Flag.X_REMOTE_COPY_STARTED + " already set, checking for remote message with " +
-                            " same message id");
+                          " has flag " + Flag.X_REMOTE_COPY_STARTED + " already set, checking for remote message with " +
+                          " same message id");
                     String rUid = remoteFolder.getUidFromMessageId(localMessage);
                     if (rUid != null) {
                         Log.w(K9.LOG_TAG, "Local message has flag " + Flag.X_REMOTE_COPY_STARTED + " already set, and there is a remote message with " +
-                                " uid " + rUid + ", assuming message was already copied and aborting this copy");
+                              " uid " + rUid + ", assuming message was already copied and aborting this copy");
 
                         String oldUid = localMessage.getUid();
                         localMessage.setUid(rUid);
@@ -2373,7 +2378,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void queueMoveOrCopy(Account account, String srcFolder, String destFolder,
-                                 boolean isCopy, List<String> uids, Map<String, String> uidMap) {
+            boolean isCopy, List<String> uids, Map<String, String> uidMap) {
         if (uidMap == null || uidMap.isEmpty()) {
             queueMoveOrCopy(account, srcFolder, destFolder, isCopy, uids);
         } else {
@@ -2421,7 +2426,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
             if (K9.DEBUG)
                 Log.d(K9.LOG_TAG, "processingPendingMoveOrCopy: source folder = " + srcFolder
-                        + ", " + messages.size() + " messages, destination folder = " + destFolder + ", isCopy = " + isCopy);
+                      + ", " + messages.size() + " messages, destination folder = " + destFolder + ", isCopy = " + isCopy);
 
             Map <String, String> remoteUidMap = null;
 
@@ -2455,7 +2460,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
              * upto speed with the remote UIDs of remote destination folder.
              */
             if (command.newUidMap != null && remoteUidMap != null && !remoteUidMap.isEmpty()) {
-                for (Entry<String, String> entry : remoteUidMap.entrySet()) {
+                for (Map.Entry<String, String> entry : remoteUidMap.entrySet()) {
                     String remoteSrcUid = entry.getKey();
                     String newUid = entry.getValue();
                     String localDestUid = command.newUidMap.get(remoteSrcUid);
@@ -2480,7 +2485,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void queueSetFlag(final Account account, final String folderName,
-                              final boolean newState, final Flag flag, final List<String> uids) {
+            final boolean newState, final Flag flag, final List<String> uids) {
         putBackground("queueSetFlag " + account.getDescription() + ":" + folderName, null, new Runnable() {
             @Override
             public void run() {
@@ -2757,7 +2762,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         }
 
         // Loop over all folders
-        for (Map.Entry<String, List<String>> entry : folderMap.entrySet()) {
+        for (Entry<String, List<String>> entry : folderMap.entrySet()) {
             String folderName = entry.getKey();
 
             // Notify listeners of changed folder status
@@ -2802,7 +2807,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
      *         {@code true}, if the flag should be set. {@code false} if it should be removed.
      */
     public void setFlag(Account account, String folderName, List<? extends Message> messages, Flag flag,
-                        boolean newState) {
+            boolean newState) {
         // TODO: Put this into the background, but right now some callers depend on the message
         //       objects being modified right after this method returns.
         Folder localFolder = null;
@@ -2867,7 +2872,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
      *         {@code true}, if the flag should be set. {@code false} if it should be removed.
      */
     public void setFlag(Account account, String folderName, String uid, Flag flag,
-                        boolean newState) {
+            boolean newState) {
         Folder localFolder = null;
         try {
             LocalStore localStore = account.getLocalStore();
@@ -2898,7 +2903,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void loadMessageRemotePartial(final Account account, final String folder,
-                                         final String uid, final MessagingListener listener) {
+            final String uid, final MessagingListener listener) {
         put("loadMessageRemotePartial", listener, new Runnable() {
             @Override
             public void run() {
@@ -2909,7 +2914,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     //TODO: Fix the callback mess. See GH-782
     public void loadMessageRemote(final Account account, final String folder,
-                                  final String uid, final MessagingListener listener) {
+                                         final String uid, final MessagingListener listener) {
         put("loadMessageRemote", listener, new Runnable() {
             @Override
             public void run() {
@@ -2919,7 +2924,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private boolean loadMessageRemoteSynchronous(final Account account, final String folder,
-                                                 final String uid, final MessagingListener listener, final boolean loadPartialFromSearch) {
+            final String uid, final MessagingListener listener, final boolean loadPartialFromSearch) {
         Folder remoteFolder = null;
         LocalFolder localFolder = null;
         try {
@@ -2986,8 +2991,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 message.setFlag(Flag.SEEN, true);
             }
 
-
-
             // now that we have the full message, refresh the headers
             for (MessagingListener l : getListeners(listener)) {
                 l.loadMessageRemoteFinished(account, folder, uid);
@@ -3040,7 +3043,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void loadAttachment(final Account account, final LocalMessage message, final Part part,
-                               final MessagingListener listener) {
+            final MessagingListener listener) {
 
         put("loadAttachment", listener, new Runnable() {
             @Override
@@ -3167,7 +3170,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         Folder localFolder = null;
         try {
             localFolder = account.getLocalStore().getFolder(
-                    account.getOutboxFolderName());
+                              account.getOutboxFolderName());
             if (!localFolder.exists()) {
                 return false;
             }
@@ -3188,15 +3191,19 @@ public class MessagingController implements Sync.MessageToSendCallback {
     /**
      * Attempt to send any messages that are sitting in the Outbox.
      */
-    private void sendPendingMessagesSynchronous(final Account account) {
+    @VisibleForTesting
+    protected void sendPendingMessagesSynchronous(final Account account) {
         LocalFolder localFolder = null;
         Exception lastFailure = null;
         boolean wasPermanentFailure = false;
         try {
             LocalStore localStore = account.getLocalStore();
             localFolder = localStore.getFolder(
-                    account.getOutboxFolderName());
+                              account.getOutboxFolderName());
             if (!localFolder.exists()) {
+                if (K9.DEBUG) {
+                    Log.v(K9.LOG_TAG, "Outbox does not exist");
+                }
                 return;
             }
             for (MessagingListener l : getListeners()) {
@@ -3219,9 +3226,11 @@ public class MessagingController implements Sync.MessageToSendCallback {
             fp.add(FetchProfile.Item.BODY);
 
             if (K9.DEBUG)
-                Log.i(K9.LOG_TAG, "Scanning folder '" + account.getOutboxFolderName() + "' (" + localFolder.getId() + ") for messages to send");
+                Log.i(K9.LOG_TAG, "Scanning folder '" + account.getOutboxFolderName()
+                        + "' (" + localFolder.getId() + ") for messages to send");
 
-            Transport transport = Transport.getInstance(K9.app, account);
+            Transport transport = transportProvider.getInstance(K9.app, account, K9.oAuth2TokenStore);
+
             for (LocalMessage message : localMessages) {
                 if (message.isSet(Flag.DELETED)) {
                     message.destroy();
@@ -3233,12 +3242,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     if (oldCount != null) {
                         count = oldCount;
                     }
-
                     if (K9.DEBUG)
                         Log.i(K9.LOG_TAG, "Send count for message " + message.getUid() + " is " + count.get());
 
                     if (count.incrementAndGet() > K9.MAX_SEND_ATTEMPTS) {
-                        Log.e(K9.LOG_TAG, "Send count for message " + message.getUid() + " can't be delivered after " + K9.MAX_SEND_ATTEMPTS + " attempts.  Giving up until the user restarts the device");
+                        Log.e(K9.LOG_TAG, "Send count for message " + message.getUid() + " can't be delivered after "
+                                + K9.MAX_SEND_ATTEMPTS + " attempts.  Giving up until the user restarts the device");
                         notificationController.showSendFailedNotification(account,
                                 new MessagingException(message.getSubject()));
                         continue;
@@ -3246,13 +3255,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                     localFolder.fetch(Collections.singletonList(message), fp, null);
                     try {
-
-
                         if (message.getHeader(K9.IDENTITY_HEADER).length > 0) {
                             Log.v(K9.LOG_TAG, "The user has set the Outbox and Drafts folder to the same thing. " +
-                                    "This message appears to be a draft, so K-9 will not send it");
+                                  "This message appears to be a draft, so K-9 will not send it");
                             continue;
-
                         }
 
                         if (K9.DEBUG)
@@ -3279,45 +3285,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         for (MessagingListener l : getListeners()) {
                             l.synchronizeMailboxProgress(account, account.getSentFolderName(), progress, todo);
                         }
-                        if (!account.hasSentFolder() || message.isSet(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)) {
-                            if (K9.DEBUG)
-                                Log.i(K9.LOG_TAG, "Account does not have a sent mail folder; deleting sent message");
-                            message.setFlag(Flag.DELETED, true);
-                            // no need to delete encmsg, has not seen db up to now...
-                        } else {
-                            LocalFolder localSentFolder = (LocalFolder) localStore.getFolder(account.getSentFolderName());
-                            if (K9.DEBUG)
-                                Log.i(K9.LOG_TAG, "Moving sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
-
-                            //Decorate the local message
-                            String[] pEpVersionHeader = encryptedMessage.getHeader(MimeHeader.HEADER_PEP_VERSION);
-                            if (pEpVersionHeader.length > 0) {
-                                message.addHeader(MimeHeader.HEADER_PEP_VERSION, pEpVersionHeader[0]);
-                            }
-                            //                            if(!isUntrustedServer) {
-                            // if secure server, add color indicator and move plaintext to server
-                            message.addHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
-//                            }
-                            localSentFolder.appendMessages(Collections.singletonList(message));
-
-                            if (K9.DEBUG)
-                                Log.i(K9.LOG_TAG, "Moved sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
-
-
-                            Rating rating = PEpUtils.extractRating(message);
-                            if(!(!account.isUntrustedSever() && rating.equals(Rating.pEpRatingUndefined))) {
-                                appendMessageCommand(account, message, localSentFolder);
-                            }
-
-//                      if(encOnServer) {       // delete all traces, msg will be sync'ed again from server...
-                            //Delete from outbox, the sent folder message is a new one (appended)
-                            message.setFlag(Flag.DELETED, true);
-                            localSentFolder.destroyMessages(Collections.singletonList(encryptedMessage));
-                            for (MessagingListener l : getListeners()) {
-                                l.folderStatusChanged(account, localSentFolder.getName(), localSentFolder.getUnreadMessageCount());
-                            }
-//                        }
-                        }
+                        moveOrDeleteSentMessage(account, localStore, localFolder, message, encryptedMessage);
                     } catch (AuthenticationFailedException e) {
                         lastFailure = e;
                         wasPermanentFailure = false;
@@ -3367,6 +3335,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Log.i(K9.LOG_TAG, "Failed to send pending messages because storage is not available - trying again later.");
             throw new UnavailableAccountException(e);
         } catch (Exception e) {
+            if (K9.DEBUG) {
+                Log.v(K9.LOG_TAG, "Failed to send pending messages", e);
+            }
             for (MessagingListener l : getListeners()) {
                 l.sendPendingMessagesFailed(account);
             }
@@ -3377,6 +3348,50 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 notificationController.clearSendFailedNotification(account);
             }
             closeFolder(localFolder);
+        }
+    }
+
+    private void moveOrDeleteSentMessage(Account account, LocalStore localStore,
+                        LocalFolder localFolder, LocalMessage message, Message encryptedMessage) throws MessagingException {
+        if (!account.hasSentFolder() || message.isSet(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)) {
+            if (K9.DEBUG)
+                Log.i(K9.LOG_TAG, "Account does not have a sent mail folder; deleting sent message");
+            message.setFlag(Flag.DELETED, true);
+        } else {
+            LocalFolder localSentFolder = localStore.getFolder(account.getSentFolderName());
+            if (K9.DEBUG)
+                Log.i(K9.LOG_TAG, "Moving sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
+            //Decorate the local message
+            String[] pEpVersionHeader = encryptedMessage.getHeader(MimeHeader.HEADER_PEP_VERSION);
+            if (pEpVersionHeader.length > 0) {
+                message.addHeader(MimeHeader.HEADER_PEP_VERSION, pEpVersionHeader[0]);
+            }
+            message.addHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
+
+
+            //localSentFolder.appendMessages(Collections.singletonList(message));
+            PendingCommand command = PendingAppend.create(localSentFolder.getName(), message.getUid());
+            queuePendingCommand(account, command);
+            processPendingCommands(account);
+
+            if (K9.DEBUG)
+                Log.i(K9.LOG_TAG, "Moved sent message to folder '" + account.getSentFolderName() + "' (" + localSentFolder.getId() + ") ");
+
+            Rating rating = PEpUtils.extractRating(message);
+            if(!(!account.isUntrustedSever() && rating.equals(Rating.pEpRatingUndefined))) {
+                appendMessageCommand(account, message, localSentFolder);
+            }
+
+            //                      if(encOnServer) {       // delete all traces, msg will be sync'ed again from server...
+            //Delete from outbox, the sent folder message is a new one (appended)
+            message.setFlag(Flag.DELETED, true);
+            localSentFolder.destroyMessages(Collections.singletonList(encryptedMessage));
+            for (MessagingListener l : getListeners()) {
+                l.folderStatusChanged(account, localSentFolder.getName(), localSentFolder.getUnreadMessageCount());
+            }
+//                        }
+
+
         }
     }
 
@@ -3407,7 +3422,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void handleSendFailure(Account account, Store localStore, Folder localFolder, Message message,
-                                   Exception exception, boolean permanentFailure) throws MessagingException {
+            Exception exception, boolean permanentFailure) throws MessagingException {
 
         Log.e(K9.LOG_TAG, "Failed to send message", exception);
 
@@ -3436,7 +3451,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void getAccountStats(final Context context, final Account account,
-                                final MessagingListener listener) {
+            final MessagingListener listener) {
 
         threadPool.execute(new Runnable() {
             @Override
@@ -3454,7 +3469,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void getSearchAccountStats(final SearchAccount searchAccount,
-                                      final MessagingListener listener) {
+            final MessagingListener listener) {
 
         threadPool.execute(new Runnable() {
             @Override
@@ -3465,7 +3480,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public AccountStats getSearchAccountStatsSynchronous(final SearchAccount searchAccount,
-                                                         final MessagingListener listener) {
+            final MessagingListener listener) {
 
         Preferences preferences = Preferences.getPreferences(context);
         LocalSearch search = searchAccount.getRelatedSearch();
@@ -3584,7 +3599,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         }
     }
     public void moveMessages(final Account srcAccount, final String srcFolder,
-                             List<MessageReference> messageReferences, final String destFolder) {
+            List<MessageReference> messageReferences, final String destFolder) {
         actOnMessageGroup(srcAccount, srcFolder, messageReferences, new MessageActor() {
             @Override
             public void act(final Account account, LocalFolder messageFolder, final List<LocalMessage> messages) {
@@ -3601,7 +3616,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void moveMessagesInThread(Account srcAccount, final String srcFolder,
-                                     final List<MessageReference> messageReferences, final String destFolder) {
+            final List<MessageReference> messageReferences, final String destFolder) {
         actOnMessageGroup(srcAccount, srcFolder, messageReferences, new MessageActor() {
             @Override
             public void act(final Account account, LocalFolder messageFolder, final List<LocalMessage> messages) {
@@ -3623,12 +3638,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void moveMessage(final Account account, final String srcFolder, final MessageReference message,
-                            final String destFolder) {
+            final String destFolder) {
         moveMessages(account, srcFolder, Collections.singletonList(message), destFolder);
     }
 
     public void copyMessages(final Account srcAccount, final String srcFolder,
-                             final List<MessageReference> messageReferences, final String destFolder) {
+            final List<MessageReference> messageReferences, final String destFolder) {
         actOnMessageGroup(srcAccount, srcFolder, messageReferences, new MessageActor() {
             @Override
             public void act(final Account account, LocalFolder messageFolder, final List<LocalMessage> messages) {
@@ -3643,7 +3658,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void copyMessagesInThread(Account srcAccount, final String srcFolder,
-                                     final List<MessageReference> messageReferences, final String destFolder) {
+            final List<MessageReference> messageReferences, final String destFolder) {
         actOnMessageGroup(srcAccount, srcFolder, messageReferences, new MessageActor() {
             @Override
             public void act(final Account account, LocalFolder messageFolder, final List<LocalMessage> messages) {
@@ -3664,13 +3679,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void copyMessage(final Account account, final String srcFolder, final MessageReference message,
-                            final String destFolder) {
+            final String destFolder) {
 
         copyMessages(account, srcFolder, Collections.singletonList(message), destFolder);
     }
 
     private void moveOrCopyMessageSynchronous(final Account account, final String srcFolder,
-                                              final List<? extends Message> inMessages, final String destFolder, final boolean isCopy) {
+            final List<? extends Message> inMessages, final String destFolder, final boolean isCopy) {
 
         try {
             LocalStore localStore = account.getLocalStore();
@@ -3708,7 +3723,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                 if (K9.DEBUG)
                     Log.i(K9.LOG_TAG, "moveOrCopyMessageSynchronous: source folder = " + srcFolder
-                            + ", " + messages.size() + " messages, " + ", destination folder = " + destFolder + ", isCopy = " + isCopy);
+                          + ", " + messages.size() + " messages, " + ", destination folder = " + destFolder + ", isCopy = " + isCopy);
 
                 Map<String, String> uidMap;
 
@@ -3871,7 +3886,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
             @Override
             public void act(final Account account, final LocalFolder messageFolder,
-                            final List<LocalMessage> accountMessages) {
+                    final List<LocalMessage> accountMessages) {
 
                 putBackground("debugClearLocalMessages", null, new Runnable() {
                     @Override
@@ -4097,7 +4112,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     public void sendAlternate(Context context, Account account, LocalMessage message) {
         if (K9.DEBUG)
             Log.d(K9.LOG_TAG, "Got message " + account.getDescription() + ":" + message.getFolder()
-                    + ":" + message.getUid() + " for sendAlternate");
+                  + ":" + message.getUid() + " for sendAlternate");
 
         Intent msg = new Intent(Intent.ACTION_SEND);
         String quotedText = null;
@@ -4187,22 +4202,22 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     addErrorMessage(account, null, e);
                 }
                 putBackground("finalize sync", null, new Runnable() {
-                            @Override
-                            public void run() {
+                    @Override
+                    public void run() {
 
-                                if (K9.DEBUG)
-                                    Log.i(K9.LOG_TAG, "Finished mail sync");
+                        if (K9.DEBUG)
+                            Log.i(K9.LOG_TAG, "Finished mail sync");
 
-                                if (wakeLock != null) {
-                                    wakeLock.release();
-                                }
-                                for (MessagingListener l : getListeners()) {
-                                    l.checkMailFinished(context, account);
-                                }
-
-                            }
+                        if (wakeLock != null) {
+                            wakeLock.release();
                         }
-                );
+                        for (MessagingListener l : getListeners()) {
+                            l.checkMailFinished(context, account);
+                        }
+
+                    }
+                }
+                             );
             }
         });
     }
@@ -4268,8 +4283,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
 
     private void checkMailForAccount(final Context context, final Account account,
-                                     final boolean ignoreLastCheckedTime,
-                                     final MessagingListener listener) {
+            final boolean ignoreLastCheckedTime,
+            final MessagingListener listener) {
         if (!account.isAvailable(context)) {
             if (K9.DEBUG) {
                 Log.i(K9.LOG_TAG, "Skipping synchronizing unavailable account " + account.getDescription());
@@ -4329,22 +4344,22 @@ public class MessagingController implements Sync.MessageToSendCallback {
             addErrorMessage(account, null, e);
         } finally {
             putBackground("clear notification flag for " + account.getDescription(), null, new Runnable() {
-                        @Override
-                        public void run() {
-                            if (K9.DEBUG)
-                                Log.v(K9.LOG_TAG, "Clearing notification flag for " + account.getDescription());
-                            account.setRingNotified(false);
-                            try {
-                                AccountStats stats = account.getStats(context);
-                                if (stats == null || stats.unreadMessageCount == 0) {
-                                    notificationController.clearNewMailNotifications(account);
-                                }
-                            } catch (MessagingException e) {
-                                Log.e(K9.LOG_TAG, "Unable to getUnreadMessageCount for account: " + account, e);
-                            }
+                @Override
+                public void run() {
+                    if (K9.DEBUG)
+                        Log.v(K9.LOG_TAG, "Clearing notification flag for " + account.getDescription());
+                    account.setRingNotified(false);
+                    try {
+                        AccountStats stats = account.getStats(context);
+                        if (stats == null || stats.unreadMessageCount == 0) {
+                            notificationController.clearNewMailNotifications(account);
                         }
+                    } catch (MessagingException e) {
+                        Log.e(K9.LOG_TAG, "Unable to getUnreadMessageCount for account: " + account, e);
                     }
-            );
+                }
+            }
+                         );
         }
 
 
@@ -4692,9 +4707,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
             String folderName = folder.getName();
             if (!account.getInboxFolderName().equals(folderName) &&
                     (account.getTrashFolderName().equals(folderName)
-                            || account.getDraftsFolderName().equals(folderName)
-                            || account.getSpamFolderName().equals(folderName)
-                            || account.getSentFolderName().equals(folderName))) {
+                     || account.getDraftsFolderName().equals(folderName)
+                     || account.getSpamFolderName().equals(folderName)
+                     || account.getSentFolderName().equals(folderName))) {
                 return false;
             }
         }
@@ -4705,7 +4720,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 if (messageUid <= localFolder.getLastUid()) {
                     if (K9.DEBUG)
                         Log.d(K9.LOG_TAG, "Message uid is " + messageUid + ", max message uid is " +
-                                localFolder.getLastUid() + ".  Skipping notification.");
+                              localFolder.getLastUid() + ".  Skipping notification.");
                     return false;
                 }
             } catch (NumberFormatException e) {
@@ -4783,12 +4798,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
     private boolean modeMismatch(Account.FolderMode aMode, Folder.FolderClass fMode) {
         if (aMode == Account.FolderMode.NONE
                 || (aMode == Account.FolderMode.FIRST_CLASS &&
-                fMode != Folder.FolderClass.FIRST_CLASS)
+                    fMode != Folder.FolderClass.FIRST_CLASS)
                 || (aMode == Account.FolderMode.FIRST_AND_SECOND_CLASS &&
-                fMode != Folder.FolderClass.FIRST_CLASS &&
-                fMode != Folder.FolderClass.SECOND_CLASS)
+                    fMode != Folder.FolderClass.FIRST_CLASS &&
+                    fMode != Folder.FolderClass.SECOND_CLASS)
                 || (aMode == Account.FolderMode.NOT_SECOND_CLASS &&
-                fMode == Folder.FolderClass.SECOND_CLASS)) {
+                    fMode == Folder.FolderClass.SECOND_CLASS)) {
             return true;
         } else {
             return false;
@@ -4796,7 +4811,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private static AtomicInteger sequencing = new AtomicInteger(0);
-
     private static class Command implements Comparable<Command> {
         public Runnable runnable;
         public MessagingListener listener;
@@ -4898,7 +4912,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 if (names.size() > maxPushFolders) {
                     if (K9.DEBUG)
                         Log.i(K9.LOG_TAG, "Count of folders to push for account " + account.getDescription() + " is " + names.size()
-                                + ", greater than limit of " + maxPushFolders + ", truncating");
+                              + ", greater than limit of " + maxPushFolders + ", truncating");
 
                     names = names.subList(0, maxPushFolders);
                 }
@@ -4951,11 +4965,11 @@ public class MessagingController implements Sync.MessageToSendCallback {
     public void messagesArrived(final Account account, final Folder remoteFolder, final List<Message> messages, final boolean flagSyncOnly) {
         if (K9.DEBUG)
             Log.i(K9.LOG_TAG, "Got new pushed email messages for account " + account.getDescription()
-                    + ", folder " + remoteFolder.getName());
+                  + ", folder " + remoteFolder.getName());
 
         final CountDownLatch latch = new CountDownLatch(1);
         putBackground("Push messageArrived of account " + account.getDescription()
-                + ", folder " + remoteFolder.getName(), null, new Runnable() {
+        + ", folder " + remoteFolder.getName(), null, new Runnable() {
             @Override
             public void run() {
                 LocalFolder localFolder = null;
@@ -5043,7 +5057,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
         notificationController.showCertificateErrorNotification(account, incoming);
     }
 
-
     private void actOnMessagesGroupedByAccountAndFolder(List<MessageReference> messages, MessageActor actor) {
         Map<String, Map<String, List<MessageReference>>> accountMap = groupMessagesByAccountAndFolder(messages);
 
@@ -5067,7 +5080,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
         for (MessageReference message : messages) {
             if (message == null) {
-                continue;
+               continue;
             }
             String accountUuid = message.getAccountUuid();
             String folderName = message.getFolderName();
@@ -5134,7 +5147,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void sendpEpSyncMessage(Account account, Message message) throws MessagingException {
-        Transport transport = Transport.getInstance(K9.app, account);
+        Transport transport = transportProvider.getInstance(K9.app, account, K9.oAuth2TokenStore);
         sendMessage(transport, message);
     }
 

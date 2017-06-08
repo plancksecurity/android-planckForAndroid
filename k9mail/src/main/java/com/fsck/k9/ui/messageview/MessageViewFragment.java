@@ -185,7 +185,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 new MessageLoaderHelper(context, getLoaderManager(), getFragmentManager(), messageLoaderCallbacks);
 
         Bundle arguments = getArguments();
-        MessageReference messageReference = arguments.getParcelable(ARG_REFERENCE);
+        String messageReferenceString = arguments.getString(ARG_REFERENCE);
+        MessageReference messageReference = MessageReference.parse(messageReferenceString);
 
         displayMessage(messageReference);
         mMessageView.setPrivacyProtected(mAccount.ispEpPrivacyProtected());
@@ -281,12 +282,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        Bundle arguments = getArguments();
-        String messageReferenceString = arguments.getString(ARG_REFERENCE);
-        MessageReference messageReference = MessageReference.parse(messageReferenceString);
-
-        displayMessage(messageReference);
     }
 
     private void displayMessage(MessageReference messageReference) {

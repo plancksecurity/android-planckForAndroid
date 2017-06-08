@@ -73,7 +73,11 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         i.putExtra(CURRENT_RATING, currentRating.toString());
         i.putExtra(SENDER, sender);
         i.putExtra(MYSELF, myself);
-        i.putExtra(MESSAGE_REFERENCE, messageReference.toIdentityString());
+        if (messageReference != null) {
+            i.putExtra(MESSAGE_REFERENCE, messageReference.toIdentityString());
+        } else {
+            i.putExtra(MESSAGE_REFERENCE, "");
+        }
         i.putExtra(MESSAGE_DIRECTION, isMessageIncoming);
         context.startActivityForResult(i, REQUEST_STATUS);
     }
