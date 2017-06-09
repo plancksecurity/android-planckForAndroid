@@ -191,6 +191,10 @@ public interface PEpProvider {
 
     void unsetIdentityFlag(Identity identity, Integer flags, CompletedCallback completedCallback);
 
+    void setIdentityFlag(Identity identity, Integer flags);
+
+    void unsetIdentityFlag(Identity identity, Integer flags);
+
     void setFastPollingCallback(Sync.NeedsFastPollCallback needsFastPollCallback);
 
     class KeyDetail {

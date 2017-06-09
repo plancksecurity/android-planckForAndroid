@@ -1,6 +1,5 @@
 package com.fsck.k9.pEp;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +10,7 @@ import android.os.Build;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.WorkerThread;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -30,6 +30,7 @@ import com.fsck.k9.mail.internet.MimeUtility;
 
 import org.apache.commons.io.IOUtils;
 import org.pEp.jniadapter.Identity;
+import org.pEp.jniadapter.IdentityFlags;
 import org.pEp.jniadapter.Rating;
 
 import java.io.ByteArrayOutputStream;
@@ -452,12 +453,23 @@ public class PEpUtils {
                 || !account.ispEpPrivacyProtected();
     }
 
+    @WorkerThread
     public static void pEpGenerateAccountKeys(Context context, Account account) {
         PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(context);
         org.pEp.jniadapter.Identity myIdentity = PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), context);
-        pEp.myself(myIdentity);
+        myIdentity = pEp.myself(myIdentity);
+        updateSyncFlag(account, pEp, myIdentity);
         pEp.close();
     }
+
+    private static void updateSyncFlag(Account account, PEpProvider pEp, Identity myIdentity) {
+        if (!account.isPepSyncEnabled()) {
+            pEp.setIdentityFlag(myIdentity, IdentityFlags.PEPIdfNotForSync.value);
+        } else {
+            pEp.unsetIdentityFlag(myIdentity, IdentityFlags.PEPIdfNotForSync.value);
+        }
+    }
+
 
     public static void colorToolbar(PePUIArtefactCache uiCache, Toolbar toolbar, Rating pEpRating) {
         if (toolbar != null) {

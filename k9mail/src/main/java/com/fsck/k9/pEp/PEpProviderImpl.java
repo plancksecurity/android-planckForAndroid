@@ -923,6 +923,24 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
+    public void setIdentityFlag(Identity identity, Integer flags) {
+        try {
+            engine.set_identity_flags(identity, flags);
+        } catch (pEpException e) {
+            Log.e(TAG, "setIdentityFlag: ", e);
+        }
+    }
+
+    @Override
+    public void unsetIdentityFlag(Identity identity, Integer flags) {
+        try {
+            engine.unset_identity_flags(identity, flags);
+        } catch (pEpException e) {
+            Log.e(TAG, "setIdentityFlag: ", e);
+        }
+    }
+
+    @Override
     public void setFastPollingCallback(Sync.NeedsFastPollCallback needsFastPollCallback) {
         engine.setNeedsFastPollCallback(needsFastPollCallback);
     }
