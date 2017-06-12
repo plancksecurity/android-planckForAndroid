@@ -363,9 +363,6 @@ public class FolderList extends K9ListActivity {
             final Bundle appData = new Bundle();
             appData.putString(EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
             triggerSearch(query, appData);
-        } else {
-            // TODO Handle the case where we're searching from within a search result.
-            startSearch(null, false, null, false);
         }
     }
 
