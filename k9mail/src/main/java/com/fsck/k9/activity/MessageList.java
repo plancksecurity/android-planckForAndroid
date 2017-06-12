@@ -2038,6 +2038,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     @Override
     public void setUnreadCount(int unread) {
         setActionBarUnread(unread);
+        populateDrawerGroup();
     }
 
     @Override
