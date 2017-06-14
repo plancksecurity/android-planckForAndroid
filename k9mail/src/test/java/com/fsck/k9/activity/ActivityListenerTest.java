@@ -4,21 +4,20 @@ package com.fsck.k9.activity;
 import android.content.Context;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.K9;
+import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.mail.Message;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = "src/main/AndroidManifest.xml", sdk = 21)
+@RunWith(K9RobolectricTestRunner.class)
 public class ActivityListenerTest {
     private static final String FOLDER = "folder";
     private static final String ERROR_MESSAGE = "errorMessage";
@@ -76,7 +75,26 @@ public class ActivityListenerTest {
 
         String operation = activityListener.getOperation(context);
 
-        assertEquals("Syncing disabled", operation);
+        if (K9.isDebug()) {
+            assertEquals("Polling and pushing disabled", operation);
+        } else {
+            assertEquals("Syncing disabled", operation);
+        }
+    }
+
+    @Test
+    public void getOperation__whenSynchronizeMailboxFailedAfterHeadersStarted_shouldResultInValidStatus() {
+        activityListener.synchronizeMailboxStarted(account, FOLDER);
+        activityListener.synchronizeMailboxHeadersStarted(account, FOLDER);
+        activityListener.synchronizeMailboxFailed(account, FOLDER, ERROR_MESSAGE);
+
+        String operation = activityListener.getOperation(context);
+
+        if (K9.isDebug()) {
+            assertEquals("Polling and pushing disabled", operation);
+        } else {
+            assertEquals("Syncing disabled", operation);
+        }
     }
 
     @Test
@@ -86,7 +104,11 @@ public class ActivityListenerTest {
 
         String operation = activityListener.getOperation(context);
 
-        assertEquals("Syncing disabled", operation);
+        if (K9.isDebug()) {
+            assertEquals("Polling and pushing disabled", operation);
+        } else {
+            assertEquals("Syncing disabled", operation);
+        }
     }
 
     @Test
@@ -116,16 +138,6 @@ public class ActivityListenerTest {
         String operation = activityListener.getOperation(context);
 
         assertEquals("", operation);
-    }
-
-    @Test
-    public void getOperation__whenSynchronizeMailboxAddOrUpdateMessage() {
-        activityListener.synchronizeMailboxStarted(account, FOLDER);
-        activityListener.synchronizeMailboxAddOrUpdateMessage(account, FOLDER, message);
-
-        String operation = activityListener.getOperation(context);
-
-        assertEquals("Poll account:folder", operation);
     }
 
     @Test

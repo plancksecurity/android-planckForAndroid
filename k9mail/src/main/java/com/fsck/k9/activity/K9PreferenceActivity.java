@@ -24,11 +24,10 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 
 
-public class K9PreferenceActivity extends PreferenceActivity {
+public abstract class K9PreferenceActivity extends PreferenceActivity {
 
     private AppCompatDelegate mDelegate;
     private Toolbar toolbar;
-
     @Override
     public void onCreate(Bundle icicle) {
         K9ActivityCommon.setLanguage(this, K9.getK9Language());

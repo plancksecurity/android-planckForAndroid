@@ -1,6 +1,7 @@
 package com.fsck.k9.mail.store.webdav;
 
 import com.fsck.k9.mail.FetchProfile;
+import com.fsck.k9.mail.K9LibRobolectricTestRunner;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessageRetrievalListener;
 import com.fsck.k9.mail.MessagingException;
@@ -11,6 +12,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.BasicHttpEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,8 +24,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import static java.util.Collections.singletonList;
 
@@ -58,8 +58,7 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("deprecation")
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = 21)
+@RunWith(K9LibRobolectricTestRunner.class)
 public class WebDavFolderTest {
     @Mock
     private MessageRetrievalListener<WebDavMessage> listener;
@@ -77,10 +76,16 @@ public class WebDavFolderTest {
     private StatusLine mockStatusLine;
     @Captor
     private ArgumentCaptor<Map<String, String>> headerCaptor;
+    @Captor
+    private ArgumentCaptor<String> urlCaptor;
+    @Captor
+    private ArgumentCaptor<StringEntity> entityCaptor;
 
     private WebDavFolder folder;
 
     private WebDavFolder destinationFolder;
+    private String storeUrl = "https://localhost/webDavStoreUrl";
+    private String folderName = "testFolder";
     private String moveOrCopyXml = "<xml>MoveOrCopyXml</xml>";
     private HashMap<String, String> moveOrCopyHeaders;
     private List<WebDavMessage> messages;
@@ -88,10 +93,10 @@ public class WebDavFolderTest {
     @Before
     public void before() throws MessagingException, IOException {
         MockitoAnnotations.initMocks(this);
-        when(mockStore.getUrl()).thenReturn("https://localhost/webDavStoreUrl");
+        when(mockStore.getUrl()).thenReturn(storeUrl);
         when(mockStore.getHttpClient()).thenReturn(mockHttpClient);
         when(mockStore.getStoreConfig()).thenReturn(mockStoreConfig);
-        folder = new WebDavFolder(mockStore, "testFolder");
+        folder = new WebDavFolder(mockStore, folderName);
 
         setupTempDirectory();
     }
@@ -516,9 +521,6 @@ public class WebDavFolderTest {
 
     @Test
     public void appendWebDavMessages_replaces_messages_with_WebDAV_versions() throws MessagingException, IOException {
-        when(mockHttpClient.executeOverride(any(HttpUriRequest.class), any(HttpContext.class))).thenReturn(mockHttpResponse);
-        when(mockHttpResponse.getStatusLine()).thenReturn(mockStatusLine);
-        when(mockStatusLine.getStatusCode()).thenReturn(200);
         List<Message> existingMessages = new ArrayList<>();
         Message existingMessage = mock(Message.class);
         existingMessages.add(existingMessage);
@@ -530,5 +532,21 @@ public class WebDavFolderTest {
         assertEquals(1, response.size(), 1);
         assertEquals(WebDavMessage.class, response.get(0).getClass());
         assertEquals(messageUid, response.get(0).getUid());
+    }
+
+    @Test
+    public void appendWebDavMessages_sendsRequestUsingStore() throws MessagingException, IOException {
+        List<Message> existingMessages = new ArrayList<>();
+        Message existingMessage = mock(Message.class);
+        existingMessages.add(existingMessage);
+        String messageUid = "testMessageUid";
+        when(existingMessage.getUid()).thenReturn(messageUid);
+
+        folder.appendWebDavMessages(existingMessages);
+
+        verify(mockStore).sendRequest(urlCaptor.capture(), eq("PUT"), entityCaptor.capture(),
+                Matchers.<Map<String, String>>eq(null), eq(true));
+        assertTrue(urlCaptor.getValue().startsWith(storeUrl + "/" + folderName + "/" + messageUid));
+        assertTrue(urlCaptor.getValue().endsWith(".eml"));
     }
 }

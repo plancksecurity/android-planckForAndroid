@@ -73,7 +73,11 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         i.putExtra(CURRENT_RATING, currentRating.toString());
         i.putExtra(SENDER, sender);
         i.putExtra(MYSELF, myself);
-        i.putExtra(MESSAGE_REFERENCE, messageReference);
+        if (messageReference != null) {
+            i.putExtra(MESSAGE_REFERENCE, messageReference.toIdentityString());
+        } else {
+            i.putExtra(MESSAGE_REFERENCE, "");
+        }
         i.putExtra(MESSAGE_DIRECTION, isMessageIncoming);
         context.startActivityForResult(i, REQUEST_STATUS);
     }
@@ -89,7 +93,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
                 && getIntent().hasExtra(MESSAGE_REFERENCE)) {
             sender = getIntent().getStringExtra(SENDER);
             myself = getIntent().getStringExtra(MYSELF);
-            messageReference = (MessageReference) getIntent().getExtras().get(MESSAGE_REFERENCE);
+            messageReference = MessageReference.parse(getIntent().getExtras().getString(MESSAGE_REFERENCE));
             boolean isMessageIncoming = getIntent().getBooleanExtra(MESSAGE_DIRECTION, false);
             presenter.initilize(this, getUiCache(), getpEp(), isMessageIncoming, new Address(sender));
             presenter.loadMessage(messageReference);

@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.ParcelFileDescriptor;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.activity.compose.RecipientMvpView.CryptoSpecialModeDisplayType;
 import com.fsck.k9.activity.compose.RecipientMvpView.CryptoStatusDisplayType;
 import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
@@ -28,7 +29,6 @@ import org.openintents.openpgp.util.OpenPgpApi;
 import org.openintents.openpgp.util.OpenPgpServiceConnection;
 import org.openintents.openpgp.util.ShadowOpenPgpAsyncTask;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 
@@ -43,8 +43,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = "src/main/AndroidManifest.xml", sdk = 21, shadows = {ShadowOpenPgpAsyncTask.class})
+@RunWith(K9RobolectricTestRunner.class)
+@Config(shadows = {ShadowOpenPgpAsyncTask.class})
 public class RecipientPresenterTest {
     private static final ReplyToAddresses TO_ADDRESSES = new ReplyToAddresses(Address.parse("to@example.org"));
     private static final List<Address> ALL_TO_ADDRESSES = Arrays.asList(Address.parse("allTo@example.org"));
@@ -58,6 +58,7 @@ public class RecipientPresenterTest {
     private ComposePgpInlineDecider composePgpInlineDecider;
     private Account account;
     private RecipientMvpView recipientMvpView;
+    private RecipientPresenter.RecipientsChangedListener listener;
 
 
     @Before
@@ -69,9 +70,10 @@ public class RecipientPresenterTest {
         composePgpInlineDecider = mock(ComposePgpInlineDecider.class);
         replyToParser = mock(ReplyToParser.class);
         LoaderManager loaderManager = mock(LoaderManager.class);
+        listener = mock(RecipientPresenter.RecipientsChangedListener.class);
 
         recipientPresenter = new RecipientPresenter(
-                context, loaderManager, recipientMvpView, account, composePgpInlineDecider, replyToParser);
+                context, loaderManager, recipientMvpView, account, composePgpInlineDecider, replyToParser, listener);
         recipientPresenter.updateCryptoStatus();
     }
 
@@ -189,6 +191,60 @@ public class RecipientPresenterTest {
         assertEquals(CryptoStatusDisplayType.OPPORTUNISTIC_EMPTY, status.getCryptoStatusDisplayType());
         assertTrue(status.isProviderStateOk());
         assertTrue(status.isPgpInlineModeEnabled());
+    }
+
+    @Test
+    public void onToTokenAdded_notifiesListenerOfRecipientChange() {
+        recipientPresenter.onToTokenAdded();
+        verify(listener).onRecipientsChanged();
+    }
+
+    @Test
+    public void onToTokenChanged_notifiesListenerOfRecipientChange() {
+        recipientPresenter.onToTokenChanged();
+        verify(listener).onRecipientsChanged();
+    }
+
+    @Test
+    public void onToTokenRemoved_notifiesListenerOfRecipientChange() {
+        recipientPresenter.onToTokenRemoved();
+        verify(listener).onRecipientsChanged();
+    }
+
+    @Test
+    public void onCcTokenAdded_notifiesListenerOfRecipientChange() {
+        recipientPresenter.onCcTokenAdded();
+        verify(listener).onRecipientsChanged();
+    }
+
+    @Test
+    public void onCcTokenChanged_notifiesListenerOfRecipientChange() {
+        recipientPresenter.onCcTokenChanged();
+        verify(listener).onRecipientsChanged();
+    }
+
+    @Test
+    public void onCcTokenRemoved_notifiesListenerOfRecipientChange() {
+        recipientPresenter.onCcTokenRemoved();
+        verify(listener).onRecipientsChanged();
+    }
+
+    @Test
+    public void onBccTokenAdded_notifiesListenerOfRecipientChange() {
+        recipientPresenter.onBccTokenAdded();
+        verify(listener).onRecipientsChanged();
+    }
+
+    @Test
+    public void onBccTokenChanged_notifiesListenerOfRecipientChange() {
+        recipientPresenter.onBccTokenChanged();
+        verify(listener).onRecipientsChanged();
+    }
+
+    @Test
+    public void onBccTokenRemoved_notifiesListenerOfRecipientChange() {
+        recipientPresenter.onBccTokenRemoved();
+        verify(listener).onRecipientsChanged();
     }
 
     private void setupCryptoProvider() throws android.os.RemoteException {

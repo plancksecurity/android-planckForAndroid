@@ -20,7 +20,7 @@ import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
+import timber.log.Timber;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -152,6 +152,7 @@ public class Accounts extends PepPermissionActivity {
 
 
     private static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
+    private static final int ACTIVITY_REQUEST_SAVE_SETTINGS_FILE = 2;
     private NestedListView accountsList;
     private View addAccountButton;
     private NestedListView foldersList;
@@ -266,12 +267,12 @@ public class Accounts extends PepPermissionActivity {
             try {
                 AccountStats stats = account.getStats(Accounts.this);
                 if (stats == null) {
-                    Log.w(K9.LOG_TAG, "Unable to get account stats");
+                    Timber.w("Unable to get account stats");
                 } else {
                     accountStatusChanged(account, stats);
                 }
             } catch (Exception e) {
-                Log.e(K9.LOG_TAG, "Unable to get account stats", e);
+                Timber.e(e, "Unable to get account stats");
             }
         }
         @Override
@@ -613,7 +614,10 @@ public class Accounts extends PepPermissionActivity {
                 createSpecialAccounts();
             }
 
-            newAccounts = new ArrayList<BaseAccount>(accounts.size());
+            newAccounts = new ArrayList<BaseAccount>(accounts.size() +
+                    SPECIAL_ACCOUNTS_COUNT);
+            newAccounts.add(mUnifiedInboxAccount);
+            newAccounts.add(mAllMessagesAccount);
         } else {
             newAccounts = new ArrayList<BaseAccount>(accounts.size());
         }
@@ -728,7 +732,7 @@ public class Accounts extends PepPermissionActivity {
      * Show that account's inbox or folder-list
      * or return false if the account is not available.
      * @param account the account to open ({@link SearchAccount} or {@link Account})
-     * @return false if unsuccessfull
+     * @return false if unsuccessful
      */
     private boolean onOpenAccount(BaseAccount account) {
         if (account instanceof SearchAccount) {
@@ -742,7 +746,7 @@ public class Accounts extends PepPermissionActivity {
             } else if (!realAccount.isAvailable(this)) {
                 String toastText = getString(R.string.account_unavailable, account.getDescription());
                 FeedbackTools.showShortFeedback(accountsList, toastText);
-                Log.i(K9.LOG_TAG, "refusing to open account that is not available");
+                Timber.i("refusing to open account that is not available");
                 return false;
             }
             if (K9.FOLDER_NONE.equals(realAccount.getAutoExpandFolderName())) {
@@ -1087,7 +1091,7 @@ public class Accounts extends PepPermissionActivity {
                 // Get list of folders from remote server
                 MessagingController.getInstance(mApplication).listFolders(mAccount, true, null);
             } catch (Exception e) {
-                Log.e(K9.LOG_TAG, "Something went while setting account passwords", e);
+                Timber.e(e, "Something went while setting account passwords");
             }
             return null;
         }
@@ -1348,28 +1352,33 @@ public class Accounts extends PepPermissionActivity {
         return true;
     }
 
-    public static String[][] USED_LIBRARIES = new String[][] {
-        new String[] {"jutf7", "http://jutf7.sourceforge.net/"},
-        new String[] {"JZlib", "http://www.jcraft.com/jzlib/"},
-        new String[] {"Commons IO", "http://commons.apache.org/io/"},
-        new String[] {"Mime4j", "http://james.apache.org/mime4j/"},
-        new String[] {"HtmlCleaner", "http://htmlcleaner.sourceforge.net/"},
-        new String[] {"Android-PullToRefresh", "https://github.com/chrisbanes/Android-PullToRefresh"},
+    public static String[][] USED_LIBRARIES = new String[][]{
+            new String[]{"Android Support Library", "https://developer.android.com/topic/libraries/support-library/index.html"},
+            new String[]{"jutf7", "http://jutf7.sourceforge.net/"},
+            new String[]{"JZlib", "http://www.jcraft.com/jzlib/"},
+            new String[]{"Commons IO", "http://commons.apache.org/io/"},
+            new String[]{"Mime4j", "http://james.apache.org/mime4j/"},
+//        new String[] {"Android-PullToRefresh", "https://github.com/chrisbanes/Android-PullToRefresh"},
 //        new String[] {"ckChangeLog", "https://github.com/cketti/ckChangeLog"},
-        new String[] {"HoloColorPicker", "https://github.com/LarsWerkman/HoloColorPicker"},
-        new String[] {"Glide", "https://github.com/bumptech/glide"},
-        new String[] {"TokenAutoComplete", "https://github.com/splitwise/TokenAutoComplete/"},
-        new String[] {"ButterKnife", "https://github.com/JakeWharton/butterknife"},
-        new String[] {"Calligraphy", "https://github.com/chrisjenx/Calligraphy"},
-        new String[] {"GPGME", "https://www.gnupg.org/(en)/related_software/gpgme/index.html"},
-        new String[] {"LibGPG-error", "https://www.gnupg.org/(en)/related_software/libgpg-error/index.html"},
-        new String[] {"Libcrypt", "https://directory.fsf.org/wiki/Libgcrypt"},
-        new String[] {"Libassuan", "https://www.gnupg.org/(en)/related_software/libassuan/index.html"},
-        new String[] {"Libksba", "https://www.gnupg.org/(en)/related_software/libksba/index.html"},
-        new String[] {"GNUPG", "https://www.gnupg.org/"},
-        new String[] {"Libcurl", "https://curl.haxx.se/libcurl/"},
-        new String[] {"Libiconv", "https://www.gnu.org/software/libiconv/"},
-        new String[] {"LibEtPan", "https://www.etpan.org/libetpan.html"},
+            new String[]{"HoloColorPicker", "https://github.com/LarsWerkman/HoloColorPicker"},
+            new String[]{"Glide", "https://github.com/bumptech/glide"},
+            new String[]{"jsoup", "https://jsoup.org/"},
+            new String[]{"Moshi", "https://github.com/square/moshi"},
+            new String[]{"Okio", "https://github.com/square/okio"},
+            new String[]{"SafeContentResolver", "https://github.com/cketti/SafeContentResolver"},
+            new String[]{"ShowcaseView", "https://github.com/amlcurran/ShowcaseView"},
+            new String[]{"Timber", "https://github.com/JakeWharton/timber"},
+            new String[]{"TokenAutoComplete", "https://github.com/splitwise/TokenAutoComplete/"}, new String[]{"ButterKnife", "https://github.com/JakeWharton/butterknife"},
+            new String[]{"Calligraphy", "https://github.com/chrisjenx/Calligraphy"},
+            new String[]{"GPGME", "https://www.gnupg.org/(en)/related_software/gpgme/index.html"},
+            new String[]{"LibGPG-error", "https://www.gnupg.org/(en)/related_software/libgpg-error/index.html"},
+            new String[]{"Libcrypt", "https://directory.fsf.org/wiki/Libgcrypt"},
+            new String[]{"Libassuan", "https://www.gnupg.org/(en)/related_software/libassuan/index.html"},
+            new String[]{"Libksba", "https://www.gnupg.org/(en)/related_software/libksba/index.html"},
+            new String[]{"GNUPG", "https://www.gnupg.org/"},
+            new String[]{"Libcurl", "https://curl.haxx.se/libcurl/"},
+            new String[]{"Libiconv", "https://www.gnu.org/software/libiconv/"},
+            new String[]{"LibEtPan", "https://www.etpan.org/libetpan.html"},
 
     };
 
@@ -1398,7 +1407,7 @@ public class Accounts extends PepPermissionActivity {
 //                              getString(R.string.app_revision_url) +
 //                              "</a>"))
         .append("</p><hr/><p>")
-        .append(String.format(getString(R.string.app_copyright_fmt), year, year))
+        .append(String.format(getString(R.string.app_copyright_fmt), Integer.toString(year), Integer.toString(year)))
         .append("</p><hr/><p>")
         .append(getString(R.string.pep_app_license))
         .append("</p><hr/><p>")
@@ -1419,8 +1428,7 @@ public class Accounts extends PepPermissionActivity {
                               "<div>TypePad \u7d75\u6587\u5b57\u30a2\u30a4\u30b3\u30f3\u753b\u50cf " +
                               "(<a href=\"http://typepad.jp/\">Six Apart Ltd</a>) / " +
                               "<a href=\"http://creativecommons.org/licenses/by/2.1/jp/\">CC BY 2.1</a></div>"))
-        .append("</p><hr/><p>")
-        .append(getString(R.string.app_htmlcleaner_license));
+        .append("</p>");
 
 
         wv.loadDataWithBaseURL("file:///android_res/drawable/", html.toString(), "text/html", "utf-8", null);
@@ -1471,7 +1479,7 @@ public class Accounts extends PepPermissionActivity {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        Log.d("onCreateContextMenu", "true");
+        Timber.d("onCreateContextMenu", "true");
         menu.setHeaderTitle(R.string.accounts_context_menu_title);
 
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
@@ -1524,16 +1532,19 @@ public class Accounts extends PepPermissionActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.i(K9.LOG_TAG, "onActivityResult requestCode = " + requestCode + ", resultCode = " + resultCode + ", data = " + data);
+        Timber.i("onActivityResult requestCode = %d, resultCode = %s, data = %s", requestCode, resultCode, data);
         if (resultCode != RESULT_OK)
             return;
         if (data == null) {
             return;
         }
         switch (requestCode) {
-        case ACTIVITY_REQUEST_PICK_SETTINGS_FILE:
-            onImport(data.getData());
-            break;
+            case ACTIVITY_REQUEST_PICK_SETTINGS_FILE:
+                onImport(data.getData());
+                break;
+            case ACTIVITY_REQUEST_SAVE_SETTINGS_FILE:
+                onExport(data);
+                break;
         }
     }
 
@@ -1993,21 +2004,54 @@ public class Accounts extends PepPermissionActivity {
 
     }
 
+    public static final String EXTRA_INC_GLOBALS = "include_globals";
+    public static final String EXTRA_ACCOUNTS = "accountUuids";
+
     public void onExport(final boolean includeGlobals, final Account account) {
+
         createStoragePermissionListeners();
-        if (hasWriteExternalPermission()) {
-            // TODO, prompt to allow a user to choose which accounts to export
-            Set<String> accountUuids = null;
+        if (hasWriteExternalPermission()) {        // TODO, prompt to allow a user to choose which accounts to export
+            ArrayList<String> accountUuids = null;
             if (account != null) {
-                accountUuids = new HashSet<String>();
+                accountUuids = new ArrayList<>();
                 accountUuids.add(account.getUuid());
             }
 
-            ExportAsyncTask asyncTask = new ExportAsyncTask(this, includeGlobals, accountUuids);
-            setNonConfigurationInstance(asyncTask);
-            asyncTask.execute();
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TITLE, SettingsExporter.EXPORT_FILENAME);
+                intent.putStringArrayListExtra(EXTRA_ACCOUNTS, accountUuids);
+                intent.putExtra(EXTRA_INC_GLOBALS, includeGlobals);
+
+                PackageManager packageManager = getPackageManager();
+                List<ResolveInfo> infos = packageManager.queryIntentActivities(intent, 0);
+
+                if (infos.size() > 0) {
+                    startActivityForResult(Intent.createChooser(intent, null), ACTIVITY_REQUEST_SAVE_SETTINGS_FILE);
+                } else {
+                    showDialog(DIALOG_NO_FILE_MANAGER);
+                }
+            } else {
+                //Pre-Kitkat
+                ExportAsyncTask asyncTask = new ExportAsyncTask(this, includeGlobals, accountUuids, null);
+                setNonConfigurationInstance(asyncTask);
+                asyncTask.execute();
+            }
         }
     }
+
+    public void onExport(Intent intent) {
+        boolean includeGlobals = intent.getBooleanExtra(EXTRA_INC_GLOBALS, false);
+        ArrayList<String> accountUuids = intent.getStringArrayListExtra(EXTRA_ACCOUNTS);
+
+        ExportAsyncTask asyncTask = new ExportAsyncTask(this, includeGlobals, accountUuids, intent.getData());
+        setNonConfigurationInstance(asyncTask);
+        asyncTask.execute();
+    }
+
 
     private boolean hasWriteExternalPermission() {
         int res = getApplicationContext().checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -2021,13 +2065,17 @@ public class Accounts extends PepPermissionActivity {
         private boolean mIncludeGlobals;
         private Set<String> mAccountUuids;
         private String mFileName;
+        private Uri mUri;
 
 
         private ExportAsyncTask(Accounts activity, boolean includeGlobals,
-                                Set<String> accountUuids) {
+                                List<String> accountUuids, Uri uri) {
             super(activity);
             mIncludeGlobals = includeGlobals;
-            mAccountUuids = accountUuids;
+            mUri = uri;
+            if (accountUuids != null) {
+                mAccountUuids = new HashSet<>(accountUuids);
+            }
         }
 
         @Override
@@ -2040,10 +2088,15 @@ public class Accounts extends PepPermissionActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                mFileName = SettingsExporter.exportToFile(mContext, mIncludeGlobals,
+                if (mUri == null) {
+                    mFileName = SettingsExporter.exportToFile(mContext, mIncludeGlobals,
                             mAccountUuids);
+                } else {
+                    SettingsExporter.exportToUri(mContext, mIncludeGlobals, mAccountUuids, mUri);
+                }
+
             } catch (SettingsImportExportException e) {
-                Log.w(K9.LOG_TAG, "Exception during export", e);
+                Timber.w(e, "Exception during export");
                 return false;
             }
             return true;
@@ -2059,8 +2112,13 @@ public class Accounts extends PepPermissionActivity {
             removeProgressDialog();
 
             if (success) {
-                activity.showSimpleDialog(R.string.settings_export_success_header,
-                                          R.string.settings_export_success, mFileName);
+                if (mFileName != null) {
+                    activity.showSimpleDialog(R.string.settings_export_success_header,
+                            R.string.settings_export_success, mFileName);
+                } else {
+                    activity.showSimpleDialog(R.string.settings_export_success_header,
+                            R.string.settings_export_success_generic);
+                }
             } else {
                 //TODO: better error messages
                 activity.showSimpleDialog(R.string.settings_export_failed_header,
@@ -2110,13 +2168,13 @@ public class Accounts extends PepPermissionActivity {
                     }
                 }
             } catch (SettingsImportExportException e) {
-                Log.w(K9.LOG_TAG, "Exception during import", e);
+                Timber.w(e, "Exception during import");
                 return false;
             } catch (FileNotFoundException e) {
-                Log.w(K9.LOG_TAG, "Couldn't open import file", e);
+                Timber.w(e, "Couldn't open import file");
                 return false;
             } catch (Exception e) {
-                Log.w(K9.LOG_TAG, "Unknown error", e);
+                Timber.w(e, "Unknown error");
                 return false;
             }
             return true;
@@ -2183,10 +2241,10 @@ public class Accounts extends PepPermissionActivity {
                     }
                 }
             } catch (SettingsImportExportException e) {
-                Log.w(K9.LOG_TAG, "Exception during export", e);
+                Timber.w(e, "Exception during export");
                 return false;
             } catch (FileNotFoundException e) {
-                Log.w(K9.LOG_TAG, "Couldn't read content from URI " + mUri);
+                Timber.w("Couldn't read content from URI %s", mUri);
                 return false;
             }
             return true;

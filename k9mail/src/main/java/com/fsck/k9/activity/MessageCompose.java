@@ -1,6 +1,13 @@
 package com.fsck.k9.activity;
 
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Pattern;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -24,7 +31,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
+import timber.log.Timber;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -41,7 +48,6 @@ import android.widget.TextView;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
-import com.fsck.k9.FontSizes;
 import com.fsck.k9.Identity;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -64,6 +70,7 @@ import com.fsck.k9.activity.compose.SaveMessageTask;
 import com.fsck.k9.activity.misc.Attachment;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
+import com.fsck.k9.controller.SimpleMessagingListener;
 import com.fsck.k9.fragment.ProgressDialogFragment;
 import com.fsck.k9.fragment.ProgressDialogFragment.CancelListener;
 import com.fsck.k9.helper.Contacts;
@@ -71,6 +78,7 @@ import com.fsck.k9.helper.IdentityHelper;
 import com.fsck.k9.helper.MailTo;
 import com.fsck.k9.helper.ReplyToParser;
 import com.fsck.k9.helper.SimpleTextWatcher;
+import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
@@ -107,11 +115,11 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings("deprecation") // TODO get rid of activity dialogs and indeterminate progress bars
 public class MessageCompose extends PepPermissionActivity implements OnClickListener,
         CancelListener, OnFocusChangeListener, OnCryptoModeChangedListener,
-        OnOpenPgpInlineChangeListener, PgpSignOnlyDialog.OnOpenPgpSignOnlyChangeListener, MessageBuilder.Callback {
-
+        OnOpenPgpInlineChangeListener, PgpSignOnlyDialog.OnOpenPgpSignOnlyChangeListener, MessageBuilder.Callback,
+        AttachmentPresenter.AttachmentsChangedListener, RecipientPresenter.RecipientsChangedListener {
     private static final int DIALOG_SAVE_OR_DISCARD_DRAFT_MESSAGE = 1;
     private static final int DIALOG_CONFIRM_DISCARD_ON_BACK = 2;
     private static final int DIALOG_CHOOSE_IDENTITY = 3;
@@ -130,20 +138,20 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     public static final String EXTRA_MESSAGE_REFERENCE = "message_reference";
 
     public static final String EXTRA_PEP_RATING = "pEpRating";
-    public static final String EXTRA_MESSAGE_DECRYPTION_RESULT  = "message_decryption_result";
+    public static final String EXTRA_MESSAGE_DECRYPTION_RESULT = "message_decryption_result";
     public static final String EXTRA_MESSAGE_BODY  = "messageBody";
 
     private static final String STATE_KEY_SOURCE_MESSAGE_PROCED =
-        "com.fsck.k9.activity.MessageCompose.stateKeySourceMessageProced";
+            "com.fsck.k9.activity.MessageCompose.stateKeySourceMessageProced";
     private static final String STATE_KEY_DRAFT_ID = "com.fsck.k9.activity.MessageCompose.draftId";
     private static final String STATE_IDENTITY_CHANGED =
-        "com.fsck.thk9.activity.MessageCompose.identityChanged";
+            "com.fsck.k9.activity.MessageCompose.identityChanged";
     private static final String STATE_IDENTITY =
-        "com.fsck.k9.activity.MessageCompose.identity";
+            "com.fsck.k9.activity.MessageCompose.identity";
     private static final String STATE_IN_REPLY_TO = "com.fsck.k9.activity.MessageCompose.inReplyTo";
     private static final String STATE_REFERENCES = "com.fsck.k9.activity.MessageCompose.references";
     private static final String STATE_KEY_READ_RECEIPT = "com.fsck.k9.activity.MessageCompose.messageReadReceipt";
-    private static final String STATE_KEY_DRAFT_NEEDS_SAVING = "com.fsck.k9.activity.MessageCompose.draftNeedsSaving";
+    private static final String STATE_KEY_CHANGES_MADE_SINCE_LAST_SAVE = "com.fsck.k9.activity.MessageCompose.changesMadeSinceLastSave";
     private static final String STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT = "alreadyNotifiedUserOfEmptySubject";
 
     private static final String FRAGMENT_WAITING_FOR_ATTACHMENT = "waitingForAttachment";
@@ -153,10 +161,10 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     public static final int MSG_SAVED_DRAFT = 4;
     private static final int MSG_DISCARDED_DRAFT = 5;
 
-    private static final int REQUEST_MASK_RECIPIENT_PRESENTER = (1<<8);
-    private static final int REQUEST_MASK_LOADER_HELPER = (1<<9);
-    private static final int REQUEST_MASK_ATTACHMENT_PRESENTER = (1<<10);
-    private static final int REQUEST_MASK_MESSAGE_BUILDER = (1<<11);
+    private static final int REQUEST_MASK_RECIPIENT_PRESENTER = (1 << 8);
+    private static final int REQUEST_MASK_LOADER_HELPER = (1 << 9);
+    private static final int REQUEST_MASK_ATTACHMENT_PRESENTER = (1 << 10);
+    private static final int REQUEST_MASK_MESSAGE_BUILDER = (1 << 11);
 
     /**
      * Regular expression to remove the first localized "Re:" prefix in subjects.
@@ -178,172 +186,69 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     private boolean permissionAsked;
 
     public Account getAccount() {
-        String accountUuid = (mMessageReference != null) ?
-                mMessageReference.getAccountUuid() :
+        String accountUuid = (relatedMessageReference != null) ?
+                relatedMessageReference.getAccountUuid() :
                 getIntent().getStringExtra(EXTRA_ACCOUNT);
         updateAccount(Preferences.getPreferences(MessageCompose.this).getAccount(accountUuid));
-        if (mAccount == null) {
+        if (account == null) {
             updateAccount(Preferences.getPreferences(MessageCompose.this).getDefaultAccount());
         }
-        return mAccount;
+        return account;
     }
+
+    private Contacts contacts;
 
     /**
      * The account used for message composition.
      */
-    private Account mAccount;
+    private Account account;
+    private Identity identity;
+    private boolean identityChanged = false;
+    private boolean signatureChanged = false;
 
-
-    private Contacts mContacts;
-
-    /**
-     * This identity's settings are used for message composition.
-     * Note: This has to be an identity of the account {@link #mAccount}.
-     */
-    private Identity mIdentity;
-
-    private boolean mIdentityChanged = false;
-    private boolean mSignatureChanged = false;
-
-    /**
-     * Reference to the source message (in case of reply, forward, or edit
-     * draft actions).
-     */
-    private MessageReference mMessageReference;
-
+    // relates to the message being replied to, forwarded, or edited TODO split up?
+    private MessageReference relatedMessageReference;
     /**
      * Indicates that the source message has been processed at least once and should not
      * be processed on any subsequent loads. This protects us from adding attachments that
      * have already been added from the restore of the view state.
      */
-    private boolean mSourceMessageProcessed = false;
+    private boolean relatedMessageProcessed = false;
 
     private PEpProvider pEp;
 
     private RecipientPresenter recipientPresenter;
     private MessageBuilder currentMessageBuilder;
-    private boolean mFinishAfterDraftSaved;
+    private boolean finishAfterDraftSaved;
     private boolean alreadyNotifiedUserOfEmptySubject = false;
+    private boolean changesMadeSinceLastSave = false;
     private Rating originalMessageRating = null;
     private boolean isSendButtonLocked = false;
-
-    @Override
-    public void onFocusChange(View v, boolean hasFocus) {
-        switch(v.getId()) {
-            case R.id.message_content:
-            case R.id.subject:
-                if (hasFocus) {
-                    recipientPresenter.onNonRecipientFieldFocused();
-                }
-                break;
-        }
-    }
-
-    @Override
-    public void onCryptoModeChanged(CryptoMode cryptoMode) {
-        recipientPresenter.onCryptoModeChanged(cryptoMode);
-    }
-
-    @Override
-    public void onOpenPgpInlineChange(boolean enabled) {
-        recipientPresenter.onCryptoPgpInlineChanged(enabled);
-    }
-
-    public void lockSendButton() {
-        isSendButtonLocked = true;
-    }
-
-    public void unlockSendButton() {
-        isSendButtonLocked = false;
-    }
-
-    @Override
-    public void onOpenPgpSignOnlyChange(boolean enabled) {
-        recipientPresenter.onCryptoPgpSignOnlyDisabled();
-    }
-
-    public enum Action {
-        COMPOSE(R.string.compose_title_compose),
-        REPLY(R.string.compose_title_reply),
-        REPLY_ALL(R.string.compose_title_reply_all),
-        FORWARD(R.string.compose_title_forward),
-        EDIT_DRAFT(R.string.compose_title_compose);
-
-        private final int titleResource;
-
-        Action(@StringRes int titleResource) {
-            this.titleResource = titleResource;
-        }
-
-        @StringRes
-        public int getTitleResource() {
-            return titleResource;
-        }
-    }
-
-    /**
-     * Contains the action we're currently performing (e.g. replying to a message)
-     */
-    private Action mAction;
-
-    private boolean mReadReceipt = false;
-
-    private TextView mChooseIdentityButton;
-    private EditText mSubjectView;
-    private EolConvertingEditText mSignatureView;
-    private EolConvertingEditText mMessageContentView;
-    private LinearLayout mAttachments;
-
-    private String mReferences;
-    private String mInReplyTo;
-
-
-    /**
-     * The currently used message format.
-     *
-     * <p>
-     * <strong>Note:</strong>
-     * Don't modify this field directly. Use {@link #updateMessageFormat()}.
-     * </p>
-     */
-    private SimpleMessageFormat mMessageFormat;
-
-    private boolean draftNeedsSaving = false;
-    private boolean isInSubActivity = false;
 
     /**
      * The database ID of this message's draft. This is used when saving drafts so the message in
      * the database is updated instead of being created anew. This property is INVALID_DRAFT_ID
      * until the first save.
      */
-    private long mDraftId = INVALID_DRAFT_ID;
+    private long draftId = INVALID_DRAFT_ID;
 
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(android.os.Message msg) {
-            switch (msg.what) {
-                case MSG_PROGRESS_ON:
-                    setProgressBarIndeterminateVisibility(true);
-                    break;
-                case MSG_PROGRESS_OFF:
-                    setProgressBarIndeterminateVisibility(false);
-                    break;
-                case MSG_SAVED_DRAFT:
-                    mDraftId = (Long) msg.obj;
-                    FeedbackTools.showLongFeedback(getRootView(), getString(R.string.message_saved_toast));
-                    break;
-                case MSG_DISCARDED_DRAFT:
-                    FeedbackTools.showLongFeedback(getRootView(), getString(R.string.message_discarded_toast));
-                    break;
-                default:
-                    super.handleMessage(msg);
-                    break;
-            }
-        }
-    };
+    private Action action;
 
-    private FontSizes mFontSizes = K9.getFontSizes();
+    private boolean requestReadReceipt = false;
 
+    private TextView chooseIdentityButton;
+    private EditText subjectView;
+    private EolConvertingEditText signatureView;
+    private EolConvertingEditText messageContentView;
+    private LinearLayout attachmentsView;
+
+    private String referencedMessageIds;
+    private String repliedToMessageId;
+
+    // The currently used message format.
+    private SimpleMessageFormat currentMessageFormat;
+
+    private boolean isInSubActivity = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -377,62 +282,66 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
         final Intent intent = getIntent();
 
-        mMessageReference = intent.getParcelableExtra(EXTRA_MESSAGE_REFERENCE);
+        String messageReferenceString = intent.getStringExtra(EXTRA_MESSAGE_REFERENCE);
+        relatedMessageReference = MessageReference.parse(messageReferenceString);
         originalMessageRating = ((Rating) intent.getSerializableExtra(EXTRA_PEP_RATING));
 
-        final String accountUuid = (mMessageReference != null) ?
-                                   mMessageReference.getAccountUuid() :
-                                   intent.getStringExtra(EXTRA_ACCOUNT);
+        final String accountUuid = (relatedMessageReference != null) ?
+                relatedMessageReference.getAccountUuid() :
+                intent.getStringExtra(EXTRA_ACCOUNT);
 
         updateAccount(Preferences.getPreferences(this).getAccount(accountUuid));
 
-        if (mAccount == null || accountUuid == null) {
+        if (account == null || accountUuid == null) {
+            //TODO: review after merge
+            //TODO: getAccount vs Preferences.getPreferences(this).getDefaultAccount()
             updateAccount(getAccount());
         }
 
-        if (mAccount == null) {
+        if (account == null) {
             /*
              * There are no accounts set up. This should not have happened. Prompt the
              * user to set up an account as an acceptable bailout.
              */
             startActivity(new Intent(this, Accounts.class));
-            draftNeedsSaving = false;
+            changesMadeSinceLastSave = false;
             finish();
             return;
         }
 
-        mContacts = Contacts.getInstance(MessageCompose.this);
+        contacts = Contacts.getInstance(MessageCompose.this);
 
         rootView = (LinearLayout) findViewById(R.id.content);
-        mChooseIdentityButton = (TextView) findViewById(R.id.identity);
-        mChooseIdentityButton.setOnClickListener(this);
+
+        chooseIdentityButton = (TextView) findViewById(R.id.identity);
+        chooseIdentityButton.setOnClickListener(this);
 
         RecipientMvpView recipientMvpView = new RecipientMvpView(this);
         ComposePgpInlineDecider composePgpInlineDecider = new ComposePgpInlineDecider();
         recipientPresenter = new RecipientPresenter(getApplicationContext(), getLoaderManager(), recipientMvpView,
-                mAccount, composePgpInlineDecider, new ReplyToParser());
+                account, composePgpInlineDecider, new ReplyToParser(), this);
         recipientPresenter.updateCryptoStatus();
 
 
-        mSubjectView = (EditText) findViewById(R.id.subject);
-        mSubjectView.getInputExtras(true).putBoolean("allowEmoji", true);
+        subjectView = (EditText) findViewById(R.id.subject);
+        subjectView.getInputExtras(true).putBoolean("allowEmoji", true);
 
-        EolConvertingEditText upperSignature = (EolConvertingEditText)findViewById(R.id.upper_signature);
-        EolConvertingEditText lowerSignature = (EolConvertingEditText)findViewById(R.id.lower_signature);
+        EolConvertingEditText upperSignature = (EolConvertingEditText) findViewById(R.id.upper_signature);
+        EolConvertingEditText lowerSignature = (EolConvertingEditText) findViewById(R.id.lower_signature);
 
         QuotedMessageMvpView quotedMessageMvpView = new QuotedMessageMvpView(this);
-        quotedMessagePresenter = new QuotedMessagePresenter(this, quotedMessageMvpView, mAccount);
-        attachmentPresenter = new AttachmentPresenter(getApplicationContext(), attachmentMvpView, getLoaderManager());
+        quotedMessagePresenter = new QuotedMessagePresenter(this, quotedMessageMvpView, account);
+        attachmentPresenter = new AttachmentPresenter(getApplicationContext(), attachmentMvpView, getLoaderManager(), this);
 
-        mMessageContentView = (EolConvertingEditText)findViewById(R.id.message_content);
-        mMessageContentView.getInputExtras(true).putBoolean("allowEmoji", true);
+        messageContentView = (EolConvertingEditText) findViewById(R.id.message_content);
+        messageContentView.getInputExtras(true).putBoolean("allowEmoji", true);
 
-        mAttachments = (LinearLayout)findViewById(R.id.attachments);
+        attachmentsView = (LinearLayout) findViewById(R.id.attachments);
 
         TextWatcher draftNeedsChangingTextWatcher = new SimpleTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                draftNeedsSaving = true;
+                changesMadeSinceLastSave = true;
                 askForPermissions();
             }
         };
@@ -440,17 +349,17 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         TextWatcher signTextWatcher = new SimpleTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                draftNeedsSaving = true;
-                mSignatureChanged = true;
+                changesMadeSinceLastSave = true;
+                signatureChanged = true;
             }
         };
 
         recipientMvpView.addTextChangedListener(draftNeedsChangingTextWatcher);
         quotedMessageMvpView.addTextChangedListener(draftNeedsChangingTextWatcher);
 
-        mSubjectView.addTextChangedListener(draftNeedsChangingTextWatcher);
+        subjectView.addTextChangedListener(draftNeedsChangingTextWatcher);
 
-        mMessageContentView.addTextChangedListener(draftNeedsChangingTextWatcher);
+        messageContentView.addTextChangedListener(draftNeedsChangingTextWatcher);
 
         /*
          * We set this to invisible by default. Other methods will turn it back on if it's
@@ -459,109 +368,108 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
         quotedMessagePresenter.showOrHideQuotedText(QuotedTextMode.NONE);
 
-        mSubjectView.setOnFocusChangeListener(this);
-        mMessageContentView.setOnFocusChangeListener(this);
+        subjectView.setOnFocusChangeListener(this);
+        messageContentView.setOnFocusChangeListener(this);
 
         if (savedInstanceState != null) {
             /*
              * This data gets used in onCreate, so grab it here instead of onRestoreInstanceState
              */
-            mSourceMessageProcessed = savedInstanceState.getBoolean(STATE_KEY_SOURCE_MESSAGE_PROCED, false);
+            relatedMessageProcessed = savedInstanceState.getBoolean(STATE_KEY_SOURCE_MESSAGE_PROCED, false);
         }
 
 
         if (initFromIntent(intent)) {
-            mAction = Action.COMPOSE;
-            draftNeedsSaving = true;
+            action = Action.COMPOSE;
+            changesMadeSinceLastSave = true;
         } else {
             String action = intent.getAction();
             if (ACTION_COMPOSE.equals(action)) {
-                mAction = Action.COMPOSE;
+                this.action = Action.COMPOSE;
             } else if (ACTION_REPLY.equals(action)) {
-                mAction = Action.REPLY;
+                this.action = Action.REPLY;
             } else if (ACTION_REPLY_ALL.equals(action)) {
-                mAction = Action.REPLY_ALL;
+                this.action = Action.REPLY_ALL;
             } else if (ACTION_FORWARD.equals(action)) {
-                mAction = Action.FORWARD;
+                this.action = Action.FORWARD;
             } else if (ACTION_EDIT_DRAFT.equals(action)) {
-                mAction = Action.EDIT_DRAFT;
+                this.action = Action.EDIT_DRAFT;
             } else {
                 // This shouldn't happen
-                Log.w(K9.LOG_TAG, "MessageCompose was started with an unsupported action");
-                mAction = Action.COMPOSE;
+                Timber.w("MessageCompose was started with an unsupported action");
+                this.action = Action.COMPOSE;
             }
         }
 
-        if (mIdentity == null) {
-            mIdentity = mAccount.getIdentity(0);
+        if (identity == null) {
+            identity = account.getIdentity(0);
         }
 
-        if (mAccount.isSignatureBeforeQuotedText()) {
-            mSignatureView = upperSignature;
+        if (account.isSignatureBeforeQuotedText()) {
+            signatureView = upperSignature;
             lowerSignature.setVisibility(View.GONE);
         } else {
-            mSignatureView = lowerSignature;
+            signatureView = lowerSignature;
             upperSignature.setVisibility(View.GONE);
         }
         updateSignature();
-        mSignatureView.addTextChangedListener(signTextWatcher);
+        signatureView.addTextChangedListener(signTextWatcher);
 
-        if (!mIdentity.getSignatureUse()) {
-            mSignatureView.setVisibility(View.GONE);
+        if (!identity.getSignatureUse()) {
+            signatureView.setVisibility(View.GONE);
         }
 
-        mReadReceipt = mAccount.isMessageReadReceiptAlways();
+        requestReadReceipt = account.isMessageReadReceiptAlways();
 
         updateFrom();
 
-        if (!mSourceMessageProcessed) {
-            if (mAction == Action.REPLY || mAction == Action.REPLY_ALL ||
-                    mAction == Action.FORWARD || mAction == Action.EDIT_DRAFT) {
+        if (!relatedMessageProcessed) {
+            if (action == Action.REPLY || action == Action.REPLY_ALL ||
+                    action == Action.FORWARD || action == Action.EDIT_DRAFT) {
                 messageLoaderHelper = new MessageLoaderHelper(this, getLoaderManager(), getFragmentManager(),
                         messageLoaderCallbacks);
-                mHandler.sendEmptyMessage(MSG_PROGRESS_ON);
+                internalMessageHandler.sendEmptyMessage(MSG_PROGRESS_ON);
 
                 Parcelable cachedDecryptionResult = intent.getParcelableExtra(EXTRA_MESSAGE_DECRYPTION_RESULT);
-                messageLoaderHelper.asyncStartOrResumeLoadingMessage(mMessageReference, cachedDecryptionResult);
+                messageLoaderHelper.asyncStartOrResumeLoadingMessage(relatedMessageReference, cachedDecryptionResult);
             }
 
-            if (mAction != Action.EDIT_DRAFT) {
-                String alwaysBccString = mAccount.getAlwaysBcc();
+            if (action != Action.EDIT_DRAFT) {
+                String alwaysBccString = account.getAlwaysBcc();
                 if (!TextUtils.isEmpty(alwaysBccString)) {
                     recipientPresenter.addBccAddresses(Address.parse(alwaysBccString));
                 }
             }
         }
 
-        if (mAction == Action.REPLY || mAction == Action.REPLY_ALL) {
-            mMessageReference = mMessageReference.withModifiedFlag(Flag.ANSWERED);
+        if (action == Action.REPLY || action == Action.REPLY_ALL) {
+            relatedMessageReference = relatedMessageReference.withModifiedFlag(Flag.ANSWERED);
         }
 
-        if (mAction == Action.REPLY || mAction == Action.REPLY_ALL ||
-                mAction == Action.EDIT_DRAFT) {
+        if (action == Action.REPLY || action == Action.REPLY_ALL ||
+                action == Action.EDIT_DRAFT) {
             //change focus to message body.
-            mMessageContentView.requestFocus();
+            messageContentView.requestFocus();
         } else {
             // Explicitly set focus to "To:" input field (see issue 2998)
             recipientMvpView.requestFocusOnToField();
         }
 
-        if (mAction == Action.FORWARD) {
-            mMessageReference = mMessageReference.withModifiedFlag(Flag.FORWARDED);
+        if (action == Action.FORWARD) {
+            relatedMessageReference = relatedMessageReference.withModifiedFlag(Flag.FORWARDED);
         }
 
         updateMessageFormat();
 
         // Set font size of input controls
-        int fontSize = mFontSizes.getMessageComposeInput();
-        recipientMvpView.setFontSizes(mFontSizes, fontSize);
-        quotedMessageMvpView.setFontSizes(mFontSizes, fontSize);
-        mFontSizes.setViewTextSize(mSubjectView, fontSize);
-        mFontSizes.setViewTextSize(mMessageContentView, fontSize);
-        mFontSizes.setViewTextSize(mSignatureView, fontSize);
+        int fontSize = K9.getFontSizes().getMessageComposeInput();
+        recipientMvpView.setFontSizes(K9.getFontSizes(), fontSize);
+        quotedMessageMvpView.setFontSizes(K9.getFontSizes(), fontSize);
+        K9.getFontSizes().setViewTextSize(subjectView, fontSize);
+        K9.getFontSizes().setViewTextSize(messageContentView, fontSize);
+        K9.getFontSizes().setViewTextSize(signatureView, fontSize);
 // TODO: pEp font sizes and skin stuff
         updateMessageFormat();
-
 
         setTitle();
 
@@ -571,7 +479,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             currentMessageBuilder.reattachCallback(this);
         }
 
-        recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.ACCOUNT, mAccount.ispEpPrivacyProtected());
+        recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.ACCOUNT, account.ispEpPrivacyProtected());
 
         setUpToolbar(true);
     }
@@ -598,8 +506,9 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     public void onDestroy() {
         super.onDestroy();
 
-        if (recipientPresenter != null)
+        if (recipientPresenter != null) {
             recipientPresenter.onActivityDestroy();
+        }
     }
 
     @Override
@@ -664,8 +573,8 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
              */
             CharSequence text = intent.getCharSequenceExtra(Intent.EXTRA_TEXT);
             // Only use EXTRA_TEXT if the body hasn't already been set by the mailto URI
-            if (text != null && mMessageContentView.getText().length() == 0) {
-                mMessageContentView.setCharacters(text);
+            if (text != null && messageContentView.getText().length() == 0) {
+                messageContentView.setCharacters(text);
             }
 
             String type = intent.getType();
@@ -688,8 +597,8 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
             String subject = intent.getStringExtra(Intent.EXTRA_SUBJECT);
             // Only use EXTRA_SUBJECT if the subject hasn't already been set by the mailto URI
-            if (subject != null && mSubjectView.getText().length() == 0) {
-                mSubjectView.setText(subject);
+            if (subject != null && subjectView.getText().length() == 0) {
+                subjectView.setText(subject);
             }
 
             recipientPresenter.initFromSendOrViewIntent(intent);
@@ -736,14 +645,14 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putBoolean(STATE_KEY_SOURCE_MESSAGE_PROCED, mSourceMessageProcessed);
-        outState.putLong(STATE_KEY_DRAFT_ID, mDraftId);
-        outState.putSerializable(STATE_IDENTITY, mIdentity);
-        outState.putBoolean(STATE_IDENTITY_CHANGED, mIdentityChanged);
-        outState.putString(STATE_IN_REPLY_TO, mInReplyTo);
-        outState.putString(STATE_REFERENCES, mReferences);
-        outState.putBoolean(STATE_KEY_READ_RECEIPT, mReadReceipt);
-        outState.putBoolean(STATE_KEY_DRAFT_NEEDS_SAVING, draftNeedsSaving);
+        outState.putBoolean(STATE_KEY_SOURCE_MESSAGE_PROCED, relatedMessageProcessed);
+        outState.putLong(STATE_KEY_DRAFT_ID, draftId);
+        outState.putSerializable(STATE_IDENTITY, identity);
+        outState.putBoolean(STATE_IDENTITY_CHANGED, identityChanged);
+        outState.putString(STATE_IN_REPLY_TO, repliedToMessageId);
+        outState.putString(STATE_REFERENCES, referencedMessageIds);
+        outState.putBoolean(STATE_KEY_READ_RECEIPT, requestReadReceipt);
+        outState.putBoolean(STATE_KEY_CHANGES_MADE_SINCE_LAST_SAVE, changesMadeSinceLastSave);
         outState.putBoolean(STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT, alreadyNotifiedUserOfEmptySubject);
 
         recipientPresenter.onSaveInstanceState(outState);
@@ -765,28 +674,29 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        mAttachments.removeAllViews();
+        attachmentsView.removeAllViews();
 
-        mReadReceipt = savedInstanceState.getBoolean(STATE_KEY_READ_RECEIPT);
+        requestReadReceipt = savedInstanceState.getBoolean(STATE_KEY_READ_RECEIPT);
 
         recipientPresenter.onRestoreInstanceState(savedInstanceState);
         quotedMessagePresenter.onRestoreInstanceState(savedInstanceState);
         attachmentPresenter.onRestoreInstanceState(savedInstanceState);
 
-        mDraftId = savedInstanceState.getLong(STATE_KEY_DRAFT_ID);
-        mIdentity = (Identity)savedInstanceState.getSerializable(STATE_IDENTITY);
-        mIdentityChanged = savedInstanceState.getBoolean(STATE_IDENTITY_CHANGED);
-        mInReplyTo = savedInstanceState.getString(STATE_IN_REPLY_TO);
-        mReferences = savedInstanceState.getString(STATE_REFERENCES);
-        draftNeedsSaving = savedInstanceState.getBoolean(STATE_KEY_DRAFT_NEEDS_SAVING);
+        draftId = savedInstanceState.getLong(STATE_KEY_DRAFT_ID);
+        identity = (Identity) savedInstanceState.getSerializable(STATE_IDENTITY);
+        identityChanged = savedInstanceState.getBoolean(STATE_IDENTITY_CHANGED);
+        repliedToMessageId = savedInstanceState.getString(STATE_IN_REPLY_TO);
+        referencedMessageIds = savedInstanceState.getString(STATE_REFERENCES);
+        changesMadeSinceLastSave = savedInstanceState.getBoolean(STATE_KEY_CHANGES_MADE_SINCE_LAST_SAVE);
         alreadyNotifiedUserOfEmptySubject = savedInstanceState.getBoolean(STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT);
+
         updateFrom();
 
         updateMessageFormat();
     }
 
     private void setTitle() {
-        setTitle(mAction.getTitleResource());
+        setTitle(action.getTitleResource());
     }
 
     @Nullable
@@ -796,7 +706,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 //        recipientPresenter.updateCryptoStatus();
         ComposeCryptoStatus cryptoStatus = recipientPresenter.getCurrentCryptoStatus();
         // TODO encrypt drafts for storage
-        if(!isDraft && cryptoStatus.shouldUsePgpMessageBuilder()) {
+        if (!isDraft && cryptoStatus.shouldUsePgpMessageBuilder()) {
             SendErrorState maybeSendErrorState = cryptoStatus.getSendErrorStateOrNull();
             if (maybeSendErrorState != null) {
                 recipientPresenter.showPgpSendError(maybeSendErrorState);
@@ -810,25 +720,25 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             builder = SimpleMessageBuilder.newInstance();
         }
 
-        builder.setSubject(mSubjectView.getText().toString())
+        builder.setSubject(Utility.stripNewLines(subjectView.getText().toString()))
                 .setSentDate(new Date())
                 .setHideTimeZone(K9.hideTimeZone())
                 .setTo(recipientPresenter.getToAddresses())
                 .setCc(recipientPresenter.getCcAddresses())
                 .setBcc(recipientPresenter.getBccAddresses())
-                .setInReplyTo(mInReplyTo)
-                .setReferences(mReferences)
-                .setRequestReadReceipt(mReadReceipt)
-                .setIdentity(mIdentity)
-                .setMessageFormat(mMessageFormat)
-                .setText(mMessageContentView.getCharacters())
+                .setInReplyTo(repliedToMessageId)
+                .setReferences(referencedMessageIds)
+                .setRequestReadReceipt(requestReadReceipt)
+                .setIdentity(identity)
+                .setMessageFormat(currentMessageFormat)
+                .setText(messageContentView.getCharacters())
                 .setAttachments(attachmentPresenter.createAttachmentList())
-                .setSignature(mSignatureView.getCharacters())
-                .setSignatureBeforeQuotedText(mAccount.isSignatureBeforeQuotedText())
-                .setIdentityChanged(mIdentityChanged)
-                .setSignatureChanged(mSignatureChanged)
-                .setCursorPosition(mMessageContentView.getSelectionStart())
-                .setMessageReference(mMessageReference)
+                .setSignature(signatureView.getCharacters())
+                .setSignatureBeforeQuotedText(account.isSignatureBeforeQuotedText())
+                .setIdentityChanged(identityChanged)
+                .setSignatureChanged(signatureChanged)
+                .setCursorPosition(messageContentView.getSelectionStart())
+                .setMessageReference(relatedMessageReference)
                 .setDraft(isDraft)
                 .setIsPgpInlineEnabled(cryptoStatus.isPgpInlineModeEnabled())
                 .setForcedUnencrypted(recipientPresenter.isForceUnencrypted())
@@ -844,7 +754,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     }
 
     private void checkToSendMessage() {
-        if (mSubjectView.getText().length() == 0 && !alreadyNotifiedUserOfEmptySubject) {
+        if (subjectView.getText().length() == 0 && !alreadyNotifiedUserOfEmptySubject) {
             FeedbackTools.showLongFeedback(getRootView(), getString(R.string.empty_subject));
             alreadyNotifiedUserOfEmptySubject = true;
             return;
@@ -869,7 +779,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     }
 
     private void checkToSaveDraftAndSave() {
-        if (!mAccount.hasDraftsFolder()) {
+        if (!account.hasDraftsFolder()) {
             FeedbackTools.showShortFeedback(getRootView(), getString(R.string.compose_error_no_draft_folder));
             return;
         }
@@ -878,20 +788,20 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             return;
         }
 
-        mFinishAfterDraftSaved = true;
+        finishAfterDraftSaved = true;
         performSaveAfterChecks();
     }
 
     private void checkToSaveDraftImplicitly() {
-        if (!mAccount.hasDraftsFolder()) {
+        if (!account.hasDraftsFolder()) {
             return;
         }
 
-        if (!draftNeedsSaving) {
+        if (!changesMadeSinceLastSave) {
             return;
         }
 
-        mFinishAfterDraftSaved = false;
+        finishAfterDraftSaved = false;
         performSaveAfterChecks();
     }
 
@@ -906,30 +816,30 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     public void performSendAfterChecks() {
         currentMessageBuilder = createMessageBuilder(false);
         if (currentMessageBuilder != null) {
-            draftNeedsSaving = false;
+            changesMadeSinceLastSave = false;
             setProgressBarIndeterminateVisibility(true);
             currentMessageBuilder.buildAsync(this);
         }
     }
 
     private void onDiscard() {
-        if (mDraftId != INVALID_DRAFT_ID) {
-            MessagingController.getInstance(getApplication()).deleteDraft(mAccount, mDraftId);
-            mDraftId = INVALID_DRAFT_ID;
+        if (draftId != INVALID_DRAFT_ID) {
+            MessagingController.getInstance(getApplication()).deleteDraft(account, draftId);
+            draftId = INVALID_DRAFT_ID;
         }
-        mHandler.sendEmptyMessage(MSG_DISCARDED_DRAFT);
-        draftNeedsSaving = false;
+        internalMessageHandler.sendEmptyMessage(MSG_DISCARDED_DRAFT);
+        changesMadeSinceLastSave = false;
         finish();
     }
 
     private void onReadReceipt() {
         CharSequence txt;
-        if (!mReadReceipt) {
+        if (!requestReadReceipt) {
             txt = getString(R.string.read_receipt_enabled);
-            mReadReceipt = true;
+            requestReadReceipt = true;
         } else {
             txt = getString(R.string.read_receipt_disabled);
-            mReadReceipt = false;
+            requestReadReceipt = false;
         }
         FeedbackTools.showShortFeedback(getRootView(), String.valueOf(txt));
     }
@@ -937,7 +847,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     public void showContactPicker(int requestCode) {
         requestCode |= REQUEST_MASK_RECIPIENT_PRESENTER;
         isInSubActivity = true;
-        startActivityForResult(mContacts.contactPickerIntent(), requestCode);
+        startActivityForResult(contacts.contactPickerIntent(), requestCode);
     }
 
     @Override
@@ -947,7 +857,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         if ((requestCode & REQUEST_MASK_MESSAGE_BUILDER) == REQUEST_MASK_MESSAGE_BUILDER) {
             requestCode ^= REQUEST_MASK_MESSAGE_BUILDER;
             if (currentMessageBuilder == null) {
-                Log.e(K9.LOG_TAG, "Got a message builder activity result for no message builder, " +
+                Timber.e("Got a message builder activity result for no message builder, " +
                         "this is an illegal state!");
                 return;
             }
@@ -974,37 +884,31 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     }
 
     private void onAccountChosen(Account account, Identity identity) {
-        if (!mAccount.equals(account)) {
-            if (K9.DEBUG) {
-                Log.v(K9.LOG_TAG, "Switching account from " + mAccount + " to " + account);
-            }
+        if (!this.account.equals(account)) {
+            Timber.v("Switching account from %s to %s", this.account, account);
 
             // on draft edit, make sure we don't keep previous message UID
-            if (mAction == Action.EDIT_DRAFT) {
-                mMessageReference = null;
+            if (action == Action.EDIT_DRAFT) {
+                relatedMessageReference = null;
             }
 
             // test whether there is something to save
-            if (draftNeedsSaving || (mDraftId != INVALID_DRAFT_ID)) {
-                final long previousDraftId = mDraftId;
-                final Account previousAccount = mAccount;
+            if (changesMadeSinceLastSave || (draftId != INVALID_DRAFT_ID)) {
+                final long previousDraftId = draftId;
+                final Account previousAccount = this.account;
 
                 // make current message appear as new
-                mDraftId = INVALID_DRAFT_ID;
+                draftId = INVALID_DRAFT_ID;
 
                 // actual account switch
                 updateAccount(account);
 
-                if (K9.DEBUG) {
-                    Log.v(K9.LOG_TAG, "Account switch, saving new draft in new account");
-                }
+                Timber.v("Account switch, saving new draft in new account");
                 checkToSaveDraftImplicitly();
 
                 if (previousDraftId != INVALID_DRAFT_ID) {
-                    if (K9.DEBUG) {
-                        Log.v(K9.LOG_TAG, "Account switch, deleting draft from previous account: "
-                              + previousDraftId);
-                    }
+                    Timber.v("Account switch, deleting draft from previous account: %d", previousDraftId);
+
                     MessagingController.getInstance(getApplication()).deleteDraft(previousAccount,
                             previousDraftId);
                 }
@@ -1016,8 +920,8 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             // displayed.
             // Please note that we're not hiding the fields if the user switches back to an account
             // that doesn't have this setting checked.
-            recipientPresenter.onSwitchAccount(mAccount);
-            quotedMessagePresenter.onSwitchAccount(mAccount);
+            recipientPresenter.onSwitchAccount(this.account);
+            quotedMessagePresenter.onSwitchAccount(this.account);
 
             // not sure how to handle mFolder, mSourceMessage?
         }
@@ -1029,14 +933,14 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         if (uiCache == null) {
             uiCache = PePUIArtefactCache.getInstance(MessageCompose.this);
         }
-        mAccount = account;
-        uiCache.setComposingAccount(mAccount);
+        this.account = account;
+        uiCache.setComposingAccount(account);
     }
 
     private void switchToIdentity(Identity identity) {
-        mIdentity = identity;
-        mIdentityChanged = true;
-        draftNeedsSaving = true;
+        this.identity = identity;
+        identityChanged = true;
+        changesMadeSinceLastSave = true;
         updateFrom();
         updateSignature();
         updateMessageFormat();
@@ -1044,16 +948,57 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     }
 
     private void updateFrom() {
-        mChooseIdentityButton.setText(mIdentity.getEmail());
+        chooseIdentityButton.setText(identity.getEmail());
     }
 
     private void updateSignature() {
-        if (mIdentity.getSignatureUse()) {
-            mSignatureView.setCharacters(mIdentity.getSignature());
-            mSignatureView.setVisibility(View.VISIBLE);
+        if (identity.getSignatureUse()) {
+            signatureView.setCharacters(identity.getSignature());
+            signatureView.setVisibility(View.VISIBLE);
         } else {
-            mSignatureView.setVisibility(View.GONE);
+            signatureView.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        switch (v.getId()) {
+            case R.id.message_content:
+            case R.id.subject:
+                if (hasFocus) {
+                    recipientPresenter.onNonRecipientFieldFocused();
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onCryptoModeChanged(CryptoMode cryptoMode) {
+        recipientPresenter.onCryptoModeChanged(cryptoMode);
+    }
+
+    @Override
+    public void onOpenPgpInlineChange(boolean enabled) {
+        recipientPresenter.onCryptoPgpInlineChanged(enabled);
+    }
+
+    @Override
+    public void onOpenPgpSignOnlyChange(boolean enabled) {
+        recipientPresenter.onCryptoPgpSignOnlyDisabled();
+    }
+    @Override
+    public void onAttachmentAdded() {
+        changesMadeSinceLastSave = true;
+    }
+
+    @Override
+    public void onAttachmentRemoved() {
+        changesMadeSinceLastSave = true;
+    }
+
+    @Override
+    public void onRecipientsChanged() {
+        changesMadeSinceLastSave = true;
     }
 
     @Override
@@ -1153,15 +1098,15 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     }
 
     private void goBack() {
-        if (draftNeedsSaving) {
-            if (!mAccount.hasDraftsFolder()) {
+        if (changesMadeSinceLastSave) {
+            if (!account.hasDraftsFolder()) {
                 showDialog(DIALOG_CONFIRM_DISCARD_ON_BACK);
             } else {
                 showDialog(DIALOG_SAVE_OR_DISCARD_DRAFT_MESSAGE);
             }
         } else {
             // Check if editing an existing draft.
-            if (mDraftId == INVALID_DRAFT_ID) {
+            if (draftId == INVALID_DRAFT_ID) {
                 onDiscard();
             } else {
                 finish();
@@ -1172,15 +1117,15 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        
+
         if (isFinishing()) {
             return false;
         }
-        
+
         getMenuInflater().inflate(R.menu.message_compose_option, menu);
 
         // Disable the 'Save' menu option if Drafts folder is set to -NONE-
-        if (!mAccount.hasDraftsFolder()) {
+        if (!account.hasDraftsFolder()) {
             menu.findItem(R.id.save).setEnabled(false);
         }
 
@@ -1209,21 +1154,40 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
     @Override
     public void onBackPressed() {
-        if (draftNeedsSaving) {
-            if (!mAccount.hasDraftsFolder()) {
+        if (changesMadeSinceLastSave && draftIsNotEmpty()) {
+            if (!account.hasDraftsFolder()) {
                 showDialog(DIALOG_CONFIRM_DISCARD_ON_BACK);
             } else {
                 showDialog(DIALOG_SAVE_OR_DISCARD_DRAFT_MESSAGE);
             }
         } else {
             // Check if editing an existing draft.
-            if (mDraftId == INVALID_DRAFT_ID) {
+            if (draftId == INVALID_DRAFT_ID) {
                 onDiscard();
             } else {
                 super.onBackPressed();
             }
         }
     }
+
+    private boolean draftIsNotEmpty() {
+        if (messageContentView.getText().length() != 0) {
+            return true;
+        }
+        if (!attachmentPresenter.createAttachmentList().isEmpty()) {
+            return true;
+        }
+        if (subjectView.getText().length() != 0) {
+            return true;
+        }
+        if (!recipientPresenter.getToAddresses().isEmpty() ||
+                !recipientPresenter.getCcAddresses().isEmpty() ||
+                !recipientPresenter.getBccAddresses().isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
 
     public void onProgressCancel(ProgressDialogFragment fragment) {
         attachmentPresenter.attachmentProgressDialogCancelled();
@@ -1234,23 +1198,23 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         switch (id) {
             case DIALOG_SAVE_OR_DISCARD_DRAFT_MESSAGE:
                 return new AlertDialog.Builder(this)
-                       .setTitle(R.string.save_or_discard_draft_message_dlg_title)
-                       .setMessage(R.string.save_or_discard_draft_message_instructions_fmt)
-                .setPositiveButton(R.string.save_draft_action, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        dismissDialog(DIALOG_SAVE_OR_DISCARD_DRAFT_MESSAGE);
-                        checkToSaveDraftAndSave();
-                    }
-                })
-                .setNegativeButton(R.string.discard_action, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        dismissDialog(DIALOG_SAVE_OR_DISCARD_DRAFT_MESSAGE);
-                        onDiscard();
-                    }
-                })
-                .create();
+                        .setTitle(R.string.save_or_discard_draft_message_dlg_title)
+                        .setMessage(R.string.save_or_discard_draft_message_instructions_fmt)
+                        .setPositiveButton(R.string.save_draft_action, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                dismissDialog(DIALOG_SAVE_OR_DISCARD_DRAFT_MESSAGE);
+                                checkToSaveDraftAndSave();
+                            }
+                        })
+                        .setNegativeButton(R.string.discard_action, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                dismissDialog(DIALOG_SAVE_OR_DISCARD_DRAFT_MESSAGE);
+                                onDiscard();
+                            }
+                        })
+                        .create();
             case DIALOG_CONFIRM_DISCARD_ON_BACK:
                 return new AlertDialog.Builder(this)
                        .setTitle(R.string.confirm_discard_draft_message_title)
@@ -1265,7 +1229,8 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                     @Override
                     public void onClick(DialogInterface dialog, int whichButton) {
                         dismissDialog(DIALOG_CONFIRM_DISCARD_ON_BACK);
-                        FeedbackTools.showLongFeedback(getRootView(), getString(R.string.message_discarded_toast));
+                        FeedbackTools.showLongFeedback(getRootView(),
+                                       getString(R.string.message_discarded_toast));
                         onDiscard();
                     }
                 })
@@ -1273,8 +1238,8 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             case DIALOG_CHOOSE_IDENTITY:
                 Context context = new ContextThemeWrapper(this,
                         (K9.getK9Theme() == K9.Theme.LIGHT) ?
-                        R.style.Theme_K9_Dialog_Light :
-                        R.style.Theme_K9_Dialog_Dark);
+                                R.style.Theme_K9_Dialog_Light :
+                                R.style.Theme_K9_Dialog_Dark);
                 Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle(R.string.send_as);
                 final IdentityAdapter adapter = new IdentityAdapter(context);
@@ -1328,15 +1293,15 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     }
 
     public void saveDraftEventually() {
-        draftNeedsSaving = true;
+        changesMadeSinceLastSave = true;
     }
 
     public void loadQuotedTextForEdit() {
-        if (mMessageReference == null) { // shouldn't happen...
+        if (relatedMessageReference == null) { // shouldn't happen...
             throw new IllegalStateException("tried to edit quoted message with no referenced message");
         }
 
-        messageLoaderHelper.asyncStartOrResumeLoadingMessage(mMessageReference, null);
+        messageLoaderHelper.asyncStartOrResumeLoadingMessage(relatedMessageReference, null);
     }
 
     /**
@@ -1348,7 +1313,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
      */
     private void processSourceMessage(MessageViewInfo messageViewInfo) {
         try {
-            switch (mAction) {
+            switch (action) {
                 case REPLY:
                 case REPLY_ALL: {
                     processMessageToReplyTo(messageViewInfo);
@@ -1363,19 +1328,19 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                     break;
                 }
                 default: {
-                    Log.w(K9.LOG_TAG, "processSourceMessage() called with unsupported action");
+                    Timber.w("processSourceMessage() called with unsupported action");
                     break;
                 }
             }
         } catch (MessagingException me) {
-            /**
+            /*
              * Let the user continue composing their message even if we have a problem processing
              * the source message. Log it as an error, though.
              */
-            Log.e(K9.LOG_TAG, "Error while processing source message: ", me);
+            Timber.e(me, "Error while processing source message: ");
         } finally {
-            mSourceMessageProcessed = true;
-            draftNeedsSaving = false;
+            relatedMessageProcessed = true;
+            changesMadeSinceLastSave = false;
         }
 
         updateMessageFormat();
@@ -1388,43 +1353,41 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             final String subject = PREFIX.matcher(message.getSubject()).replaceFirst("");
 
             if (!subject.toLowerCase(Locale.US).startsWith("re:")) {
-                mSubjectView.setText("Re: " + subject);
+                subjectView.setText("Re: " + subject);
             } else {
-                mSubjectView.setText(subject);
+                subjectView.setText(subject);
             }
         } else {
-            mSubjectView.setText("");
+            subjectView.setText("");
         }
 
         /*
          * If a reply-to was included with the message use that, otherwise use the from
          * or sender address.
          */
-        boolean isReplyAll = mAction == Action.REPLY_ALL;
+        boolean isReplyAll = action == Action.REPLY_ALL;
         recipientPresenter.initFromReplyToMessage(message, isReplyAll);
 
         if (message.getMessageId() != null && message.getMessageId().length() > 0) {
-            mInReplyTo = message.getMessageId();
+            repliedToMessageId = message.getMessageId();
 
             String[] refs = message.getReferences();
             if (refs != null && refs.length > 0) {
-                mReferences = TextUtils.join("", refs) + " " + mInReplyTo;
+                referencedMessageIds = TextUtils.join("", refs) + " " + repliedToMessageId;
             } else {
-                mReferences = mInReplyTo;
+                referencedMessageIds = repliedToMessageId;
             }
 
         } else {
-            if (K9.DEBUG) {
-                Log.d(K9.LOG_TAG, "could not get Message-ID.");
-            }
+            Timber.d("could not get Message-ID.");
         }
 
         // Quote the message and setup the UI.
-        quotedMessagePresenter.initFromReplyToMessage(messageViewInfo, mAction);
+        quotedMessagePresenter.initFromReplyToMessage(messageViewInfo, action);
 
-        if (mAction == Action.REPLY || mAction == Action.REPLY_ALL) {
-            Identity useIdentity = IdentityHelper.getRecipientIdentityFromMessage(mAccount, message);
-            Identity defaultIdentity = mAccount.getIdentity(0);
+        if (action == Action.REPLY || action == Action.REPLY_ALL) {
+            Identity useIdentity = IdentityHelper.getRecipientIdentityFromMessage(account, message);
+            Identity defaultIdentity = account.getIdentity(0);
             if (useIdentity != defaultIdentity) {
                 switchToIdentity(useIdentity);
             }
@@ -1437,9 +1400,9 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
         String subject = message.getSubject();
         if (subject != null && !subject.toLowerCase(Locale.US).startsWith("fwd:")) {
-            mSubjectView.setText("Fwd: " + subject);
+            subjectView.setText("Fwd: " + subject);
         } else {
-            mSubjectView.setText(subject);
+            subjectView.setText(subject);
         }
 
         // "Be Like Thunderbird" - on forwarded messages, set the message ID
@@ -1447,12 +1410,10 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         // only includes ID of the message being forwarded in the reference,
         // even if there are multiple references.
         if (!TextUtils.isEmpty(message.getMessageId())) {
-            mInReplyTo = message.getMessageId();
-            mReferences = mInReplyTo;
+            repliedToMessageId = message.getMessageId();
+            referencedMessageIds = repliedToMessageId;
         } else {
-            if (K9.DEBUG) {
-                Log.d(K9.LOG_TAG, "could not get Message-ID.");
-            }
+            Timber.d("could not get Message-ID.");
         }
 
         // Quote the message and setup the UI.
@@ -1462,24 +1423,24 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
     private void processDraftMessage(MessageViewInfo messageViewInfo) {
         Message message = messageViewInfo.message;
-        mDraftId = MessagingController.getInstance(getApplication()).getId(message);
-        mSubjectView.setText(message.getSubject());
+        draftId = MessagingController.getInstance(getApplication()).getId(message);
+        subjectView.setText(message.getSubject());
 
         recipientPresenter.initFromDraftMessage(message);
 
         // Read In-Reply-To header from draft
         final String[] inReplyTo = message.getHeader("In-Reply-To");
         if (inReplyTo.length >= 1) {
-            mInReplyTo = inReplyTo[0];
+            repliedToMessageId = inReplyTo[0];
         }
 
         // Read References header from draft
         final String[] references = message.getHeader("References");
         if (references.length >= 1) {
-            mReferences = references[0];
+            referencedMessageIds = references[0];
         }
 
-        if (!mSourceMessageProcessed) {
+        if (!relatedMessageProcessed) {
             attachmentPresenter.loadNonInlineAttachments(messageViewInfo);
         }
 
@@ -1496,46 +1457,44 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         if (k9identity.containsKey(IdentityField.SIGNATURE)) {
             newIdentity.setSignatureUse(true);
             newIdentity.setSignature(k9identity.get(IdentityField.SIGNATURE));
-            mSignatureChanged = true;
+            signatureChanged = true;
         } else {
             if (message instanceof LocalMessage) {
                 newIdentity.setSignatureUse(((LocalMessage) message).getFolder().getSignatureUse());
             }
-            newIdentity.setSignature(mIdentity.getSignature());
+            newIdentity.setSignature(identity.getSignature());
         }
 
         if (k9identity.containsKey(IdentityField.NAME)) {
             newIdentity.setName(k9identity.get(IdentityField.NAME));
-            mIdentityChanged = true;
+            identityChanged = true;
         } else {
-            newIdentity.setName(mIdentity.getName());
+            newIdentity.setName(identity.getName());
         }
 
         if (k9identity.containsKey(IdentityField.EMAIL)) {
             newIdentity.setEmail(k9identity.get(IdentityField.EMAIL));
-            mIdentityChanged = true;
+            identityChanged = true;
         } else {
-            newIdentity.setEmail(mIdentity.getEmail());
+            newIdentity.setEmail(identity.getEmail());
         }
 
         if (k9identity.containsKey(IdentityField.ORIGINAL_MESSAGE)) {
-            mMessageReference = null;
-            try {
-                String originalMessage = k9identity.get(IdentityField.ORIGINAL_MESSAGE);
-                MessageReference messageReference = new MessageReference(originalMessage);
+            relatedMessageReference = null;
+            String originalMessage = k9identity.get(IdentityField.ORIGINAL_MESSAGE);
+            MessageReference messageReference = MessageReference.parse(originalMessage);
 
+            if (messageReference != null) {
                 // Check if this is a valid account in our database
                 Preferences prefs = Preferences.getPreferences(getApplicationContext());
                 Account account = prefs.getAccount(messageReference.getAccountUuid());
                 if (account != null) {
-                    mMessageReference = messageReference;
+                    relatedMessageReference = messageReference;
                 }
-            } catch (MessagingException e) {
-                Log.e(K9.LOG_TAG, "Could not decode message reference in identity.", e);
             }
         }
 
-        mIdentity = newIdentity;
+        identity = newIdentity;
 
         updateSignature();
         updateFrom();
@@ -1552,7 +1511,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         final MessageReference messageReference;
 
         SendMessageTask(Context context, Account account, Contacts contacts, Message message,
-                        Long draftId, MessageReference messageReference) {
+                Long draftId, MessageReference messageReference) {
             this.context = context;
             this.account = account;
             this.contacts = contacts;
@@ -1569,7 +1528,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                 contacts.markAsContacted(message.getRecipients(RecipientType.BCC));
                 updateReferencedMessage();
             } catch (Exception e) {
-                Log.e(K9.LOG_TAG, "Failed to mark contact as contacted.", e);
+                Timber.e(e, "Failed to mark contact as contacted.");
             }
 
             MessagingController.getInstance(context).sendMessage(account, message, null);
@@ -1586,12 +1545,11 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
          **/
         private void updateReferencedMessage() {
             if (messageReference != null && messageReference.getFlag() != null) {
-                if (K9.DEBUG) {
-                    Log.d(K9.LOG_TAG, "Setting referenced message (" +
-                            messageReference.getFolderName() + ", " +
-                            messageReference.getUid() + ") flag to " +
-                            messageReference.getFlag());
-                }
+                Timber.d("Setting referenced message (%s, %s) flag to %s",
+                        messageReference.getFolderName(),
+                        messageReference.getUid(),
+                        messageReference.getFlag());
+
                 final Account account = Preferences.getPreferences(context)
                         .getAccount(messageReference.getAccountUuid());
                 final String folderName = messageReference.getFolderName();
@@ -1614,23 +1572,23 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
         String subject = mailTo.getSubject();
         if (subject != null && !subject.isEmpty()) {
-            mSubjectView.setText(subject);
+            subjectView.setText(subject);
         }
 
         String body = mailTo.getBody();
         if (body != null && !body.isEmpty()) {
-            mMessageContentView.setCharacters(body);
+            messageContentView.setCharacters(body);
         }
     }
 
-    private void setMessageFormat(SimpleMessageFormat format) {
+    private void setCurrentMessageFormat(SimpleMessageFormat format) {
         // This method will later be used to enable/disable the rich text editing mode.
 
-        mMessageFormat = format;
+        currentMessageFormat = format;
     }
 
     public void updateMessageFormat() {
-        MessageFormat origMessageFormat = mAccount.getMessageFormat();
+        MessageFormat origMessageFormat = account.getMessageFormat();
         SimpleMessageFormat messageFormat;
         if (origMessageFormat == MessageFormat.TEXT) {
             // The user wants to send text/plain messages. We don't override that choice under
@@ -1646,7 +1604,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             // plain text in those cases.
             messageFormat = SimpleMessageFormat.TEXT;
         } else if (origMessageFormat == MessageFormat.AUTO) {
-            if (mAction == Action.COMPOSE || quotedMessagePresenter.isQuotedTextText() ||
+            if (action == Action.COMPOSE || quotedMessagePresenter.isQuotedTextText() ||
                     !quotedMessagePresenter.includeQuotedText()) {
                 // If the message format is set to "AUTO" we use text/plain whenever possible. That
                 // is, when composing new messages and replying to or forwarding text/plain
@@ -1660,32 +1618,32 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             messageFormat = SimpleMessageFormat.HTML;
         }
 
-        setMessageFormat(messageFormat);
+        setCurrentMessageFormat(messageFormat);
     }
 
     @Override
     public void onMessageBuildSuccess(MimeMessage message, boolean isDraft) {
         if (isDraft) {
-            draftNeedsSaving = false;
+            changesMadeSinceLastSave = false;
             currentMessageBuilder = null;
 
-            if (mAction == Action.EDIT_DRAFT && mMessageReference != null) {
-                message.setUid(mMessageReference.getUid());
+            if (action == Action.EDIT_DRAFT && relatedMessageReference != null) {
+                message.setUid(relatedMessageReference.getUid());
             }
 
             // TODO more appropriate logic here? not sure
             boolean saveRemotely = !recipientPresenter.getCurrentCryptoStatus().shouldUsePgpMessageBuilder();
-            new SaveMessageTask(getApplicationContext(), mAccount, mContacts, mHandler,
-                    message, mDraftId, saveRemotely).execute();
-            if (mFinishAfterDraftSaved) {
+            new SaveMessageTask(getApplicationContext(), account, contacts, internalMessageHandler,
+                    message, draftId, saveRemotely).execute();
+            if (finishAfterDraftSaved) {
                 finish();
             } else {
                 setProgressBarIndeterminateVisibility(false);
             }
         } else {
             currentMessageBuilder = null;
-            new SendMessageTask(getApplicationContext(), mAccount, mContacts, message,
-                    mDraftId != INVALID_DRAFT_ID ? mDraftId : null, mMessageReference).execute();
+            new SendMessageTask(getApplicationContext(), account, contacts, message,
+                    draftId != INVALID_DRAFT_ID ? draftId : null, relatedMessageReference).execute();
             finish();
         }
     }
@@ -1698,7 +1656,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
     @Override
     public void onMessageBuildException(MessagingException me) {
-        Log.e(K9.LOG_TAG, "Error sending message", me);
+        Timber.e(me, "Error sending message");
         FeedbackTools.showLongFeedback(getRootView(), getString(R.string.send_failed_reason, me.getLocalizedMessage()));
         currentMessageBuilder = null;
         setProgressBarIndeterminateVisibility(false);
@@ -1710,7 +1668,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         try {
             startIntentSenderForResult(pendingIntent.getIntentSender(), requestCode, null, 0, 0, 0);
         } catch (SendIntentException e) {
-            Log.e(K9.LOG_TAG, "Error starting pending intent from builder!", e);
+            Timber.e(e, "Error starting pending intent from builder!");
         }
     }
 
@@ -1728,18 +1686,18 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         // could be called when switching from HTML to text replies. If that happens, we
         // only want to update the UI with quoted text (which picks the appropriate
         // part).
-        if (mSourceMessageProcessed) {
+        if (relatedMessageProcessed) {
             try {
                 quotedMessagePresenter.populateUIWithQuotedMessage(messageViewInfo, true, action);
             } catch (MessagingException e) {
                 // Hm, if we couldn't populate the UI after source reprocessing, let's just delete it?
                 quotedMessagePresenter.showOrHideQuotedText(QuotedTextMode.HIDE);
-                Log.e(K9.LOG_TAG, "Could not re-process source message; deleting quoted text to be safe.", e);
+                Timber.e(e, "Could not re-process source message; deleting quoted text to be safe.");
             }
             updateMessageFormat();
         } else {
             processSourceMessage(messageViewInfo);
-            mSourceMessageProcessed = true;
+            relatedMessageProcessed = true;
         }
     }
 
@@ -1751,19 +1709,19 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
         @Override
         public void onMessageDataLoadFailed() {
-            mHandler.sendEmptyMessage(MSG_PROGRESS_OFF);
+            internalMessageHandler.sendEmptyMessage(MSG_PROGRESS_OFF);
             FeedbackTools.showLongFeedback(getRootView(), getString(R.string.status_invalid_id_error));
         }
 
         @Override
         public void onMessageViewInfoLoadFinished(MessageViewInfo messageViewInfo) {
-            mHandler.sendEmptyMessage(MSG_PROGRESS_OFF);
-            loadLocalMessageForDisplay(messageViewInfo, mAction);
+            internalMessageHandler.sendEmptyMessage(MSG_PROGRESS_OFF);
+            loadLocalMessageForDisplay(messageViewInfo, action);
         }
 
         @Override
         public void onMessageViewInfoLoadFailed(MessageViewInfo messageViewInfo) {
-            mHandler.sendEmptyMessage(MSG_PROGRESS_OFF);
+            internalMessageHandler.sendEmptyMessage(MSG_PROGRESS_OFF);
             FeedbackTools.showLongFeedback(getRootView(), getString(R.string.status_invalid_id_error));
         }
 
@@ -1779,7 +1737,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                 requestCode |= REQUEST_MASK_LOADER_HELPER;
                 startIntentSenderForResult(si, requestCode, fillIntent, flagsMask, flagValues, extraFlags);
             } catch (SendIntentException e) {
-                Log.e(K9.LOG_TAG, "Irrecoverable error calling PendingIntent!", e);
+                Timber.e(e, "Irrecoverable error calling PendingIntent!");
             }
         }
 
@@ -1805,30 +1763,30 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     };
 
     // TODO We miss callbacks for this listener if they happens while we are paused!
-    public MessagingListener messagingListener = new MessagingListener() {
+    public MessagingListener messagingListener = new SimpleMessagingListener() {
 
         @Override
         public void messageUidChanged(Account account, String folder, String oldUid, String newUid) {
-            if (mMessageReference == null) {
+            if (relatedMessageReference == null) {
                 return;
             }
 
             Account sourceAccount = Preferences.getPreferences(MessageCompose.this)
-                    .getAccount(mMessageReference.getAccountUuid());
-            String sourceFolder = mMessageReference.getFolderName();
-            String sourceMessageUid = mMessageReference.getUid();
+                    .getAccount(relatedMessageReference.getAccountUuid());
+            String sourceFolder = relatedMessageReference.getFolderName();
+            String sourceMessageUid = relatedMessageReference.getUid();
 
             boolean changedMessageIsCurrent =
                     account.equals(sourceAccount) && folder.equals(sourceFolder) && oldUid.equals(sourceMessageUid);
             if (changedMessageIsCurrent) {
-                mMessageReference = mMessageReference.withModifiedUid(newUid);
+                relatedMessageReference = relatedMessageReference.withModifiedUid(newUid);
             }
         }
 
     };
 
     AttachmentMvpView attachmentMvpView = new AttachmentMvpView() {
-        private HashMap<Uri,View> attachmentViews = new HashMap<>();
+        private HashMap<Uri, View> attachmentViews = new HashMap<>();
 
         @Override
         public void showWaitingForAttachmentDialog(WaitingAction waitingAction) {
@@ -1879,7 +1837,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
         @Override
         public void addAttachmentView(final Attachment attachment) {
-            View view = getLayoutInflater().inflate(R.layout.message_compose_attachment, mAttachments, false);
+            View view = getLayoutInflater().inflate(R.layout.message_compose_attachment, attachmentsView, false);
             attachmentViews.put(attachment.uri, view);
 
             ImageView deleteButton = (ImageView) view.findViewById(R.id.attachment_delete);
@@ -1891,7 +1849,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             });
 
             updateAttachmentView(attachment);
-            mAttachments.addView(view);
+            attachmentsView.addView(view);
         }
 
         @Override
@@ -1917,7 +1875,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         @Override
         public void removeAttachmentView(Attachment attachment) {
             View view = attachmentViews.get(attachment.uri);
-            mAttachments.removeView(view);
+            attachmentsView.removeView(view);
             attachmentViews.remove(attachment.uri);
         }
 
@@ -1962,5 +1920,56 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     public void inject() {
 
     }
+    public void lockSendButton() {
+        isSendButtonLocked = true;
+    }
 
+    public void unlockSendButton() {
+        isSendButtonLocked = false;
+    }
+
+    private Handler internalMessageHandler = new Handler() {
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what) {
+                case MSG_PROGRESS_ON:
+                    setProgressBarIndeterminateVisibility(true);
+                    break;
+                case MSG_PROGRESS_OFF:
+                    setProgressBarIndeterminateVisibility(false);
+                    break;
+                case MSG_SAVED_DRAFT:
+                    draftId = (Long) msg.obj;
+                    FeedbackTools.showLongFeedback(getRootView(),
+                            getString(R.string.message_saved_toast));
+                    break;
+                case MSG_DISCARDED_DRAFT:
+                    FeedbackTools.showLongFeedback(getRootView(),
+                            getString(R.string.message_discarded_toast));
+                    break;
+                default:
+                    super.handleMessage(msg);
+                    break;
+            }
+        }
+    };
+
+    public enum Action {
+        COMPOSE(R.string.compose_title_compose),
+        REPLY(R.string.compose_title_reply),
+        REPLY_ALL(R.string.compose_title_reply_all),
+        FORWARD(R.string.compose_title_forward),
+        EDIT_DRAFT(R.string.compose_title_compose);
+
+        private final int titleResource;
+
+        Action(@StringRes int titleResource) {
+            this.titleResource = titleResource;
+        }
+
+        @StringRes
+        public int getTitleResource() {
+            return titleResource;
+        }
+    }
 }

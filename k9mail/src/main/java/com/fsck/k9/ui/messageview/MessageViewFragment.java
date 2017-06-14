@@ -19,7 +19,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.text.TextUtils;
-import android.util.Log;
+import timber.log.Timber;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -110,7 +110,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         MessageViewFragment fragment = new MessageViewFragment();
 
         Bundle args = new Bundle();
-        args.putParcelable(ARG_REFERENCE, reference);
+        args.putString(ARG_REFERENCE, reference.toIdentityString());
         fragment.setArguments(args);
 
         return fragment;
@@ -185,7 +185,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 new MessageLoaderHelper(context, getLoaderManager(), getFragmentManager(), messageLoaderCallbacks);
 
         Bundle arguments = getArguments();
-        MessageReference messageReference = arguments.getParcelable(ARG_REFERENCE);
+        String messageReferenceString = arguments.getString(ARG_REFERENCE);
+        MessageReference messageReference = MessageReference.parse(messageReferenceString);
 
         displayMessage(messageReference);
         mMessageView.setPrivacyProtected(mAccount.ispEpPrivacyProtected());
@@ -215,6 +216,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         Activity activity = getActivity();
         boolean isChangingConfigurations = activity != null && activity.isChangingConfigurations();
         if (isChangingConfigurations) {
@@ -284,9 +286,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
     private void displayMessage(MessageReference messageReference) {
         mMessageReference = messageReference;
-        if (K9.DEBUG) {
-            Log.d(K9.LOG_TAG, "MessageView displaying message " + mMessageReference);
-        }
+        Timber.d("MessageView displaying message %s", mMessageReference);
 
         mAccount = Preferences.getPreferences(getApplicationContext()).getAccount(mMessageReference.getAccountUuid());
         messageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, null);
@@ -486,7 +486,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         intent.putExtra(ChooseFolder.EXTRA_ACCOUNT, mAccount.getUuid());
         intent.putExtra(ChooseFolder.EXTRA_CUR_FOLDER, mMessageReference.getFolderName());
         intent.putExtra(ChooseFolder.EXTRA_SEL_FOLDER, mAccount.getLastSelectedFolderName());
-        intent.putExtra(ChooseFolder.EXTRA_MESSAGE, mMessageReference);
+        intent.putExtra(ChooseFolder.EXTRA_MESSAGE, mMessageReference.toIdentityString());
         startActivityForResult(intent, activity);
     }
 
@@ -496,6 +496,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             messageCryptoPresenter.onActivityResult(requestCode, resultCode, data);
             return;
         }
+
+        // Note: because fragments do not have a startIntentSenderForResult method, pending intent activities are
+        // launched through the MessageList activity, and delivered back via onPendingIntentResult()
 
         switch (requestCode) {
             case ACTIVITY_CHOOSE_DIRECTORY: {
@@ -518,7 +521,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 }
 
                 String destFolderName = data.getStringExtra(ChooseFolder.EXTRA_NEW_FOLDER);
-                MessageReference ref = data.getParcelableExtra(ChooseFolder.EXTRA_MESSAGE);
+                String messageReferenceString = data.getStringExtra(ChooseFolder.EXTRA_MESSAGE);
+                MessageReference ref = MessageReference.parse(messageReferenceString);
                 if (mMessageReference.equals(ref)) {
                     mAccount.setLastSelectedFolderName(destFolderName);
                     switch (requestCode) {
@@ -795,7 +799,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         pePUIArtefactCache.setRecipients(mAccount, addresses);
         for (String s : mMessage.getHeaderNames()) {
             for (String s1 : mMessage.getHeader(s)) {
-                Log.i("MessageHeader", "onClick " + s + " " + s1);
+                Timber.i("MessageHeader", "onClick " + s + " " + s1);
             }
         }
 
@@ -899,7 +903,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 getActivity().startIntentSenderForResult(
                         si, requestCode, fillIntent, flagsMask, flagValues, extraFlags);
             } catch (SendIntentException e) {
-                Log.e(K9.LOG_TAG, "Irrecoverable error calling PendingIntent!", e);
+                Timber.e(e, "Irrecoverable error calling PendingIntent!");
             }
         }
     };
@@ -967,7 +971,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                         refreshMessage();
                     }
                 } catch (MessagingException e) {
-                    Log.e("pEp", "decryptMessage: view", e);
+                    Timber.e("pEp", "decryptMessage: view", e);
                 }
             }
 

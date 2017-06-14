@@ -9,14 +9,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import android.util.Log;
-
-import com.fsck.k9.mail.K9MailLib;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.filter.Base64OutputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.james.mime4j.codec.QuotedPrintableOutputStream;
 import org.apache.james.mime4j.util.MimeUtil;
+import timber.log.Timber;
 
 
 /**
@@ -59,7 +57,7 @@ public class BinaryTempFileBody implements RawDataBody, SizeAware {
             File newFile = File.createTempFile("body", null, mTempDirectory);
             final OutputStream out = new FileOutputStream(newFile);
             try {
-                OutputStream wrappedOut = null;
+                OutputStream wrappedOut;
                 if (MimeUtil.ENC_QUOTED_PRINTABLE.equals(encoding)) {
                     wrappedOut = new QuotedPrintableOutputStream(out, false);
                 } else if (MimeUtil.ENC_BASE64.equals(encoding)) {
@@ -136,8 +134,11 @@ public class BinaryTempFileBody implements RawDataBody, SizeAware {
             try {
                 super.close();
             } finally {
-                Log.d(K9MailLib.LOG_TAG, "deleting temp file");
-                mFile.delete();
+                Timber.d("Deleting temporary binary file: %s", mFile.getName());
+                boolean fileSuccessfullyDeleted = mFile.delete();
+                if (!fileSuccessfullyDeleted) {
+                    Timber.i("Failed to delete temporary binary file: %s", mFile.getName());
+                }
             }
         }
 

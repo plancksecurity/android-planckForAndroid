@@ -18,6 +18,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import android.content.Context;
+import timber.log.Timber;
+
+import com.fsck.k9.mail.store.RemoteStore;
+import com.fsck.k9.mailstore.LocalStore;
+import com.fsck.k9.preferences.StorageEditor;
+import com.fsck.k9.preferences.Storage;
+
+
 public class Preferences {
 
     private static Preferences preferences;
@@ -31,27 +40,27 @@ public class Preferences {
     }
 
 
-    private Storage mStorage;
+    private Storage storage;
     private Map<String, Account> accounts = null;
     private List<Account> accountsInOrder = null;
     private Account newAccount;
-    private Context mContext;
+    private Context context;
     private List<String> keysInOrder = null;
 
     private Preferences(Context context) {
-        mStorage = Storage.getStorage(context);
-        mContext = context;
-        if (mStorage.isEmpty()) {
-            Log.i(K9.LOG_TAG, "Preferences storage is zero-size, importing from Android-style preferences");
-            StorageEditor editor = mStorage.edit();
+        storage = Storage.getStorage(context);
+        this.context = context;
+        if (storage.isEmpty()) {
+            Timber.i("Preferences storage is zero-size, importing from Android-style preferences");
+            StorageEditor editor = storage.edit();
             editor.copy(context.getSharedPreferences("AndroidMail.Main", Context.MODE_PRIVATE));
             editor.commit();
         }
     }
 
     public synchronized void loadAccounts() {
-        accounts = new HashMap<String, Account>();
-        accountsInOrder = new LinkedList<Account>();
+        accounts = new HashMap<>();
+        accountsInOrder = new LinkedList<>();
         String accountUuids = getStorage().getString("accountUuids", null);
         if ((accountUuids != null) && (accountUuids.length() != 0)) {
             String[] uuids = accountUuids.split(",");
@@ -81,7 +90,7 @@ public class Preferences {
             loadAccounts();
         }
 
-        return Collections.unmodifiableList(new ArrayList<Account>(accountsInOrder));
+        return Collections.unmodifiableList(new ArrayList<>(accountsInOrder));
     }
 
     /**
@@ -92,9 +101,9 @@ public class Preferences {
      */
     public synchronized Collection<Account> getAvailableAccounts() {
         List<Account> allAccounts = getAccounts();
-        Collection<Account> retval = new ArrayList<Account>(accounts.size());
+        Collection<Account> retval = new ArrayList<>(accounts.size());
         for (Account account : allAccounts) {
-            if (account.isEnabled() && account.isAvailable(mContext)) {
+            if (account.isEnabled() && account.isAvailable(context)) {
                 retval.add(account);
             }
         }
@@ -106,13 +115,12 @@ public class Preferences {
         if (accounts == null) {
             loadAccounts();
         }
-        Account account = accounts.get(uuid);
 
-        return account;
+        return accounts.get(uuid);
     }
 
     public synchronized Account newAccount() {
-        newAccount = new Account(mContext);
+        newAccount = new Account(context);
         accounts.put(newAccount.getUuid(), newAccount);
         accountsInOrder.add(newAccount);
 
@@ -130,7 +138,7 @@ public class Preferences {
         try {
             RemoteStore.removeInstance(account);
         } catch (Exception e) {
-            Log.e(K9.LOG_TAG, "Failed to reset remote store for account " + account.getUuid(), e);
+            Timber.e(e, "Failed to reset remote store for account %s", account.getUuid());
         }
         LocalStore.removeAccount(account);
 
@@ -166,10 +174,10 @@ public class Preferences {
     }
 
     public Storage getStorage() {
-        return mStorage;
+        return storage;
     }
 
-    public static <T extends Enum<T>> T getEnumStringPref(Storage storage, String key, T defaultEnum) {
+    static <T extends Enum<T>> T getEnumStringPref(Storage storage, String key, T defaultEnum) {
         String stringPref = storage.getString(key, null);
 
         if (stringPref == null) {
@@ -178,8 +186,8 @@ public class Preferences {
             try {
                 return Enum.valueOf(defaultEnum.getDeclaringClass(), stringPref);
             } catch (IllegalArgumentException ex) {
-                Log.w(K9.LOG_TAG, "Unable to convert preference key [" + key +
-                        "] value [" + stringPref + "] to enum of type " + defaultEnum.getDeclaringClass(), ex);
+                Timber.w(ex, "Unable to convert preference key [%s] value [%s] to enum of type %s",
+                        key, stringPref, defaultEnum.getDeclaringClass());
 
                 return defaultEnum;
             }

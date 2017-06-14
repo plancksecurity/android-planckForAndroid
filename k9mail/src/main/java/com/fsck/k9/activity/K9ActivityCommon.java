@@ -77,9 +77,9 @@ public class K9ActivityCommon {
             locale = new Locale(language);
         }
 
-        Configuration config = new Configuration();
-        config.locale = locale;
         Resources resources = context.getResources();
+        Configuration config = resources.getConfiguration();
+        config.locale = locale;
         resources.updateConfiguration(config, resources.getDisplayMetrics());
     }
 

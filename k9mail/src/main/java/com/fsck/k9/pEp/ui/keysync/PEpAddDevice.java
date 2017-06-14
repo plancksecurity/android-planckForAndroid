@@ -278,7 +278,7 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
 
     @Override
     public void showError() {
-        FeedbackTools.showShortFeedback(getRootView(), getResources().getString(R.string.openpgp_unknown_error));
+        FeedbackTools.showShortFeedback(getRootView(), getResources().getString(R.string.status_loading_error));
     }
 
     @Override

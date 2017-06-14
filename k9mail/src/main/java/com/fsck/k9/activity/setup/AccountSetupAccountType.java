@@ -3,7 +3,7 @@ package com.fsck.k9.activity.setup;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
+import timber.log.Timber;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -154,7 +154,7 @@ public class AccountSetupAccountType extends K9Activity implements OnClickListen
     }
 
     private void failure(Exception use) {
-        Log.e(K9.LOG_TAG, "Failure", use);
+        Timber.e(use, "Failure");
         String toastText = getString(R.string.account_setup_bad_uri, use.getMessage());
 
         FeedbackTools.showLongFeedback(getRootView(), toastText);

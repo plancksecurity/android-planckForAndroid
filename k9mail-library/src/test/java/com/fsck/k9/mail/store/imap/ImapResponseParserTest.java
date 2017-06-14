@@ -6,12 +6,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fsck.k9.mail.K9LibRobolectricTestRunner;
 import com.fsck.k9.mail.filter.FixedLengthInputStream;
 import com.fsck.k9.mail.filter.PeekableInputStream;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -20,8 +19,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = 21)
+@RunWith(K9LibRobolectricTestRunner.class)
 public class ImapResponseParserTest {
     private PeekableInputStream peekableInputStream;
 
@@ -86,13 +84,27 @@ public class ImapResponseParserTest {
 
     @Test
     public void testReadStatusResponseWithOKResponse() throws Exception {
-        ImapResponseParser parser = createParser("* COMMAND BAR\tBAZ\r\nTAG OK COMMAND completed\r\n");
+        ImapResponseParser parser = createParser("* COMMAND BAR\tBAZ\r\n" +
+                "TAG OK COMMAND completed\r\n");
 
         List<ImapResponse> responses = parser.readStatusResponse("TAG", null, null, null);
 
         assertEquals(2, responses.size());
         assertEquals(asList("COMMAND", "BAR", "BAZ"), responses.get(0));
         assertEquals(asList("OK", "COMMAND completed"), responses.get(1));
+    }
+
+    @Test
+    public void testReadStatusResponseUntaggedHandlerGetsUntaggedOnly() throws Exception {
+        ImapResponseParser parser = createParser(
+                "* UNTAGGED\r\n" +
+                "A2 OK COMMAND completed\r\n");
+        TestUntaggedHandler untaggedHandler = new TestUntaggedHandler();
+
+        parser.readStatusResponse("A2", null, null, untaggedHandler);
+
+        assertEquals(1, untaggedHandler.responses.size());
+        assertEquals(asList("UNTAGGED"), untaggedHandler.responses.get(0));
     }
 
     @Test
@@ -113,6 +125,23 @@ public class ImapResponseParserTest {
         assertEquals(asList("UNTAGGED"), untaggedHandler.responses.get(0));
         assertEquals(responses.get(0), untaggedHandler.responses.get(1));
         assertEquals(responses.get(1), untaggedHandler.responses.get(2));
+    }
+
+    @Test
+    public void testReadStatusResponseUntaggedHandlerStillCalledOnNegativeReply() throws Exception {
+        ImapResponseParser parser = createParser(
+                "+ text\r\n" +
+                "A2 NO Bad response\r\n");
+        TestUntaggedHandler untaggedHandler = new TestUntaggedHandler();
+
+        try {
+            List<ImapResponse> responses = parser.readStatusResponse("A2", null, null, untaggedHandler);
+        } catch (NegativeImapResponseException e) {
+        }
+
+        assertEquals(1, untaggedHandler.responses.size());
+        assertEquals(asList("text"), untaggedHandler.responses.get(0));
+
     }
 
     @Test(expected = NegativeImapResponseException.class)
@@ -355,6 +384,14 @@ public class ImapResponseParserTest {
         assertEquals("[FolderName]", response.get(3));
     }
 
+    @Test(expected = IOException.class)
+    public void testListResponseContainingFolderNameContainingBracketsThrowsException() throws Exception {
+        ImapResponseParser parser = createParser(
+                "* LIST (\\NoInferiors) \"/\" Root/Folder/Subfolder()\r\n");
+
+        parser.readResponse();
+    }
+
     @Test
     public void readResponseShouldReadWholeListResponseLine() throws Exception {
         ImapResponseParser parser = createParser("* LIST (\\HasNoChildren) \".\" [FolderName]\r\n" +
@@ -388,7 +425,7 @@ public class ImapResponseParserTest {
             parser.readResponse();
             fail("Expected exception");
         } catch (IOException e) {
-            assertEquals("Unexpected non-string token: [1, 2]", e.getMessage());
+            assertEquals("Unexpected non-string token: ImapList - [1, 2]", e.getMessage());
         }
     }
 

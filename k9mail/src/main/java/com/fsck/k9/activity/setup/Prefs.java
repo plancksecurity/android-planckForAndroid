@@ -56,12 +56,12 @@ public class Prefs extends K9PreferenceActivity {
     private static final String PREFERENCE_LANGUAGE = "language";
     private static final String PREFERENCE_THEME = "theme";
     private static final String PREFERENCE_MESSAGE_VIEW_THEME = "messageViewTheme";
-    private static final String PREFERENCE_FIXED_MESSAGE_THEME = "fixedMessageViewTheme";
-    private static final String PREFERENCE_COMPOSER_THEME = "messageComposeTheme";
+    private static final String PREFERENCE_FIXED_MESSAGE_THEME = "fixed_message_view_theme";
+    private static final String PREFERENCE_COMPOSER_THEME = "message_compose_theme";
     private static final String PREFERENCE_FONT_SIZE = "font_size";
     private static final String PREFERENCE_ANIMATIONS = "animations";
     private static final String PREFERENCE_GESTURES = "gestures";
-    private static final String PREFERENCE_VOLUME_NAVIGATION = "volumeNavigation";
+    private static final String PREFERENCE_VOLUME_NAVIGATION = "volume_navigation";
     private static final String PREFERENCE_START_INTEGRATED_INBOX = "start_integrated_inbox";
     private static final String PREFERENCE_CONFIRM_ACTIONS = "confirm_actions";
     private static final String PREFERENCE_NOTIFICATION_HIDE_SUBJECT = "notification_hide_subject";
@@ -383,7 +383,7 @@ public class Prefs extends K9PreferenceActivity {
         mHideUserAgent = (CheckBoxPreference)findPreference(PREFERENCE_HIDE_USERAGENT);
         mHideTimeZone = (CheckBoxPreference)findPreference(PREFERENCE_HIDE_TIMEZONE);
 
-        mDebugLogging.setChecked(K9.DEBUG);
+        mDebugLogging.setChecked(K9.isDebug());
         mSensitiveLogging.setChecked(K9.DEBUG_SENSITIVE);
         mHideUserAgent.setChecked(K9.hideUserAgent());
         mHideTimeZone.setChecked(K9.hideTimeZone());
@@ -594,10 +594,10 @@ public class Prefs extends K9PreferenceActivity {
         K9.setAttachmentDefaultPath(mAttachmentPathPreference.getSummary().toString());
         boolean needsRefresh = K9.setBackgroundOps(mBackgroundOps.getValue());
 
-        if (!K9.DEBUG && mDebugLogging.isChecked()) {
+        if (!K9.isDebug() && mDebugLogging.isChecked()) {
             FeedbackTools.showLongFeedback(getRootView(), getString(R.string.debug_logging_enabled));
         }
-        K9.DEBUG = mDebugLogging.isChecked();
+        K9.setDebug(mDebugLogging.isChecked());
         K9.DEBUG_SENSITIVE = mSensitiveLogging.isChecked();
         K9.setHideUserAgent(mHideUserAgent.isChecked());
         K9.setHideTimeZone(mHideTimeZone.isChecked());

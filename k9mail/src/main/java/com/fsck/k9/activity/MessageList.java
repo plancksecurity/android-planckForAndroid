@@ -20,7 +20,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import timber.log.Timber;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -36,6 +36,8 @@ import android.widget.TextView;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.SortType;
+import com.fsck.k9.AccountStats;
+import com.fsck.k9.BaseAccount;
 import com.fsck.k9.K9;
 import com.fsck.k9.K9.SplitViewMode;
 import com.fsck.k9.Preferences;
@@ -49,8 +51,11 @@ import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.fragment.MessageListFragment;
 import com.fsck.k9.fragment.MessageListFragment.MessageListFragmentListener;
+import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.Part;
 import com.fsck.k9.mailstore.LocalFolder;
+import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
@@ -96,8 +101,11 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener,
         NavigationView.OnNavigationItemSelectedListener, DrawerLocker {
 
-    // for this activity
-    private static final String EXTRA_SEARCH = "search";
+    @Deprecated
+    //TODO: Remove after 2017-09-11
+    private static final String EXTRA_SEARCH_OLD = "search";
+
+    private static final String EXTRA_SEARCH = "search_bytes";
     private static final String EXTRA_NO_THREADING = "no_threading";
 
     private static final String ACTION_SHORTCUT = "shortcut";
@@ -187,7 +195,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             MessageReference messageReference) {
         Intent intent = new Intent(context, MessageList.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra(EXTRA_MESSAGE_REFERENCE, messageReference);
+        intent.putExtra(EXTRA_MESSAGE_REFERENCE, messageReference.toIdentityString());
         return intent;
     }
 
@@ -633,13 +641,13 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         try {
             if (account != null && folderName != null) {
                 if (!account.isAvailable(MessageList.this)) {
-                    Log.i(K9.LOG_TAG, "not refreshing folder of unavailable account");
+                    Timber.i(K9.LOG_TAG, "not refreshing folder of unavailable account");
                     return null;
                 }
                 localFolder = account.getLocalStore().getFolder(folderName);
             }
         } catch (Exception e) {
-            Log.e(K9.LOG_TAG, "Exception while populating folder", e);
+            Timber.e(K9.LOG_TAG, "Exception while populating folder", e);
         } finally {
             if (localFolder != null) {
                 localFolder.close();
@@ -741,10 +749,211 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         } else {
             MessagingController instance = MessagingController.getInstance(this);
             instance.listFolders(mAccount, false, new MessagingListener() {
+                //// TODO: 08/06/17 BREAK this interface to accomplish LISKOV
+                @Override
+                public void searchStats(AccountStats stats) {
+
+                }
+
+                @Override
+                public void accountStatusChanged(BaseAccount account, AccountStats stats) {
+
+                }
+
+                @Override
+                public void accountSizeChanged(Account account, long oldSize, long newSize) {
+
+                }
+
+                @Override
+                public void listFoldersStarted(Account account) {
+
+                }
+
                 @Override
                 public void listFolders(Account account, List<LocalFolder> folders) {
                     menuFolders = folders;
                     populateFolders(folders);
+                }
+
+                @Override
+                public void listFoldersFinished(Account account) {
+
+                }
+
+                @Override
+                public void listFoldersFailed(Account account, String message) {
+
+                }
+
+                @Override
+                public void listLocalMessagesAddMessages(Account account, String folder, List<LocalMessage> messages) {
+
+                }
+
+                @Override
+                public void synchronizeMailboxStarted(Account account, String folder) {
+
+                }
+
+                @Override
+                public void synchronizeMailboxHeadersStarted(Account account, String folder) {
+
+                }
+
+                @Override
+                public void synchronizeMailboxHeadersProgress(Account account, String folder, int completed, int total) {
+
+                }
+
+                @Override
+                public void synchronizeMailboxHeadersFinished(Account account, String folder, int totalMessagesInMailbox, int numNewMessages) {
+
+                }
+
+                @Override
+                public void synchronizeMailboxProgress(Account account, String folder, int completed, int total) {
+
+                }
+
+                @Override
+                public void synchronizeMailboxNewMessage(Account account, String folder, Message message) {
+
+                }
+
+                @Override
+                public void synchronizeMailboxRemovedMessage(Account account, String folder, Message message) {
+
+                }
+
+                @Override
+                public void synchronizeMailboxFinished(Account account, String folder, int totalMessagesInMailbox, int numNewMessages) {
+
+                }
+
+                @Override
+                public void synchronizeMailboxFailed(Account account, String folder, String message) {
+
+                }
+
+                @Override
+                public void loadMessageRemoteFinished(Account account, String folder, String uid) {
+
+                }
+
+                @Override
+                public void loadMessageRemoteFailed(Account account, String folder, String uid, Throwable t) {
+
+                }
+
+                @Override
+                public void checkMailStarted(Context context, Account account) {
+
+                }
+
+                @Override
+                public void checkMailFinished(Context context, Account account) {
+
+                }
+
+                @Override
+                public void sendPendingMessagesStarted(Account account) {
+
+                }
+
+                @Override
+                public void sendPendingMessagesCompleted(Account account) {
+
+                }
+
+                @Override
+                public void sendPendingMessagesFailed(Account account) {
+
+                }
+
+                @Override
+                public void emptyTrashCompleted(Account account) {
+
+                }
+
+                @Override
+                public void folderStatusChanged(Account account, String folderName, int unreadMessageCount) {
+
+                }
+
+                @Override
+                public void systemStatusChanged() {
+
+                }
+
+                @Override
+                public void messageDeleted(Account account, String folder, Message message) {
+
+                }
+
+                @Override
+                public void messageUidChanged(Account account, String folder, String oldUid, String newUid) {
+
+                }
+
+                @Override
+                public void setPushActive(Account account, String folderName, boolean enabled) {
+
+                }
+
+                @Override
+                public void loadAttachmentFinished(Account account, Message message, Part part) {
+
+                }
+
+                @Override
+                public void loadAttachmentFailed(Account account, Message message, Part part, String reason) {
+
+                }
+
+                @Override
+                public void pendingCommandStarted(Account account, String commandTitle) {
+
+                }
+
+                @Override
+                public void pendingCommandsProcessing(Account account) {
+
+                }
+
+                @Override
+                public void pendingCommandCompleted(Account account, String commandTitle) {
+
+                }
+
+                @Override
+                public void pendingCommandsFinished(Account account) {
+
+                }
+
+                @Override
+                public void remoteSearchStarted(String folder) {
+
+                }
+
+                @Override
+                public void remoteSearchServerQueryComplete(String folderName, int numResults, int maxResults) {
+
+                }
+
+                @Override
+                public void remoteSearchFinished(String folder, int numResults, int maxResults, List<Message> extraResults) {
+
+                }
+
+                @Override
+                public void remoteSearchFailed(String folder, String err) {
+
+                }
+
+                @Override
+                public void enableProgressIndicator(boolean enable) {
+
                 }
             });
         }
@@ -821,6 +1030,10 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+
+        if (isFinishing()) {
+            return;
+        }
 
         setIntent(intent);
 
@@ -1024,6 +1237,9 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                     mSearch.addAccountUuid(LocalSearch.ALL_ACCOUNTS);
                 }
             }
+        } else if (intent.hasExtra(EXTRA_SEARCH_OLD)) {
+            mSearch = intent.getParcelableExtra(EXTRA_SEARCH_OLD);
+            mNoThreading = intent.getBooleanExtra(EXTRA_NO_THREADING, false);
         } else {
             // regular LocalSearch object was passed
             mSearch = intent.getParcelableExtra(EXTRA_SEARCH);
@@ -1031,7 +1247,8 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         }
 
         if (mMessageReference == null) {
-            mMessageReference = intent.getParcelableExtra(EXTRA_MESSAGE_REFERENCE);
+            String messageReferenceString = intent.getStringExtra(EXTRA_MESSAGE_REFERENCE);
+            mMessageReference = MessageReference.parse(messageReferenceString);
         }
 
         if (mMessageReference != null) {
@@ -1070,7 +1287,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         mSingleFolderMode = mSingleAccountMode && (mSearch.getFolderNames().size() == 1);
 
         if (mSingleAccountMode && (mAccount == null || !mAccount.isAvailable(this))) {
-            Log.i(K9.LOG_TAG, "not opening MessageList of unavailable account");
+            Timber.i("not opening MessageList of unavailable account");
             onAccountUnavailable();
             return false;
         }
@@ -1080,6 +1297,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         }
 
         // now we know if we are in single account mode and need a subtitle
+        mActionBarSubTitle.setVisibility((!mSingleFolderMode) ? View.GONE : View.VISIBLE);
 
         mActionBarSubTitle.setVisibility(Intent.ACTION_SEARCH.equals(intent.getAction()) || !mSingleFolderMode  ? View.GONE : View.VISIBLE);
         return true;
@@ -1378,8 +1596,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
         // Swallow these events too to avoid the audible notification of a volume change
         if (K9.useVolumeKeysForListNavigationEnabled()) {
             if ((keyCode == KeyEvent.KEYCODE_VOLUME_UP) || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
-                if (K9.DEBUG)
-                    Log.v(K9.LOG_TAG, "Swallowed key up.");
+                Timber.v("Swallowed key up.");
                 return true;
             }
         }
@@ -1799,6 +2016,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     public void setActionBarUnread(int unread) {
+        // TODO: 08/06/17 Review
         if (unread == 0) {
             mActionBarUnread.setVisibility(View.GONE);
         } else {

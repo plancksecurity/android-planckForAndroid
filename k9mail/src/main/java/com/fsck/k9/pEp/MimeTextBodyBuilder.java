@@ -4,10 +4,12 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.fsck.k9.K9;
-import com.fsck.k9.helper.HtmlConverter;
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.internet.TextBody;
-import com.fsck.k9.message.InsertableHtmlContent;
+import com.fsck.k9.message.html.HtmlConverter;
+import com.fsck.k9.message.quote.InsertableHtmlContent;
+
+import timber.log.Timber;
 
 // FIXME: make this part of MimeMessageBuilder
 
@@ -47,9 +49,8 @@ class MimeTextBodyBuilder {
         if (mIncludeQuotedText) {
             InsertableHtmlContent quotedHtmlContent = getQuotedTextHtml();
 
-            if (K9.DEBUG) {
-                Log.d(K9.LOG_TAG, "insertable: " + quotedHtmlContent.toDebugString());
-            }
+            Timber.d(K9.LOG_TAG, "insertable: " + quotedHtmlContent.toDebugString());
+
 
             if (mAppendSignature) {
                 // Append signature to the reply

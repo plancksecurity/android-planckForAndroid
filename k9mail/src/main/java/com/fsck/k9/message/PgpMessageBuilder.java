@@ -11,7 +11,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import android.util.Log;
+import timber.log.Timber;
 
 import com.fsck.k9.Globals;
 import com.fsck.k9.K9;
@@ -219,7 +219,7 @@ public class PgpMessageBuilder extends MessageBuilder {
                         throw new IllegalStateException(
                                 "Got opportunistic error, but encryption wasn't supposed to be opportunistic!");
                     }
-                    Log.d(K9.LOG_TAG, "Skipping encryption due to opportunistic mode");
+                    Timber.d("Skipping encryption due to opportunistic mode");
                     return null;
                 }
                 throw new MessagingException(error.getMessage());
@@ -296,7 +296,7 @@ public class PgpMessageBuilder extends MessageBuilder {
             String micAlgParameter = result.getStringExtra(OpenPgpApi.RESULT_SIGNATURE_MICALG);
             contentType += String.format("; micalg=\"%s\"", micAlgParameter);
         } else {
-            Log.e(K9.LOG_TAG, "missing micalg parameter for pgp multipart/signed!");
+            Timber.e("missing micalg parameter for pgp multipart/signed!");
         }
         currentProcessedMimeMessage.setHeader(MimeHeader.HEADER_CONTENT_TYPE, contentType);
     }
@@ -309,7 +309,9 @@ public class PgpMessageBuilder extends MessageBuilder {
         MimeMultipart multipartEncrypted = createMimeMultipart();
         multipartEncrypted.setSubType("encrypted");
         multipartEncrypted.addBodyPart(new MimeBodyPart(new TextBody("Version: 1"), "application/pgp-encrypted"));
-        multipartEncrypted.addBodyPart(new MimeBodyPart(encryptedBodyPart, "application/octet-stream"));
+        MimeBodyPart encryptedPart = new MimeBodyPart(encryptedBodyPart, "application/octet-stream; name=\"encrypted.asc\"");
+        encryptedPart.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, "inline; filename=\"encrypted.asc\"");
+        multipartEncrypted.addBodyPart(encryptedPart);
         MimeMessageHelper.setBody(currentProcessedMimeMessage, multipartEncrypted);
 
         String contentType = String.format(

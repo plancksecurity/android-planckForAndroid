@@ -1,6 +1,17 @@
 
 package com.fsck.k9;
 
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.SynchronousQueue;
+
 import android.app.Activity;
 import android.app.Application;
 import android.app.PendingIntent;
@@ -18,7 +29,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.text.format.Time;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.fsck.k9.Account.SortType;
@@ -26,12 +36,11 @@ import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.UpgradeDatabases;
 import com.fsck.k9.controller.MessagingController;
-import com.fsck.k9.controller.MessagingListener;
+import com.fsck.k9.controller.SimpleMessagingListener;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.K9MailLib;
 import com.fsck.k9.mail.Message;
-import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.BinaryTempFileBody;
 import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mailstore.LocalStore;
@@ -42,6 +51,7 @@ import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.pEp.ui.keysync.PEpAddDevice;
+import com.fsck.k9.power.DeviceIdleManager;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.UnreadWidgetProvider;
@@ -49,6 +59,10 @@ import com.fsck.k9.service.BootReceiver;
 import com.fsck.k9.service.MailService;
 import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
+import com.fsck.k9.widget.list.MessageListWidgetProvider;
+import timber.log.Timber;
+import timber.log.Timber.DebugTree;
+
 
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
@@ -170,7 +184,7 @@ public class K9 extends Application {
      * Log.d, including protocol dumps.
      * Controlled by Preferences at run-time
      */
-    public static boolean DEBUG = false;
+    private static boolean DEBUG = false;
 
     /**
      * If this is enabled than logging that normally hides sensitive information
@@ -387,10 +401,22 @@ public class K9 extends Application {
      * whether any accounts are configured.
      */
     public static void setServicesEnabled(Context context) {
-        int acctLength = Preferences.getPreferences(context).getAvailableAccounts().size();
+        Context appContext = context.getApplicationContext();
+        int acctLength = Preferences.getPreferences(appContext).getAvailableAccounts().size();
+        boolean enable = acctLength > 0;
 
-        setServicesEnabled(context, acctLength > 0, null);
+        setServicesEnabled(appContext, enable, null);
 
+        updateDeviceIdleReceiver(appContext, enable);
+    }
+
+    private static void updateDeviceIdleReceiver(Context context, boolean enable) {
+        DeviceIdleManager deviceIdleManager = DeviceIdleManager.getInstance(context);
+        if (enable) {
+            deviceIdleManager.registerReceiver();
+        } else {
+            deviceIdleManager.unregisterReceiver();
+        }
     }
 
     private static void setServicesEnabled(Context context, boolean enabled, Integer wakeLockId) {
@@ -433,7 +459,7 @@ public class K9 extends Application {
     }
 
     /**
-     * Register BroadcastReceivers programmaticaly because doing it from manifest
+     * Register BroadcastReceivers programmatically because doing it from manifest
      * would make K-9 auto-start. We don't want auto-start because the initialization
      * sequence isn't safe while some events occur (SD card unmount).
      */
@@ -454,7 +480,7 @@ public class K9 extends Application {
                 try {
                     queue.put(new Handler());
                 } catch (InterruptedException e) {
-                    Log.e(K9.LOG_TAG, "", e);
+                    Timber.e(e);
                 }
                 Looper.loop();
             }
@@ -464,17 +490,17 @@ public class K9 extends Application {
         try {
             final Handler storageGoneHandler = queue.take();
             registerReceiver(receiver, filter, null, storageGoneHandler);
-            Log.i(K9.LOG_TAG, "Registered: unmount receiver");
+            Timber.i("Registered: unmount receiver");
         } catch (InterruptedException e) {
-            Log.e(K9.LOG_TAG, "Unable to register unmount receiver", e);
+            Timber.e(e, "Unable to register unmount receiver");
         }
 
         registerReceiver(new ShutdownReceiver(), new IntentFilter(Intent.ACTION_SHUTDOWN));
-        Log.i(K9.LOG_TAG, "Registered: shutdown receiver");
+        Timber.i("Registered: shutdown receiver");
     }
 
     public static void save(StorageEditor editor) {
-        editor.putBoolean("enableDebugLogging", K9.DEBUG);
+        editor.putBoolean("enableDebugLogging", K9.isDebug());
         editor.putBoolean("enableSensitiveLogging", K9.DEBUG_SENSITIVE);
         editor.putString("backgroundOperations", K9.backgroundOps.name());
         editor.putBoolean("animations", mAnimations);
@@ -601,7 +627,7 @@ public class K9 extends Application {
         setServicesEnabled(this);
         registerReceivers();
 
-        MessagingController.getInstance(this).addListener(new MessagingListener() {
+        MessagingController.getInstance(this).addListener(new SimpleMessagingListener() {
             private void broadcastIntent(String action, Account account, String folder, Message message) {
                 Uri uri = Uri.parse("email://messages/" + account.getAccountNumber() + "/" + Uri.encode(folder) + "/" + Uri.encode(message.getUid()));
                 Intent intent = new Intent(action, uri);
@@ -615,20 +641,30 @@ public class K9 extends Application {
                 intent.putExtra(K9.Intents.EmailReceived.EXTRA_SUBJECT, message.getSubject());
                 intent.putExtra(K9.Intents.EmailReceived.EXTRA_FROM_SELF, account.isAnIdentity(message.getFrom()));
                 K9.this.sendBroadcast(intent);
-                if (K9.DEBUG)
-                    Log.d(K9.LOG_TAG, "Broadcasted: action=" + action
-                          + " account=" + account.getDescription()
-                          + " folder=" + folder
-                          + " message uid=" + message.getUid()
-                         );
+
+                Timber.d("Broadcasted: action=%s account=%s folder=%s message uid=%s",
+                        action,
+                        account.getDescription(),
+                        folder,
+                        message.getUid());
             }
 
             private void updateUnreadWidget() {
                 try {
                     UnreadWidgetProvider.updateUnreadCount(K9.this);
                 } catch (Exception e) {
-                    if (K9.DEBUG) {
-                        Log.e(LOG_TAG, "Error while updating unread widget(s)", e);
+                    Timber.e(e, "Error while updating unread widget(s)");
+                }
+            }
+
+            private void updateMailListWidget() {
+                try {
+                    MessageListWidgetProvider.triggerMessageListWidgetUpdate(K9.this);
+                } catch (RuntimeException e) {
+                    if (BuildConfig.DEBUG) {
+                        throw e;
+                    } else {
+                        Timber.e(e, "Error while updating message list widget");
                     }
                 }
             }
@@ -637,18 +673,21 @@ public class K9 extends Application {
             public void synchronizeMailboxRemovedMessage(Account account, String folder, Message message) {
                 broadcastIntent(K9.Intents.EmailReceived.ACTION_EMAIL_DELETED, account, folder, message);
                 updateUnreadWidget();
+                updateMailListWidget();
             }
 
             @Override
             public void messageDeleted(Account account, String folder, Message message) {
                 broadcastIntent(K9.Intents.EmailReceived.ACTION_EMAIL_DELETED, account, folder, message);
                 updateUnreadWidget();
+                updateMailListWidget();
             }
 
             @Override
             public void synchronizeMailboxNewMessage(Account account, String folder, Message message) {
                 broadcastIntent(K9.Intents.EmailReceived.ACTION_EMAIL_RECEIVED, account, folder, message);
                 updateUnreadWidget();
+                updateMailListWidget();
             }
 
             @Override
@@ -656,6 +695,7 @@ public class K9 extends Application {
                     int unreadMessageCount) {
 
                 updateUnreadWidget();
+                updateMailListWidget();
 
                 // let observers know a change occurred
                 Intent intent = new Intent(K9.Intents.EmailReceived.ACTION_REFRESH_OBSERVER, null);
@@ -689,7 +729,7 @@ public class K9 extends Application {
 
             @Override
             public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
-                Log.e("pEp", "notifyHandshake: " + signal.name());
+                Timber.e("pEp", "notifyHandshake: " + signal.name());
                 switch (signal) {
                     case SyncNotifyUndefined:
                         break;
@@ -736,7 +776,7 @@ public class K9 extends Application {
     }
 
     private void goToAddDevice(Identity myself, Identity partner, SyncHandshakeSignal signal, String explanation) {
-        Log.i("PEPJNI", "showHandshake: " + signal.name() + " " + myself.toString() + "\n::\n" + partner.toString());
+        Timber.i("PEPJNI", "showHandshake: " + signal.name() + " " + myself.toString() + "\n::\n" + partner.toString());
 
         String trust = pEpSyncProvider.trustwords(myself, partner, language, true);
         Context context = K9.this.getApplicationContext();
@@ -791,7 +831,7 @@ public class K9 extends Application {
      */
     public static void loadPrefs(Preferences prefs) {
         Storage storage = prefs.getStorage();
-        DEBUG = storage.getBoolean("enableDebugLogging", BuildConfig.DEVELOPER_MODE);
+        setDebug(storage.getBoolean("enableDebugLogging", BuildConfig.DEVELOPER_MODE));
         DEBUG_SENSITIVE = storage.getBoolean("enableSensitiveLogging", false);
         mAnimations = storage.getBoolean("animations", true);
         mGesturesEnabled = storage.getBoolean("gesturesEnabled", false);
@@ -923,13 +963,12 @@ public class K9 extends Application {
     protected void notifyObservers() {
         synchronized (observers) {
             for (final ApplicationAware aware : observers) {
-                if (K9.DEBUG) {
-                    Log.v(K9.LOG_TAG, "Initializing observer: " + aware);
-                }
+                Timber.v("Initializing observer: %s", aware);
+
                 try {
                     aware.initializeComponent(this);
                 } catch (Exception e) {
-                    Log.w(K9.LOG_TAG, "Failure when notifying " + aware, e);
+                    Timber.w(e, "Failure when notifying %s", aware);
                 }
             }
 
@@ -1112,14 +1151,14 @@ public class K9 extends Application {
             return false;
         }
 
-        Time time = new Time();
-        time.setToNow();
+        GregorianCalendar gregorianCalendar = new GregorianCalendar();
+
         Integer startHour = Integer.parseInt(mQuietTimeStarts.split(":")[0]);
         Integer startMinute = Integer.parseInt(mQuietTimeStarts.split(":")[1]);
         Integer endHour = Integer.parseInt(mQuietTimeEnds.split(":")[0]);
         Integer endMinute = Integer.parseInt(mQuietTimeEnds.split(":")[1]);
 
-        Integer now = (time.hour * 60) + time.minute;
+        Integer now = (gregorianCalendar.get(Calendar.HOUR) * 60) + gregorianCalendar.get(Calendar.MINUTE);
         Integer quietStarts = startHour * 60 + startMinute;
         Integer quietEnds =  endHour * 60 + endMinute;
 
@@ -1149,7 +1188,14 @@ public class K9 extends Application {
         return false;
     }
 
+    public static void setDebug(boolean debug) {
+        K9.DEBUG = debug;
+        updateLoggingStatus();
+    }
 
+    public static boolean isDebug() {
+        return DEBUG;
+    }
 
     public static boolean startIntegratedInbox() {
         return mStartIntegratedInbox;
@@ -1530,9 +1576,18 @@ public class K9 extends Application {
         if (save) {
             Editor editor = sDatabaseVersionCache.edit();
             editor.putInt(KEY_LAST_ACCOUNT_DATABASE_VERSION, LocalStore.DB_VERSION);
-            editor.commit();
+            editor.apply();
         }
     }
+
+    private static void updateLoggingStatus() {
+        Timber.uprootAll();
+        boolean enableDebugLogging = BuildConfig.DEBUG || DEBUG;
+        if (enableDebugLogging) {
+            Timber.plant(new DebugTree());
+        }
+    }
+
 
     private ActivityLifecycleCallbacks activityLifecycleCallbacks = new ActivityLifecycleCallbacks() {
         int activityCount = 0;

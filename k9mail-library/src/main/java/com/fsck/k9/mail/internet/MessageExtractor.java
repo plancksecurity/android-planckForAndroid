@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.BodyPart;
@@ -20,11 +19,13 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.Multipart;
 import com.fsck.k9.mail.Part;
+import com.fsck.k9.mail.internet.Viewable.Flowed;
 import org.apache.commons.io.input.BoundedInputStream;
+import timber.log.Timber;
 
-import static com.fsck.k9.mail.K9MailLib.LOG_TAG;
 import static com.fsck.k9.mail.internet.CharsetSupport.fixupCharset;
 import static com.fsck.k9.mail.internet.MimeUtility.getHeaderParameter;
+import static com.fsck.k9.mail.internet.FlowedMessageUtils.isFormatFlowed;
 import static com.fsck.k9.mail.internet.MimeUtility.isSameMimeType;
 import static com.fsck.k9.mail.internet.Viewable.Alternative;
 import static com.fsck.k9.mail.internet.Viewable.Html;
@@ -60,9 +61,9 @@ public class MessageExtractor {
                 throw new MessagingException("Provided invalid part");
             }
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Unable to getTextFromPart", e);
+            Timber.e(e, "Unable to getTextFromPart");
         } catch (MessagingException e) {
-            Log.e(LOG_TAG, "Unable to getTextFromPart", e);
+            Timber.e("Unable to getTextFromPart");
         }
         return null;
     }
@@ -131,7 +132,7 @@ public class MessageExtractor {
     }
 
 
-    /** Traverse the MIME tree of a message an extract viewable parts. */
+    /** Traverse the MIME tree of a message and extract viewable parts. */
     public static void findViewablesAndAttachments(Part part,
                 @Nullable List<Viewable> outputViewableParts, @Nullable List<Part> outputNonViewableParts)
             throws MessagingException {
@@ -188,13 +189,18 @@ public class MessageExtractor {
                 return;
             }
             String mimeType = part.getMimeType();
+            Viewable viewable;
             if (isSameMimeType(mimeType, "text/plain")) {
-                Text text = new Text(part);
-                outputViewableParts.add(text);
+                if (isFormatFlowed(part.getContentType())) {
+                    boolean delSp = FlowedMessageUtils.isDelSp(part.getContentType());
+                    viewable = new Flowed(part, delSp);
+                } else {
+                    viewable = new Text(part);
+                }
             } else {
-                Html html = new Html(part);
-                outputViewableParts.add(html);
+                viewable = new Html(part);
             }
+            outputViewableParts.add(viewable);
         } else if (isSameMimeType(part.getMimeType(), "application/pgp-signature")) {
             // ignore this type explicitly
         } else {

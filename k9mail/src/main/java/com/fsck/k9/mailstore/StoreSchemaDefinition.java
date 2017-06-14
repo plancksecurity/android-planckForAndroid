@@ -3,17 +3,22 @@ package com.fsck.k9.mailstore;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
+import timber.log.Timber;
 import com.fsck.k9.Account;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.mail.Flag;
+import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mailstore.migrations.Migrations;
 import com.fsck.k9.mailstore.migrations.MigrationsHelper;
 import com.fsck.k9.preferences.Storage;
 
 import java.util.List;
 import java.util.Locale;
+
+import static com.fsck.k9.mailstore.LocalStore.DB_VERSION;
+import static java.lang.String.format;
+import static java.util.Locale.US;
 
 
 class StoreSchemaDefinition implements LockableDatabase.SchemaDefinition {
@@ -38,15 +43,14 @@ class StoreSchemaDefinition implements LockableDatabase.SchemaDefinition {
                 throw new Error("Exception while upgrading database", e);
             }
 
-            Log.e(K9.LOG_TAG, "Exception while upgrading database. Resetting the DB to v0", e);
+            Timber.e(e, "Exception while upgrading database. Resetting the DB to v0");
             db.setVersion(0);
             upgradeDatabase(db);
         }
     }
 
     private void upgradeDatabase(final SQLiteDatabase db) {
-        Log.i(K9.LOG_TAG, String.format(Locale.US, "Upgrading database from version %d to version %d",
-                db.getVersion(), LocalStore.DB_VERSION));
+        Timber.i("Upgrading database from version %d to version %d", db.getVersion(), DB_VERSION);
 
         db.beginTransaction();
         try {
@@ -88,7 +92,7 @@ class StoreSchemaDefinition implements LockableDatabase.SchemaDefinition {
                 "poll_class TEXT, " +
                 "push_class TEXT, " +
                 "display_class TEXT, " +
-                "notify_class TEXT, " +
+                "notify_class TEXT default '"+ Folder.FolderClass.INHERITED.name() + "', " +
                 "more_messages TEXT default \"unknown\"" +
                 ")");
 
@@ -195,7 +199,7 @@ class StoreSchemaDefinition implements LockableDatabase.SchemaDefinition {
 
         db.execSQL("DROP TABLE IF EXISTS pending_commands");
         db.execSQL("CREATE TABLE pending_commands " +
-                "(id INTEGER PRIMARY KEY, command TEXT, arguments TEXT)");
+                "(id INTEGER PRIMARY KEY, command TEXT, data TEXT)");
 
         db.execSQL("DROP TRIGGER IF EXISTS delete_folder");
         db.execSQL("CREATE TRIGGER delete_folder BEFORE DELETE ON folders BEGIN DELETE FROM messages WHERE old.id = folder_id; END;");
@@ -204,7 +208,8 @@ class StoreSchemaDefinition implements LockableDatabase.SchemaDefinition {
         db.execSQL("CREATE TRIGGER delete_message " +
                 "BEFORE DELETE ON messages " +
                 "BEGIN " +
-                "DELETE FROM message_parts WHERE root = OLD.message_part_id;" +
+                "DELETE FROM message_parts WHERE root = OLD.message_part_id; " +
+                "DELETE FROM messages_fulltext WHERE docid = OLD.id; " +
                 "END");
 
         db.execSQL("DROP TABLE IF EXISTS messages_fulltext");
@@ -237,7 +242,7 @@ class StoreSchemaDefinition implements LockableDatabase.SchemaDefinition {
 
         @Override
         public Context getContext() {
-            return localStore.context;
+            return localStore.getContext();
         }
 
         @Override

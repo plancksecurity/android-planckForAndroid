@@ -22,7 +22,7 @@ import butterknife.Bind;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
-public class K9ListActivity extends AppCompatActivity implements K9ActivityMagic {
+public abstract class K9ListActivity extends AppCompatActivity implements K9ActivityMagic {
 
     @Nullable
     @Bind(R.id.toolbar) Toolbar toolbar;

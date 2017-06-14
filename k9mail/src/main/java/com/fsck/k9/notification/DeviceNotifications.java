@@ -76,9 +76,9 @@ class DeviceNotifications extends BaseNotifications {
         NotificationSetting notificationSetting = account.getNotificationSetting();
         controller.configureNotification(
                 builder,
-                (notificationSetting.shouldRing()) ? notificationSetting.getRingtone() : null,
-                (notificationSetting.shouldVibrate()) ? notificationSetting.getVibration() : null,
-                (notificationSetting.isLed()) ? notificationSetting.getLedColor() : null,
+                (notificationSetting.isRingEnabled()) ? notificationSetting.getRingtone() : null,
+                (notificationSetting.isVibrateEnabled()) ? notificationSetting.getVibration() : null,
+                (notificationSetting.isLedEnabled()) ? notificationSetting.getLedColor() : null,
                 NOTIFICATION_LED_BLINK_SLOW,
                 ringAndVibrate);
 
@@ -126,9 +126,9 @@ class DeviceNotifications extends BaseNotifications {
         String accountName = controller.getAccountName(account);
         String title = context.getResources().getQuantityString(R.plurals.notification_new_messages_title,
                 newMessagesCount, newMessagesCount);
-        String summary = (notificationData.hasAdditionalMessages()) ?
+        String summary = (notificationData.hasSummaryOverflowMessages()) ?
                 context.getString(R.string.notification_additional_messages,
-                        notificationData.getAdditionalMessagesCount(), accountName) :
+                        notificationData.getSummaryOverflowMessagesCount(), accountName) :
                 accountName;
         String groupKey = NotificationGroupKeys.getGroupKey(account);
 

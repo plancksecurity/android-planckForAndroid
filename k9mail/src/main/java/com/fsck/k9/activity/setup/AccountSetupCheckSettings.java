@@ -11,7 +11,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
+import timber.log.Timber;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,6 +32,8 @@ import com.fsck.k9.mail.CertificateValidationException;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.Transport;
+import com.fsck.k9.mail.TransportProvider;
+import com.fsck.k9.mail.store.webdav.WebDavStore;
 import com.fsck.k9.mail.filter.Hex;
 import com.fsck.k9.mail.store.webdav.WebDavStore;
 
@@ -113,7 +115,7 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
     }
 
     private void handleCertificateValidationException(CertificateValidationException cve) {
-        Log.e(K9.LOG_TAG, "Error while testing settings (cve)", cve);
+        Timber.e(cve, "Error while testing settings");
 
         X509Certificate[] chain = cve.getCertChain();
         // Avoid NullPointerException in acceptKeyDialog()
@@ -184,7 +186,7 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
                 try {
                     sha1 = MessageDigest.getInstance("SHA-1");
                 } catch (NoSuchAlgorithmException e) {
-                    Log.e(K9.LOG_TAG, "Error while initializing MessageDigest", e);
+                    Timber.e(e, "Error while initializing MessageDigest");
                 }
 
                 final X509Certificate[] chain = ex.getCertChain();
@@ -217,7 +219,7 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
                                 String name;
                                 switch (type.intValue()) {
                                 case 0:
-                                    Log.w(K9.LOG_TAG, "SubjectAltName of type OtherName not supported.");
+                                    Timber.w("SubjectAltName of type OtherName not supported.");
                                     continue;
                                 case 1: // RFC822Name
                                     name = (String)value;
@@ -226,13 +228,13 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
                                     name = (String)value;
                                     break;
                                 case 3:
-                                    Log.w(K9.LOG_TAG, "unsupported SubjectAltName of type x400Address");
+                                    Timber.w("unsupported SubjectAltName of type x400Address");
                                     continue;
                                 case 4:
-                                    Log.w(K9.LOG_TAG, "unsupported SubjectAltName of type directoryName");
+                                    Timber.w("unsupported SubjectAltName of type directoryName");
                                     continue;
                                 case 5:
-                                    Log.w(K9.LOG_TAG, "unsupported SubjectAltName of type ediPartyName");
+                                    Timber.w("unsupported SubjectAltName of type ediPartyName");
                                     continue;
                                 case 6:  // Uri
                                     name = (String)value;
@@ -241,7 +243,7 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
                                     name = (String)value;
                                     break;
                                 default:
-                                    Log.w(K9.LOG_TAG, "unsupported SubjectAltName of unknown type");
+                                    Timber.w("unsupported SubjectAltName of unknown type");
                                     continue;
                                 }
 
@@ -261,17 +263,17 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
                         }
                     } catch (Exception e1) {
                         // don't fail just because of subjectAltNames
-                        Log.w(K9.LOG_TAG, "cannot display SubjectAltNames in dialog", e1);
+                        Timber.w(e1, "cannot display SubjectAltNames in dialog");
                     }
 
                     chainInfo.append("Issuer: ").append(chain[i].getIssuerDN().toString()).append("\n");
                     if (sha1 != null) {
                         sha1.reset();
                         try {
-                            char[] sha1sum = Hex.encodeHex(sha1.digest(chain[i].getEncoded()));
-                            chainInfo.append("Fingerprint (SHA-1): ").append(new String(sha1sum)).append("\n");
+                            String sha1sum = Hex.encodeHex(sha1.digest(chain[i].getEncoded()));
+                            chainInfo.append("Fingerprint (SHA-1): ").append(sha1sum).append("\n");
                         } catch (CertificateEncodingException e) {
-                            Log.e(K9.LOG_TAG, "Error while encoding certificate", e);
+                            Timber.e(e, "Error while encoding certificate");
                         }
                     }
                 }
@@ -331,6 +333,8 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
     private void onCancel() {
         mCanceled = true;
         setMessage(R.string.account_setup_check_settings_canceling_msg);
+        setResult(RESULT_CANCELED);
+        finish();
     }
 
     public void onClick(View v) {
@@ -459,14 +463,14 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
                 finish();
 
             } catch (AuthenticationFailedException afe) {
-                Log.e(K9.LOG_TAG, "Error while testing settings (auth failed)", afe);
+                Timber.e(afe, "Error while testing settings (auth failed)");
                 showErrorDialog(
                         R.string.account_setup_failed_dlg_auth_message_fmt,
                         afe.getMessage() == null ? "" : afe.getMessage());
             } catch (CertificateValidationException cve) {
                 handleCertificateValidationException(cve);
             } catch (Exception e) {
-                Log.e(K9.LOG_TAG, "Error while testing settings", e);
+                Timber.e(e, "Error while testing settings");
                 String message = e.getMessage() == null ? "" : e.getMessage();
                 showErrorDialog(R.string.account_setup_failed_dlg_server_message_fmt, message);
             }
@@ -506,8 +510,7 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
             if (!(account.getRemoteStore() instanceof WebDavStore)) {
                 publishProgress(R.string.account_setup_check_settings_check_outgoing_msg);
             }
-            Transport transport = Transport.getInstance(K9.app, account,
-                    new AndroidAccountOAuth2TokenStore(AccountSetupCheckSettings.this));
+            Transport transport = TransportProvider.getInstance().getTransport(K9.app, account, K9.oAuth2TokenStore);
             transport.close();
             try {
                 transport.open();

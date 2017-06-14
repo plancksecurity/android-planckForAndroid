@@ -1,6 +1,9 @@
 package com.fsck.k9.mail.store;
 
-import android.accounts.AccountManager;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import android.content.Context;
 import android.net.ConnectivityManager;
 
@@ -16,8 +19,6 @@ import com.fsck.k9.mail.store.pop3.Pop3Store;
 import com.fsck.k9.mail.store.webdav.WebDavHttpClient;
 import com.fsck.k9.mail.store.webdav.WebDavStore;
 
-import java.util.HashMap;
-import java.util.Map;
 
 public abstract class RemoteStore extends Store {
     public static final int SOCKET_CONNECT_TIMEOUT = 30000;
@@ -40,9 +41,7 @@ public abstract class RemoteStore extends Store {
     /**
      * Get an instance of a remote mail store.
      */
-    public synchronized static Store getInstance(Context context, StoreConfig storeConfig,
-                                                 OAuth2TokenProvider oAuth2TokenProvider)
-            throws MessagingException {
+    public static synchronized Store getInstance(Context context, StoreConfig storeConfig, OAuth2TokenProvider oAuth2TokenProvider) throws MessagingException {
         String uri = storeConfig.getStoreUri();
 
         if (uri.startsWith("local")) {
@@ -52,15 +51,14 @@ public abstract class RemoteStore extends Store {
         Store store = sStores.get(uri);
         if (store == null) {
             if (uri.startsWith("imap")) {
-                store = new ImapStore(storeConfig,
+//                OAuth2TokenProvider oAuth2TokenProvider = null;
+                store = new ImapStore(
+                        storeConfig,
                         new DefaultTrustedSocketFactory(context),
-                        (ConnectivityManager) context.getSystemService(
-                                Context.CONNECTIVITY_SERVICE),
-                        oAuth2TokenProvider
-                        );
+                        (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE),
+                        oAuth2TokenProvider);
             } else if (uri.startsWith("pop3")) {
-                store = new Pop3Store(storeConfig,
-                        new DefaultTrustedSocketFactory(context));
+                store = new Pop3Store(storeConfig, new DefaultTrustedSocketFactory(context));
             } else if (uri.startsWith("webdav")) {
                 store = new WebDavStore(storeConfig, new WebDavHttpClient.WebDavHttpClientFactory());
             }

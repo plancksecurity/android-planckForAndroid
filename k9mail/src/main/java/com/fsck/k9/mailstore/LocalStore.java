@@ -29,11 +29,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
+import timber.log.Timber;
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
-import com.fsck.k9.helper.UrlEncodingHelper;
+import com.fsck.k9.controller.PendingCommandSerializer;
+import com.fsck.k9.controller.MessagingControllerCommands.PendingCommand;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.BodyPart;
@@ -52,6 +53,7 @@ import com.fsck.k9.mailstore.LockableDatabase.DbCallback;
 import com.fsck.k9.mailstore.LockableDatabase.WrappedException;
 import com.fsck.k9.mailstore.StorageManager.StorageProvider;
 import com.fsck.k9.message.extractors.AttachmentCounter;
+import com.fsck.k9.message.extractors.AttachmentInfoExtractor;
 import com.fsck.k9.message.extractors.MessageFulltextCreator;
 import com.fsck.k9.message.extractors.MessagePreviewCreator;
 import com.fsck.k9.preferences.Storage;
@@ -90,6 +92,7 @@ import java.util.concurrent.ConcurrentMap;
  * </pre>
  */
 public class LocalStore extends Store implements Serializable {
+
     private static final long serialVersionUID = -5142141896809423072L;
 
     static final String[] EMPTY_STRING_ARRAY = new String[0];
@@ -167,7 +170,7 @@ public class LocalStore extends Store implements Serializable {
      */
     private static final int THREAD_FLAG_UPDATE_BATCH_SIZE = 500;
 
-    public static final int DB_VERSION = 56;
+    public static final int DB_VERSION = 60;
 
 
     public static String getColumnNameForFlag(Flag flag) {
@@ -202,6 +205,8 @@ public class LocalStore extends Store implements Serializable {
     private final MessagePreviewCreator messagePreviewCreator;
     private final MessageFulltextCreator messageFulltextCreator;
     private final AttachmentCounter attachmentCounter;
+    private final PendingCommandSerializer pendingCommandSerializer;
+    final AttachmentInfoExtractor attachmentInfoExtractor;
 
     /**
      * local://localhost/path/to/database/uuid.db
@@ -220,6 +225,8 @@ public class LocalStore extends Store implements Serializable {
         messagePreviewCreator = MessagePreviewCreator.newInstance();
         messageFulltextCreator = MessageFulltextCreator.newInstance();
         attachmentCounter = AttachmentCounter.newInstance();
+        pendingCommandSerializer = PendingCommandSerializer.getInstance();
+        attachmentInfoExtractor = AttachmentInfoExtractor.getInstance();
 
         database.open();
     }
@@ -259,7 +266,7 @@ public class LocalStore extends Store implements Serializable {
         try {
             removeInstance(account);
         } catch (Exception e) {
-            Log.e(K9.LOG_TAG, "Failed to reset local store for account " + account.getUuid(), e);
+            Timber.e(e, "Failed to reset local store for account %s", account.getUuid());
         }
     }
 
@@ -270,6 +277,10 @@ public class LocalStore extends Store implements Serializable {
 
     public void switchLocalStorage(final String newStorageProviderId) throws MessagingException {
         database.switchProvider(newStorageProviderId);
+    }
+
+    Context getContext() {
+        return context;
     }
 
     protected Account getAccount() {
@@ -307,8 +318,9 @@ public class LocalStore extends Store implements Serializable {
     }
 
     public void compact() throws MessagingException {
-        if (K9.DEBUG)
-            Log.i(K9.LOG_TAG, "Before compaction size = " + getSize());
+        if (K9.isDebug()) {
+            Timber.i("Before compaction size = %d", getSize());
+        }
 
         database.execute(false, new DbCallback<Void>() {
             @Override
@@ -317,23 +329,25 @@ public class LocalStore extends Store implements Serializable {
                 return null;
             }
         });
-        if (K9.DEBUG)
-            Log.i(K9.LOG_TAG, "After compaction size = " + getSize());
+
+        if (K9.isDebug()) {
+            Timber.i("After compaction size = %d", getSize());
+        }
     }
 
 
     public void clear() throws MessagingException {
-        if (K9.DEBUG)
-            Log.i(K9.LOG_TAG, "Before prune size = " + getSize());
+        if (K9.isDebug()) {
+            Timber.i("Before prune size = %d", getSize());
+        }
 
         deleteAllMessageDataFromDisk();
-        if (K9.DEBUG) {
-            Log.i(K9.LOG_TAG, "After prune / before compaction size = " + getSize());
 
-            Log.i(K9.LOG_TAG, "Before clear folder count = " + getFolderCount());
-            Log.i(K9.LOG_TAG, "Before clear message count = " + getMessageCount());
-
-            Log.i(K9.LOG_TAG, "After prune / before clear size = " + getSize());
+        if (K9.isDebug()) {
+            Timber.i("After prune / before compaction size = %d", getSize());
+            Timber.i("Before clear folder count = %d", getFolderCount());
+            Timber.i("Before clear message count = %d", getMessageCount());
+            Timber.i("After prune / before clear size = %d", getSize());
         }
 
         database.execute(false, new DbCallback<Void>() {
@@ -355,10 +369,9 @@ public class LocalStore extends Store implements Serializable {
 
         compact();
 
-        if (K9.DEBUG) {
-            Log.i(K9.LOG_TAG, "After clear message count = " + getMessageCount());
-
-            Log.i(K9.LOG_TAG, "After clear size = " + getSize());
+        if (K9.isDebug()) {
+            Timber.i("After clear message count = %d", getMessageCount());
+            Timber.i("After clear size = %d", getSize());
         }
     }
 
@@ -501,7 +514,7 @@ public class LocalStore extends Store implements Serializable {
                 Cursor cursor = null;
                 try {
                     cursor = db.query("pending_commands",
-                                      new String[] { "id", "command", "arguments" },
+                                      new String[] { "id", "command", "data" },
                                       null,
                                       null,
                                       null,
@@ -509,14 +522,11 @@ public class LocalStore extends Store implements Serializable {
                                       "id ASC");
                     List<PendingCommand> commands = new ArrayList<>();
                     while (cursor.moveToNext()) {
-                        PendingCommand command = new PendingCommand();
-                        command.mId = cursor.getLong(0);
-                        command.command = cursor.getString(1);
-                        String arguments = cursor.getString(2);
-                        command.arguments = arguments.split(",");
-                        for (int i = 0; i < command.arguments.length; i++) {
-                            command.arguments[i] = Utility.fastUrlDecode(command.arguments[i]);
-                        }
+                        long databaseId = cursor.getLong(0);
+                        String commandName = cursor.getString(1);
+                        String data = cursor.getString(2);
+                        PendingCommand command = pendingCommandSerializer.unserialize(
+                                databaseId, commandName, data);
                         commands.add(command);
                     }
                     return commands;
@@ -528,12 +538,9 @@ public class LocalStore extends Store implements Serializable {
     }
 
     public void addPendingCommand(PendingCommand command) throws MessagingException {
-        for (int i = 0; i < command.arguments.length; i++) {
-            command.arguments[i] = UrlEncodingHelper.encodeUtf8(command.arguments[i]);
-        }
         final ContentValues cv = new ContentValues();
-        cv.put("command", command.command);
-        cv.put("arguments", Utility.combine(command.arguments, ','));
+        cv.put("command", command.getCommandName());
+        cv.put("data", pendingCommandSerializer.serialize(command));
         database.execute(false, new DbCallback<Void>() {
             @Override
             public Void doDbWork(final SQLiteDatabase db) throws WrappedException {
@@ -547,7 +554,7 @@ public class LocalStore extends Store implements Serializable {
         database.execute(false, new DbCallback<Void>() {
             @Override
             public Void doDbWork(final SQLiteDatabase db) throws WrappedException {
-                db.delete("pending_commands", "id = ?", new String[] { Long.toString(command.mId) });
+                db.delete("pending_commands", "id = ?", new String[] { Long.toString(command.databaseId) });
                 return null;
             }
         });
@@ -565,25 +572,6 @@ public class LocalStore extends Store implements Serializable {
 
     public LocalFolder getFolderById(long folderId) {
         return new LocalFolder(this, folderId);
-    }
-
-    public static class PendingCommand {
-        private long mId;
-        public String command;
-        public String[] arguments;
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append(command);
-            sb.append(": ");
-            for (String argument : arguments) {
-                sb.append(", ");
-                sb.append(argument);
-                //sb.append("\n");
-            }
-            return sb.toString();
-        }
     }
 
     @Override
@@ -617,9 +605,7 @@ public class LocalStore extends Store implements Serializable {
                 ((!TextUtils.isEmpty(where)) ? " AND (" + where + ")" : "") +
                 " ORDER BY date DESC";
 
-        if (K9.DEBUG) {
-            Log.d(K9.LOG_TAG, "Query = " + sqlQuery);
-        }
+        Timber.d("Query = %s", sqlQuery);
 
         return getMessages(retrievalListener, null, sqlQuery, selectionArgs);
     }
@@ -666,7 +652,7 @@ public class LocalStore extends Store implements Serializable {
                         i++;
                     }
                 } catch (Exception e) {
-                    Log.d(K9.LOG_TAG, "Got an exception", e);
+                    Timber.d(e, "Got an exception");
                 } finally {
                     Utility.closeQuietly(cursor);
                 }

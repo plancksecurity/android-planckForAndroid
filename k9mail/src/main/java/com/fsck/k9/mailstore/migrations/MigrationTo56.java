@@ -4,7 +4,8 @@ package com.fsck.k9.mailstore.migrations;
 import android.database.sqlite.SQLiteDatabase;
 
 
-class MigrationTo56 {
+public class MigrationTo56 {
+
     public static void renamepEpRatingColumn(SQLiteDatabase db) {
         db.execSQL("ALTER TABLE messages RENAME TO messages_orig;\n");
 
@@ -26,7 +27,7 @@ class MigrationTo56 {
                 "message_id TEXT, " +
                 "preview_type TEXT default \"none\", " +
                 "preview TEXT, " +
-                "mime_type TEXT, "+
+                "mime_type TEXT, " +
                 "normalized_subject_hash INTEGER, " +
                 "empty INTEGER default 0, " +
                 "read INTEGER default 0, " +
@@ -37,59 +38,59 @@ class MigrationTo56 {
                 "pep_rating TEXT" +
                 ")");
         db.execSQL("INSERT INTO messages(" +
-                                            "id, " +
-                                            "deleted, " +
-                                            "folder_id, " +
-                                            "uid, " +
-                                            "subject, " +
-                                            "date, " +
-                                            "flags, " +
-                                            "sender_list, " +
-                                            "to_list, " +
-                                            "cc_list, " +
-                                            "bcc_list, " +
-                                            "reply_to_list, " +
-                                            "attachment_count, " +
-                                            "internal_date, " +
-                                            "message_id, " +
-                                            "preview_type, " +
-                                            "preview, " +
-                                            "mime_type, "+
-                                            "normalized_subject_hash, " +
-                                            "empty, " +
-                                            "read, " +
-                                            "flagged, " +
-                                            "answered, " +
-                                            "forwarded, " +
-                                            "message_part_id, " +
-                                            "pep_rating" + ") " +
-                            "SELECT "+ "id, " +
-                                "deleted, " +
-                                "folder_id, " +
-                                "uid, " +
-                                "subject, " +
-                                "date, " +
-                                "flags, " +
-                                "sender_list, " +
-                                "to_list, " +
-                                "cc_list, " +
-                                "bcc_list, " +
-                                "reply_to_list, " +
-                                "attachment_count, " +
-                                "internal_date, " +
-                                "message_id, " +
-                                "preview_type, " +
-                                "preview, " +
-                                "mime_type, "+
-                                "normalized_subject_hash, " +
-                                "empty, " +
-                                "read, " +
-                                "flagged, " +
-                                "answered, " +
-                                "forwarded, " +
-                                "message_part_id, " +
-                                "pep_color "+
-                            "FROM messages_orig;");
+                "id, " +
+                "deleted, " +
+                "folder_id, " +
+                "uid, " +
+                "subject, " +
+                "date, " +
+                "flags, " +
+                "sender_list, " +
+                "to_list, " +
+                "cc_list, " +
+                "bcc_list, " +
+                "reply_to_list, " +
+                "attachment_count, " +
+                "internal_date, " +
+                "message_id, " +
+                "preview_type, " +
+                "preview, " +
+                "mime_type, " +
+                "normalized_subject_hash, " +
+                "empty, " +
+                "read, " +
+                "flagged, " +
+                "answered, " +
+                "forwarded, " +
+                "message_part_id, " +
+                "pep_rating" + ") " +
+                "SELECT " + "id, " +
+                "deleted, " +
+                "folder_id, " +
+                "uid, " +
+                "subject, " +
+                "date, " +
+                "flags, " +
+                "sender_list, " +
+                "to_list, " +
+                "cc_list, " +
+                "bcc_list, " +
+                "reply_to_list, " +
+                "attachment_count, " +
+                "internal_date, " +
+                "message_id, " +
+                "preview_type, " +
+                "preview, " +
+                "mime_type, " +
+                "normalized_subject_hash, " +
+                "empty, " +
+                "read, " +
+                "flagged, " +
+                "answered, " +
+                "forwarded, " +
+                "message_part_id, " +
+                "pep_color " +
+                "FROM messages_orig;");
 
 
         db.execSQL("DROP TABLE messages_orig;");
@@ -98,4 +99,5 @@ class MigrationTo56 {
     static void cleanUpFtsTable(SQLiteDatabase db) {
         db.execSQL("DELETE FROM messages_fulltext WHERE docid NOT IN (SELECT id FROM messages WHERE deleted = 0)");
     }
+
 }
