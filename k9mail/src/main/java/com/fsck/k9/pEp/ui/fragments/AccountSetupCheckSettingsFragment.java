@@ -12,7 +12,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,6 +46,8 @@ import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+
+import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -125,7 +126,7 @@ public class AccountSetupCheckSettingsFragment extends Fragment implements Confi
     }
 
     private void handleCertificateValidationException(CertificateValidationException cve) {
-        Log.e(K9.LOG_TAG, "Error while testing settings (cve)", cve);
+        Timber.e(cve, "Error while testing settings (cve)");
 
         X509Certificate[] chain = cve.getCertChain();
         // Avoid NullPointerException in acceptKeyDialog()
@@ -191,7 +192,7 @@ public class AccountSetupCheckSettingsFragment extends Fragment implements Confi
                 try {
                     sha1 = MessageDigest.getInstance("SHA-1");
                 } catch (NoSuchAlgorithmException e) {
-                    Log.e(K9.LOG_TAG, "Error while initializing MessageDigest", e);
+                    Timber.e(e, "Error while initializing MessageDigest");
                 }
 
                 final X509Certificate[] chain = ex.getCertChain();
@@ -224,7 +225,7 @@ public class AccountSetupCheckSettingsFragment extends Fragment implements Confi
                                 String name;
                                 switch (type.intValue()) {
                                     case 0:
-                                        Log.w(K9.LOG_TAG, "SubjectAltName of type OtherName not supported.");
+                                        Timber.w("SubjectAltName of type OtherName not supported.");
                                         continue;
                                     case 1: // RFC822Name
                                         name = (String)value;
@@ -233,13 +234,13 @@ public class AccountSetupCheckSettingsFragment extends Fragment implements Confi
                                         name = (String)value;
                                         break;
                                     case 3:
-                                        Log.w(K9.LOG_TAG, "unsupported SubjectAltName of type x400Address");
+                                        Timber.w("unsupported SubjectAltName of type x400Address");
                                         continue;
                                     case 4:
-                                        Log.w(K9.LOG_TAG, "unsupported SubjectAltName of type directoryName");
+                                        Timber.w("unsupported SubjectAltName of type directoryName");
                                         continue;
                                     case 5:
-                                        Log.w(K9.LOG_TAG, "unsupported SubjectAltName of type ediPartyName");
+                                        Timber.w("unsupported SubjectAltName of type ediPartyName");
                                         continue;
                                     case 6:  // Uri
                                         name = (String)value;
@@ -248,7 +249,7 @@ public class AccountSetupCheckSettingsFragment extends Fragment implements Confi
                                         name = (String)value;
                                         break;
                                     default:
-                                        Log.w(K9.LOG_TAG, "unsupported SubjectAltName of unknown type");
+                                        Timber.w("unsupported SubjectAltName of unknown type");
                                         continue;
                                 }
 
@@ -268,7 +269,7 @@ public class AccountSetupCheckSettingsFragment extends Fragment implements Confi
                         }
                     } catch (Exception e1) {
                         // don't fail just because of subjectAltNames
-                        Log.w(K9.LOG_TAG, "cannot display SubjectAltNames in dialog", e1);
+                        Timber.w(e1, "cannot display SubjectAltNames in dialog");
                     }
 
                     chainInfo.append("Issuer: ").append(chain[i].getIssuerDN().toString()).append("\n");
@@ -278,7 +279,7 @@ public class AccountSetupCheckSettingsFragment extends Fragment implements Confi
                             String sha1sum = Hex.encodeHex(sha1.digest(chain[i].getEncoded()));
                             chainInfo.append("Fingerprint (SHA-1): ").append(sha1sum).append("\n");
                         } catch (CertificateEncodingException e) {
-                            Log.e(K9.LOG_TAG, "Error while encoding certificate", e);
+                            Timber.e(e,"Error while encoding certificate");
                         }
                     }
                 }
@@ -484,14 +485,14 @@ public class AccountSetupCheckSettingsFragment extends Fragment implements Confi
                     getActivity().finish();
                 }
             } catch (AuthenticationFailedException afe) {
-                Log.e(K9.LOG_TAG, "Error while testing settings (auth failed)", afe);
+                Timber.e(afe, "Error while testing settings (auth failed)");
                 showErrorDialog(
                         R.string.account_setup_failed_dlg_auth_message_fmt,
                         afe.getMessage() == null ? "" : afe.getMessage());
             } catch (CertificateValidationException cve) {
                 handleCertificateValidationException(cve);
             } catch (Exception e) {
-                Log.e(K9.LOG_TAG, "Error while testing settings", e);
+                Timber.e(e, "Error while testing settings");
                 String message = e.getMessage() == null ? "" : e.getMessage();
                 showErrorDialog(R.string.account_setup_failed_dlg_server_message_fmt, message);
             }
