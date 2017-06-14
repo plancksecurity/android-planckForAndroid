@@ -36,6 +36,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 
+import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
+
 public class PEpAddDevice extends PepActivity implements AddDeviceView {
 
     public static final String ACTION_SHOW_PEP_TRUSTWORDS = "com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS";
@@ -74,6 +76,7 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
         intent.putExtra(PARTNER, partner);
         intent.putExtra(MYSELF, myself);
         intent.putExtra(EXPLANATION, explanation);
+        intent.setFlags(FLAG_ACTIVITY_CLEAR_TOP);
         return intent;
 
     }
@@ -259,7 +262,13 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
 
     @Override
     public void close() {
-        finish();
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(receiver);
+        super.onDestroy();
     }
 
     @Override
