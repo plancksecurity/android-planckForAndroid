@@ -348,13 +348,13 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
             counterpartyAddress = fromAddrs[0];
         }
 
-        /* We hide the subject by default for each new message, and MessageTitleView might show
-         * it later by calling showSubjectLine(). */
-        boolean newMessageShown = mMessage == null || mMessage.getId() != message.getId();
-        // TODO: 08/06/17 Review
-        if (newMessageShown) {
-            mSubjectView.setVisibility(GONE);
-        }
+// NOT NEEDED ON pEp due to we don-t call show subject line
+//        /* We hide the subject by default for each new message, and MessageTitleView might show
+//         * it later by calling showSubjectLine(). */
+//        boolean newMessageShown = mMessage == null || mMessage.getId() != message.getId();
+//        if (newMessageShown) {
+//            mSubjectView.setVisibility(GONE);
+//        }
 
         mMessage = message;
         mAccount = account;
