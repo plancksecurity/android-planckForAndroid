@@ -40,6 +40,7 @@ public class PePUIArtefactCache
     private ArrayList<Identity> recipients;
     private Resources resources;
     private Account composingAccount;
+    private Account lastUsedAccount;
 
     public synchronized static PePUIArtefactCache getInstance(Context context) {
         if (instance == null) {
@@ -110,5 +111,13 @@ public class PePUIArtefactCache
 
     public Account getComposingAccount() {
         return composingAccount;
+    }
+
+    public Account getLastUsedAccount() {
+        return lastUsedAccount;
+    }
+
+    public void setLastUsedAccount(Account lastUsedAccount) {
+        this.lastUsedAccount = lastUsedAccount;
     }
 }

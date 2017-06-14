@@ -153,6 +153,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private boolean messageViewVisible;
     private boolean isThreadDisplayed;
     private MessageSwipeDirection direction;
+    private Account lastUsedAccount;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
             boolean noThreading, boolean newTask) {
@@ -671,6 +672,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
             public void onClick(final Account account) {
                 mMessageListFragment.showLoadingMessages();
                 mAccount = account;
+                PePUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
                 drawerCloseListener = new DrawerLayout.DrawerListener() {
                     @Override
                     public void onDrawerSlide(View drawerView, float slideOffset) {
@@ -1402,7 +1404,11 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 setMessageViewVisible(false);
             }
             if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
-                Router.onOpenAccount(this, mAccount);
+                if (mAccount != null) {
+                    Router.onOpenAccount(this, mAccount);
+                } else {
+                    onAccountUnavailable();
+                }
             } else if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
                 updateToolbarColorToOriginal();
                 showMessageList();
@@ -1686,6 +1692,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 return true;
             }
             case R.id.search: {
+                PePUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
                 showSearchView();
                 return true;
             }
