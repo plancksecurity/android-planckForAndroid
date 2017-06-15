@@ -76,7 +76,6 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
         intent.putExtra(PARTNER, partner);
         intent.putExtra(MYSELF, myself);
         intent.putExtra(EXPLANATION, explanation);
-        intent.setFlags(FLAG_ACTIVITY_CLEAR_TOP);
         return intent;
 
     }
