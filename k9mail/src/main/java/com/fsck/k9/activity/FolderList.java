@@ -3,6 +3,7 @@ package com.fsck.k9.activity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
@@ -367,10 +368,15 @@ public class FolderList extends K9ListActivity {
     }
 
     public void showSearchView() {
-        if (searchLayout != null) {
-            getToolbar().setVisibility(View.GONE);
-            searchLayout.setVisibility(View.VISIBLE);
-            setFocusOnKeyboard();
+        if(Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP ||
+                Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1) {
+            onSearchRequested();
+        } else {
+            if (searchLayout != null) {
+                getToolbar().setVisibility(View.GONE);
+                searchLayout.setVisibility(View.VISIBLE);
+                setFocusOnKeyboard();
+            }
         }
     }
 
