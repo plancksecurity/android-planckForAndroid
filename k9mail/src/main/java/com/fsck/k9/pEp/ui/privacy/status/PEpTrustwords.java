@@ -88,6 +88,8 @@ public class PEpTrustwords extends PepColoredActivity {
 
         setContentView(R.layout.pep_trustwords);
         ButterKnife.bind(this);
+        flipper.setVisibility(View.INVISIBLE);
+
         setUpToolbar(true);
         PEpUtils.colorToolbar(getToolbar(), getResources().getColor(R.color.light_primary_color));
         context = getApplicationContext();
@@ -189,8 +191,11 @@ public class PEpTrustwords extends PepColoredActivity {
         confirmTrustWords.setVisibility(View.VISIBLE);
 
         if (!PEpUtils.isPEpUser(partner)) {
+            flipper.setAnimateFirstView(false);
+            flipper.setDisplayedChild(1);
             showFingerprints();
         }
+        flipper.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -246,6 +251,7 @@ public class PEpTrustwords extends PepColoredActivity {
                     menuItemTrustwordsLanguage.setVisible(true);
                     menuItemtrustwordsLength.setVisible(true);
                 }
+                flipper.showNext();
                 showFingerprints();
                 return true;
             case R.id.action_language:
@@ -269,7 +275,6 @@ public class PEpTrustwords extends PepColoredActivity {
     }
 
     private void showFingerprints() {
-        flipper.showNext();
         showingPgpFingerprint = !showingPgpFingerprint;
         invalidateOptionsMenu();
     }
