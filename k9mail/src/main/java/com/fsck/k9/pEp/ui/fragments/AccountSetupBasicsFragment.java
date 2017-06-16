@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.ContentLoadingProgressBar;
@@ -66,6 +67,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
             "com.fsck.k9.AccountSetupBasics.provider";
     private final static String STATE_KEY_CHECKED_INCOMING =
             "com.fsck.k9.AccountSetupBasics.checkedIncoming";
+    public static final String GMAIL = "gmail";
 
     private EditText mEmailView;
     private EditText mPasswordView;
@@ -434,15 +436,19 @@ public class AccountSetupBasicsFragment extends PEpFragment
         UIUtils.saveCredentialsInPreferences(getActivity(),  mEmailView.getText().toString(), mPasswordView.getText().toString());
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        enableViewGroup(true, (ViewGroup) rootView);
+        mNextButton.setVisibility(View.VISIBLE);
+        nextProgressBar.hide();
+    }
+
     private void onNext() {
         nextProgressBar.show();
         mNextButton.setVisibility(View.GONE);
         enableViewGroup(false, (ViewGroup) rootView);
-        if (mClientCertificateCheckBox.isChecked() || mOAuth2CheckBox.isChecked()) {
-            // Auto-setup doesn't support client certificates.
-            onManualSetup();
-            return;
-        }
+
         String email;
         if (mEmailView.getVisibility() == View.VISIBLE) {
             email = mEmailView.getText().toString().trim();
@@ -450,6 +456,41 @@ public class AccountSetupBasicsFragment extends PEpFragment
             email = mAccountSpinner.getSelectedItem().toString();
         }
         if (avoidAddingAlreadyExistingAccount(email)) return;
+
+        List<String> accounts = accountTokenStore.getAccounts();
+        if (accounts.contains(email)) {
+            mOAuth2CheckBox.setChecked(true);
+            mAccountSpinner.setSelection(accounts.indexOf(email));
+            setup(email);
+        } else if (email.contains(GMAIL)) {
+            new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.add_account_title)
+                    .setMessage(R.string.add_account_message)
+                    .setPositiveButton(getResources().getString(R.string.okay_action), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent addAccountIntent = new Intent(Settings.ACTION_ADD_ACCOUNT)
+                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            addAccountIntent.putExtra(Settings.EXTRA_ACCOUNT_TYPES, new String[] {"com.google"});
+                            getActivity().startActivity(addAccountIntent);
+                        }
+                    })
+                    .setNegativeButton(getResources().getString(R.string.skip_button), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            setup(email);
+                        }
+                    })
+                    .show();
+        }
+    }
+
+    private void setup(String email) {
+        if (mClientCertificateCheckBox.isChecked() || mOAuth2CheckBox.isChecked()) {
+            // Auto-setup doesn't support client certificates.
+            onManualSetup();
+            return;
+        }
         String[] emailParts = splitEmail(email);
         String domain = emailParts[1];
         mProvider = findProviderForDomain(domain);
