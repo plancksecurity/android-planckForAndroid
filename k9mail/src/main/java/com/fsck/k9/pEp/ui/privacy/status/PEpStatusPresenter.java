@@ -128,7 +128,7 @@ public class PEpStatusPresenter implements Presenter {
     }
 
     public void onResult(int position) {
-        Rating rating = pEpProvider.incoming_message_rating(localMessage);
+        Rating rating = pEpProvider.incomingMessageRating(localMessage);
         ArrayList<Identity> recipients = cache.getRecipients();
         Identity partner = recipients.get(position);
         Rating pEpRating = pEpProvider.identityRating(partner);

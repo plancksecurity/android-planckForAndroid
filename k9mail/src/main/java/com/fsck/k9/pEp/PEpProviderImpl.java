@@ -960,7 +960,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public Rating incoming_message_rating(MimeMessage message) {
+    public Rating incomingMessageRating(MimeMessage message) {
         Message pEpMessage = new PEpMessageBuilder(message).createMessage(context);
         try {
             return engine.re_evaluate_message_rating(pEpMessage);

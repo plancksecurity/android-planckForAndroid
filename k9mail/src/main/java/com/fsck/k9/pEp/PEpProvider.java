@@ -197,7 +197,7 @@ public interface PEpProvider {
 
     void setFastPollingCallback(Sync.NeedsFastPollCallback needsFastPollCallback);
 
-    Rating incoming_message_rating(MimeMessage message);
+    Rating incomingMessageRating(MimeMessage message);
 
     class KeyDetail {
         private final Address address;
