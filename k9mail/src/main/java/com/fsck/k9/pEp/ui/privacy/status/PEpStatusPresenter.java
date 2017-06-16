@@ -2,7 +2,6 @@ package com.fsck.k9.pEp.ui.privacy.status;
 
 import android.content.Intent;
 import android.content.IntentSender;
-import android.view.View;
 
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageLoaderHelper;
@@ -129,13 +128,13 @@ public class PEpStatusPresenter implements Presenter {
     }
 
     public void onResult(int position) {
+        Rating rating = pEpProvider.incoming_message_rating(localMessage);
         ArrayList<Identity> recipients = cache.getRecipients();
         Identity partner = recipients.get(position);
         Rating pEpRating = pEpProvider.identityRating(partner);
         identities = pEpIdentityMapper.mapRecipients(recipients);
         view.updateIdentities(identities);
         if (isMessageIncoming) {
-            Rating rating = pEpProvider.identityRating(senderAddress);
             onRatingChanged(rating);
         } else {
             setupOutgoingMessageRating();
