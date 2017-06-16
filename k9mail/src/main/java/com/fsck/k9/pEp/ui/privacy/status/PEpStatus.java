@@ -246,8 +246,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PEpTrustwords.HANDSHAKE_REQUEST) {
             if (resultCode == RESULT_OK) {
-                int position = data.getIntExtra(PEpTrustwords.PARTNER_POSITION, PEpTrustwords.DEFAULT_POSITION);
-                presenter.onResult(position);
+                presenter.onResult();
             }
         }
     }
