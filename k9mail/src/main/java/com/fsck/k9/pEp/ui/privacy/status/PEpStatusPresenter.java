@@ -70,15 +70,11 @@ public class PEpStatusPresenter implements Presenter {
 
     public void resetRecipientTrust(int position) {
         Identity id = identities.get(position);
-        pEpProvider.resetTrust(id, new PEpProvider.CompletedCallback() {
+        pEpProvider.loadMessageRatingAfterResetTrust(localMessage, isMessageIncoming, id, new PEpProvider.ResultCallback<Rating>() {
             @Override
-            public void onComplete() {
+            public void onLoaded(Rating result) {
                 List<PEpIdentity> updatedIdentities = updateRecipients(identities, id);
-                if (isMessageIncoming) {
-                    onRatingChanged(Rating.pEpRatingReliable);
-                } else {
-                    setupOutgoingMessageRating();
-                }
+                onRatingChanged(result);
                 view.updateIdentities(updatedIdentities);
             }
 
