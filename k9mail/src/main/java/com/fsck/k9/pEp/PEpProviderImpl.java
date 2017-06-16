@@ -38,6 +38,8 @@ import java.util.Vector;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 /**
  * pep provider implementation. Dietz is the culprit.
  */
@@ -955,5 +957,16 @@ public class PEpProviderImpl implements PEpProvider {
 
     private void notifyError(final Throwable throwable, final Callback callback) {
         this.postExecutionThread.post(() -> callback.onError(throwable));
+    }
+
+    @Override
+    public Rating incoming_message_rating(MimeMessage message) {
+        Message pEpMessage = new PEpMessageBuilder(message).createMessage(context);
+        try {
+            return engine.re_evaluate_message_rating(pEpMessage);
+        } catch (pEpException e) {
+            Timber.e(e);
+            return Rating.pEpRatingUndefined;
+        }
     }
 }
