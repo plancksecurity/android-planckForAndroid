@@ -23,6 +23,7 @@ public class MessageViewHolder implements View.OnClickListener {
     public int position = -1;
     public PEpContactBadge contactBadge;
     public View attachment;
+    public View container;
 
     public MessageViewHolder(MessageListFragment fragment) {
         this.fragment = fragment;

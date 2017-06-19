@@ -857,6 +857,12 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                if(adapter.isSelected(position)) {
+                    adapter.removeSelected(position);
+                } else {
+                    adapter.addSelected(position);
+                }
+                adapter.notifyDataSetChanged();
                 getActivity().startActionMode(new android.view.ActionMode.Callback() {
                     @Override
                     public boolean onCreateActionMode(android.view.ActionMode mode, Menu menu) {
