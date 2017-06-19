@@ -482,6 +482,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
                         }
                     })
                     .show();
+        } else {
+            setup(email);
         }
     }
 
