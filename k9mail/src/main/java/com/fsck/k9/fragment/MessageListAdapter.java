@@ -70,8 +70,16 @@ public class MessageListAdapter extends CursorAdapter {
         return selectedMessages.contains(position);
     }
 
+    public Boolean isSomethingSelected() {
+        return !selectedMessages.isEmpty();
+    }
+
     public void removeSelected(Integer position) {
         selectedMessages.remove(position);
+    }
+
+    public void clearSelected() {
+        selectedMessages = new ArrayList<>();
     }
 
     private enum Swipe {
