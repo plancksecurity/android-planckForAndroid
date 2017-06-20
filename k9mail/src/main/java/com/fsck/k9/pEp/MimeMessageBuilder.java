@@ -215,6 +215,9 @@ class MimeMessageBuilder extends MessageBuilder {
             else
                 bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, contentType);
 
+            if(attachment.content_id != null) {
+                bp.addHeader(MimeHeader.HEADER_CONTENT_ID, attachment.content_id);
+            }
             // FIXME: the following lines lack clearness of flow...
             /* if msg is plain text or if it's one of the non-special pgp attachments (Attachment #1 and #2 have special meaning,
                see "else" branch then dont't treat special (means, use attachment disposition) */

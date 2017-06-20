@@ -100,7 +100,7 @@ class PEpMessageBuilder {
         for (int part = 0; part < nrOfParts; part++) {
             MimeBodyPart mbp = (MimeBodyPart) mmp.getBodyPart(part);
             Body mbp_body = mbp.getBody();
-            if(mbp_body == null) {
+            if (mbp_body == null) {
                 // eh? this can happen?!
                 Log.e("pep", "mbp_body==null!");
                 continue;
@@ -120,7 +120,7 @@ class PEpMessageBuilder {
                 } else {
                     text = new String(PEpUtils.extractBodyContent(mbp_body));
                 }
-                if(plain) {
+                if (plain) {
                     String longmsg = pEpMsg.getLongmsg();
                     if (longmsg != null) {
                         pEpMsg.setLongmsg(longmsg + text);
@@ -137,10 +137,7 @@ class PEpMessageBuilder {
                 }
                 Log.d("pep", "found Text: " + text);
             } else  {
-                String filename = getFileName(mbp);
-                String type = mbp.getMimeType();
-                byte data[] = PEpUtils.extractBodyContent(mbp_body);
-                addAttachment(attachments, type, filename, data);
+                addAttachment(attachments, mbp);
             }
         }
     }
@@ -151,9 +148,27 @@ class PEpMessageBuilder {
         blob.mime_type = mimeType;
         blob.data = data;
         attachments.add(blob);
+    }
+
+    private void addAttachment(Vector<Blob> attachments, MimeBodyPart attachment) throws IOException, MessagingException {
+        Blob attachmentBlob = new Blob();
+        attachmentBlob.mime_type = attachment.getMimeType();
+        attachmentBlob.data = PEpUtils.extractBodyContent(attachment.getBody());
+
+        if (isInline(attachment)) {
+            attachmentBlob.content_id = attachment.getContentId();
+        } else {
+            attachmentBlob.filename = getFileName(attachment);
+        }
+
 //        Log.d("pep", "PePMessageBuilder: BLOB #" + attachments.size() + ":" + mimeType + ":" + filename);
+        attachments.add(attachmentBlob);
 
+    }
 
+    private Boolean isInline(MimeBodyPart attachment) {
+        String disposition = MimeUtility.unfoldAndDecode(attachment.getDisposition());
+        return ("inline".equalsIgnoreCase(disposition));
     }
 
 
