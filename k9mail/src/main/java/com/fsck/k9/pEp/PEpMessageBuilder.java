@@ -19,6 +19,8 @@ import org.pEp.jniadapter.Pair;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -156,9 +158,17 @@ class PEpMessageBuilder {
         attachmentBlob.data = PEpUtils.extractBodyContent(attachment.getBody());
 
         if (isInline(attachment)) {
-            attachmentBlob.content_id = attachment.getContentId();
+            try {
+                attachmentBlob.filename = String.valueOf(new URI(attachment.getContentId()));
+            } catch (URISyntaxException e) {
+                attachmentBlob.filename = attachment.getContentId();
+            }
         } else {
-            attachmentBlob.filename = getFileName(attachment);
+            try {
+                attachmentBlob.filename = String.valueOf(new URI(getFileName(attachment)));
+            } catch (URISyntaxException e) {
+                attachmentBlob.filename = getFileName(attachment);
+            }
         }
 
 //        Log.d("pep", "PePMessageBuilder: BLOB #" + attachments.size() + ":" + mimeType + ":" + filename);
