@@ -1,8 +1,3 @@
-/*
-Created by Helm  23/03/16.
-*/
-
-
 package com.fsck.k9.pEp.ui.adapters;
 
 import android.content.Context;
