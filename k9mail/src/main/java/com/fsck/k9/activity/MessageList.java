@@ -760,7 +760,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private void populateDrawerGroup() {
         if (menuFolders != null) {
             populateFolders(menuFolders);
-        } else {
+        } else if (mAccount != null) {
             MessagingController instance = MessagingController.getInstance(this);
             instance.listFolders(mAccount, false, new MessagingListener() {
                 //// TODO: 08/06/17 BREAK this interface to accomplish LISKOV
