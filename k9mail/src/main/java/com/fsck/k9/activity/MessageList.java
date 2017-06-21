@@ -226,16 +226,18 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     @Override
     public void setDrawerEnabled(boolean enabled) {
-        int lockMode = enabled ? DrawerLayout.LOCK_MODE_UNLOCKED :
-                DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
-        drawerLayout.setDrawerLockMode(lockMode);
-        toggle.setDrawerIndicatorEnabled(enabled);
-        toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        if (drawerLayout != null) {
+            int lockMode = enabled ? DrawerLayout.LOCK_MODE_UNLOCKED :
+                    DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
+            drawerLayout.setDrawerLockMode(lockMode);
+            toggle.setDrawerIndicatorEnabled(enabled);
+            toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
+        }
     }
 
     public void setMessageViewVisible(Boolean visible) {
