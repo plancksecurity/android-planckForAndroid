@@ -3303,7 +3303,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
             message.addHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
 
 
-            //localSentFolder.appendMessages(Collections.singletonList(message));
+            localSentFolder.appendMessages(Collections.singletonList(message));
             PendingCommand command = PendingAppend.create(localSentFolder.getName(), message.getUid());
             queuePendingCommand(account, command);
             processPendingCommands(account);
