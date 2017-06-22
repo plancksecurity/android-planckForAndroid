@@ -107,7 +107,6 @@ public class PEpStatusPresenter implements Presenter {
     private void onRatingChanged(Rating rating) {
         if (localMessage != null) {
             localMessage.setpEpRating(rating);
-            localMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpUtils.ratingToString(rating));
             view.saveLocalMessage(localMessage);
         }
         view.setRating(rating);
