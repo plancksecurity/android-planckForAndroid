@@ -310,6 +310,9 @@ public class PEpUtils {
 
 
     public static String ratingToString(Rating rating) {
+        if (rating == null) {
+            return "undefined";
+        }
         switch (rating) {
             case pEpRatingCannotDecrypt:
                 return "cannot_decrypt";
