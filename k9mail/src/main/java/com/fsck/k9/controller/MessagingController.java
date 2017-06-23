@@ -3304,6 +3304,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
 
 
             localSentFolder.appendMessages(Collections.singletonList(message));
+            //localFolder.moveMessages(Collections.singletonList(message), localSentFolder);
             PendingCommand command = PendingAppend.create(localSentFolder.getName(), message.getUid());
             queuePendingCommand(account, command);
             processPendingCommands(account);
@@ -3319,10 +3320,10 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
 
             //                      if(encOnServer) {       // delete all traces, msg will be sync'ed again from server...
             //Delete from outbox, the sent folder message is a new one (appended)
-            message.setFlag(Flag.DELETED, true);
-            localSentFolder.destroyMessages(Collections.singletonList(encryptedMessage));
+            LocalFolder localoutbox = localStore.getFolder(account.getOutboxFolderName());
+            localoutbox.destroyMessages(Collections.singletonList(encryptedMessage));
             for (MessagingListener l : getListeners()) {
-                l.folderStatusChanged(account, localSentFolder.getName(), localSentFolder.getUnreadMessageCount());
+                l.folderStatusChanged(account, localoutbox.getName(), localoutbox.getUnreadMessageCount());
             }
 //                        }
 
