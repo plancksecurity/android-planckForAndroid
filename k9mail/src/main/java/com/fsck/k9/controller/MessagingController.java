@@ -88,6 +88,7 @@ import com.fsck.k9.search.SqlQueryBuilder;
 import timber.log.Timber;
 
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
+import static com.fsck.k9.mail.Flag.DELETED;
 import static com.fsck.k9.mail.Flag.X_REMOTE_COPY_STARTED;
 
 import org.pEp.jniadapter.Rating;
@@ -3321,10 +3322,9 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
             //                      if(encOnServer) {       // delete all traces, msg will be sync'ed again from server...
             //Delete from outbox, the sent folder message is a new one (appended)
             LocalFolder localoutbox = localStore.getFolder(account.getOutboxFolderName());
-            localoutbox.destroyMessages(Collections.singletonList(encryptedMessage));
-            for (MessagingListener l : getListeners()) {
-                l.folderStatusChanged(account, localoutbox.getName(), localoutbox.getUnreadMessageCount());
-            }
+            LocalMessage messageToDelete = localoutbox.getMessage(message.getUid());
+            messageToDelete.setFlag(Flag.DELETED, true);
+
 //                        }
 
 
