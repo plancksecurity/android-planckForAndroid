@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.text.Editable;
@@ -43,11 +44,14 @@ import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.pEp.PEpPermissionChecker;
 import com.fsck.k9.pEp.PepPermissionActivity;
 import com.fsck.k9.pEp.UIUtils;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.view.ClientCertificateSpinner;
 
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -431,6 +435,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void onNext() {
+        List<String> accountEmails = getAccountEmails();
+
         nextProgressBar.show();
         mNextButton.setVisibility(View.GONE);
         enableViewGroup(false, (ViewGroup) rootView);
@@ -444,6 +450,10 @@ public class AccountSetupBasicsFragment extends PEpFragment
             email = mEmailView.getText().toString().trim();
         } else {
             email = mAccountSpinner.getSelectedItem().toString();
+        }
+        if (accountAlreadyExists(accountEmails, email)) {
+            resetView();
+            return;
         }
         String[] emailParts = splitEmail(email);
         String domain = emailParts[1];
@@ -462,6 +472,28 @@ public class AccountSetupBasicsFragment extends PEpFragment
         } else {
             finishAutoSetup();
         }
+    }
+
+    private void resetView() {
+        FeedbackTools.showLongFeedback(getView(), "Account already exists");
+        nextProgressBar.hide();
+        mNextButton.setVisibility(View.VISIBLE);
+        enableViewGroup(true, (ViewGroup) rootView);
+    }
+
+    private boolean accountAlreadyExists(List<String> accountEmails, String email) {
+        return accountEmails.contains(email);
+    }
+
+    @NonNull
+    private List<String> getAccountEmails() {
+        Preferences preferences = Preferences.getPreferences(getActivity());
+        List<Account> accounts = preferences.getAccounts();
+        List<String> accountEmails = new ArrayList<>(accounts.size());
+        for (Account account : accounts) {
+            accountEmails.add(account.getEmail());
+        }
+        return accountEmails;
     }
 
     private void enableViewGroup(boolean enable, ViewGroup viewGroup) {
