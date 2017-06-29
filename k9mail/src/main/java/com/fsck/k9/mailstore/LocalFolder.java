@@ -1377,19 +1377,7 @@ public class LocalFolder extends Folder<LocalMessage> implements Serializable {
                     ? System.currentTimeMillis() : message.getInternalDate().getTime());
             cv.put("mime_type", message.getMimeType());
             cv.put("empty", 0);
-            Rating pEpRating = null;
-            if (message instanceof LocalMessage) {
-                //Todo improve that: Logic keep saved when it exists, if not store the original one
-                //without info we just store undefined
-                pEpRating = ((LocalMessage) message).getpEpRating();
-                cv.put("pep_rating", PEpUtils.ratingToString(pEpRating));
-            }
-            if (pEpRating == null && message.getHeader(MimeHeader.HEADER_PEP_RATING).length > 0) {
-                cv.put("pep_rating", message.getHeader(MimeHeader.HEADER_PEP_RATING)[0]);
-            }
-            else if (pEpRating == null) {
-                cv.put("pep_rating", Rating.pEpRatingUndefined.toString());
-            }
+            putLatestRating(message, cv);
             cv.put("preview_type", databasePreviewType.getDatabaseValue());
             if (previewResult.isPreviewTextAvailable()) {
                 cv.put("preview", previewResult.getPreviewText());
@@ -1430,6 +1418,22 @@ public class LocalFolder extends Folder<LocalMessage> implements Serializable {
             }
         } catch (Exception e) {
             throw new MessagingException("Error appending message: " + message.getSubject(), e);
+        }
+    }
+
+    private void putLatestRating(Message message, ContentValues cv) {
+        Rating pEpRating = null;
+        if (message instanceof LocalMessage) {
+            //Todo improve that: Logic keep saved when it exists, if not store the original one
+            //without info we just store undefined
+            pEpRating = ((LocalMessage) message).getpEpRating();
+            cv.put("pep_rating", PEpUtils.ratingToString(pEpRating));
+        }
+        if (pEpRating == null && message.getHeader(MimeHeader.HEADER_PEP_RATING).length > 0) {
+            cv.put("pep_rating", message.getHeader(MimeHeader.HEADER_PEP_RATING)[0]);
+        }
+        else if (pEpRating == null) {
+            cv.put("pep_rating", Rating.pEpRatingUndefined.toString());
         }
     }
 

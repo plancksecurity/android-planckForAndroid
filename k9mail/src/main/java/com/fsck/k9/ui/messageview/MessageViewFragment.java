@@ -834,14 +834,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
             displayHeaderForLoadingMessage(message);
             mMessageView.setToLoadingState();
+            recoverRating(message);
 
-            // recover pEpRating from db, if is null,
-            // then we take the one in the header and store it
-            pEpRating = message.getpEpRating();
-            if (pEpRating == null) {
-                pEpRating = PEpUtils.extractRating(message);
-                message.setpEpRating(pEpRating);
-            }
 
             ((MessageList) getActivity()).setMessageViewVisible(true);
 
@@ -913,6 +907,16 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             }
         }
     };
+
+    private void recoverRating(LocalMessage message) {
+        // recover pEpRating from db, if is null,
+        // then we take the one in the header and store it
+        pEpRating = message.getpEpRating();
+        if (pEpRating == null) {
+            pEpRating = PEpUtils.extractRating(message);
+            message.setpEpRating(pEpRating);
+        }
+    }
 
     private void showKeyNotFoundFeedback() {
         String title = pePUIArtefactCache.getTitle(Rating.pEpRatingHaveNoKey);
