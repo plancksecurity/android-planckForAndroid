@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.text.Editable;
@@ -43,11 +44,14 @@ import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.pEp.PEpPermissionChecker;
 import com.fsck.k9.pEp.PepPermissionActivity;
 import com.fsck.k9.pEp.UIUtils;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.view.ClientCertificateSpinner;
 
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -445,6 +449,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         } else {
             email = mAccountSpinner.getSelectedItem().toString();
         }
+        if (avoidAddingAlreadyExistingAccount(email)) return;
         String[] emailParts = splitEmail(email);
         String domain = emailParts[1];
         mProvider = findProviderForDomain(domain);
@@ -462,6 +467,33 @@ public class AccountSetupBasicsFragment extends PEpFragment
         } else {
             finishAutoSetup();
         }
+    }
+
+    private boolean avoidAddingAlreadyExistingAccount(String email) {
+        if (accountAlreadyExists(email)) {
+            resetView();
+            return true;
+        }
+        return false;
+    }
+
+    private void resetView() {
+        FeedbackTools.showLongFeedback(getView(), getString(R.string.account_already_exists));
+        nextProgressBar.hide();
+        mNextButton.setVisibility(View.VISIBLE);
+        enableViewGroup(true, (ViewGroup) rootView);
+    }
+
+    @NonNull
+    private boolean accountAlreadyExists(String email) {
+        Preferences preferences = Preferences.getPreferences(getActivity());
+        List<Account> accounts = preferences.getAccounts();
+        for (Account account : accounts) {
+            if (account.getEmail().equalsIgnoreCase(email)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void enableViewGroup(boolean enable, ViewGroup viewGroup) {
@@ -523,6 +555,9 @@ public class AccountSetupBasicsFragment extends PEpFragment
         } else {
             email = mEmailView.getText().toString().trim();
         }
+
+        if (avoidAddingAlreadyExistingAccount(email)) return;
+
         String[] emailParts = splitEmail(email);
         String user = email;
         String domain = emailParts[1];
