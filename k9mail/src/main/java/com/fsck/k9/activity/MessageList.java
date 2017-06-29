@@ -20,7 +20,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import timber.log.Timber;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -90,6 +89,8 @@ import org.pEp.jniadapter.Rating;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import timber.log.Timber;
 
 
 /**
@@ -225,16 +226,18 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
     @Override
     public void setDrawerEnabled(boolean enabled) {
-        int lockMode = enabled ? DrawerLayout.LOCK_MODE_UNLOCKED :
-                DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
-        drawerLayout.setDrawerLockMode(lockMode);
-        toggle.setDrawerIndicatorEnabled(enabled);
-        toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        if (drawerLayout != null) {
+            int lockMode = enabled ? DrawerLayout.LOCK_MODE_UNLOCKED :
+                    DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
+            drawerLayout.setDrawerLockMode(lockMode);
+            toggle.setDrawerIndicatorEnabled(enabled);
+            toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
+        }
     }
 
     public void setMessageViewVisible(Boolean visible) {
@@ -614,8 +617,19 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 unifiedInboxMessages.setText(String.valueOf(unifiedMessageCount));
                 allMessages.setText(String.valueOf(allMessageCount));
             }
+            setNewInboxMessages(unifiedInboxMessages, unifiedMessageCount);
+            setNewInboxMessages(allMessages, allMessageCount);
         } catch (MessagingException | NullPointerException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void setNewInboxMessages(TextView inboxMessages, Integer unifiedMessageCount) {
+        if(unifiedMessageCount > 0) {
+            inboxMessages.setVisibility(View.VISIBLE);
+            inboxMessages.setText(String.valueOf(unifiedMessageCount));
+        } else {
+            inboxMessages.setVisibility(View.GONE);
         }
     }
 
@@ -748,7 +762,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private void populateDrawerGroup() {
         if (menuFolders != null) {
             populateFolders(menuFolders);
-        } else {
+        } else if (mAccount != null) {
             MessagingController instance = MessagingController.getInstance(this);
             instance.listFolders(mAccount, false, new MessagingListener() {
                 //// TODO: 08/06/17 BREAK this interface to accomplish LISKOV
@@ -982,6 +996,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
         navigationFolders.setLayoutManager(new LinearLayoutManager(this));
         navigationFolders.setAdapter(folderAdapter);
+        setupMainFolders();
     }
 
     private void changeFolder(final LocalFolder folder) {
