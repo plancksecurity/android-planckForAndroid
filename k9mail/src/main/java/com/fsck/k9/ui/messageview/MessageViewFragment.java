@@ -311,10 +311,10 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             K9Activity activity = (K9Activity) getActivity();
             if (mAccount.ispEpPrivacyProtected()) {
                 PEpUtils.colorToolbar(activity.getToolbar(), PEpUtils.getRatingColor(pEpRating, getActivity()));
-                mMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpRating.name());
+                mMessage.setpEpRating(pEpRating);
             } else {
                 PEpUtils.colorToolbar(activity.getToolbar(), PEpUtils.getRatingColor(Rating.pEpRatingUndefined, getActivity()));
-                mMessage.setHeader(MimeHeader.HEADER_PEP_RATING, Rating.pEpRatingUndefined.name());
+                mMessage.setpEpRating(Rating.pEpRatingUndefined);
             }
             activity.setStatusBarPepColor(pEpRating);
             mMessageView.setHeaders(mMessage, mAccount);
@@ -834,8 +834,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
             displayHeaderForLoadingMessage(message);
             mMessageView.setToLoadingState();
+            recoverRating(message);
 
-            pEpRating = PEpUtils.extractRating(message);
 
             ((MessageList) getActivity()).setMessageViewVisible(true);
 
@@ -907,6 +907,16 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             }
         }
     };
+
+    private void recoverRating(LocalMessage message) {
+        // recover pEpRating from db, if is null,
+        // then we take the one in the header and store it
+        pEpRating = message.getpEpRating();
+        if (pEpRating == null) {
+            pEpRating = PEpUtils.extractRating(message);
+            message.setpEpRating(pEpRating);
+        }
+    }
 
     private void showKeyNotFoundFeedback() {
         String title = pePUIArtefactCache.getTitle(Rating.pEpRatingHaveNoKey);

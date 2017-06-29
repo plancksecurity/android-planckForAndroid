@@ -179,7 +179,7 @@ public interface PEpProvider {
 
     void cancelHandshake(Identity identity);
 
-    void resetTrust(Identity id, CompletedCallback completedCallback);
+    void loadMessageRatingAfterResetTrust(MimeMessage message, boolean isIncoming, Identity id, ResultCallback<Rating> loadedCallback);
 
     String getLog();
 
@@ -196,6 +196,8 @@ public interface PEpProvider {
     void unsetIdentityFlag(Identity identity, Integer flags);
 
     void setFastPollingCallback(Sync.NeedsFastPollCallback needsFastPollCallback);
+
+    Rating incomingMessageRating(MimeMessage message);
 
     class KeyDetail {
         private final Address address;
