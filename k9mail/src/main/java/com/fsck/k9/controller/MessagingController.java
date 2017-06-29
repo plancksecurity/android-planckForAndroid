@@ -88,6 +88,7 @@ import com.fsck.k9.search.SqlQueryBuilder;
 import timber.log.Timber;
 
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
+import static com.fsck.k9.mail.Flag.DELETED;
 import static com.fsck.k9.mail.Flag.X_REMOTE_COPY_STARTED;
 
 import org.pEp.jniadapter.Rating;
@@ -3303,7 +3304,8 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
             message.addHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
 
 
-            //localSentFolder.appendMessages(Collections.singletonList(message));
+            localSentFolder.appendMessages(Collections.singletonList(message));
+            //localFolder.moveMessages(Collections.singletonList(message), localSentFolder);
             PendingCommand command = PendingAppend.create(localSentFolder.getName(), message.getUid());
             queuePendingCommand(account, command);
             processPendingCommands(account);
@@ -3319,11 +3321,10 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
 
             //                      if(encOnServer) {       // delete all traces, msg will be sync'ed again from server...
             //Delete from outbox, the sent folder message is a new one (appended)
-            message.setFlag(Flag.DELETED, true);
-            localSentFolder.destroyMessages(Collections.singletonList(encryptedMessage));
-            for (MessagingListener l : getListeners()) {
-                l.folderStatusChanged(account, localSentFolder.getName(), localSentFolder.getUnreadMessageCount());
-            }
+            LocalFolder localoutbox = localStore.getFolder(account.getOutboxFolderName());
+            LocalMessage messageToDelete = localoutbox.getMessage(message.getUid());
+            messageToDelete.setFlag(Flag.DELETED, true);
+
 //                        }
 
 
