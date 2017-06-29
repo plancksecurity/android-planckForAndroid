@@ -131,6 +131,9 @@
     <string name="action_continue">Continue</string>
     <string name="battery_optimization_rationale_title">Disable battery optimizations</string>
     <string name="battery_optimiazation_explanation">In order to synchronize your emails in the background we need to disable battery optimizations</string>
+    <string name="add_account_title">Add your account</string>
+    <string name="add_account_message">To be able to use this account you should add it to your device</string>
+    <string name="account_already_exists">Account already exists</string>
 
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>

@@ -38,6 +38,8 @@ import java.util.Vector;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 /**
  * pep provider implementation. Dietz is the culprit.
  */
@@ -664,15 +666,22 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void resetTrust(Identity id, CompletedCallback completedCallback) {
+    public void loadMessageRatingAfterResetTrust(MimeMessage mimeMessage, boolean isIncoming, Identity id, ResultCallback resultCallback) {
         threadExecutor.execute(() -> {
             Engine engine = null;
             try {
                 engine = getNewEngineSession();
                 engine.keyResetTrust(id);
-                notifyCompleted(completedCallback);
+                Message pEpMessage = new PEpMessageBuilder(mimeMessage).createMessage(context);
+                Rating rating;
+                if (isIncoming) {
+                    rating = engine.re_evaluate_message_rating(pEpMessage);
+                } else {
+                    rating = engine.outgoing_message_rating(pEpMessage);
+                }
+                notifyLoaded(rating, resultCallback);
             } catch (pEpException e) {
-                notifyError(e, completedCallback);
+                notifyError(e, resultCallback);
             } finally {
                 if (engine != null) {
                     engine.close();
@@ -955,5 +964,16 @@ public class PEpProviderImpl implements PEpProvider {
 
     private void notifyError(final Throwable throwable, final Callback callback) {
         this.postExecutionThread.post(() -> callback.onError(throwable));
+    }
+
+    @Override
+    public Rating incomingMessageRating(MimeMessage message) {
+        Message pEpMessage = new PEpMessageBuilder(message).createMessage(context);
+        try {
+            return engine.re_evaluate_message_rating(pEpMessage);
+        } catch (pEpException e) {
+            Timber.e(e);
+            return Rating.pEpRatingUndefined;
+        }
     }
 }

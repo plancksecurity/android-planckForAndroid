@@ -174,9 +174,10 @@ class PEpMessageBuilder {
 
         // TODO: other headers
         ArrayList<Pair<String, String>> optionalFields = new ArrayList<>();
-        if (mm.getHeader(MimeHeader.HEADER_PEP_AUTOCONSUME).length > 0) {
-            optionalFields.add(new Pair<>(MimeHeader.HEADER_PEP_AUTOCONSUME, mm.getHeader(MimeHeader.HEADER_PEP_AUTOCONSUME)[0]));
-        }
+        addOptionalField(optionalFields, MimeHeader.HEADER_PEP_AUTOCONSUME);
+        addOptionalField(optionalFields, MimeHeader.HEADER_PEP_KEY_LIST);
+        addOptionalField(optionalFields, MimeHeader.HEADER_PEP_ALWAYS_SECURE);
+        addOptionalField(optionalFields, MimeHeader.HEADER_PEP_RATING);
         m.setOptFields(optionalFields);
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
@@ -187,6 +188,12 @@ class PEpMessageBuilder {
         } catch (ParseException ignore) {
         }
 
+    }
+
+    private void addOptionalField(ArrayList<Pair<String, String>> optionalFields, String headerKey) {
+        if (mm.getHeader(headerKey).length > 0) {
+            optionalFields.add(new Pair<>(headerKey, mm.getHeader(headerKey)[0]));
+        }
     }
 
     private Vector<String> createMessageReferences(String[] references) {

@@ -2,7 +2,6 @@ package com.fsck.k9.pEp.ui.privacy.status;
 
 import android.content.Intent;
 import android.content.IntentSender;
-import android.view.View;
 
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageLoaderHelper;
@@ -71,15 +70,11 @@ public class PEpStatusPresenter implements Presenter {
 
     public void resetRecipientTrust(int position) {
         Identity id = identities.get(position);
-        pEpProvider.resetTrust(id, new PEpProvider.CompletedCallback() {
+        pEpProvider.loadMessageRatingAfterResetTrust(localMessage, isMessageIncoming, id, new PEpProvider.ResultCallback<Rating>() {
             @Override
-            public void onComplete() {
+            public void onLoaded(Rating result) {
                 List<PEpIdentity> updatedIdentities = updateRecipients(identities, id);
-                if (isMessageIncoming) {
-                    onRatingChanged(Rating.pEpRatingReliable);
-                } else {
-                    setupOutgoingMessageRating();
-                }
+                onRatingChanged(result);
                 view.updateIdentities(updatedIdentities);
             }
 
@@ -112,7 +107,6 @@ public class PEpStatusPresenter implements Presenter {
     private void onRatingChanged(Rating rating) {
         if (localMessage != null) {
             localMessage.setpEpRating(rating);
-            localMessage.setHeader(MimeHeader.HEADER_PEP_RATING, pEpUtils.ratingToString(rating));
             view.saveLocalMessage(localMessage);
         }
         view.setRating(rating);
@@ -128,14 +122,12 @@ public class PEpStatusPresenter implements Presenter {
         }
     }
 
-    public void onResult(int position) {
+    public void onResult() {
+        Rating rating = pEpProvider.incomingMessageRating(localMessage);
         ArrayList<Identity> recipients = cache.getRecipients();
-        Identity partner = recipients.get(position);
-        Rating pEpRating = pEpProvider.identityRating(partner);
         identities = pEpIdentityMapper.mapRecipients(recipients);
         view.updateIdentities(identities);
         if (isMessageIncoming) {
-            Rating rating = pEpProvider.identityRating(senderAddress);
             onRatingChanged(rating);
         } else {
             setupOutgoingMessageRating();

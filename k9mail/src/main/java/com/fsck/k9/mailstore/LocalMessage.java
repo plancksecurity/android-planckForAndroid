@@ -22,6 +22,8 @@ import com.fsck.k9.mail.message.MessageHeaderParser;
 import com.fsck.k9.mailstore.LockableDatabase.DbCallback;
 import com.fsck.k9.mailstore.LockableDatabase.WrappedException;
 import com.fsck.k9.message.extractors.PreviewResult.PreviewType;
+import com.fsck.k9.pEp.PEpUtils;
+
 import org.pEp.jniadapter.Rating;
 
 import java.util.Date;
@@ -45,6 +47,8 @@ public class LocalMessage extends MimeMessage {
     private String mimeType;
     private PreviewType previewType;
     private boolean headerNeedsUpdating = false;
+    private Rating pEpRating;
+
 
 
     private LocalMessage(LocalStore localStore) {
@@ -135,6 +139,8 @@ public class LocalMessage extends MimeMessage {
         }
 
         headerNeedsUpdating = false;
+
+        this.pEpRating = PEpUtils.stringToRating(cursor.getString(26));
     }
 
     @VisibleForTesting
@@ -315,6 +321,7 @@ public class LocalMessage extends MimeMessage {
                     cv.putNull("preview");
                     cv.putNull("reply_to_list");
                     cv.putNull("message_part_id");
+                    cv.putNull("pep_rating");
 
                     db.update("messages", cv, "id = ?", new String[] { Long.toString(mId) });
 
@@ -534,6 +541,7 @@ public class LocalMessage extends MimeMessage {
         message.mimeType = mimeType;
         message.previewType = previewType;
         message.headerNeedsUpdating = headerNeedsUpdating;
+        message.pEpRating = pEpRating;
 
         return message;
     }
@@ -627,6 +635,7 @@ public class LocalMessage extends MimeMessage {
     }
 
     public void setpEpRating(final Rating pEpRating) {
+        this.pEpRating = pEpRating;
         try {
             this.localStore.database.execute(true, new DbCallback<Void>() {
                 @Override
@@ -651,4 +660,7 @@ public class LocalMessage extends MimeMessage {
         this.localStore.notifyChange();
     }
 
+    public Rating getpEpRating() {
+        return pEpRating;
+    }
 }
