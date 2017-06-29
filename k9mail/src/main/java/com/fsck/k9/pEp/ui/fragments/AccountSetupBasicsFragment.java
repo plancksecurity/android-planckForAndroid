@@ -449,10 +449,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         } else {
             email = mAccountSpinner.getSelectedItem().toString();
         }
-        if (accountAlreadyExists(email)) {
-            resetView();
-            return;
-        }
+        if (avoidAddingAlreadyExistingAccount(email)) return;
         String[] emailParts = splitEmail(email);
         String domain = emailParts[1];
         mProvider = findProviderForDomain(domain);
@@ -470,6 +467,14 @@ public class AccountSetupBasicsFragment extends PEpFragment
         } else {
             finishAutoSetup();
         }
+    }
+
+    private boolean avoidAddingAlreadyExistingAccount(String email) {
+        if (accountAlreadyExists(email)) {
+            resetView();
+            return true;
+        }
+        return false;
     }
 
     private void resetView() {
@@ -550,6 +555,9 @@ public class AccountSetupBasicsFragment extends PEpFragment
         } else {
             email = mEmailView.getText().toString().trim();
         }
+
+        if (avoidAddingAlreadyExistingAccount(email)) return;
+
         String[] emailParts = splitEmail(email);
         String user = email;
         String domain = emailParts[1];
