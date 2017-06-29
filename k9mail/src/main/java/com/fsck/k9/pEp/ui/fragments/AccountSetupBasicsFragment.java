@@ -475,7 +475,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void resetView() {
-        FeedbackTools.showLongFeedback(getView(), "Account already exists");
+        FeedbackTools.showLongFeedback(getView(), getString(R.string.account_already_exists));
         nextProgressBar.hide();
         mNextButton.setVisibility(View.VISIBLE);
         enableViewGroup(true, (ViewGroup) rootView);
