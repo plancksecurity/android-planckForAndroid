@@ -435,8 +435,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void onNext() {
-        List<String> accountEmails = getAccountEmails();
-
         nextProgressBar.show();
         mNextButton.setVisibility(View.GONE);
         enableViewGroup(false, (ViewGroup) rootView);
@@ -451,7 +449,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         } else {
             email = mAccountSpinner.getSelectedItem().toString();
         }
-        if (accountAlreadyExists(accountEmails, email)) {
+        if (accountAlreadyExists(email)) {
             resetView();
             return;
         }
@@ -481,19 +479,16 @@ public class AccountSetupBasicsFragment extends PEpFragment
         enableViewGroup(true, (ViewGroup) rootView);
     }
 
-    private boolean accountAlreadyExists(List<String> accountEmails, String email) {
-        return accountEmails.contains(email);
-    }
-
     @NonNull
-    private List<String> getAccountEmails() {
+    private boolean accountAlreadyExists(String email) {
         Preferences preferences = Preferences.getPreferences(getActivity());
         List<Account> accounts = preferences.getAccounts();
-        List<String> accountEmails = new ArrayList<>(accounts.size());
         for (Account account : accounts) {
-            accountEmails.add(account.getEmail());
+            if (account.getEmail().equalsIgnoreCase(email)) {
+                return true;
+            }
         }
-        return accountEmails;
+        return false;
     }
 
     private void enableViewGroup(boolean enable, ViewGroup viewGroup) {
