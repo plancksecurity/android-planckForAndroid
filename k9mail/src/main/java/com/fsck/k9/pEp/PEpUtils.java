@@ -29,6 +29,7 @@ import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeUtility;
 
 import org.apache.commons.io.IOUtils;
+import org.pEp.jniadapter.CommType;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.IdentityFlags;
 import org.pEp.jniadapter.Rating;
@@ -596,6 +597,13 @@ public class PEpUtils {
                 context.startActivity(intent);
             }
         }
+    }
+
+    public static Boolean isPEpUser(Identity identity) {
+        return !identity.comm_type.equals(CommType.PEP_ct_OpenPGP)
+                && !identity.comm_type.equals(CommType.PEP_ct_OpenPGP_unconfirmed)
+                && !identity.comm_type.equals(CommType.PEP_ct_OpenPGP_weak)
+                && !identity.comm_type.equals(CommType.PEP_ct_OpenPGP_weak_unconfirmed);
     }
 
 }

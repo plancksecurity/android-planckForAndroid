@@ -88,6 +88,8 @@ public class PEpTrustwords extends PepColoredActivity {
 
         setContentView(R.layout.pep_trustwords);
         ButterKnife.bind(this);
+        flipper.setVisibility(View.INVISIBLE);
+
         setUpToolbar(true);
         PEpUtils.colorToolbar(getToolbar(), getResources().getColor(R.color.light_primary_color));
         context = getApplicationContext();
@@ -102,6 +104,7 @@ public class PEpTrustwords extends PepColoredActivity {
             if (intent.hasExtra(PARTNER_POSITION)) {
                 partnerPosition = intent.getIntExtra(PARTNER_POSITION, DEFAULT_POSITION);
                 partner = getUiCache().getRecipients().get(partnerPosition);
+                partner = getpEp().updateIdentity(partner);
                 if (!partner.username.equals(partner.address)) {
                     partnerView.setText(String.format(getString(R.string.pep_complete_partner_format), partner.username, partner.address));
                     partnerLabel.setText(String.format(getString(R.string.pep_complete_partner_format), partner.username, partner.address));
@@ -160,21 +163,7 @@ public class PEpTrustwords extends PepColoredActivity {
         getpEp().trustwords(myself, partner, trustwordsLanguage, new PEpProvider.ResultCallback<HandshakeData>() {
             @Override
             public void onLoaded(final HandshakeData handshakeData) {
-                fullTrustwords = handshakeData.getFullTrustwords();
-                shortTrustwords = handshakeData.getShortTrustwords();
-                if (areTrustwordsShort) {
-                    tvTrustwords.setText(shortTrustwords);
-                } else {
-                    tvTrustwords.setText(fullTrustwords);
-                }
-
-                myself = handshakeData.getMyself();
-                partner = handshakeData.getPartner();
-                myselfFpr.setText(PEpUtils.formatFpr(myself.fpr));
-                partnerFpr.setText(PEpUtils.formatFpr(partner.fpr));
-                loading.setVisibility(View.GONE);
-                wrongTrustWords.setVisibility(View.VISIBLE);
-                confirmTrustWords.setVisibility(View.VISIBLE);
+                showTrustwords(handshakeData);
             }
 
             @Override
@@ -182,6 +171,31 @@ public class PEpTrustwords extends PepColoredActivity {
 
             }
         });
+    }
+
+    private void showTrustwords(HandshakeData handshakeData) {
+        fullTrustwords = handshakeData.getFullTrustwords();
+        shortTrustwords = handshakeData.getShortTrustwords();
+        if (areTrustwordsShort) {
+            tvTrustwords.setText(shortTrustwords);
+        } else {
+            tvTrustwords.setText(fullTrustwords);
+        }
+
+        myself = handshakeData.getMyself();
+        partner = handshakeData.getPartner();
+        myselfFpr.setText(PEpUtils.formatFpr(myself.fpr));
+        partnerFpr.setText(PEpUtils.formatFpr(partner.fpr));
+        loading.setVisibility(View.GONE);
+        wrongTrustWords.setVisibility(View.VISIBLE);
+        confirmTrustWords.setVisibility(View.VISIBLE);
+
+        if (!PEpUtils.isPEpUser(partner)) {
+            flipper.setAnimateFirstView(false);
+            flipper.setDisplayedChild(1);
+            showFingerprints();
+        }
+        flipper.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -238,8 +252,7 @@ public class PEpTrustwords extends PepColoredActivity {
                     menuItemtrustwordsLength.setVisible(true);
                 }
                 flipper.showNext();
-                showingPgpFingerprint = !showingPgpFingerprint;
-                invalidateOptionsMenu();
+                showFingerprints();
                 return true;
             case R.id.action_language:
                 showLanguageSelectionDialog();
@@ -259,6 +272,11 @@ public class PEpTrustwords extends PepColoredActivity {
         //noinspection SimplifiableIfStatement
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showFingerprints() {
+        showingPgpFingerprint = !showingPgpFingerprint;
+        invalidateOptionsMenu();
     }
 
     private void changeTrustwordsLength(Boolean areShort) {
