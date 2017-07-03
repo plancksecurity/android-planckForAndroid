@@ -104,11 +104,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
         mClientCertificateCheckBox = (CheckBox) rootView.findViewById(R.id.account_client_certificate);
         mClientCertificateSpinner = (ClientCertificateSpinner) rootView.findViewById(R.id.account_client_certificate_spinner);
         mOAuth2CheckBox = (CheckBox) rootView.findViewById(R.id.account_oauth2);
-        mAccountSpinner = (Spinner) rootView.findViewById(R.id.account_spinner);
-        accountTokenStore = K9.oAuth2TokenStore;
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                getActivity(), R.layout.simple_spinner_item, accountTokenStore.getAccounts());
-        mAccountSpinner.setAdapter(adapter);
         mNextButton = (Button) rootView.findViewById(R.id.next);
         nextProgressBar = (ContentLoadingProgressBar) rootView.findViewById(R.id.next_progressbar);
         mManualSetupButton = (Button) rootView.findViewById(R.id.manual_setup);
@@ -440,6 +435,11 @@ public class AccountSetupBasicsFragment extends PEpFragment
     public void onResume() {
         super.onResume();
         enableViewGroup(true, (ViewGroup) rootView);
+        mAccountSpinner = (Spinner) rootView.findViewById(R.id.account_spinner);
+        accountTokenStore = K9.oAuth2TokenStore;
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                getActivity(), R.layout.simple_spinner_item, accountTokenStore.getAccounts());
+        mAccountSpinner.setAdapter(adapter);
         mNextButton.setVisibility(View.VISIBLE);
         nextProgressBar.hide();
     }
