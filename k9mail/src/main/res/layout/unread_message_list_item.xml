@@ -12,7 +12,7 @@
             android:adjustViewBounds="false"
             android:layout_height="match_parent"
             android:layout_width="8dip"
-            android:layout_marginRight="4dp"
+            android:paddingEnd="4dp"
             android:visibility="invisible"
             />
 
@@ -43,13 +43,13 @@
 
     <com.fsck.k9.pEp.ui.PEpContactBadge
             android:id="@+id/contact_badge"
-            android:layout_marginRight="8dip"
-            android:layout_marginTop="4dip"
-            android:layout_marginBottom="3dip"
+            android:paddingEnd="8dip"
+            android:paddingTop="4dip"
+            android:paddingBottom="3dip"
             android:layout_height="52dp"
             android:layout_width="52dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="4dp"
+            android:paddingStart="4dp"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_contact_picture"
             android:background="@android:color/transparent"/>
@@ -59,12 +59,12 @@
             android:id="@+id/list_item_inner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dip"
+            android:paddingTop="8dip"
             android:clickable="false"
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:layout_gravity="center_vertical"
-            android:layout_marginBottom="8dp">
+            android:paddingBottom="8dp">
 
         <TextView
             android:id="@+id/preview"
@@ -74,7 +74,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignWithParentIfMissing="false"
             android:layout_below="@+id/subject_wrapper"
-            android:layout_marginLeft="1dip"
+            android:paddingStart="1dip"
             android:bufferType="spannable"
             android:fontFamily="sans-serif-light"
             android:gravity="top"
@@ -103,8 +103,8 @@
                     android:layout_weight="0.3"
                     android:ellipsize="end"
                     android:singleLine="true"
-                    android:layout_marginBottom="1dip"
-                    android:layout_marginLeft="1dip"
+                    android:paddingBottom="1dip"
+                    android:paddingStart="1dip"
                     android:textSize="16sp"
                     android:textColor="?android:attr/textColorPrimary"
                     android:fontFamily="sans-serif-medium"
@@ -118,8 +118,8 @@
                     android:layout_width="0dp"
                     android:layout_weight="0.7"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="1dip"
-                    android:layout_marginLeft="1dip"
+                    android:paddingBottom="1dip"
+                    android:paddingStart="1dip"
                     android:ellipsize="marquee"
                     android:singleLine="true"
                     android:textSize="16sp"
@@ -136,8 +136,8 @@
                     android:background="?attr/messageListThreadCountBackground"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dip"
-                    android:layout_marginRight="4dip"
+                    android:paddingStart="3dip"
+                    android:paddingEnd="4dip"
                     android:paddingRight="4dip"
                     android:paddingBottom="1dip"
                     android:paddingLeft="4dip"
