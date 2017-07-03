@@ -12,7 +12,6 @@ import android.text.Editable;
 import android.text.TextUtils.TruncateAt;
 import android.text.TextWatcher;
 import android.text.format.DateUtils;
-import timber.log.Timber;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
@@ -59,6 +58,7 @@ import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 import com.fsck.k9.search.LocalSearch;
+import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.service.MailService;
@@ -68,6 +68,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+
+import timber.log.Timber;
 
 import static com.fsck.k9.activity.MessageList.EXTRA_SEARCH_ACCOUNT;
 
@@ -645,6 +647,18 @@ public class FolderList extends K9ListActivity {
      }
 
     private void onOpenFolder(String folder) {
+        String allMessagesFolderName = context.getString(R.string.search_all_messages_title);
+        String unifiedFolderName = context.getString(R.string.integrated_inbox_title);
+        if (folder.equals(allMessagesFolderName)) {
+            SearchAccount allMessagesAccount = SearchAccount.createAllMessagesAccount(this);
+            MessageList.actionDisplaySearch(this, allMessagesAccount.getRelatedSearch(), false, false);
+            return;
+        }
+        if (folder.equals(unifiedFolderName)) {
+            SearchAccount unifiedInboxAccount = SearchAccount.createUnifiedInboxAccount(this);
+            MessageList.actionDisplaySearch(this, unifiedInboxAccount.getRelatedSearch(), false, false);
+            return;
+        }
         LocalSearch search = new LocalSearch(folder);
         search.addAccountUuid(mAccount.getUuid());
         search.addAllowedFolder(folder);
