@@ -45,4 +45,5 @@
     <color name="recipient_token_background_dark">#090909</color>
 
     <color name="translucent_background">#003E4447</color>
+    <color name="pep_selected_item">#E8EAF6</color>
 </resources>

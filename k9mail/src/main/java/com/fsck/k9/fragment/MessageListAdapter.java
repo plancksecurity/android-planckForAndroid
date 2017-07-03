@@ -36,6 +36,9 @@ import com.fsck.k9.pEp.ui.PEpContactBadge;
 
 import org.pEp.jniadapter.Rating;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static android.view.View.GONE;
 import static com.fsck.k9.fragment.MLFProjectionInfo.ANSWERED_COLUMN;
 import static com.fsck.k9.fragment.MLFProjectionInfo.ATTACHMENT_COUNT_COLUMN;
@@ -56,6 +59,28 @@ import static com.fsck.k9.fragment.MLFProjectionInfo.UID_COLUMN;
 
 
 public class MessageListAdapter extends CursorAdapter {
+
+    private List<Integer> selectedMessages = new ArrayList<>();
+
+    public void addSelected(Integer position) {
+        selectedMessages.add(position);
+    }
+
+    public Boolean isSelected(Integer position) {
+        return selectedMessages.contains(position);
+    }
+
+    public Boolean isSomethingSelected() {
+        return !selectedMessages.isEmpty();
+    }
+
+    public void removeSelected(Integer position) {
+        selectedMessages.remove(position);
+    }
+
+    public void clearSelected() {
+        selectedMessages = new ArrayList<>();
+    }
 
     private enum Swipe {
         NO_SWIPE, LEFT, RIGHT;
@@ -266,6 +291,7 @@ public class MessageListAdapter extends CursorAdapter {
 
         View readView = view.findViewById(R.id.message_read_container);
         View unreadView = view.findViewById(R.id.message_unread_container);
+
         if (read) {
             readView.setVisibility(View.VISIBLE);
             unreadView.setVisibility(GONE);
@@ -280,6 +306,7 @@ public class MessageListAdapter extends CursorAdapter {
         holder.date = (TextView) view.findViewById(R.id.date);
         holder.chip = view.findViewById(R.id.chip);
         holder.attachment = view.findViewById(R.id.attachment_icon);
+        holder.container = swipeView;
 
         if (fragment.previewLines == 0 && fragment.contactsPictureLoader == null) {
             view.findViewById(R.id.preview).setVisibility(GONE);
@@ -471,6 +498,12 @@ public class MessageListAdapter extends CursorAdapter {
         }
 
         holder.date.setText(displayDate);
+
+        if (selectedMessages != null && selectedMessages.contains(holder.position)) {
+           holder.container.setBackgroundColor(context.getResources().getColor(R.color.pep_selected_item));
+        } else {
+            holder.container.setBackgroundColor(context.getResources().getColor(android.R.color.transparent));
+        }
     }
 
 

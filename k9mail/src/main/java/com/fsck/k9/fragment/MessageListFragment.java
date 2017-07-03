@@ -848,6 +848,8 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 //        // Disable pull-to-refresh until the message list has been loaded
 //        swipeRefreshLayout.setEnabled(false);
 //    }
+    private boolean isLongClicked;
+
     private void initializeLayout() {
         listView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
         listView.setLongClickable(true);
@@ -857,13 +859,16 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                getActivity().startActionMode(new android.view.ActionMode.Callback() {
-                    @Override
-                    public boolean onCreateActionMode(android.view.ActionMode mode, Menu menu) {
-                        MenuInflater menuInflater = mode.getMenuInflater();
-                        menuInflater.inflate(R.menu.message_list_item_context, menu);
-                        return true;
-                    }
+                isLongClicked = true;
+                toggleMessageSelectWithAdapterPosition(position);
+                if (actionMode == null) {
+                    getActivity().startActionMode(new android.view.ActionMode.Callback() {
+                        @Override
+                        public boolean onCreateActionMode(android.view.ActionMode mode, Menu menu) {
+                            MenuInflater menuInflater = mode.getMenuInflater();
+                            menuInflater.inflate(R.menu.message_list_item_context, menu);
+                            return true;
+                        }
 
                     @Override
                     public boolean onPrepareActionMode(android.view.ActionMode mode, Menu menu) {
@@ -944,20 +949,21 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                                 break;
                             }
 
-                            // debug options
-                            case R.id.debug_delete_locally: {
-                                onDebugClearLocally(getMessageAtPosition(position));
-                                break;
+                                // debug options
+                                case R.id.debug_delete_locally: {
+                                    onDebugClearLocally(getMessageAtPosition(position));
+                                    break;
+                                }
                             }
+                            selected.clear();
+                            adapter.clearSelected();
+                            if (actionMode == null) {
+                                startAndPrepareActionMode();
+                            }
+                            actionMode.finish();
+                            actionMode = null;
+                            return false;
                         }
-                        selected.clear();
-                        if (actionMode == null) {
-                            startAndPrepareActionMode();
-                        }
-                        actionMode.finish();
-                        actionMode = null;
-                        return true;
-                    }
 
                     @Override
                     public void onDestroyActionMode(android.view.ActionMode mode) {
@@ -977,7 +983,10 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                onMessageClick(parent, view, position, id);
+                if (!isLongClicked) {
+                    onMessageClick(parent, view, position, id);
+                }
+                isLongClicked = false;
             }
         });
     }
@@ -1702,7 +1711,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                 Cursor cursor = (Cursor) adapter.getItem(i);
                 long uniqueId = cursor.getLong(uniqueIdColumn);
                 this.selected.add(uniqueId);
-
+                adapter.addSelected(cursor.getPosition());
                 if (showingThreadedList) {
                     int threadCount = cursor.getInt(THREAD_COUNT_COLUMN);
                     selectedCount += (threadCount > 1) ? threadCount : 1;
@@ -1717,6 +1726,10 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             computeBatchDirection();
             updateActionModeTitle();
             computeSelectAllVisibility();
+            if (selectedCount == 0 && actionMode != null) {
+                actionMode.finish();
+                actionMode = null;
+            }
         } else {
             this.selected.clear();
             selectedCount = 0;
