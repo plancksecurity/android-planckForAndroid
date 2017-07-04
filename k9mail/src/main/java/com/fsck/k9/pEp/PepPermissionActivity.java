@@ -36,6 +36,7 @@ public abstract class PepPermissionActivity extends K9Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initializeInjector(getApplicationComponent());
+        inject();
     }
 
     @Override

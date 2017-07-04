@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.ContentLoadingProgressBar;
@@ -15,7 +14,6 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -45,13 +43,13 @@ import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.pEp.PEpPermissionChecker;
 import com.fsck.k9.pEp.PepPermissionActivity;
 import com.fsck.k9.pEp.UIUtils;
+import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.view.ClientCertificateSpinner;
 
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -86,6 +84,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private boolean mCheckedIncoming = false;
     private ContentLoadingProgressBar nextProgressBar;
     private View rootView;
+    private AccountSetupNavigator accountSetupNavigator;
 
     public boolean ismCheckedIncoming() {
         return mCheckedIncoming;
@@ -131,18 +130,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private void setupToolbar() {
         ((AccountSetupBasics) getActivity()).initializeToolbar(true, R.string.account_setup_basics_title);
         ((AccountSetupBasics) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.pep_green));
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        switch (itemId) {
-            case android.R.id.home: {
-                getActivity().finish();
-                return true;
-            }
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private void initializeViewListeners() {
@@ -439,6 +426,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
     @Override
     public void onResume() {
         super.onResume();
+        accountSetupNavigator = ((AccountSetupBasics) getActivity()).getAccountSetupNavigator();
+        accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.BASICS, mAccount);
         enableViewGroup(true, (ViewGroup) rootView);
         mNextButton.setVisibility(View.VISIBLE);
         nextProgressBar.hide();
@@ -469,10 +458,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
                     .setPositiveButton(getResources().getString(R.string.okay_action), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Intent addAccountIntent = new Intent(Settings.ACTION_ADD_ACCOUNT)
-                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            addAccountIntent.putExtra(Settings.EXTRA_ACCOUNT_TYPES, new String[] {"com.google"});
-                            getActivity().startActivity(addAccountIntent);
+                            accountSetupNavigator.createGmailAccount(getActivity());
                         }
                     })
                     .setNegativeButton(getResources().getString(R.string.skip_button), new DialogInterface.OnClickListener() {
@@ -572,12 +558,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
                             @Override
                             public void onLoaded(PEpSettingsChecker.Redirection redirection) {
-                                ChooseAccountTypeFragment chooseAccountTypeFragment = ChooseAccountTypeFragment.actionSelectAccountType(mAccount, false);
-                                getFragmentManager()
-                                        .beginTransaction()
-                                        .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                                        .replace(R.id.account_setup_container, chooseAccountTypeFragment, "chooseAccountTypeFragment")
-                                        .commit();
+                                accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
                             }
                         });
             } else {
@@ -645,12 +626,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         setupFolderNames(domain);
 
         saveCredentialsInPreferences();
-        ChooseAccountTypeFragment chooseAccountTypeFragment = ChooseAccountTypeFragment.actionSelectAccountType(mAccount, false);
-        getFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                .replace(R.id.account_setup_container, chooseAccountTypeFragment, "chooseAccountTypeFragment")
-                .commit();
+        accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
     }
 
     private void setupFolderNames(String domain) {

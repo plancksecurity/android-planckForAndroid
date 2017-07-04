@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -16,6 +15,7 @@ import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.setup.AccountSetupIncoming;
 import com.fsck.k9.helper.EmailHelper;
 import com.fsck.k9.mail.ServerSettings;
+import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.setup.ServerNameSuggester;
 
@@ -36,6 +36,7 @@ public class ChooseAccountTypeFragment extends Fragment {
     private Account mAccount;
     private boolean mMakeDefault;
     private View rootView;
+    private AccountSetupNavigator accountSetupNavigator;
 
     public static ChooseAccountTypeFragment actionSelectAccountType(Account account, boolean makeDefault) {
         ChooseAccountTypeFragment fragment = new ChooseAccountTypeFragment();
@@ -78,52 +79,29 @@ public class ChooseAccountTypeFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        View.OnClickListener onClickListener = v -> Preferences.getPreferences(getActivity()).deleteAccount(mAccount);
-
-        if(getActivity() instanceof  AccountSetupBasics) {
-            ((AccountSetupBasics) getActivity()).setHomeButtonListener(onClickListener);
-        }
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        switch (itemId) {
-            case android.R.id.home: {
-                getActivity().finish();
-                return true;
-            }
-        }
-        return super.onOptionsItemSelected(item);
+    public void onResume() {
+        super.onResume();
+        accountSetupNavigator = ((AccountSetupBasics) getActivity()).getAccountSetupNavigator();
+        accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.ACCOUNT_TYPE, mAccount);
     }
 
     private void onDavClicked() {
         try {
             setupDav();
-            AccountSetupIncomingFragment accountSetupIncomingFragment = AccountSetupIncomingFragment.actionIncomingSettings(mAccount, mMakeDefault);
-            getFragmentManager()
-                    .beginTransaction()
-                    .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                    .replace(R.id.account_setup_container, accountSetupIncomingFragment, "accountSetupIncomingFragment")
-                    .commit();
+            goForward();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
     }
 
+    private void goForward() {
+        accountSetupNavigator.goForward(getFragmentManager(), mAccount, mMakeDefault);
+    }
+
     private void onIMAPClicked() {
         try {
             setupStoreAndSmtpTransport(IMAP, "imap+ssl+");
-            AccountSetupIncomingFragment accountSetupIncomingFragment = AccountSetupIncomingFragment.actionIncomingSettings(mAccount, mMakeDefault);
-            getFragmentManager()
-                    .beginTransaction()
-                    .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                    .replace(R.id.account_setup_container, accountSetupIncomingFragment, "accountSetupIncomingFragment")
-                    .commit();
+            goForward();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -132,12 +110,7 @@ public class ChooseAccountTypeFragment extends Fragment {
     private void onPopClicked() {
         try {
             setupStoreAndSmtpTransport(POP3, "pop3+ssl+");
-            AccountSetupIncomingFragment accountSetupIncomingFragment = AccountSetupIncomingFragment.actionEditIncomingSettings(mAccount);
-            getFragmentManager()
-                    .beginTransaction()
-                    .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                    .replace(R.id.account_setup_container, accountSetupIncomingFragment, "accountSetupIncomingFragment")
-                    .commit();
+            goForward();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

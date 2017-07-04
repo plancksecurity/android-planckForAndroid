@@ -47,6 +47,7 @@ import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mail.store.imap.ImapStoreSettings;
 import com.fsck.k9.mail.store.webdav.WebDavStoreSettings;
+import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.service.MailService;
 import com.fsck.k9.view.ClientCertificateSpinner;
@@ -100,6 +101,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     private ConnectionSecurity[] mConnectionSecurityChoices = ConnectionSecurity.values();
     private View rootView;
     private ContentLoadingProgressBar nextProgressBar;
+    private AccountSetupNavigator accountSetupNavigator;
 
     public static AccountSetupIncomingFragment actionIncomingSettings(Account account, boolean makeDefault) {
         AccountSetupIncomingFragment fragment = new AccountSetupIncomingFragment();
@@ -327,18 +329,6 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         initializeViewListeners();
         validateFields();
         return rootView;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        View.OnClickListener onClickListener = v -> Preferences.getPreferences(getActivity()).deleteAccount(mAccount);
-
-        if(getActivity() instanceof  AccountSetupBasics) {
-            ((AccountSetupBasics) getActivity()).setHomeButtonListener(onClickListener);
-        }
-
     }
 
     @Override
@@ -614,12 +604,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
 
                     @Override
                     public void onLoaded(PEpSettingsChecker.Redirection redirection) {
-                        AccountSetupOutgoingFragment accountSetupOutgoingFragment = AccountSetupOutgoingFragment.actionOutgoingSettings(mAccount, false);
-                        getFragmentManager()
-                                .beginTransaction()
-                                .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                                .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
-                                .commit();
+                        accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
                     }
                 });
     }
@@ -770,5 +755,12 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     private ConnectionSecurity getSelectedSecurity() {
         ConnectionSecurityHolder holder = (ConnectionSecurityHolder) mSecurityTypeView.getSelectedItem();
         return holder.connectionSecurity;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        accountSetupNavigator = ((AccountSetupBasics) getActivity()).getAccountSetupNavigator();
+        accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.INCOMING, mAccount);
     }
 }
