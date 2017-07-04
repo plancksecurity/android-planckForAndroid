@@ -95,6 +95,7 @@ public interface PEpProvider {
     Rating identityRating(Identity identity);
 
     void identityRating(Identity identity, ResultCallback<Rating> callback);
+    void identityRating(Address address, ResultCallback<Rating> callback);
 
     Rating identityRating(Address address);
 

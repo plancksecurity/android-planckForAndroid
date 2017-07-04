@@ -573,6 +573,12 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
+    public void identityRating(Address address, ResultCallback<Rating> callback) {
+        Identity id = PEpUtils.createIdentity(address, context);
+        identityRating(id, callback);
+    }
+
+    @Override
     public synchronized String trustwords(Identity id, String language) {
         id.lang = language;
         createEngineInstanceIfNeeded();
