@@ -76,6 +76,8 @@ public class Migrations {
                 MigrationTo59.addMissingIndexes(db);
             case 60:
                 MigrationTo60.migratePendingCommands(db);
+            case 61:
+                MigrationTo61.renameK9Tables(db);
 
         }
     }

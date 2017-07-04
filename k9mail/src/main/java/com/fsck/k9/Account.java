@@ -64,7 +64,7 @@ public class Account implements BaseAccount, StoreConfig {
     /**
      * This local folder is used to store messages to be sent.
      */
-    public static final String OUTBOX = "K9MAIL_INTERNAL_OUTBOX";
+    public static final String OUTBOX = "PEP_INTERNAL_OUTBOX";
     private final boolean DEFAULT_PEP_SYNC_ENABLED = true;
     private boolean pEpSyncEnabled;
 
