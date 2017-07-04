@@ -8,22 +8,20 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.InputType;
-import android.text.TextWatcher;
-import timber.log.Timber;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
+import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PepPermissionActivity;
-import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
+import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 /**
  * Prompts the user for the email address and password.
@@ -37,7 +35,7 @@ public class AccountSetupBasics extends PepPermissionActivity {
     private static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
     private static final int DIALOG_NO_FILE_MANAGER = 4;
     private AccountSetupBasicsFragment accountSetupBasicsFragment;
-    private View.OnClickListener homeButtonListener;
+    @Inject AccountSetupNavigator accountSetupNavigator;
 
     public static void actionNewAccount(Context context) {
         Intent i = new Intent(context, AccountSetupBasics.class);
@@ -51,6 +49,7 @@ public class AccountSetupBasics extends PepPermissionActivity {
         if (savedInstanceState == null) {
             accountSetupBasicsFragment = new AccountSetupBasicsFragment();
             FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.addToBackStack("AccountSetupBasicsFragment");
             ft.add(R.id.account_setup_container, accountSetupBasicsFragment).commit();
         }
         PEpUtils.askForBatteryOptimizationWhiteListing(this);
@@ -96,7 +95,7 @@ public class AccountSetupBasics extends PepPermissionActivity {
 
     @Override
     public void inject() {
-
+        getpEpComponent().inject(this);
     }
 
     @Override
@@ -117,10 +116,7 @@ public class AccountSetupBasics extends PepPermissionActivity {
                 onImport();
                 break;
             case android.R.id.home:
-                if (homeButtonListener != null) {
-                    homeButtonListener.onClick(item.getActionView());
-                }
-                finish();
+                goBack();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -128,15 +124,32 @@ public class AccountSetupBasics extends PepPermissionActivity {
         return true;
     }
 
-    public void setHomeButtonListener(View.OnClickListener onClickListener) {
-        this.homeButtonListener = onClickListener;
+    private void goBack() {
+        if (accountSetupNavigator.shouldDeleteAccount()) {
+            deleteAccount();
+        }
+        accountSetupNavigator.goBack(this, getFragmentManager());
     }
 
     @Override
     public void onBackPressed() {
+        goBack();
         super.onBackPressed();
-        if (homeButtonListener != null) {
-            homeButtonListener.onClick(getRootView());
+    }
+
+    public AccountSetupNavigator getAccountSetupNavigator() {
+        return accountSetupNavigator;
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (!accountSetupNavigator.getCurrentStep().equals(AccountSetupNavigator.Step.OUTGOING)) {
+            deleteAccount();
         }
+        super.onDestroy();
+    }
+
+    private void deleteAccount() {
+        Preferences.getPreferences(getApplicationContext()).deleteAccount(accountSetupNavigator.getAccount());
     }
 }

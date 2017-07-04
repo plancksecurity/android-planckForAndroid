@@ -37,6 +37,7 @@ import com.fsck.k9.mail.AuthType;
 import com.fsck.k9.mail.ConnectionSecurity;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
+import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.view.ClientCertificateSpinner;
 
@@ -80,6 +81,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
 
     @Inject PEpSettingsChecker pEpSettingsChecker;
     private ContentLoadingProgressBar nextProgressBar;
+    private AccountSetupNavigator accountSetupNavigator;
 
     public static AccountSetupOutgoingFragment actionOutgoingSettings(Account account, boolean makeDefault) {
         AccountSetupOutgoingFragment fragment = new AccountSetupOutgoingFragment();
@@ -230,15 +232,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         initializeViewListeners();
         validateFields();
         return rootView;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if(getActivity() instanceof  AccountSetupBasics) {
-            ((AccountSetupBasics) getActivity()).setHomeButtonListener(v -> {
-            });
-        }
     }
 
     @Override
@@ -509,12 +502,16 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         if (resultCode == RESULT_OK) {
             if (mEdit) {
                 mAccount.save(Preferences.getPreferences(getActivity()));
-                getActivity().finish();
+                goForward();
             } else {
                 AccountSetupOptions.actionOptions(getActivity(), mAccount, mMakeDefault);
-                getActivity().finish();
+                goForward();
             }
         }
+    }
+
+    private void goForward() {
+        getActivity().finish();
     }
 
     protected void onNext() {
@@ -583,5 +580,12 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     private ConnectionSecurity getSelectedSecurity() {
         ConnectionSecurityHolder holder = (ConnectionSecurityHolder) mSecurityTypeView.getSelectedItem();
         return holder.connectionSecurity;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        accountSetupNavigator = ((AccountSetupBasics) getActivity()).getAccountSetupNavigator();
+        accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.OUTGOING, mAccount);
     }
 }
