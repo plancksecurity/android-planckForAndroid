@@ -6,8 +6,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.fsck.k9.R;
+import com.fsck.k9.activity.FolderInfoHolder;
 import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mailstore.LocalFolder;
+import com.fsck.k9.pEp.models.FolderModel;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
 import com.pedrogomez.renderers.Renderer;
 
@@ -15,7 +16,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class FolderRenderer extends Renderer<LocalFolder> {
+public class FolderRenderer extends Renderer<FolderModel> {
 
     @Bind(R.id.folder_name) TextView folderName;
     @Bind(R.id.folder_new_messages) TextView folderNewMessages;
@@ -40,10 +41,12 @@ public class FolderRenderer extends Renderer<LocalFolder> {
 
     @Override
     public void render() {
-        LocalFolder folder = getContent();
-        folderName.setText(folder.getName());
+        FolderModel folder = getContent();
+        folderName.setText(FolderInfoHolder.getDisplayName(getContext(),
+                folder.getAccount(),
+                folder.getLocalFolder().getName()));
         try {
-            int unreadMessageCount = folder.getUnreadMessageCount();
+            int unreadMessageCount = folder.getLocalFolder().getUnreadMessageCount();
             renderUnreadMessages(unreadMessageCount);
         } catch (MessagingException e) {
             //TODO do a proper log
@@ -66,7 +69,7 @@ public class FolderRenderer extends Renderer<LocalFolder> {
     }
 
     @OnClick(R.id.folder_layout) void onFolderClicked() {
-        LocalFolder folder = getContent();
-        onFolderClickListener.onClick(folder);
+        FolderModel folder = getContent();
+        onFolderClickListener.onClick(folder.getLocalFolder());
     }
 }
