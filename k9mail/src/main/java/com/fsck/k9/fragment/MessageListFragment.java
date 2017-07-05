@@ -870,84 +870,84 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                             return true;
                         }
 
-                    @Override
-                    public boolean onPrepareActionMode(android.view.ActionMode mode, Menu menu) {
-                        return false;
-                    }
+                        @Override
+                        public boolean onPrepareActionMode(android.view.ActionMode mode, Menu menu) {
+                            return false;
+                        }
 
-                    @Override
-                    public boolean onActionItemClicked(android.view.ActionMode mode, MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.deselect:
-                            case R.id.select: {
-                                toggleMessageSelectWithAdapterPosition(position);
-                                break;
-                            }
-                            case R.id.reply: {
-                                onReply(getMessageAtPosition(position), PEpUtils.extractRating(getLocalMessageAtPosition(position)));
-                                break;
-                            }
-                            case R.id.reply_all: {
-                                onReplyAll(getMessageAtPosition(position), PEpUtils.extractRating(getLocalMessageAtPosition(position)));
-                                break;
-                            }
-                            case R.id.forward: {
-                                //TODO: Check how to avoid to retrive the whole message
-                                onForward(getMessageAtPosition(position), PEpUtils.extractRating(getLocalMessageAtPosition(position)));
-                                break;
-                            }
-                            case R.id.send_again: {
-                                onResendMessage(getMessageAtPosition(position));
-                                selectedCount = 0;
-                                break;
-                            }
-                            case R.id.same_sender: {
-                                Cursor cursor = (Cursor) adapter.getItem(position);
-                                String senderAddress = getSenderAddressFromCursor(cursor);
-                                if (senderAddress != null) {
-                                    fragmentListener.showMoreFromSameSender(senderAddress);
+                        @Override
+                        public boolean onActionItemClicked(android.view.ActionMode mode, MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.deselect:
+                                case R.id.select: {
+                                    toggleMessageSelectWithAdapterPosition(position);
+                                    break;
                                 }
-                                break;
-                            }
-                            case R.id.delete: {
-                                MessageReference message = getMessageAtPosition(position);
-                                onDelete(message);
-                                break;
-                            }
-                            case R.id.mark_as_read: {
-                                setFlag(position, Flag.SEEN, true);
-                                break;
-                            }
-                            case R.id.mark_as_unread: {
-                                setFlag(position, Flag.SEEN, false);
-                                break;
-                            }
-                            case R.id.flag: {
-                                setFlag(position, Flag.FLAGGED, true);
-                                break;
-                            }
-                            case R.id.unflag: {
-                                setFlag(position, Flag.FLAGGED, false);
-                                break;
-                            }
+                                case R.id.reply: {
+                                    onReply(getMessageAtPosition(position), PEpUtils.extractRating(getLocalMessageAtPosition(position)));
+                                    break;
+                                }
+                                case R.id.reply_all: {
+                                    onReplyAll(getMessageAtPosition(position), PEpUtils.extractRating(getLocalMessageAtPosition(position)));
+                                    break;
+                                }
+                                case R.id.forward: {
+                                    //TODO: Check how to avoid to retrive the whole message
+                                    onForward(getMessageAtPosition(position), PEpUtils.extractRating(getLocalMessageAtPosition(position)));
+                                    break;
+                                }
+                                case R.id.send_again: {
+                                    onResendMessage(getMessageAtPosition(position));
+                                    selectedCount = 0;
+                                    break;
+                                }
+                                case R.id.same_sender: {
+                                    Cursor cursor = (Cursor) adapter.getItem(position);
+                                    String senderAddress = getSenderAddressFromCursor(cursor);
+                                    if (senderAddress != null) {
+                                        fragmentListener.showMoreFromSameSender(senderAddress);
+                                    }
+                                    break;
+                                }
+                                case R.id.delete: {
+                                    MessageReference message = getMessageAtPosition(position);
+                                    onDelete(message);
+                                    break;
+                                }
+                                case R.id.mark_as_read: {
+                                    setFlag(position, Flag.SEEN, true);
+                                    break;
+                                }
+                                case R.id.mark_as_unread: {
+                                    setFlag(position, Flag.SEEN, false);
+                                    break;
+                                }
+                                case R.id.flag: {
+                                    setFlag(position, Flag.FLAGGED, true);
+                                    break;
+                                }
+                                case R.id.unflag: {
+                                    setFlag(position, Flag.FLAGGED, false);
+                                    break;
+                                }
 
-                            // only if the account supports this
-                            case R.id.archive: {
-                                onArchive(getMessageAtPosition(position));
-                                break;
-                            }
-                            case R.id.spam: {
-                                onSpam(getMessageAtPosition(position));
-                                break;
-                            }
-                            case R.id.move: {
-                                onMove(getMessageAtPosition(position));
-                                break;
-                            }
-                            case R.id.copy: {
-                                onCopy(getMessageAtPosition(position));
-                                break;
-                            }
+                                // only if the account supports this
+                                case R.id.archive: {
+                                    onArchive(getMessageAtPosition(position));
+                                    break;
+                                }
+                                case R.id.spam: {
+                                    onSpam(getMessageAtPosition(position));
+                                    break;
+                                }
+                                case R.id.move: {
+                                    onMove(getMessageAtPosition(position));
+                                    break;
+                                }
+                                case R.id.copy: {
+                                    onCopy(getMessageAtPosition(position));
+                                    break;
+                                }
 
                                 // debug options
                                 case R.id.debug_delete_locally: {
@@ -965,12 +965,13 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                             return false;
                         }
 
-                    @Override
-                    public void onDestroyActionMode(android.view.ActionMode mode) {
-                        actionMode = null;
-                        setSelectionState(false);
-                    }
-                });
+                        @Override
+                        public void onDestroyActionMode(android.view.ActionMode mode) {
+                            actionMode = null;
+                            setSelectionState(false);
+                        }
+                    });
+                }
                 return true;
             }
         });
