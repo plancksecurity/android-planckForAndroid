@@ -518,8 +518,7 @@
             android:persistent="false"
             android:key="pep_extra_keys"
             android:singleLine="true"
-            android:title="@string/master_key_management"
-            android:summary="@string/account_settings_color_summary" />
+            android:title="@string/master_key_management" />
 
     </PreferenceScreen>
 </PreferenceScreen>
