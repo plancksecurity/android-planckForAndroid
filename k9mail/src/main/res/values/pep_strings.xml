@@ -123,7 +123,7 @@
     <string name="error_parsing_fingerprint">Error parsing fingerprint!</string>
     <string name="is_always_secure">Store protected on server</string>
     <string name="is_not_always_secure">Store unprotected on server</string>
-    <string name="master_key_management">Master Key management</string>
+    <string name="master_key_management">Master Key Management</string>
     <string name="message_saving_error">Message saving error</string>
     <string name="intro_first_text">Automatically encrypts and anonymizes your e-mail</string>
     <string name="intro_second_text">Prevents Identity Theft. Kills Spam. Stops Phishing.</string>
