@@ -2250,8 +2250,12 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
              */
             switch (item.getItemId()) {
                 case R.id.delete: {
-                    List<MessageReference> messages = getCheckedMessages();
-                    onDelete(messages);
+                    try {
+                        List<MessageReference> messages = getCheckedMessages();
+                        onDelete(messages);
+                    } catch (Exception e) {
+                        Timber.e(e);
+                    }
                     selectedCount = 0;
                     break;
                 }
@@ -2299,7 +2303,9 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                 }
             }
             if (selectedCount == 0) {
-                actionMode.finish();
+                if (actionMode != null) {
+                    actionMode.finish();
+                }
             }
 
             return true;
