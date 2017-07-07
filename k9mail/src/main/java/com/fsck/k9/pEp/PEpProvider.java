@@ -46,12 +46,12 @@ public interface PEpProvider {
      * @param bccAddresses bcc addresses
      * @return the privacy level of a mail sent to the set of recipients
      */
-    Rating getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses);
-    Rating getPrivacyState(com.fsck.k9.mail.Message message);
+    Rating getRating(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses);
+    Rating getRating(com.fsck.k9.mail.Message message);
 
-    void getPrivacyState(com.fsck.k9.mail.Message message, ResultCallback<Rating> callback);
+    void getRating(com.fsck.k9.mail.Message message, ResultCallback<Rating> callback);
 
-    void getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback);
+    void getRating(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback);
 
     /**
      * Decrypts one k9 MimeMessage. Hides all the black magic associated with the real

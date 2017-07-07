@@ -13,7 +13,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -962,7 +961,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                     MimeMessage decryptedMessage = decryptResult.msg;
                     if (message.getFolder().getName().equals(mAccount.getSentFolderName())
                             || message.getFolder().getName().equals(mAccount.getDraftsFolderName())) {
-                        decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
+                        decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getRating(message)));
                     }
 
                     decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...

@@ -90,7 +90,7 @@ public class PEpStatusPresenter implements Presenter {
         for (PEpIdentity identity : identities) {
             addresses.add(new Address(identity.address));
         }
-        pEpProvider.getPrivacyState(senderAddress, addresses, Collections.emptyList(), Collections.emptyList(), new PEpProvider.ResultCallback<Rating>() {
+        pEpProvider.getRating(senderAddress, addresses, Collections.emptyList(), Collections.emptyList(), new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
                 onRatingChanged(rating);

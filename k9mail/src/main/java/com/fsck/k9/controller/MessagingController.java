@@ -88,7 +88,6 @@ import com.fsck.k9.search.SqlQueryBuilder;
 import timber.log.Timber;
 
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
-import static com.fsck.k9.mail.Flag.DELETED;
 import static com.fsck.k9.mail.Flag.X_REMOTE_COPY_STARTED;
 
 import org.pEp.jniadapter.Rating;
@@ -1716,7 +1715,7 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                         MimeMessage decryptedMessage =  result.msg;
                         if (message.getFolder().getName().equals(account.getSentFolderName())
                                 || message.getFolder().getName().equals(account.getDraftsFolderName())) {
-                            decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
+                            decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getRating(message)));
                         } else {
                             decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(result.rating));
                         }
@@ -2256,7 +2255,7 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                     localMessage.setUid(encryptedMessage.getUid());
                     localFolder.changeUid(localMessage);
                     if (localMessage.getFolder().getName().equals(account.getDraftsFolderName())) {
-                        localMessage.addHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(localMessage)));
+                        localMessage.addHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getRating(localMessage)));
                         localFolder.appendMessages(Collections.singletonList(localMessage));
                     }
                     for (MessagingListener l : getListeners()) {
@@ -3038,10 +3037,10 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
             LocalStore localStore = account.getLocalStore();
             LocalFolder localFolder = localStore.getFolder(account.getOutboxFolderName());
             localFolder.open(Folder.OPEN_MODE_RW);
-            if (PEpUtils.ispEpDisabled(account, message, pEpProvider.getPrivacyState(message))) {
+            if (PEpUtils.ispEpDisabled(account, message, pEpProvider.getRating(message))) {
                 message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(Rating.pEpRatingUnencrypted));
             } else {
-                Rating privacyState = pEpProvider.getPrivacyState(message);
+                Rating privacyState = pEpProvider.getRating(message);
                 message.setHeader(MimeHeader.HEADER_PEP_RATING, privacyState.name());
             }
             localFolder.appendMessages(Collections.singletonList(message));
@@ -3205,7 +3204,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
                         Message encryptedMessage;
 //                        PEpUtils.dumpMimeMessage("beforeEncrypt", (MimeMessage) message);
                         if (message.isSet(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)
-                                || PEpUtils.ispEpDisabled(account, message, pEpProvider.getPrivacyState(message))) {
+                                || PEpUtils.ispEpDisabled(account, message, pEpProvider.getRating(message))) {
                             message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(Rating.pEpRatingUnencrypted));
                             sendMessage(transport, message);
                             encryptedMessage = message;
@@ -3301,7 +3300,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
             if (pEpVersionHeader.length > 0) {
                 message.addHeader(MimeHeader.HEADER_PEP_VERSION, pEpVersionHeader[0]);
             }
-            message.addHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getPrivacyState(message)));
+            message.addHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getRating(message)));
 
 
             localSentFolder.appendMessages(Collections.singletonList(message));
