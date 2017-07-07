@@ -198,13 +198,13 @@ public class PEpProviderImpl implements PEpProvider {
 
     private boolean isUnencryptedForSome(List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses) {
         for (Address toAddress : toAddresses) {
-            if (identityRating(toAddress).value > Rating.pEpRatingUnencrypted.value) return true;
+            if (getRating(toAddress).value > Rating.pEpRatingUnencrypted.value) return true;
         }
         for (Address ccAddress : ccAddresses) {
-            if (identityRating(ccAddress).value > Rating.pEpRatingUnencrypted.value) return true;
+            if (getRating(ccAddress).value > Rating.pEpRatingUnencrypted.value) return true;
         }
         for (Address bccAddress : bccAddresses) {
-            if (identityRating(bccAddress).value > Rating.pEpRatingUnencrypted.value) return true;
+            if (getRating(bccAddress).value > Rating.pEpRatingUnencrypted.value) return true;
         }
         return false;
     }
@@ -525,7 +525,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     private boolean isEncrypted(Identity identity) {
-        return identityRating(identity).value > Rating.pEpRatingUnencrypted.value;
+        return getRating(identity).value > Rating.pEpRatingUnencrypted.value;
     }
 
     private Vector<String> convertExtraKeys(String[] extraKeys) {
@@ -537,25 +537,25 @@ public class PEpProviderImpl implements PEpProvider {
 
 
     @Override
-    public synchronized Rating identityRating(Address address) {
+    public synchronized Rating getRating(Address address) {
         Identity ident = PEpUtils.createIdentity(address, context);
-        return identityRating(ident);
+        return getRating(ident);
     }
 
     @Override
-    public synchronized Rating identityRating(Identity ident) {
+    public synchronized Rating getRating(Identity ident) {
         createEngineInstanceIfNeeded();
         try {
             Rating result =  engine.identity_rating(ident);
             return result;
         } catch (pEpException e) {
-            Log.e(TAG, "identityRating: ", e);
+            Log.e(TAG, "getRating: ", e);
             return Rating.pEpRatingUndefined;
         }
     }
 
     @Override
-    public void identityRating(final Identity identity, final ResultCallback<Rating> callback) {
+    public void getRating(final Identity identity, final ResultCallback<Rating> callback) {
         threadExecutor.execute(() -> {
             Engine engine1 = null;
             try {
@@ -573,9 +573,9 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void identityRating(Address address, ResultCallback<Rating> callback) {
+    public void getRating(Address address, ResultCallback<Rating> callback) {
         Identity id = PEpUtils.createIdentity(address, context);
-        identityRating(id, callback);
+        getRating(id, callback);
     }
 
     @Override

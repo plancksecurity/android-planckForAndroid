@@ -92,12 +92,12 @@ public interface PEpProvider {
      * @param identity
      * @return identity trust status color
      */
-    Rating identityRating(Identity identity);
+    Rating getRating(Identity identity);
 
-    void identityRating(Identity identity, ResultCallback<Rating> callback);
-    void identityRating(Address address, ResultCallback<Rating> callback);
+    void getRating(Identity identity, ResultCallback<Rating> callback);
+    void getRating(Address address, ResultCallback<Rating> callback);
 
-    Rating identityRating(Address address);
+    Rating getRating(Address address);
 
     /**
      * Retrieve long trustwords for a given identity

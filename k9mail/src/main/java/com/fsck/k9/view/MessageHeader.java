@@ -55,13 +55,6 @@ import java.util.List;
 import java.util.Set;
 
 
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.ui.PEpContactBadge;
-
-import org.pEp.jniadapter.Rating;
-
-
-
 public class MessageHeader extends LinearLayout implements OnClickListener, OnLongClickListener {
     private Context mContext;
     private TextView mFromView;
@@ -420,7 +413,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     private void loadpEpRating(Address from, boolean isPrivacyProtected) {
         PEpProvider pEp = ((K9) getContext().getApplicationContext()).getpEpProvider();
-        pEp.identityRating(from, new PEpProvider.ResultCallback<Rating>() {
+        pEp.getRating(from, new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
                 pEpRating = rating;

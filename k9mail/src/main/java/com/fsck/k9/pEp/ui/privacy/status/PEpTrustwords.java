@@ -144,7 +144,7 @@ public class PEpTrustwords extends PepColoredActivity {
     }
 
     private void loadPartnerRating() {
-        getpEp().identityRating(partner, new PEpProvider.ResultCallback<Rating>() {
+        getpEp().getRating(partner, new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
                 setpEpRating(rating);
@@ -312,7 +312,7 @@ public class PEpTrustwords extends PepColoredActivity {
     @OnClick(R.id.wrongTrustwords)
     public void wrongTrustwords() {
         getpEp().keyCompromised(partner);
-        getpEp().identityRating(partner);
+        getpEp().getRating(partner);
         Intent returnIntent = new Intent();
         returnIntent.putExtra(PARTNER_POSITION, partnerPosition);
         setResult(Activity.RESULT_OK, returnIntent);
