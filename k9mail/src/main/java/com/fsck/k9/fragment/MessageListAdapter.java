@@ -66,14 +66,6 @@ public class MessageListAdapter extends CursorAdapter {
         selectedMessages.add(position);
     }
 
-    public Boolean isSelected(Integer position) {
-        return selectedMessages.contains(position);
-    }
-
-    public Boolean isSomethingSelected() {
-        return !selectedMessages.isEmpty();
-    }
-
     public void removeSelected(Integer position) {
         selectedMessages.remove(position);
     }
