@@ -443,6 +443,8 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         if (selectedCount > 0) {
             toggleMessageSelect(position);
         } else {
+            adapter.clearSelected();
+            this.selected.clear();
             if (showingThreadedList && cursor.getInt(THREAD_COUNT_COLUMN) > 1) {
                 Account account = getAccountFromCursor(cursor);
                 String folderName = cursor.getString(FOLDER_NAME_COLUMN);
@@ -1708,6 +1710,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             }
 
             selectedCount = 0;
+            this.selected.clear();
             for (int i = 0, end = adapter.getCount(); i < end; i++) {
                 Cursor cursor = (Cursor) adapter.getItem(i);
                 long uniqueId = cursor.getLong(uniqueIdColumn);
@@ -1734,6 +1737,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         } else {
             this.selected.clear();
             selectedCount = 0;
+            adapter.clearSelected();
             if (actionMode != null) {
                 actionMode.finish();
                 actionMode = null;
@@ -1766,8 +1770,10 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         boolean selected = this.selected.contains(uniqueId);
         if (!selected) {
             this.selected.add(uniqueId);
+            adapter.addSelected(cursor.getPosition());
         } else {
             this.selected.remove(uniqueId);
+            adapter.removeSelected(cursor.getPosition());
         }
 
         int selectedCountDelta = 1;
@@ -1778,20 +1784,20 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             }
         }
 
+        if (selected) {
+            selectedCount -= selectedCountDelta;
+        } else {
+            selectedCount += selectedCountDelta;
+        }
+
         if (actionMode != null) {
-            if (selectedCount == selectedCountDelta && selected) {
+            if (selectedCount <= 0 && selected) {
                 actionMode.finish();
                 actionMode = null;
                 return;
             }
         } else {
             startAndPrepareActionMode();
-        }
-
-        if (selected) {
-            selectedCount -= selectedCountDelta;
-        } else {
-            selectedCount += selectedCountDelta;
         }
 
         computeBatchDirection();

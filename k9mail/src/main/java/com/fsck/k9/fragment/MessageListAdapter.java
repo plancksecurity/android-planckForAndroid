@@ -79,7 +79,7 @@ public class MessageListAdapter extends CursorAdapter {
     }
 
     public void clearSelected() {
-        selectedMessages = new ArrayList<>();
+        selectedMessages.clear();
     }
 
     private enum Swipe {
@@ -291,7 +291,7 @@ public class MessageListAdapter extends CursorAdapter {
 
         View readView = view.findViewById(R.id.message_read_container);
         View unreadView = view.findViewById(R.id.message_unread_container);
-
+        View containerBackground = view.findViewById(R.id.container_background);
         if (read) {
             readView.setVisibility(View.VISIBLE);
             unreadView.setVisibility(GONE);
@@ -306,7 +306,6 @@ public class MessageListAdapter extends CursorAdapter {
         holder.date = (TextView) view.findViewById(R.id.date);
         holder.chip = view.findViewById(R.id.chip);
         holder.attachment = view.findViewById(R.id.attachment_icon);
-        holder.container = swipeView;
 
         if (fragment.previewLines == 0 && fragment.contactsPictureLoader == null) {
             view.findViewById(R.id.preview).setVisibility(GONE);
@@ -498,9 +497,10 @@ public class MessageListAdapter extends CursorAdapter {
         }
 
         holder.date.setText(displayDate);
+        holder.container = containerBackground;
 
         if (selectedMessages != null && selectedMessages.contains(holder.position)) {
-           holder.container.setBackgroundColor(context.getResources().getColor(R.color.pep_selected_item));
+            holder.container.setBackgroundColor(context.getResources().getColor(R.color.pep_selected_item));
         } else {
             holder.container.setBackgroundColor(context.getResources().getColor(android.R.color.transparent));
         }

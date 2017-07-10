@@ -5,7 +5,6 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.daimajia.swipe.SwipeLayout;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 
@@ -24,7 +23,7 @@ public class MessageViewHolder implements View.OnClickListener {
     public int position = -1;
     public PEpContactBadge contactBadge;
     public View attachment;
-    public SwipeLayout container;
+    public View container;
 
     public MessageViewHolder(MessageListFragment fragment) {
         this.fragment = fragment;
