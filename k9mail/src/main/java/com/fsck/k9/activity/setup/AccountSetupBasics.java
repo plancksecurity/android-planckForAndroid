@@ -134,7 +134,6 @@ public class AccountSetupBasics extends PepPermissionActivity {
     @Override
     public void onBackPressed() {
         goBack();
-        super.onBackPressed();
     }
 
     public AccountSetupNavigator getAccountSetupNavigator() {

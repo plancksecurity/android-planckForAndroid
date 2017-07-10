@@ -11,7 +11,6 @@ import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -21,7 +20,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -336,18 +334,6 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         getpEpComponent().inject(this);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        switch (itemId) {
-            case android.R.id.home: {
-                Toast.makeText(getActivity(), "PITA", Toast.LENGTH_SHORT).show();
-                //getActivity().finish();
-                return true;
-            }
-        }
-        return super.onOptionsItemSelected(item);
-    }
     /**
      * Called at the end of either {@code onCreate()} or
      * {@code onRestoreInstanceState()}, after the views have been initialized,
