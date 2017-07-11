@@ -675,8 +675,10 @@ public class PEpProviderImpl implements PEpProvider {
                 Message pEpMessage = new PEpMessageBuilder(mimeMessage).createMessage(context);
                 Rating rating;
                 if (isIncoming) {
+                    pEpMessage.setDir(Message.Direction.Incoming);
                     rating = engine.re_evaluate_message_rating(pEpMessage);
                 } else {
+                    pEpMessage.setDir(Message.Direction.Outgoing);
                     rating = engine.outgoing_message_rating(pEpMessage);
                 }
                 notifyLoaded(rating, resultCallback);
