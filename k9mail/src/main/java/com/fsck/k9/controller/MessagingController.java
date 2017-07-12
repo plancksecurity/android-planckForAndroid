@@ -121,6 +121,11 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import timber.log.Timber;
+
+import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
+import static com.fsck.k9.mail.Flag.X_REMOTE_COPY_STARTED;
+
 /**
  * Starts a long running (application) Thread that will run through commands
  * that require remote mailbox access. This class is used to serialize and
@@ -1721,8 +1726,7 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                         }
 
                                 decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
-
-                        if (!alreadyDecrypted) {                    // Store the updated message locally
+                        // Store the updated message locally
                     final LocalMessage localMessage = localFolder.storeSmallMessage(decryptedMessage, new Runnable() {
                         @Override
                         public void run() {
@@ -1731,6 +1735,7 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                     });
 
                     if (account.ispEpPrivacyProtected()
+                                    && !alreadyDecrypted
                                     && !account.isUntrustedSever()
                                     && result.flags == null
                                     && !decryptedMessage.isSet(Flag.X_PEP_NEVER_UNSECURE)) {
@@ -1758,7 +1763,6 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                                 // Notify with the localMessage so that we don't have to recalculate the content preview.
                                 notificationController.addNewMailNotification(account, localMessage, unreadBeforeStart);
                             }
-}
                         }} catch (MessagingException | RuntimeException me) {
                             addErrorMessage(account, null, me);
                             Timber.e(me,"SYNC: fetch small messages");
