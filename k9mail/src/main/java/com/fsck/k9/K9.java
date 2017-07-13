@@ -198,7 +198,7 @@ public class K9 extends Application {
      *
      * Feature is enabled when DEBUG == true
      */
-    public static final String ERROR_FOLDER_NAME = "K9mail-errors";
+    public static final String ERROR_FOLDER_NAME = "pEp-errors";
 
     /**
      * A reference to the {@link SharedPreferences} used for caching the last known database

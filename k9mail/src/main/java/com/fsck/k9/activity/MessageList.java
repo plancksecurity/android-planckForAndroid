@@ -58,6 +58,7 @@ import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.models.FolderModel;
 import com.fsck.k9.pEp.ui.PEpUIUtils;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageSwipeDirection;
@@ -309,8 +310,8 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     private boolean mMessageListWasDisplayed = false;
     private ViewSwitcher mViewSwitcher;
 
-    private RendererBuilder<LocalFolder> rendererFolderBuilder;
-    private RVRendererAdapter<LocalFolder> folderAdapter;
+    private RendererBuilder<FolderModel> rendererFolderBuilder;
+    private RVRendererAdapter<FolderModel> folderAdapter;
     private RendererBuilder<Account> rendererAccountBuilder;
     private RVRendererAdapter<Account> accountAdapter;
 
@@ -976,6 +977,15 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
     }
 
     private void populateFolders(List<LocalFolder> folders) {
+        List<FolderModel> folderModels = new ArrayList<>(folders.size());
+
+        for (LocalFolder folder : folders) {
+            FolderModel folderModel = new FolderModel();
+            folderModel.setAccount(mAccount);
+            folderModel.setLocalFolder(folder);
+            folderModels.add(folderModel);
+        }
+
         FolderRenderer folderRenderer = new FolderRenderer();
         rendererFolderBuilder = new RendererBuilder<>(folderRenderer);
 
@@ -990,7 +1000,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
             }
         });
-        ListAdapteeCollection<LocalFolder> adapteeCollection = new ListAdapteeCollection<>(folders);
+        ListAdapteeCollection<FolderModel> adapteeCollection = new ListAdapteeCollection<>(folderModels);
 
         folderAdapter = new RVRendererAdapter<>(rendererFolderBuilder, adapteeCollection);
 
