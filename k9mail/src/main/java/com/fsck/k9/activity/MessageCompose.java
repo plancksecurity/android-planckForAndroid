@@ -184,6 +184,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     private MenuItem alwaysSecureMenuItem;
     private PePUIArtefactCache uiCache;
     private boolean permissionAsked;
+    private RecipientMvpView recipientMvpView;
 
     public Account getAccount() {
         String accountUuid = (relatedMessageReference != null) ?
@@ -316,7 +317,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         chooseIdentityButton = (TextView) findViewById(R.id.identity);
         chooseIdentityButton.setOnClickListener(this);
 
-        RecipientMvpView recipientMvpView = new RecipientMvpView(this);
+        recipientMvpView = new RecipientMvpView(this);
         ComposePgpInlineDecider composePgpInlineDecider = new ComposePgpInlineDecider();
         recipientPresenter = new RecipientPresenter(getApplicationContext(), getLoaderManager(), recipientMvpView,
                 account, composePgpInlineDecider, new ReplyToParser(), this);
@@ -1093,6 +1094,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     }
 
     private void onPEpIndicator() {
+        recipientMvpView.setMessageReference(relatedMessageReference);
         handlePEpState(false);
         recipientPresenter.onPepIndicator();
     }
