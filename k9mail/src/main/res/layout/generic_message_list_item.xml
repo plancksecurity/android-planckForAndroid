@@ -49,7 +49,7 @@
     <!-- Bottom View End-->
 
     <!-- Surface View Start -->
-    <LinearLayout
+    <LinearLayout android:id="@+id/container_background"
         android:padding="10dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

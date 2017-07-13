@@ -443,6 +443,8 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         if (selectedCount > 0) {
             toggleMessageSelect(position);
         } else {
+            adapter.clearSelected();
+            this.selected.clear();
             if (showingThreadedList && cursor.getInt(THREAD_COUNT_COLUMN) > 1) {
                 Account account = getAccountFromCursor(cursor);
                 String folderName = cursor.getString(FOLDER_NAME_COLUMN);
@@ -848,6 +850,8 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 //        // Disable pull-to-refresh until the message list has been loaded
 //        swipeRefreshLayout.setEnabled(false);
 //    }
+    private boolean isLongClicked;
+
     private void initializeLayout() {
         listView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
         listView.setLongClickable(true);
@@ -857,114 +861,119 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                getActivity().startActionMode(new android.view.ActionMode.Callback() {
-                    @Override
-                    public boolean onCreateActionMode(android.view.ActionMode mode, Menu menu) {
-                        MenuInflater menuInflater = mode.getMenuInflater();
-                        menuInflater.inflate(R.menu.message_list_item_context, menu);
-                        return true;
-                    }
+                isLongClicked = true;
+                toggleMessageSelectWithAdapterPosition(position);
+                if (actionMode == null) {
+                    getActivity().startActionMode(new android.view.ActionMode.Callback() {
+                        @Override
+                        public boolean onCreateActionMode(android.view.ActionMode mode, Menu menu) {
+                            MenuInflater menuInflater = mode.getMenuInflater();
+                            menuInflater.inflate(R.menu.message_list_item_context, menu);
+                            return true;
+                        }
 
-                    @Override
-                    public boolean onPrepareActionMode(android.view.ActionMode mode, Menu menu) {
-                        return false;
-                    }
+                        @Override
+                        public boolean onPrepareActionMode(android.view.ActionMode mode, Menu menu) {
+                            return false;
+                        }
 
-                    @Override
-                    public boolean onActionItemClicked(android.view.ActionMode mode, MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.deselect:
-                            case R.id.select: {
-                                toggleMessageSelectWithAdapterPosition(position);
-                                break;
-                            }
-                            case R.id.reply: {
-                                onReply(getMessageAtPosition(position), PEpUtils.extractRating(getLocalMessageAtPosition(position)));
-                                break;
-                            }
-                            case R.id.reply_all: {
-                                onReplyAll(getMessageAtPosition(position), PEpUtils.extractRating(getLocalMessageAtPosition(position)));
-                                break;
-                            }
-                            case R.id.forward: {
-                                //TODO: Check how to avoid to retrive the whole message
-                                onForward(getMessageAtPosition(position), PEpUtils.extractRating(getLocalMessageAtPosition(position)));
-                                break;
-                            }
-                            case R.id.send_again: {
-                                onResendMessage(getMessageAtPosition(position));
-                                selectedCount = 0;
-                                break;
-                            }
-                            case R.id.same_sender: {
-                                Cursor cursor = (Cursor) adapter.getItem(position);
-                                String senderAddress = getSenderAddressFromCursor(cursor);
-                                if (senderAddress != null) {
-                                    fragmentListener.showMoreFromSameSender(senderAddress);
+                        @Override
+                        public boolean onActionItemClicked(android.view.ActionMode mode, MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.deselect:
+                                case R.id.select: {
+                                    toggleMessageSelectWithAdapterPosition(position);
+                                    break;
                                 }
-                                break;
-                            }
-                            case R.id.delete: {
-                                MessageReference message = getMessageAtPosition(position);
-                                onDelete(message);
-                                break;
-                            }
-                            case R.id.mark_as_read: {
-                                setFlag(position, Flag.SEEN, true);
-                                break;
-                            }
-                            case R.id.mark_as_unread: {
-                                setFlag(position, Flag.SEEN, false);
-                                break;
-                            }
-                            case R.id.flag: {
-                                setFlag(position, Flag.FLAGGED, true);
-                                break;
-                            }
-                            case R.id.unflag: {
-                                setFlag(position, Flag.FLAGGED, false);
-                                break;
-                            }
+                                case R.id.reply: {
+                                    onReply(getMessageAtPosition(position), PEpUtils.extractRating(getLocalMessageAtPosition(position)));
+                                    break;
+                                }
+                                case R.id.reply_all: {
+                                    onReplyAll(getMessageAtPosition(position), PEpUtils.extractRating(getLocalMessageAtPosition(position)));
+                                    break;
+                                }
+                                case R.id.forward: {
+                                    //TODO: Check how to avoid to retrive the whole message
+                                    onForward(getMessageAtPosition(position), PEpUtils.extractRating(getLocalMessageAtPosition(position)));
+                                    break;
+                                }
+                                case R.id.send_again: {
+                                    onResendMessage(getMessageAtPosition(position));
+                                    selectedCount = 0;
+                                    break;
+                                }
+                                case R.id.same_sender: {
+                                    Cursor cursor = (Cursor) adapter.getItem(position);
+                                    String senderAddress = getSenderAddressFromCursor(cursor);
+                                    if (senderAddress != null) {
+                                        fragmentListener.showMoreFromSameSender(senderAddress);
+                                    }
+                                    break;
+                                }
+                                case R.id.delete: {
+                                    MessageReference message = getMessageAtPosition(position);
+                                    onDelete(message);
+                                    break;
+                                }
+                                case R.id.mark_as_read: {
+                                    setFlag(position, Flag.SEEN, true);
+                                    break;
+                                }
+                                case R.id.mark_as_unread: {
+                                    setFlag(position, Flag.SEEN, false);
+                                    break;
+                                }
+                                case R.id.flag: {
+                                    setFlag(position, Flag.FLAGGED, true);
+                                    break;
+                                }
+                                case R.id.unflag: {
+                                    setFlag(position, Flag.FLAGGED, false);
+                                    break;
+                                }
 
-                            // only if the account supports this
-                            case R.id.archive: {
-                                onArchive(getMessageAtPosition(position));
-                                break;
-                            }
-                            case R.id.spam: {
-                                onSpam(getMessageAtPosition(position));
-                                break;
-                            }
-                            case R.id.move: {
-                                onMove(getMessageAtPosition(position));
-                                break;
-                            }
-                            case R.id.copy: {
-                                onCopy(getMessageAtPosition(position));
-                                break;
-                            }
+                                // only if the account supports this
+                                case R.id.archive: {
+                                    onArchive(getMessageAtPosition(position));
+                                    break;
+                                }
+                                case R.id.spam: {
+                                    onSpam(getMessageAtPosition(position));
+                                    break;
+                                }
+                                case R.id.move: {
+                                    onMove(getMessageAtPosition(position));
+                                    break;
+                                }
+                                case R.id.copy: {
+                                    onCopy(getMessageAtPosition(position));
+                                    break;
+                                }
 
-                            // debug options
-                            case R.id.debug_delete_locally: {
-                                onDebugClearLocally(getMessageAtPosition(position));
-                                break;
+                                // debug options
+                                case R.id.debug_delete_locally: {
+                                    onDebugClearLocally(getMessageAtPosition(position));
+                                    break;
+                                }
                             }
+                            selected.clear();
+                            adapter.clearSelected();
+                            if (actionMode == null) {
+                                startAndPrepareActionMode();
+                            }
+                            actionMode.finish();
+                            actionMode = null;
+                            return false;
                         }
-                        selected.clear();
-                        if (actionMode == null) {
-                            startAndPrepareActionMode();
-                        }
-                        actionMode.finish();
-                        actionMode = null;
-                        return true;
-                    }
 
-                    @Override
-                    public void onDestroyActionMode(android.view.ActionMode mode) {
-                        actionMode = null;
-                        setSelectionState(false);
-                    }
-                });
+                        @Override
+                        public void onDestroyActionMode(android.view.ActionMode mode) {
+                            actionMode = null;
+                            setSelectionState(false);
+                        }
+                    });
+                }
                 return true;
             }
         });
@@ -977,7 +986,10 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                onMessageClick(parent, view, position, id);
+                if (!isLongClicked) {
+                    onMessageClick(parent, view, position, id);
+                }
+                isLongClicked = false;
             }
         });
     }
@@ -1698,11 +1710,12 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             }
 
             selectedCount = 0;
+            this.selected.clear();
             for (int i = 0, end = adapter.getCount(); i < end; i++) {
                 Cursor cursor = (Cursor) adapter.getItem(i);
                 long uniqueId = cursor.getLong(uniqueIdColumn);
                 this.selected.add(uniqueId);
-
+                adapter.addSelected(cursor.getPosition());
                 if (showingThreadedList) {
                     int threadCount = cursor.getInt(THREAD_COUNT_COLUMN);
                     selectedCount += (threadCount > 1) ? threadCount : 1;
@@ -1717,9 +1730,14 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             computeBatchDirection();
             updateActionModeTitle();
             computeSelectAllVisibility();
+            if (selectedCount == 0 && actionMode != null) {
+                actionMode.finish();
+                actionMode = null;
+            }
         } else {
             this.selected.clear();
             selectedCount = 0;
+            adapter.clearSelected();
             if (actionMode != null) {
                 actionMode.finish();
                 actionMode = null;
@@ -1752,8 +1770,10 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         boolean selected = this.selected.contains(uniqueId);
         if (!selected) {
             this.selected.add(uniqueId);
+            adapter.addSelected(cursor.getPosition());
         } else {
             this.selected.remove(uniqueId);
+            adapter.removeSelected(cursor.getPosition());
         }
 
         int selectedCountDelta = 1;
@@ -1764,20 +1784,20 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             }
         }
 
+        if (selected) {
+            selectedCount -= selectedCountDelta;
+        } else {
+            selectedCount += selectedCountDelta;
+        }
+
         if (actionMode != null) {
-            if (selectedCount == selectedCountDelta && selected) {
+            if (selectedCount <= 0 && selected) {
                 actionMode.finish();
                 actionMode = null;
                 return;
             }
         } else {
             startAndPrepareActionMode();
-        }
-
-        if (selected) {
-            selectedCount -= selectedCountDelta;
-        } else {
-            selectedCount += selectedCountDelta;
         }
 
         computeBatchDirection();

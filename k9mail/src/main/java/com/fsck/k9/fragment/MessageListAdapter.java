@@ -36,6 +36,9 @@ import com.fsck.k9.pEp.ui.PEpContactBadge;
 
 import org.pEp.jniadapter.Rating;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static android.view.View.GONE;
 import static com.fsck.k9.fragment.MLFProjectionInfo.ANSWERED_COLUMN;
 import static com.fsck.k9.fragment.MLFProjectionInfo.ATTACHMENT_COUNT_COLUMN;
@@ -56,6 +59,20 @@ import static com.fsck.k9.fragment.MLFProjectionInfo.UID_COLUMN;
 
 
 public class MessageListAdapter extends CursorAdapter {
+
+    private List<Integer> selectedMessages = new ArrayList<>();
+
+    public void addSelected(Integer position) {
+        selectedMessages.add(position);
+    }
+
+    public void removeSelected(Integer position) {
+        selectedMessages.remove(position);
+    }
+
+    public void clearSelected() {
+        selectedMessages.clear();
+    }
 
     private enum Swipe {
         NO_SWIPE, LEFT, RIGHT;
@@ -266,6 +283,7 @@ public class MessageListAdapter extends CursorAdapter {
 
         View readView = view.findViewById(R.id.message_read_container);
         View unreadView = view.findViewById(R.id.message_unread_container);
+        View containerBackground = view.findViewById(R.id.container_background);
         if (read) {
             readView.setVisibility(View.VISIBLE);
             unreadView.setVisibility(GONE);
@@ -471,6 +489,13 @@ public class MessageListAdapter extends CursorAdapter {
         }
 
         holder.date.setText(displayDate);
+        holder.container = containerBackground;
+
+        if (selectedMessages != null && selectedMessages.contains(holder.position)) {
+            holder.container.setBackgroundColor(context.getResources().getColor(R.color.pep_selected_item));
+        } else {
+            holder.container.setBackgroundColor(context.getResources().getColor(android.R.color.transparent));
+        }
     }
 
 
