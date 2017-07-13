@@ -59,31 +59,31 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized Rating getPrivacyState(com.fsck.k9.mail.Message message) {
+    public synchronized Rating getRating(com.fsck.k9.mail.Message message) {
         Address from = message.getFrom()[0];                            // FIXME: From is an array?!
         List<Address> to = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO));
         List<Address> cc = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC));
         List<Address> bcc = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC));
-        return getPrivacyState(from, to, cc, bcc);
+        return getRating(from, to, cc, bcc);
     }
 
     @Override
-    public void getPrivacyState(com.fsck.k9.mail.Message message, ResultCallback<Rating> callback) {
+    public void getRating(com.fsck.k9.mail.Message message, ResultCallback<Rating> callback) {
         Address from = message.getFrom()[0];                            // FIXME: From is an array?!
         List<Address> to = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO));
         List<Address> cc = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC));
         List<Address> bcc = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC));
-        getPrivacyState(from, to, cc, bcc, callback);
+        getRating(from, to, cc, bcc, callback);
     }
 
-    private Rating getPrivacyState(Message message) {
+    private Rating getRating(Message message) {
         try {
             if (engine == null) {
                 createEngineSession();
             }
             return engine.outgoing_message_rating(message);
         } catch (pEpException e) {
-            Log.e(TAG, "during getPrivacyState:", e);
+            Log.e(TAG, "during getRating:", e);
         }
         return Rating.pEpRatingUndefined;
     }
@@ -112,7 +112,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     //Don't instantiate a new engine
     @Override
-    public synchronized Rating getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses) {
+    public synchronized Rating getRating(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses) {
         if (bccAddresses.size()  > 0){
             return Rating.pEpRatingUnencrypted;
         }
@@ -140,7 +140,7 @@ public class PEpProviderImpl implements PEpProvider {
             testee.setDir(Message.Direction.Outgoing);
 
             Rating result = engine.outgoing_message_rating(testee);   // stupid way to be able to patch the value in debugger
-            Log.i(TAG, "getPrivacyState " + result.name());
+            Log.i(TAG, "getRating " + result.name());
 
             return result;
         } catch (Throwable e) {
@@ -153,7 +153,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback) {
+    public void getRating(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback) {
         threadExecutor.execute(() -> {
             if (bccAddresses.size()  > 0) {
                 notifyLoaded(Rating.pEpRatingUnencrypted, callback);
@@ -181,7 +181,7 @@ public class PEpProviderImpl implements PEpProvider {
                 testee.setDir(Message.Direction.Outgoing);
 
                 Rating result = engine.outgoing_message_rating(testee);   // stupid way to be able to patch the value in debugger
-                Log.i(TAG, "getPrivacyState " + result.name());
+                Log.i(TAG, "getRating " + result.name());
 
                 notifyLoaded(result, callback);
             } catch (Throwable e) {
@@ -198,13 +198,13 @@ public class PEpProviderImpl implements PEpProvider {
 
     private boolean isUnencryptedForSome(List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses) {
         for (Address toAddress : toAddresses) {
-            if (identityRating(toAddress).value > Rating.pEpRatingUnencrypted.value) return true;
+            if (getRating(toAddress).value > Rating.pEpRatingUnencrypted.value) return true;
         }
         for (Address ccAddress : ccAddresses) {
-            if (identityRating(ccAddress).value > Rating.pEpRatingUnencrypted.value) return true;
+            if (getRating(ccAddress).value > Rating.pEpRatingUnencrypted.value) return true;
         }
         for (Address bccAddress : bccAddresses) {
-            if (identityRating(bccAddress).value > Rating.pEpRatingUnencrypted.value) return true;
+            if (getRating(bccAddress).value > Rating.pEpRatingUnencrypted.value) return true;
         }
         return false;
     }
@@ -525,7 +525,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     private boolean isEncrypted(Identity identity) {
-        return identityRating(identity).value > Rating.pEpRatingUnencrypted.value;
+        return getRating(identity).value > Rating.pEpRatingUnencrypted.value;
     }
 
     private Vector<String> convertExtraKeys(String[] extraKeys) {
@@ -537,25 +537,25 @@ public class PEpProviderImpl implements PEpProvider {
 
 
     @Override
-    public synchronized Rating identityRating(Address address) {
+    public synchronized Rating getRating(Address address) {
         Identity ident = PEpUtils.createIdentity(address, context);
-        return identityRating(ident);
+        return getRating(ident);
     }
 
     @Override
-    public synchronized Rating identityRating(Identity ident) {
+    public synchronized Rating getRating(Identity ident) {
         createEngineInstanceIfNeeded();
         try {
             Rating result =  engine.identity_rating(ident);
             return result;
         } catch (pEpException e) {
-            Log.e(TAG, "identityRating: ", e);
+            Log.e(TAG, "getRating: ", e);
             return Rating.pEpRatingUndefined;
         }
     }
 
     @Override
-    public void identityRating(final Identity identity, final ResultCallback<Rating> callback) {
+    public void getRating(final Identity identity, final ResultCallback<Rating> callback) {
         threadExecutor.execute(() -> {
             Engine engine1 = null;
             try {
@@ -570,6 +570,12 @@ public class PEpProviderImpl implements PEpProvider {
                 }
             }
         });
+    }
+
+    @Override
+    public void getRating(Address address, ResultCallback<Rating> callback) {
+        Identity id = PEpUtils.createIdentity(address, context);
+        getRating(id, callback);
     }
 
     @Override

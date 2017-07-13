@@ -941,7 +941,7 @@ public class RecipientPresenter implements PermissionPingCallback {
                 bccAdresses = newBccAdresses;
                 recipientMvpView.lockSendButton();
                 pEp = ((K9) context.getApplicationContext()).getpEpProvider();
-                pEp.getPrivacyState(fromAddress, toAdresses, ccAdresses, bccAdresses, new PEpProvider.ResultCallback<Rating>() {
+                pEp.getRating(fromAddress, toAdresses, ccAdresses, bccAdresses, new PEpProvider.ResultCallback<Rating>() {
                     @Override
                     public void onLoaded(Rating rating) {
                         privacyState = rating;

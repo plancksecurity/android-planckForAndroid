@@ -40,7 +40,7 @@ public class PEpIdentityMapper {
         pEpIdentity.me = recipient.me;
         pEpIdentity.user_id = recipient.user_id;
         pEpIdentity.username = recipient.username;
-        pEpIdentity.setRating(pEpProvider.identityRating(recipient));
+        pEpIdentity.setRating(pEpProvider.getRating(recipient));
         return pEpIdentity;
     }
 }

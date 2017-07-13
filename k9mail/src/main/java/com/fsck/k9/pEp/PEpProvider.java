@@ -46,12 +46,12 @@ public interface PEpProvider {
      * @param bccAddresses bcc addresses
      * @return the privacy level of a mail sent to the set of recipients
      */
-    Rating getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses);
-    Rating getPrivacyState(com.fsck.k9.mail.Message message);
+    Rating getRating(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses);
+    Rating getRating(com.fsck.k9.mail.Message message);
 
-    void getPrivacyState(com.fsck.k9.mail.Message message, ResultCallback<Rating> callback);
+    void getRating(com.fsck.k9.mail.Message message, ResultCallback<Rating> callback);
 
-    void getPrivacyState(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback);
+    void getRating(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback);
 
     /**
      * Decrypts one k9 MimeMessage. Hides all the black magic associated with the real
@@ -92,11 +92,12 @@ public interface PEpProvider {
      * @param identity
      * @return identity trust status color
      */
-    Rating identityRating(Identity identity);
+    Rating getRating(Identity identity);
 
-    void identityRating(Identity identity, ResultCallback<Rating> callback);
+    void getRating(Identity identity, ResultCallback<Rating> callback);
+    void getRating(Address address, ResultCallback<Rating> callback);
 
-    Rating identityRating(Address address);
+    Rating getRating(Address address);
 
     /**
      * Retrieve long trustwords for a given identity

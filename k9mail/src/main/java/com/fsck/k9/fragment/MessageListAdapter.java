@@ -377,7 +377,7 @@ public class MessageListAdapter extends CursorAdapter {
 //                    List<Address> to = Arrays.asList(toAddrs);
 //                    List<Address> cc = Arrays.asList(ccAddrs);j
 //                    List<Address> bcc = Arrays.asList(new Address[0]);
-//                    holder.contactBadge.setpEpRating(((K9) context.getApplicationContext()).getpEpProvider().getPrivacyState(from, to, cc, bcc));
+//                    holder.contactBadge.setpEpRating(((K9) context.getApplicationContext()).getpEpProvider().getRating(from, to, cc, bcc));
                     /*
                      * At least in Android 2.2 a different background + padding is used when no
                      * email address is available. ListView reuses the views but QuickContactBadge

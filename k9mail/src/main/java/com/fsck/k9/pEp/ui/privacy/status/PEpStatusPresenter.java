@@ -7,7 +7,6 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageLoaderHelper;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
-import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.pEp.PEpProvider;
@@ -91,7 +90,7 @@ public class PEpStatusPresenter implements Presenter {
         for (PEpIdentity identity : identities) {
             addresses.add(new Address(identity.address));
         }
-        pEpProvider.getPrivacyState(senderAddress, addresses, Collections.emptyList(), Collections.emptyList(), new PEpProvider.ResultCallback<Rating>() {
+        pEpProvider.getRating(senderAddress, addresses, Collections.emptyList(), Collections.emptyList(), new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
                 onRatingChanged(rating);
@@ -144,7 +143,7 @@ public class PEpStatusPresenter implements Presenter {
 
     private PEpIdentity updateRecipient(Identity recipient, Identity id) {
         PEpIdentity pEpIdentity = pEpIdentityMapper.mapRecipient(recipient);
-        pEpIdentity.setRating(pEpProvider.identityRating(recipient));
+        pEpIdentity.setRating(pEpProvider.getRating(recipient));
         return pEpIdentity;
     }
 
