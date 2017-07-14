@@ -10,6 +10,7 @@ import com.fsck.k9.pEp.ui.activities.PermissionsActivity;
 import com.fsck.k9.pEp.ui.blacklist.PepBlacklist;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
+import com.fsck.k9.pEp.ui.fragments.AccountSetupOptionsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys;
 import com.fsck.k9.pEp.ui.keysync.KeysyncManagement;
@@ -47,6 +48,8 @@ import dagger.Component;
     void inject(AccountSetupOutgoingFragment accountSetupOutgoingFragment);
 
     void inject(AccountSetupBasics accountSetupBasics);
+
+    void inject(AccountSetupOptionsFragment accountSetupOptionsFragment);
 
     void inject(MessageList messageList);
 }
