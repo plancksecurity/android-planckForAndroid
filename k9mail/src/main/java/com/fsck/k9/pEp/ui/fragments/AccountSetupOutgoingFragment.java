@@ -253,7 +253,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
 
                     @Override
                     public void onLoaded(PEpSettingsChecker.Redirection redirection) {
-                        AccountSetupNames.actionSetNames(getActivity(), mAccount);
+                        goForward();
                     }
                 });
     }
@@ -511,7 +511,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     }
 
     private void goForward() {
-        getActivity().finish();
+        accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
     }
 
     protected void onNext() {

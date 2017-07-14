@@ -45,6 +45,7 @@ import com.fsck.k9.pEp.PepPermissionActivity;
 import com.fsck.k9.pEp.UIUtils;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.pEp.ui.tools.SetupAccountType;
 import com.fsck.k9.view.ClientCertificateSpinner;
 
 import java.io.Serializable;
@@ -55,7 +56,10 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 import static android.app.Activity.RESULT_OK;
+import static com.fsck.k9.mail.ServerSettings.Type.IMAP;
 
 public class AccountSetupBasicsFragment extends PEpFragment
         implements View.OnClickListener, TextWatcher, CompoundButton.OnCheckedChangeListener, ClientCertificateSpinner.OnClientCertificateChangedListener {
@@ -92,6 +96,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private CheckBox mShowPasswordCheckBox;
 
     @Inject PEpSettingsChecker pEpSettingsChecker;
+    @Inject SetupAccountType setupAccountType;
 
     @Nullable
     @Override
@@ -558,7 +563,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
                             @Override
                             public void onLoaded(PEpSettingsChecker.Redirection redirection) {
-                                accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
+                                goForward();
                             }
                         });
             } else {
@@ -572,7 +577,18 @@ public class AccountSetupBasicsFragment extends PEpFragment
         }
     }
 
+    private void goForward() {
+        try {
+        mAccount.save(Preferences.getPreferences(getActivity()));
+            setupAccountType.setupStoreAndSmtpTransport(mAccount, IMAP, "imap+ssl+");
+        accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
+        } catch (URISyntaxException e) {
+            Timber.e(e);
+        }
+    }
+
     private void onManualSetup() {
+        ((AccountSetupBasics) getActivity()).setManualSetupRequired(true);
         String email;
         if (mOAuth2CheckBox.isChecked()) {
             email = mAccountSpinner.getSelectedItem().toString();
@@ -605,7 +621,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
             password = mPasswordView.getText().toString();
         }
 
-        if (mAccount == null) {
+        if (mAccount == null || Preferences.getPreferences(getActivity()).getAccount(mAccount.getUuid()) == null) {
             mAccount = Preferences.getPreferences(getActivity()).newAccount();
         }
         mAccount.setName(getOwnerName());
@@ -626,7 +642,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         setupFolderNames(domain);
 
         saveCredentialsInPreferences();
-        accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
+        goForward();
     }
 
     private void setupFolderNames(String domain) {

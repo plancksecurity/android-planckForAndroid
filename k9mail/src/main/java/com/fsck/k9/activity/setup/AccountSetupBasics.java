@@ -35,6 +35,7 @@ public class AccountSetupBasics extends PepPermissionActivity {
     private static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
     private static final int DIALOG_NO_FILE_MANAGER = 4;
     private AccountSetupBasicsFragment accountSetupBasicsFragment;
+    public boolean isManualSetupRequired;
     @Inject AccountSetupNavigator accountSetupNavigator;
 
     public static void actionNewAccount(Context context) {
@@ -142,7 +143,7 @@ public class AccountSetupBasics extends PepPermissionActivity {
 
     @Override
     protected void onDestroy() {
-        if (!accountSetupNavigator.getCurrentStep().equals(AccountSetupNavigator.Step.OUTGOING)) {
+        if (!accountSetupNavigator.getCurrentStep().equals(AccountSetupNavigator.Step.OUTGOING) && isManualSetupRequired) {
             deleteAccount();
         }
         super.onDestroy();
@@ -150,5 +151,13 @@ public class AccountSetupBasics extends PepPermissionActivity {
 
     private void deleteAccount() {
         Preferences.getPreferences(getApplicationContext()).deleteAccount(accountSetupNavigator.getAccount());
+    }
+
+    public boolean isManualSetupRequired() {
+        return isManualSetupRequired;
+    }
+
+    public void setManualSetupRequired(boolean manualSetupRequired) {
+        isManualSetupRequired = manualSetupRequired;
     }
 }

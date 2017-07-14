@@ -78,13 +78,6 @@ public class ChooseAccountTypeFragment extends Fragment {
         return rootView;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        accountSetupNavigator = ((AccountSetupBasics) getActivity()).getAccountSetupNavigator();
-        accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.ACCOUNT_TYPE, mAccount);
-    }
-
     private void onDavClicked() {
         try {
             setupDav();

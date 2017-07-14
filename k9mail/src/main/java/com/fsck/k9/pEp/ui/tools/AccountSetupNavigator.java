@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import com.fsck.k9.Account;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
+import com.fsck.k9.pEp.ui.fragments.AccountSetupOptionsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
 import com.fsck.k9.pEp.ui.fragments.ChooseAccountTypeFragment;
 
@@ -19,9 +20,9 @@ public class AccountSetupNavigator {
 
     public enum Step {
         BASICS,
-        ACCOUNT_TYPE,
         INCOMING,
-        OUTGOING
+        OUTGOING,
+        OPTIONS
     }
 
     private Step currentStep;
@@ -36,11 +37,23 @@ public class AccountSetupNavigator {
 
     public void goForward(FragmentManager fragmentManager, Account account, @Nullable Boolean makeDefault) {
         if (currentStep.equals(Step.BASICS)) {
-            goFromBasicsToChooseAccountTypesSettings(fragmentManager, account, makeDefault);
-        } else if (currentStep.equals(Step.ACCOUNT_TYPE)) {
             goFromChooseAccountTypeToIncomingSettings(fragmentManager, account, makeDefault);
         } else if(currentStep.equals(Step.INCOMING)) {
             goFromIncomingSettingsToOutgoingSettings(fragmentManager, account, makeDefault);
+        } else if(currentStep.equals(Step.OUTGOING)) {
+            goFromOutgoingSettingsToAccountSetupOptions(fragmentManager, account, makeDefault);
+        }
+    }
+
+    private void goFromOutgoingSettingsToAccountSetupOptions(FragmentManager fragmentManager, Account account, Boolean makeDefault) {
+        if (makeDefault != null) {
+            AccountSetupOptionsFragment accountSetupOptionsFragment = AccountSetupOptionsFragment.actionOptions(account, makeDefault);
+            fragmentManager
+                    .beginTransaction()
+                    .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                    .replace(R.id.account_setup_container, accountSetupOptionsFragment, "accountSetupOptionsFragment")
+                    .addToBackStack(null)
+                    .commit();
         }
     }
 
@@ -87,7 +100,6 @@ public class AccountSetupNavigator {
 
     public void goBack(Activity activity, FragmentManager fragmentManager) {
         if (!currentStep.equals(Step.BASICS)) {
-            //fragmentManager.popBackStack ("AccountSetupBasicsFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE);
             fragmentManager.popBackStack();
         } else {
             activity.finish();
@@ -99,7 +111,7 @@ public class AccountSetupNavigator {
     }
 
     public Boolean shouldDeleteAccount() {
-        return currentStep.equals(Step.ACCOUNT_TYPE);
+        return currentStep.equals(Step.INCOMING);
     }
 
     public void setCurrentStep(Step currentStep, Account account) {
