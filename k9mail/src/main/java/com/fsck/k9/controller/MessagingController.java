@@ -1724,7 +1724,7 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                                 decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
 
                         if (!alreadyDecrypted ||
-                                alreadyDecrypted && !account.ispEpPrivacyProtected()) {                    // Store the updated message locally
+                                alreadyDecrypted && !account.isUntrustedSever()) {                    // Store the updated message locally
                     final LocalMessage localMessage = localFolder.storeSmallMessage(decryptedMessage, new Runnable() {
                         @Override
                         public void run() {
