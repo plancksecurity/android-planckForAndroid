@@ -1,16 +1,12 @@
 package com.fsck.k9.pEp.ui.fragments;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
-import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.controller.MessagingController;
-import com.fsck.k9.mail.AuthenticationFailedException;
-import com.fsck.k9.mail.CertificateValidationException;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.Transport;
@@ -44,13 +40,13 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
     }
 
     @Override
-    public void checkSettings(String accountUuid,
+    public void checkSettings(Account account,
                               AccountSetupCheckSettings.CheckDirection checkDirection,
                               Boolean makeDefault, String procedence, Boolean isEditing,
                               ResultCallback<Redirection> callback) {
         this.threadExecutor = new JobExecutor();
         this.postExecutionThread = new UIThread();
-        this.account = Preferences.getPreferences(context).getAccount(accountUuid);
+        this.account = account;
         this.direction = checkDirection;
         this.makeDefault = makeDefault;
         this.procedence = procedence;
@@ -73,21 +69,14 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
                     savePreferences();
                     notifyLoaded(PEpSettingsChecker.Redirection.TO_APP);
                 }
-            } catch (AuthenticationFailedException afe) {
-                Log.e(K9.LOG_TAG, "Error while testing settings (auth failed)", afe);
-                onError(afe.getMessage() == null ? "" : afe.getMessage());
-            } catch (CertificateValidationException cve) {
-                //TODO handleCertificateValidationException(cve);
-            } catch (Exception e) {
-                Log.e(K9.LOG_TAG, "Error while testing settings", e);
-                String message = e.getMessage() == null ? "" : e.getMessage();
-                onError(message);
+            } catch (Exception exception) {
+                onError(exception);
             }
         });
     }
 
-    private void onError(String customMessage) {
-        this.postExecutionThread.post(() -> callback.onError(customMessage));
+    private void onError(Exception exception) {
+        this.postExecutionThread.post(() -> callback.onError(exception));
     }
 
     private void notifyLoaded(PEpSettingsChecker.Redirection redirection) {
