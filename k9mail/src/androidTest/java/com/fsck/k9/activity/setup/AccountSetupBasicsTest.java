@@ -8,6 +8,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
 
 import org.junit.Before;
@@ -15,11 +16,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.replaceText;
@@ -102,16 +98,9 @@ public class AccountSetupBasicsTest {
                 withParent(isAssignableFrom(Toolbar.class))))
                 .check(matches);
 
-        try {
-            InputStream inputStream = getInstrumentation().getTargetContext().getResources().getAssets().open("test_credentials.properties");
-            Properties properties = new Properties();
-            properties.load(inputStream);
-            String server = properties.getProperty("TEST_SERVER");
+        String server = BuildConfig.PEP_TEST_EMAIL_SERVER;
 
-            onView(withId(R.id.account_server)).perform(replaceText(server));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        onView(withId(R.id.account_server)).perform(replaceText(server));
         onView(withId(R.id.next)).perform(click());
     }
 
@@ -125,17 +114,10 @@ public class AccountSetupBasicsTest {
                 withParent(isAssignableFrom(Toolbar.class))))
                 .check(matches(withText(R.string.account_setup_basics_title)));
 
-        Properties properties = new Properties();
-        try {
-            InputStream inputStream = getInstrumentation().getTargetContext().getResources().getAssets().open("test_credentials.properties");
-            properties.load(inputStream);
-            String email = properties.getProperty("TEST_EMAIL");
-            String pass = properties.getProperty("TEST_PASSWORD");
-            onView(withId(R.id.account_email)).perform(replaceText(email));
-            onView(withId(R.id.account_password)).perform(replaceText(pass));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String email = BuildConfig.PEP_TEST_EMAIL_ADDRESS;
+        String pass = BuildConfig.PEP_TEST_EMAIL_PASSWORD;
+        onView(withId(R.id.account_email)).perform(replaceText(email));
+        onView(withId(R.id.account_password)).perform(replaceText(pass));
     }
 
     private void startActivity() {
