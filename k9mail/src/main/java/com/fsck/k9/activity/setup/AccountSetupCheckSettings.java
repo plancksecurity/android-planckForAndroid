@@ -11,7 +11,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import timber.log.Timber;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,7 +22,6 @@ import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
@@ -33,14 +32,10 @@ import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.TransportProvider;
-import com.fsck.k9.mail.store.webdav.WebDavStore;
 import com.fsck.k9.mail.filter.Hex;
 import com.fsck.k9.mail.store.webdav.WebDavStore;
-
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import com.fsck.k9.mail.store.webdav.WebDavStore;
+import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpCertificateException;
+import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpSetupException;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -50,6 +45,8 @@ import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+
+import timber.log.Timber;
 
 /**
  * Checks the given settings to make sure that they can be used to send and
@@ -114,19 +111,19 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
         new CheckAccountTask(mAccount).execute(mDirection);
     }
 
-    private void handleCertificateValidationException(CertificateValidationException cve) {
-        Timber.e(cve, "Error while testing settings");
+    private void handleCertificateValidationException(PEpSetupException cve) {
+        PEpCertificateException certificateException = (PEpCertificateException) cve;
+        Log.e(K9.LOG_TAG, "Error while testing settings (cve)", certificateException.getOriginalException());
 
-        X509Certificate[] chain = cve.getCertChain();
         // Avoid NullPointerException in acceptKeyDialog()
-        if (chain != null) {
+        if (certificateException.hasCertChain()) {
             acceptKeyDialog(
                     R.string.account_setup_failed_dlg_certificate_message_fmt,
-                    cve);
+                    certificateException.getOriginalException());
         } else {
             showErrorDialog(
                     R.string.account_setup_failed_dlg_server_message_fmt,
-                    errorMessageForCertificateException(cve));
+                    errorMessageForCertificateException(certificateException.getOriginalException()));
         }
     }
 
@@ -468,7 +465,7 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
                         R.string.account_setup_failed_dlg_auth_message_fmt,
                         afe.getMessage() == null ? "" : afe.getMessage());
             } catch (CertificateValidationException cve) {
-                handleCertificateValidationException(cve);
+                handleCertificateValidationException(new PEpCertificateException(cve));
             } catch (Exception e) {
                 Timber.e(e, "Error while testing settings");
                 String message = e.getMessage() == null ? "" : e.getMessage();
