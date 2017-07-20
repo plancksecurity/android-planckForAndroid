@@ -37,12 +37,13 @@ import com.fsck.k9.activity.setup.ConnectionSecurityAdapter;
 import com.fsck.k9.activity.setup.ConnectionSecurityHolder;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.AuthType;
-import com.fsck.k9.mail.AuthenticationFailedException;
 import com.fsck.k9.mail.CertificateValidationException;
 import com.fsck.k9.mail.ConnectionSecurity;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.filter.Hex;
+import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpCertificateException;
+import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpSetupException;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.view.ClientCertificateSpinner;
@@ -257,7 +258,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
                 false,
                 new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
                     @Override
-                    public void onError(Exception exception) {
+                    public void onError(PEpSetupException exception) {
                         handleErrorCheckingSettings(exception);
                     }
 
@@ -266,6 +267,32 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
                         goForward();
                     }
                 });
+    }
+
+    private void enableViewGroup(boolean enable, ViewGroup viewGroup) {
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            View child = viewGroup.getChildAt(i);
+            if (child instanceof ViewGroup) {
+                enableViewGroup(enable, ((ViewGroup) child));
+            } else {
+                child.setEnabled(enable);
+            }
+        }
+
+    }
+
+    private void handleErrorCheckingSettings(PEpSetupException exception) {
+        if (exception.isCertificateAcceptanceNeeded()) {
+            handleCertificateValidationException(exception);
+        } else {
+            showErrorDialog(
+                    exception.getTitleResource(),
+                    exception.getMessage() == null ? "" : exception.getMessage());
+            Preferences.getPreferences(getActivity()).deleteAccount(mAccount);
+        }
+        nextProgressBar.hide();
+        mNextButton.setVisibility(View.VISIBLE);
+        enableViewGroup(true, (ViewGroup) rootView);
     }
 
     @Override
@@ -599,18 +626,20 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.OUTGOING, mAccount);
     }
 
-    private void handleErrorCheckingSettings(Exception exception) {
-        if (exception instanceof AuthenticationFailedException) {
-            showErrorDialog(
-                    R.string.account_setup_failed_dlg_auth_message_fmt,
-                    exception.getMessage() == null ? "" : exception.getMessage());
-        } else if (exception instanceof CertificateValidationException) {
-            handleCertificateValidationException((CertificateValidationException) exception);
+    private void handleCertificateValidationException(PEpSetupException cve) {
+        PEpCertificateException certificateException = (PEpCertificateException) cve;
+        Log.e(K9.LOG_TAG, "Error while testing settings (cve)", certificateException.getOriginalException());
+
+        // Avoid NullPointerException in acceptKeyDialog()
+        if (certificateException.hasCertChain()) {
+            acceptKeyDialog(
+                    R.string.account_setup_failed_dlg_certificate_message_fmt,
+                    certificateException.getOriginalException());
         } else {
-            showErrorDialog(R.string.account_setup_failed_dlg_server_message_fmt, exception.getMessage());
+            showErrorDialog(
+                    R.string.account_setup_failed_dlg_server_message_fmt,
+                    errorMessageForCertificateException(certificateException.getOriginalException()));
         }
-        nextProgressBar.hide();
-        mNextButton.setVisibility(View.VISIBLE);
     }
 
     private void showErrorDialog(int stringResource, String message) {

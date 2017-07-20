@@ -7,6 +7,8 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.controller.MessagingController;
+import com.fsck.k9.mail.AuthenticationFailedException;
+import com.fsck.k9.mail.CertificateValidationException;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.Transport;
@@ -15,6 +17,10 @@ import com.fsck.k9.pEp.infrastructure.threading.JobExecutor;
 import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
 import com.fsck.k9.pEp.infrastructure.threading.UIThread;
+import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpAuthenticationException;
+import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpCertificateException;
+import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpMessagingException;
+import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpSetupException;
 
 import javax.inject.Inject;
 
@@ -69,13 +75,17 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
                     savePreferences();
                     notifyLoaded(PEpSettingsChecker.Redirection.TO_APP);
                 }
-            } catch (Exception exception) {
-                onError(exception);
+            } catch (AuthenticationFailedException exception) {
+                onError(new PEpAuthenticationException(exception));
+            } catch (CertificateValidationException exception) {
+                onError(new PEpCertificateException(exception));
+            } catch (MessagingException exception) {
+                onError(new PEpMessagingException(exception));
             }
         });
     }
 
-    private void onError(Exception exception) {
+    private void onError(PEpSetupException exception) {
         this.postExecutionThread.post(() -> callback.onError(exception));
     }
 
