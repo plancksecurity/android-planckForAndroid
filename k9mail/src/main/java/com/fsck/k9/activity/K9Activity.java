@@ -44,6 +44,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     @Nullable @Bind(R.id.search_clear) View clearSearchIcon;
 
     private K9ActivityCommon mBase;
+    private View.OnClickListener onCloseSearchClickListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,9 +92,15 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         }
     }
 
+    public void setUpToolbar(boolean showUpButton, View.OnClickListener onCloseSearchClickListener) {
+        setUpToolbar(showUpButton);
+        this.onCloseSearchClickListener = onCloseSearchClickListener;
+    }
+
     @Nullable @OnClick(R.id.search_clear)
     void onClearSeachClicked() {
         hideSearchView();
+        onCloseSearchClickListener.onClick(null);
         searchInput.setText(null);
         KeyboardUtils.hideKeyboard(searchInput);
     }
