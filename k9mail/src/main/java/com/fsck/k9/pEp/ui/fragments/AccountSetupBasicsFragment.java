@@ -75,6 +75,7 @@ import static com.fsck.k9.mail.ServerSettings.Type.IMAP;
 
 public class AccountSetupBasicsFragment extends PEpFragment
         implements View.OnClickListener, TextWatcher, CompoundButton.OnCheckedChangeListener, ClientCertificateSpinner.OnClientCertificateChangedListener {
+    private static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
     private final static String EXTRA_ACCOUNT = "com.fsck.k9.AccountSetupBasics.account";
     private final static int DIALOG_NOTE = 1;
     private final static String STATE_KEY_PROVIDER =
@@ -550,31 +551,35 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            if (!mCheckedIncoming) {
-                //We've successfully checked incoming.  Now check outgoing.
-                mCheckedIncoming = true;
-                saveCredentialsInPreferences();
-                pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, false, AccountSetupCheckSettingsFragment.LOGIN,
-                        false,
-                        new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
-                            @Override
-                            public void onError(PEpSetupException exception) {
-                                handleErrorCheckingSettings(exception);
-                            }
+        if (requestCode == ACTIVITY_REQUEST_PICK_SETTINGS_FILE) {
+            ((AccountSetupBasics)getActivity()).onImport(data.getData());
+        } else {
+            if (resultCode == RESULT_OK) {
+                if (!mCheckedIncoming) {
+                    //We've successfully checked incoming.  Now check outgoing.
+                    mCheckedIncoming = true;
+                    saveCredentialsInPreferences();
+                    pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, false, AccountSetupCheckSettingsFragment.LOGIN,
+                            false,
+                            new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
+                                @Override
+                                public void onError(PEpSetupException exception) {
+                                    handleErrorCheckingSettings(exception);
+                                }
 
-                            @Override
-                            public void onLoaded(PEpSettingsChecker.Redirection redirection) {
-                                goForward();
-                            }
-                        });
-            } else {
-                //We've successfully checked outgoing as well.
-                mAccount.setDescription(mAccount.getEmail());
-                mAccount.save(Preferences.getPreferences(getActivity()));
-                K9.setServicesEnabled(getActivity());
-                AccountSetupNames.actionSetNames(getActivity(), mAccount);
-                getActivity().finish();
+                                @Override
+                                public void onLoaded(PEpSettingsChecker.Redirection redirection) {
+                                    goForward();
+                                }
+                            });
+                } else {
+                    //We've successfully checked outgoing as well.
+                    mAccount.setDescription(mAccount.getEmail());
+                    mAccount.save(Preferences.getPreferences(getActivity()));
+                    K9.setServicesEnabled(getActivity());
+                    AccountSetupNames.actionSetNames(getActivity(), mAccount);
+                    getActivity().finish();
+                }
             }
         }
     }

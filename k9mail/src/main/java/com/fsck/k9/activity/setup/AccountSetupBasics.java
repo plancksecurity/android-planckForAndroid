@@ -5,21 +5,20 @@ package com.fsck.k9.activity.setup;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
+import com.fsck.k9.activity.Accounts;
+import com.fsck.k9.activity.misc.NonConfigurationInstance;
+import com.fsck.k9.pEp.PEpImporterActivity;
 import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.PepPermissionActivity;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -30,13 +29,14 @@ import javax.inject.Inject;
  * activity. If no settings are found the settings are handed off to the
  * AccountSetupAccountType activity.
  */
-public class AccountSetupBasics extends PepPermissionActivity {
+public class AccountSetupBasics extends PEpImporterActivity {
 
     private static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
     private static final int DIALOG_NO_FILE_MANAGER = 4;
     private AccountSetupBasicsFragment accountSetupBasicsFragment;
     public boolean isManualSetupRequired;
     @Inject AccountSetupNavigator accountSetupNavigator;
+    private NonConfigurationInstance nonConfigurationInstance;
 
     public static void actionNewAccount(Context context) {
         Intent i = new Intent(context, AccountSetupBasics.class);
@@ -54,6 +54,12 @@ public class AccountSetupBasics extends PepPermissionActivity {
             ft.add(R.id.account_setup_container, accountSetupBasicsFragment).commit();
         }
         PEpUtils.askForBatteryOptimizationWhiteListing(this);
+
+        // Handle activity restarts because of a configuration change (e.g. rotating the screen)
+        nonConfigurationInstance = (NonConfigurationInstance) getLastNonConfigurationInstance();
+        if (nonConfigurationInstance != null) {
+            nonConfigurationInstance.restore(this);
+        }
     }
 
     @Override
@@ -63,20 +69,25 @@ public class AccountSetupBasics extends PepPermissionActivity {
         return true;
     }
 
-    private void onImport() {
-        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-        i.addCategory(Intent.CATEGORY_OPENABLE);
-        i.setType("*/*");
+    @Override
+    protected void refresh() {
+    }
 
-        PackageManager packageManager = getPackageManager();
-        List<ResolveInfo> infos = packageManager.queryIntentActivities(i, 0);
+    @Override
+    public void onImport(Uri uri) {
+        ListImportContentsAsyncTask asyncTask = new ListImportContentsAsyncTask(this, uri);
+        setNonConfigurationInstance(asyncTask);
+        asyncTask.execute();
+    }
 
-        if (infos.size() > 0) {
-            startActivityForResult(Intent.createChooser(i, null),
-                    ACTIVITY_REQUEST_PICK_SETTINGS_FILE);
-        } else {
-            showDialog(DIALOG_NO_FILE_MANAGER);
-        }
+    @Override
+    public void setNonConfigurationInstance(NonConfigurationInstance inst) {
+        nonConfigurationInstance = inst;
+    }
+
+    @Override
+    protected void onImportFinished() {
+        Accounts.listAccounts(this);
     }
 
     @Override
