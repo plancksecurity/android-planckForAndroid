@@ -2,6 +2,10 @@ def pEpEngineRevision = 1780
 def pEpJNIAdapterRevision = 317
 def version = "0.9.11.5"
 
+def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
+def pEpTestEmailPassword = "\"$System.env.PEP_TEST_EMAIL_PASSWORD\""
+def pEpTestEmailServer = "\"$System.env.PEP_TEST_EMAIL_SERVER\""
+
 buildscript {
     repositories {
         mavenCentral()
@@ -115,6 +119,9 @@ android {
 
         buildConfigField "int", "ENGINE_REVISION", "${pEpEngineRevision}"
         buildConfigField "int", "ADAPTER_REVISION", "${pEpJNIAdapterRevision}"
+        buildConfigField "String", "PEP_TEST_EMAIL_ADDRESS", "${pEpTestEmailAddress}"
+        buildConfigField "String", "PEP_TEST_EMAIL_PASSWORD", "${pEpTestEmailPassword}"
+        buildConfigField "String", "PEP_TEST_EMAIL_SERVER", "${pEpTestEmailServer}"
 
         javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true
     }
