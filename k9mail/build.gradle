@@ -84,6 +84,8 @@ dependencies {
 
     compile 'com.hudomju:swipe-to-dismiss-undo:1.0'
 
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2'
+
     // Arch dependencies
     provided 'org.glassfish:javax.annotation:10.0-b28'
     annotationProcessor "com.google.dagger:dagger-compiler:2.4"
