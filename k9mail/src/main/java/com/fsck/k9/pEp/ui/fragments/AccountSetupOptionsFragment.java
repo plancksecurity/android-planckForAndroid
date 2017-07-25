@@ -181,7 +181,6 @@ public class AccountSetupOptionsFragment extends PEpFragment {
         }
         K9.setServicesEnabled(getActivity());
         AccountSetupNames.actionSetNames(getActivity(), mAccount);
-        getActivity().finish();
     }
 
     public void onClick(View v) {

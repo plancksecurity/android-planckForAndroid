@@ -42,6 +42,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
     public static void actionSetNames(Context context, Account account) {
         Intent i = new Intent(context, AccountSetupNames.class);
         i.putExtra(EXTRA_ACCOUNT, account.getUuid());
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(i);
     }
 
@@ -157,7 +158,6 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
                 dialog.dismiss();
             }
             Accounts.listAccounts(AccountSetupNames.this);
-            AccountSetupNames.this.finish();
         }
 
         @Override

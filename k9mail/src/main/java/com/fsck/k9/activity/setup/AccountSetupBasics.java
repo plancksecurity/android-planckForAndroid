@@ -154,7 +154,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
 
     @Override
     protected void onDestroy() {
-        if (!accountSetupNavigator.getCurrentStep().equals(AccountSetupNavigator.Step.OUTGOING) && isManualSetupRequired) {
+        if (accountSetupNavigator.shouldDeleteAccount() && isManualSetupRequired) {
             deleteAccount();
         }
         super.onDestroy();
