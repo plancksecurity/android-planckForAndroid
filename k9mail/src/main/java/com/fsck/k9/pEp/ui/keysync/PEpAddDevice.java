@@ -28,6 +28,7 @@ import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import org.pEp.jniadapter.Identity;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -306,6 +307,7 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
     @Override
     protected void onResume() {
         super.onResume();
+        trustwordsLanguage = Locale.getDefault().getLanguage();
         loadTrustwords();
     }
 
