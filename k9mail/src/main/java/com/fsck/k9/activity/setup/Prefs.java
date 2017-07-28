@@ -2,6 +2,8 @@ package com.fsck.k9.activity.setup;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -9,7 +11,6 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceScreen;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 
@@ -202,8 +204,7 @@ public class Prefs extends K9PreferenceActivity {
                            entryValueVector.toArray(EMPTY_CHAR_SEQUENCE_ARRAY));
 
         mLanguage.setOnPreferenceChangeListener((preference, newValue) -> {
-            new AlertDialog.Builder(Prefs.this).setMessage(R.string.language_change_message)
-                    .setPositiveButton(R.string.okay_action, null).show();
+            applyLanguage(newValue);
             return true;
         });
 
@@ -507,6 +508,19 @@ public class Prefs extends K9PreferenceActivity {
             startActivity(keysyncManagerIntent);
             return true;
         });
+    }
+
+    private void applyLanguage(Object newValue) {
+        Locale newLocale = new Locale(String.valueOf(newValue));
+        Locale.setDefault(newLocale);
+        Configuration config = new Configuration();
+        config.locale = newLocale;
+        Resources resources = getResources();
+        resources.updateConfiguration(config, resources.getDisplayMetrics());
+        resources.getDisplayMetrics();
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
     }
 
     private static String themeIdToName(K9.Theme theme) {
