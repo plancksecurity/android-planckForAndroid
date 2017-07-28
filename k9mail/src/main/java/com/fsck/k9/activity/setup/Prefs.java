@@ -9,6 +9,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceScreen;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
@@ -26,7 +27,6 @@ import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.pEp.ui.blacklist.PepBlacklist;
-import com.fsck.k9.pEp.ui.keys.PepExtraKeys;
 import com.fsck.k9.pEp.ui.keysync.KeysyncManagement;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.CheckBoxListPreference;
@@ -200,6 +200,12 @@ public class Prefs extends K9PreferenceActivity {
         initListPreference(mLanguage, K9.getK9Language(),
                            entryVector.toArray(EMPTY_CHAR_SEQUENCE_ARRAY),
                            entryValueVector.toArray(EMPTY_CHAR_SEQUENCE_ARRAY));
+
+        mLanguage.setOnPreferenceChangeListener((preference, newValue) -> {
+            new AlertDialog.Builder(Prefs.this).setMessage(R.string.language_change_message)
+                    .setPositiveButton(R.string.okay_action, null).show();
+            return true;
+        });
 
         mTheme = setupListPreference(PREFERENCE_THEME, themeIdToName(K9.getK9Theme()));
         mFixedMessageTheme = (CheckBoxPreference) findPreference(PREFERENCE_FIXED_MESSAGE_THEME);

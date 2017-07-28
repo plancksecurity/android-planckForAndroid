@@ -134,6 +134,7 @@
     <string name="add_account_title">Add your account</string>
     <string name="add_account_message">To be able to use this account you should add it to your device</string>
     <string name="account_already_exists">Account already exists</string>
+    <string name="language_change_message">The app will be displayed in the language you\'ve chosen when you restart it</string>
 
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>
