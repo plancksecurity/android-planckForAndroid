@@ -18,7 +18,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.text.TextUtils;
-import timber.log.Timber;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -83,6 +82,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
+
+import timber.log.Timber;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -225,6 +226,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         if (messageLoaderHelper != null) {
             messageLoaderHelper.onDestroy();
         }
+        getActivity().setResult(RESULT_CANCELED);
     }
 
     @Override
