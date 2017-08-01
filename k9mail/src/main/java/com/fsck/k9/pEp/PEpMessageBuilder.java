@@ -156,29 +156,24 @@ class PEpMessageBuilder {
         Blob attachmentBlob = new Blob();
         attachmentBlob.mime_type = attachment.getMimeType();
         attachmentBlob.data = PEpUtils.extractBodyContent(attachment.getBody());
-
-        if (isInline(attachment)) {
-            try {
-                attachmentBlob.filename = String.valueOf(new URI(attachment.getContentId()));
-            } catch (URISyntaxException e) {
-                attachmentBlob.filename = attachment.getContentId();
-            }
-        } else {
-            try {
-                attachmentBlob.filename = String.valueOf(new URI(getFileName(attachment)));
-            } catch (URISyntaxException e) {
-                attachmentBlob.filename = getFileName(attachment);
-            }
-        }
+        attachmentBlob.filename = getFilenameUri(attachment);
 
 //        Log.d("pep", "PePMessageBuilder: BLOB #" + attachments.size() + ":" + mimeType + ":" + filename);
         attachments.add(attachmentBlob);
 
     }
 
+    private String getFilenameUri(MimeBodyPart attachment) throws MessagingException {
+        if (isInline(attachment)) {
+            return MimeHeader.CID_SCHEME + attachment.getContentId();
+        } else {
+            return MimeHeader.FILE_SCHEME + getFileName(attachment);
+        }
+    }
+
     private Boolean isInline(MimeBodyPart attachment) {
         String disposition = MimeUtility.unfoldAndDecode(attachment.getDisposition());
-        return ("inline".equalsIgnoreCase(disposition));
+        return (MimeHeader.INLINE_DISPOSITION.equalsIgnoreCase(disposition));
     }
 
 
