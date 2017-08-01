@@ -31,6 +31,8 @@ import org.pEp.jniadapter.Blob;
 import org.pEp.jniadapter.Message;
 import org.pEp.jniadapter.Pair;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -210,11 +212,15 @@ class MimeMessageBuilder extends MessageBuilder {
              * header value (all parameters at once) will be encoded by
              * MimeHeader.writeTo().
              */
-            if (filename != null)
+            boolean isInlineAttachment = attachment.filename.startsWith(MimeHeader.CID_SCHEME);
+            if (filename != null) {
                 bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, String.format("%s;\r\n name=\"%s\"", contentType, filename));
-            else
+                if(isInlineAttachment) {
+                    bp.addHeader(MimeHeader.HEADER_CONTENT_ID, attachment.filename.split(MimeHeader.URI_SCHEME_SEPARATOR)[1]);
+                }
+            } else {
                 bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, contentType);
-
+            }
             // FIXME: the following lines lack clearness of flow...
             /* if msg is plain text or if it's one of the non-special pgp attachments (Attachment #1 and #2 have special meaning,
                see "else" branch then dont't treat special (means, use attachment disposition) */
@@ -225,14 +231,18 @@ class MimeMessageBuilder extends MessageBuilder {
                 }
                 else bp.setEncoding(MimeUtil.ENC_8BIT);
 
-                if (filename != null)
+                boolean isFileAttachment = attachment.filename.startsWith(MimeHeader.FILE_SCHEME);
+                if (filename != null && isFileAttachment) {
                     bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
                             "attachment;\r\n filename=\"%s\";\r\n size=%d",
                             filename, attachment.data.length));
-                else
+                } else if(filename != null && isInlineAttachment) {
+                    bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, "inline");
+                } else {
                     bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
                             "attachment;\r\n size=%d",
                             attachment.data.length));
+                }
             } else {                // we all live in pgp...
                 if (i == 0) {        // 1st. attachment is pgp version if encrypted.
                     bp.addHeader(MimeHeader.HEADER_CONTENT_DESCRIPTION, "PGP/MIME version identification");

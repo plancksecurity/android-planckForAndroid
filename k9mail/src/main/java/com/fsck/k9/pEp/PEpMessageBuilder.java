@@ -19,6 +19,8 @@ import org.pEp.jniadapter.Pair;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -100,7 +102,7 @@ class PEpMessageBuilder {
         for (int part = 0; part < nrOfParts; part++) {
             MimeBodyPart mbp = (MimeBodyPart) mmp.getBodyPart(part);
             Body mbp_body = mbp.getBody();
-            if(mbp_body == null) {
+            if (mbp_body == null) {
                 // eh? this can happen?!
                 Log.e("pep", "mbp_body==null!");
                 continue;
@@ -120,7 +122,7 @@ class PEpMessageBuilder {
                 } else {
                     text = new String(PEpUtils.extractBodyContent(mbp_body));
                 }
-                if(plain) {
+                if (plain) {
                     String longmsg = pEpMsg.getLongmsg();
                     if (longmsg != null) {
                         pEpMsg.setLongmsg(longmsg + text);
@@ -137,10 +139,7 @@ class PEpMessageBuilder {
                 }
                 Log.d("pep", "found Text: " + text);
             } else  {
-                String filename = getFileName(mbp);
-                String type = mbp.getMimeType();
-                byte data[] = PEpUtils.extractBodyContent(mbp_body);
-                addAttachment(attachments, type, filename, data);
+                addAttachment(attachments, mbp);
             }
         }
     }
@@ -151,9 +150,30 @@ class PEpMessageBuilder {
         blob.mime_type = mimeType;
         blob.data = data;
         attachments.add(blob);
+    }
+
+    private void addAttachment(Vector<Blob> attachments, MimeBodyPart attachment) throws IOException, MessagingException {
+        Blob attachmentBlob = new Blob();
+        attachmentBlob.mime_type = attachment.getMimeType();
+        attachmentBlob.data = PEpUtils.extractBodyContent(attachment.getBody());
+        attachmentBlob.filename = getFilenameUri(attachment);
+
 //        Log.d("pep", "PePMessageBuilder: BLOB #" + attachments.size() + ":" + mimeType + ":" + filename);
+        attachments.add(attachmentBlob);
 
+    }
 
+    private String getFilenameUri(MimeBodyPart attachment) throws MessagingException {
+        if (isInline(attachment)) {
+            return MimeHeader.CID_SCHEME + attachment.getContentId();
+        } else {
+            return MimeHeader.FILE_SCHEME + getFileName(attachment);
+        }
+    }
+
+    private Boolean isInline(MimeBodyPart attachment) {
+        String disposition = MimeUtility.unfoldAndDecode(attachment.getDisposition());
+        return (MimeHeader.INLINE_DISPOSITION.equalsIgnoreCase(disposition));
     }
 
 
