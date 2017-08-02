@@ -2,6 +2,7 @@ package com.fsck.k9.pEp.ui.privacy.status;
 
 import android.content.Intent;
 import android.content.IntentSender;
+import android.support.annotation.NonNull;
 
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageLoaderHelper;
@@ -69,12 +70,20 @@ public class PEpStatusPresenter implements Presenter {
 
     public void resetRecipientTrust(int position) {
         Identity id = identities.get(position);
-        pEpProvider.loadMessageRatingAfterResetTrust(localMessage, isMessageIncoming, id, new PEpProvider.ResultCallback<Rating>() {
+        if (localMessage != null) {
+            resetIncomingMessageTrust(id);
+        } else {
+            List<Address> addresses = getRecipientAddresses();
+            resetOutgoingMessageTrust(id, addresses);
+        }
+
+    }
+
+    private void resetOutgoingMessageTrust(Identity id, List<Address> addresses) {
+        pEpProvider.loadOutgoingMessageRatingAfterResetTrust(id, senderAddress, addresses, Collections.emptyList(), Collections.emptyList(), new PEpProvider.ResultCallback<Rating>() {
             @Override
-            public void onLoaded(Rating result) {
-                List<PEpIdentity> updatedIdentities = updateRecipients(identities, id);
-                onRatingChanged(result);
-                view.updateIdentities(updatedIdentities);
+            public void onLoaded(Rating rating) {
+                onTrustReset(rating, id);
             }
 
             @Override
@@ -82,14 +91,30 @@ public class PEpStatusPresenter implements Presenter {
 
             }
         });
+    }
 
+    private void onTrustReset(Rating rating, Identity id) {
+        List<PEpIdentity> updatedIdentities = updateRecipients(identities, id);
+        onRatingChanged(rating);
+        view.updateIdentities(updatedIdentities);
+    }
+
+    private void resetIncomingMessageTrust(Identity id) {
+        pEpProvider.loadMessageRatingAfterResetTrust(localMessage, isMessageIncoming, id, new PEpProvider.ResultCallback<Rating>() {
+            @Override
+            public void onLoaded(Rating result) {
+                onTrustReset(result, id);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+        });
     }
 
     private void setupOutgoingMessageRating() {
-        List<Address> addresses = new ArrayList<>(identities.size());
-        for (PEpIdentity identity : identities) {
-            addresses.add(new Address(identity.address));
-        }
+        List<Address> addresses = getRecipientAddresses();
         pEpProvider.getRating(senderAddress, addresses, Collections.emptyList(), Collections.emptyList(), new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
@@ -101,6 +126,15 @@ public class PEpStatusPresenter implements Presenter {
 
             }
         });
+    }
+
+    @NonNull
+    private List<Address> getRecipientAddresses() {
+        List<Address> addresses = new ArrayList<>(identities.size());
+        for (PEpIdentity identity : identities) {
+            addresses.add(new Address(identity.address));
+        }
+        return addresses;
     }
 
     private void onRatingChanged(Rating rating) {
