@@ -51,11 +51,12 @@ import com.fsck.k9.view.ClientCertificateSpinner;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
+
+import butterknife.OnTextChanged;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -285,6 +286,16 @@ public class AccountSetupBasicsFragment extends PEpFragment
         Utility.setCompoundDrawablesAlpha(mNextButton, mNextButton.isEnabled() ? 255 : 128);
     }
 
+    @OnTextChanged(R.id.account_email)
+    public void onEmailChanged() {
+        validateFields();
+    }
+
+    @OnTextChanged(R.id.account_password)
+    public void onPasswordChanged() {
+        validateFields();
+    }
+
     private String getOwnerName() {
         String name = null;
         try {
@@ -442,6 +453,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         mAccountSpinner.setAdapter(adapter);
         mNextButton.setVisibility(View.VISIBLE);
         nextProgressBar.hide();
+        validateFields();
     }
 
     private void onNext() {
@@ -455,7 +467,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         } else {
             email = mAccountSpinner.getSelectedItem().toString();
         }
-        if (avoidAddingAlreadyExistingAccount(email)) return;
+        if (isAValidAddress(email)) return;
 
         List<String> accounts = accountTokenStore.getAccounts();
         if (accounts.contains(email)) {
@@ -487,6 +499,19 @@ public class AccountSetupBasicsFragment extends PEpFragment
         }
     }
 
+    private boolean isAValidAddress(String email) {
+        return avoidAddingAlreadyExistingAccount(email) ||
+                isEmailNull(email);
+    }
+
+    private boolean isEmailNull(String email) {
+        if (email == null || email.isEmpty()) {
+            resetView("You must enter an email address");
+            return true;
+        }
+        return false;
+    }
+
     private void setup(String email) {
         if (mClientCertificateCheckBox.isChecked() || mOAuth2CheckBox.isChecked()) {
             // Auto-setup doesn't support client certificates.
@@ -514,14 +539,14 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
     private boolean avoidAddingAlreadyExistingAccount(String email) {
         if (accountAlreadyExists(email)) {
-            resetView();
+            resetView(getString(R.string.account_already_exists));
             return true;
         }
         return false;
     }
 
-    private void resetView() {
-        FeedbackTools.showLongFeedback(getView(), getString(R.string.account_already_exists));
+    private void resetView(String feedback) {
+        FeedbackTools.showLongFeedback(getView(), feedback);
         nextProgressBar.hide();
         mNextButton.setVisibility(View.VISIBLE);
         enableViewGroup(true, (ViewGroup) rootView);
@@ -599,7 +624,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
             email = mEmailView.getText().toString().trim();
         }
 
-        if (avoidAddingAlreadyExistingAccount(email)) return;
+        if (isAValidAddress(email)) return;
 
         String[] emailParts = splitEmail(email);
         String user = email;
