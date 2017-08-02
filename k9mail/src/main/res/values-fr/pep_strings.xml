@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <resources>
     <!--<string name="pep_account_setup_generating_keys">Setting your Privacy by Default </string>-->
     <string name="pep_reset_trust">Ne plus faire confiance</string>
@@ -19,7 +19,7 @@
     <!--<string name="pep_add_key_to_blacklist">Add a key to blacklist</string>-->
     <!--<string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>-->
 
-    <string name="pep_confirm_trustwords">Confirmer</string>
+    <string name="pep_confirm_trustwords">Accepter</string>
     <!--<string name="pep_wrong_trustwords">Trustwords incorrects</string>-->
     <!--<string name="pep_wrong_fingerprint">Wrong fingerprint</string>-->
     <string name="pep_ask_trustwords">Demandez à votre partenaire: Quel sont vos Trustwords ? Puis comparez sa réponse à celle affichée ci-dessous.</string>
@@ -43,8 +43,8 @@
     <!--<string name="pep_trust_server_description">Store serverside mails in a safe form.</string>-->
     <!--<string name="pep_account_privacy_protection_explanation">Enable privacy protection for this account </string>-->
 
-    <string name="key_list_title">Available keys</string>
-    <string name="pep_add_device_ask_trustwords">You are about to add a device to your pEp device group. Confirm by successfully verifying the following Trustwords.</string>
+    <string name="key_list_title">Clefs disponibles</string>
+    <string name="pep_add_device_ask_trustwords">Vous êtes sur le point d\'ajouter un appareil à votre groupe d\'appareils p≡p. Veuillez confirmer en vérifiant les Trustwords suivants.</string>
     <string name="pep_device_group">Appareils liées par p≡p</string>
     <string name="handshake_reset_dialog_message">Attention: Ce correspondant a auparavant été marqué comme suspect. Etes-vous certain de vouloir procéder a un nouveau Handshake?</string>
     <string name="pep_gpg_compatibility">Compatibilité OpenPGP</string>
@@ -103,4 +103,65 @@
         <item>Verifiez le contenu de ce message avec votre correspondant! Il ne parvient très vraisemblablement pas du correspondant indiqué!<!--pEpRatingUnderAttack--></item>
     </string-array>
 
-</resources>
+<string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Continuer</string>
+    <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Annuler</string>
+    <string name="global_settings_title">Paramètres globaux</string>
+    <string name="button_settings">Paramètres</string>
+    <string name="navigation_drawer_open">Ouvrir le panneau de navigation</string>
+    <string name="navigation_drawer_close">Fermer le panneau de navigation</string>
+    <string name="pep_account_setup_generating_keys">"Protection de votre vie privée en cours d\'activation "</string>
+    <string name="pep_dialog_confirm_forward_title">Confirmer le transfert</string>
+
+    <string name="pep_extra_addresses">Identifiants des clefs additionnelles :</string>
+    <string name="pep_passive_mode">Mode passif</string>
+    <string name="pep_add_key_to_blacklist">Ajouter la clefs à la liste noire</string>
+    <string name="pep_remove_key_from_blacklist">Retirer la clef de la liste noire</string>
+
+    <string name="pep_wrong_trustwords">Rejeter</string>
+    <string name="pep_wrong_fingerprint">Empreinte non conforme</string>
+    <string name="pep_force_protected">Activer la protection</string>
+    <string name="pep_receivedSecretKey">Cette clef secrète à été reçue :</string>
+    <string name="pep_username">Nom de l\'utilisateur</string>
+    <string name="pep_userAddress">Adresse de l\'utilisateur</string>
+    <string name="pep_secret_key_detected">Clef secrète détectée</string>
+    <string name="pep_from_format">de l’expéditeur %1$s</string>
+    <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Faire confiance au serveur et stocker les messages sans protection</string>
+    <string name="pep_mistrust_server_and_store_mails_encrypted">Protéger les messages stockés</string>
+    <string name="pep_enable_privacy_protection">protection de la vie privée p≡p</string>
+    <string name="pep_app_license">Sous licence GNU General Public License v3</string>
+    <string name="pep_trust_server_description">Stocker les messages de façon sûre coté serveur.</string>
+    <string name="pep_account_privacy_protection_explanation">"Activer la protection de vie privée p≡p pour ce compte "</string>
+    <string name="pep_forward_warning">Avertissement de réponse non sécurisée</string>
+    <string name="pep_forward_warning_description">Afficher un avertissement lorsque le transfert ou la réponse à un message dégrade sa sûreté.</string>
+    <string name="message_list_item_removed">Supprimé</string>
+    <string name="message_list_item_undo">Défaire</string>
+    <string name="available_accounts_title">Comptes disponibles</string>
+    <string name="pep_app_description">K-9/p≡p est un client e-mail puissant pour Android incluant Pretty Easy Privacy.</string>
+    <string name="app_k9_pep_name">"K-9/p≡p "</string>
+    <string name="configure_account_action">Gérer les comptes</string>
+    <string name="pep_add_device_ask_move_trustwords">Vous êtes sur le point de déplacer votre appareils vers un autre groupe d\'appareil p≡p. Veuillez confirmer en vérifiant les Trustwords suivants.</string>
+    <string name="pep_keysync_timeout">délais de synchronisation p≡p dépassé</string>
+    <string name="read_permission_first_explanation">p≡p à besoin de votre autorisation pour lire les contacts stockés dans votre téléphone</string>
+    <string name="read_snackbar_permission_rationale">p≡p à besoin de votre autorisation pour lire les contacts stockés dans votre téléphone</string>
+    <string name="read_snackbar_permission_permanently_denied">Ne pas autoriser p≡p à lire les contacts stockés dans votre téléphone pourrait entraîner des comportements inattendus</string>
+    <string name="read_permission_rationale_title">Lecture des contacts</string>
+
+    <string name="download_permission_first_explanation">p≡p à besoin de votre autorisation pour télécharger des fichiers sur votre téléphone</string>
+    <string name="download_snackbar_permission_rationale">p≡p à besoin de votre autorisation pour télécharger des fichiers sur votre téléphone</string>
+    <string name="download_snackbar_permission_permanently_denied">Ne pas autoriser p≡p à télécharger des fichiers sur votre téléphone pourrait entraîner des comportements inattendus</string>
+    <string name="download_permission_rationale_title">Téléchargement de fichiers</string>
+    <string name="add_fpr">Ajouter une empreinte</string>
+    <string name="error_parsing_fingerprint">Erreur lors de l\'analyse de l\'empreinte !</string>
+    <string name="is_always_secure">Stocker protégé sur le serveur</string>
+    <string name="master_key_management">Gestion de clef maîtresse</string>
+    <string name="message_saving_error">Erreur lors de la sauvegarde du message</string>
+    <string name="intro_first_text">Crypte et anonymise automatiquement votre e-mail</string>
+    <string name="intro_second_text">Empêche l\'usurpation d’identité. Élimine le pourriel. Stoppe l\'hameçonnage.</string>
+    <string name="intro_third_text">Dit à quel point votre communication est sûre avec un code couleur simple.</string>
+
+    <string name="is_not_always_secure">Stocke sans protection sur le serveur</string>
+    <string name="action_continue">Continuer</string>
+    <string name="battery_optimization_rationale_title">Désactiver les optimisation d\'économie d\'énergie</string>
+    <string name="battery_optimiazation_explanation">Afin de synchroniser vos e-mail en tâche de fond, vous devez désactiver les optimisation d\'économie d\'énergie</string>
+
+    </resources>
