@@ -200,6 +200,8 @@ public interface PEpProvider {
 
     Rating incomingMessageRating(MimeMessage message);
 
+    void loadOutgoingMessageRatingAfterResetTrust(Identity identity, Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback);
+
     class KeyDetail {
         private final Address address;
         private final String detailMessage;
