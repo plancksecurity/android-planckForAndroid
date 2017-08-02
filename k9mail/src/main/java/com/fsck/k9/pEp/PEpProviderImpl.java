@@ -2,6 +2,7 @@ package com.fsck.k9.pEp;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -154,46 +155,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public void getRating(Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback) {
-        threadExecutor.execute(() -> {
-            if (bccAddresses.size()  > 0) {
-                notifyLoaded(Rating.pEpRatingUnencrypted, callback);
-                return;
-            }
-            Message testee = null;
-            Engine engine = null;
-            try {
-                engine = getNewEngineSession();
-                int recipientsSize = toAddresses.size() + ccAddresses.size() + bccAddresses.size();
-                if (from == null || recipientsSize == 0)
-                    notifyLoaded(Rating.pEpRatingUndefined, callback);
-
-                testee = new Message();
-
-                Identity idFrom = PEpUtils.createIdentity(from, context);
-                idFrom.me = true;
-                idFrom.user_id = PEP_OWN_USER_ID;
-                testee.setFrom(idFrom);
-                testee.setTo(PEpUtils.createIdentities(toAddresses, context));
-                testee.setCc(PEpUtils.createIdentities(ccAddresses, context));
-                testee.setBcc(PEpUtils.createIdentities(bccAddresses, context));
-                testee.setShortmsg("hello, world");     // FIXME: do I need them?
-                testee.setLongmsg("Lorem ipsum");
-                testee.setDir(Message.Direction.Outgoing);
-
-                Rating result = engine.outgoing_message_rating(testee);   // stupid way to be able to patch the value in debugger
-                Log.i(TAG, "getRating " + result.name());
-
-                notifyLoaded(result, callback);
-            } catch (Throwable e) {
-                Log.e(TAG, "during color test:", e);
-                notifyError(e, callback);
-            } finally {
-                if (testee != null) testee.close();
-                if (engine != null) {
-                    engine.close();
-                }
-            }
-        });
+        getRating(null, from, toAddresses, ccAddresses, bccAddresses, callback);
     }
 
     private boolean isUnencryptedForSome(List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses) {
@@ -987,6 +949,10 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public void loadOutgoingMessageRatingAfterResetTrust(Identity identity, Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback) {
+        getRating(identity, from, toAddresses, ccAddresses, bccAddresses, callback);
+    }
+
+    private void getRating(@Nullable Identity identity, Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback) {
         threadExecutor.execute(() -> {
             if (bccAddresses.size()  > 0) {
                 notifyLoaded(Rating.pEpRatingUnencrypted, callback);
@@ -996,7 +962,9 @@ public class PEpProviderImpl implements PEpProvider {
             Engine engine = null;
             try {
                 engine = getNewEngineSession();
-                engine.keyResetTrust(identity);
+                if (identity != null) {
+                    engine.keyResetTrust(identity);
+                }
                 int recipientsSize = toAddresses.size() + ccAddresses.size() + bccAddresses.size();
                 if (from == null || recipientsSize == 0)
                     notifyLoaded(Rating.pEpRatingUndefined, callback);
