@@ -1,8 +1,16 @@
 package com.fsck.k9.pEp.ui.activities;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 
 import com.fsck.k9.R;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
@@ -56,17 +64,49 @@ public class PermissionsActivity extends PepPermissionActivity {
         getpEpComponent().inject(this);
     }
 
+
     @OnClick(R.id.action_continue)
     public void onContinueClicked() {
-        createBasicPermissionsActivity(new PEpProvider.CompletedCallback() {
+        if (noPermissionGrantedOrDenied()) {
+            createBasicPermissionsActivity(permissionsCompletedCallback());
+        } else if (!isPermissionGranted(Manifest.permission.READ_CONTACTS)) {
+            showNeedPermissionsDialog();
+        } else if(!isPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            showNeedPermissionsDialog();
+        } else {
+            goToSetupAccount();
+        }
+    }
+
+    private void showNeedPermissionsDialog() {
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.permissions_needed_message)
+                .setPositiveButton(R.string.okay_action, (dialog, which) -> {
+                    Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", getPackageName(), null);
+                    intent.setData(uri);
+                    startActivity(intent);
+                })
+                .setNegativeButton(R.string.cancel_action, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        goToSetupAccount();
+                    }
+                })
+                .show();
+    }
+
+    @NonNull
+    private PEpProvider.CompletedCallback permissionsCompletedCallback() {
+        return new PEpProvider.CompletedCallback() {
             @Override
             public void onComplete() {
                 if(!askBatteryPermissionShowed) {
                     PEpUtils.askForBatteryOptimizationWhiteListing(PermissionsActivity.this);
                     askBatteryPermissionShowed = !askBatteryPermissionShowed;
                 } else {
-                    AccountSetupBasics.actionNewAccount(PermissionsActivity.this);
-                    finish();
+                    goToSetupAccount();
                 }
             }
 
@@ -76,10 +116,27 @@ public class PermissionsActivity extends PepPermissionActivity {
                     PEpUtils.askForBatteryOptimizationWhiteListing(PermissionsActivity.this);
                     askBatteryPermissionShowed = !askBatteryPermissionShowed;
                 } else {
-                    AccountSetupBasics.actionNewAccount(PermissionsActivity.this);
-                    finish();
+                    goToSetupAccount();
                 }
             }
-        });
+        };
+    }
+
+    private void goToSetupAccount() {
+        AccountSetupBasics.actionNewAccount(PermissionsActivity.this);
+        finish();
+    }
+
+    private boolean noPermissionGrantedOrDenied() {
+        return isPermissionDenied(Manifest.permission.READ_CONTACTS) &&
+                isPermissionDenied(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    private boolean isPermissionDenied(String readContacts) {
+        return ContextCompat.checkSelfPermission(this, readContacts) == PackageManager.PERMISSION_DENIED;
+    }
+
+    private boolean isPermissionGranted(String readContacts) {
+        return ContextCompat.checkSelfPermission(this, readContacts) == PackageManager.PERMISSION_GRANTED;
     }
 }
