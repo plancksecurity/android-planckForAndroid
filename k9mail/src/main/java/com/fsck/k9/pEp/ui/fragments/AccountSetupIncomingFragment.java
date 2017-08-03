@@ -769,7 +769,6 @@ public class AccountSetupIncomingFragment extends PEpFragment {
             showErrorDialog(
                     exception.getTitleResource(),
                     exception.getMessage() == null ? "" : exception.getMessage());
-            Preferences.getPreferences(getActivity()).deleteAccount(mAccount);
         }
         nextProgressBar.hide();
         mNextButton.setVisibility(View.VISIBLE);

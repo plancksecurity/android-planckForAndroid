@@ -6,6 +6,11 @@ def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
 def pEpTestEmailPassword = "\"$System.env.PEP_TEST_EMAIL_PASSWORD\""
 def pEpTestEmailServer = "\"$System.env.PEP_TEST_EMAIL_SERVER\""
 
+def pEpDragonEmail = "\"$System.env.PEP_DRAGON_EMAIL_ADDRESS\""
+def pEpDragonPassword = "\"$System.env.PEP_DRAGON_PASSWORD\""
+def pEpDragonServer = "\"$System.env.PEP_DRAGON_SERVER\""
+def pEpDragonUsername = "\"$System.env.PEP_DRAGON_USERNAME\""
+
 buildscript {
     repositories {
         mavenCentral()
@@ -124,6 +129,11 @@ android {
         buildConfigField "String", "PEP_TEST_EMAIL_ADDRESS", "${pEpTestEmailAddress}"
         buildConfigField "String", "PEP_TEST_EMAIL_PASSWORD", "${pEpTestEmailPassword}"
         buildConfigField "String", "PEP_TEST_EMAIL_SERVER", "${pEpTestEmailServer}"
+
+        buildConfigField "String", "PEP_DRAGON_EMAIL_ADDRESS", "${pEpDragonEmail}"
+        buildConfigField "String", "PEP_DRAGON_PASSWORD", "${pEpDragonPassword}"
+        buildConfigField "String", "PEP_DRAGON_SERVER", "${pEpDragonServer}"
+        buildConfigField "String", "PEP_DRAGON_USERNAME", "${pEpDragonUsername}"
 
         javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true
     }
