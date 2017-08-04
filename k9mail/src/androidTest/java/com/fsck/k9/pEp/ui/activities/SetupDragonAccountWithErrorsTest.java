@@ -13,6 +13,7 @@ import android.view.ViewParent;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
+import com.fsck.k9.activity.setup.AccountSetupBasics;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -39,20 +40,10 @@ import static org.hamcrest.Matchers.is;
 public class SetupDragonAccountWithErrorsTest {
 
     @Rule
-    public ActivityTestRule<SplashActivity> mActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
+    public ActivityTestRule<AccountSetupBasics> mActivityTestRule = new ActivityTestRule<>(AccountSetupBasics.class);
 
     @Test
     public void setupDragonAccountWithErrorsTest() {
-        ViewInteraction appCompatButton = onView(
-                allOf(withId(R.id.skip), withText("SKIP"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.bottom),
-                                        1),
-                                1),
-                        isDisplayed()));
-        appCompatButton.perform(click());
-
         ViewInteraction appCompatEditText4 = onView(
                 allOf(withId(R.id.account_email),
                         childAtPosition(
