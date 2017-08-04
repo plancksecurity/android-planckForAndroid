@@ -1,7 +1,9 @@
 package com.fsck.k9.pEp.ui.activities;
 
 
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -29,7 +31,6 @@ import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static java.lang.Thread.sleep;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
@@ -43,6 +44,8 @@ public class SetupDragonAccountTest {
 
     @Test
     public void setupDragonAccountTest() {
+        Resources resources = InstrumentationRegistry.getContext().getResources();
+
         ViewInteraction appCompatEditText = onView(
                 allOf(withId(R.id.account_email),
                         childAtPosition(
@@ -71,7 +74,7 @@ public class SetupDragonAccountTest {
         appCompatEditText5.perform(scrollTo(), replaceText(getPassword()), closeSoftKeyboard());
 
         ViewInteraction appCompatButton2 = onView(
-                allOf(withId(R.id.next), withText("Next"),
+                allOf(withId(R.id.next),
                         childAtPosition(
                                 childAtPosition(
                                         withClassName(is("android.widget.LinearLayout")),
@@ -109,7 +112,7 @@ public class SetupDragonAccountTest {
         appCompatButton3.perform(click());
 
         ViewInteraction appCompatButton4 = onView(
-                allOf(withId(android.R.id.button1), withText("Accept Key"),
+                allOf(withId(android.R.id.button1),
                         childAtPosition(
                                 allOf(withClassName(is("android.widget.LinearLayout")),
                                         childAtPosition(
@@ -133,7 +136,15 @@ public class SetupDragonAccountTest {
 
         doWait();
 
-        ViewInteraction appCompatButton6 = onView(withText("Accept Key"));
+        ViewInteraction appCompatButton6 = onView(
+                allOf(withId(android.R.id.button1),
+                        childAtPosition(
+                                allOf(withClassName(is("android.widget.LinearLayout")),
+                                        childAtPosition(
+                                                withClassName(is("android.widget.LinearLayout")),
+                                                3)),
+                                3),
+                        isDisplayed()));
         appCompatButton6.perform(click());
     }
 

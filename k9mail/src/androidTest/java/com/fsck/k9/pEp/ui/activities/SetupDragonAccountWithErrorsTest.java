@@ -30,7 +30,6 @@ import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static java.lang.Thread.sleep;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
@@ -63,7 +62,7 @@ public class SetupDragonAccountWithErrorsTest {
         appCompatEditText5.perform(scrollTo(), replaceText(getPassword()), closeSoftKeyboard());
 
         ViewInteraction appCompatButton2 = onView(
-                allOf(withId(R.id.next), withText("Next"),
+                allOf(withId(R.id.next),
                         childAtPosition(
                                 childAtPosition(
                                         withClassName(is("android.widget.LinearLayout")),
@@ -73,7 +72,7 @@ public class SetupDragonAccountWithErrorsTest {
         appCompatButton2.perform(click());
 
         ViewInteraction appCompatButton3 = onView(
-                allOf(withId(R.id.next), withText("Next"),
+                allOf(withId(R.id.next),
                         childAtPosition(
                                 childAtPosition(
                                         withClassName(is("android.widget.LinearLayout")),
@@ -115,21 +114,14 @@ public class SetupDragonAccountWithErrorsTest {
         appCompatButton4.perform(click());
 
         ViewInteraction appCompatButton5 = onView(
-                allOf(withId(android.R.id.button1), withText("Accept Key"),
-                        childAtPosition(
-                                allOf(withClassName(is("android.widget.LinearLayout")),
-                                        childAtPosition(
-                                                withClassName(is("android.widget.LinearLayout")),
-                                                3)),
-                                3),
-                        isDisplayed()));
+                withId(android.R.id.button1));
 
         doWait();
 
         appCompatButton5.perform(click());
 
         ViewInteraction appCompatButton6 = onView(
-                allOf(withId(R.id.next), withText("Next"),
+                allOf(withId(R.id.next),
                         childAtPosition(
                                 childAtPosition(
                                         withClassName(is("android.widget.LinearLayout")),
@@ -146,7 +138,7 @@ public class SetupDragonAccountWithErrorsTest {
         appCompatEditText8.perform(scrollTo(), replaceText(getServer()), closeSoftKeyboard());
 
         ViewInteraction appCompatButton7 = onView(
-                allOf(withId(R.id.next), withText("Next"),
+                allOf(withId(R.id.next),
                         childAtPosition(
                                 childAtPosition(
                                         withClassName(is("android.widget.LinearLayout")),
@@ -158,7 +150,7 @@ public class SetupDragonAccountWithErrorsTest {
         doWait();
 
         ViewInteraction appCompatButton8 = onView(
-                allOf(withId(android.R.id.button1), withText("Accept Key"),
+                allOf(withId(android.R.id.button1),
                         childAtPosition(
                                 allOf(withClassName(is("android.widget.LinearLayout")),
                                         childAtPosition(
