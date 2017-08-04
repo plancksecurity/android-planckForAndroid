@@ -4,7 +4,6 @@ import android.app.FragmentManager;
 import android.app.LoaderManager;
 import android.content.Context;
 
-import com.fsck.k9.pEp.ConnectionUtils;
 import com.fsck.k9.pEp.ui.SimpleMessageLoaderHelper;
 import com.fsck.k9.pEp.ui.fragments.PEpSettingsCheck;
 import com.fsck.k9.pEp.ui.fragments.PEpSettingsChecker;
@@ -31,11 +30,6 @@ public class PEpModule {
 
     @Provides
     public PEpSettingsChecker providePEpSettingsCheck() {
-        return new PEpSettingsCheck(context.getApplicationContext(), provideConnectionUtils());
-    }
-
-    @Provides
-    public ConnectionUtils provideConnectionUtils() {
-        return new ConnectionUtils(context);
+        return new PEpSettingsCheck(context.getApplicationContext());
     }
 }

@@ -1,12 +1,15 @@
 package com.fsck.k9.pEp.ui.fragments;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
+import com.fsck.k9.R;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.controller.MessagingController;
+import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.AuthenticationFailedException;
 import com.fsck.k9.mail.CertificateValidationException;
 import com.fsck.k9.mail.MessagingException;
@@ -80,7 +83,15 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
             } catch (CertificateValidationException exception) {
                 onError(new PEpCertificateException(exception));
             } catch (MessagingException exception) {
-                onError(new PEpMessagingException(exception));
+                if (!Utility.hasConnectivity(context)) {
+                    exception = new MessagingException(context.getString(R.string.device_offline_warning));
+                    onError(new PEpMessagingException(exception));
+                } else {
+                    Log.e(K9.LOG_TAG, "Error while testing settings", exception);
+                    String message = exception.getMessage() == null ? "" : exception.getMessage();
+                    exception = new MessagingException(message);
+                    onError(new PEpMessagingException(exception));
+                }
             }
         });
     }
