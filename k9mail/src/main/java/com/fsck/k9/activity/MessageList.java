@@ -728,7 +728,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
         accountAdapter = new RVRendererAdapter<>(rendererAccountBuilder, adapteeCollection);
 
-        navigationAccounts.setLayoutManager(new LinearLayoutManager(this));
+        navigationAccounts.setLayoutManager(getDrawerLayoutManager());
         navigationAccounts.setAdapter(accountAdapter);
 
         setupCreateAccountListener();
@@ -740,6 +740,16 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
                 onAccounts();
             }
         });
+    }
+
+    @NonNull
+    private LinearLayoutManager getDrawerLayoutManager() {
+        return new LinearLayoutManager(this) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
     }
 
     private void setupCreateAccountListener() {
@@ -1004,7 +1014,7 @@ public class MessageList extends K9Activity implements MessageListFragmentListen
 
         folderAdapter = new RVRendererAdapter<>(rendererFolderBuilder, adapteeCollection);
 
-        navigationFolders.setLayoutManager(new LinearLayoutManager(this));
+        navigationFolders.setLayoutManager(getDrawerLayoutManager());
         navigationFolders.setAdapter(folderAdapter);
         setupMainFolders();
     }
