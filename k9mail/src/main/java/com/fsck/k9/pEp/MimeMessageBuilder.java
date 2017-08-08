@@ -212,8 +212,9 @@ class MimeMessageBuilder extends MessageBuilder {
              * header value (all parameters at once) will be encoded by
              * MimeHeader.writeTo().
              */
-            boolean isInlineAttachment = attachment.filename.startsWith(MimeHeader.CID_SCHEME);
+            boolean isInlineAttachment = false;
             if (filename != null) {
+                isInlineAttachment = attachment.filename.startsWith(MimeHeader.CID_SCHEME);
                 bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, String.format("%s;\r\n name=\"%s\"", contentType, filename));
                 if(isInlineAttachment) {
                     bp.addHeader(MimeHeader.HEADER_CONTENT_ID, attachment.filename.split(MimeHeader.URI_SCHEME_SEPARATOR)[1]);
