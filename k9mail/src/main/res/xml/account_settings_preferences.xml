@@ -44,14 +44,14 @@
             android:key="account_default"
             android:title="@string/account_settings_default_label"
             android:summary="@string/account_settings_default_summary" />
-
+        <!--
         <Preference
             android:persistent="false"
             android:key="chip_color"
             android:singleLine="true"
             android:title="@string/account_settings_color_label"
             android:summary="@string/account_settings_color_summary" />
-
+         -->
     </PreferenceScreen>
 
     <PreferenceScreen
