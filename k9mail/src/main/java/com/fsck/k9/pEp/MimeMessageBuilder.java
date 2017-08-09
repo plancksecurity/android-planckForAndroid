@@ -215,9 +215,16 @@ class MimeMessageBuilder extends MessageBuilder {
             boolean isInlineAttachment = false;
             if (filename != null) {
                 isInlineAttachment = attachment.filename.startsWith(MimeHeader.CID_SCHEME);
-                bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, String.format("%s;\r\n name=\"%s\"", contentType, filename));
+                String[] filenameParts = attachment.filename.split(MimeHeader.URI_SCHEME_SEPARATOR);
+                if (filenameParts.length > 1) {
+                    bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, String.format("%s;\r\n name=\"%s\"", contentType, filenameParts[1]));
+                } else {
+                    bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, String.format("%s;\r\n name=\"%s\"", contentType, filename));
+
+                }
                 if(isInlineAttachment) {
-                    bp.addHeader(MimeHeader.HEADER_CONTENT_ID, attachment.filename.split(MimeHeader.URI_SCHEME_SEPARATOR)[1]);
+                    if (filenameParts.length > 1) bp.addHeader(MimeHeader.HEADER_CONTENT_ID, filenameParts[1]);
+                    else bp.addHeader(MimeHeader.HEADER_CONTENT_ID, filename);
                 }
             } else {
                 bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, contentType);
@@ -234,9 +241,16 @@ class MimeMessageBuilder extends MessageBuilder {
 
                 boolean isFileAttachment = attachment.filename.startsWith(MimeHeader.FILE_SCHEME);
                 if (filename != null && isFileAttachment) {
-                    bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
+                    String[] filenameParts = attachment.filename.split(MimeHeader.URI_SCHEME_SEPARATOR);
+                    if (filenameParts.length > 1) {
+                        bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
                             "attachment;\r\n filename=\"%s\";\r\n size=%d",
-                            filename, attachment.data.length));
+                            filenameParts[1], attachment.data.length));
+                    } else {
+                        bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
+                                "attachment;\r\n filename=\"%s\";\r\n size=%d",
+                                filename, attachment.data.length));
+                    }
                 } else if(filename != null && isInlineAttachment) {
                     bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, "inline");
                 } else {
@@ -250,7 +264,7 @@ class MimeMessageBuilder extends MessageBuilder {
                 } else if (i == 1) {
                     bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,    // 2nd field is enc'd content.
                             "inline;\r\n filename=\"%s\";\r\n size=%d",
-                            filename, attachment.data.length));
+                            filename.split(MimeHeader.URI_SCHEME_SEPARATOR)[1], attachment.data.length));
                 }
             }
 
