@@ -16,7 +16,6 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.support.v7.widget.Toolbar;
-import timber.log.Timber;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.DeletePolicy;
@@ -49,6 +48,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import timber.log.Timber;
 
 
 public class AccountSettings extends K9PreferenceActivity {
@@ -98,7 +99,7 @@ public class AccountSettings extends K9PreferenceActivity {
     private static final String PREFERENCE_EXPUNGE_POLICY = "expunge_policy";
     private static final String PREFERENCE_AUTO_EXPAND_FOLDER = "account_setup_auto_expand_folder";
     private static final String PREFERENCE_SEARCHABLE_FOLDERS = "searchable_folders";
-    private static final String PREFERENCE_CHIP_COLOR = "chip_color";
+    //private static final String PREFERENCE_CHIP_COLOR = "chip_color";
     private static final String PREFERENCE_LED_COLOR = "led_color";
     private static final String PREFERENCE_NOTIFICATION_OPENS_UNREAD = "notification_opens_unread";
     private static final String PREFERENCE_MESSAGE_AGE = "account_message_age";
@@ -662,13 +663,13 @@ public class AccountSettings extends K9PreferenceActivity {
 
         new PopulateFolderPrefsTask().execute();
 
-        chipColor = findPreference(PREFERENCE_CHIP_COLOR);
+        /*chipColor = findPreference(PREFERENCE_CHIP_COLOR);
         chipColor.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
                 onChooseChipColor();
                 return false;
             }
-        });
+        });*/
 
         ledColor = findPreference(PREFERENCE_LED_COLOR);
         ledColor.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
