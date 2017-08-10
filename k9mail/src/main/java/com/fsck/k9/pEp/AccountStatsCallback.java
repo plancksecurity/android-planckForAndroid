@@ -4,5 +4,5 @@ import com.fsck.k9.AccountStats;
 import com.fsck.k9.BaseAccount;
 
 public interface AccountStatsCallback {
-    public void accountStatusChanged(BaseAccount account, AccountStats stats);
+    void accountStatusChanged(BaseAccount account, AccountStats stats);
 }
