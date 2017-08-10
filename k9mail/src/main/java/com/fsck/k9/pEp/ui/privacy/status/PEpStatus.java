@@ -47,7 +47,6 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     private static final String MESSAGE_DIRECTION = "messageDirection";
     public static final int REQUEST_STATUS = 2;
 
-    @Inject PEpUtils pEpUtils;
     @Inject PEpStatusPresenter presenter;
 
     @Bind(R.id.pEpTitle)

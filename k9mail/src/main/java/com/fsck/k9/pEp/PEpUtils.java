@@ -45,8 +45,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
-import javax.inject.Inject;
-
 /**
  * some helper stuff
  */
@@ -61,10 +59,6 @@ public class PEpUtils {
 
     public static CharSequence[] getPEpLanguages() {
         return pEpLanguages;
-    }
-
-
-    @Inject public PEpUtils() {
     }
 
     public static Vector<Identity> createIdentities(List<Address> addressList, Context context) {
