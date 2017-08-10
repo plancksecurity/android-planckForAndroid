@@ -1,10 +1,7 @@
 package com.fsck.k9.pEp.ui.activities;
 
 
-import android.content.res.Resources;
 import android.support.annotation.NonNull;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.ViewInteraction;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
@@ -28,124 +25,52 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static java.lang.Thread.sleep;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class SetupDragonAccountTest {
 
     @Rule
-    public ActivityTestRule<AccountSetupBasics> mActivityTestRule = new ActivityTestRule<>(AccountSetupBasics.class);
+    public ActivityTestRule<AccountSetupBasics> activityTestRule = new ActivityTestRule<>(AccountSetupBasics.class);
 
     @Test
     public void setupDragonAccountTest() {
-        Resources resources = InstrumentationRegistry.getContext().getResources();
+        accountSetupBasics();
+        incomingSettings();
+        outgoingSettings();
+    }
 
-        ViewInteraction appCompatEditText = onView(
-                allOf(withId(R.id.account_email),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.support.design.widget.TextInputLayout")),
-                                        0),
-                                0)));
-        appCompatEditText.perform(scrollTo(), click());
+    private void outgoingSettings() {
+        onView(withId(R.id.account_server)).perform(scrollTo(), replaceText(getServer()), closeSoftKeyboard());
 
-        ViewInteraction appCompatEditText2 = onView(
-                allOf(withId(R.id.account_email),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.support.design.widget.TextInputLayout")),
-                                        0),
-                                0)));
-        appCompatEditText2.perform(scrollTo(), replaceText(getEmail()), closeSoftKeyboard());
-
-        ViewInteraction appCompatEditText5 = onView(
-                allOf(withId(R.id.account_password),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.support.design.widget.TextInputLayout")),
-                                        0),
-                                0)));
-        appCompatEditText5.perform(scrollTo(), replaceText(getPassword()), closeSoftKeyboard());
-
-        ViewInteraction appCompatButton2 = onView(
-                allOf(withId(R.id.next),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.LinearLayout")),
-                                        1),
-                                0),
-                        isDisplayed()));
-        appCompatButton2.perform(click());
-
-        ViewInteraction appCompatEditText6 = onView(
-                allOf(withId(R.id.account_server),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.ScrollView")),
-                                        0),
-                                1)));
-        appCompatEditText6.perform(scrollTo(), replaceText(getServer()), closeSoftKeyboard());
-
-        ViewInteraction appCompatEditText7 = onView(
-                allOf(withId(R.id.account_username),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.ScrollView")),
-                                        0),
-                                7)));
-        appCompatEditText7.perform(scrollTo(), replaceText(getUsername()), closeSoftKeyboard());
-
-        ViewInteraction appCompatButton3 = onView(
-                allOf(withId(R.id.next),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.LinearLayout")),
-                                        1),
-                                0),
-                        isDisplayed()));
-        appCompatButton3.perform(click());
-
-        ViewInteraction appCompatButton4 = onView(
-                allOf(withId(android.R.id.button1),
-                        childAtPosition(
-                                allOf(withClassName(is("android.widget.LinearLayout")),
-                                        childAtPosition(
-                                                withClassName(is("android.widget.LinearLayout")),
-                                                3)),
-                                3),
-                        isDisplayed()));
-        appCompatButton4.perform(click());
-
-        ViewInteraction appCompatEditText11 = onView(
-                allOf(withId(R.id.account_server),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.ScrollView")),
-                                        0),
-                                1)));
-        appCompatEditText11.perform(scrollTo(), replaceText(getServer()), closeSoftKeyboard());
-
-        ViewInteraction appCompatButton5 = onView(withId(R.id.next));
-        appCompatButton5.perform(click());
-
+        clickNext();
         doWait();
+        clickAccept();
+    }
 
-        ViewInteraction appCompatButton6 = onView(
-                allOf(withId(android.R.id.button1),
-                        childAtPosition(
-                                allOf(withClassName(is("android.widget.LinearLayout")),
-                                        childAtPosition(
-                                                withClassName(is("android.widget.LinearLayout")),
-                                                3)),
-                                3),
-                        isDisplayed()));
-        appCompatButton6.perform(click());
+    private void incomingSettings() {
+        onView(withId(R.id.account_server)).perform(scrollTo(), replaceText(getServer()), closeSoftKeyboard());
+        onView(withId(R.id.account_username)).perform(scrollTo(), replaceText(getUsername()), closeSoftKeyboard());
+
+        clickNext();
+        clickAccept();
+    }
+
+    private void accountSetupBasics() {
+        onView(withId(R.id.account_email)).perform(scrollTo(), click());
+        onView(withId(R.id.account_email)).perform(scrollTo(), replaceText(getEmail()), closeSoftKeyboard());
+        onView(withId(R.id.account_password)).perform(scrollTo(), replaceText(getPassword()), closeSoftKeyboard());
+        clickNext();
+    }
+
+    private void clickAccept() {
+        onView(withId(android.R.id.button1)).perform(click());
+    }
+
+    private void clickNext() {
+        onView(withId(R.id.next)).perform(click());
     }
 
     @NonNull
