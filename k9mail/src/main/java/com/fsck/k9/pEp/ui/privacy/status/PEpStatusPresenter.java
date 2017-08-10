@@ -11,7 +11,6 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.infrastructure.Presenter;
 import com.fsck.k9.pEp.models.PEpIdentity;
@@ -30,7 +29,6 @@ import javax.inject.Inject;
 public class PEpStatusPresenter implements Presenter {
 
     private final SimpleMessageLoaderHelper simpleMessageLoaderHelper;
-    private final PEpUtils pEpUtils;
     private final PEpIdentityMapper pEpIdentityMapper;
     private PEpStatusView view;
     private PePUIArtefactCache cache;
@@ -41,9 +39,8 @@ public class PEpStatusPresenter implements Presenter {
     private Address senderAddress;
 
     @Inject
-    public PEpStatusPresenter(SimpleMessageLoaderHelper simpleMessageLoaderHelper, PEpUtils pEpUtils, PEpIdentityMapper pEpIdentityMapper) {
+    public PEpStatusPresenter(SimpleMessageLoaderHelper simpleMessageLoaderHelper, PEpIdentityMapper pEpIdentityMapper) {
         this.simpleMessageLoaderHelper = simpleMessageLoaderHelper;
-        this.pEpUtils = pEpUtils;
         this.pEpIdentityMapper = pEpIdentityMapper;
     }
 
