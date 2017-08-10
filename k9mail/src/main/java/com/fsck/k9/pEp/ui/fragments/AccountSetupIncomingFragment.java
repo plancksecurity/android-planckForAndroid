@@ -3,15 +3,18 @@ package com.fsck.k9.pEp.ui.fragments;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -21,7 +24,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -37,23 +39,35 @@ import com.fsck.k9.activity.setup.ConnectionSecurityAdapter;
 import com.fsck.k9.activity.setup.ConnectionSecurityHolder;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.AuthType;
+import com.fsck.k9.mail.CertificateValidationException;
 import com.fsck.k9.mail.ConnectionSecurity;
 import com.fsck.k9.mail.NetworkType;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.Transport;
+import com.fsck.k9.mail.filter.Hex;
 import com.fsck.k9.mail.oauth.AuthorizationException;
 import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mail.store.imap.ImapStoreSettings;
 import com.fsck.k9.mail.store.webdav.WebDavStoreSettings;
+import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpCertificateException;
+import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpSetupException;
+import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.service.MailService;
 import com.fsck.k9.view.ClientCertificateSpinner;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -100,6 +114,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     private ConnectionSecurity[] mConnectionSecurityChoices = ConnectionSecurity.values();
     private View rootView;
     private ContentLoadingProgressBar nextProgressBar;
+    private AccountSetupNavigator accountSetupNavigator;
 
     public static AccountSetupIncomingFragment actionIncomingSettings(Account account, boolean makeDefault) {
         AccountSetupIncomingFragment fragment = new AccountSetupIncomingFragment();
@@ -330,34 +345,10 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        View.OnClickListener onClickListener = v -> Preferences.getPreferences(getActivity()).deleteAccount(mAccount);
-
-        if(getActivity() instanceof  AccountSetupBasics) {
-            ((AccountSetupBasics) getActivity()).setHomeButtonListener(onClickListener);
-        }
-
-    }
-
-    @Override
     protected void inject() {
         getpEpComponent().inject(this);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        switch (itemId) {
-            case android.R.id.home: {
-                Toast.makeText(getActivity(), "PITA", Toast.LENGTH_SHORT).show();
-                //getActivity().finish();
-                return true;
-            }
-        }
-        return super.onOptionsItemSelected(item);
-    }
     /**
      * Called at the end of either {@code onCreate()} or
      * {@code onRestoreInstanceState()}, after the views have been initialized,
@@ -601,25 +592,17 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     }
 
     private void checkSettings() {
-        pEpSettingsChecker.checkSettings(mAccount.getUuid(), AccountSetupCheckSettings.CheckDirection.INCOMING, mMakeDefault, AccountSetupCheckSettingsFragment.INCOMING,
+        pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, mMakeDefault, AccountSetupCheckSettingsFragment.INCOMING,
                 false,
                 new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
                     @Override
-                    public void onError(String customMessage) {
-                        nextProgressBar.hide();
-                        mNextButton.setVisibility(View.VISIBLE);
-                        rootView.setEnabled(true);
-                        showDialogFragment(customMessage);
+                    public void onError(PEpSetupException exception) {
+                        handleErrorCheckingSettings(exception);
                     }
 
                     @Override
                     public void onLoaded(PEpSettingsChecker.Redirection redirection) {
-                        AccountSetupOutgoingFragment accountSetupOutgoingFragment = AccountSetupOutgoingFragment.actionOutgoingSettings(mAccount, false);
-                        getFragmentManager()
-                                .beginTransaction()
-                                .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                                .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
-                                .commit();
+                        accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
                     }
                 });
     }
@@ -770,5 +753,227 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     private ConnectionSecurity getSelectedSecurity() {
         ConnectionSecurityHolder holder = (ConnectionSecurityHolder) mSecurityTypeView.getSelectedItem();
         return holder.connectionSecurity;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        accountSetupNavigator = ((AccountSetupBasics) getActivity()).getAccountSetupNavigator();
+        accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.INCOMING, mAccount);
+    }
+
+    private void handleErrorCheckingSettings(PEpSetupException exception) {
+        if (exception.isCertificateAcceptanceNeeded()) {
+            handleCertificateValidationException(exception);
+        } else {
+            showErrorDialog(
+                    exception.getTitleResource(),
+                    exception.getMessage() == null ? "" : exception.getMessage());
+        }
+        nextProgressBar.hide();
+        mNextButton.setVisibility(View.VISIBLE);
+        enableViewGroup(true, (ViewGroup) rootView);
+    }
+
+    private void enableViewGroup(boolean enable, ViewGroup viewGroup) {
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            View child = viewGroup.getChildAt(i);
+            if (child instanceof ViewGroup) {
+                enableViewGroup(enable, ((ViewGroup) child));
+            } else {
+                child.setEnabled(enable);
+            }
+        }
+
+    }
+
+    private void showErrorDialog(int stringResource, String message) {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(getResources().getString(stringResource))
+                .setMessage(message)
+                .show();
+    }
+
+    private void handleCertificateValidationException(PEpSetupException cve) {
+        PEpCertificateException certificateException = (PEpCertificateException) cve;
+        Log.e(K9.LOG_TAG, "Error while testing settings (cve)", certificateException.getOriginalException());
+
+        // Avoid NullPointerException in acceptKeyDialog()
+        if (certificateException.hasCertChain()) {
+            acceptKeyDialog(
+                    R.string.account_setup_failed_dlg_certificate_message_fmt,
+                    certificateException.getOriginalException());
+        } else {
+            showErrorDialog(
+                    R.string.account_setup_failed_dlg_server_message_fmt,
+                    errorMessageForCertificateException(certificateException.getOriginalException()));
+        }
+    }
+
+    private String errorMessageForCertificateException(CertificateValidationException e) {
+        switch (e.getReason()) {
+            case Expired: return getString(R.string.client_certificate_expired, e.getAlias(), e.getMessage());
+            case MissingCapability: return getString(R.string.auth_external_error);
+            case RetrievalFailure: return getString(R.string.client_certificate_retrieval_failure, e.getAlias());
+            case UseMessage: return e.getMessage();
+            case Unknown:
+            default: return "";
+        }
+    }
+
+    private void acceptKeyDialog(final int msgResId, final CertificateValidationException ex) {
+        Handler handler = new Handler();
+        handler.post(new Runnable() {
+            public void run() {
+                String exMessage = "Unknown Error";
+
+                if (ex != null) {
+                    if (ex.getCause() != null) {
+                        if (ex.getCause().getCause() != null) {
+                            exMessage = ex.getCause().getCause().getMessage();
+
+                        } else {
+                            exMessage = ex.getCause().getMessage();
+                        }
+                    } else {
+                        exMessage = ex.getMessage();
+                    }
+                }
+
+                StringBuilder chainInfo = new StringBuilder(100);
+                MessageDigest sha1 = null;
+                try {
+                    sha1 = MessageDigest.getInstance("SHA-1");
+                } catch (NoSuchAlgorithmException e) {
+                    Log.e(K9.LOG_TAG, "Error while initializing MessageDigest", e);
+                }
+
+                final X509Certificate[] chain = ex.getCertChain();
+                // We already know chain != null (tested before calling this method)
+                for (int i = 0; i < chain.length; i++) {
+                    // display certificate chain information
+                    //TODO: localize this strings
+                    chainInfo.append("Certificate chain[").append(i).append("]:\n");
+                    chainInfo.append("Subject: ").append(chain[i].getSubjectDN().toString()).append("\n");
+
+                    // display SubjectAltNames too
+                    // (the user may be mislead into mistrusting a certificate
+                    //  by a subjectDN not matching the server even though a
+                    //  SubjectAltName matches)
+                    try {
+                        final Collection< List<? >> subjectAlternativeNames = chain[i].getSubjectAlternativeNames();
+                        if (subjectAlternativeNames != null) {
+                            // The list of SubjectAltNames may be very long
+                            //TODO: localize this string
+                            StringBuilder altNamesText = new StringBuilder();
+                            altNamesText.append("Subject has ").append(subjectAlternativeNames.size()).append(" alternative names\n");
+
+                            // we need these for matching
+                            String storeURIHost = (Uri.parse(mAccount.getStoreUri())).getHost();
+                            String transportURIHost = (Uri.parse(mAccount.getTransportUri())).getHost();
+
+                            for (List<?> subjectAlternativeName : subjectAlternativeNames) {
+                                Integer type = (Integer)subjectAlternativeName.get(0);
+                                Object value = subjectAlternativeName.get(1);
+                                String name;
+                                switch (type.intValue()) {
+                                    case 0:
+                                        Log.w(K9.LOG_TAG, "SubjectAltName of type OtherName not supported.");
+                                        continue;
+                                    case 1: // RFC822Name
+                                        name = (String)value;
+                                        break;
+                                    case 2:  // DNSName
+                                        name = (String)value;
+                                        break;
+                                    case 3:
+                                        Log.w(K9.LOG_TAG, "unsupported SubjectAltName of type x400Address");
+                                        continue;
+                                    case 4:
+                                        Log.w(K9.LOG_TAG, "unsupported SubjectAltName of type directoryName");
+                                        continue;
+                                    case 5:
+                                        Log.w(K9.LOG_TAG, "unsupported SubjectAltName of type ediPartyName");
+                                        continue;
+                                    case 6:  // Uri
+                                        name = (String)value;
+                                        break;
+                                    case 7: // ip-address
+                                        name = (String)value;
+                                        break;
+                                    default:
+                                        Log.w(K9.LOG_TAG, "unsupported SubjectAltName of unknown type");
+                                        continue;
+                                }
+
+                                // if some of the SubjectAltNames match the store or transport -host,
+                                // display them
+                                if (name.equalsIgnoreCase(storeURIHost) || name.equalsIgnoreCase(transportURIHost)) {
+                                    //TODO: localize this string
+                                    altNamesText.append("Subject(alt): ").append(name).append(",...\n");
+                                } else if (name.startsWith("*.") && (
+                                        storeURIHost.endsWith(name.substring(2)) ||
+                                                transportURIHost.endsWith(name.substring(2)))) {
+                                    //TODO: localize this string
+                                    altNamesText.append("Subject(alt): ").append(name).append(",...\n");
+                                }
+                            }
+                            chainInfo.append(altNamesText);
+                        }
+                    } catch (Exception e1) {
+                        // don't fail just because of subjectAltNames
+                        Log.w(K9.LOG_TAG, "cannot display SubjectAltNames in dialog", e1);
+                    }
+
+                    chainInfo.append("Issuer: ").append(chain[i].getIssuerDN().toString()).append("\n");
+                    if (sha1 != null) {
+                        sha1.reset();
+                        try {
+                            String sha1sum = Hex.encodeHex(sha1.digest(chain[i].getEncoded()));
+                            chainInfo.append("Fingerprint (SHA-1): ").append(sha1sum).append("\n");
+                        } catch (CertificateEncodingException e) {
+                            Log.e(K9.LOG_TAG, "Error while encoding certificate", e);
+                        }
+                    }
+                }
+
+                // TODO: refactor with DialogFragment.
+                // This is difficult because we need to pass through chain[0] for onClick()
+                new AlertDialog.Builder(getActivity())
+                        .setTitle(getString(R.string.account_setup_failed_dlg_invalid_certificate_title))
+                        //.setMessage(getString(R.string.account_setup_failed_dlg_invalid_certificate)
+                        .setMessage(getString(msgResId, exMessage)
+                                + " " + chainInfo.toString()
+                        )
+                        .setCancelable(true)
+                        .setPositiveButton(
+                                getString(R.string.account_setup_failed_dlg_invalid_certificate_accept),
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        acceptCertificate(chain[0]);
+                                    }
+                                })
+                        .setNegativeButton(
+                                getString(R.string.account_setup_failed_dlg_invalid_certificate_reject),
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Preferences.getPreferences(getActivity()).deleteAccount(mAccount);
+                                        getFragmentManager().popBackStack();
+                                    }
+                                })
+                        .show();
+            }
+        });
+    }
+
+    private void acceptCertificate(X509Certificate certificate) {
+        try {
+            mAccount.addCertificate(AccountSetupCheckSettings.CheckDirection.INCOMING, certificate);
+        } catch (CertificateException e) {
+            showErrorDialog(
+                    R.string.account_setup_failed_dlg_certificate_message_fmt,
+                    e.getMessage() == null ? "" : e.getMessage());
+        }
+        accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
     }
 }

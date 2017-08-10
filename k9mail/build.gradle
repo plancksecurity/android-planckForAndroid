@@ -2,6 +2,15 @@ def pEpEngineRevision = 1928
 def pEpJNIAdapterRevision = 325
 def version = "0.9.11.7"
 
+def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
+def pEpTestEmailPassword = "\"$System.env.PEP_TEST_EMAIL_PASSWORD\""
+def pEpTestEmailServer = "\"$System.env.PEP_TEST_EMAIL_SERVER\""
+
+def pEpDragonEmail = "\"$System.env.PEP_DRAGON_EMAIL_ADDRESS\""
+def pEpDragonPassword = "\"$System.env.PEP_DRAGON_PASSWORD\""
+def pEpDragonServer = "\"$System.env.PEP_DRAGON_SERVER\""
+def pEpDragonUsername = "\"$System.env.PEP_DRAGON_USERNAME\""
+
 buildscript {
     repositories {
         mavenCentral()
@@ -80,6 +89,8 @@ dependencies {
 
     compile 'com.hudomju:swipe-to-dismiss-undo:1.0'
 
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2'
+
     // Arch dependencies
     provided 'org.glassfish:javax.annotation:10.0-b28'
     annotationProcessor "com.google.dagger:dagger-compiler:2.4"
@@ -115,6 +126,14 @@ android {
 
         buildConfigField "int", "ENGINE_REVISION", "${pEpEngineRevision}"
         buildConfigField "int", "ADAPTER_REVISION", "${pEpJNIAdapterRevision}"
+        buildConfigField "String", "PEP_TEST_EMAIL_ADDRESS", "${pEpTestEmailAddress}"
+        buildConfigField "String", "PEP_TEST_EMAIL_PASSWORD", "${pEpTestEmailPassword}"
+        buildConfigField "String", "PEP_TEST_EMAIL_SERVER", "${pEpTestEmailServer}"
+
+        buildConfigField "String", "PEP_DRAGON_EMAIL_ADDRESS", "${pEpDragonEmail}"
+        buildConfigField "String", "PEP_DRAGON_PASSWORD", "${pEpDragonPassword}"
+        buildConfigField "String", "PEP_DRAGON_SERVER", "${pEpDragonServer}"
+        buildConfigField "String", "PEP_DRAGON_USERNAME", "${pEpDragonUsername}"
 
         javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true
     }
