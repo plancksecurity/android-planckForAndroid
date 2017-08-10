@@ -749,8 +749,8 @@
         <outgoing uri="smtp+ssl+://ssl0.ovh.net" username="$email" />
     </provider>
     <provider id="peptestch" label="pEp Test" domain="peptest.ch">
-        <incoming uri="imap+ssl+://mail.syhosting.ch" username="$email" />
-        <outgoing uri="smtp+tls+://mail.syhosting.ch" username="$email" />
+        <incoming uri="imap+ssl+://peptest.ch" username="$email" />
+        <outgoing uri="smtp+tls+://peptest.ch" username="$email" />
     </provider>
     <provider id="pepSecurity" label="pEp Security" domain="pep-security.net">
         <incoming uri="imap+ssl+://mail.pep-security.net" username="$user@pep-security.net" />
