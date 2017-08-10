@@ -55,6 +55,7 @@ import com.fsck.k9.mail.Part;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.StorageManager;
+import com.fsck.k9.pEp.AccountUtils;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepActivity;
@@ -105,8 +106,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener,
         NavigationView.OnNavigationItemSelectedListener, DrawerLocker {
 
-    @Inject
-    PEpUtils pEpUtils;
+    @Inject AccountUtils accountUtils;
 
     @Deprecated
     //TODO: Remove after 2017-09-11
@@ -1334,12 +1334,12 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private void setupMainFoldersUnreadMessages() {
         unifiedInboxAccount = SearchAccount.createUnifiedInboxAccount(this);
         allMessagesAccount = SearchAccount.createAllMessagesAccount(this);
-        pEpUtils.loadSearchAccountStats(this, unifiedInboxAccount,
+        accountUtils.loadSearchAccountStats(this, unifiedInboxAccount,
                 (account, stats) -> {
                     TextView unifiedInboxMessages = (TextView) findViewById(R.id.unified_inbox_new_messages);
                     setNewInboxMessages(stats, unifiedInboxMessages);
                 });
-        pEpUtils.loadSearchAccountStats(this, allMessagesAccount,
+        accountUtils.loadSearchAccountStats(this, allMessagesAccount,
                 (account, stats) -> {
                     TextView allMessages = (TextView) findViewById(R.id.all_messages_new_messages);
                     setNewInboxMessages(stats, allMessages);});
