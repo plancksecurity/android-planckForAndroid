@@ -20,6 +20,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -239,13 +240,17 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                     DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
             drawerLayout.setDrawerLockMode(lockMode);
             toggle.setDrawerIndicatorEnabled(enabled);
-            toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onBackPressed();
-                }
-            });
+            if (!enabled) {
+                toggle.setToolbarNavigationClickListener(v -> onBackPressed());
+            }
         }
+    }
+
+    private void handleDrawerState() {
+        if(drawerLayout.isDrawerOpen(Gravity.START))
+            drawerLayout.closeDrawer(Gravity.END);
+        else
+            drawerLayout.openDrawer(Gravity.START);
     }
 
     public void setMessageViewVisible(Boolean visible) {
@@ -1241,7 +1246,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
                 //Query was received from Search Dialog
                 String query = intent.getStringExtra(SearchManager.QUERY).trim();
-
                 mSearch = new LocalSearch(getString(R.string.search_results));
                 mSearch.setManualSearch(true);
                 mNoThreading = true;
@@ -1358,6 +1362,12 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         if (!isThreadDisplayed) {
             PEpUtils.colorToolbar(PePUIArtefactCache.getInstance(getApplicationContext()), getToolbar(), Rating.pEpRatingTrustedAndAnonymized);
             setStatusBarPepColor(Rating.pEpRatingTrustedAndAnonymized);
+        }
+
+        if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
+            setDrawerEnabled(false);
+        } else {
+            setDrawerEnabled(true);
         }
 
         if (mAccount != null) {
@@ -2302,13 +2312,12 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     @Override
     public void goBack() {
-        FragmentManager fragmentManager = getFragmentManager();
         if (mDisplayMode == DisplayMode.MESSAGE_VIEW) {
             showMessageList();
         } else if (mMessageListFragment.isManualSearch()) {
             finish();
         } else {
-            onAccounts();
+            handleDrawerState();
         }
     }
 
@@ -2414,9 +2423,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
         showDefaultTitleView();
         configureMenu(mMenu);
-        if (drawerLayout != null) {
-            setDrawerEnabled(true);
-        }
     }
 
     private void showMessageView() {
