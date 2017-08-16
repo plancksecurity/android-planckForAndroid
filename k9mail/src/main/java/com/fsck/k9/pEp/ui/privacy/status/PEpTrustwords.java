@@ -22,7 +22,6 @@ import com.fsck.k9.pEp.ui.keysync.languages.PEpLanguageSelector;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
-import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -141,7 +140,6 @@ public class PEpTrustwords extends PepColoredActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        trustwordsLanguage = Locale.getDefault().getLanguage();
         loadTrustwords();
     }
 
