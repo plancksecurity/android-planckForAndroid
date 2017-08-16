@@ -561,19 +561,19 @@ public class PEpProviderImpl implements PEpProvider {
         threadExecutor.execute(() -> {
             Engine engine = null;
             try {
-
                 engine = getNewEngineSession();
+                Identity myself;
+                Identity another;
                 if (!areKeysyncTrustwords) {
-                    Identity myself = engine.myself(self);
-                    Identity another = engine.updateIdentity(other);
-                    String longTrustwords = engine.get_trustwords(myself, another, lang, true);
-                    String shortTrustwords = engine.get_trustwords(myself, another, lang, false);
-                    notifyLoaded(new HandshakeData(longTrustwords, shortTrustwords, myself, another), callback);
+                    myself = engine.myself(self);
+                    another = engine.updateIdentity(other);
                 } else {
-                    String longTrustwords = engine.get_trustwords(self, other, lang, true);
-                    String shortTrustwords = engine.get_trustwords(self, other, lang, false);
-                    notifyLoaded(new HandshakeData(longTrustwords, shortTrustwords, self, other), callback);
+                    myself = self;
+                    another = other;
                 }
+                String longTrustwords = engine.get_trustwords(myself, another, lang, true);
+                String shortTrustwords = engine.get_trustwords(myself, another, lang, false);
+                notifyLoaded(new HandshakeData(longTrustwords, shortTrustwords, myself, another), callback);
             } catch (Exception e) {
                 notifyError(e, callback);
             } finally {
