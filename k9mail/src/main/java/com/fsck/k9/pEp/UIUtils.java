@@ -24,8 +24,28 @@ public class UIUtils {
         for (Locale locale : Locale.getAvailableLocales()) {
             for (int i = 0; i < pEpLocales.length; i++) {
                 if (locale.getLanguage().equals(pEpLocales[i])) {
-                    String uppercasedLanguage = uppercaseFirstCharacter(locale.getDisplayLanguage());
-                    pEpLanguages[i] = uppercasedLanguage;
+                    String language = "";
+                    switch (locale.getLanguage()) {
+                        case "ca":
+                            language = "Català";
+                            break;
+                        case "de":
+                            language = "Deutsch";
+                            break;
+                        case "es":
+                            language = "Español";
+                            break;
+                        case "fr":
+                            language = "Français";
+                            break;
+                        case "tr":
+                            language = "Türkçe";
+                            break;
+                        case "en":
+                            language = "English";
+                            break;
+                    }
+                    pEpLanguages[i] = language;
                 }
             }
         }

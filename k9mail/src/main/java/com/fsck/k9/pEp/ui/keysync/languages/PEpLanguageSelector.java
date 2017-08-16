@@ -12,12 +12,12 @@ public class PEpLanguageSelector {
 
     public static final String PEP_DEFAULT_LANGUAGE = "en";
 
-    public static void showLanguageSelector(Context context, CharSequence[] pEpLanguages,
+    public static void showLanguageSelector(Context context, CharSequence[] pEpLocales,
                                             String trustwordsLanguage,
                                             DialogInterface.OnClickListener onClickListener) {
         trustwordsLanguage = ensureTrustwordsLanguage(trustwordsLanguage);
-        CharSequence[] displayLanguages = UIUtils.prettifyLanguages(pEpLanguages);
-        Integer selectedLanguageIndex = getLanguageIndex(pEpLanguages, trustwordsLanguage);
+        CharSequence[] displayLanguages = UIUtils.prettifyLanguages(pEpLocales);
+        Integer selectedLanguageIndex = getLanguageIndex(pEpLocales, trustwordsLanguage);
         new AlertDialog.Builder(context)
                 .setTitle(context.getResources().getString(R.string.settings_language_label))
                 .setSingleChoiceItems(displayLanguages, selectedLanguageIndex, onClickListener)
