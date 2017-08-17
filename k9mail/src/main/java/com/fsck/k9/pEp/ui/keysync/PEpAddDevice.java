@@ -37,8 +37,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 
-import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
-
 public class PEpAddDevice extends PepActivity implements AddDeviceView {
 
     public static final String ACTION_SHOW_PEP_TRUSTWORDS = "com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS";
@@ -174,7 +172,7 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
     }
 
     private boolean changeTrustwordsLanguage(Integer languagePosition) {
-        final CharSequence[] pEpLanguages = PEpUtils.getPEpLanguages();
+        final CharSequence[] pEpLanguages = PEpUtils.getPEpLocales();
         String language = pEpLanguages[languagePosition].toString();
         changeTrustwords(language);
         return true;

@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -56,7 +57,7 @@ public class PEpUtils {
 
     private static final CharSequence[] pEpLanguages = {"ca", "de", "es", "fr", "tr", "en"};
 
-    public static CharSequence[] getPEpLanguages() {
+    public static CharSequence[] getPEpLocales() {
         return pEpLanguages;
     }
 
@@ -559,5 +560,17 @@ public class PEpUtils {
                 && !identity.comm_type.equals(CommType.PEP_ct_OpenPGP_weak)
                 && !identity.comm_type.equals(CommType.PEP_ct_OpenPGP_weak_unconfirmed);
     }
+
+    public static CharSequence[] getPEpLanguages(CharSequence[] pEpLocales, PEpProvider pEpProvider) {
+        CharSequence[] languagesToReturn = new CharSequence[pEpLocales.length];
+        Map<String, PEpLanguage> languages = pEpProvider.obtainLanguages();
+        List<CharSequence> languagesToShow = new ArrayList<>();
+        for (CharSequence pEpLocale : pEpLocales) {
+            PEpLanguage pEpLanguage1 = languages.get(String.valueOf(pEpLocale));
+            languagesToShow.add(pEpLanguage1.getLanguage());
+        }
+        return languagesToShow.toArray(languagesToReturn);
+    }
+
 }
 

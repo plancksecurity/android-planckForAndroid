@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
+import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
@@ -288,9 +289,11 @@ public class PEpTrustwords extends PepColoredActivity {
     }
 
     private void showLanguageSelectionDialog() {
-        final CharSequence[] pEpLanguages = PEpUtils.getPEpLanguages();
-        PEpLanguageSelector.showLanguageSelector(PEpTrustwords.this, pEpLanguages, trustwordsLanguage, (dialog, languagePositon) -> {
-            String language = pEpLanguages[languagePositon].toString();
+        PEpProvider pEpProvider = ((K9) getApplication()).getpEpProvider();
+        final CharSequence[] pEpLocales = PEpUtils.getPEpLocales();
+        CharSequence[] pepLanguages = PEpUtils.getPEpLanguages(pEpLocales, pEpProvider);
+        PEpLanguageSelector.showLanguageSelector(PEpTrustwords.this, pEpLocales, pepLanguages, trustwordsLanguage, (dialog, languagePositon) -> {
+            String language = pEpLocales[languagePositon].toString();
             changeTrustwords(language);
         });
     }
