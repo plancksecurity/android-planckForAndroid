@@ -987,13 +987,17 @@ public class PEpProviderImpl implements PEpProvider {
             String[] lanchageCharacters = languageList.split("\n");
             for (String lanchageCharacter : lanchageCharacters) {
                 String[] split = lanchageCharacter.split(",");
-                PEpLanguage pEpLanguage = new PEpLanguage(split[0], split[1], split[2]);
-                languages.put(split[0], pEpLanguage);
+                PEpLanguage pEpLanguage = new PEpLanguage(getElementAtPosition(split[0]), getElementAtPosition(split[1]), getElementAtPosition(split[2]));
+                languages.put(getElementAtPosition(split[0]), pEpLanguage);
             }
             return languages;
         } catch (pEpException e) {
             Timber.e(e);
             return null;
         }
+    }
+
+    private String getElementAtPosition(String chain) {
+        return chain.substring(1, chain.length() - 1);
     }
 }
