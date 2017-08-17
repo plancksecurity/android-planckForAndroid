@@ -33,8 +33,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.inject.Inject;
@@ -975,5 +977,23 @@ public class PEpProviderImpl implements PEpProvider {
                 }
             }
         });
+    }
+
+    @Override
+    public Map<String, PEpLanguage> obtainLanguages() {
+        try {
+            Map<String, PEpLanguage> languages = new HashMap<>();
+            String languageList = engine.get_languagelist();
+            String[] lanchageCharacters = languageList.split("\n");
+            for (String lanchageCharacter : lanchageCharacters) {
+                String[] split = lanchageCharacter.split(",");
+                PEpLanguage pEpLanguage = new PEpLanguage(split[0], split[1], split[2]);
+                languages.put(split[0], pEpLanguage);
+            }
+            return languages;
+        } catch (pEpException e) {
+            Timber.e(e);
+            return null;
+        }
     }
 }

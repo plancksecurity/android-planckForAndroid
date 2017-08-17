@@ -13,6 +13,7 @@ import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.Sync;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by dietz on 01.07.15.
@@ -198,6 +199,8 @@ public interface PEpProvider {
     Rating incomingMessageRating(MimeMessage message);
 
     void loadOutgoingMessageRatingAfterResetTrust(Identity identity, Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback);
+
+    Map<String, PEpLanguage> obtainLanguages();
 
     class KeyDetail {
         private final Address address;
