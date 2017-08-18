@@ -85,10 +85,6 @@ import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification;
 import com.fsck.k9.search.SqlQueryBuilder;
-import timber.log.Timber;
-
-import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
-import static com.fsck.k9.mail.Flag.X_REMOTE_COPY_STARTED;
 
 import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.Sync;
@@ -120,6 +116,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import timber.log.Timber;
+
+import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
+import static com.fsck.k9.mail.Flag.X_REMOTE_COPY_STARTED;
 
 /**
  * Starts a long running (application) Thread that will run through commands
@@ -3396,6 +3397,8 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
                     listener.accountStatusChanged(account, stats);
                 } catch (MessagingException me) {
                     Timber.e(me, "Count not get unread count for account %s", account.getDescription());
+                } catch (IllegalArgumentException exception) {
+                    Preferences.getPreferences(context).deleteAccount(account);
                 }
 
             }
