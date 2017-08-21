@@ -129,6 +129,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         mShowPasswordCheckBox = (CheckBox) rootView.findViewById(R.id.show_password);
         mNextButton.setOnClickListener(this);
         mManualSetupButton.setOnClickListener(this);
+        mAccountSpinner = (Spinner) rootView.findViewById(R.id.account_spinner);
 
         initializeViewListeners();
         validateFields();
@@ -448,7 +449,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
         accountSetupNavigator = ((AccountSetupBasics) getActivity()).getAccountSetupNavigator();
         accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.BASICS, mAccount);
         enableViewGroup(true, (ViewGroup) rootView);
-        mAccountSpinner = (Spinner) rootView.findViewById(R.id.account_spinner);
         accountTokenStore = K9.oAuth2TokenStore;
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 getActivity(), R.layout.simple_spinner_item, accountTokenStore.getAccounts());
