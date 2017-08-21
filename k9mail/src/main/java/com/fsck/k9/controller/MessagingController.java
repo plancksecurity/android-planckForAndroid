@@ -85,10 +85,6 @@ import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification;
 import com.fsck.k9.search.SqlQueryBuilder;
-import timber.log.Timber;
-
-import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
-import static com.fsck.k9.mail.Flag.X_REMOTE_COPY_STARTED;
 
 import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.Sync;
@@ -1734,11 +1730,7 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                         }
                     });
 
-                    if (account.ispEpPrivacyProtected()
-                                    && !alreadyDecrypted
-                                    && !account.isUntrustedSever()
-                                    && result.flags == null
-                                    && !decryptedMessage.isSet(Flag.X_PEP_NEVER_UNSECURE)) {
+                    if (shouldAppendMessage(result, alreadyDecrypted, decryptedMessage, account)) {
                                 appendMessageCommand(account, localMessage, localFolder);
                             }
                             Timber.d("pep", "in download loop (nr=" + number + ") post pep");// Increment the number of "new messages" if the newly downloaded message is
@@ -1777,6 +1769,18 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
         }});
 
         Timber.d("SYNC: Done fetching small messages for folder %s", folder);
+    }
+
+    private boolean shouldAppendMessage(PEpProvider.DecryptResult result, boolean alreadyDecrypted, MimeMessage decryptedMessage, Account account) {
+        return (account.ispEpPrivacyProtected()
+                        && !alreadyDecrypted
+                        && !account.isUntrustedSever()
+                        && result.flags == null
+                        && !decryptedMessage.isSet(Flag.X_PEP_NEVER_UNSECURE))
+                || (!account.ispEpPrivacyProtected()
+                        && alreadyDecrypted
+                        && result.flags == null
+                        && !decryptedMessage.isSet(Flag.X_PEP_NEVER_UNSECURE));
     }
 
     private <T extends Message> PEpProvider.DecryptResult decryptMessage(MimeMessage message) {
