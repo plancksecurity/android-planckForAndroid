@@ -19,8 +19,6 @@ import org.pEp.jniadapter.Pair;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -164,16 +162,15 @@ class PEpMessageBuilder {
     }
 
     private String getFilenameUri(MimeBodyPart attachment) throws MessagingException {
-        if (isInline(attachment)) {
+        if (hasContentId(attachment)) {
             return MimeHeader.CID_SCHEME + attachment.getContentId();
         } else {
             return MimeHeader.FILE_SCHEME + getFileName(attachment);
         }
     }
 
-    private Boolean isInline(MimeBodyPart attachment) {
-        String disposition = MimeUtility.unfoldAndDecode(attachment.getDisposition());
-        return (MimeHeader.INLINE_DISPOSITION.equalsIgnoreCase(disposition));
+    private Boolean hasContentId(MimeBodyPart attachment) {
+        return attachment.getContentId() != null;
     }
 
 
