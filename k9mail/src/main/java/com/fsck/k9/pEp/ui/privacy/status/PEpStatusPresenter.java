@@ -153,11 +153,11 @@ public class PEpStatusPresenter implements Presenter {
     }
 
     public void onResult() {
-        Rating rating = pEpProvider.incomingMessageRating(localMessage);
         ArrayList<Identity> recipients = cache.getRecipients();
         identities = pEpIdentityMapper.mapRecipients(recipients);
         view.updateIdentities(identities);
-        if (isMessageIncoming) {
+        if (localMessage != null) {
+            Rating rating = pEpProvider.incomingMessageRating(localMessage);
             onRatingChanged(rating);
         } else {
             setupOutgoingMessageRating();
