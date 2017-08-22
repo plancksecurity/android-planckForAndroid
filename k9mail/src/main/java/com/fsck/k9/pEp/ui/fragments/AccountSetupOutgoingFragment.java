@@ -114,6 +114,16 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         fragment.setArguments(bundle);
         return fragment;
     }
+
+    public static AccountSetupOutgoingFragment intentActionEditOutgoingSettings(String accountUuid) {
+        AccountSetupOutgoingFragment fragment = new AccountSetupOutgoingFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(EXTRA_ACCOUNT, accountUuid);
+        bundle.putBoolean(EXTRA_EDIT, true);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -547,6 +557,9 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     }
 
     private void goForward() {
+        if (mEdit) {
+            getActivity().finish();
+        }
         accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
     }
 

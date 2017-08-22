@@ -115,6 +115,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     private View rootView;
     private ContentLoadingProgressBar nextProgressBar;
     private AccountSetupNavigator accountSetupNavigator;
+    private boolean editSettings;
 
     public static AccountSetupIncomingFragment actionIncomingSettings(Account account, boolean makeDefault) {
         AccountSetupIncomingFragment fragment = new AccountSetupIncomingFragment();
@@ -129,6 +130,15 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         AccountSetupIncomingFragment fragment = new AccountSetupIncomingFragment();
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_ACCOUNT, account.getUuid());
+        bundle.putString(EXTRA_ACTION, Intent.ACTION_EDIT);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
+    public static AccountSetupIncomingFragment actionEditIncomingSettings(String accountUuid) {
+        AccountSetupIncomingFragment fragment = new AccountSetupIncomingFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(EXTRA_ACCOUNT, accountUuid);
         bundle.putString(EXTRA_ACTION, Intent.ACTION_EDIT);
         fragment.setArguments(bundle);
         return fragment;
@@ -204,7 +214,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
             mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
         }
 
-        boolean editSettings = Intent.ACTION_EDIT.equals(getArguments().getString(EXTRA_ACTION));
+        editSettings = Intent.ACTION_EDIT.equals(getArguments().getString(EXTRA_ACTION));
 
         try {
             Log.i(K9.LOG_TAG, "Setting up based on settings: " + mAccount.getStoreUri());
@@ -602,9 +612,16 @@ public class AccountSetupIncomingFragment extends PEpFragment {
 
                     @Override
                     public void onLoaded(PEpSettingsChecker.Redirection redirection) {
-                        accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
+                        goForward();
                     }
                 });
+    }
+
+    private void goForward() {
+        if (editSettings) {
+            getActivity().finish();
+        }
+        accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
     }
 
     protected void onNext() {
@@ -974,6 +991,6 @@ public class AccountSetupIncomingFragment extends PEpFragment {
                     R.string.account_setup_failed_dlg_certificate_message_fmt,
                     e.getMessage() == null ? "" : e.getMessage());
         }
-        accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
+        goForward();
     }
 }
