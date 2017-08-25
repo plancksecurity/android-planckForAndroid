@@ -119,14 +119,14 @@
     <string name="global_settings_title">Configuración global</string>
     <string name="pep_add_device_ask_move_trustwords">Estás a punto de mover un dispositivo a otro grupo de dispositivos de p≡p. Confirma verificando las siguientes Trustwords.</string>
     <string name="pep_keysync_timeout">Timeout de sincronización p≡p</string>
-    <string name="read_permission_first_explanation">Necesitamos tu permiso para leer los contactos almacenados en tu móvil</string>
+    <string name="read_permission_first_explanation">Necesitamos acceder a tus contactos para autocompletar los emails.\nLa información de tus contactos no saldrá nunca de tu teléfono!</string>
     <string name="button_settings">Configuración</string>
     <string name="read_snackbar_permission_rationale">Necesitamos tu permiso para leer los contactos almacenados en tu móvil</string>
     <string name="read_snackbar_permission_permanently_denied">No permitir la lectura de contactos puede provocar que la app se comporte de manera inesperada</string>
     <string name="read_permission_rationale_title">"Leer  contactos"</string>
 
     <string name="download_permission_first_explanation">Necesitamos tu permiso para descargar archivos</string>
-    <string name="download_snackbar_permission_rationale">Necesitamos tu permiso para descargar archivos</string>
+    <string name="download_snackbar_permission_rationale">Necesitamos tu permiso para guardar los adjuntos de tus correos.</string>
     <string name="download_snackbar_permission_permanently_denied">No permitir la descarga de archivos puede provocar comportamientos inesperados</string>
     <string name="download_permission_rationale_title">Descargar archivos</string>
     <string name="add_fpr">Añadir FPR</string>

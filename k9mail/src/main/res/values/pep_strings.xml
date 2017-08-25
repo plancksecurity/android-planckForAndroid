@@ -109,14 +109,14 @@
     <string name="pep_enable_sync_account">Synchronize this account</string>
     <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
     <string name="pep_keysync_timeout">p≡p sync timeout</string>
-    <string name="read_permission_first_explanation">We need your permission to read the contacts stored on your mobile phone</string>
+    <string name="read_permission_first_explanation">We need access to your contacts in order to use autocomplete function in emails.\nYour contact list information never leaves your device!</string>
     <string name="button_settings">Settings</string>
     <string name="read_snackbar_permission_rationale">We need your permission to read the contacts stored on your mobile phone</string>
     <string name="read_snackbar_permission_permanently_denied">Don\'t allowing us read your contacts may cause unexpected behaviours</string>
     <string name="read_permission_rationale_title">Reading contacts</string>
 
     <string name="download_permission_first_explanation">We need your permission to download files on your mobile phone</string>
-    <string name="download_snackbar_permission_rationale">We need your permission to download files on your mobile phone</string>
+    <string name="download_snackbar_permission_rationale">We need your permission to save attachments from your emails.</string>
     <string name="download_snackbar_permission_permanently_denied">Don\'t allowing us download files may cause unexpected behaviours</string>
     <string name="download_permission_rationale_title">Download files</string>
     <string name="add_fpr">ADD FPR</string>
@@ -130,7 +130,7 @@
     <string name="intro_third_text">Tells you how secure your communication is based on traffic lights.</string>
     <string name="action_continue">Continue</string>
     <string name="battery_optimization_rationale_title">Disable battery optimizations</string>
-    <string name="battery_optimiazation_explanation">In order to synchronize your emails in the background we need to disable battery optimizations</string>
+    <string name="battery_optimiazation_explanation">We need this permission to regularly check your emails in the background.</string>
     <string name="add_account_title">Add your account</string>
     <string name="add_account_message">To be able to use this account you should add it to your device</string>
     <string name="account_already_exists">Account already exists</string>
