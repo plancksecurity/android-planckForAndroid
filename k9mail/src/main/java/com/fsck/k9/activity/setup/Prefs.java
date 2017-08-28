@@ -1,9 +1,11 @@
 package com.fsck.k9.activity.setup;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -22,11 +24,10 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.ColorPickerDialog;
 import com.fsck.k9.activity.K9PreferenceActivity;
-import com.fsck.k9.helper.FileBrowserHelper;
-import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.notification.NotificationController;
+import com.fsck.k9.pEp.filepicker.FilePickerActivity;
+import com.fsck.k9.pEp.filepicker.Utils;
 import com.fsck.k9.pEp.ui.blacklist.PepBlacklist;
-import com.fsck.k9.pEp.ui.keys.PepExtraKeys;
 import com.fsck.k9.pEp.ui.keysync.KeysyncManagement;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.CheckBoxListPreference;
@@ -119,6 +120,7 @@ public class Prefs extends K9PreferenceActivity {
     private static final int VISIBLE_REFILE_ACTIONS_MOVE = 2;
     private static final int VISIBLE_REFILE_ACTIONS_COPY = 3;
     private static final int VISIBLE_REFILE_ACTIONS_SPAM = 4;
+    private static final int FILE_CODE = 5;
 
     private ListPreference mLanguage;
     private ListPreference mTheme;
@@ -391,31 +393,15 @@ public class Prefs extends K9PreferenceActivity {
         mAttachmentPathPreference = findPreference(PREFERENCE_ATTACHMENT_DEF_PATH);
         mAttachmentPathPreference.setSummary(K9.getAttachmentDefaultPath());
         mAttachmentPathPreference
-        .setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                FileBrowserHelper
-                .getInstance()
-                .showFileBrowserActivity(Prefs.this,
-                                         new File(K9.getAttachmentDefaultPath()),
-                                         ACTIVITY_CHOOSE_FOLDER, callback);
+        .setOnPreferenceClickListener(preference -> {
+            Intent intent = new Intent(getBaseContext(), FilePickerActivity.class);
+            intent.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
+            intent.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false);
+            intent.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_DIR);
+            intent.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
 
-                return true;
-            }
-
-            FileBrowserFailOverCallback callback = new FileBrowserFailOverCallback() {
-
-                @Override
-                public void onPathEntered(String path) {
-                    mAttachmentPathPreference.setSummary(path);
-                    K9.setAttachmentDefaultPath(path);
-                }
-
-                @Override
-                public void onCancel() {
-                    // canceled, do nothing
-                }
-            };
+            startActivityForResult(intent, FILE_CODE);
+            return true;
         });
 
         mWrapFolderNames = (CheckBoxPreference)findPreference(PREFERENCE_FOLDERLIST_WRAP_NAME);
@@ -640,22 +626,14 @@ public class Prefs extends K9PreferenceActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-        case ACTIVITY_CHOOSE_FOLDER:
-            if (resultCode == RESULT_OK && data != null) {
-                // obtain the filename
-                Uri fileUri = data.getData();
-                if (fileUri != null) {
-                    String filePath = fileUri.getPath();
-                    if (filePath != null) {
-                        mAttachmentPathPreference.setSummary(filePath.toString());
-                        K9.setAttachmentDefaultPath(filePath.toString());
-                    }
-                }
+        if (requestCode == FILE_CODE && resultCode == Activity.RESULT_OK) {
+            List<Uri> files = Utils.getSelectedFilesFromResult(data);
+            for (Uri uri: files) {
+                File file = Utils.getFileForUri(uri);
+                mAttachmentPathPreference.setSummary(file.getPath());
+                K9.setAttachmentDefaultPath(file.getPath());
             }
-            break;
         }
-
         super.onActivityResult(requestCode, resultCode, data);
     }
 
