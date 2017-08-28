@@ -156,7 +156,7 @@ public class PEpStatusPresenter implements Presenter {
         ArrayList<Identity> recipients = cache.getRecipients();
         identities = pEpIdentityMapper.mapRecipients(recipients);
         view.updateIdentities(identities);
-        if (localMessage != null) {
+        if (isMessageIncoming) {
             Rating rating = pEpProvider.incomingMessageRating(localMessage);
             onRatingChanged(rating);
         } else {
