@@ -41,11 +41,11 @@
     <string name="pep_trust_server_description">Desa els correus al servidor de forma segura.</string>
     <string name="pep_account_privacy_protection_explanation">Protegeix la privacitat d\'aquest compte</string>
     <string name="pep_account_setup_generating_keys">Configurant la seva privacitat</string>
-    <string name="pEp_trustwords">Trustwords pEp</string>f
+    <string name="pEp_trustwords">Trustwords pEp</string>
     <string name="key_list_title">Available keys</string>
     <string name="pep_add_device_ask_trustwords">You are about to add a device to your pEp device group. Confirm by successfully verifying the following Trustwords.</string>
     <string name="pep_device_group">Grup de dispositius de p≡p</string>
-    <string name="handshake_reset_dialog_message">Av’s: Aquesta comunicaci— sХhavia marcat prЏviament com a no confiable. Desitges realitzar un nou Handshake?</string>
+    <string name="handshake_reset_dialog_message">Avís: Aquesta comunicació s\'havia marcat prèviament com a no confiable. Desitges realitzar un nou Handshake?</string>
     <string name="pep_gpg_compatibility">Compatibilitat amb OpenPGP</string>
     <string name="crash_toast_text">Oops, something went wrong</string>
     <string name="advanced_options">Advanced options</string>
@@ -70,9 +70,9 @@
     </string-array>
 
     <string-array name="pep_explanation">
-        <item>No es disposa d\’informació suficient per determinar si la comunicació és segura.<!--pEpRatingUndefined--></item>
-        <item>No s\’ha pogut desxifrar el missatge.<!--pEpRatingCannotDecrypt--></item>
-        <item>No s\’ha pogut desxifrar el missatge perquè la clau no està disponible.<!--pEpRatingHaveNoKey--></item>
+        <item>No es disposa d\'informació suficient per determinar si la comunicació és segura.<!--pEpRatingUndefined--></item>
+        <item>No s\'ha pogut desxifrar el missatge.<!--pEpRatingCannotDecrypt--></item>
+        <item>No s\'ha pogut desxifrar el missatge perquè la clau no està disponible.<!--pEpRatingHaveNoKey--></item>
         <item>Aquest missatge no és segura.<!--pEpRatingUnencrypted--></item>
         <item>Aquest missatge no és segur per algun dels interlocutors.<!--pEpRatingUnencryptedForSome--></item>
         <item>El missatge té una protecció no confiable.<!--pEpRatingUnreliable--></item>
@@ -89,14 +89,14 @@
         <item>Si us plau, introdueixi la informació necessària.<!--pEpRatingUndefined--></item>
         <item>Si ets el destinatari d\'aquest missatge, si us plau informa a la persona que envia el missatge que no disposes de la seva clau.<!--pEpRatingCannotDecrypt--></item>
         <item>Si ets el destinatari d\'aquest missatge, si us plau informa al usuari de que no disposes de la seva clau.<!--pEpRatingHaveNoKey--></item>
-        <item>Si us plau, pregunti al seu company per la possibilitat d’utilitzar una solució de xifrat o instal·lar p≡p.<!--pEpRatingUnencrypted--></item>
-        <item>Verifiqui que l\’estat de privacitat amb els seus interlocutor és com a mínim segur.<!--pEpRatingUnencryptedForSome--></item>
+        <item>Si us plau, pregunti al seu company per la possibilitat d\'utilitzar una solució de xifrat o instal·lar p≡p.<!--pEpRatingUnencrypted--></item>
+        <item>Verifiqui que l\'estat de privacitat amb els seus interlocutor és com a mínim segur.<!--pEpRatingUnencryptedForSome--></item>
         <item>El missatge no té una seguretat confiable ni signatura.Si us plau, pregunti al seu company per la possibilitat de fer servir una solució de xifrat o instal·lar p≡p.<!--pEpRatingUnreliable--></item>
         <item>Completi l\'intercanvi de paraules de confiança amb el seu interlocutor. Només cal realitzar aquest intercanvi una vegada per contacte per assegurar una comunicació privada i confiable.<!--pEpRatingReliable--></item>
         <item>No cal realitzar més accions!<!--pEpRatingTrusted--></item>
         <item>No cal realitzar més accions!<!--pEpRatingTrustedAndAnonymized--></item>
         <item>No cal realitzar més accions!<!--pEpRatingFullyAnonymous--></item>
-        <item>Restablir la connexió amb l\’interlocutor i tornar a fer un intercanvi de paraules de confiança.<!--pEpRatingMissTrust--></item>
+        <item>Restablir la connexió amb l\'interlocutor i tornar a fer un intercanvi de paraules de confiança.<!--pEpRatingMissTrust--></item>
         <item><!--pEpRatingB0rken--></item>
         <item>Verifiqui tant vostè com el seu company de comunicació el contingut del missatge.<!--pEpRatingUnderAttack--></item>
     </string-array>
