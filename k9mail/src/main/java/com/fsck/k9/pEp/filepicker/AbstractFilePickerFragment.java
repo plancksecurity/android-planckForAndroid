@@ -1,6 +1,5 @@
 package com.fsck.k9.pEp.filepicker;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -47,7 +46,7 @@ import static com.fsck.k9.pEp.filepicker.Utils.appendPath;
  */
 public abstract class AbstractFilePickerFragment<T> extends Fragment
         implements LoaderManager.LoaderCallbacks<SortedList<T>>,
-        NewItemFragment.OnNewFolderListener, LogicHandler<T> {
+        LogicHandler<T> {
 
     // The different preset modes of operation. This impacts the behaviour
     // and possible actions in the UI.
@@ -475,21 +474,6 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
         MenuItem item = menu.findItem(R.id.nnf_action_createdir);
         item.setVisible(allowCreateDir);
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem menuItem) {
-        if (R.id.nnf_action_createdir == menuItem.getItemId()) {
-            Activity activity = getActivity();
-            if (activity instanceof AppCompatActivity) {
-                NewFolderFragment.showDialog(((AppCompatActivity) activity).getSupportFragmentManager(),
-                        AbstractFilePickerFragment.this);
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
-
 
     @Override
     public void onSaveInstanceState(Bundle b) {
