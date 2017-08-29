@@ -136,7 +136,7 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
-    <style name="FilePickerTheme" parent="NNF_BaseTheme">
+    <style name="FilePickerTheme" parent="NNF_BaseTheme.Light">
         <!-- Set these to match your theme -->
         <item name="colorPrimary">@color/pep_green</item>
         <item name="colorPrimaryDark">@color/pep_green</item>

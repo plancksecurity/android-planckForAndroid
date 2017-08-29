@@ -13,7 +13,7 @@
         android:layout_alignParentTop="true"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
-        android:theme="?nnf_toolbarTheme">
+        android:theme="@style/ToolbarTheme">
 
         <TextView
             android:id="@+id/nnf_current_dir"
