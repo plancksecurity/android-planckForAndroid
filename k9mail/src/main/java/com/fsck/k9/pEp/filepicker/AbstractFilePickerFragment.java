@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -30,6 +31,7 @@ import android.widget.Toast;
 
 import com.fsck.k9.R;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -507,6 +509,7 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
             getLoaderManager()
                     .restartLoader(0, null, AbstractFilePickerFragment.this);
         } else {
+            Snackbar.make(getView(), R.string.nnf_permission_external_write_denied, Snackbar.LENGTH_SHORT).show();
             handlePermission(nextPath);
         }
     }
@@ -531,7 +534,7 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
      */
     protected boolean hasPermission(@NonNull T path) {
         // Nothing to request by default
-        return true;
+        return new File(path.toString()).canWrite();
     }
 
     /**

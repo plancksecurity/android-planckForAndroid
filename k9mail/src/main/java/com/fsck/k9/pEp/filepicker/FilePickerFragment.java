@@ -56,7 +56,8 @@ public class FilePickerFragment extends AbstractFilePickerFragment<File> {
     protected boolean hasPermission(@NonNull File path) {
         return PackageManager.PERMISSION_GRANTED ==
                 ContextCompat.checkSelfPermission(getContext(),
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                && path.canWrite();
     }
 
     /**
@@ -94,12 +95,7 @@ public class FilePickerFragment extends AbstractFilePickerFragment<File> {
                 mListener.onCancelled();
             }
         } else { // if (requestCode == PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE) {
-            if (PackageManager.PERMISSION_GRANTED == grantResults[0]) {
-                // Do refresh
-                if (mRequestedPath != null) {
-                    refresh(mRequestedPath);
-                }
-            } else {
+            if (PackageManager.PERMISSION_GRANTED != grantResults[0]) {
                 Toast.makeText(getContext(), R.string.nnf_permission_external_write_denied,
                         Toast.LENGTH_SHORT).show();
                 // Treat this as a cancel press
