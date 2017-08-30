@@ -38,13 +38,13 @@ public abstract class K9PreferenceActivity extends PreferenceActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        Toolbar bar;
+        LinearLayout bar;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             ListView list = (ListView) findViewById(android.R.id.list);
             ListView.MarginLayoutParams layoutParams = (ListView.MarginLayoutParams) list.getLayoutParams();
             ViewGroup root = (ViewGroup) list.getParent().getParent().getParent();
-            bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
+            bar = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
             layoutParams.setMargins(0, bar.getHeight(), 0, 0);
             root.addView(bar, 0); // insert at top
         } else {
@@ -53,7 +53,7 @@ public abstract class K9PreferenceActivity extends PreferenceActivity {
 
             root.removeAllViews();
 
-            bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
+            bar = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
 
 
             int height;
@@ -69,17 +69,17 @@ public abstract class K9PreferenceActivity extends PreferenceActivity {
             root.addView(content);
             root.addView(bar);
         }
-
-        bar.setNavigationOnClickListener(new View.OnClickListener() {
+        Toolbar toolbar = (Toolbar) bar.getChildAt(0);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
-        bar.setTitleTextColor(getResources().getColor(R.color.white));
-        bar.setBackgroundColor(getResources().getColor(R.color.pep_green));
+        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
+        toolbar.setBackgroundColor(getResources().getColor(R.color.pep_green));
         setStatusBarPepColor();
-        toolbar = bar;
+        this.toolbar = toolbar;
     }
 
     public void setStatusBarPepColor() {
@@ -200,12 +200,12 @@ public abstract class K9PreferenceActivity extends PreferenceActivity {
 
         setTheme(K9.getK9ThemeResourceId());
 
-        Toolbar bar;
+        LinearLayout bar;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH && Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
             ListView content = (ListView) dialog.findViewById(android.R.id.list);
             ViewGroup root = (ViewGroup) content.getParent().getParent();
-            bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
+            bar = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
 
             int height;
             TypedValue tv = new TypedValue();
@@ -218,10 +218,10 @@ public abstract class K9PreferenceActivity extends PreferenceActivity {
             root.addView(bar, 0); // insert at top
         } else {
             LinearLayout root = (LinearLayout) dialog.findViewById(android.R.id.list).getParent().getParent();
-            bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
+            bar = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
             root.addView(bar, 0); // insert at top
         }
-        toolbar = bar;
+        toolbar = (Toolbar) bar.getChildAt(0);
 
         toolbar.setTitle(preferenceScreen.getTitle());
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
