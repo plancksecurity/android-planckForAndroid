@@ -2,6 +2,7 @@ package com.fsck.k9.activity.setup;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,9 +12,11 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceScreen;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ArrayAdapter;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
@@ -394,11 +397,12 @@ public class Prefs extends K9PreferenceActivity {
         mAttachmentPathPreference.setSummary(K9.getAttachmentDefaultPath());
         mAttachmentPathPreference
         .setOnPreferenceClickListener(preference -> {
+            String externalStoragePath = Environment.getExternalStorageDirectory().getPath();
             Intent intent = new Intent(getBaseContext(), FilePickerActivity.class);
             intent.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
             intent.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false);
             intent.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_DIR);
-            intent.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
+            intent.putExtra(FilePickerActivity.EXTRA_START_PATH, externalStoragePath);
 
             startActivityForResult(intent, FILE_CODE);
             return true;

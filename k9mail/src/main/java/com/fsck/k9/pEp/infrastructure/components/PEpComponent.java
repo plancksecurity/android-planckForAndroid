@@ -1,7 +1,8 @@
 package com.fsck.k9.pEp.infrastructure.components;
 
-import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.MessageList;
+import com.fsck.k9.activity.setup.AccountSetupBasics;
+import com.fsck.k9.pEp.filepicker.SelectPathFragment;
 import com.fsck.k9.pEp.infrastructure.PerActivity;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
@@ -52,4 +53,6 @@ import dagger.Component;
     void inject(AccountSetupOptionsFragment accountSetupOptionsFragment);
 
     void inject(MessageList messageList);
+
+    void inject(SelectPathFragment selectPathFragment);
 }

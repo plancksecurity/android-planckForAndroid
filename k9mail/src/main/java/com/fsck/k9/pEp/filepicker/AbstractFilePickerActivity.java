@@ -99,15 +99,32 @@ public abstract class AbstractFilePickerActivity<T> extends AppCompatActivity
         AbstractFilePickerFragment<T> fragment =
                 (AbstractFilePickerFragment<T>) fm.findFragmentByTag(TAG);
 
-        if (fragment == null) {
-            fragment =
-                    getFragment(startPath, mode, allowMultiple, allowCreateDir, allowExistingFile,
-                            singleClick);
-        }
+        String secondaryStorage = System.getenv("SECONDARY_STORAGE");
 
-        if (fragment != null) {
-            fm.beginTransaction().replace(R.id.fragment, fragment, TAG)
+        if (secondaryStorage != null) {
+            SelectPathFragment selectPathFragment = SelectPathFragment.newInstance();
+            fm.beginTransaction().replace(R.id.fragment, selectPathFragment, TAG)
                     .commit();
+            selectPathFragment.setPathClickListener(new OnPathClickListener() {
+                @Override
+                public void onClick(String path) {
+                    AbstractFilePickerFragment<T> filePickerFragment = getFragment(path, mode, allowMultiple, allowCreateDir, allowExistingFile,
+                            singleClick);
+                    fm.beginTransaction().replace(R.id.fragment, filePickerFragment, TAG)
+                            .commit();
+                }
+            });
+        } else {
+            if (fragment == null) {
+                fragment =
+                        getFragment(startPath, mode, allowMultiple, allowCreateDir, allowExistingFile,
+                                singleClick);
+            }
+
+            if (fragment != null) {
+                fm.beginTransaction().replace(R.id.fragment, fragment, TAG)
+                        .commit();
+            }
         }
 
         // Default to cancelled
