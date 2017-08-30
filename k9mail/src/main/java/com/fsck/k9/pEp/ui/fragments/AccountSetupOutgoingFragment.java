@@ -559,8 +559,9 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     private void goForward() {
         if (mEdit) {
             getActivity().finish();
+        } else {
+            accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
         }
-        accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
     }
 
     protected void onNext() {
