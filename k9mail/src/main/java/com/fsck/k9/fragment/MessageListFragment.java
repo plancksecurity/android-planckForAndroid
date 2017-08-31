@@ -360,6 +360,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     private void setWindowTitle() {
         // regular folder content display
         if (!isManualSearch() && singleFolderMode) {
+            showComposeButton();
             Activity activity = getActivity();
             String displayName = FolderInfoHolder.getDisplayName(activity, account,
                     folderName);
@@ -373,6 +374,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
                 fragmentListener.setMessageListSubTitle(operation);
             }
         } else {
+            hideComposeButton();
             // query result display.  This may be for a search folder as opposed to a user-initiated search.
             if (title != null) {
                 // This was a search folder; the search folder has overridden our title.
@@ -1534,6 +1536,14 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         }
 
         return AdapterView.INVALID_POSITION;
+    }
+
+    public void hideComposeButton() {
+        fab.setVisibility(GONE);
+    }
+
+    public void showComposeButton() {
+        fab.setVisibility(View.VISIBLE);
     }
 
     class MessageListActivityListener extends ActivityListener {
