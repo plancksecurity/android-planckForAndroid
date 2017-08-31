@@ -2,6 +2,7 @@
 package com.fsck.k9.mail.store.pop3;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 
 import com.fsck.k9.mail.*;
 import com.fsck.k9.mail.filter.Base64;
@@ -257,7 +258,7 @@ public class Pop3Store extends RemoteStore {
     }
 
     @Override
-    public void checkSettings() throws MessagingException {
+    public void checkSettings(Context context) throws MessagingException {
         Pop3Folder folder = new Pop3Folder(mStoreConfig.getInboxFolderName());
         try {
             folder.open(Folder.OPEN_MODE_RW);

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="offline_error_explanation">Your device seems to be offline, please check your connection before you can continue</string>
+</resources>

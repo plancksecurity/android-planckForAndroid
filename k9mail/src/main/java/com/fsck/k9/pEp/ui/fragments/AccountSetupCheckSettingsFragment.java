@@ -23,7 +23,6 @@ import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.activity.setup.AccountSetupNames;
@@ -548,7 +547,7 @@ public class AccountSetupCheckSettingsFragment extends Fragment implements Confi
             } else {
                 publishProgress(R.string.account_setup_check_settings_check_incoming_msg);
             }
-            store.checkSettings();
+            store.checkSettings(getContext());
 
             if (store instanceof WebDavStore) {
                 publishProgress(R.string.account_setup_check_settings_fetch);

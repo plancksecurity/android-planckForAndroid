@@ -2,6 +2,8 @@
 package com.fsck.k9.mail;
 
 
+import android.content.Context;
+
 import java.util.List;
 
 /**
@@ -17,7 +19,7 @@ public abstract class Store {
 
     public abstract List <? extends Folder > getPersonalNamespaces(boolean forceListAll) throws MessagingException;
 
-    public abstract void checkSettings() throws MessagingException;
+    public abstract void checkSettings(Context context) throws MessagingException;
 
     public boolean isCopyCapable() {
         return false;

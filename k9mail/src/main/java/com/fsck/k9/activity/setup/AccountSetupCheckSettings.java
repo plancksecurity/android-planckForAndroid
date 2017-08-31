@@ -523,7 +523,7 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
             } else {
                 publishProgress(R.string.account_setup_check_settings_check_incoming_msg);
             }
-            store.checkSettings();
+            store.checkSettings(AccountSetupCheckSettings.this);
 
             if (store instanceof WebDavStore) {
                 publishProgress(R.string.account_setup_check_settings_fetch);

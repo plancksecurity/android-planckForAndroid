@@ -72,7 +72,7 @@ public class ImapStoreTest {
         ImapConnection imapConnection = mock(ImapConnection.class);
         imapStore.enqueueImapConnection(imapConnection);
 
-        imapStore.checkSettings();
+        imapStore.checkSettings(context);
 
         verify(imapConnection).open();
     }
@@ -84,7 +84,7 @@ public class ImapStoreTest {
         imapStore.enqueueImapConnection(imapConnection);
 
         try {
-            imapStore.checkSettings();
+            imapStore.checkSettings(context);
             fail("Expected exception");
         } catch (MessagingException e) {
             assertEquals("Unable to connect", e.getMessage());

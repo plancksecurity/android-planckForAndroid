@@ -116,7 +116,7 @@ public class WebDavStoreTest {
         WebDavStore webDavStore = createWebDavStore("webdav://user:password@http://server:123456");
         configureHttpResponses(UNAUTHORIZED_401_RESPONSE, OK_200_RESPONSE);
 
-        webDavStore.checkSettings();
+        webDavStore.checkSettings(context);
 
         assertHttpClientUsesHttps(false);
     }
@@ -126,7 +126,7 @@ public class WebDavStoreTest {
         WebDavStore webDavStore = createWebDavStore("webdav://user:password@server:123456");
         configureHttpResponses(UNAUTHORIZED_401_RESPONSE, OK_200_RESPONSE);
 
-        webDavStore.checkSettings();
+        webDavStore.checkSettings(context);
 
         assertHttpClientUsesHttps(false);
     }
@@ -136,7 +136,7 @@ public class WebDavStoreTest {
         WebDavStore webDavStore = createWebDavStore("webdav+ssl://user:password@server:123456");
         configureHttpResponses(UNAUTHORIZED_401_RESPONSE, OK_200_RESPONSE);
 
-        webDavStore.checkSettings();
+        webDavStore.checkSettings(context);
 
         assertHttpClientUsesHttps(true);
     }
@@ -146,7 +146,7 @@ public class WebDavStoreTest {
         WebDavStore webDavStore = createWebDavStore("webdav+tls://user:password@server:123456");
         configureHttpResponses(UNAUTHORIZED_401_RESPONSE, OK_200_RESPONSE);
 
-        webDavStore.checkSettings();
+        webDavStore.checkSettings(context);
 
         assertHttpClientUsesHttps(true);
     }
@@ -161,7 +161,7 @@ public class WebDavStoreTest {
                 .thenAnswer(createOkResponseWithCookie())
                 .thenReturn(OK_200_RESPONSE);
 
-        webDavStore.checkSettings();
+        webDavStore.checkSettings(context);
 
         List<HttpGeneric> requests = requestCaptor.getAllValues();
         assertEquals(4, requests.size());
@@ -178,7 +178,7 @@ public class WebDavStoreTest {
         WebDavStore webDavStore = createDefaultWebDavStore();
         configureHttpResponses(UNAUTHORIZED_401_RESPONSE, OK_200_RESPONSE);
 
-        webDavStore.checkSettings();
+        webDavStore.checkSettings(context);
 
         List<HttpGeneric> requests = requestCaptor.getAllValues();
         assertEquals(2, requests.size());
@@ -193,7 +193,7 @@ public class WebDavStoreTest {
         WebDavStore webDavStore = createDefaultWebDavStore();
         configureHttpResponses(UNAUTHORIZED_401_RESPONSE, UNAUTHORIZED_401_RESPONSE);
 
-        webDavStore.checkSettings();
+        webDavStore.checkSettings(context);
     }
 
     @Test(expected = MessagingException.class)
@@ -201,7 +201,7 @@ public class WebDavStoreTest {
         WebDavStore webDavStore = createDefaultWebDavStore();
         configureHttpResponses(UNAUTHORIZED_401_RESPONSE, SERVER_ERROR_500_RESPONSE);
 
-        webDavStore.checkSettings();
+        webDavStore.checkSettings(context);
     }
 
     @Test(expected = CertificateValidationException.class)
@@ -211,7 +211,7 @@ public class WebDavStoreTest {
         when(mockHttpClient.executeOverride(requestCaptor.capture(), any(HttpContext.class)))
                 .thenThrow(new SSLException("Test"));
 
-        webDavStore.checkSettings();
+        webDavStore.checkSettings(context);
     }
 
     //TODO: Is this really something we want to test?
@@ -220,7 +220,7 @@ public class WebDavStoreTest {
         WebDavStore webDavStore = createDefaultWebDavStore();
         configureHttpResponses(UNAUTHORIZED_401_RESPONSE, OK_200_RESPONSE);
 
-        webDavStore.checkSettings();
+        webDavStore.checkSettings(context);
 
         ArgumentCaptor<Scheme> schemeCaptor = ArgumentCaptor.forClass(Scheme.class);
         verify(mockSchemeRegistry).register(schemeCaptor.capture());

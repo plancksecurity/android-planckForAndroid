@@ -1,6 +1,24 @@
 package com.fsck.k9.mail.store.imap;
 
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+
+import com.fsck.k9.mail.AuthType;
+import com.fsck.k9.mail.ConnectionSecurity;
+import com.fsck.k9.mail.Flag;
+import com.fsck.k9.mail.K9MailLib;
+import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.NetworkType;
+import com.fsck.k9.mail.PushReceiver;
+import com.fsck.k9.mail.Pusher;
+import com.fsck.k9.mail.R;
+import com.fsck.k9.mail.ServerSettings;
+import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
+import com.fsck.k9.mail.ssl.TrustedSocketFactory;
+import com.fsck.k9.mail.store.RemoteStore;
+import com.fsck.k9.mail.store.StoreConfig;
+
 import java.io.IOException;
 import java.nio.charset.CharacterCodingException;
 import java.util.ArrayList;
@@ -14,21 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import android.net.ConnectivityManager;
-
-import com.fsck.k9.mail.AuthType;
-import com.fsck.k9.mail.ConnectionSecurity;
-import com.fsck.k9.mail.Flag;
-import com.fsck.k9.mail.K9MailLib;
-import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.NetworkType;
-import com.fsck.k9.mail.PushReceiver;
-import com.fsck.k9.mail.Pusher;
-import com.fsck.k9.mail.ServerSettings;
-import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
-import com.fsck.k9.mail.ssl.TrustedSocketFactory;
-import com.fsck.k9.mail.store.RemoteStore;
-import com.fsck.k9.mail.store.StoreConfig;
 import timber.log.Timber;
 
 
@@ -297,7 +300,7 @@ public class ImapStore extends RemoteStore {
     }
 
     @Override
-    public void checkSettings() throws MessagingException {
+    public void checkSettings(Context context) throws MessagingException {
         try {
             ImapConnection connection = createImapConnection();
 
@@ -305,7 +308,7 @@ public class ImapStore extends RemoteStore {
             autoconfigureFolders(connection);
             connection.close();
         } catch (IOException ioe) {
-            throw new MessagingException("Unable to connect", ioe);
+            throw new MessagingException(context.getString(R.string.offline_error_explanation), ioe);
         }
     }
 
