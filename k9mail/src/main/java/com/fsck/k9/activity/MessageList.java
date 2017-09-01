@@ -450,6 +450,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void setupMainAccountListener() {
+        //TODO MIRA EL LISTENER
         mainAccountLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -458,6 +459,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                     navigationViewFolders.setVisibility(View.VISIBLE);
                     createAccountsMenu();
                 } else {
+                    navigationViewAccounts.setVisibility(View.VISIBLE);
+                    navigationViewFolders.setVisibility(View.GONE);
                     createFoldersMenu();
                 }
             }
