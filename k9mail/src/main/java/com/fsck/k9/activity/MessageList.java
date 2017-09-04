@@ -722,12 +722,14 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     @NonNull
     private LinearLayoutManager getDrawerLayoutManager() {
-        return new LinearLayoutManager(this) {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this) {
             @Override
             public boolean canScrollVertically() {
                 return false;
             }
         };
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        return linearLayoutManager;
     }
 
     private void setupCreateAccountListener() {
