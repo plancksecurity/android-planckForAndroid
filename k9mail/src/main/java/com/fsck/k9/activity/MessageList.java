@@ -417,8 +417,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         navigationViewAccounts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navigationViewAccounts.setVisibility(View.GONE);
-                navigationViewFolders.setVisibility(View.VISIBLE);
+                showFoldersArrowIndicator();
                 createAccountsMenu();
             }
         });
@@ -426,8 +425,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         navigationViewFolders.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navigationViewAccounts.setVisibility(View.VISIBLE);
-                navigationViewFolders.setVisibility(View.GONE);
+                showAccountsArrowIndicator();
                 createFoldersMenu();
             }
         });
@@ -455,16 +453,24 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             @Override
             public void onClick(View v) {
                 if (!showingAccountsMenu) {
-                    navigationViewAccounts.setVisibility(View.GONE);
-                    navigationViewFolders.setVisibility(View.VISIBLE);
+                    showFoldersArrowIndicator();
                     createAccountsMenu();
                 } else {
-                    navigationViewAccounts.setVisibility(View.VISIBLE);
-                    navigationViewFolders.setVisibility(View.GONE);
+                    showAccountsArrowIndicator();
                     createFoldersMenu();
                 }
             }
         });
+    }
+
+    private void showFoldersArrowIndicator() {
+        navigationViewAccounts.setVisibility(View.GONE);
+        navigationViewFolders.setVisibility(View.VISIBLE);
+    }
+
+    private void showAccountsArrowIndicator() {
+        navigationViewAccounts.setVisibility(View.VISIBLE);
+        navigationViewFolders.setVisibility(View.GONE);
     }
 
     private void setupTwoAcountsListeners(List<Account> accounts) {
