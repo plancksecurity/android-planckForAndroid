@@ -96,7 +96,7 @@
         </activity>
         <activity
             android:name=".activity.setup.Prefs"
-            android:configChanges="locale"
+            android:configChanges="locale|keyboard|keyboardHidden|orientation|screenSize"
             android:excludeFromRecents="true"
             android:label="@string/prefs_title"
             android:taskAffinity="${applicationId}.activity.setup.Prefs" />

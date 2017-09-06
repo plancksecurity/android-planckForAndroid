@@ -8,6 +8,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
@@ -38,23 +39,17 @@ public abstract class K9PreferenceActivity extends PreferenceActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        Toolbar bar;
+        AppBarLayout bar;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            ListView list = (ListView) findViewById(android.R.id.list);
-            ListView.MarginLayoutParams layoutParams = (ListView.MarginLayoutParams) list.getLayoutParams();
-            ViewGroup root = (ViewGroup) list.getParent().getParent().getParent();
-            bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
-            layoutParams.setMargins(0, bar.getHeight(), 0, 0);
-            root.addView(bar, 0); // insert at top
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+            LinearLayout root = (LinearLayout) findViewById(android.R.id.list).getParent().getParent().getParent();
+            bar = (AppBarLayout) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
+            root.addView(bar, 0);
         } else {
             ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
             ListView content = (ListView) root.getChildAt(0);
-
             root.removeAllViews();
-
-            bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
-
+            bar = (AppBarLayout) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
 
             int height;
             TypedValue tv = new TypedValue();
@@ -70,16 +65,13 @@ public abstract class K9PreferenceActivity extends PreferenceActivity {
             root.addView(bar);
         }
 
-        bar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
+        toolbar = (Toolbar) bar.getChildAt(0);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 finish();
             }
         });
-        bar.setTitleTextColor(getResources().getColor(R.color.white));
-        bar.setBackgroundColor(getResources().getColor(R.color.pep_green));
-        setStatusBarPepColor();
-        toolbar = bar;
     }
 
     public void setStatusBarPepColor() {
@@ -187,51 +179,60 @@ public abstract class K9PreferenceActivity extends PreferenceActivity {
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
         super.onPreferenceTreeClick(preferenceScreen, preference);
 
-        // If the user has clicked on a preference screen, set up the screen
-        if (preference instanceof PreferenceScreen) {
-            setUpNestedScreen((PreferenceScreen) preference);
+        if (preference!=null) {
+            if (preference instanceof PreferenceScreen) {
+                if (((PreferenceScreen) preference).getDialog() != null) {
+                    ((PreferenceScreen) preference).getDialog().getWindow().getDecorView().setBackgroundDrawable(this.getWindow().getDecorView().getBackground().getConstantState().newDrawable());
+                    setUpNestedScreen((PreferenceScreen) preference);
+                }
+            }
         }
 
-        return true;
+        return false;
     }
 
     public void setUpNestedScreen(PreferenceScreen preferenceScreen) {
         final Dialog dialog = preferenceScreen.getDialog();
 
-        setTheme(K9.getK9ThemeResourceId());
+        AppBarLayout appBar;
 
-        Toolbar bar;
+        ViewGroup mRootView = (ViewGroup) dialog.findViewById(android.R.id.content);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH && Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-            ListView content = (ListView) dialog.findViewById(android.R.id.list);
-            ViewGroup root = (ViewGroup) content.getParent().getParent();
-            bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
-
-            int height;
-            TypedValue tv = new TypedValue();
-            if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
-                height = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
-            }else{
-                height = bar.getHeight();
-            }
-            content.setPadding(0, height, 0, 0);
-            root.addView(bar, 0); // insert at top
-        } else {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             LinearLayout root = (LinearLayout) dialog.findViewById(android.R.id.list).getParent().getParent();
-            bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
-            root.addView(bar, 0); // insert at top
+            appBar = (AppBarLayout) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
+            root.addView(appBar, 0);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            LinearLayout root = (LinearLayout) dialog.findViewById(android.R.id.list).getParent();
+            appBar = (AppBarLayout) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
+            root.addView(appBar, 0);
+        } else {
+            ListView content = (ListView) mRootView.getChildAt(0);
+            mRootView.removeAllViews();
+
+            LinearLayout LL = new LinearLayout(this);
+            LL.setOrientation(LinearLayout.VERTICAL);
+
+            ViewGroup.LayoutParams LLParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            LL.setLayoutParams(LLParams);
+
+            appBar = (AppBarLayout) LayoutInflater.from(this).inflate(R.layout.toolbar, mRootView, false);
+
+            LL.addView(appBar);
+            LL.addView(content);
+
+            mRootView.addView(LL);
         }
-        toolbar = bar;
+
+        toolbar = (Toolbar) appBar.getChildAt(0);
 
         toolbar.setTitle(preferenceScreen.getTitle());
-        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
-        toolbar.setBackgroundColor(getResources().getColor(R.color.pep_green));
+
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
             }
         });
-        setStatusBarPepColor();
     }
 }
