@@ -239,7 +239,7 @@ class MimeMessageBuilder extends MessageBuilder {
                 }
                 else bp.setEncoding(MimeUtil.ENC_8BIT);
 
-                boolean isFileAttachment = attachment.filename.startsWith(MimeHeader.FILE_SCHEME);
+                boolean isFileAttachment = filename != null && attachment.filename.startsWith(MimeHeader.FILE_SCHEME);
                 if (filename != null && isFileAttachment) {
                     String[] filenameParts = attachment.filename.split(MimeHeader.URI_SCHEME_SEPARATOR);
                     if (filenameParts.length > 1) {
