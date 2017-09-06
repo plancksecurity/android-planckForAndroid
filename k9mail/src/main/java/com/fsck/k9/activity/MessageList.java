@@ -951,9 +951,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void populateFolders(List<LocalFolder> folders) {
-        List<FolderModel> folderModels = new ArrayList<>(folders.size());
+        List<LocalFolder> foldersFiltered = filterLocalFolders(folders);
 
-        for (LocalFolder folder : folders) {
+        List<FolderModel> folderModels = new ArrayList<>(foldersFiltered.size());
+        for (LocalFolder folder : foldersFiltered) {
             FolderModel folderModel = new FolderModel();
             folderModel.setAccount(mAccount);
             folderModel.setLocalFolder(folder);
@@ -981,6 +982,20 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         navigationFolders.setLayoutManager(getDrawerLayoutManager());
         navigationFolders.setAdapter(folderAdapter);
         setupMainFolders();
+    }
+
+    @NonNull
+    private List<LocalFolder> filterLocalFolders(List<LocalFolder> folders) {
+        String allMessagesFolderName = getString(R.string.search_all_messages_title);
+        String unifiedFolderName = getString(R.string.integrated_inbox_title);
+        List<LocalFolder> foldersFiltered = new ArrayList<>();
+        for (LocalFolder folder : folders) {
+            if (!folder.getName().equals(allMessagesFolderName) &&
+                    !folder.getName().equals(unifiedFolderName)) {
+                foldersFiltered.add(folder);
+            }
+        }
+        return foldersFiltered;
     }
 
     private void changeFolder(final LocalFolder folder) {
