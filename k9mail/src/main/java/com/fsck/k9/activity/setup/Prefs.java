@@ -203,8 +203,8 @@ public class Prefs extends K9PreferenceActivity {
                            entryVector.toArray(EMPTY_CHAR_SEQUENCE_ARRAY),
                            entryValueVector.toArray(EMPTY_CHAR_SEQUENCE_ARRAY));
 
-        mLanguage.setOnPreferenceChangeListener((preference, newValue) -> {
-            applyLanguage(newValue);
+        mLanguage.setOnPreferenceChangeListener((preference, newLanguage) -> {
+            applyLanguage(newLanguage);
             return true;
         });
 
