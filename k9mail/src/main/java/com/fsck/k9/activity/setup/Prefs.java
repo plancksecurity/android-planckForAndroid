@@ -2,6 +2,8 @@ package com.fsck.k9.activity.setup;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -26,7 +28,6 @@ import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.pEp.ui.blacklist.PepBlacklist;
-import com.fsck.k9.pEp.ui.keys.PepExtraKeys;
 import com.fsck.k9.pEp.ui.keysync.KeysyncManagement;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.CheckBoxListPreference;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 
@@ -200,6 +202,11 @@ public class Prefs extends K9PreferenceActivity {
         initListPreference(mLanguage, K9.getK9Language(),
                            entryVector.toArray(EMPTY_CHAR_SEQUENCE_ARRAY),
                            entryValueVector.toArray(EMPTY_CHAR_SEQUENCE_ARRAY));
+
+        mLanguage.setOnPreferenceChangeListener((preference, newLanguage) -> {
+            applyLanguage(newLanguage);
+            return true;
+        });
 
         mTheme = setupListPreference(PREFERENCE_THEME, themeIdToName(K9.getK9Theme()));
         mFixedMessageTheme = (CheckBoxPreference) findPreference(PREFERENCE_FIXED_MESSAGE_THEME);
@@ -501,6 +508,19 @@ public class Prefs extends K9PreferenceActivity {
             startActivity(keysyncManagerIntent);
             return true;
         });
+    }
+
+    private void applyLanguage(Object newValue) {
+        Locale newLocale = new Locale(String.valueOf(newValue));
+        Locale.setDefault(newLocale);
+        Configuration config = new Configuration();
+        config.locale = newLocale;
+        Resources resources = getResources();
+        resources.updateConfiguration(config, resources.getDisplayMetrics());
+        resources.getDisplayMetrics();
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
     }
 
     private static String themeIdToName(K9.Theme theme) {
