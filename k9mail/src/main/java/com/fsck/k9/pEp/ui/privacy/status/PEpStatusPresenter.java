@@ -67,7 +67,7 @@ public class PEpStatusPresenter implements Presenter {
 
     public void resetRecipientTrust(int position) {
         Identity id = identities.get(position);
-        if (localMessage != null) {
+        if (isMessageIncoming) {
             resetIncomingMessageTrust(id);
         } else {
             List<Address> addresses = getRecipientAddresses();
