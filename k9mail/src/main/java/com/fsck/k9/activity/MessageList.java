@@ -366,6 +366,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         foldersDrawerLayout = findViewById(R.id.navigation_bar_folders_layout);
         accountsDrawerLayout = findViewById(R.id.navigation_bar_accounts_layout);
     }
