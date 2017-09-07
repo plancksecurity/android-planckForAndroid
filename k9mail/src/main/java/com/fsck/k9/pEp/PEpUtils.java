@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -42,7 +41,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -231,41 +229,6 @@ public class PEpUtils {
         }
         return new ByteArrayOutputStream().toByteArray();
     }
-
-    public static String getShortTrustwords(String trustwords) {
-        StringBuilder builder = new StringBuilder();
-        String[] trustArray = trustwords.split(TRUSTWORDS_SEPARATOR);
-
-        if (trustArray.length > 5) {
-            for (int i = 0; i < 5; i++) {
-                builder.append(trustArray[i]);
-                builder.append(TRUSTWORDS_SEPARATOR);
-            }
-        }
-        return builder.toString();
-    }
-
-
-    @NonNull
-    public static String obtainTrustwordsLang(String language) {
-        if (language == null || language.equals("")) {
-            language = Locale.getDefault().getLanguage();
-        }
-        if (isLanguageInPEPLanguages(language)) {
-            return language;
-        } else {
-            return  "en";
-        }
-    }
-    private static boolean isLanguageInPEPLanguages(String language) {
-        for (CharSequence pEpLanguage : pEpLanguages) {
-            if (pEpLanguage.equals(language)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 
     public static String ratingToString(Rating rating) {
         if (rating == null) {
