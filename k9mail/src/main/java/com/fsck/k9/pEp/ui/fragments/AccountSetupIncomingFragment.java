@@ -351,6 +351,9 @@ public class AccountSetupIncomingFragment extends PEpFragment {
 
         initializeViewListeners();
         validateFields();
+        if (editSettings) {
+            mNextButton.setText(R.string.done_action);
+        }
         return rootView;
     }
 

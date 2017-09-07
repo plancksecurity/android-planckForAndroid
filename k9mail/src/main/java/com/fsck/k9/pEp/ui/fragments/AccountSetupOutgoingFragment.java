@@ -255,6 +255,9 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
 
         initializeViewListeners();
         validateFields();
+        if (mEdit) {
+            mNextButton.setText(R.string.done_action);
+        }
         return rootView;
     }
 
