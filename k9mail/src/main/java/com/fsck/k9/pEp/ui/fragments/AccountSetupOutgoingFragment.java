@@ -257,6 +257,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         validateFields();
         if (mEdit) {
             mNextButton.setText(R.string.done_action);
+            ((K9Activity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
         return rootView;
     }
