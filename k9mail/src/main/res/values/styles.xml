@@ -156,6 +156,8 @@
         <item name="colorPrimary">@color/pep_green</item>
         <item name="colorPrimaryDark">@color/pep_green</item>
         <item name="colorAccent">@color/pep_green</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:textColorPrimary">@color/openpgp_black</item>
     </style>
 
     <style name="NNF_BaseTheme" parent="Theme.AppCompat.DialogWhenLarge">

@@ -509,7 +509,6 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
             getLoaderManager()
                     .restartLoader(0, null, AbstractFilePickerFragment.this);
         } else {
-            Snackbar.make(getView(), R.string.nnf_permission_external_write_denied, Snackbar.LENGTH_SHORT).show();
             handlePermission(nextPath);
         }
     }

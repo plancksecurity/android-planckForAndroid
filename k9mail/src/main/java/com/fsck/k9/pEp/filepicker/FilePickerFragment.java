@@ -1,6 +1,7 @@
 package com.fsck.k9.pEp.filepicker;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.FileObserver;
@@ -9,6 +10,7 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.util.SortedListAdapterCallback;
 import android.widget.Toast;
@@ -96,12 +98,18 @@ public class FilePickerFragment extends AbstractFilePickerFragment<File> {
             }
         } else { // if (requestCode == PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE) {
             if (PackageManager.PERMISSION_GRANTED != grantResults[0]) {
-                Toast.makeText(getContext(), R.string.nnf_permission_external_write_denied,
-                        Toast.LENGTH_SHORT).show();
-                // Treat this as a cancel press
-                if (mListener != null) {
-                    mListener.onCancelled();
-                }
+                new AlertDialog.Builder(getContext())
+                        .setMessage(R.string.nnf_permission_external_write_denied)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Treat this as a cancel press
+                                if (mListener != null) {
+                                    mListener.onCancelled();
+                                }
+                            }
+                        })
+                        .show();
             } else {
                 refresh(mCurrentPath);
             }
