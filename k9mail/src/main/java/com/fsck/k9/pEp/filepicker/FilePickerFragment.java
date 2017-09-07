@@ -102,6 +102,8 @@ public class FilePickerFragment extends AbstractFilePickerFragment<File> {
                 if (mListener != null) {
                     mListener.onCancelled();
                 }
+            } else {
+                refresh(mCurrentPath);
             }
         }
     }
