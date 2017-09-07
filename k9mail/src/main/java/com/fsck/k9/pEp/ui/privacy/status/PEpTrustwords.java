@@ -290,9 +290,10 @@ public class PEpTrustwords extends PepColoredActivity {
 
     private void showLanguageSelectionDialog() {
         PEpProvider pEpProvider = ((K9) getApplication()).getpEpProvider();
-        final CharSequence[] pEpLocales = PEpUtils.getPEpLocales();
-        CharSequence[] pepLanguages = PEpUtils.getPEpLanguages(pEpLocales, pEpProvider);
-        PEpLanguageSelector.showLanguageSelector(PEpTrustwords.this, pEpLocales, pepLanguages, trustwordsLanguage, (dialog, languagePositon) -> {
+        Tuple<CharSequence[], CharSequence[]> pEpLanguagesTuple = PEpUtils.getPEpLanguages(pEpProvider);
+        CharSequence[] pEpLocales = pEpLanguagesTuple.x;
+        CharSequence[] pEpLanguages = pEpLanguagesTuple.y;
+        PEpLanguageSelector.showLanguageSelector(PEpTrustwords.this, pEpLocales, pEpLanguages, trustwordsLanguage, (dialog, languagePositon) -> {
             String language = pEpLocales[languagePositon].toString();
             changeTrustwords(language);
         });

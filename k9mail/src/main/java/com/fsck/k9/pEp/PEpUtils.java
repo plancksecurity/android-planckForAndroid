@@ -26,6 +26,7 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeUtility;
+import com.fsck.k9.pEp.ui.privacy.status.Tuple;
 
 import org.apache.commons.io.IOUtils;
 import org.pEp.jniadapter.CommType;
@@ -43,6 +44,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 /**
@@ -561,15 +563,18 @@ public class PEpUtils {
                 && !identity.comm_type.equals(CommType.PEP_ct_OpenPGP_weak_unconfirmed);
     }
 
-    public static CharSequence[] getPEpLanguages(CharSequence[] pEpLocales, PEpProvider pEpProvider) {
-        CharSequence[] languagesToReturn = new CharSequence[pEpLocales.length];
+    public static Tuple<CharSequence[], CharSequence[]> getPEpLanguages(PEpProvider pEpProvider) {
         Map<String, PEpLanguage> languages = pEpProvider.obtainLanguages();
+        Set<String> pEpLocales = languages.keySet();
         List<CharSequence> languagesToShow = new ArrayList<>();
-        for (CharSequence pEpLocale : pEpLocales) {
-            PEpLanguage pEpLanguage1 = languages.get(String.valueOf(pEpLocale));
-            languagesToShow.add(pEpLanguage1.getLanguage());
+        for (String pEpLocale : pEpLocales) {
+            PEpLanguage language = languages.get(String.valueOf(pEpLocale));
+            languagesToShow.add(language.getLanguage());
         }
-        return languagesToShow.toArray(languagesToReturn);
+        CharSequence[] localesToReturn = new CharSequence[pEpLocales.size()];
+        CharSequence[] languagesToReturn = new CharSequence[languagesToShow.size()];
+        return new Tuple<>(pEpLocales.toArray(localesToReturn),
+                languagesToShow.toArray(languagesToReturn));
     }
 
 }
