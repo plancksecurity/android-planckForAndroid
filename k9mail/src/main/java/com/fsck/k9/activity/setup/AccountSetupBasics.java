@@ -53,7 +53,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
             ft.addToBackStack("AccountSetupBasicsFragment");
             ft.add(R.id.account_setup_container, accountSetupBasicsFragment).commit();
         }
-        PEpUtils.askForBatteryOptimizationWhiteListing(this);
+        PEpUtils.askForBatteryOptimizationWhiteListing(getK9());
 
         // Handle activity restarts because of a configuration change (e.g. rotating the screen)
         nonConfigurationInstance = (NonConfigurationInstance) getLastNonConfigurationInstance();

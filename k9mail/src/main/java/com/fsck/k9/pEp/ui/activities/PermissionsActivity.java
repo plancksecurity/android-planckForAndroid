@@ -103,7 +103,7 @@ public class PermissionsActivity extends PepPermissionActivity {
             @Override
             public void onComplete() {
                 if(!askBatteryPermissionShowed) {
-                    PEpUtils.askForBatteryOptimizationWhiteListing(PermissionsActivity.this);
+                    PEpUtils.askForBatteryOptimizationWhiteListing(getK9());
                     askBatteryPermissionShowed = !askBatteryPermissionShowed;
                 } else {
                     goToSetupAccount();
@@ -113,7 +113,7 @@ public class PermissionsActivity extends PepPermissionActivity {
             @Override
             public void onError(Throwable throwable) {
                 if(!askBatteryPermissionShowed) {
-                    PEpUtils.askForBatteryOptimizationWhiteListing(PermissionsActivity.this);
+                    PEpUtils.askForBatteryOptimizationWhiteListing(getK9());
                     askBatteryPermissionShowed = !askBatteryPermissionShowed;
                 } else {
                     goToSetupAccount();

@@ -2,16 +2,6 @@
 package com.fsck.k9;
 
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.SynchronousQueue;
-
 import android.app.Activity;
 import android.app.Application;
 import android.app.PendingIntent;
@@ -23,12 +13,13 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.os.StrictMode;
-import android.text.format.Time;
 import android.widget.Toast;
 
 import com.fsck.k9.Account.SortType;
@@ -38,7 +29,6 @@ import com.fsck.k9.activity.UpgradeDatabases;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.SimpleMessagingListener;
 import com.fsck.k9.mail.Address;
-import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.K9MailLib;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.internet.BinaryTempFileBody;
@@ -60,9 +50,6 @@ import com.fsck.k9.service.MailService;
 import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
 import com.fsck.k9.widget.list.MessageListWidgetProvider;
-import timber.log.Timber;
-import timber.log.Timber.DebugTree;
-
 
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
@@ -74,11 +61,16 @@ import org.pEp.jniadapter.SyncHandshakeSignal;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
+
+import timber.log.Timber;
+import timber.log.Timber.DebugTree;
 
 @ReportsCrashes(mailTo = "crashreport@prettyeasyprivacy.com",
         mode = ReportingInteractionMode.TOAST,
@@ -93,6 +85,16 @@ public class K9 extends Application {
     private boolean ispEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
     private Account currentAccount;
     private ApplicationComponent component;
+
+    public boolean isBatteryOptimizationAsked() {
+        return batteryOptimizationAsked;
+    }
+
+    private boolean batteryOptimizationAsked;
+
+    public void batteryOptimizationAsked() {
+        batteryOptimizationAsked = true;
+    }
 
     /**
      * Components that are interested in knowing when the K9 instance is
@@ -708,6 +710,12 @@ public class K9 extends Application {
         });
 
         notifyObservers();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            String packageName = getPackageName();
+            batteryOptimizationAsked = powerManager.isIgnoringBatteryOptimizations(packageName);
+        }
     }
 
     private void pEpInitEnvironment() {
