@@ -74,11 +74,12 @@ public class Migrations {
                 MigrationTo58.createDeleteMessageTrigger(db);
             case 58:
                 MigrationTo59.addMissingIndexes(db);
-            case 60:
+            case 59:
                 MigrationTo60.migratePendingCommands(db);
-            case 61:
+            case 60:
                 MigrationTo61.renameK9Tables(db);
-
+            case 61:
+                MigrationTo62.removeErrorsFolder(db);
         }
     }
 }
