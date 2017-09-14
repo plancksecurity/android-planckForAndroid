@@ -46,4 +46,6 @@
 
     <color name="translucent_background">#003E4447</color>
     <color name="pep_selected_item">#E8EAF6</color>
+
+    <color name="pep_options_menu_background">#F09e9e9e</color>
 </resources>

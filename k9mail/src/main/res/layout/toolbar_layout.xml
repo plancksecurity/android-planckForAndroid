@@ -14,7 +14,7 @@
         android:elevation="4dp"
         tools:title="title"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:theme="@style/ToolbarLayoutTheme"
         tools:backgroundTint="@color/colorPrimary">
 
         <include layout="@layout/actionbar_custom" />
