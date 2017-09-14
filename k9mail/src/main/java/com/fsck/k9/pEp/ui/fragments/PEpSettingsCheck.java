@@ -5,8 +5,10 @@ import android.content.Context;
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
+import com.fsck.k9.R;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.controller.MessagingController;
+import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.AuthenticationFailedException;
 import com.fsck.k9.mail.CertificateValidationException;
 import com.fsck.k9.mail.MessagingException;
@@ -23,6 +25,8 @@ import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpMessagingException;
 import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpSetupException;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 public class PEpSettingsCheck implements PEpSettingsChecker {
     public static final String INCOMING = "INCOMING";
@@ -80,7 +84,15 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
             } catch (CertificateValidationException exception) {
                 onError(new PEpCertificateException(exception));
             } catch (MessagingException exception) {
-                onError(new PEpMessagingException(exception));
+                if (!Utility.hasConnectivity(context)) {
+                    exception = new MessagingException(context.getString(R.string.device_offline_warning));
+                    onError(new PEpMessagingException(exception));
+                } else {
+                    Timber.d(K9.LOG_TAG, "Error while testing settings", exception);
+                    String message = exception.getMessage() == null ? "" : exception.getMessage();
+                    exception = new MessagingException(message);
+                    onError(new PEpMessagingException(exception));
+                }
             }
         });
     }

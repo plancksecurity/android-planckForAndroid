@@ -24,7 +24,7 @@ public class PEpMessagingException extends PEpSetupException {
 
     @Override
     public int getTitleResource() {
-        return R.string.account_setup_failed_dlg_server_message_fmt;
+        return R.string.account_setup_failed_dlg_title;
     }
 
     public MessagingException getOriginalException() {
