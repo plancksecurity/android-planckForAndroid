@@ -158,14 +158,4 @@ public class HtmlSanitizerTest {
                 "<tr><td>Hmailserver service shutdown:</td><td>Ok</td></tr>" +
                 "</tbody></table></body></html>", toCompactString(result));
     }
-
-    @Test
-    public void shouldProduceValidHtmlFromHtmlWithXmlDeclaration() {
-        String html = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-                "<html><head></head><body></body></html>";
-
-        String result = htmlSanitizer.sanitize(html);
-
-        assertEquals("<html><head></head><body></body></html>", result);
-    }
 }
