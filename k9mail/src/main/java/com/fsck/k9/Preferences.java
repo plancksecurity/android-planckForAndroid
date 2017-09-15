@@ -128,6 +128,11 @@ public class Preferences {
     }
 
     public synchronized void deleteAccount(Account account) {
+        Account defaultAccount = getDefaultAccount();
+        if (defaultAccount.getUuid().equals(account.getUuid())) {
+            getStorage().edit().remove("defaultAccountUuid");
+        }
+
         if (accounts != null) {
             accounts.remove(account.getUuid());
         }
