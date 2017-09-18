@@ -1,7 +1,5 @@
 package com.fsck.k9.pEp.ui.keysync;
 
-import android.util.Log;
-
 import com.fsck.k9.Account;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.Presenter;
@@ -28,10 +26,10 @@ public class KeysyncManagerPresenter implements Presenter {
         this.view = view;
         this.pEpProvider = pEpProvider;
         this.accounts = accounts;
-        loadIdentities(view, pEpProvider, accounts);
+        loadIdentities(view, accounts);
     }
 
-    private void loadIdentities(final KeysyncManagementView view, PEpProvider pEpProvider, final List<Account> accounts) {
+    private void loadIdentities(final KeysyncManagementView view, final List<Account> accounts) {
         pEpProvider.loadOwnIdentities(new PEpProvider.ResultCallback<List<Identity>>() {
             @Override
             public void onLoaded(List<Identity> identities) {
