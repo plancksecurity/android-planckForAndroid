@@ -29,6 +29,7 @@ public class PermissionsActivity extends PepPermissionActivity {
     @Bind(R.id.permission_storage) PEpPermissionView storagePermissionView;
     @Bind(R.id.permission_battery) PEpPermissionView batteryPermissionView;
     private boolean askBatteryPermissionShowed;
+    private boolean shouldAskPermissions;
 
     public static void actionAskPermissions(Context context) {
         Intent i = new Intent(context, PermissionsActivity.class);
@@ -40,6 +41,7 @@ public class PermissionsActivity extends PepPermissionActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_permissions);
         ButterKnife.bind(this);
+        shouldAskPermissions = true;
         contactsPermissionView.initialize(getResources().getString(R.string.read_permission_rationale_title),
                 getResources().getString(R.string.read_permission_first_explanation)
         );
@@ -76,6 +78,7 @@ public class PermissionsActivity extends PepPermissionActivity {
         } else {
             goToSetupAccount();
         }
+        shouldAskPermissions = false;
     }
 
     private void showNeedPermissionsDialog() {
@@ -129,7 +132,8 @@ public class PermissionsActivity extends PepPermissionActivity {
 
     private boolean noPermissionGrantedOrDenied() {
         return isPermissionDenied(Manifest.permission.READ_CONTACTS) &&
-                isPermissionDenied(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                isPermissionDenied(Manifest.permission.WRITE_EXTERNAL_STORAGE) &&
+                shouldAskPermissions;
     }
 
     private boolean isPermissionDenied(String readContacts) {
