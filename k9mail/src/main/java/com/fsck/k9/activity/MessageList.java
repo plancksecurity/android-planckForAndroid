@@ -360,13 +360,12 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         displayViews();
         if (mAccount != null && mAccount.ispEpPrivacyProtected()) initializePepStatus();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
-                this, drawer, getToolbar(), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+                this, drawerLayout, getToolbar(), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.setDrawerListener(toggle);
         toggle.syncState();
 
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         foldersDrawerLayout = findViewById(R.id.navigation_bar_folders_layout);
         accountsDrawerLayout = findViewById(R.id.navigation_bar_accounts_layout);
     }
