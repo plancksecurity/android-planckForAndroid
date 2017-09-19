@@ -98,7 +98,7 @@ public class AccountSettings extends K9PreferenceActivity {
     private static final String PREFERENCE_DELETE_POLICY = "delete_policy";
     private static final String PREFERENCE_EXPUNGE_POLICY = "expunge_policy";
     private static final String PREFERENCE_AUTO_EXPAND_FOLDER = "account_setup_auto_expand_folder";
-    private static final String PREFERENCE_SEARCHABLE_FOLDERS = "searchable_folders";
+    //private static final String PREFERENCE_SEARCHABLE_FOLDERS = "searchable_folders";
     //private static final String PREFERENCE_CHIP_COLOR = "chip_color";
     private static final String PREFERENCE_LED_COLOR = "led_color";
     private static final String PREFERENCE_NOTIFICATION_OPENS_UNREAD = "notification_opens_unread";
@@ -166,7 +166,7 @@ public class AccountSettings extends K9PreferenceActivity {
     private ListPreference targetMode;
     private ListPreference deletePolicy;
     private ListPreference expungePolicy;
-    private ListPreference searchableFolders;
+    //private ListPreference searchableFolders;
     private ListPreference autoExpandFolder;
     private Preference chipColor;
     private Preference ledColor;
@@ -418,6 +418,7 @@ public class AccountSettings extends K9PreferenceActivity {
         syncRemoteDeletions = (CheckBoxPreference) findPreference(PREFERENCE_SYNC_REMOTE_DELETIONS);
         syncRemoteDeletions.setChecked(account.syncRemoteDeletions());
 
+        /*
         searchableFolders = (ListPreference) findPreference(PREFERENCE_SEARCHABLE_FOLDERS);
         searchableFolders.setValue(account.getSearchableFolders().name());
         searchableFolders.setSummary(searchableFolders.getEntry());
@@ -430,7 +431,7 @@ public class AccountSettings extends K9PreferenceActivity {
                 return false;
             }
         });
-
+        */
         displayCount = (ListPreference) findPreference(PREFERENCE_DISPLAY_COUNT);
         displayCount.setValue(String.valueOf(account.getDisplayCount()));
         displayCount.setSummary(displayCount.getEntry());
@@ -852,7 +853,7 @@ public class AccountSettings extends K9PreferenceActivity {
             account.setExpungePolicy(Expunge.valueOf(expungePolicy.getValue()));
         }
         account.setSyncRemoteDeletions(syncRemoteDeletions.isChecked());
-        account.setSearchableFolders(Searchable.valueOf(searchableFolders.getValue()));
+        //account.setSearchableFolders(Searchable.valueOf(searchableFolders.getValue()));
         account.setMessageFormat(MessageFormat.valueOf(messageFormat.getValue()));
         account.setAlwaysShowCcBcc(alwaysShowCcBcc.isChecked());
         account.setMessageReadReceipt(messageReadReceipt.isChecked());
