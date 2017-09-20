@@ -8,8 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.pEp.jniadapter.Identity;
 
 import java.util.Collections;
@@ -40,17 +38,6 @@ public class KeysyncManagerPresenterTest {
         verify(view).showIdentities(any());
     }
 
-    private void setupResultCallback() {
-        doAnswer(new Answer() {
-            @Override public Object answer(InvocationOnMock invocation) throws Throwable {
-                ResultCallback<List<Identity>> callback =
-                        (ResultCallback<List<Identity>>) invocation.getArguments()[0];
-                callback.onLoaded(identities());
-                return null;
-            }
-        }).when(provider).loadOwnIdentities(any(ResultCallback.class));
-    }
-
     @Test
     public void shouldShowErrorWhenEngineReturnsError() throws Exception {
         setupErrorCallback();
@@ -58,6 +45,15 @@ public class KeysyncManagerPresenterTest {
         presenter.initialize(view, provider, accounts());
 
         verify(view).showError();
+    }
+
+    private void setupResultCallback() {
+        doAnswer(invocation -> {
+            ResultCallback<List<Identity>> callback =
+                    (ResultCallback<List<Identity>>) invocation.getArguments()[0];
+            callback.onLoaded(identities());
+            return null;
+        }).when(provider).loadOwnIdentities(any(ResultCallback.class));
     }
 
     private void setupErrorCallback() {
