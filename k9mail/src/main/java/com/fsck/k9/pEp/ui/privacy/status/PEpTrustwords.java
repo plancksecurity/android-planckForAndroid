@@ -24,6 +24,7 @@ import com.fsck.k9.pEp.ui.keysync.languages.PEpLanguageSelector;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
+import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -100,6 +101,13 @@ public class PEpTrustwords extends PepColoredActivity {
         executor = Executors.newSingleThreadExecutor();
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initPep();
+
+        String language = Locale.getDefault().getLanguage();
+        //TODO should be done retrieving languages from engine
+        // once P4A-468 is merged into develop.s
+        if (PEpUtils.isLanguageInPEPLanguages(language)) {
+            trustwordsLanguage = language;
+        }
 
         if (getIntent() != null) {
 
