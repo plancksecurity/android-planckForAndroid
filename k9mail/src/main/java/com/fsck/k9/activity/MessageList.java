@@ -20,6 +20,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -239,13 +240,17 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                     DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
             drawerLayout.setDrawerLockMode(lockMode);
             toggle.setDrawerIndicatorEnabled(enabled);
-            toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onBackPressed();
-                }
-            });
+            if (!enabled) {
+                toggle.setToolbarNavigationClickListener(v -> onBackPressed());
+            }
         }
+    }
+
+    private void handleDrawerState() {
+        if(drawerLayout.isDrawerOpen(Gravity.START))
+            drawerLayout.closeDrawer(Gravity.END);
+        else
+            drawerLayout.openDrawer(Gravity.START);
     }
 
     public void setMessageViewVisible(Boolean visible) {
@@ -355,10 +360,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         displayViews();
         if (mAccount != null && mAccount.ispEpPrivacyProtected()) initializePepStatus();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
-                this, drawer, getToolbar(), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+                this, drawerLayout, getToolbar(), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.setDrawerListener(toggle);
         toggle.syncState();
 
         foldersDrawerLayout = findViewById(R.id.navigation_bar_folders_layout);
@@ -1241,7 +1246,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
                 //Query was received from Search Dialog
                 String query = intent.getStringExtra(SearchManager.QUERY).trim();
-
                 mSearch = new LocalSearch(getString(R.string.search_results));
                 mSearch.setManualSearch(true);
                 mNoThreading = true;
@@ -1360,6 +1364,12 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             setStatusBarPepColor(Rating.pEpRatingTrustedAndAnonymized);
         }
 
+        if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
+            setDrawerEnabled(false);
+        } else {
+            setDrawerEnabled(true);
+        }
+
         if (mAccount != null) {
             loadNavigationView();
         }
@@ -1395,7 +1405,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void initializeActionBar() {
-        setUpToolbar(true);
+        setUpToolbar(true, v -> setDrawerEnabled(true));
         customView = getToolbar().findViewById(R.id.actionbar_custom);
         mActionBarMessageList = customView.findViewById(R.id.actionbar_message_list);
         mActionBarMessageView = customView.findViewById(R.id.actionbar_message_view);
@@ -1734,6 +1744,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             }
             case R.id.search: {
                 PePUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
+                setDrawerEnabled(false);
                 showSearchView();
                 return true;
             }
@@ -2301,13 +2312,12 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     @Override
     public void goBack() {
-        FragmentManager fragmentManager = getFragmentManager();
         if (mDisplayMode == DisplayMode.MESSAGE_VIEW) {
             showMessageList();
         } else if (mMessageListFragment.isManualSearch()) {
             finish();
         } else {
-            onAccounts();
+            handleDrawerState();
         }
     }
 
@@ -2413,9 +2423,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
         showDefaultTitleView();
         configureMenu(mMenu);
-        if (drawerLayout != null) {
-            setDrawerEnabled(true);
-        }
     }
 
     private void showMessageView() {
