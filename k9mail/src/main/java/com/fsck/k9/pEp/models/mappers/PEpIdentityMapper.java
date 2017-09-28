@@ -37,7 +37,6 @@ public class PEpIdentityMapper {
         pEpIdentity.flags = recipient.flags;
         pEpIdentity.fpr = recipient.fpr;
         pEpIdentity.lang = recipient.lang;
-        pEpIdentity.me = recipient.me;
         pEpIdentity.user_id = recipient.user_id;
         pEpIdentity.username = recipient.username;
         pEpIdentity.setRating(pEpProvider.getRating(recipient));
