@@ -130,7 +130,6 @@ public class PEpProviderImpl implements PEpProvider {
             testee = new Message();
 
             Identity idFrom = PEpUtils.createIdentity(from, context);
-            idFrom.me = true;
             idFrom.user_id = PEP_OWN_USER_ID;
             testee.setFrom(idFrom);
             testee.setTo(PEpUtils.createIdentities(toAddresses, context));
@@ -972,7 +971,6 @@ public class PEpProviderImpl implements PEpProvider {
                 testee = new Message();
 
                 Identity idFrom = PEpUtils.createIdentity(from, context);
-                idFrom.me = true;
                 idFrom.user_id = PEP_OWN_USER_ID;
                 testee.setFrom(idFrom);
                 testee.setTo(PEpUtils.createIdentities(toAddresses, context));
