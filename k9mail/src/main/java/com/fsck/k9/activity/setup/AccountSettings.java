@@ -759,7 +759,11 @@ public class AccountSettings extends K9PreferenceActivity {
         mPepExtraKeys = findPreference(PEP_EXTRA_KEYS);
 
         if (BuildConfig.WITH_KEY_SYNC) {
-            mPEpSyncAccount.setChecked(account.isPepSyncEnabled());
+            Boolean pepSyncEnabled = account.isPepSyncEnabled();
+            mPEpSyncAccount.setChecked(pepSyncEnabled);
+            if(pepSyncEnabled) {
+                mPEpSyncAccount.setEnabled(false);
+            }
         } else {
             mPEpSyncAccount.setChecked(false);
             mPEpSyncAccount.setEnabled(false);
