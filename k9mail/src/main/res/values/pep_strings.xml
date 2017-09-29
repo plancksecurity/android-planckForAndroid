@@ -136,6 +136,8 @@
     <string name="account_already_exists">Account already exists</string>
     <string name="device_offline_warning">Your device seems to be offline, please check your connection before you can continue</string>
     <string name="permissions_needed_message">Not granting the needed permissions may cause unexpected behaviours. Press OK to grant them to us.</string>
+    <string name="pep_enable_sync_text">Enable p≡p sync for all accounts</string>
+    <string name="manage_keysync">Enable p≡p sync for the accounts</string>
 
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>
