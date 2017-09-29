@@ -35,14 +35,19 @@ import com.fsck.k9.activity.ChooseIdentity;
 import com.fsck.k9.activity.ColorPickerDialog;
 import com.fsck.k9.activity.K9PreferenceActivity;
 import com.fsck.k9.activity.ManageIdentities;
+import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mailstore.StorageManager;
+import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys;
 import com.fsck.k9.service.MailService;
 
 import org.openintents.openpgp.util.OpenPgpAppPreference;
 import org.openintents.openpgp.util.OpenPgpKeyPreference;
+import org.pEp.jniadapter.Identity;
+import org.pEp.jniadapter.IdentityFlags;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -758,9 +763,13 @@ public class AccountSettings extends K9PreferenceActivity {
         mPEpSyncAccount = (CheckBoxPreference) findPreference(PEP_ENABLE_SYNC_ACCOUNT);
         mPepExtraKeys = findPreference(PEP_EXTRA_KEYS);
 
+        Identity id = PEpUtils.createIdentity(new Address(account.getEmail()), getApplicationContext());
+        PEpProvider pEpProvider = ((K9) getApplication()).getpEpProvider();
+        id = pEpProvider.updateIdentity(id);
+        boolean flagged = IdentityFlags.PEPIdfNotForSync.value != id.flags;
         if (BuildConfig.WITH_KEY_SYNC) {
             Boolean pepSyncEnabled = account.isPepSyncEnabled();
-            mPEpSyncAccount.setChecked(pepSyncEnabled);
+            mPEpSyncAccount.setChecked(pepSyncEnabled && flagged);
             if(pepSyncEnabled) {
                 mPEpSyncAccount.setEnabled(false);
             }
