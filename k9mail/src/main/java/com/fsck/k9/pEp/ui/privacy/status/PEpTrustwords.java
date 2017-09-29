@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -290,9 +291,9 @@ public class PEpTrustwords extends PepColoredActivity {
 
     private void showLanguageSelectionDialog() {
         PEpProvider pEpProvider = ((K9) getApplication()).getpEpProvider();
-        Tuple<CharSequence[], CharSequence[]> pEpLanguagesTuple = PEpUtils.getPEpLanguages(pEpProvider);
-        CharSequence[] pEpLocales = pEpLanguagesTuple.x;
-        CharSequence[] pEpLanguages = pEpLanguagesTuple.y;
+        Pair<CharSequence[], CharSequence[]> pEpLanguagesTuple = PEpUtils.getPEpLanguages(pEpProvider);
+        CharSequence[] pEpLocales = pEpLanguagesTuple.first;
+        CharSequence[] pEpLanguages = pEpLanguagesTuple.second;
         PEpLanguageSelector.showLanguageSelector(PEpTrustwords.this, pEpLocales, pEpLanguages, trustwordsLanguage, (dialog, languagePositon) -> {
             String language = pEpLocales[languagePositon].toString();
             changeTrustwords(language);

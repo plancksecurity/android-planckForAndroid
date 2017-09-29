@@ -13,6 +13,7 @@ import android.support.annotation.WorkerThread;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.util.Pair;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
@@ -25,7 +26,6 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeUtility;
-import com.fsck.k9.pEp.ui.privacy.status.Tuple;
 
 import org.apache.commons.io.IOUtils;
 import org.pEp.jniadapter.CommType;
@@ -526,7 +526,7 @@ public class PEpUtils {
                 && !identity.comm_type.equals(CommType.PEP_ct_OpenPGP_weak_unconfirmed);
     }
 
-    public static Tuple<CharSequence[], CharSequence[]> getPEpLanguages(PEpProvider pEpProvider) {
+    public static Pair<CharSequence[], CharSequence[]> getPEpLanguages(PEpProvider pEpProvider) {
         Map<String, PEpLanguage> languages = pEpProvider.obtainLanguages();
         Set<String> pEpLocales = languages.keySet();
         List<CharSequence> languagesToShow = new ArrayList<>();
@@ -536,7 +536,7 @@ public class PEpUtils {
         }
         CharSequence[] localesToReturn = new CharSequence[pEpLocales.size()];
         CharSequence[] languagesToReturn = new CharSequence[languagesToShow.size()];
-        return new Tuple<>(pEpLocales.toArray(localesToReturn),
+        return new Pair<>(pEpLocales.toArray(localesToReturn),
                 languagesToShow.toArray(languagesToReturn));
     }
 
