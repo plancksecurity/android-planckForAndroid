@@ -6,21 +6,19 @@ import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.UIUtils;
 
 public class PEpLanguageSelector {
 
     public static final String PEP_DEFAULT_LANGUAGE = "en";
 
-    public static void showLanguageSelector(Context context, CharSequence[] pEpLanguages,
-                                            String trustwordsLanguage,
+    public static void showLanguageSelector(Context context, CharSequence[] pEpLocales,
+                                            CharSequence[] pEpLanguages, String trustwordsLanguage,
                                             DialogInterface.OnClickListener onClickListener) {
         trustwordsLanguage = ensureTrustwordsLanguage(trustwordsLanguage);
-        CharSequence[] displayLanguages = UIUtils.prettifyLanguages(pEpLanguages);
-        Integer selectedLanguageIndex = getLanguageIndex(pEpLanguages, trustwordsLanguage);
+        Integer selectedLanguageIndex = getLanguageIndex(pEpLocales, trustwordsLanguage);
         new AlertDialog.Builder(context)
                 .setTitle(context.getResources().getString(R.string.settings_language_label))
-                .setSingleChoiceItems(displayLanguages, selectedLanguageIndex, onClickListener)
+                .setSingleChoiceItems(pEpLanguages, selectedLanguageIndex, onClickListener)
                 .setPositiveButton(R.string.ok, null)
                 .create().show();
     }

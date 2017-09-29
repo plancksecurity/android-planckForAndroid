@@ -968,4 +968,6 @@
   <string name="messageview_crypto_warning_error">¡Ha habido un <b>error en la firma de este mensaje</b>!</string>
   <string name="recipient_error_non_ascii">¡Los caracteres especiales aún no están soportados!</string>
   <string name="recipient_error_parse_failed">¡Error al analizar la dirección!</string>
+  <string name="pep_menu_long_trustwords">Ver más</string>
+  <string name="pep_menu_short_trustwords">Ver menos</string>
 </resources>

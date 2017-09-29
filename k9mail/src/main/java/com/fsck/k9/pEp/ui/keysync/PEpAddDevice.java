@@ -28,6 +28,7 @@ import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import org.pEp.jniadapter.Identity;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -35,8 +36,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
-
-import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
 
 public class PEpAddDevice extends PepActivity implements AddDeviceView {
 
@@ -173,7 +172,7 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
     }
 
     private boolean changeTrustwordsLanguage(Integer languagePosition) {
-        final CharSequence[] pEpLanguages = PEpUtils.getPEpLanguages();
+        final CharSequence[] pEpLanguages = PEpUtils.getPEpLocales();
         String language = pEpLanguages[languagePosition].toString();
         changeTrustwords(language);
         return true;
@@ -185,7 +184,9 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
 //        myIdentity = getpEp().updateIdentity(myIdentity);
 //        partnerIdentity = getpEp().updateIdentity(partnerIdentity);
 
-        getpEp().obtainTrustwords(myIdentity, partnerIdentity, language, areTrustwordsShort, new PEpProvider.ResultCallback<HandshakeData>() {
+        getpEp().obtainTrustwords(myIdentity, partnerIdentity, language,
+                true,
+                new PEpProvider.ResultCallback<HandshakeData>() {
             @Override
             public void onLoaded(HandshakeData handshakeData) {
                 if (areTrustwordsShort) {
@@ -207,7 +208,10 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
     private void changeTrustwordsLength(Boolean areShort) {
         areTrustwordsShort = areShort;
         if (areShort) {
-            getpEp().obtainTrustwords(myIdentity, partnerIdentity, trustwordsLanguage, areTrustwordsShort, new PEpProvider.ResultCallback<HandshakeData>() {
+            getpEp().obtainTrustwords(myIdentity, partnerIdentity,
+                    trustwordsLanguage,
+                    true,
+                    new PEpProvider.ResultCallback<HandshakeData>() {
                 @Override
                 public void onLoaded(HandshakeData handshakeData) {
                     shortTrustwords = handshakeData.getShortTrustwords();
@@ -220,7 +224,10 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
                 }
             });
         } else {
-            getpEp().obtainTrustwords(myIdentity, partnerIdentity, trustwordsLanguage, areTrustwordsShort, new PEpProvider.ResultCallback<HandshakeData>() {
+            getpEp().obtainTrustwords(myIdentity, partnerIdentity,
+                    trustwordsLanguage,
+                    true,
+                    new PEpProvider.ResultCallback<HandshakeData>() {
                 @Override
                 public void onLoaded(HandshakeData handshakeData) {
                     fullTrustwords = handshakeData.getFullTrustwords();
@@ -298,12 +305,16 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
     @Override
     protected void onResume() {
         super.onResume();
+        trustwordsLanguage = Locale.getDefault().getLanguage();
         loadTrustwords();
     }
 
     private void loadTrustwords() {
         //Actually what is heavy is update identity and myself.
-        getpEp().obtainTrustwords(myIdentity, partnerIdentity, trustwordsLanguage, areTrustwordsShort, new PEpProvider.ResultCallback<HandshakeData>() {
+        getpEp().obtainTrustwords(myIdentity, partnerIdentity,
+                trustwordsLanguage,
+                true,
+                new PEpProvider.ResultCallback<HandshakeData>() {
             @Override
             public void onLoaded(final HandshakeData handshakeData) {
                 fullTrustwords = handshakeData.getFullTrustwords();

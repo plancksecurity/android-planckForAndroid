@@ -1,7 +1,5 @@
 package com.fsck.k9.pEp;
 
-import android.content.Context;
-
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeMessage;
@@ -15,6 +13,7 @@ import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.Sync;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by dietz on 01.07.15.
@@ -106,12 +105,11 @@ public interface PEpProvider {
      * @return trustwords string
      */
     String trustwords(Identity id, String language);
-    void trustwords(Identity myself, Identity partner, String lang,
-                    ResultCallback<HandshakeData> callback);
+
     String trustwords(Identity myself, Identity partner, String lang, boolean isShort);
 
-    void obtainTrustwords(Identity myself, Identity partner, String lang,
-                          Boolean areTrustwordsShort, ResultCallback<HandshakeData> callback);
+    void obtainTrustwords(Identity myself, Identity partner, String lang, Boolean areKeysyncTrustwords,
+                          ResultCallback<HandshakeData> callback);
 
     /**
      * Close the engine/session associated to the provider
@@ -201,6 +199,8 @@ public interface PEpProvider {
     Rating incomingMessageRating(MimeMessage message);
 
     void loadOutgoingMessageRatingAfterResetTrust(Identity identity, Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback);
+
+    Map<String, PEpLanguage> obtainLanguages();
 
     class KeyDetail {
         private final Address address;

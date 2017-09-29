@@ -33,8 +33,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.inject.Inject;
@@ -541,37 +543,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public synchronized String trustwords(Identity id, String language) {
-        id.lang = language;
-        createEngineInstanceIfNeeded();
-        return engine.trustwords(id);
-    }
-
-    @Override
-    public void trustwords(Identity self, Identity other, String lang, ResultCallback<HandshakeData> callback) {
-        threadExecutor.execute(() -> {
-            Engine engine = null;
-            try {
-                Identity myself = self;
-                Identity partner = other;
-                engine = getNewEngineSession();
-
-                myself.lang = PEpUtils.obtainTrustwordsLang(lang);
-                myself.user_id = PEP_OWN_USER_ID;
-                myself = engine.myself(myself);
-                partner.lang = PEpUtils.obtainTrustwordsLang(lang);
-                partner = engine.updateIdentity(partner);
-
-                String trust = engine.get_trustwords(myself, partner, lang, true);
-                String shortTrust = engine.get_trustwords(myself, partner, lang, false);
-                notifyLoaded(new HandshakeData(trust, shortTrust, myself, partner), callback);
-            } catch (Exception e) {
-                notifyError(e, callback);
-            } finally {
-                if (engine != null) {
-                    engine.close();
-                }
-            }
-        });
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -585,14 +557,25 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void obtainTrustwords(Identity self, Identity other, String lang, Boolean areTrustwordsShort, ResultCallback<HandshakeData> callback) {
+    public void obtainTrustwords(Identity self, Identity other, String lang,
+                                 Boolean areKeysyncTrustwords,
+                                 ResultCallback<HandshakeData> callback) {
         threadExecutor.execute(() -> {
             Engine engine = null;
             try {
                 engine = getNewEngineSession();
-                String longTrustwords = engine.get_trustwords(self, other, lang, true);
-                String shortTrustwords = engine.get_trustwords(self, other, lang, false);
-                notifyLoaded(new HandshakeData(longTrustwords, shortTrustwords, self, other), callback);
+                Identity myself;
+                Identity another;
+                if (!areKeysyncTrustwords) {
+                    myself = engine.myself(self);
+                    another = engine.updateIdentity(other);
+                } else {
+                    myself = self;
+                    another = other;
+                }
+                String longTrustwords = engine.get_trustwords(myself, another, lang, true);
+                String shortTrustwords = engine.get_trustwords(myself, another, lang, false);
+                notifyLoaded(new HandshakeData(longTrustwords, shortTrustwords, myself, another), callback);
             } catch (Exception e) {
                 notifyError(e, callback);
             } finally {
@@ -994,5 +977,27 @@ public class PEpProviderImpl implements PEpProvider {
                 }
             }
         });
+    }
+
+    @Override
+    public Map<String, PEpLanguage> obtainLanguages() {
+        try {
+            Map<String, PEpLanguage> languages = new HashMap<>();
+            String languageList = engine.get_languagelist();
+            String[] lanchageCharacters = languageList.split("\n");
+            for (String lanchageCharacter : lanchageCharacters) {
+                String[] split = lanchageCharacter.split(",");
+                PEpLanguage pEpLanguage = new PEpLanguage(getElementAtPosition(split[0]), getElementAtPosition(split[1]), getElementAtPosition(split[2]));
+                languages.put(getElementAtPosition(split[0]), pEpLanguage);
+            }
+            return languages;
+        } catch (pEpException e) {
+            Timber.e(e);
+            return null;
+        }
+    }
+
+    private String getElementAtPosition(String chain) {
+        return chain.substring(1, chain.length() - 1);
     }
 }

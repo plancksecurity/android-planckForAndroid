@@ -9,14 +9,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.util.Pair;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.helper.Contacts;
@@ -42,7 +41,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 /**
@@ -57,7 +57,7 @@ public class PEpUtils {
 
     private static final CharSequence[] pEpLanguages = {"ca", "de", "es", "fr", "tr", "en"};
 
-    public static CharSequence[] getPEpLanguages() {
+    public static CharSequence[] getPEpLocales() {
         return pEpLanguages;
     }
 
@@ -229,81 +229,6 @@ public class PEpUtils {
         }
         return new ByteArrayOutputStream().toByteArray();
     }
-
-    public static String getShortTrustwords(String trustwords) {
-        StringBuilder builder = new StringBuilder();
-        String[] trustArray = trustwords.split(TRUSTWORDS_SEPARATOR);
-
-        if (trustArray.length > 5) {
-            for (int i = 0; i < 5; i++) {
-                builder.append(trustArray[i]);
-                builder.append(TRUSTWORDS_SEPARATOR);
-            }
-        }
-        return builder.toString();
-    }
-
-    public static String getShortTrustWords(PEpProvider pEp, Identity id, String... languages) {
-        if (languages.length == 0) {
-            String k9Language = K9.getK9Language();
-            return obtainTrustwords(pEp, id, k9Language, true);
-        } else {
-            String language = languages[0];
-            return obtainTrustwords(pEp, id, language, true);
-        }
-    }
-
-    public static String getTrustWords(PEpProvider pEp, Identity id, String... languages) {
-        if (languages.length == 0) {
-            String k9Language = K9.getK9Language();
-            return obtainTrustwords(pEp, id, k9Language, false);
-        } else {
-            String language = languages[0];
-            return obtainTrustwords(pEp, id, language, false);
-        }
-    }
-
-    @NonNull
-    private static String obtainTrustwords(PEpProvider pEp, Identity id, String language, Boolean shouldBeShorten) {
-        if (language == null || language.equals("")) {
-            language = Locale.getDefault().getLanguage();
-        }
-        if (isLanguageInPEPLanguages(language)) {
-            if (shouldBeShorten) {
-                return getShortTrustwords(pEp.trustwords(id, language));
-            } else {
-                return pEp.trustwords(id, language);
-            }
-        } else {
-            if (shouldBeShorten) {
-                return getShortTrustwords(pEp.trustwords(id, "en"));
-            } else {
-                return pEp.trustwords(id, "en");
-            }
-        }
-    }
-
-
-    @NonNull
-    public static String obtainTrustwordsLang(String language) {
-        if (language == null || language.equals("")) {
-            language = Locale.getDefault().getLanguage();
-        }
-        if (isLanguageInPEPLanguages(language)) {
-            return language;
-        } else {
-            return  "en";
-        }
-    }
-    private static boolean isLanguageInPEPLanguages(String language) {
-        for (CharSequence pEpLanguage : pEpLanguages) {
-            if (pEpLanguage.equals(language)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 
     public static String ratingToString(Rating rating) {
         if (rating == null) {
@@ -600,5 +525,20 @@ public class PEpUtils {
                 && !identity.comm_type.equals(CommType.PEP_ct_OpenPGP_weak)
                 && !identity.comm_type.equals(CommType.PEP_ct_OpenPGP_weak_unconfirmed);
     }
+
+    public static Pair<CharSequence[], CharSequence[]> getPEpLanguages(PEpProvider pEpProvider) {
+        Map<String, PEpLanguage> languages = pEpProvider.obtainLanguages();
+        Set<String> pEpLocales = languages.keySet();
+        List<CharSequence> languagesToShow = new ArrayList<>();
+        for (String pEpLocale : pEpLocales) {
+            PEpLanguage language = languages.get(String.valueOf(pEpLocale));
+            languagesToShow.add(language.getLanguage());
+        }
+        CharSequence[] localesToReturn = new CharSequence[pEpLocales.size()];
+        CharSequence[] languagesToReturn = new CharSequence[languagesToShow.size()];
+        return new Pair<>(pEpLocales.toArray(localesToReturn),
+                languagesToShow.toArray(languagesToReturn));
+    }
+
 }
 

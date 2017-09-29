@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
+import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
@@ -160,7 +162,9 @@ public class PEpTrustwords extends PepColoredActivity {
 
     private void loadTrustwords() {
         //Actually what is heavy is update identity and myself.
-        getpEp().trustwords(myself, partner, trustwordsLanguage, new PEpProvider.ResultCallback<HandshakeData>() {
+        getpEp().obtainTrustwords(myself, partner, trustwordsLanguage,
+                false,
+                new PEpProvider.ResultCallback<HandshakeData>() {
             @Override
             public void onLoaded(final HandshakeData handshakeData) {
                 showTrustwords(handshakeData);
@@ -286,9 +290,12 @@ public class PEpTrustwords extends PepColoredActivity {
     }
 
     private void showLanguageSelectionDialog() {
-        final CharSequence[] pEpLanguages = PEpUtils.getPEpLanguages();
-        PEpLanguageSelector.showLanguageSelector(PEpTrustwords.this, pEpLanguages, trustwordsLanguage, (dialog, languagePositon) -> {
-            String language = pEpLanguages[languagePositon].toString();
+        PEpProvider pEpProvider = ((K9) getApplication()).getpEpProvider();
+        Pair<CharSequence[], CharSequence[]> pEpLanguagesTuple = PEpUtils.getPEpLanguages(pEpProvider);
+        CharSequence[] pEpLocales = pEpLanguagesTuple.first;
+        CharSequence[] pEpLanguages = pEpLanguagesTuple.second;
+        PEpLanguageSelector.showLanguageSelector(PEpTrustwords.this, pEpLocales, pEpLanguages, trustwordsLanguage, (dialog, languagePositon) -> {
+            String language = pEpLocales[languagePositon].toString();
             changeTrustwords(language);
         });
     }
