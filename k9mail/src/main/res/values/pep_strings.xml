@@ -106,7 +106,7 @@
     <string name="crash_toast_text">Oops, something went wrong</string>
     <string name="advanced_options">Advanced options</string>
     <string name="basic_options">Basic options</string>
-    <string name="pep_enable_sync_account">Synchronize this account</string>
+    <string name="pep_enable_sync_account">Enable p≡p sync</string>
     <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
     <string name="pep_keysync_timeout">p≡p sync timeout</string>
     <string name="read_permission_first_explanation">We need access to your contacts in order to use autocomplete function in emails.\nYour contact list information never leaves your device!</string>

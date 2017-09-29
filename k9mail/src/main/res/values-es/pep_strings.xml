@@ -51,7 +51,7 @@
     <string name="advanced_options">Opciones avanzadas</string>
     <string name="basic_options">Opciones básicas</string>
     <string name="pep_enable_auto_download">Descarga automática de mensajes</string>
-    <string name="pep_enable_sync_account">Sincroniza esta cuenta</string>
+    <string name="pep_enable_sync_account">Habilitar sincronización de p≡p</string>
     <string name="synchronize_these_accounts_between_my_devices">sincroniza estas cuentas entre mis dispositivos</string>
 
     <string-array name="pep_title">
