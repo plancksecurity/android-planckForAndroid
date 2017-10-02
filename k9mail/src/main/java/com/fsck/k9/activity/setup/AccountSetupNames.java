@@ -25,7 +25,7 @@ import com.fsck.k9.activity.Accounts;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.UIUtils;
+import com.fsck.k9.pEp.PePUIArtefactCache;
 
 public class AccountSetupNames extends K9Activity implements OnClickListener {
     private static final String EXTRA_ACCOUNT = "account";
@@ -38,6 +38,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
 
     private Button mDoneButton;
     private CheckBox pepSyncAccount;
+    private PePUIArtefactCache pePUIArtefactCache;
 
     public static void actionSetNames(Context context, Account account) {
         Intent i = new Intent(context, AccountSetupNames.class);
@@ -95,7 +96,8 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
             pepSyncAccount.setVisibility(View.GONE);
         }
 
-        UIUtils.removeCredentialsInPreferences(AccountSetupNames.this);
+        pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
+        pePUIArtefactCache.removeCredentialsInPreferences();
     }
 
     @Override
