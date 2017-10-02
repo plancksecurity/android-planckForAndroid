@@ -1,6 +1,7 @@
 package com.fsck.k9.pEp;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -14,6 +15,8 @@ import org.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Cache for texts and icons.
@@ -41,6 +44,8 @@ public class PePUIArtefactCache
     private Resources resources;
     private Account composingAccount;
     private Account lastUsedAccount;
+    private String emailSetup;
+    private String passSetup;
 
     public synchronized static PePUIArtefactCache getInstance(Context context) {
         if (instance == null) {
@@ -119,5 +124,26 @@ public class PePUIArtefactCache
 
     public void setLastUsedAccount(Account lastUsedAccount) {
         this.lastUsedAccount = lastUsedAccount;
+    }
+
+    private static final String PEP_SHARED_PREFERENCES = "pEp";
+    private static final String EMAIL_SETUP = "email_setup";
+    private static final String PASS_SETUP = "pass_setup";
+
+    public void saveCredentialsInPreferences(String email, String password) {
+        emailSetup = email;
+        passSetup = password;
+    }
+
+    public void removeCredentialsInPreferences() {
+        emailSetup = null;
+        passSetup = null;
+    }
+
+    public String getEmailInPreferences() {
+        return emailSetup;
+    }
+    public String getPasswordInPreferences() {
+        return passSetup;
     }
 }

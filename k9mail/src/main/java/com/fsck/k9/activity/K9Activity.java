@@ -24,7 +24,6 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.UIUtils;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 
 import org.pEp.jniadapter.Rating;
@@ -68,7 +67,8 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     @Override
     protected void onDestroy() {
         mBase.onDestroy();
-        UIUtils.removeCredentialsInPreferences(this);
+        PePUIArtefactCache pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
+        pePUIArtefactCache.removeCredentialsInPreferences();
         super.onDestroy();
     }
 

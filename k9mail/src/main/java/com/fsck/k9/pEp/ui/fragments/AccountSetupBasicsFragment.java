@@ -45,8 +45,8 @@ import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.filter.Hex;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.pEp.PEpPermissionChecker;
+import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepPermissionActivity;
-import com.fsck.k9.pEp.UIUtils;
 import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpCertificateException;
 import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpSetupException;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
@@ -68,9 +68,8 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import timber.log.Timber;
-
 import butterknife.OnTextChanged;
+import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
 import static com.fsck.k9.mail.ServerSettings.Type.IMAP;
@@ -104,6 +103,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private ContentLoadingProgressBar nextProgressBar;
     private View rootView;
     private AccountSetupNavigator accountSetupNavigator;
+    private PePUIArtefactCache pePUIArtefactCache;
 
     public boolean ismCheckedIncoming() {
         return mCheckedIncoming;
@@ -134,8 +134,9 @@ public class AccountSetupBasicsFragment extends PEpFragment
         initializeViewListeners();
         validateFields();
 
-        String email = UIUtils.getEmailInPreferences(getActivity());
-        String password = UIUtils.getPasswordInPreferences(getActivity());
+        pePUIArtefactCache = ((AccountSetupBasics) getActivity()).getPePUIArtefactCache();
+        String email = pePUIArtefactCache.getEmailInPreferences();
+        String password = pePUIArtefactCache.getPasswordInPreferences();
         if (email != null && password != null) {
             mEmailView.setText(email);
             mPasswordView.setText(password);
@@ -440,7 +441,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void saveCredentialsInPreferences() {
-        UIUtils.saveCredentialsInPreferences(getActivity(),  mEmailView.getText().toString(), mPasswordView.getText().toString());
+        pePUIArtefactCache.saveCredentialsInPreferences(mEmailView.getText().toString(), mPasswordView.getText().toString());
     }
 
     @Override
