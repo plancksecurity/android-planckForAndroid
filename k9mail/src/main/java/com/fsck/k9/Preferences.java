@@ -123,7 +123,7 @@ public class Preferences {
     public synchronized void deleteAccount(Account account) {
         Account defaultAccount = getDefaultAccount();
         if (defaultAccount.equals(account)) {
-            getStorage().edit().remove("defaultAccountUuid");
+            getStorage().edit().remove("defaultAccountUuid").commit();
         }
 
         if (accounts != null) {
