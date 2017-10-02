@@ -2,7 +2,6 @@
 package com.fsck.k9;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.store.RemoteStore;
@@ -18,13 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import android.content.Context;
 import timber.log.Timber;
-
-import com.fsck.k9.mail.store.RemoteStore;
-import com.fsck.k9.mailstore.LocalStore;
-import com.fsck.k9.preferences.StorageEditor;
-import com.fsck.k9.preferences.Storage;
 
 
 public class Preferences {
@@ -129,7 +122,7 @@ public class Preferences {
 
     public synchronized void deleteAccount(Account account) {
         Account defaultAccount = getDefaultAccount();
-        if (defaultAccount.getUuid().equals(account.getUuid())) {
+        if (defaultAccount.equals(account)) {
             getStorage().edit().remove("defaultAccountUuid");
         }
 
