@@ -114,6 +114,16 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         fragment.setArguments(bundle);
         return fragment;
     }
+
+    public static AccountSetupOutgoingFragment intentActionEditOutgoingSettings(String accountUuid) {
+        AccountSetupOutgoingFragment fragment = new AccountSetupOutgoingFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(EXTRA_ACCOUNT, accountUuid);
+        bundle.putBoolean(EXTRA_EDIT, true);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -245,6 +255,10 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
 
         initializeViewListeners();
         validateFields();
+        if (mEdit) {
+            mNextButton.setText(R.string.done_action);
+            ((K9Activity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        }
         return rootView;
     }
 
@@ -547,7 +561,11 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     }
 
     private void goForward() {
-        accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
+        if (mEdit) {
+            getActivity().finish();
+        } else {
+            accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
+        }
     }
 
     protected void onNext() {

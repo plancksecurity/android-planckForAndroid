@@ -2,6 +2,7 @@
 package com.fsck.k9.activity.setup;
 
 
+import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.Accounts;
@@ -18,6 +20,7 @@ import com.fsck.k9.pEp.PEpImporterActivity;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
+import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 
 import javax.inject.Inject;
@@ -33,21 +36,61 @@ public class AccountSetupBasics extends PEpImporterActivity {
 
     private static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
     private static final int DIALOG_NO_FILE_MANAGER = 4;
+    private static final String EXTRA_ACCOUNT = "account";
+    private static final String EXTRA_EDIT_INCOMING = "extra_edit_incoming";
+    private static final String EXTRA_EDIT_OUTGOING = "extra_edit_outgoing";
     private AccountSetupBasicsFragment accountSetupBasicsFragment;
     public boolean isManualSetupRequired;
-    @Inject AccountSetupNavigator accountSetupNavigator;
+    public boolean isEditingIncomingSettings;
+    public boolean isEditingOutgoingSettings;
     private NonConfigurationInstance nonConfigurationInstance;
+    @Inject AccountSetupNavigator accountSetupNavigator;
 
     public static void actionNewAccount(Context context) {
         Intent i = new Intent(context, AccountSetupBasics.class);
         context.startActivity(i);
     }
 
+    public static void actionEditIncomingSettings(Activity context, Account account) {
+        context.startActivity(intentActionEditIncomingSettings(context, account));
+    }
+
+    public static Intent intentActionEditIncomingSettings(Context context, Account account) {
+        Intent i = new Intent(context, AccountSetupBasics.class);
+        i.putExtra(EXTRA_EDIT_INCOMING, true);
+        i.putExtra(EXTRA_ACCOUNT, account.getUuid());
+        return i;
+    }
+
+    public static void actionEditOutgoingSettings(Context context, Account account) {
+        context.startActivity(intentActionEditOutgoingSettings(context, account));
+    }
+
+    public static Intent intentActionEditOutgoingSettings(Context context, Account account) {
+        Intent i = new Intent(context, AccountSetupBasics.class);
+        i.putExtra(EXTRA_EDIT_OUTGOING, true);
+        i.putExtra(EXTRA_ACCOUNT, account.getUuid());
+        return i;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         bindViews(R.layout.account_setup_basics);
-        if (savedInstanceState == null) {
+        isEditingIncomingSettings = getIntent().getBooleanExtra(EXTRA_EDIT_INCOMING, false);
+        isEditingOutgoingSettings = getIntent().getBooleanExtra(EXTRA_EDIT_OUTGOING, false);
+        if (isEditingIncomingSettings) {
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.addToBackStack("AccountSetupIncomingFragment");
+            String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
+            ft.add(R.id.account_setup_container, AccountSetupIncomingFragment.actionEditIncomingSettings(accountUuid)).commit();
+        } else if (isEditingOutgoingSettings) {
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.addToBackStack("AccountSetupIncomingFragment");
+            String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
+            ft.add(R.id.account_setup_container, AccountSetupOutgoingFragment.intentActionEditOutgoingSettings(accountUuid)).commit();
+        }
+        else if (savedInstanceState == null) {
             accountSetupBasicsFragment = new AccountSetupBasicsFragment();
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.addToBackStack("AccountSetupBasicsFragment");
