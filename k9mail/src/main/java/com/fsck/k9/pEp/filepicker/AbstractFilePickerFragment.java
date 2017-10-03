@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -223,6 +222,9 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
             }
         });
 
+        if (((AppCompatActivity) getActivity()).getSupportActionBar() != null) {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         mCurrentDirView = (TextView) view.findViewById(R.id.nnf_current_dir);
         // Restore state
         if (mCurrentPath != null && mCurrentDirView != null) {
@@ -386,6 +388,7 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        ((AbstractFilePickerActivity) getActivity()).setActiveFragment(this);
         setHasOptionsMenu(true);
     }
 
@@ -613,6 +616,7 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
             case LogicHandler.VIEWTYPE_HEADER:
                 v = LayoutInflater.from(getActivity()).inflate(R.layout.nnf_filepicker_listitem_dir,
                         parent, false);
+                v.setVisibility(View.GONE);
                 return new HeaderViewHolder(v);
             case LogicHandler.VIEWTYPE_CHECKABLE:
                 v = LayoutInflater.from(getActivity()).inflate(R.layout.nnf_filepicker_listitem_checkable,
@@ -680,6 +684,12 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
      * Currently selected items are cleared by this operation.
      */
     public void goUp() {
+        File pathFile = (File) this.mCurrentPath;
+        File parent = (File) getParent(this.mCurrentPath);
+        String path = pathFile.getPath().substring(0, pathFile.getPath().length() - 2);
+        if (parent.getPath().equals(path)) {
+            getActivity().finish();
+        }
         goToDir(getParent(mCurrentPath));
     }
 
@@ -819,6 +829,7 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
 
         public HeaderViewHolder(View v) {
             super(v);
+            v.setVisibility(View.GONE);
             v.setOnClickListener(this);
             text = (TextView) v.findViewById(android.R.id.text1);
         }

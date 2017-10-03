@@ -12,9 +12,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
 import com.fsck.k9.R;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,6 +75,7 @@ public abstract class AbstractFilePickerActivity<T> extends AppCompatActivity
     protected boolean allowMultiple = false;
     private boolean allowExistingFile = true;
     protected boolean singleClick = false;
+    private AbstractFilePickerFragment fragment;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -100,8 +103,7 @@ public abstract class AbstractFilePickerActivity<T> extends AppCompatActivity
                 (AbstractFilePickerFragment<T>) fm.findFragmentByTag(TAG);
 
         String secondaryStorage = System.getenv("SECONDARY_STORAGE");
-
-        if (secondaryStorage != null) {
+        if (isAvailableStorage(secondaryStorage)) {
             SelectPathFragment selectPathFragment = SelectPathFragment.newInstance();
             fm.beginTransaction().replace(R.id.fragment, selectPathFragment, TAG)
                     .commit();
@@ -129,6 +131,34 @@ public abstract class AbstractFilePickerActivity<T> extends AppCompatActivity
 
         // Default to cancelled
         setResult(Activity.RESULT_CANCELED);
+    }
+
+    private boolean isAvailableStorage(String secondaryStorage) {
+        if (secondaryStorage == null || secondaryStorage.length() == 0) {
+            return false;
+        }
+
+        String path = secondaryStorage;
+        if (path.contains(":")) {
+            path = path.substring(0, path.indexOf(":"));
+        }
+
+        File externalFilePath = new File(path);
+
+        return externalFilePath.exists() && externalFilePath.canWrite();
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (fragment != null) {
+                    fragment.goUp();
+                }
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     protected abstract AbstractFilePickerFragment<T> getFragment(
@@ -184,5 +214,9 @@ public abstract class AbstractFilePickerActivity<T> extends AppCompatActivity
     public void onCancelled() {
         setResult(Activity.RESULT_CANCELED);
         finish();
+    }
+
+    public <T> void setActiveFragment(AbstractFilePickerFragment tAbstractFilePickerFragment) {
+        this.fragment = tAbstractFilePickerFragment;
     }
 }
