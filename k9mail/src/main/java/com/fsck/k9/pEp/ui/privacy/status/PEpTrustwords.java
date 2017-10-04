@@ -15,6 +15,7 @@ import android.widget.ViewSwitcher;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.pEp.PEpLanguage;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.HandshakeData;
@@ -24,6 +25,9 @@ import com.fsck.k9.pEp.ui.keysync.languages.PEpLanguageSelector;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -101,6 +105,11 @@ public class PEpTrustwords extends PepColoredActivity {
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initPep();
 
+        String language = Locale.getDefault().getLanguage();
+        if (isLanguageInPEPLanguages(language)) {
+            trustwordsLanguage = language;
+        }
+
         if (getIntent() != null) {
 
             if (intent.hasExtra(PARTNER_POSITION)) {
@@ -132,6 +141,12 @@ public class PEpTrustwords extends PepColoredActivity {
             }
 
         }
+    }
+
+    private boolean isLanguageInPEPLanguages(String language) {
+        PEpProvider pEpProvider = ((K9) getApplication()).getpEpProvider();
+        Map<String, PEpLanguage> languages = pEpProvider.obtainLanguages();
+        return languages.keySet().contains(language);
     }
 
     @Override
@@ -291,9 +306,19 @@ public class PEpTrustwords extends PepColoredActivity {
 
     private void showLanguageSelectionDialog() {
         PEpProvider pEpProvider = ((K9) getApplication()).getpEpProvider();
-        Pair<CharSequence[], CharSequence[]> pEpLanguagesTuple = PEpUtils.getPEpLanguages(pEpProvider);
-        CharSequence[] pEpLocales = pEpLanguagesTuple.first;
-        CharSequence[] pEpLanguages = pEpLanguagesTuple.second;
+        Map<String, PEpLanguage> languages = pEpProvider.obtainLanguages();
+
+        Set<String> locales = languages.keySet();
+        CharSequence[] pEpLocales = new CharSequence[locales.size()];
+        CharSequence[] pEpLanguages = new CharSequence[locales.size()];
+
+        Integer position = 0;
+        for (String locale : locales) {
+            pEpLocales[position] = locale;
+            pEpLanguages[position] = languages.get(locale).getLanguage();
+            position++;
+        }
+
         PEpLanguageSelector.showLanguageSelector(PEpTrustwords.this, pEpLocales, pEpLanguages, trustwordsLanguage, (dialog, languagePositon) -> {
             String language = pEpLocales[languagePositon].toString();
             changeTrustwords(language);
