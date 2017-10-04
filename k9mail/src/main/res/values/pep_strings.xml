@@ -185,6 +185,13 @@
         <item>Separately verify the content of this message with your communication partner.<!--pEpRatingUnderAttack--></item>
     </string-array>
 
+    <string name="nnf_new_folder">New folder</string>
+    <string name="nnf_create_folder_error">Failed to create folder</string>
+    <string name="nnf_name">Name</string>
+    <string name="nnf_select_something_first">Please select something first</string>
+    <string name="nnf_need_valid_filename">Please enter or select a valid filename</string>
+    <string name="nnf_permission_external_write_denied">Permisson to access filesystem denied</string>
+    <string name="nnf_filename">Filename</string>
 
 
 </resources>
