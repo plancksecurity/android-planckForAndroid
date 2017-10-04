@@ -13,10 +13,12 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.os.StrictMode;
 import android.widget.Toast;
 
@@ -84,6 +86,16 @@ public class K9 extends Application {
     private boolean ispEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
     private Account currentAccount;
     private ApplicationComponent component;
+
+    public boolean isBatteryOptimizationAsked() {
+        return batteryOptimizationAsked;
+    }
+
+    private boolean batteryOptimizationAsked;
+
+    public void batteryOptimizationAsked() {
+        batteryOptimizationAsked = true;
+    }
 
     /**
      * Components that are interested in knowing when the K9 instance is
@@ -699,6 +711,12 @@ public class K9 extends Application {
         });
 
         notifyObservers();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            String packageName = getPackageName();
+            batteryOptimizationAsked = powerManager.isIgnoringBatteryOptimizations(packageName);
+        }
     }
 
     private void pEpInitEnvironment() {
