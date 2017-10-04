@@ -40,10 +40,10 @@ import static org.hamcrest.Matchers.startsWith;
 @RunWith(AndroidJUnit4.class)
 public class GreyStatusEmailTest {
 
-    public static final int TIME = 2000;
-    //Cosntants are capital and static final, for example private static final String DESCRIPTION_NAME=
-    private static final String DESCRIPTION = "jj";
-    private static final String USER_NAME = "U.U";
+    private static final int TIME = 2000;
+    private static final String DESCRIPTION = "tester one";
+    private static final String USER_NAME = "testerJ";
+    private static final String EMAIL = "newemail@mail.es";
     @Rule
     public ActivityTestRule<SplashActivity> mActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
 
@@ -54,10 +54,9 @@ public class GreyStatusEmailTest {
         accountListSelect(DESCRIPTION);
         composseMessageButton();
         testStatusEmpty();
-        //Status:   0 Unkonwn / 3 No secure / 7 Secure & Confident5
-        testStatusMail("newemail@mail.es", "Subject", "Message", Rating.pEpRatingUnencrypted.value);
+        testStatusMail(EMAIL, "Subject", "Message", Rating.pEpRatingUnencrypted.value);
         testStatusMail("", "", "", Rating.pEpRatingUndefined.value);
-        testStatusMail("newemail@mail.es", "", "", Rating.pEpRatingUnencrypted.value);
+        testStatusMail(EMAIL, "", "", Rating.pEpRatingUnencrypted.value);
         sendEmail();
     }
 
@@ -67,7 +66,6 @@ public class GreyStatusEmailTest {
 
     private void testStatusMail(String to, String subject, String message, int status){
         fillEmail(to, subject, message);
-        doWait(TIME);
         doWait(TIME);
         checkStatus(status);
     }
@@ -79,14 +77,24 @@ public class GreyStatusEmailTest {
     }
 
     private void newEmailAccount(){
-        onView(withId(R.id.account_email)).perform(typeText("juan@miau.xyz"));
-        onView(withId(R.id.account_password)).perform(scrollTo(), typeText("9IJNHY6TFC"), closeSoftKeyboard());
+        onView(withId(R.id.account_email)).perform(typeText(getEmail()));
+        onView(withId(R.id.account_password)).perform(scrollTo(), typeText(getPassword()), closeSoftKeyboard());
         onView(withId(R.id.manual_setup)).perform(click());
 
         fillImapData();
         onView(withId(R.id.next)).perform(click());
         doWait(TIME);
         fillSmptData();
+        doWait(TIME);
+        onView(withId(R.id.next)).perform(click());
+        doWait(TIME);
+        onView(withId(R.id.next)).perform(click());
+    }
+
+    private void gmailAccount(){
+        onView(withId(R.id.account_oauth2)).perform(click());
+        onView(withId(R.id.next)).perform(click());
+        onView(withId(R.id.next)).perform(click());
         doWait(TIME);
         onView(withId(R.id.next)).perform(click());
         doWait(TIME);
@@ -102,18 +110,8 @@ public class GreyStatusEmailTest {
     }
 
     private void fillServerData() {
-        onView(withId(R.id.account_server)).perform(replaceText("mx1.hostinger.es"));
-        onView(withId(R.id.account_username)).perform(replaceText("juan@miau.xyz"));
-    }
-
-    private void gmailAccount(){
-        onView(withId(R.id.account_oauth2)).perform(click());
-        onView(withId(R.id.next)).perform(click());
-        onView(withId(R.id.next)).perform(click());
-        doWait(TIME);
-        onView(withId(R.id.next)).perform(click());
-        doWait(TIME);
-        onView(withId(R.id.next)).perform(click());
+        onView(withId(R.id.account_server)).perform(replaceText(getEmailServer()));
+        onView(withId(R.id.account_username)).perform(replaceText(getEmail()));
     }
 
     private void accountDescription(String description, String userName) {
@@ -121,6 +119,7 @@ public class GreyStatusEmailTest {
         onView(withId(R.id.account_name)).perform(typeText(userName));
         doWait(TIME);
         onView(withId(R.id.done)).perform(click());
+        doWait(TIME);
     }
 
     private void accountListSelect(String description){
@@ -140,11 +139,13 @@ public class GreyStatusEmailTest {
 
     private void fillEmail(String to, String subject, String message){
         onView(withId(R.id.to)).perform(click());
+        doWait(TIME);
         onView(withId(R.id.to)).perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL));
         doWait(TIME);
         onView(withId(R.id.to)).perform(typeText(to));
         onView(withId(R.id.subject)).perform(typeText(subject));
         onView(withId(R.id.message_content)).perform(typeText(message));
+        onView(withId(R.id.message_content)).perform(click());
     }
 
     private void sendEmail(){
@@ -167,6 +168,11 @@ public class GreyStatusEmailTest {
     @NonNull
     private String getEmail() {
         return BuildConfig.PEP_TEST_EMAIL_ADDRESS;
+    }
+
+    @NonNull
+    private String getEmailServer() {
+        return BuildConfig.PEP_TEST_EMAIL_SERVER;
     }
 
     @NonNull String getPassword(){ return  BuildConfig.PEP_TEST_EMAIL_PASSWORD;}
