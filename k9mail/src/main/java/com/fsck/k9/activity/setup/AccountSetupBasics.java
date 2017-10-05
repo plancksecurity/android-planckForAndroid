@@ -18,7 +18,6 @@ import com.fsck.k9.activity.Accounts;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
 import com.fsck.k9.pEp.PEpImporterActivity;
 import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
@@ -46,8 +45,6 @@ public class AccountSetupBasics extends PEpImporterActivity {
     public boolean isEditingOutgoingSettings;
     private NonConfigurationInstance nonConfigurationInstance;
     @Inject AccountSetupNavigator accountSetupNavigator;
-
-    private PePUIArtefactCache pePUIArtefactCache;
 
     public static void actionNewAccount(Context context) {
         Intent i = new Intent(context, AccountSetupBasics.class);
@@ -106,7 +103,6 @@ public class AccountSetupBasics extends PEpImporterActivity {
         if (nonConfigurationInstance != null) {
             nonConfigurationInstance.restore(this);
         }
-        pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
     }
 
     @Override
@@ -217,9 +213,5 @@ public class AccountSetupBasics extends PEpImporterActivity {
 
     public void setManualSetupRequired(boolean manualSetupRequired) {
         isManualSetupRequired = manualSetupRequired;
-    }
-
-    public PePUIArtefactCache getPePUIArtefactCache() {
-        return pePUIArtefactCache;
     }
 }

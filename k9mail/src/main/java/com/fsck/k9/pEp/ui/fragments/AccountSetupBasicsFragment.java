@@ -134,7 +134,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
         initializeViewListeners();
         validateFields();
 
-        pePUIArtefactCache = ((AccountSetupBasics) getActivity()).getPePUIArtefactCache();
+        pePUIArtefactCache = PePUIArtefactCache.getInstance(getActivity().getApplicationContext());
+
         String email = pePUIArtefactCache.getEmailInPreferences();
         String password = pePUIArtefactCache.getPasswordInPreferences();
         if (email != null && password != null) {
