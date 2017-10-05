@@ -16,6 +16,7 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.DeletePolicy;
@@ -767,11 +768,14 @@ public class AccountSettings extends K9PreferenceActivity {
         PEpProvider pEpProvider = ((K9) getApplication()).getpEpProvider();
         id = pEpProvider.updateIdentity(id);
         boolean flagged = IdentityFlags.PEPIdfNotForSync.value != id.flags;
+
+        K9 application = (K9) getApplication();
+
         if (BuildConfig.WITH_KEY_SYNC) {
             Boolean pepSyncEnabled = account.isPepSyncEnabled();
             mPEpSyncAccount.setChecked(pepSyncEnabled && flagged);
             if(pepSyncEnabled) {
-                mPEpSyncAccount.setEnabled(false);
+                mPEpSyncAccount.setEnabled(!application.ispEpSyncEnabled());
             }
         } else {
             mPEpSyncAccount.setChecked(false);
@@ -806,8 +810,6 @@ public class AccountSettings extends K9PreferenceActivity {
             pEpSaveEncrypted.setEnabled(false);
             mPEpSyncAccount.setEnabled(false);
         }
-
-        mPEpSyncAccount.setEnabled(ispEpSyncEnabled && BuildConfig.WITH_KEY_SYNC);
 
         mPepExtraKeys.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
