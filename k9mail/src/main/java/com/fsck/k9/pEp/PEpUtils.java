@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Pair;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.helper.Contacts;
