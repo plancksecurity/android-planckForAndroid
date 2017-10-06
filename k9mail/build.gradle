@@ -1,6 +1,6 @@
-def pEpEngineRevision = 1944
-def pEpJNIAdapterRevision = 325
-def version = "0.9.11.8"
+def pEpEngineRevision = 2091
+def pEpJNIAdapterRevision = 378
+def version = "0.9.11.10"
 
 def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
 def pEpTestEmailPassword = "\"$System.env.PEP_TEST_EMAIL_PASSWORD\""
@@ -111,7 +111,7 @@ android {
 
         //applicationId "pep.android.k9"
         applicationId "${appId}"
-        versionCode 70
+        versionCode 72
 //        versionName '0.9.9.2'
         minSdkVersion 21
         targetSdkVersion 25
@@ -207,6 +207,7 @@ android {
             enable true
             reset()
             include 'armeabi-v7a'
+//            include 'x86'
             universalApk false
         }
     }
