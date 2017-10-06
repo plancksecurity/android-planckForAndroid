@@ -51,7 +51,6 @@ import com.fsck.k9.helper.SizeFormatter;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.PEpImporterActivity;
-import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.About;
 import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
@@ -425,7 +424,7 @@ public class Accounts extends PEpImporterActivity {
 
         setupAddAccountButton();
         setupSettingsButton();
-        PEpUtils.askForBatteryOptimizationWhiteListing(getK9());
+        askForBatteryOptimizationWhiteListing();
     }
 
     @Override

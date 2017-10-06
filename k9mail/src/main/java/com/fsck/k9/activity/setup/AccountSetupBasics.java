@@ -17,7 +17,6 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.Accounts;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
 import com.fsck.k9.pEp.PEpImporterActivity;
-import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
@@ -96,7 +95,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
             ft.addToBackStack("AccountSetupBasicsFragment");
             ft.add(R.id.account_setup_container, accountSetupBasicsFragment).commit();
         }
-        PEpUtils.askForBatteryOptimizationWhiteListing(getK9());
+        askForBatteryOptimizationWhiteListing();
 
         // Handle activity restarts because of a configuration change (e.g. rotating the screen)
         nonConfigurationInstance = (NonConfigurationInstance) getLastNonConfigurationInstance();

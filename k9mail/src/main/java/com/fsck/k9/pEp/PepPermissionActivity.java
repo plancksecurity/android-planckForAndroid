@@ -1,7 +1,13 @@
 package com.fsck.k9.pEp;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 
 import com.fsck.k9.K9;
@@ -139,5 +145,25 @@ public abstract class PepPermissionActivity extends K9Activity {
 
     public PEpComponent getpEpComponent() {
         return pEpComponent;
+    }
+
+    public void askForBatteryOptimizationWhiteListing() {
+        K9 k9 = (K9) getApplication();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && !k9.isBatteryOptimizationAsked()) {
+            //TODO Probably is a good idea to first explain to the user why we need this
+            //and  if the user rejects it, give the option to don't ask again and again
+            Intent intent = new Intent();
+            String packageName = k9.getPackageName();
+            PowerManager pm = (PowerManager) k9.getSystemService(Context.POWER_SERVICE);
+            if (pm.isIgnoringBatteryOptimizations(packageName))
+                intent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+            else {
+                intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                intent.setData(Uri.parse("package:" + packageName));
+            }
+            k9.startActivity(intent);
+            k9.batteryOptimizationAsked();
+        }
     }
 }

@@ -15,7 +15,6 @@ import android.support.v7.app.AlertDialog;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PepPermissionActivity;
 import com.fsck.k9.pEp.ui.PEpPermissionView;
 
@@ -106,7 +105,7 @@ public class PermissionsActivity extends PepPermissionActivity {
             @Override
             public void onComplete() {
                 if(!askBatteryPermissionShowed) {
-                    PEpUtils.askForBatteryOptimizationWhiteListing(getK9());
+                    askForBatteryOptimizationWhiteListing();
                     askBatteryPermissionShowed = !askBatteryPermissionShowed;
                 } else {
                     goToSetupAccount();
@@ -116,7 +115,7 @@ public class PermissionsActivity extends PepPermissionActivity {
             @Override
             public void onError(Throwable throwable) {
                 if(!askBatteryPermissionShowed) {
-                    PEpUtils.askForBatteryOptimizationWhiteListing(getK9());
+                    askForBatteryOptimizationWhiteListing();
                     askBatteryPermissionShowed = !askBatteryPermissionShowed;
                 } else {
                     goToSetupAccount();
