@@ -5,35 +5,30 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
+import android.support.test.espresso.IdlingPolicies;
 import android.support.test.espresso.action.ViewActions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
+import android.text.format.DateUtils;
 import android.view.KeyEvent;
-
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
-
+import java.util.concurrent.TimeUnit;
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.replaceText;
-import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.hasToString;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 
 @LargeTest
@@ -44,11 +39,13 @@ public class GreyStatusEmailTest {
     private static final String DESCRIPTION = "tester one";
     private static final String USER_NAME = "testerJ";
     private static final String EMAIL = "newemail@mail.es";
+
     @Rule
-    public ActivityTestRule<SplashActivity> mActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
+    public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
 
     @Test
     public void greyStatusEmailTest() {
+        increaseTimeoutWait();
         accountConfiguration();
         accountDescription(DESCRIPTION, USER_NAME);
         accountListSelect(DESCRIPTION);
@@ -78,9 +75,8 @@ public class GreyStatusEmailTest {
 
     private void newEmailAccount(){
         onView(withId(R.id.account_email)).perform(typeText(getEmail()));
-        onView(withId(R.id.account_password)).perform(scrollTo(), typeText(getPassword()), closeSoftKeyboard());
+        onView(withId(R.id.account_password)).perform(typeText(getPassword()), closeSoftKeyboard());
         onView(withId(R.id.manual_setup)).perform(click());
-
         fillImapData();
         onView(withId(R.id.next)).perform(click());
         doWait(TIME);
@@ -119,7 +115,6 @@ public class GreyStatusEmailTest {
         onView(withId(R.id.account_name)).perform(typeText(userName));
         doWait(TIME);
         onView(withId(R.id.done)).perform(click());
-        doWait(TIME);
     }
 
     private void accountListSelect(String description){
@@ -165,15 +160,18 @@ public class GreyStatusEmailTest {
         return targetContext.getResources().getStringArray(id)[n];
     }
 
-    @NonNull
-    private String getEmail() {
-        return BuildConfig.PEP_TEST_EMAIL_ADDRESS;
+    private void increaseTimeoutWait(){
+        long waitingTime = DateUtils.SECOND_IN_MILLIS * 150;
+        IdlingPolicies.setMasterPolicyTimeout(waitingTime, TimeUnit.MILLISECONDS);
+        IdlingPolicies.setIdlingResourceTimeout(waitingTime, TimeUnit.MILLISECONDS);
     }
 
     @NonNull
-    private String getEmailServer() {
-        return BuildConfig.PEP_TEST_EMAIL_SERVER;
-    }
+    private String getEmail() {return BuildConfig.PEP_TEST_EMAIL_ADDRESS;}
 
-    @NonNull String getPassword(){ return  BuildConfig.PEP_TEST_EMAIL_PASSWORD;}
+    @NonNull
+    private String getEmailServer() {return BuildConfig.PEP_TEST_EMAIL_SERVER;}
+
+    @NonNull
+    private String getPassword(){return  BuildConfig.PEP_TEST_EMAIL_PASSWORD;}
 }
