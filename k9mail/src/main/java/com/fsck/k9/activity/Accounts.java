@@ -658,6 +658,8 @@ public class Accounts extends PEpImporterActivity {
                 controller.getSearchAccountStats(searchAccount, mListener);
             }
         }
+
+        mFoldersAdapter.notifyDataSetChanged();
     }
 
     private void onAddNewAccount() {
@@ -883,6 +885,11 @@ public class Accounts extends PEpImporterActivity {
             mUnreadMessageCount -= oldUnreadMessageCount;
         }
         mHandler.setViewTitle();
+        if (accounts.size() < 1) {
+            accountStats.clear();
+            WelcomeMessage.showWelcomeMessage(this);
+            finish();
+        }
     }
 
     @Override
