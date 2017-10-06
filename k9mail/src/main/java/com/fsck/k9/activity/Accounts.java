@@ -425,7 +425,7 @@ public class Accounts extends PEpImporterActivity {
 
         setupAddAccountButton();
         setupSettingsButton();
-        PEpUtils.askForBatteryOptimizationWhiteListing(getK9());
+        PEpUtils.askForBatteryOptimizationWhiteListing(this);
     }
 
     @Override
