@@ -23,11 +23,13 @@ import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.longClick;
 import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.startsWith;
 
@@ -55,6 +57,7 @@ public class GreyStatusEmailTest {
         testStatusMail("", "", "", Rating.pEpRatingUndefined.value);
         testStatusMail(EMAIL, "", "", Rating.pEpRatingUnencrypted.value);
         sendEmail();
+        removeAccout(DESCRIPTION);
     }
 
     private void testStatusEmpty(){
@@ -145,6 +148,13 @@ public class GreyStatusEmailTest {
 
     private void sendEmail(){
         onView(withId(R.id.send)).perform(click());
+    }
+
+    private void removeAccout(String description){
+        Espresso.pressBack();
+        onData(hasToString(startsWith(description))).inAdapterView(withId(R.id.accounts_list)).perform(longClick());
+        onData(anything()).atPosition(4).perform(click());
+        onView(withId(android.R.id.button1)).perform(click());
     }
 
     private void doWait(int timeMillis){
