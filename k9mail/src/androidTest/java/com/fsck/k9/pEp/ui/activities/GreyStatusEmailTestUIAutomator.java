@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
 
+import static java.lang.Thread.sleep;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -60,15 +61,50 @@ public class GreyStatusEmailTestUIAutomator {
 */
     @Test
     public void greyStatusEmailTest() {
+        accountConfiguration();
+    }
+
+    private void accountConfiguration(){
         mDevice.findObject(By.res(PACKAGE, "skip")).click();
-        waitFor("account_email");
+        newEmailAccount();
+    }
+
+    private void newEmailAccount(){
+        doWait(TIME);
         mDevice.findObject(By.res(PACKAGE, "account_email")).setText(getEmail());
         mDevice.findObject(By.res(PACKAGE, "account_password")).setText(getPassword());
         mDevice.findObject(By.res(PACKAGE, "manual_setup")).click();
+
+        fillImapData();
+        mDevice.findObject(By.res(PACKAGE, "next")).click();
+        doWait(TIME);
+        fillSmptData();
+        doWait(TIME);
+        mDevice.findObject(By.res(PACKAGE, "next")).click();
+        doWait(TIME);
+        mDevice.findObject(By.res(PACKAGE, "next")).click();
     }
 
-    private void waitFor(String name){
-        UiObject2 waitFor = mDevice.wait(Until.findObject(By.res(PACKAGE, name)), 500);
+    private void fillSmptData() {
+        fillServerData();
+    }
+
+    private void fillImapData() {
+        fillServerData();
+    }
+
+    private void fillServerData() {
+        doWait(TIME);
+        mDevice.findObject(By.res(PACKAGE, "account_server")).setText(getEmailServer());
+        mDevice.findObject(By.res(PACKAGE, "account_username")).setText(getEmail());
+    }
+
+    private void doWait(int timeMillis){
+        try {
+            Thread.sleep(timeMillis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private String getLauncherPackageName() {
