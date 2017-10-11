@@ -51,6 +51,11 @@ public class GreyStatusEmailTestUIAutomator {
         mDevice.wait(Until.hasObject(By.pkg(PACKAGE).depth(0)), LAUNCH_TIMEOUT);
     }
 
+    @Test
+    public void checkPreconditions() {
+        assertThat(mDevice, notNullValue());
+    }
+
     private String getLauncherPackageName() {
         final Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
