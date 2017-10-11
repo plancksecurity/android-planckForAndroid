@@ -133,15 +133,15 @@ public abstract class PepPermissionActivity extends K9Activity {
     }
 
     public void askForBatteryOptimizationWhiteListing() {
-        K9 k9 = (K9) getApplication();
+        K9 k9 = getK9();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && !k9.isBatteryOptimizationAsked()) {
             Intent intent = new Intent();
             String packageName = getPackageName();
             PowerManager pm = (PowerManager) k9.getSystemService(Context.POWER_SERVICE);
-            if (pm != null && pm.isIgnoringBatteryOptimizations(packageName))
+            if (pm != null && pm.isIgnoringBatteryOptimizations(packageName)) {
                 intent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
-            else {
+            } else {
                 intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
                 intent.setData(Uri.parse("package:" + packageName));
             }
