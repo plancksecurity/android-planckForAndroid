@@ -136,8 +136,6 @@ public abstract class PepPermissionActivity extends K9Activity {
         K9 k9 = (K9) getApplication();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && !k9.isBatteryOptimizationAsked()) {
-            //TODO Probably is a good idea to first explain to the user why we need this
-            //and  if the user rejects it, give the option to don't ask again and again
             Intent intent = new Intent();
             String packageName = getPackageName();
             PowerManager pm = (PowerManager) k9.getSystemService(Context.POWER_SERVICE);
