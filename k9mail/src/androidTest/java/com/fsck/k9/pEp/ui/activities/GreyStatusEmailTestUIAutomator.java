@@ -68,6 +68,7 @@ public class GreyStatusEmailTestUIAutomator {
         accountConfiguration();
         accountDescription(DESCRIPTION, USER_NAME);
         accountListSelect(DESCRIPTION);
+        composseMessageButton();
     }
 
     private void accountConfiguration(){
@@ -124,6 +125,10 @@ public class GreyStatusEmailTestUIAutomator {
         } catch (UiObjectNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    private void composseMessageButton(){
+        mDevice.findObject(By.res(PACKAGE, "fab_button_compose_message")).click();
     }
 
     private void doWait(int timeMillis){
