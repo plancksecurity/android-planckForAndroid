@@ -12,5 +12,11 @@ import org.junit.runner.RunWith;
 @SdkSuppress(minSdkVersion = 18)
 public class GreyStatusEmailTestUIAutomator {
 
+    private static final String BASIC_SAMPLE_PACKAGE = "com.fsck.k9.pEp.ui.activities";
+    private static final int TIME = 2000;
+    private static final String DESCRIPTION = "tester one";
+    private static final String USER_NAME = "testerJ";
+    private static final String EMAIL = "newemail@mail.es";
+    private static final int LAUNCH_TIMEOUT = 5000;
     private UiDevice mDevice;
 }
