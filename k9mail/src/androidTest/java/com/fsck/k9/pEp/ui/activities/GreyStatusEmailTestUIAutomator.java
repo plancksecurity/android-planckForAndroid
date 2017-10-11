@@ -17,6 +17,7 @@ import com.fsck.k9.BuildConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.pEp.jniadapter.Rating;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -29,7 +30,7 @@ import static org.junit.Assert.assertThat;
 @SdkSuppress(minSdkVersion = 18)
 public class GreyStatusEmailTestUIAutomator {
 
-    private static final String PACKAGE = "com.fsck.k9";
+    private static final String PACKAGE = "pep.android.k9";
     private static final int TIME = 2000;
     private static final String DESCRIPTION = "tester one";
     private static final String USER_NAME = "testerJ";
@@ -54,6 +55,11 @@ public class GreyStatusEmailTestUIAutomator {
     @Test
     public void checkPreconditions() {
         assertThat(mDevice, notNullValue());
+    }
+
+    @Test
+    public void greyStatusEmailTest() {
+
     }
 
     private String getLauncherPackageName() {
