@@ -154,15 +154,15 @@ public abstract class PepPermissionActivity extends K9Activity {
             //TODO Probably is a good idea to first explain to the user why we need this
             //and  if the user rejects it, give the option to don't ask again and again
             Intent intent = new Intent();
-            String packageName = k9.getPackageName();
+            String packageName = getPackageName();
             PowerManager pm = (PowerManager) k9.getSystemService(Context.POWER_SERVICE);
-            if (pm.isIgnoringBatteryOptimizations(packageName))
+            if (pm != null && pm.isIgnoringBatteryOptimizations(packageName))
                 intent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
             else {
                 intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
                 intent.setData(Uri.parse("package:" + packageName));
             }
-            k9.startActivity(intent);
+            startActivity(intent);
             k9.batteryOptimizationAsked();
         }
     }
