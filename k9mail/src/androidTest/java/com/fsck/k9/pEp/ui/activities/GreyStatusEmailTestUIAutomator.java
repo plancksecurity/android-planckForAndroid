@@ -15,6 +15,7 @@ import android.support.test.uiautomator.Until;
 import com.fsck.k9.BuildConfig;
 
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -28,7 +29,7 @@ import static org.junit.Assert.assertThat;
 @SdkSuppress(minSdkVersion = 18)
 public class GreyStatusEmailTestUIAutomator {
 
-    private static final String BASIC_SAMPLE_PACKAGE = "com.fsck.k9.pEp.ui.activities";
+    private static final String PACKAGE = "com.fsck.k9";
     private static final int TIME = 2000;
     private static final String DESCRIPTION = "tester one";
     private static final String USER_NAME = "testerJ";
@@ -44,10 +45,10 @@ public class GreyStatusEmailTestUIAutomator {
         assertThat(launcherPackage, notNullValue());
         mDevice.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), LAUNCH_TIMEOUT);
         Context context = InstrumentationRegistry.getContext();
-        final Intent intent = context.getPackageManager().getLaunchIntentForPackage(BASIC_SAMPLE_PACKAGE);
+        final Intent intent = context.getPackageManager().getLaunchIntentForPackage(PACKAGE);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);
-        mDevice.wait(Until.hasObject(By.pkg(BASIC_SAMPLE_PACKAGE).depth(0)), LAUNCH_TIMEOUT);
+        mDevice.wait(Until.hasObject(By.pkg(PACKAGE).depth(0)), LAUNCH_TIMEOUT);
     }
 
     private String getLauncherPackageName() {
