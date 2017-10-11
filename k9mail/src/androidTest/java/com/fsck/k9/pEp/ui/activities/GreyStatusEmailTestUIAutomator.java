@@ -10,6 +10,7 @@ import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.Until;
 
 import com.fsck.k9.BuildConfig;
@@ -51,15 +52,23 @@ public class GreyStatusEmailTestUIAutomator {
         context.startActivity(intent);
         mDevice.wait(Until.hasObject(By.pkg(PACKAGE).depth(0)), LAUNCH_TIMEOUT);
     }
-
+/*
     @Test
     public void checkPreconditions() {
         assertThat(mDevice, notNullValue());
     }
-
+*/
     @Test
     public void greyStatusEmailTest() {
+        mDevice.findObject(By.res(PACKAGE, "skip")).click();
+        waitFor("account_email");
+        mDevice.findObject(By.res(PACKAGE, "account_email")).setText(getEmail());
+        mDevice.findObject(By.res(PACKAGE, "account_password")).setText(getPassword());
+        mDevice.findObject(By.res(PACKAGE, "manual_setup")).click();
+    }
 
+    private void waitFor(String name){
+        UiObject2 waitFor = mDevice.wait(Until.findObject(By.res(PACKAGE, name)), 500);
     }
 
     private String getLauncherPackageName() {
