@@ -62,6 +62,7 @@ public class GreyStatusEmailTestUIAutomator {
     @Test
     public void greyStatusEmailTest() {
         accountConfiguration();
+        accountDescription(DESCRIPTION, USER_NAME);
     }
 
     private void accountConfiguration(){
@@ -97,6 +98,14 @@ public class GreyStatusEmailTestUIAutomator {
         doWait(TIME);
         mDevice.findObject(By.res(PACKAGE, "account_server")).setText(getEmailServer());
         mDevice.findObject(By.res(PACKAGE, "account_username")).setText(getEmail());
+    }
+
+    private void accountDescription(String description, String userName) {
+        doWait(TIME);
+        mDevice.findObject(By.res(PACKAGE, "account_description")).setText(description);
+        mDevice.findObject(By.res(PACKAGE, "account_name")).setText(userName);
+        //doWait(TIME);
+        mDevice.findObject(By.res(PACKAGE, "done")).click();
     }
 
     private void doWait(int timeMillis){
