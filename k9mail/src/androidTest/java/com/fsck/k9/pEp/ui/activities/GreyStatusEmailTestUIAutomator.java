@@ -1,8 +1,12 @@
 package com.fsck.k9.pEp.ui.activities;
 
+import android.support.annotation.NonNull;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.UiDevice;
+
+import com.fsck.k9.BuildConfig;
+
 import org.junit.runner.RunWith;
 /**
  * Created by juan on 11/10/17.
@@ -19,4 +23,14 @@ public class GreyStatusEmailTestUIAutomator {
     private static final String EMAIL = "newemail@mail.es";
     private static final int LAUNCH_TIMEOUT = 5000;
     private UiDevice mDevice;
+
+
+    @NonNull
+    private String getEmail() {return BuildConfig.PEP_TEST_EMAIL_ADDRESS;}
+
+    @NonNull
+    private String getEmailServer() {return BuildConfig.PEP_TEST_EMAIL_SERVER;}
+
+    @NonNull
+    private String getPassword(){return  BuildConfig.PEP_TEST_EMAIL_PASSWORD;}
 }
