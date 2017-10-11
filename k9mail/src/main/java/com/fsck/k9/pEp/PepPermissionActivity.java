@@ -32,8 +32,6 @@ import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener;
 import java.util.List;
 
 public abstract class PepPermissionActivity extends K9Activity {
-    PePUIArtefactCache uiCache;
-    private PEpProvider pEp;
     private CompositePermissionListener storagePermissionListener;
     private CompositePermissionListener contactPermissionListener;
     private PEpComponent pEpComponent;
@@ -48,19 +46,6 @@ public abstract class PepPermissionActivity extends K9Activity {
     @Override
     public void search(String query) {
         /* no-op */
-    }
-
-    protected void initPep() {
-        uiCache = PePUIArtefactCache.getInstance(getApplicationContext());
-        pEp = ((K9) getApplication()).getpEpProvider();
-    }
-
-    public PEpProvider getpEp() {
-        return pEp;
-    }
-
-    public PePUIArtefactCache getUiCache() {
-        return uiCache;
     }
 
     private ApplicationComponent getApplicationComponent() {
