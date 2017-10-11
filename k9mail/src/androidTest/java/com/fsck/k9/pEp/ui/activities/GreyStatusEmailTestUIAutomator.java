@@ -10,7 +10,11 @@ import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
+import android.support.test.uiautomator.UiObjectNotFoundException;
+import android.support.test.uiautomator.UiScrollable;
+import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
 
 import com.fsck.k9.BuildConfig;
@@ -63,6 +67,7 @@ public class GreyStatusEmailTestUIAutomator {
     public void greyStatusEmailTest() {
         accountConfiguration();
         accountDescription(DESCRIPTION, USER_NAME);
+        accountListSelect(DESCRIPTION);
     }
 
     private void accountConfiguration(){
@@ -106,6 +111,19 @@ public class GreyStatusEmailTestUIAutomator {
         mDevice.findObject(By.res(PACKAGE, "account_name")).setText(userName);
         //doWait(TIME);
         mDevice.findObject(By.res(PACKAGE, "done")).click();
+    }
+
+    private void accountListSelect(String description){
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        mDevice.findObject(By.res(PACKAGE, "accounts_list")).click();
+        UiScrollable listView = new UiScrollable(new UiSelector());
+        UiObject listViewItem = null;
+        try {
+            listViewItem = listView.getChildByText(new UiSelector().className(android.widget.TextView.class.getName()), description);
+            listViewItem.click();
+        } catch (UiObjectNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private void doWait(int timeMillis){
