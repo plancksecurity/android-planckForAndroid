@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.action.ViewActions;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
+import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
@@ -18,6 +20,8 @@ import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
 import android.view.KeyEvent;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
@@ -26,6 +30,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
+
+import java.util.List;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -48,6 +54,8 @@ public class GreyStatusEmailTestUIAutomator {
 
     private static final String PACKAGE = "pep.android.k9";
     private static final int TIME = 2000;
+    private static final int LONG_TIME = 30000;
+    private static final long CLICK_TIME = 3000;
     private static final String DESCRIPTION = "tester one";
     private static final String USER_NAME = "testerJ";
     private static final String EMAIL = "newemail@mail.es";
@@ -84,15 +92,17 @@ public class GreyStatusEmailTestUIAutomator {
         testStatusMail("", "", "", Rating.pEpRatingUndefined.value);
         testStatusMail(EMAIL, "", "", Rating.pEpRatingUnencrypted.value);
         sendEmail();
+        removeAccount();
     }
 
     private void accountConfiguration(){
+        waitForExists("skip");
         mDevice.findObject(By.res(PACKAGE, "skip")).click();
         newEmailAccount();
     }
 
     private void newEmailAccount(){
-        doWait(TIME);
+        waitForExists("account_email");
         mDevice.findObject(By.res(PACKAGE, "account_email")).setText(getEmail());
         mDevice.findObject(By.res(PACKAGE, "account_password")).setText(getPassword());
         mDevice.findObject(By.res(PACKAGE, "manual_setup")).click();
@@ -101,7 +111,7 @@ public class GreyStatusEmailTestUIAutomator {
         mDevice.findObject(By.res(PACKAGE, "next")).click();
         doWait(TIME);
         fillSmptData();
-        doWait(TIME);
+        waitForExists("next");
         mDevice.findObject(By.res(PACKAGE, "next")).click();
         doWait(TIME);
         mDevice.findObject(By.res(PACKAGE, "next")).click();
@@ -176,6 +186,7 @@ public class GreyStatusEmailTestUIAutomator {
         onView(withId(R.id.message_content)).perform(click());
     }
     private void sendEmail(){
+        doWait(TIME);
         mDevice.findObject(By.res(PACKAGE, "send")).click();
     }
 
@@ -185,6 +196,32 @@ public class GreyStatusEmailTestUIAutomator {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private void removeAccount(){
+        doWait(LONG_TIME);
+        mDevice.pressBack();
+        doWait(TIME);
+        //mDevice.findObject(By.res(PACKAGE, "accounts_list")).longClick();
+        UiObject2 list = mDevice.findObject(By.res(PACKAGE, "accounts_list"));
+        Rect bounds = list.getVisibleBounds();
+        mDevice.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 60);
+        //onData(anything()).atPosition(4).perform(click());
+        //for(int i=0;i<n;i++)new UiObject(new UiSelector().className("android.widget.CheckBox").instance(i)).click();
+        doWait(TIME);
+        BySelector selector = By.clazz("android.widget.TextView");
+        mDevice.findObjects(selector).get(5).click();
+        //listview.getChild(new UiSelector().clickable(true).index(index)).click();
+        doWait(TIME);
+        //UiObject2 button = mDevice.findObject(By.res(PACKAGE, "button1"));
+        //button.click();
+
+        selector = By.clazz("android.widget.Button");
+        mDevice.findObjects(selector).get(1).click();
+    }
+
+    private void waitForExists(String view){
+        mDevice.wait(Until.hasObject(By.res(PACKAGE, view)), LONG_TIME);
     }
 
     private String getLauncherPackageName() {
