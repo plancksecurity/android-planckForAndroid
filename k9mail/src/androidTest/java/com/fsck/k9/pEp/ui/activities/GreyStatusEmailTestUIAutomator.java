@@ -18,6 +18,7 @@ import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
 
 import com.fsck.k9.BuildConfig;
+import com.fsck.k9.R;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +26,10 @@ import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
 
 import static java.lang.Thread.sleep;
+import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.JMock1Matchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -69,6 +73,7 @@ public class GreyStatusEmailTestUIAutomator {
         accountDescription(DESCRIPTION, USER_NAME);
         accountListSelect(DESCRIPTION);
         composseMessageButton();
+        testStatusEmpty();
     }
 
     private void accountConfiguration(){
@@ -131,6 +136,18 @@ public class GreyStatusEmailTestUIAutomator {
         mDevice.findObject(By.res(PACKAGE, "fab_button_compose_message")).click();
     }
 
+    private void checkStatus(int status){
+        doWait(TIME);
+        mDevice.findObject(By.res(PACKAGE, "pEp_indicator")).click();
+        doWait(TIME);
+        assertEquals(mDevice.findObject(By.res(PACKAGE, "pEpTitle")).getText(), getResourceString(R.array.pep_title, status).toString());
+        mDevice.pressBack();
+    }
+
+    private void testStatusEmpty(){
+        checkStatus(Rating.pEpRatingUndefined.value);
+    }
+
     private void doWait(int timeMillis){
         try {
             Thread.sleep(timeMillis);
@@ -145,6 +162,11 @@ public class GreyStatusEmailTestUIAutomator {
         PackageManager pm = InstrumentationRegistry.getContext().getPackageManager();
         ResolveInfo resolveInfo = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
         return resolveInfo.activityInfo.packageName;
+    }
+
+    private String getResourceString(int id, int n) {
+        Context targetContext = InstrumentationRegistry.getTargetContext();
+        return targetContext.getResources().getStringArray(id)[n];
     }
 
     @NonNull
