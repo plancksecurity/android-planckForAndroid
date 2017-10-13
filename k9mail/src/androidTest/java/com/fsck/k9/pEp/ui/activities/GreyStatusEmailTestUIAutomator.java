@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.action.ViewActions;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
@@ -16,6 +17,7 @@ import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
+import android.view.KeyEvent;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
@@ -25,6 +27,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
 
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static java.lang.Thread.sleep;
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -73,7 +79,7 @@ public class GreyStatusEmailTestUIAutomator {
         accountDescription(DESCRIPTION, USER_NAME);
         accountListSelect(DESCRIPTION);
         composseMessageButton();
-        //testStatusEmpty();
+        testStatusEmpty();
         testStatusMail(EMAIL, "Subject", "Message", Rating.pEpRatingUnencrypted.value);
         testStatusMail("", "", "", Rating.pEpRatingUndefined.value);
         testStatusMail(EMAIL, "", "", Rating.pEpRatingUnencrypted.value);
@@ -159,14 +165,14 @@ public class GreyStatusEmailTestUIAutomator {
     }
 
     private void fillEmail(String to, String subject, String message){
+        onView(withId(R.id.to)).perform(click());
         doWait(TIME);
-        mDevice.findObject(By.res(PACKAGE, "to")).setText(to);
+        onView(withId(R.id.to)).perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL));
         doWait(TIME);
-        mDevice.findObject(By.res(PACKAGE, "message_content")).click();
-        doWait(TIME);
-        mDevice.findObject(By.res(PACKAGE, "message_content")).setText(message);
-        mDevice.findObject(By.res(PACKAGE, "subject")).setText(subject);
-        doWait(TIME);
+        onView(withId(R.id.to)).perform(typeText(to));
+        onView(withId(R.id.subject)).perform(typeText(subject));
+        onView(withId(R.id.message_content)).perform(typeText(message));
+        onView(withId(R.id.message_content)).perform(click());
     }
 
     private void doWait(int timeMillis){
