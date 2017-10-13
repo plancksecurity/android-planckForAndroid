@@ -83,6 +83,7 @@ public class GreyStatusEmailTestUIAutomator {
         testStatusMail(EMAIL, "Subject", "Message", Rating.pEpRatingUnencrypted.value);
         testStatusMail("", "", "", Rating.pEpRatingUndefined.value);
         testStatusMail(EMAIL, "", "", Rating.pEpRatingUnencrypted.value);
+        sendEmail();
     }
 
     private void accountConfiguration(){
@@ -173,6 +174,9 @@ public class GreyStatusEmailTestUIAutomator {
         onView(withId(R.id.subject)).perform(typeText(subject));
         onView(withId(R.id.message_content)).perform(typeText(message));
         onView(withId(R.id.message_content)).perform(click());
+    }
+    private void sendEmail(){
+        mDevice.findObject(By.res(PACKAGE, "send")).click();
     }
 
     private void doWait(int timeMillis){
