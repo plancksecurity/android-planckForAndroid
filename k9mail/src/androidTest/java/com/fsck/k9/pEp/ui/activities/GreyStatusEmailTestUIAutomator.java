@@ -10,6 +10,7 @@ import android.support.test.espresso.action.ViewActions;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
+import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
@@ -18,6 +19,8 @@ import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
 import android.view.KeyEvent;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
@@ -26,6 +29,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
+
+import java.util.List;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -84,6 +89,7 @@ public class GreyStatusEmailTestUIAutomator {
         testStatusMail("", "", "", Rating.pEpRatingUndefined.value);
         testStatusMail(EMAIL, "", "", Rating.pEpRatingUnencrypted.value);
         sendEmail();
+        removeAccount();
     }
 
     private void accountConfiguration(){
@@ -185,6 +191,21 @@ public class GreyStatusEmailTestUIAutomator {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private void removeAccount(){
+        mDevice.pressBack();
+        doWait(TIME);
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        mDevice.findObject(By.res(PACKAGE, "accounts_list")).longClick();
+        //onData(anything()).atPosition(4).perform(click());
+        //for(int i=0;i<n;i++)new UiObject(new UiSelector().className("android.widget.CheckBox").instance(i)).click();
+        BySelector selector = By.clazz("android.widget.TextView");
+        mDevice.findObjects(selector).get(4).click();
+        //listview.getChild(new UiSelector().clickable(true).index(index)).click();
+        doWait(TIME);
+        mDevice.findObject(By.res(PACKAGE, "button1")).longClick();
+        onView(withId(android.R.id.button1)).perform(click());
     }
 
     private String getLauncherPackageName() {
