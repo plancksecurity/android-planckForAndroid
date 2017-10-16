@@ -53,6 +53,7 @@ public class GreyStatusEmailTestUIAutomator {
 
     private static final String PACKAGE = "pep.android.k9";
     private static final int TIME = 2000;
+    private static final int LONG_TIME = 30000;
     private static final String DESCRIPTION = "tester one";
     private static final String USER_NAME = "testerJ";
     private static final String EMAIL = "newemail@mail.es";
@@ -93,6 +94,7 @@ public class GreyStatusEmailTestUIAutomator {
     }
 
     private void accountConfiguration(){
+        doWait(TIME);
         mDevice.findObject(By.res(PACKAGE, "skip")).click();
         newEmailAccount();
     }
@@ -182,6 +184,7 @@ public class GreyStatusEmailTestUIAutomator {
         onView(withId(R.id.message_content)).perform(click());
     }
     private void sendEmail(){
+        doWait(TIME);
         mDevice.findObject(By.res(PACKAGE, "send")).click();
     }
 
@@ -194,18 +197,20 @@ public class GreyStatusEmailTestUIAutomator {
     }
 
     private void removeAccount(){
-        mDevice.pressBack();
         doWait(TIME);
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        mDevice.pressBack();
+        doWait(LONG_TIME);
+        mDevice.wait(Until.hasObject(By.res(PACKAGE, "accounts_list")), LONG_TIME);
+        //InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         mDevice.findObject(By.res(PACKAGE, "accounts_list")).longClick();
         //onData(anything()).atPosition(4).perform(click());
         //for(int i=0;i<n;i++)new UiObject(new UiSelector().className("android.widget.CheckBox").instance(i)).click();
         BySelector selector = By.clazz("android.widget.TextView");
-        mDevice.findObjects(selector).get(4).click();
-        //listview.getChild(new UiSelector().clickable(true).index(index)).click();
         doWait(TIME);
-        mDevice.findObject(By.res(PACKAGE, "button1")).longClick();
-        onView(withId(android.R.id.button1)).perform(click());
+        mDevice.findObjects(selector).get(5).click();
+        //listview.getChild(new UiSelector().clickable(true).index(index)).click();
+        mDevice.wait(Until.hasObject(By.res(PACKAGE, "button1")), LONG_TIME);
+        mDevice.findObject(By.res(PACKAGE, "button1")).click();
     }
 
     private String getLauncherPackageName() {
