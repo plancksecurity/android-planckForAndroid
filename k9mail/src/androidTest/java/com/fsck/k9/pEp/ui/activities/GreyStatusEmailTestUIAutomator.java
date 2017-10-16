@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.action.ViewActions;
@@ -54,6 +55,7 @@ public class GreyStatusEmailTestUIAutomator {
     private static final String PACKAGE = "pep.android.k9";
     private static final int TIME = 2000;
     private static final int LONG_TIME = 30000;
+    private static final long CLICK_TIME = 3000;
     private static final String DESCRIPTION = "tester one";
     private static final String USER_NAME = "testerJ";
     private static final String EMAIL = "newemail@mail.es";
@@ -94,13 +96,13 @@ public class GreyStatusEmailTestUIAutomator {
     }
 
     private void accountConfiguration(){
-        doWait(TIME);
+        waitForExists("skip");
         mDevice.findObject(By.res(PACKAGE, "skip")).click();
         newEmailAccount();
     }
 
     private void newEmailAccount(){
-        doWait(TIME);
+        waitForExists("account_email");
         mDevice.findObject(By.res(PACKAGE, "account_email")).setText(getEmail());
         mDevice.findObject(By.res(PACKAGE, "account_password")).setText(getPassword());
         mDevice.findObject(By.res(PACKAGE, "manual_setup")).click();
@@ -109,7 +111,7 @@ public class GreyStatusEmailTestUIAutomator {
         mDevice.findObject(By.res(PACKAGE, "next")).click();
         doWait(TIME);
         fillSmptData();
-        doWait(TIME);
+        waitForExists("next");
         mDevice.findObject(By.res(PACKAGE, "next")).click();
         doWait(TIME);
         mDevice.findObject(By.res(PACKAGE, "next")).click();
@@ -197,20 +199,29 @@ public class GreyStatusEmailTestUIAutomator {
     }
 
     private void removeAccount(){
-        doWait(TIME);
-        mDevice.pressBack();
         doWait(LONG_TIME);
-        mDevice.wait(Until.hasObject(By.res(PACKAGE, "accounts_list")), LONG_TIME);
-        //InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        mDevice.findObject(By.res(PACKAGE, "accounts_list")).longClick();
+        mDevice.pressBack();
+        doWait(TIME);
+        //mDevice.findObject(By.res(PACKAGE, "accounts_list")).longClick();
+        UiObject2 list = mDevice.findObject(By.res(PACKAGE, "accounts_list"));
+        Rect bounds = list.getVisibleBounds();
+        mDevice.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 60);
         //onData(anything()).atPosition(4).perform(click());
         //for(int i=0;i<n;i++)new UiObject(new UiSelector().className("android.widget.CheckBox").instance(i)).click();
-        BySelector selector = By.clazz("android.widget.TextView");
         doWait(TIME);
+        BySelector selector = By.clazz("android.widget.TextView");
         mDevice.findObjects(selector).get(5).click();
         //listview.getChild(new UiSelector().clickable(true).index(index)).click();
-        mDevice.wait(Until.hasObject(By.res(PACKAGE, "button1")), LONG_TIME);
-        mDevice.findObject(By.res(PACKAGE, "button1")).click();
+        doWait(TIME);
+        //UiObject2 button = mDevice.findObject(By.res(PACKAGE, "button1"));
+        //button.click();
+
+        selector = By.clazz("android.widget.Button");
+        mDevice.findObjects(selector).get(1).click();
+    }
+
+    private void waitForExists(String view){
+        mDevice.wait(Until.hasObject(By.res(PACKAGE, view)), LONG_TIME);
     }
 
     private String getLauncherPackageName() {
