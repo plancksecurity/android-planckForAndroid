@@ -453,7 +453,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void setupMainAccountListener() {
-        //TODO MIRA EL LISTENER
         mainAccountLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -704,9 +703,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         });
         ListAdapteeCollection<Account> adapteeCollection = new ListAdapteeCollection<>(accounts);
 
+        navigationAccounts.setLayoutManager(getDrawerLayoutManager());
         accountAdapter = new RVRendererAdapter<>(rendererAccountBuilder, adapteeCollection);
 
-        navigationAccounts.setLayoutManager(getDrawerLayoutManager());
         navigationAccounts.setAdapter(accountAdapter);
 
         setupCreateAccountListener();
@@ -993,10 +992,12 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         });
         ListAdapteeCollection<FolderModel> adapteeCollection = new ListAdapteeCollection<>(folderModels);
 
+        if (navigationFolders != null) {
+            navigationFolders.setLayoutManager(getDrawerLayoutManager());
+        }
         folderAdapter = new RVRendererAdapter<>(rendererFolderBuilder, adapteeCollection);
 
         if (navigationFolders != null) {
-            navigationFolders.setLayoutManager(getDrawerLayoutManager());
             navigationFolders.setAdapter(folderAdapter);
         }
         setupMainFolders();
