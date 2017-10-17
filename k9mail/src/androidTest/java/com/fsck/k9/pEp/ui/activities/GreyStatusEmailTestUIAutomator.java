@@ -44,7 +44,7 @@ public class GreyStatusEmailTestUIAutomator {
 
     private static final String PACKAGE = "pep.android.k9";
     private static final int TIME = 2000;
-    private static final int LONG_TIME = 30000;
+    private static final int LONG_TIME = 20000;
     private static final String DESCRIPTION = "tester one";
     private static final String USER_NAME = "testerJ";
     private static final String EMAIL = "newemail@mail.es";
@@ -91,12 +91,13 @@ public class GreyStatusEmailTestUIAutomator {
         mDevice.findObject(By.res(PACKAGE, "account_password")).setText(getPassword());
         mDevice.findObject(By.res(PACKAGE, "manual_setup")).click();
         fillImapData();
+        waitForExists("next");
         mDevice.findObject(By.res(PACKAGE, "next")).click();
         doWait(TIME);
         fillSmptData();
         waitForExists("next");
         mDevice.findObject(By.res(PACKAGE, "next")).click();
-        doWait(TIME);
+        waitForExists("next");
         mDevice.findObject(By.res(PACKAGE, "next")).click();
     }
 
@@ -115,16 +116,14 @@ public class GreyStatusEmailTestUIAutomator {
     }
 
     private void accountDescription(String description, String userName) {
-        doWait(TIME);
+        waitForExists("account_description");
         mDevice.findObject(By.res(PACKAGE, "account_description")).setText(description);
         mDevice.findObject(By.res(PACKAGE, "account_name")).setText(userName);
-        //doWait(TIME);
         mDevice.findObject(By.res(PACKAGE, "done")).click();
     }
 
     private void accountListSelect(String description){
-        doWait(TIME);
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        waitForExists("accounts_list");
         mDevice.findObject(By.res(PACKAGE, "accounts_list")).click();
         UiScrollable listView = new UiScrollable(new UiSelector());
         UiObject listViewItem = null;
@@ -137,11 +136,12 @@ public class GreyStatusEmailTestUIAutomator {
     }
 
     private void composseMessageButton(){
+        waitForExists("fab_button_compose_message");
         mDevice.findObject(By.res(PACKAGE, "fab_button_compose_message")).click();
     }
 
     private void checkStatus(int status){
-        doWait(TIME);
+        waitForExists("pEp_indicator");
         mDevice.findObject(By.res(PACKAGE, "pEp_indicator")).click();
         doWait(TIME);
         assertEquals(mDevice.findObject(By.res(PACKAGE, "pEpTitle")).getText(), getResourceString(R.array.pep_title, status));
@@ -154,11 +154,11 @@ public class GreyStatusEmailTestUIAutomator {
 
     private void testStatusMail(String to, String subject, String message, int status){
         fillEmail(to, subject, message);
-        doWait(TIME);
         checkStatus(status);
     }
 
     private void fillEmail(String to, String subject, String message){
+        waitForExists("R.id.to");
         onView(withId(R.id.to)).perform(click());
         doWait(TIME);
         onView(withId(R.id.to)).perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL));
@@ -169,7 +169,7 @@ public class GreyStatusEmailTestUIAutomator {
         onView(withId(R.id.message_content)).perform(click());
     }
     private void sendEmail(){
-        doWait(TIME);
+        waitForExists("send");
         mDevice.findObject(By.res(PACKAGE, "send")).click();
     }
 
@@ -184,7 +184,7 @@ public class GreyStatusEmailTestUIAutomator {
     private void removeAccount(){
         doWait(LONG_TIME);
         mDevice.pressBack();
-        doWait(TIME);
+        waitForExists("accounts_list");
         longClick("accounts_list");
         doWait(TIME);
         BySelector selector = By.clazz("android.widget.TextView");
