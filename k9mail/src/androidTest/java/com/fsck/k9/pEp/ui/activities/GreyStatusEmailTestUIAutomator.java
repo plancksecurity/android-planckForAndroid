@@ -20,28 +20,18 @@ import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
 import android.view.KeyEvent;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
-
-import java.util.List;
-
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static java.lang.Thread.sleep;
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.JMock1Matchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -55,7 +45,6 @@ public class GreyStatusEmailTestUIAutomator {
     private static final String PACKAGE = "pep.android.k9";
     private static final int TIME = 2000;
     private static final int LONG_TIME = 30000;
-    private static final long CLICK_TIME = 3000;
     private static final String DESCRIPTION = "tester one";
     private static final String USER_NAME = "testerJ";
     private static final String EMAIL = "newemail@mail.es";
@@ -75,12 +64,7 @@ public class GreyStatusEmailTestUIAutomator {
         context.startActivity(intent);
         mDevice.wait(Until.hasObject(By.pkg(PACKAGE).depth(0)), LAUNCH_TIMEOUT);
     }
-/*
-    @Test
-    public void checkPreconditions() {
-        assertThat(mDevice, notNullValue());
-    }
-*/
+
     @Test
     public void greyStatusEmailTest() {
         accountConfiguration();
@@ -106,7 +90,6 @@ public class GreyStatusEmailTestUIAutomator {
         mDevice.findObject(By.res(PACKAGE, "account_email")).setText(getEmail());
         mDevice.findObject(By.res(PACKAGE, "account_password")).setText(getPassword());
         mDevice.findObject(By.res(PACKAGE, "manual_setup")).click();
-
         fillImapData();
         mDevice.findObject(By.res(PACKAGE, "next")).click();
         doWait(TIME);
@@ -202,20 +185,13 @@ public class GreyStatusEmailTestUIAutomator {
         doWait(LONG_TIME);
         mDevice.pressBack();
         doWait(TIME);
-        //mDevice.findObject(By.res(PACKAGE, "accounts_list")).longClick();
         UiObject2 list = mDevice.findObject(By.res(PACKAGE, "accounts_list"));
         Rect bounds = list.getVisibleBounds();
         mDevice.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 60);
-        //onData(anything()).atPosition(4).perform(click());
-        //for(int i=0;i<n;i++)new UiObject(new UiSelector().className("android.widget.CheckBox").instance(i)).click();
         doWait(TIME);
         BySelector selector = By.clazz("android.widget.TextView");
         mDevice.findObjects(selector).get(5).click();
-        //listview.getChild(new UiSelector().clickable(true).index(index)).click();
         doWait(TIME);
-        //UiObject2 button = mDevice.findObject(By.res(PACKAGE, "button1"));
-        //button.click();
-
         selector = By.clazz("android.widget.Button");
         mDevice.findObjects(selector).get(1).click();
     }
