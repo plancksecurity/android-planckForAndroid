@@ -184,12 +184,16 @@ public class GreyStatusEmailTestUIAutomator {
         mDevice.pressBack();
         doWait(TIME);
         longClick("accounts_list");
+        selectRemoveAccount();
+        doWait(TIME);
+        BySelector selector = By.clazz("android.widget.Button");
+        mDevice.findObjects(selector).get(1).click();
+    }
+
+    private void selectRemoveAccount(){
         doWait(TIME);
         BySelector selector = By.clazz("android.widget.TextView");
         mDevice.findObjects(selector).get(5).click();
-        doWait(TIME);
-        selector = By.clazz("android.widget.Button");
-        mDevice.findObjects(selector).get(1).click();
     }
 
     private void longClick(String view){
