@@ -43,7 +43,7 @@ import static org.junit.Assert.assertThat;
 public class GreyStatusEmailTestUIAutomator {
 
     private static final String PACKAGE = "pep.android.k9";
-    private static final int TIME = 2000;
+    private static final int TIME = 2500;
     private static final int LONG_TIME = 30000;
     private static final String DESCRIPTION = "tester one";
     private static final String USER_NAME = "testerJ";
