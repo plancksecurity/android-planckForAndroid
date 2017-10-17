@@ -185,9 +185,7 @@ public class GreyStatusEmailTestUIAutomator {
         doWait(LONG_TIME);
         mDevice.pressBack();
         doWait(TIME);
-        UiObject2 list = mDevice.findObject(By.res(PACKAGE, "accounts_list"));
-        Rect bounds = list.getVisibleBounds();
-        mDevice.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 60);
+        longClick("accounts_list");
         doWait(TIME);
         BySelector selector = By.clazz("android.widget.TextView");
         mDevice.findObjects(selector).get(5).click();
@@ -195,6 +193,11 @@ public class GreyStatusEmailTestUIAutomator {
         selector = By.clazz("android.widget.Button");
         mDevice.findObjects(selector).get(1).click();
     }
+
+    private void longClick(String view){
+        UiObject2 list = mDevice.findObject(By.res(PACKAGE, view));
+        Rect bounds = list.getVisibleBounds();
+        mDevice.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 60);}
 
     private void waitForExists(String view){
         mDevice.wait(Until.hasObject(By.res(PACKAGE, view)), LONG_TIME);
