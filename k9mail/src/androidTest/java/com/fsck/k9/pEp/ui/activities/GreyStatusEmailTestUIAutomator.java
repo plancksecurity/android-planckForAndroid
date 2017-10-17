@@ -44,7 +44,7 @@ public class GreyStatusEmailTestUIAutomator {
 
     private static final String PACKAGE = "pep.android.k9";
     private static final int TIME = 2000;
-    private static final int LONG_TIME = 20000;
+    private static final int LONG_TIME = 30000;
     private static final String DESCRIPTION = "tester one";
     private static final String USER_NAME = "testerJ";
     private static final String EMAIL = "newemail@mail.es";
@@ -80,24 +80,23 @@ public class GreyStatusEmailTestUIAutomator {
     }
 
     private void accountConfiguration(){
-        waitForExists("skip");
+        doWait(TIME);
         mDevice.findObject(By.res(PACKAGE, "skip")).click();
         newEmailAccount();
     }
 
     private void newEmailAccount(){
-        waitForExists("account_email");
+        doWait(TIME);
         mDevice.findObject(By.res(PACKAGE, "account_email")).setText(getEmail());
         mDevice.findObject(By.res(PACKAGE, "account_password")).setText(getPassword());
         mDevice.findObject(By.res(PACKAGE, "manual_setup")).click();
         fillImapData();
-        waitForExists("next");
         mDevice.findObject(By.res(PACKAGE, "next")).click();
         doWait(TIME);
         fillSmptData();
-        waitForExists("next");
+        doWait(TIME);
         mDevice.findObject(By.res(PACKAGE, "next")).click();
-        waitForExists("next");
+        doWait(TIME);
         mDevice.findObject(By.res(PACKAGE, "next")).click();
     }
 
@@ -116,14 +115,14 @@ public class GreyStatusEmailTestUIAutomator {
     }
 
     private void accountDescription(String description, String userName) {
-        waitForExists("account_description");
+        doWait(TIME);
         mDevice.findObject(By.res(PACKAGE, "account_description")).setText(description);
         mDevice.findObject(By.res(PACKAGE, "account_name")).setText(userName);
         mDevice.findObject(By.res(PACKAGE, "done")).click();
     }
 
     private void accountListSelect(String description){
-        waitForExists("accounts_list");
+        doWait(TIME);
         mDevice.findObject(By.res(PACKAGE, "accounts_list")).click();
         UiScrollable listView = new UiScrollable(new UiSelector());
         UiObject listViewItem = null;
@@ -136,12 +135,11 @@ public class GreyStatusEmailTestUIAutomator {
     }
 
     private void composseMessageButton(){
-        waitForExists("fab_button_compose_message");
         mDevice.findObject(By.res(PACKAGE, "fab_button_compose_message")).click();
     }
 
     private void checkStatus(int status){
-        waitForExists("pEp_indicator");
+        doWait(TIME);
         mDevice.findObject(By.res(PACKAGE, "pEp_indicator")).click();
         doWait(TIME);
         assertEquals(mDevice.findObject(By.res(PACKAGE, "pEpTitle")).getText(), getResourceString(R.array.pep_title, status));
@@ -154,11 +152,11 @@ public class GreyStatusEmailTestUIAutomator {
 
     private void testStatusMail(String to, String subject, String message, int status){
         fillEmail(to, subject, message);
+        doWait(TIME);
         checkStatus(status);
     }
 
     private void fillEmail(String to, String subject, String message){
-        waitForExists("R.id.to");
         onView(withId(R.id.to)).perform(click());
         doWait(TIME);
         onView(withId(R.id.to)).perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL));
@@ -169,7 +167,7 @@ public class GreyStatusEmailTestUIAutomator {
         onView(withId(R.id.message_content)).perform(click());
     }
     private void sendEmail(){
-        waitForExists("send");
+        doWait(TIME);
         mDevice.findObject(By.res(PACKAGE, "send")).click();
     }
 
@@ -184,7 +182,7 @@ public class GreyStatusEmailTestUIAutomator {
     private void removeAccount(){
         doWait(LONG_TIME);
         mDevice.pressBack();
-        waitForExists("accounts_list");
+        doWait(TIME);
         longClick("accounts_list");
         doWait(TIME);
         BySelector selector = By.clazz("android.widget.TextView");
@@ -198,10 +196,6 @@ public class GreyStatusEmailTestUIAutomator {
         UiObject2 list = mDevice.findObject(By.res(PACKAGE, view));
         Rect bounds = list.getVisibleBounds();
         mDevice.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 60);}
-
-    private void waitForExists(String view){
-        mDevice.wait(Until.hasObject(By.res(PACKAGE, view)), LONG_TIME);
-    }
 
     private String getLauncherPackageName() {
         final Intent intent = new Intent(Intent.ACTION_MAIN);
