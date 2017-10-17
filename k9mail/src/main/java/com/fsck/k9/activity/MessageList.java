@@ -1,6 +1,7 @@
 package com.fsck.k9.activity;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.FragmentManager;
 import android.app.FragmentManager.OnBackStackChangedListener;
 import android.app.FragmentTransaction;
@@ -114,6 +115,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private static final String EXTRA_SEARCH_OLD = "search";
 
     private static final String EXTRA_SEARCH = "search_bytes";
+    private static final String EXTRA_FOLDER = "open_folder";
     private static final String EXTRA_NO_THREADING = "no_threading";
 
     private static final String ACTION_SHORTCUT = "shortcut";
@@ -166,20 +168,31 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private SearchAccount allMessagesAccount;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
-            boolean noThreading, boolean newTask) {
-        actionDisplaySearch(context, search, noThreading, newTask, true);
+            boolean noThreading, boolean newTask, boolean isFolder) {
+        actionDisplaySearch(context, search, noThreading, newTask, false, isFolder);
     }
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
-            boolean noThreading, boolean newTask, boolean clearTop) {
+                                           boolean noThreading, boolean newTask) {
+        actionDisplaySearch(context, search, noThreading, newTask, true, false);
+    }
+
+    public static void actionDisplaySearch(Context context, SearchSpecification search,
+            boolean noThreading, boolean newTask, boolean clearTop, boolean isFolder) {
         context.startActivity(
-                intentDisplaySearch(context, search, noThreading, newTask, clearTop));
+                intentDisplaySearch(context, search, noThreading, newTask, clearTop, isFolder));
     }
 
     public static Intent intentDisplaySearch(Context context, SearchSpecification search,
             boolean noThreading, boolean newTask, boolean clearTop) {
+        return intentDisplaySearch(context, search, noThreading, newTask, clearTop, false);
+    }
+
+    public static Intent intentDisplaySearch(Context context, SearchSpecification search,
+            boolean noThreading, boolean newTask, boolean clearTop, boolean isFolder) {
         Intent intent = new Intent(context, MessageList.class);
         intent.putExtra(EXTRA_SEARCH, search);
+        intent.putExtra(EXTRA_FOLDER, isFolder);
         intent.putExtra(EXTRA_NO_THREADING, noThreading);
 
         if (clearTop) {
@@ -1463,21 +1476,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             if (isMessageViewVisible()) {
                 setMessageViewVisible(false);
             }
-            if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
-                if (mAccount != null) {
-                    Router.onOpenAccount(this, mAccount);
-                } else {
-                    onAccountUnavailable();
-                }
-            } else if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
-                updateToolbarColorToOriginal();
-                showMessageList();
-                setDrawerEnabled(true);
-            } else if (isThreadDisplayed) {
-                actionDisplaySearch(this, mSearch, false, false);
-            } else {
-                onAccounts();
-            }
+            goBack();
     }
 
     private void updateToolbarColorToOriginal() {
@@ -1677,7 +1676,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     private void onShowFolderList() {
         FolderList.actionHandleAccount(this, mAccount);
-        finish();
     }
 
     private void onEditPrefs() {
@@ -2319,13 +2317,49 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     @Override
     public void goBack() {
-        if (mDisplayMode == DisplayMode.MESSAGE_VIEW) {
+        if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
+            if(isBackstackClear()) {
+                if (mAccount != null) {
+                    Router.onOpenAccount(this, mAccount);
+                } else {
+                    onAccountUnavailable();
+                }
+            } else {
+                finish();
+            }
+
+        } else if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
+            updateToolbarColorToOriginal();
             showMessageList();
-        } else if (mMessageListFragment.isManualSearch()) {
-            finish();
+        } else if (isThreadDisplayed) {
+            actionDisplaySearch(this, mSearch, false, false);
+        } else if (getIntent().getBooleanExtra(EXTRA_FOLDER, false)) {
+            if(isBackstackClear()) {
+                LocalSearch search = new LocalSearch(mAccount.getAutoExpandFolderName());
+                search.addAllowedFolder(mAccount.getAutoExpandFolderName());
+                search.addAccountUuid(mAccount.getUuid());
+                Intent intent = MessageList.intentDisplaySearch(MessageList.this, search, false, false, true, false);
+                finish();
+                startActivity(intent);
+            } else {
+                finish();
+            }
         } else {
-            handleDrawerState();
+            if(isBackstackClear()) {
+                onAccounts();
+            } else {
+                finish();
+            }
         }
+    }
+
+    private boolean isBackstackClear() {
+        ActivityManager mngr = (ActivityManager) getSystemService( ACTIVITY_SERVICE );
+
+        List<ActivityManager.RunningTaskInfo> taskList = mngr.getRunningTasks(10);
+
+        return taskList.get(0).numActivities == 1 &&
+                taskList.get(0).topActivity.getClassName().equals(this.getClass().getName());
     }
 
     @Override

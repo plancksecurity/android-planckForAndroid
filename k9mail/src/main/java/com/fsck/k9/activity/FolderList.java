@@ -417,7 +417,6 @@ public class FolderList extends K9ListActivity {
         if (intent.getBooleanExtra(EXTRA_FROM_SHORTCUT, false) &&
                    !K9.FOLDER_NONE.equals(mAccount.getAutoExpandFolderName())) {
             onOpenFolder(mAccount.getAutoExpandFolderName());
-            finish();
         } else {
             initializeActivityView();
         }
@@ -568,7 +567,7 @@ public class FolderList extends K9ListActivity {
     @Override public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case android.R.id.home:
-            onAccounts();
+            finish();
 
             return true;
 
@@ -651,18 +650,18 @@ public class FolderList extends K9ListActivity {
         String unifiedFolderName = context.getString(R.string.integrated_inbox_title);
         if (folder.equals(allMessagesFolderName)) {
             SearchAccount allMessagesAccount = SearchAccount.createAllMessagesAccount(this);
-            MessageList.actionDisplaySearch(this, allMessagesAccount.getRelatedSearch(), false, false);
+            MessageList.actionDisplaySearch(this, allMessagesAccount.getRelatedSearch(), false, false, true);
             return;
         }
         if (folder.equals(unifiedFolderName)) {
             SearchAccount unifiedInboxAccount = SearchAccount.createUnifiedInboxAccount(this);
-            MessageList.actionDisplaySearch(this, unifiedInboxAccount.getRelatedSearch(), false, false);
+            MessageList.actionDisplaySearch(this, unifiedInboxAccount.getRelatedSearch(), false, false, true);
             return;
         }
         LocalSearch search = new LocalSearch(folder);
         search.addAccountUuid(mAccount.getUuid());
         search.addAllowedFolder(folder);
-        MessageList.actionDisplaySearch(this, search, false, false);
+        MessageList.actionDisplaySearch(this, search, false, false, true);
     }
 
     private void onCompact(Account account) {
@@ -1309,7 +1308,7 @@ public class FolderList extends K9ListActivity {
 
         @Override
         public void onClick(View v) {
-            MessageList.actionDisplaySearch(FolderList.this, search, true, false);
+            MessageList.actionDisplaySearch(FolderList.this, search, true, false, true);
         }
     }
 }
