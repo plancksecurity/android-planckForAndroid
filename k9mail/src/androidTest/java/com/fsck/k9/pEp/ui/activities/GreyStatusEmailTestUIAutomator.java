@@ -34,10 +34,6 @@ import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-/**
- * Created by juan on 11/10/17.
- */
-
 @RunWith(AndroidJUnit4.class)
 @SdkSuppress(minSdkVersion = 18)
 public class GreyStatusEmailTestUIAutomator {
