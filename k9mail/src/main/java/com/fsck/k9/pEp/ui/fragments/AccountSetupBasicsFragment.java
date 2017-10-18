@@ -104,7 +104,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private ContentLoadingProgressBar nextProgressBar;
     private View rootView;
     private AccountSetupNavigator accountSetupNavigator;
-    private PePUIArtefactCache pePUIArtefactCache;
+    private PePUIArtefactCache pEpUIArtefactCache;
 
     public boolean ismCheckedIncoming() {
         return mCheckedIncoming;
@@ -135,10 +135,10 @@ public class AccountSetupBasicsFragment extends PEpFragment
         initializeViewListeners();
         validateFields();
 
-        pePUIArtefactCache = PePUIArtefactCache.getInstance(getActivity().getApplicationContext());
+        pEpUIArtefactCache = PePUIArtefactCache.getInstance(getActivity().getApplicationContext());
 
-        String email = pePUIArtefactCache.getEmailInPreferences();
-        String password = pePUIArtefactCache.getPasswordInPreferences();
+        String email = pEpUIArtefactCache.getEmailInPreferences();
+        String password = pEpUIArtefactCache.getPasswordInPreferences();
         if (email != null && password != null) {
             mEmailView.setText(email);
             mPasswordView.setText(password);
@@ -443,7 +443,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void saveCredentialsInPreferences() {
-        pePUIArtefactCache.saveCredentialsInPreferences(mEmailView.getText().toString(), mPasswordView.getText().toString());
+        pEpUIArtefactCache.saveCredentialsInPreferences(mEmailView.getText().toString(), mPasswordView.getText().toString());
     }
 
     @Override
