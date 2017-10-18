@@ -156,7 +156,8 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            if ((dialog != null) && dialog.isShowing()){
+            if ((dialog != null) && dialog.isShowing()
+                    && !AccountSetupNames.this.isDestroyed()){
                 dialog.dismiss();
             }
             Accounts.listAccounts(AccountSetupNames.this);
