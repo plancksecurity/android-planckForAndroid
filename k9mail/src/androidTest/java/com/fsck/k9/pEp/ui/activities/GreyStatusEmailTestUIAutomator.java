@@ -87,6 +87,7 @@ public class GreyStatusEmailTestUIAutomator {
         mDevice.findObject(By.res(PACKAGE, "manual_setup")).click();
         fillImapData();
         mDevice.findObject(By.res(PACKAGE, "next")).click();
+        waitForNotExists("next");
         fillSmptData();
         doWait("next");
         mDevice.findObject(By.res(PACKAGE, "next")).click();
@@ -160,6 +161,7 @@ public class GreyStatusEmailTestUIAutomator {
     private void sendEmail(){
         doWait("send");
         mDevice.findObject(By.res(PACKAGE, "send")).click();
+        waitForNotExists("send");
     }
 
     private void doWait(String viewId){
@@ -177,10 +179,16 @@ public class GreyStatusEmailTestUIAutomator {
         assertThat(androidRocksTextView, notNullValue());
     }
 
+    private void waitForNotExists(String viewId){
+        UiObject nextButton = mDevice.findObject(new UiSelector().resourceId(viewId));
+        nextButton.waitUntilGone(TIME);
+    }
+
     private void removeAccount(){
         mDevice.pressBack();
         doWait("accounts_list");
         longClick("accounts_list");
+        waitForNotExists("accounts_list");
         selectRemoveAccount();
         selectAcceptButton();
     }
