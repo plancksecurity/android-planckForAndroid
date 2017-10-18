@@ -39,12 +39,11 @@ import static org.junit.Assert.assertThat;
 public class GreyStatusEmailTestUIAutomator {
 
     private static final String PACKAGE = "pep.android.k9";
-    private static final int TIME = 2500;
-    private static final int LONG_TIME = 30000;
     private static final String DESCRIPTION = "tester one";
     private static final String USER_NAME = "testerJ";
     private static final String EMAIL = "newemail@mail.es";
     private static final int LAUNCH_TIMEOUT = 5000;
+    private static final long TIME = 6000;
     private UiDevice mDevice;
 
     @Before
@@ -76,23 +75,22 @@ public class GreyStatusEmailTestUIAutomator {
     }
 
     private void accountConfiguration(){
-        doWait(TIME);
+        doWait("skip");
         mDevice.findObject(By.res(PACKAGE, "skip")).click();
         newEmailAccount();
     }
 
     private void newEmailAccount(){
-        doWait(TIME);
+        doWait("account_email");
         mDevice.findObject(By.res(PACKAGE, "account_email")).setText(getEmail());
         mDevice.findObject(By.res(PACKAGE, "account_password")).setText(getPassword());
         mDevice.findObject(By.res(PACKAGE, "manual_setup")).click();
         fillImapData();
         mDevice.findObject(By.res(PACKAGE, "next")).click();
-        doWait(TIME);
         fillSmptData();
-        doWait(TIME);
+        doWait("next");
         mDevice.findObject(By.res(PACKAGE, "next")).click();
-        doWait(TIME);
+        doWait("next");
         mDevice.findObject(By.res(PACKAGE, "next")).click();
     }
 
@@ -105,20 +103,20 @@ public class GreyStatusEmailTestUIAutomator {
     }
 
     private void fillServerData() {
-        doWait(TIME);
+        doWait("account_server");
         mDevice.findObject(By.res(PACKAGE, "account_server")).setText(getEmailServer());
         mDevice.findObject(By.res(PACKAGE, "account_username")).setText(getEmail());
     }
 
     private void accountDescription(String description, String userName) {
-        doWait(TIME);
+        doWait("account_description");
         mDevice.findObject(By.res(PACKAGE, "account_description")).setText(description);
         mDevice.findObject(By.res(PACKAGE, "account_name")).setText(userName);
         mDevice.findObject(By.res(PACKAGE, "done")).click();
     }
 
     private void accountListSelect(String description){
-        doWait(TIME);
+        doWait("accounts_list");
         mDevice.findObject(By.res(PACKAGE, "accounts_list")).click();
         UiScrollable listView = new UiScrollable(new UiSelector());
         UiObject listViewItem = null;
@@ -135,9 +133,9 @@ public class GreyStatusEmailTestUIAutomator {
     }
 
     private void checkStatus(int status){
-        doWait(TIME);
+        doWait("pEp_indicator");
         mDevice.findObject(By.res(PACKAGE, "pEp_indicator")).click();
-        doWait(TIME);
+        doWait("pEpTitle");
         assertEquals(mDevice.findObject(By.res(PACKAGE, "pEpTitle")).getText(), getResourceString(R.array.pep_title, status));
         mDevice.pressBack();
     }
@@ -148,50 +146,51 @@ public class GreyStatusEmailTestUIAutomator {
 
     private void testStatusMail(String to, String subject, String message, int status){
         fillEmail(to, subject, message);
-        doWait(TIME);
         checkStatus(status);
     }
 
     private void fillEmail(String to, String subject, String message){
         onView(withId(R.id.to)).perform(click());
-        doWait(TIME);
         onView(withId(R.id.to)).perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL));
-        doWait(TIME);
         onView(withId(R.id.to)).perform(typeText(to));
         onView(withId(R.id.subject)).perform(typeText(subject));
         onView(withId(R.id.message_content)).perform(typeText(message));
         onView(withId(R.id.message_content)).perform(click());
     }
     private void sendEmail(){
-        doWait(TIME);
+        doWait("send");
         mDevice.findObject(By.res(PACKAGE, "send")).click();
     }
 
-    private void doWait(int timeMillis){
-        try {
-            Thread.sleep(timeMillis);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    private void doWait(String viewId){
+        /*
+        boolean finish = false;
+        do {
+            if (mDevice.findObject(By.res(PACKAGE, viewId)) != null){
+                finish = true;
+            }
+        }while (!finish);
+        */
+        UiObject2 androidRocksTextView = mDevice
+                .wait(Until.findObject(By.res(PACKAGE, viewId)),
+                        100000);
+        assertThat(androidRocksTextView, notNullValue());
     }
 
     private void removeAccount(){
-        doWait(LONG_TIME);
         mDevice.pressBack();
-        doWait(TIME);
+        doWait("accounts_list");
         longClick("accounts_list");
         selectRemoveAccount();
         selectAcceptButton();
     }
 
     private void selectRemoveAccount(){
-        doWait(TIME);
         BySelector selector = By.clazz("android.widget.TextView");
         mDevice.findObjects(selector).get(5).click();
     }
 
     private void selectAcceptButton(){
-        doWait(TIME);
         BySelector selector = By.clazz("android.widget.Button");
         mDevice.findObjects(selector).get(1).click();
     }
