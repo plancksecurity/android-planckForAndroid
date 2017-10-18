@@ -175,7 +175,7 @@ public class GreyStatusEmailTestUIAutomator {
         */
         UiObject2 androidRocksTextView = mDevice
                 .wait(Until.findObject(By.res(PACKAGE, viewId)),
-                        100000);
+                        150000);
         assertThat(androidRocksTextView, notNullValue());
     }
 
@@ -199,9 +199,18 @@ public class GreyStatusEmailTestUIAutomator {
     }
 
     private void selectAcceptButton(){
+        waitForObject("android.widget.Button");
         BySelector selector = By.clazz("android.widget.Button");
         mDevice.findObjects(selector).get(1).click();
     }
+
+    private void waitForObject(String object){
+        boolean finish = false;
+        do {
+            if (mDevice.findObject(By.clazz(object)) != null){
+                finish = true;
+            }
+        }while (!finish);}
 
     private void longClick(String view){
         UiObject2 list = mDevice.findObject(By.res(PACKAGE, view));
