@@ -71,6 +71,7 @@ import javax.inject.Inject;
 import butterknife.OnTextChanged;
 import timber.log.Timber;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static com.fsck.k9.mail.ServerSettings.Type.IMAP;
 
@@ -579,7 +580,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ACTIVITY_REQUEST_PICK_SETTINGS_FILE) {
+        if (requestCode == ACTIVITY_REQUEST_PICK_SETTINGS_FILE
+                && resultCode != RESULT_CANCELED) {
             ((AccountSetupBasics)getActivity()).onImport(data.getData());
         } else {
             if (resultCode == RESULT_OK) {
