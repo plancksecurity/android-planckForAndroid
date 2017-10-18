@@ -319,6 +319,13 @@ public class Accounts extends PEpImporterActivity {
 
     public static final String ACTION_IMPORT_SETTINGS = "importSettings";
 
+    public static void listAccountsOnStartup(Context context) {
+        Intent intent = new Intent(context, Accounts.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.putExtra(EXTRA_STARTUP, true);
+        context.startActivity(intent);
+    }
 
     public static void listAccounts(Context context) {
         Intent intent = new Intent(context, Accounts.class);

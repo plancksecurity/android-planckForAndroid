@@ -157,7 +157,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
             if ((dialog != null) && dialog.isShowing()){
                 dialog.dismiss();
             }
-            Accounts.listAccounts(AccountSetupNames.this);
+            Accounts.listAccountsOnStartup(AccountSetupNames.this);
         }
 
         @Override
