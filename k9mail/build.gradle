@@ -1,6 +1,6 @@
-def pEpEngineRevision = 2091
+def pEpEngineRevision = 2144
 def pEpJNIAdapterRevision = 378
-def version = "0.9.11.10"
+def version = "0.9.11.11"
 
 def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
 def pEpTestEmailPassword = "\"$System.env.PEP_TEST_EMAIL_PASSWORD\""
@@ -111,7 +111,7 @@ android {
 
         //applicationId "pep.android.k9"
         applicationId "${appId}"
-        versionCode 72
+        versionCode 73
 //        versionName '0.9.9.2'
         minSdkVersion 21
         targetSdkVersion 25
