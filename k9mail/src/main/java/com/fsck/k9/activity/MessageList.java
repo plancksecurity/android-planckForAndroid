@@ -993,8 +993,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
         folderAdapter = new RVRendererAdapter<>(rendererFolderBuilder, adapteeCollection);
 
-        navigationFolders.setLayoutManager(getDrawerLayoutManager());
-        navigationFolders.setAdapter(folderAdapter);
+        if (navigationFolders != null) {
+            navigationFolders.setLayoutManager(getDrawerLayoutManager());
+            navigationFolders.setAdapter(folderAdapter);
+        }
         setupMainFolders();
     }
 
