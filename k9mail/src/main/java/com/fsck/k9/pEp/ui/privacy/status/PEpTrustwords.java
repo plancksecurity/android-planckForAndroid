@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -209,10 +208,10 @@ public class PEpTrustwords extends PepColoredActivity {
         wrongTrustWords.setVisibility(View.VISIBLE);
         confirmTrustWords.setVisibility(View.VISIBLE);
 
-        if (!PEpUtils.isPEpUser(partner)) {
+        if (!PEpUtils.isPEpUser(partner) && showingPgpFingerprint) {
             flipper.setAnimateFirstView(false);
             flipper.setDisplayedChild(1);
-            showFingerprints();
+            showFingerprints(false);
         }
         flipper.setVisibility(View.VISIBLE);
     }
@@ -271,7 +270,7 @@ public class PEpTrustwords extends PepColoredActivity {
                     menuItemtrustwordsLength.setVisible(true);
                 }
                 flipper.showNext();
-                showFingerprints();
+                showFingerprints(true);
                 return true;
             case R.id.action_language:
                 showLanguageSelectionDialog();
@@ -293,8 +292,10 @@ public class PEpTrustwords extends PepColoredActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void showFingerprints() {
-        showingPgpFingerprint = !showingPgpFingerprint;
+    private void showFingerprints(boolean buttonPressed) {
+        if (buttonPressed) {
+            showingPgpFingerprint = !showingPgpFingerprint;
+        }
         invalidateOptionsMenu();
     }
 
@@ -358,7 +359,10 @@ public class PEpTrustwords extends PepColoredActivity {
         showingPgpFingerprint = savedInstanceState.getBoolean(SHOWING_PGP_FINGERPRINT);
         areTrustwordsShort = savedInstanceState.getBoolean(ARE_TRUSTWORD_SHORT);
         trustwordsLanguage = savedInstanceState.getString(TRUSTWORD_LANGUAGE);
-        if (showingPgpFingerprint) flipper.showNext();
+        if (showingPgpFingerprint) {
+            flipper.showNext();
+            invalidateOptionsMenu();
+        }
     }
 
     @Override
