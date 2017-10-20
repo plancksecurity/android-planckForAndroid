@@ -26,6 +26,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
+
+import java.util.regex.Pattern;
+
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
@@ -87,7 +90,7 @@ public class GreyStatusEmailTestUIAutomator {
         mDevice.findObject(By.res(PACKAGE, "manual_setup")).click();
         fillImapData();
         mDevice.findObject(By.res(PACKAGE, "next")).click();
-        waitForNotExists("next");
+        //waitForNotExists("next");
         fillSmptData();
         doWait("next");
         mDevice.findObject(By.res(PACKAGE, "next")).click();
@@ -96,6 +99,11 @@ public class GreyStatusEmailTestUIAutomator {
     }
 
     private void fillSmptData() {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         fillServerData();
     }
 
@@ -107,6 +115,12 @@ public class GreyStatusEmailTestUIAutomator {
         doWait("account_server");
         mDevice.findObject(By.res(PACKAGE, "account_server")).setText(getEmailServer());
         mDevice.findObject(By.res(PACKAGE, "account_username")).setText(getEmail());
+    }
+
+    private void waitForSetText(String text, String id){
+        do {
+            mDevice.findObject(By.res(PACKAGE, "account_server")).setText(getEmailServer());
+        }while(mDevice.findObject(By.res(PACKAGE, id)).getText() != text);
     }
 
     private void accountDescription(String description, String userName) {
@@ -151,12 +165,22 @@ public class GreyStatusEmailTestUIAutomator {
     }
 
     private void fillEmail(String to, String subject, String message){
+        doWait("to");
+        mDevice.findObject(By.res(PACKAGE, "to")).click();
+        //mDevice.pressDelete();
+        mDevice.pressKeyCode(KeyEvent.KEYCODE_DEL);
+        mDevice.findObject(By.res(PACKAGE, "to")).setText(to);
+        mDevice.findObject(By.res(PACKAGE, "subject")).setText(subject);
+        mDevice.findObject(By.res(PACKAGE, "message_content")).setText(message);
+        mDevice.findObject(By.res(PACKAGE, "message_content")).click();
+        /*
         onView(withId(R.id.to)).perform(click());
         onView(withId(R.id.to)).perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL));
         onView(withId(R.id.to)).perform(typeText(to));
         onView(withId(R.id.subject)).perform(typeText(subject));
         onView(withId(R.id.message_content)).perform(typeText(message));
         onView(withId(R.id.message_content)).perform(click());
+    */
     }
     private void sendEmail(){
         doWait("send");
