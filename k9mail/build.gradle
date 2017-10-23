@@ -86,7 +86,7 @@ dependencies {
     compile "com.android.support:appcompat-v7:${project.supportLibraryVersion}"
 
 
-    compile 'com.karumi:dexter:4.1.0'
+    compile 'com.karumi:dexter:4.1.1'
 
     compile 'com.hudomju:swipe-to-dismiss-undo:1.0'
 
