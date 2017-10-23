@@ -156,10 +156,22 @@ public class AccountSetupBasics extends PEpImporterActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         AccountSetupIncomingFragment accountSetupIncomingFragment = (AccountSetupIncomingFragment)getFragmentManager().findFragmentByTag("accountSetupIncomingFragment");
+        AccountSetupOutgoingFragment accountSetupOutgoingFragment = (AccountSetupOutgoingFragment)getFragmentManager().findFragmentByTag("AccountSetupOutgoingFragment");
         if (accountSetupIncomingFragment != null && accountSetupIncomingFragment.isVisible()) {
             accountSetupIncomingFragment.onActivityResult(requestCode, resultCode, data);
         } else {
-            accountSetupBasicsFragment.onActivityResult(requestCode, resultCode, data);
+            if (accountSetupIncomingFragment != null) {
+                accountSetupIncomingFragment.onActivityResult(requestCode, resultCode, data);
+                return;
+            }
+            if (accountSetupOutgoingFragment != null) {
+                accountSetupOutgoingFragment.onActivityResult(requestCode, resultCode, data);
+                return;
+            }
+            if (accountSetupBasicsFragment != null) {
+                accountSetupBasicsFragment.onActivityResult(requestCode, resultCode, data);
+                return;
+            }
         }
     }
 

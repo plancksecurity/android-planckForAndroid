@@ -40,12 +40,14 @@ import com.fsck.k9.mail.AuthType;
 import com.fsck.k9.mail.CertificateValidationException;
 import com.fsck.k9.mail.ConnectionSecurity;
 import com.fsck.k9.mail.ServerSettings;
+import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.filter.Hex;
 import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpCertificateException;
 import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpSetupException;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.service.MailService;
 import com.fsck.k9.view.ClientCertificateSpinner;
 
 import java.net.URI;
@@ -557,7 +559,37 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
                 AccountSetupOptions.actionOptions(getActivity(), mAccount, mMakeDefault);
                 goForward();
             }
-        }
+        } else {
+                /*
+                 * Set the username and password for the outgoing settings to the username and
+                 * password the user just set for incoming.
+                 */
+                try {
+                    String username = mUsernameView.getText().toString();
+
+                    String password = null;
+                    String clientCertificateAlias = null;
+                    AuthType authType = getSelectedAuthType();
+                    if (AuthType.EXTERNAL == authType) {
+                        clientCertificateAlias = mClientCertificateSpinner.getAlias();
+                    } else {
+                        password = mPasswordView.getText().toString();
+                    }
+
+                    URI oldUri = new URI(mAccount.getTransportUri());
+                    ServerSettings transportServer = new ServerSettings(ServerSettings.Type.SMTP, oldUri.getHost(), oldUri.getPort(),
+                            ConnectionSecurity.SSL_TLS_REQUIRED, authType, username, password, clientCertificateAlias);
+                    String transportUri = Transport.createTransportUri(transportServer);
+                    mAccount.setTransportUri(transportUri);
+                } catch (URISyntaxException use) {
+                    /*
+                     * If we can't set up the URL we just continue. It's only for
+                     * convenience.
+                     */
+                }
+
+                checkSettings();
+            }
     }
 
     private void goForward() {
