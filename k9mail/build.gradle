@@ -34,7 +34,7 @@ repositories {
 }
 
 ext {
-    supportLibraryVersion = '25.3.1'
+    supportLibraryVersion = '26.1.0'
 }
 
 //noinspection GroovyAssignabilityCheck
