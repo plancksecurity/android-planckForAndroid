@@ -95,17 +95,8 @@ android {
     buildToolsVersion androidBuildToolsVersion
 
     defaultConfig {
-        //Original config
-//        applicationId "com.fsck.k9"
-//        testApplicationId "com.fsck.k9.tests"
-
-//        versionCode 23230
-//        versionName "5.203"
-
-        //applicationId "pep.android.k9"
         applicationId "${appId}"
         versionCode 73
-//        versionName "0.9.9.2"
         minSdkVersion 21
         targetSdkVersion 25
         setProperty("archivesBaseName", "$version")
@@ -206,12 +197,6 @@ android {
     }
     buildToolsVersion "26.0.2"
 
-//  Not compatible with gradle 4 and android studio 3.0
-//    applicationVariants.all { variant ->
-//        variant.outputs.all { output ->
-//            outputFileName = "${variant.versionName}-${variant.versionCode}.apk"
-//        }
-//    }
 }
 
 if (project.hasProperty("keyAlias")) {
