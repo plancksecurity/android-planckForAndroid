@@ -70,6 +70,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     private static final String STATE_SECURITY_TYPE_POSITION = "stateSecurityTypePosition";
     private static final String STATE_AUTH_TYPE_POSITION = "authTypePosition";
     private static final String EXTRA_EDIT = "edit";
+    private static String EXTRA_BACK = "back";
 
     private EditText mUsernameView;
     private EditText mPasswordView;
@@ -96,6 +97,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     @Inject PEpSettingsChecker pEpSettingsChecker;
     private ContentLoadingProgressBar nextProgressBar;
     private AccountSetupNavigator accountSetupNavigator;
+    private boolean mBack;
 
     public static AccountSetupOutgoingFragment actionOutgoingSettings(Account account, boolean makeDefault) {
         AccountSetupOutgoingFragment fragment = new AccountSetupOutgoingFragment();
@@ -124,6 +126,15 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         return fragment;
     }
 
+    public static AccountSetupOutgoingFragment intentBackToOutgoingSettings(String accountUuid) {
+        AccountSetupOutgoingFragment fragment = new AccountSetupOutgoingFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(EXTRA_ACCOUNT, accountUuid);
+        bundle.putBoolean(EXTRA_BACK, true);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -134,6 +145,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
 
         String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
         mEdit = getArguments().getBoolean(EXTRA_EDIT);
+        mBack = getArguments().getBoolean(EXTRA_BACK);
         mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
         try {
             if (new URI(mAccount.getStoreUri()).getScheme().startsWith("webdav")) {
@@ -257,6 +269,9 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         validateFields();
         if (mEdit) {
             mNextButton.setText(R.string.done_action);
+            ((K9Activity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        }
+        if (mBack) {
             ((K9Activity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
         return rootView;
