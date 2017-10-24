@@ -110,6 +110,8 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
         int itemId = item.getItemId();
         switch (itemId) {
             case android.R.id.home: {
+                AccountSetupBasics.actionBackToOutgoingSettings(this, mAccount);
+
                 finish();
                 return true;
             }
