@@ -11,6 +11,7 @@ if (rootProject.testCoverage) {
 
 repositories {
     jcenter()
+    google()
 }
 
 dependencies {
@@ -68,5 +69,5 @@ android {
         exclude 'META-INF/NOTICE.txt'
         exclude 'LICENSE.txt'
     }
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '26.0.2'
 }

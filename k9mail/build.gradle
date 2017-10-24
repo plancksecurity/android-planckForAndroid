@@ -1,6 +1,6 @@
-def pEpEngineRevision = 2091
+def pEpEngineRevision = 2144
 def pEpJNIAdapterRevision = 378
-def version = "0.9.11.10"
+def version = "0.9.11.11"
 
 def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
 def pEpTestEmailPassword = "\"$System.env.PEP_TEST_EMAIL_PASSWORD\""
@@ -17,23 +17,24 @@ buildscript {
     }
 }
 
-apply plugin: 'com.android.application'
+apply plugin: "com.android.application"
 
 if (!rootProject.optimizeForDevelopment) {
-    apply from: '../gradle/plugins/checkstyle-android.gradle'
-    apply from: '../gradle/plugins/findbugs-android.gradle'
+    apply from: "../gradle/plugins/checkstyle-android.gradle"
+    apply from: "../gradle/plugins/findbugs-android.gradle"
 }
 
 if (rootProject.testCoverage) {
-    apply plugin: 'jacoco'
+    apply plugin: "jacoco"
 }
 
 repositories {
     jcenter()
+    google()
 }
 
 ext {
-    supportLibraryVersion = '25.3.1'
+    supportLibraryVersion = "26.1.0"
 }
 
 //noinspection GroovyAssignabilityCheck
@@ -44,57 +45,49 @@ configurations.all {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':pEpJNIAdapter')
-    compile project(':k9mail-library')
-    compile project(':plugins:HoloColorPicker')
-    compile project(':plugins:openpgp-api-lib:openpgp-api')
-    compile "com.squareup.okio:okio:${okioVersion}"
-    compile 'commons-io:commons-io:2.4'
-    compile "com.android.support:support-v4:${androidSupportLibraryVersion}"
-    compile 'org.jsoup:jsoup:1.10.2'
-    compile 'de.cketti.library.changelog:ckchangelog:1.2.1'
-    compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.splitwise:tokenautocomplete:2.0.7'
-    compile 'de.cketti.safecontentresolver:safe-content-resolver-v14:0.9.0'
-    compile 'com.github.amlcurran.showcaseview:library:5.4.1'
-    compile 'com.squareup.moshi:moshi:1.2.0'
-    compile "com.jakewharton.timber:timber:${timberVersion}"
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation project(":pEpJNIAdapter")
+    implementation project(":k9mail-library")
+    implementation project(":plugins:HoloColorPicker")
+    implementation project(":plugins:openpgp-api-lib:openpgp-api")
 
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    implementation "com.android.support:support-v4:${project.supportLibraryVersion}"
+    implementation "com.android.support:cardview-v7:${project.supportLibraryVersion}"
+    implementation "com.android.support:design:${project.supportLibraryVersion}"
+    implementation "com.android.support:appcompat-v7:${project.supportLibraryVersion}"
+    implementation "com.android.support:recyclerview-v7:${project.supportLibraryVersion}"
+    implementation "com.android.support:support-vector-drawable:${project.supportLibraryVersion}"
 
-    testCompile "org.robolectric:robolectric:${robolectricVersion}"
-    testCompile "junit:junit:${junitVersion}"
-    testCompile "org.mockito:mockito-core:${mockitoVersion}"
-    testCompile "org.jdom:jdom2:2.0.6"
+    implementation "com.squareup.okio:okio:${okioVersion}"
+    implementation "com.squareup.moshi:moshi:${moshiVersion}"
+    implementation "commons-io:commons-io:${apacheCommonsVersion}"
+    implementation "com.splitwise:tokenautocomplete:${tokenAutoCompleteVersion}"
+    implementation "com.github.amlcurran.showcaseview:library:${showCaseViewVersion}"
+    implementation "com.jakewharton.timber:timber:${timberVersion}"
+    implementation "com.jakewharton:butterknife:${butterKnifeVersion}"
+    implementation "com.github.pedrovgs:renderers:${renderersVersion}"
+    implementation "com.github.bumptech.glide:glide:${glideVersion}"
+    implementation "com.github.paolorotolo:appintro:${appIntroVersion}"
+    implementation "com.daimajia.swipelayout:library:${swipeLayoutVersion}@aar"
+    implementation "com.karumi:dexter:${dexterVersion}"
+    implementation "com.hudomju:swipe-to-dismiss-undo:${swipeToDismissVersion}"
+    implementation "ch.acra:acra:${acraVersion}"
+    implementation "de.cketti.safecontentresolver:safe-content-resolver-v14:${safeContentResolverVersion}"
+    implementation "de.hdodenhof:circleimageview:${circleImageViewVersion}"
+    implementation "org.jsoup:jsoup:${jsoupVersion}"
+    implementation "uk.co.chrisjenx:calligraphy:${callygraphyVersion}"
 
-    compile 'com.jakewharton:butterknife:7.0.1'
-    compile 'uk.co.chrisjenx:calligraphy:2.1.0'
-    compile 'de.hdodenhof:circleimageview:2.1.0'
-    compile 'com.github.pedrovgs:renderers:3.2.0'
-    compile 'ch.acra:acra:4.6.1'
-    compile "com.android.support:support-v4:${project.supportLibraryVersion}"
-    compile "com.android.support:support-vector-drawable:${project.supportLibraryVersion}"
-    compile 'com.github.paolorotolo:appintro:4.1.0'
-    compile 'org.jsoup:jsoup:1.10.2'
-    compile "com.daimajia.swipelayout:library:1.2.0@aar"
+    androidTestImplementation "com.android.support.test.espresso:espresso-intents:${espressoVersion}"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:${espressoVersion}"
 
-    compile "com.android.support:recyclerview-v7:${project.supportLibraryVersion}"
-    compile "com.android.support:cardview-v7:${project.supportLibraryVersion}"
-    compile "com.android.support:design:${project.supportLibraryVersion}"
-    compile "com.android.support:appcompat-v7:${project.supportLibraryVersion}"
-
-
-    compile 'com.karumi:dexter:4.1.0'
-
-    compile 'com.hudomju:swipe-to-dismiss-undo:1.0'
-
-    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2'
+    testImplementation "org.robolectric:robolectric:${robolectricVersion}"
+    testImplementation "junit:junit:${junitVersion}"
+    testImplementation "org.mockito:mockito-core:${mockitoVersion}"
+    testImplementation "org.jdom:jdom2:2.0.6"
 
     // Arch dependencies
-    provided 'org.glassfish:javax.annotation:10.0-b28'
     annotationProcessor "com.google.dagger:dagger-compiler:2.4"
-    compile 'com.google.dagger:dagger:2.4'
+    implementation "com.google.dagger:dagger:2.4"
 }
 
 android {
@@ -102,21 +95,12 @@ android {
     buildToolsVersion androidBuildToolsVersion
 
     defaultConfig {
-        //Original config
-//        applicationId "com.fsck.k9"
-//        testApplicationId "com.fsck.k9.tests"
-
-//        versionCode 23230
-//        versionName '5.203'
-
-        //applicationId "pep.android.k9"
         applicationId "${appId}"
-        versionCode 72
-//        versionName '0.9.9.2'
+        versionCode 73
         minSdkVersion 21
         targetSdkVersion 25
         setProperty("archivesBaseName", "$version")
-        generatedDensities = ['mdpi', 'hdpi', 'xhdpi']
+        generatedDensities = ["mdpi", "hdpi", "xhdpi"]
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -137,23 +121,23 @@ android {
 
         javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true
     }
-    flavorDimensions 'playStore', 'none'
+    flavorDimensions "playStore", "none"
 
     productFlavors {
         withkeysync {
             buildConfigField "boolean", "WITH_KEY_SYNC", "true"
-            versionName "${version}" + '.withKeysync'
-            dimension 'playStore'
+            versionName "${version}" + ".withKeysync"
+            dimension "playStore"
 
         }
         withthoutkeysync {
             buildConfigField "boolean", "WITH_KEY_SYNC", "false"
-            versionName "${version}" + '.withoutKeysync'
-            dimension 'playStore'
+            versionName "${version}" + ".withoutKeysync"
+            dimension "playStore"
 
         }
         playStore {
-            dimension 'none'
+            dimension "none"
         }
     }
         signingConfigs {
@@ -161,7 +145,7 @@ android {
     }
     buildTypes {
         release {
-            if (project.hasProperty('storeFile')) {
+            if (project.hasProperty("storeFile")) {
                 signingConfig signingConfigs.release
 
             }
@@ -182,18 +166,18 @@ android {
         lintConfig file("$rootProject.projectDir/config/lint/lint.xml")
     }
     packagingOptions {
-        exclude 'META-INF/DEPENDENCIES.txt'
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/dependencies.txt'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/license.txt'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/notice.txt'
-        exclude 'META-INF/LGPL2.1'
-        exclude 'META-INF/README'
-        exclude 'LICENSE.txt'
+        exclude "META-INF/DEPENDENCIES.txt"
+        exclude "META-INF/DEPENDENCIES"
+        exclude "META-INF/dependencies.txt"
+        exclude "META-INF/LICENSE.txt"
+        exclude "META-INF/LICENSE"
+        exclude "META-INF/license.txt"
+        exclude "META-INF/NOTICE.txt"
+        exclude "META-INF/NOTICE"
+        exclude "META-INF/notice.txt"
+        exclude "META-INF/LGPL2.1"
+        exclude "META-INF/README"
+        exclude "LICENSE.txt"
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -206,30 +190,24 @@ android {
         abi {
             enable true
             reset()
-            include 'armeabi-v7a'
-//            include 'x86'
+            include "armeabi-v7a"
+//            include "x86"
             universalApk false
         }
     }
-    buildToolsVersion '25.0.2'
+    buildToolsVersion "26.0.2"
 
-//  Not compatible with gradle 4 and android studio 3.0
-//    applicationVariants.all { variant ->
-//        variant.outputs.all { output ->
-//            outputFileName = "${variant.versionName}-${variant.versionCode}.apk"
-//        }
-//    }
 }
 
-if (project.hasProperty('keyAlias')) {
+if (project.hasProperty("keyAlias")) {
     android.signingConfigs.release.keyAlias = keyAlias
 }
-if (project.hasProperty('keyPassword')) {
+if (project.hasProperty("keyPassword")) {
     android.signingConfigs.release.keyPassword = keyPassword
 }
-if (project.hasProperty('storeFile')) {
+if (project.hasProperty("storeFile")) {
     android.signingConfigs.release.storeFile = file(storeFile)
 }
-if (project.hasProperty('storePassword')) {
+if (project.hasProperty("storePassword")) {
     android.signingConfigs.release.storePassword = storePassword
 }
