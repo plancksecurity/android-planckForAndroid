@@ -108,7 +108,9 @@ public class QuotedMessagePresenter {
             // Strip signature.
             // closing tags such as </div>, </span>, </table>, </pre> will be cut off.
             if (account.isStripSignature() && (action == Action.REPLY || action == Action.REPLY_ALL)) {
-                content = HtmlSignatureRemover.stripSignature(content);
+                if (content != null) {
+                    content = HtmlSignatureRemover.stripSignature(content);
+                }
             }
 
             // Add the HTML reply header to the top of the content.
