@@ -44,8 +44,7 @@ public class ImportSettingsTest {
 
     @Test
     public void importCrash(){
-        doWait("skip");
-        mDevice.findObject(By.res(PACKAGE, "skip")).click();
+        waitForSkipButton();
         doWait();
         originalPackage = mDevice.getCurrentPackageName();
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
@@ -54,6 +53,11 @@ public class ImportSettingsTest {
         getActivityInstance();
         doWait();
 
+    }
+
+    private void waitForSkipButton(){
+        doWait("skip");
+        mDevice.findObject(By.res(PACKAGE, "skip")).click();
     }
 
     private void doWait(String viewId){
