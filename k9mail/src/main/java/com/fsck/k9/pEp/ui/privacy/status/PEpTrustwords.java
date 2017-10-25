@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -209,9 +208,10 @@ public class PEpTrustwords extends PepColoredActivity {
         wrongTrustWords.setVisibility(View.VISIBLE);
         confirmTrustWords.setVisibility(View.VISIBLE);
 
-        if (!PEpUtils.isPEpUser(partner)) {
+        if (!PEpUtils.isPEpUser(partner) && showingPgpFingerprint) {
             flipper.setAnimateFirstView(false);
             flipper.setDisplayedChild(1);
+            showingPgpFingerprint = true;
             showFingerprints();
         }
         flipper.setVisibility(View.VISIBLE);
@@ -230,21 +230,24 @@ public class PEpTrustwords extends PepColoredActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem fingerprintItem = menu.findItem(R.id.action_pgp_fingerprint);
+        menu.clear();
 
         if (showingPgpFingerprint) {
-            fingerprintItem.setTitle(R.string.pEp_trustwords);
-            menuItemTrustwordsLanguage.setVisible(false);
-            menuItemtrustwordsLength.setVisible(false);
-        }
-
-        if(areTrustwordsShort) {
-            menuItemtrustwordsLength.setTitle(getString(R.string.pep_menu_long_trustwords));
+            menu.add(Menu.NONE, R.id.action_pgp_fingerprint, Menu.NONE, R.string.pEp_trustwords);
+            menu.removeItem(R.id.action_language);
+            menu.removeItem(R.id.long_trustwords);
         } else {
-            menuItemtrustwordsLength.setTitle(R.string.pep_menu_short_trustwords);
+            menu.add(Menu.NONE, R.id.action_pgp_fingerprint, Menu.NONE, R.string.pep_pgp_fingerprint);
+            menu.add(Menu.NONE, R.id.action_language, Menu.NONE, R.string.settings_language_label);
+            menu.add(Menu.NONE, R.id.long_trustwords, Menu.NONE, R.string.pep_menu_long_trustwords);
+            if(areTrustwordsShort) {
+                menuItemtrustwordsLength.setTitle(getString(R.string.pep_menu_long_trustwords));
+            } else {
+                menuItemtrustwordsLength.setTitle(R.string.pep_menu_short_trustwords);
+            }
         }
 
-        return true;
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -260,11 +263,13 @@ public class PEpTrustwords extends PepColoredActivity {
                 return true;
             case R.id.action_pgp_fingerprint:
                 if (item.getTitle().equals(getString(R.string.pep_pgp_fingerprint))){
+                    showingPgpFingerprint = true;
                     item.setTitle(R.string.pEp_trustwords);
                     menuItemTrustwordsLanguage.setVisible(false);
                     menuItemtrustwordsLength.setVisible(false);
                 }
                 else{
+                    showingPgpFingerprint = false;
                     item.setTitle(getString(R.string.pep_pgp_fingerprint));
                     wrongTrustWords.setText(R.string.pep_wrong_trustwords);
                     menuItemTrustwordsLanguage.setVisible(true);
@@ -294,7 +299,6 @@ public class PEpTrustwords extends PepColoredActivity {
     }
 
     private void showFingerprints() {
-        showingPgpFingerprint = !showingPgpFingerprint;
         invalidateOptionsMenu();
     }
 
@@ -359,6 +363,7 @@ public class PEpTrustwords extends PepColoredActivity {
         areTrustwordsShort = savedInstanceState.getBoolean(ARE_TRUSTWORD_SHORT);
         trustwordsLanguage = savedInstanceState.getString(TRUSTWORD_LANGUAGE);
         if (showingPgpFingerprint) flipper.showNext();
+        invalidateOptionsMenu();
     }
 
     @Override
