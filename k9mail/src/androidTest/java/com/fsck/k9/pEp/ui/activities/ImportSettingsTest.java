@@ -1,33 +1,23 @@
 package com.fsck.k9.pEp.ui.activities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.core.deps.guava.collect.Iterables;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
-import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
-import android.support.test.runner.lifecycle.Stage;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.Until;
-import android.util.Log;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import java.util.Collection;
-
-import timber.log.Timber;
-
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.pEp.jniadapter.AndroidHelper.TAG;
 
 @RunWith(AndroidJUnit4.class)
 @SdkSuppress(minSdkVersion = 18)
@@ -56,25 +46,12 @@ public class ImportSettingsTest {
         doWait("skip");
         mDevice.findObject(By.res(PACKAGE, "skip")).click();
         doWait();
-        //originalText = mDevice.findObjects(selector).get(1).getText();
         originalText = mDevice.getCurrentPackageName();
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         doWait();
         BySelector selector = By.clazz("android.widget.TextView");
         mDevice.findObjects(selector).get(2).click();
-        //doWait("icon1");
-        //mDevice.findObject(By.res(PACKAGE, "icon1")).click();
-        //BySelector selector2 = By.clazz("android.widget.ImageView");
-        //mDevice.findObjects(selector2).get(0).click();
-        //mDevice.pressHome();
-        //mDevice.pressBack();
-        //UiObject2 icon2 = mDevice.findObject(By.res(PACKAGE, "icon1"));
-        //Rect bounds = icon.getVisibleBounds();
-        //mDevice.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 20);
-        //mDevice.swipe(40, 100, 40, 100, 50);
-        doWait();
         getActivityInstance();
-        //mDevice.click(mDevice.getDisplayWidth()/20, mDevice.getDisplayHeight()/12);
         doWait();
 
     }
@@ -84,8 +61,6 @@ public class ImportSettingsTest {
     }
 
     private void doWait(){
-        //getInstrumentation().waitForIdleSync();
-
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
@@ -101,18 +76,10 @@ public class ImportSettingsTest {
         return resolveInfo.activityInfo.packageName;
     }
     public void getActivityInstance(){
-        //BySelector selector;
-        try {
             do {
-                //selector = By.clazz("android.widget.TextView");
                 mDevice.pressBack();
-                Log.d(TAG, "Nombre Entra en el bucle");
-                //Log.e(TAG, "Nombre original: " + originalText + " // Nombre NO-original: " + mDevice.getCurrentPackageName() + " //");
                 doWait();
             }
-            while (originalText != mDevice.getCurrentPackageName());//while (originalText != mDevice.findObjects(selector).get(1).getText());
-        }catch (Exception e){
-            Log.e(TAG, "Nombre Fallo: " + e.getMessage());
-        }
+            while (originalText != mDevice.getCurrentPackageName());
     }
 }
