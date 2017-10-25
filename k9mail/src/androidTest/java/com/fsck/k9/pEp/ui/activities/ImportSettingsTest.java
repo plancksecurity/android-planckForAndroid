@@ -26,7 +26,7 @@ public class ImportSettingsTest {
     private static final String PACKAGE = "pep.android.k9";
     private static final int LAUNCH_TIMEOUT = 5000;
     private static final int TIME = 1000;
-    private String originalText = "";
+    private String originalPackage = "";
     private UiDevice mDevice;
     @Before
     public void startMainActivityFromHomeScreen() {
@@ -47,7 +47,7 @@ public class ImportSettingsTest {
         doWait("skip");
         mDevice.findObject(By.res(PACKAGE, "skip")).click();
         doWait();
-        originalText = mDevice.getCurrentPackageName();
+        originalPackage = mDevice.getCurrentPackageName();
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         doWait();
         BySelector selector = By.clazz("android.widget.TextView");
@@ -81,6 +81,6 @@ public class ImportSettingsTest {
                 mDevice.pressBack();
                 doWait();
             }
-            while (originalText != mDevice.getCurrentPackageName());
+            while (originalPackage != mDevice.getCurrentPackageName());
     }
 }
