@@ -25,6 +25,7 @@ public class ImportSettingsTest {
 
     private static final String PACKAGE = "pep.android.k9";
     private static final int LAUNCH_TIMEOUT = 5000;
+    private static final int TIME = 1000;
     private String originalText = "";
     private UiDevice mDevice;
     @Before
@@ -62,7 +63,7 @@ public class ImportSettingsTest {
 
     private void doWait(){
         try {
-            Thread.sleep(3000);
+            Thread.sleep(TIME);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
