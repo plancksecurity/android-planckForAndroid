@@ -50,8 +50,7 @@ public class ImportSettingsTest {
         originalPackage = mDevice.getCurrentPackageName();
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         doWait();
-        BySelector selector = By.clazz("android.widget.TextView");
-        mDevice.findObjects(selector).get(2).click();
+        selectImportSettings();
         getActivityInstance();
         doWait();
 
@@ -67,6 +66,11 @@ public class ImportSettingsTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        }
+
+        private void selectImportSettings(){
+            BySelector selector = By.clazz("android.widget.TextView");
+            mDevice.findObjects(selector).get(2).click();
         }
 
     private String getLauncherPackageName() {
