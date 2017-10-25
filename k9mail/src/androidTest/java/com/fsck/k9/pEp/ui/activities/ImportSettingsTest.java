@@ -56,6 +56,8 @@ public class ImportSettingsTest {
         doWait("skip");
         mDevice.findObject(By.res(PACKAGE, "skip")).click();
         doWait();
+        //originalText = mDevice.findObjects(selector).get(1).getText();
+        originalText = mDevice.getCurrentPackageName();
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         doWait();
         BySelector selector = By.clazz("android.widget.TextView");
@@ -99,10 +101,18 @@ public class ImportSettingsTest {
         return resolveInfo.activityInfo.packageName;
     }
     public void getActivityInstance(){
-        BySelector selector = By.clazz("android.widget.TextView");
-        do {
-            Log.e(TAG, "Nombre original: " + originalText);
-            mDevice.pressBack();
-        }while (originalText != mDevice.findObjects(selector).get(0).getText());
+        //BySelector selector;
+        try {
+            do {
+                //selector = By.clazz("android.widget.TextView");
+                mDevice.pressBack();
+                Log.d(TAG, "Nombre Entra en el bucle");
+                //Log.e(TAG, "Nombre original: " + originalText + " // Nombre NO-original: " + mDevice.getCurrentPackageName() + " //");
+                doWait();
+            }
+            while (originalText != mDevice.getCurrentPackageName());//while (originalText != mDevice.findObjects(selector).get(1).getText());
+        }catch (Exception e){
+            Log.e(TAG, "Nombre Fallo: " + e.getMessage());
+        }
     }
 }
