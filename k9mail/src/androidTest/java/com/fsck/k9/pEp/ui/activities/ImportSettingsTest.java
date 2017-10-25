@@ -43,7 +43,7 @@ public class ImportSettingsTest {
     }
 
     @Test
-    public void importCrash(){
+    public void importSettings(){
         waitForSkipButton();
         doWait();
         originalPackage = mDevice.getCurrentPackageName();
