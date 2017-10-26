@@ -25,7 +25,6 @@ public class ImportSettingsTest {
 
     private static final String PACKAGE = "pep.android.k9";
     private static final int LAUNCH_TIMEOUT = 5000;
-    private static final int TIME = 10000;
     private String originalPackage = "";
     private UiDevice mDevice;
     @Before
@@ -46,11 +45,9 @@ public class ImportSettingsTest {
     public void importSettings(){
         waitForSkipButton();
         mDevice.waitForIdle();
-        //doWait();
         originalPackage = mDevice.getCurrentPackageName();
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         mDevice.waitForIdle();
-        //doWait();
         selectImportSettings();
         getActivityInstance();
         mDevice.waitForIdle();
@@ -64,14 +61,6 @@ public class ImportSettingsTest {
     private void doWait(String viewId){
         mDevice.wait(Until.findObject(By.res(PACKAGE, viewId)),15000);
     }
-
-    private void doWait(){
-        try {
-            Thread.sleep(TIME);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        }
 
         private void selectImportSettings(){
             BySelector selector = By.clazz("android.widget.TextView");
