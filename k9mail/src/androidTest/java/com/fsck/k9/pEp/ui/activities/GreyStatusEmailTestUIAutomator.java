@@ -72,7 +72,7 @@ public class GreyStatusEmailTestUIAutomator {
         testStatusEmpty();
         testStatusMail(EMAIL, "Subject", "Message", Rating.pEpRatingUnencrypted.value);
         testStatusMail("", "", "", Rating.pEpRatingUndefined.value);
-        testStatusMail(EMAIL, "", "", Rating.pEpRatingUnencrypted.value);
+        testStatusMail(EMAIL, "Subject", "Message", Rating.pEpRatingUnencrypted.value);
         sendEmail();
         removeAccount();
     }
@@ -115,6 +115,7 @@ public class GreyStatusEmailTestUIAutomator {
         doWait("account_server");
         mDevice.findObject(By.res(PACKAGE, "account_server")).setText(getEmailServer());
         mDevice.findObject(By.res(PACKAGE, "account_username")).setText(getEmail());
+        mDevice.waitForIdle();
     }
 
     private void waitForSetText(String text, String id){
@@ -166,13 +167,21 @@ public class GreyStatusEmailTestUIAutomator {
 
     private void fillEmail(String to, String subject, String message){
         doWait("to");
+        mDevice.waitForIdle();
         mDevice.findObject(By.res(PACKAGE, "to")).click();
+        doWait(2000);
+        //onView(withId(R.id.to)).perform(click());
         //mDevice.pressDelete();
         mDevice.pressKeyCode(KeyEvent.KEYCODE_DEL);
-        mDevice.findObject(By.res(PACKAGE, "to")).setText(to);
+        mDevice.waitForIdle();
+        //mDevice.findObject(By.res(PACKAGE, "to")).setText(to);
+        onView(withId(R.id.to)).perform(typeText(to));
         mDevice.findObject(By.res(PACKAGE, "subject")).setText(subject);
         mDevice.findObject(By.res(PACKAGE, "message_content")).setText(message);
         mDevice.findObject(By.res(PACKAGE, "message_content")).click();
+        //onView(withId(R.id.subject)).perform(typeText(subject));
+        //onView(withId(R.id.message_content)).perform(typeText(message));
+        //onView(withId(R.id.message_content)).perform(click());
         /*
         onView(withId(R.id.to)).perform(click());
         onView(withId(R.id.to)).perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL));
@@ -182,9 +191,18 @@ public class GreyStatusEmailTestUIAutomator {
         onView(withId(R.id.message_content)).perform(click());
     */
     }
+
+    private void doWait(int timeMillis){
+        try {
+            Thread.sleep(timeMillis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
     private void sendEmail(){
         doWait("send");
         mDevice.findObject(By.res(PACKAGE, "send")).click();
+        doWait(35000);
         waitForNotExists("send");
     }
 
