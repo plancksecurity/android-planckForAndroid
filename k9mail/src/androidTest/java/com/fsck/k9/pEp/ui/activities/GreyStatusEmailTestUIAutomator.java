@@ -12,6 +12,7 @@ import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
+import android.support.test.uiautomator.UiCollection;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
@@ -19,6 +20,7 @@ import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
+import android.util.Log;
 import android.view.KeyEvent;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
@@ -36,6 +38,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.pEp.jniadapter.AndroidHelper.TAG;
 
 @RunWith(AndroidJUnit4.class)
 @SdkSuppress(minSdkVersion = 18)
@@ -229,15 +232,48 @@ public class GreyStatusEmailTestUIAutomator {
     private void removeAccount(){
         mDevice.pressBack();
         doWait("accounts_list");
+        mDevice.waitForIdle();
         longClick("accounts_list");
-        waitForNotExists("accounts_list");
+        //waitForNotExists("accounts_list");
+        mDevice.waitForIdle();
         selectRemoveAccount();
+        mDevice.waitForIdle();
         selectAcceptButton();
     }
 
     private void selectRemoveAccount(){
+        UiCollection list = new UiCollection(
+                new UiSelector().className("android.widget.ListView"));
+        try {
+            for (int i =0; i< 10; i++) {
+                if (list.getChild(new UiSelector().index(i)).toString().equals(R.string.remove_account_action)){
+                    list.getChild(new UiSelector().index(i)).click();
+                }
+            }
+        } catch (UiObjectNotFoundException e) {
+            e.printStackTrace();
+        }
+        /*
+        UiObject2 listView = mDevice.findObject(By.res(PACKAGE, "select_dialog_listview"));
+        BySelector selectorLinearLayout = By.clazz("android.widget.LinearLayout");
+        BySelector selectorRelativeLayout = By.clazz("android.widget.RelativeLayout");
+        BySelector selectorTextView= By.clazz("android.widget.TextView");
+        listView.findObjects(selectorLinearLayout).get(4).findObjects(selectorRelativeLayout).get(0).findObjects(selectorTextView).get(0).click();
+        */
+        /*
         BySelector selector = By.clazz("android.widget.TextView");
-        mDevice.findObjects(selector).get(5).click();
+        Log.d(TAG, "numero de textos: " + mDevice.findObjects(selector).size());
+        for (int i = 0; i < mDevice.findObjects(selector).size(); i++) {
+            Log.d(TAG, "numero "+ i + " de texto: "+ mDevice.findObjects(selector).get(i).toString());
+            if (mDevice.findObjects(selector).get(i).toString().equals(R.string.remove_account_action)){
+                mDevice.findObjects(selector).get(i).click();
+            }
+        }
+        */
+        //listView.getChildren().get(4).getChildren().get(0).getChildren().get(0).click();
+        //BySelector selector = By.clazz("android.widget.TextView");
+        //listView.findObjects(selector).get(4).click();
+        //mDevice.findObjects(By.res(PACKAGE, "title")).get(4).click();
     }
 
     private void selectAcceptButton(){
@@ -257,7 +293,7 @@ public class GreyStatusEmailTestUIAutomator {
     private void longClick(String view){
         UiObject2 list = mDevice.findObject(By.res(PACKAGE, view));
         Rect bounds = list.getVisibleBounds();
-        mDevice.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 60);}
+        mDevice.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 180);}
 
     private String getLauncherPackageName() {
         final Intent intent = new Intent(Intent.ACTION_MAIN);
