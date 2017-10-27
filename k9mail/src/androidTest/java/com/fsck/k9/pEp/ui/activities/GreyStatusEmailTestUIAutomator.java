@@ -7,12 +7,9 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.action.ViewActions;
-import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
-import android.support.test.uiautomator.UiCollection;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
@@ -20,7 +17,6 @@ import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
-import android.util.Log;
 import android.view.KeyEvent;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
@@ -28,20 +24,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
-
-import java.util.regex.Pattern;
-
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.pEp.jniadapter.AndroidHelper.TAG;
 
 @RunWith(AndroidJUnit4.class)
-@SdkSuppress(minSdkVersion = 18)
 public class GreyStatusEmailTestUIAutomator {
 
     private static final String PACKAGE = "pep.android.k9";
@@ -50,6 +40,7 @@ public class GreyStatusEmailTestUIAutomator {
     private static final String EMAIL = "newemail@mail.es";
     private static final int LAUNCH_TIMEOUT = 5000;
     private static final long TIME = 6000;
+
     private UiDevice mDevice;
 
     @Before
@@ -93,7 +84,6 @@ public class GreyStatusEmailTestUIAutomator {
         mDevice.findObject(By.res(PACKAGE, "manual_setup")).click();
         fillImapData();
         mDevice.findObject(By.res(PACKAGE, "next")).click();
-        //waitForNotExists("next");
         fillSmptData();
         doWait("next");
         mDevice.findObject(By.res(PACKAGE, "next")).click();
@@ -119,12 +109,6 @@ public class GreyStatusEmailTestUIAutomator {
         mDevice.findObject(By.res(PACKAGE, "account_server")).setText(getEmailServer());
         mDevice.findObject(By.res(PACKAGE, "account_username")).setText(getEmail());
         mDevice.waitForIdle();
-    }
-
-    private void waitForSetText(String text, String id){
-        do {
-            mDevice.findObject(By.res(PACKAGE, "account_server")).setText(getEmailServer());
-        }while(mDevice.findObject(By.res(PACKAGE, id)).getText() != text);
     }
 
     private void accountDescription(String description, String userName) {
@@ -173,26 +157,12 @@ public class GreyStatusEmailTestUIAutomator {
         mDevice.waitForIdle();
         mDevice.findObject(By.res(PACKAGE, "to")).click();
         doWait(2000);
-        //onView(withId(R.id.to)).perform(click());
-        //mDevice.pressDelete();
         mDevice.pressKeyCode(KeyEvent.KEYCODE_DEL);
         mDevice.waitForIdle();
-        //mDevice.findObject(By.res(PACKAGE, "to")).setText(to);
         onView(withId(R.id.to)).perform(typeText(to));
         mDevice.findObject(By.res(PACKAGE, "subject")).setText(subject);
         mDevice.findObject(By.res(PACKAGE, "message_content")).setText(message);
         mDevice.findObject(By.res(PACKAGE, "message_content")).click();
-        //onView(withId(R.id.subject)).perform(typeText(subject));
-        //onView(withId(R.id.message_content)).perform(typeText(message));
-        //onView(withId(R.id.message_content)).perform(click());
-        /*
-        onView(withId(R.id.to)).perform(click());
-        onView(withId(R.id.to)).perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL));
-        onView(withId(R.id.to)).perform(typeText(to));
-        onView(withId(R.id.subject)).perform(typeText(subject));
-        onView(withId(R.id.message_content)).perform(typeText(message));
-        onView(withId(R.id.message_content)).perform(click());
-    */
     }
 
     private void doWait(int timeMillis){
@@ -210,14 +180,6 @@ public class GreyStatusEmailTestUIAutomator {
     }
 
     private void doWait(String viewId){
-        /*
-        boolean finish = false;
-        do {
-            if (mDevice.findObject(By.res(PACKAGE, viewId)) != null){
-                finish = true;
-            }
-        }while (!finish);
-        */
         UiObject2 androidRocksTextView = mDevice
                 .wait(Until.findObject(By.res(PACKAGE, viewId)),
                         150000);
@@ -234,7 +196,6 @@ public class GreyStatusEmailTestUIAutomator {
         doWait("accounts_list");
         mDevice.waitForIdle();
         longClick("accounts_list");
-        //waitForNotExists("accounts_list");
         mDevice.waitForIdle();
         selectRemoveAccount();
         mDevice.waitForIdle();
@@ -243,40 +204,11 @@ public class GreyStatusEmailTestUIAutomator {
 
     private void selectRemoveAccount(){
         BySelector selector = By.clazz("android.widget.TextView");
-        //waitForNotExists("title");
-        //mDevice.findObject(By.text(String.valueOf(R.string.remove_account_action))).click();
-        //mDevice.findObject(By.text(String.valueOf(R.string.remove_account_action))).click();
-
         for (int i = 0; i < mDevice.findObjects(selector).size(); i++) {
             if (mDevice.findObjects(selector).get(i).getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(R.string.remove_account_action))){
                 mDevice.findObjects(selector).get(i).click();
             }
         }
-
-        /*
-        UiObject2 listView = mDevice.findObject(By.res(PACKAGE, "select_dialog_listview"));
-        BySelector selectorLinearLayout = By.clazz("android.widget.LinearLayout");
-        BySelector selectorRelativeLayout = By.clazz("android.widget.RelativeLayout");
-        BySelector selectorTextView= By.clazz("android.widget.TextView");
-        listView.findObjects(selectorLinearLayout).get(4).findObjects(selectorRelativeLayout).get(0).findObjects(selectorTextView).get(0).click();
-        */
-        /*
-        UiCollection list = new UiCollection(
-                new UiSelector().className("android.widget.ListView"));
-        try {
-            for (int i =0; i< 10; i++) {
-                if (list.getChild(new UiSelector().index(i)).toString().equals(R.string.remove_account_action)){
-                    list.getChild(new UiSelector().index(i)).click();
-                }
-            }
-        } catch (UiObjectNotFoundException e) {
-            e.printStackTrace();
-        }
-        */
-        //listView.getChildren().get(4).getChildren().get(0).getChildren().get(0).click();
-        //BySelector selector = By.clazz("android.widget.TextView");
-        //listView.findObjects(selector).get(4).click();
-        //mDevice.findObjects(By.res(PACKAGE, "title")).get(4).click();
     }
 
     private void selectAcceptButton(){
