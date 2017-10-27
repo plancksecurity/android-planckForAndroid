@@ -242,6 +242,25 @@ public class GreyStatusEmailTestUIAutomator {
     }
 
     private void selectRemoveAccount(){
+        BySelector selector = By.clazz("android.widget.TextView");
+        //waitForNotExists("title");
+        //mDevice.findObject(By.text(String.valueOf(R.string.remove_account_action))).click();
+        //mDevice.findObject(By.text(String.valueOf(R.string.remove_account_action))).click();
+
+        for (int i = 0; i < mDevice.findObjects(selector).size(); i++) {
+            if (mDevice.findObjects(selector).get(i).getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(R.string.remove_account_action))){
+                mDevice.findObjects(selector).get(i).click();
+            }
+        }
+
+        /*
+        UiObject2 listView = mDevice.findObject(By.res(PACKAGE, "select_dialog_listview"));
+        BySelector selectorLinearLayout = By.clazz("android.widget.LinearLayout");
+        BySelector selectorRelativeLayout = By.clazz("android.widget.RelativeLayout");
+        BySelector selectorTextView= By.clazz("android.widget.TextView");
+        listView.findObjects(selectorLinearLayout).get(4).findObjects(selectorRelativeLayout).get(0).findObjects(selectorTextView).get(0).click();
+        */
+        /*
         UiCollection list = new UiCollection(
                 new UiSelector().className("android.widget.ListView"));
         try {
@@ -252,22 +271,6 @@ public class GreyStatusEmailTestUIAutomator {
             }
         } catch (UiObjectNotFoundException e) {
             e.printStackTrace();
-        }
-        /*
-        UiObject2 listView = mDevice.findObject(By.res(PACKAGE, "select_dialog_listview"));
-        BySelector selectorLinearLayout = By.clazz("android.widget.LinearLayout");
-        BySelector selectorRelativeLayout = By.clazz("android.widget.RelativeLayout");
-        BySelector selectorTextView= By.clazz("android.widget.TextView");
-        listView.findObjects(selectorLinearLayout).get(4).findObjects(selectorRelativeLayout).get(0).findObjects(selectorTextView).get(0).click();
-        */
-        /*
-        BySelector selector = By.clazz("android.widget.TextView");
-        Log.d(TAG, "numero de textos: " + mDevice.findObjects(selector).size());
-        for (int i = 0; i < mDevice.findObjects(selector).size(); i++) {
-            Log.d(TAG, "numero "+ i + " de texto: "+ mDevice.findObjects(selector).get(i).toString());
-            if (mDevice.findObjects(selector).get(i).toString().equals(R.string.remove_account_action)){
-                mDevice.findObjects(selector).get(i).click();
-            }
         }
         */
         //listView.getChildren().get(4).getChildren().get(0).getChildren().get(0).click();
