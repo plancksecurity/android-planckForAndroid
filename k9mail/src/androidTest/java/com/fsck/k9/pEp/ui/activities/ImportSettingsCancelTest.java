@@ -1,53 +1,84 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
+import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
+import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.is;
 
-@RunWith(AndroidJUnit4.class)
-public class ImportSettingsCancelTest {
+
+public class ImportSettingsTest {
 
     private TestUtils testUtils;
-    private UiDevice device;
-    private static final String APP_ID = "pep.android.k9";
+
+    @Rule
+    public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
 
     @Before
     public void startMainActivityFromHomeScreen() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(device);
+        testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()));
         testUtils.startActivity();
     }
 
     @Test
-    public void importSettings(){
-        importSettingsTest();
+    public void importSettings() {
+        importSettingsTest(false);
     }
 
-    public void importSettingsTest(){
+    private void importSettingsTest(boolean isGmail) {
         testUtils.increaseTimeoutWait();
-        onView(withId(R.id.skip)).perform(click());
+        testUtils.externalAppRespondWithFile(R.raw.settings);
+        testUtils.createAccount(isGmail);
+        testUtils.pressBack();
         testUtils.doWait();
-        assertPackageNameIsCurrentPackageName();
         testUtils.openOptionsMenu();
         testUtils.doWait();
-        testUtils.selectFromMenu(R.string.settings_import);
-        testUtils.getActivityInstance();
+        testUtils.selectFromMenu(R.string.import_export_action);
         testUtils.doWait();
-        assertPackageNameIsCurrentPackageName();
+        testUtils.doWaitForResource(R.string.settings_import);
+        testUtils.selectFromMenu(R.string.settings_import);
+        testUtils.doWait();
+        testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.settings_import_selection);
+        testUtils.clickAcceptButton();
+        testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.settings_import_success_header);
+        testUtils.clickAcceptButton();
+        testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.settings_import_activate_account_header);
+        testUtils.clickCancelButton();
+        testUtils.doWait();
+        assertExistsTest();
+        testUtils.removeLastAccount();
+        testUtils.doWait();
+        assertExistsTest();
+        testUtils.removeLastAccount();
+        testUtils.doWait();
+        testUtils.doWaitForResource(R.id.skip);
+        assertThereAreNoAccounts();
     }
 
-    private void assertPackageNameIsCurrentPackageName(){
-        assertThat(APP_ID, is((device.getCurrentPackageName())));}
+    private void assertExistsTest(){
+        onData(anything())
+                .inAdapterView(withId(R.id.accounts_list))
+                .atPosition(0)
+                .onChildView(withId(R.id.description))
+                .check(matches(withText(testUtils.getAccountDescription())));
+    }
+
+    private void assertThereAreNoAccounts(){
+        onView(withId(R.id.skip))
+                .check(matches(isDisplayed()));
+    }
 }
