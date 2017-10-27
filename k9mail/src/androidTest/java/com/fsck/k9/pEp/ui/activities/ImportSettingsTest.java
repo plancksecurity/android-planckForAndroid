@@ -20,32 +20,31 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 @RunWith(AndroidJUnit4.class)
-@SdkSuppress(minSdkVersion = 18)
 public class ImportSettingsTest {
 
-    private static final String PACKAGE = "pep.android.k9";
-    private static final int LAUNCH_TIMEOUT = 5000;
-    private String originalPackage = "";
+    private static final int TIMEOUT = 15000;
+    private static final String currentPackage = "pep.android.k9";
+
     private UiDevice mDevice;
+
     @Before
     public void startMainActivityFromHomeScreen() {
         mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         mDevice.pressHome();
         final String launcherPackage = getLauncherPackageName();
         assertThat(launcherPackage, notNullValue());
-        mDevice.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), LAUNCH_TIMEOUT);
+        mDevice.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), TIMEOUT);
         Context context = InstrumentationRegistry.getContext();
-        final Intent intent = context.getPackageManager().getLaunchIntentForPackage(PACKAGE);
+        final Intent intent = context.getPackageManager().getLaunchIntentForPackage(currentPackage);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);
-        mDevice.wait(Until.hasObject(By.pkg(PACKAGE).depth(0)), LAUNCH_TIMEOUT);
+        mDevice.wait(Until.hasObject(By.pkg(currentPackage).depth(0)), TIMEOUT);
     }
 
     @Test
     public void importSettings(){
         waitForSkipButton();
         mDevice.waitForIdle();
-        originalPackage = mDevice.getCurrentPackageName();
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         mDevice.waitForIdle();
         selectImportSettings();
@@ -55,11 +54,11 @@ public class ImportSettingsTest {
 
     private void waitForSkipButton(){
         doWait("skip");
-        mDevice.findObject(By.res(PACKAGE, "skip")).click();
+        mDevice.findObject(By.res(currentPackage, "skip")).click();
     }
 
     private void doWait(String viewId){
-        mDevice.wait(Until.findObject(By.res(PACKAGE, viewId)),15000);
+        mDevice.wait(Until.findObject(By.res(currentPackage, viewId)),TIMEOUT);
     }
 
         private void selectImportSettings(){
@@ -77,10 +76,11 @@ public class ImportSettingsTest {
     public void getActivityInstance(){
             do {
                 mDevice.waitForIdle();
-            }while (originalPackage == mDevice.getCurrentPackageName());
+            }while (currentPackage.equals(mDevice.getCurrentPackageName()));
+
             do {
                 mDevice.pressBack();
             }
-            while (originalPackage != mDevice.getCurrentPackageName());
+            while (!currentPackage.equals(mDevice.getCurrentPackageName()));
     }
 }
