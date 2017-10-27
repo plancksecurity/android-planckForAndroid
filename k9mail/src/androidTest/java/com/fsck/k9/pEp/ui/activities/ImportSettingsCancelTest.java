@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
@@ -23,7 +22,7 @@ import static org.junit.Assert.assertThat;
 public class ImportSettingsCancelTest {
 
     private static final int TIMEOUT = 15000;
-    private static final String currentPackage = "pep.android.k9";
+    private static final String PACKAGE = "pep.android.k9";
 
     private UiDevice mDevice;
 
@@ -35,10 +34,10 @@ public class ImportSettingsCancelTest {
         assertThat(launcherPackage, notNullValue());
         mDevice.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), TIMEOUT);
         Context context = InstrumentationRegistry.getContext();
-        final Intent intent = context.getPackageManager().getLaunchIntentForPackage(currentPackage);
+        final Intent intent = context.getPackageManager().getLaunchIntentForPackage(PACKAGE);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);
-        mDevice.wait(Until.hasObject(By.pkg(currentPackage).depth(0)), TIMEOUT);
+        mDevice.wait(Until.hasObject(By.pkg(PACKAGE).depth(0)), TIMEOUT);
     }
 
     @Test
@@ -54,11 +53,11 @@ public class ImportSettingsCancelTest {
 
     private void waitForSkipButton(){
         doWait("skip");
-        mDevice.findObject(By.res(currentPackage, "skip")).click();
+        mDevice.findObject(By.res(PACKAGE, "skip")).click();
     }
 
     private void doWait(String viewId){
-        mDevice.wait(Until.findObject(By.res(currentPackage, viewId)),TIMEOUT);
+        mDevice.wait(Until.findObject(By.res(PACKAGE, viewId)),TIMEOUT);
     }
 
         private void selectImportSettings(){
@@ -76,11 +75,11 @@ public class ImportSettingsCancelTest {
     public void getActivityInstance(){
             do {
                 mDevice.waitForIdle();
-            }while (currentPackage.equals(mDevice.getCurrentPackageName()));
+            }while (PACKAGE.equals(mDevice.getCurrentPackageName()));
 
             do {
                 mDevice.pressBack();
             }
-            while (!currentPackage.equals(mDevice.getCurrentPackageName()));
+            while (!PACKAGE.equals(mDevice.getCurrentPackageName()));
     }
 }
