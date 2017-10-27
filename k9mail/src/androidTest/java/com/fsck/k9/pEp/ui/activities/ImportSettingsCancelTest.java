@@ -1,84 +1,86 @@
 package com.fsck.k9.pEp.ui.activities;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.intent.rule.IntentsTestRule;
+import android.support.test.filters.SdkSuppress;
+import android.support.test.runner.AndroidJUnit4;
+import android.support.test.uiautomator.By;
+import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
-
-import com.fsck.k9.R;
-
+import android.support.test.uiautomator.Until;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
-import static android.support.test.espresso.Espresso.onData;
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.anything;
-import static org.hamcrest.Matchers.is;
-
-
+@RunWith(AndroidJUnit4.class)
 public class ImportSettingsCancelTest {
 
-    private TestUtils testUtils;
+    private static final int TIMEOUT = 15000;
+    private static final String currentPackage = "pep.android.k9";
 
-    @Rule
-    public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
+    private UiDevice mDevice;
 
     @Before
     public void startMainActivityFromHomeScreen() {
-        testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()));
-        testUtils.startActivity();
+        mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        mDevice.pressHome();
+        final String launcherPackage = getLauncherPackageName();
+        assertThat(launcherPackage, notNullValue());
+        mDevice.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), TIMEOUT);
+        Context context = InstrumentationRegistry.getContext();
+        final Intent intent = context.getPackageManager().getLaunchIntentForPackage(currentPackage);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        context.startActivity(intent);
+        mDevice.wait(Until.hasObject(By.pkg(currentPackage).depth(0)), TIMEOUT);
     }
 
     @Test
-    public void importSettings() {
-        importSettingsTest(false);
+    public void importSettings(){
+        waitForSkipButton();
+        mDevice.waitForIdle();
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        mDevice.waitForIdle();
+        selectImportSettings();
+        getActivityInstance();
+        mDevice.waitForIdle();
     }
 
-    private void importSettingsTest(boolean isGmail) {
-        testUtils.increaseTimeoutWait();
-        testUtils.externalAppRespondWithFile(R.raw.settings);
-        testUtils.createAccount(isGmail);
-        testUtils.pressBack();
-        testUtils.doWait();
-        testUtils.openOptionsMenu();
-        testUtils.doWait();
-        testUtils.selectFromMenu(R.string.import_export_action);
-        testUtils.doWait();
-        testUtils.doWaitForResource(R.string.settings_import);
-        testUtils.selectFromMenu(R.string.settings_import);
-        testUtils.doWait();
-        testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.settings_import_selection);
-        testUtils.clickAcceptButton();
-        testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.settings_import_success_header);
-        testUtils.clickAcceptButton();
-        testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.settings_import_activate_account_header);
-        testUtils.clickCancelButton();
-        testUtils.doWait();
-        assertExistsTest();
-        testUtils.removeLastAccount();
-        testUtils.doWait();
-        assertExistsTest();
-        testUtils.removeLastAccount();
-        testUtils.doWait();
-        testUtils.doWaitForResource(R.id.skip);
-        assertThereAreNoAccounts();
+    private void waitForSkipButton(){
+        doWait("skip");
+        mDevice.findObject(By.res(currentPackage, "skip")).click();
     }
 
-    private void assertExistsTest(){
-        onData(anything())
-                .inAdapterView(withId(R.id.accounts_list))
-                .atPosition(0)
-                .onChildView(withId(R.id.description))
-                .check(matches(withText(testUtils.getAccountDescription())));
+    private void doWait(String viewId){
+        mDevice.wait(Until.findObject(By.res(currentPackage, viewId)),TIMEOUT);
     }
 
-    private void assertThereAreNoAccounts(){
-        onView(withId(R.id.skip))
-                .check(matches(isDisplayed()));
+        private void selectImportSettings(){
+            BySelector selector = By.clazz("android.widget.TextView");
+            mDevice.findObjects(selector).get(2).click();
+        }
+
+    private String getLauncherPackageName() {
+        final Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        PackageManager pm = InstrumentationRegistry.getContext().getPackageManager();
+        ResolveInfo resolveInfo = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        return resolveInfo.activityInfo.packageName;
+    }
+    public void getActivityInstance(){
+            do {
+                mDevice.waitForIdle();
+            }while (currentPackage.equals(mDevice.getCurrentPackageName()));
+
+            do {
+                mDevice.pressBack();
+            }
+            while (!currentPackage.equals(mDevice.getCurrentPackageName()));
     }
 }
