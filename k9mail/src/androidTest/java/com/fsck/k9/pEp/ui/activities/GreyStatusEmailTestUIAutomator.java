@@ -204,9 +204,11 @@ public class GreyStatusEmailTestUIAutomator {
 
     private void selectRemoveAccount(){
         BySelector selector = By.clazz("android.widget.TextView");
-        for (int i = 0; i < device.findObjects(selector).size(); i++) {
+        int size = device.findObjects(selector).size();
+        for (int i = 0; i < size; i++) {
             if (device.findObjects(selector).get(i).getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(R.string.remove_account_action))){
                 device.findObjects(selector).get(i).click();
+                i = size;
             }
         }
     }
