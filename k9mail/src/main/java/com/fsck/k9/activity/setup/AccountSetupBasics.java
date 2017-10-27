@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -159,7 +160,9 @@ public class AccountSetupBasics extends PEpImporterActivity {
         if (accountSetupIncomingFragment != null && accountSetupIncomingFragment.isVisible()) {
             accountSetupIncomingFragment.onActivityResult(requestCode, resultCode, data);
         } else {
-            accountSetupBasicsFragment.onActivityResult(requestCode, resultCode, data);
+            if (accountSetupBasicsFragment != null && accountSetupBasicsFragment.isVisible()) {
+                accountSetupBasicsFragment.onActivityResult(requestCode, resultCode, data);
+            }
         }
     }
 
