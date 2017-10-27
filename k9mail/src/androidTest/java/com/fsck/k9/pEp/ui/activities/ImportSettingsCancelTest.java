@@ -20,7 +20,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 @RunWith(AndroidJUnit4.class)
-public class ImportSettingsTest {
+public class ImportSettingsCancelTest {
 
     private static final int TIMEOUT = 15000;
     private static final String currentPackage = "pep.android.k9";
