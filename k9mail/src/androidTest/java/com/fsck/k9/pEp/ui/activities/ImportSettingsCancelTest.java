@@ -42,18 +42,14 @@ public class ImportSettingsCancelTest {
 
     @Test
     public void importSettings(){
-        waitForSkipButton();
+        doWait("skip");
+        mDevice.findObject(By.res(PACKAGE, "skip")).click();
         mDevice.waitForIdle();
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         mDevice.waitForIdle();
         selectImportSettings();
         getActivityInstance();
         mDevice.waitForIdle();
-    }
-
-    private void waitForSkipButton(){
-        doWait("skip");
-        mDevice.findObject(By.res(PACKAGE, "skip")).click();
     }
 
     private void doWait(String viewId){
