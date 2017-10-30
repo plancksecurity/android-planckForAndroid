@@ -73,13 +73,12 @@ public class ImportSettingsCancelTest {
         return resolveInfo.activityInfo.packageName;
     }
     public void getActivityInstance(){
-            do {
+        while (PACKAGE.equals(mDevice.getCurrentPackageName())){
                 mDevice.waitForIdle();
-            }while (PACKAGE.equals(mDevice.getCurrentPackageName()));
+            }
 
-            do {
+            while (!PACKAGE.equals(mDevice.getCurrentPackageName())){
                 mDevice.pressBack();
             }
-            while (!PACKAGE.equals(mDevice.getCurrentPackageName()));
     }
 }
