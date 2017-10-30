@@ -50,7 +50,7 @@ public class ImportSettingsTest {
     }
 
     @Test
-    public void greyStatusEmailTest() {
+    public void ImportSettingsTest() {
         accountConfiguration();
         accountDescription(DESCRIPTION, USER_NAME);
         device.waitForIdle();
@@ -58,10 +58,16 @@ public class ImportSettingsTest {
         device.waitForIdle();
         selectSettingsImportExport();
         device.waitForIdle();
-        waitForMenu();
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        //waitForMenu();
         selectSettingsImport();
         getActivityInstance();
         removeAccount();
+        device.waitForIdle();
     }
 
     private void accountConfiguration(){
@@ -115,12 +121,9 @@ public class ImportSettingsTest {
         BySelector selector = By.clazz("android.widget.TextView");
         int size = device.findObjects(selector).size();
         String originalText = device.findObjects(selector).get(size-1).getText();
-        boolean finish = false;
-        do {
-            if ((size != device.findObjects(selector).size())){
-                finish = true;
-            }
-        }while (!finish);
+        while ((size == device.findObjects(selector).size())){
+            device.waitForIdle();
+        }
     }
 
     private void selectSettingsImportExport(){
