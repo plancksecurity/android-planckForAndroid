@@ -187,8 +187,8 @@ public class GreyStatusEmailTestUIAutomator {
     }
 
     private void waitForNotExists(String viewId){
-        UiObject nextButton = device.findObject(new UiSelector().resourceId(viewId));
-        nextButton.waitUntilGone(TIME);
+        UiObject view = device.findObject(new UiSelector().resourceId(viewId));
+        view.waitUntilGone(TIME);
     }
 
     private void removeAccount(){
