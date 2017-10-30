@@ -11,17 +11,16 @@ import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
-import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
-import android.support.test.uiautomator.UiObjectNotFoundException;
-import android.support.test.uiautomator.UiScrollable;
-import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -54,6 +53,14 @@ public class ImportSettingsTest {
     public void greyStatusEmailTest() {
         accountConfiguration();
         accountDescription(DESCRIPTION, USER_NAME);
+        device.waitForIdle();
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        device.waitForIdle();
+        selectSettingsImportExport();
+        device.waitForIdle();
+        waitForMenu();
+        selectSettingsImport();
+        getActivityInstance();
         removeAccount();
     }
 
@@ -103,6 +110,39 @@ public class ImportSettingsTest {
         device.findObject(By.res(PACKAGE, "account_name")).setText(userName);
         device.findObject(By.res(PACKAGE, "done")).click();
     }
+
+    private void waitForMenu(){
+        BySelector selector = By.clazz("android.widget.TextView");
+        int size = device.findObjects(selector).size();
+        String originalText = device.findObjects(selector).get(size-1).getText();
+        boolean finish = false;
+        do {
+            if ((size != device.findObjects(selector).size())){
+                finish = true;
+            }
+        }while (!finish);
+    }
+
+    private void selectSettingsImportExport(){
+        BySelector selector = By.clazz("android.widget.TextView");
+        int size = device.findObjects(selector).size();
+        for (int i = 0; i < size; i++) {
+            if (device.findObjects(selector).get(i).getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(R.string.import_export_action))){
+                device.findObjects(selector).get(i).click();
+                i = size;
+            }
+        }
+    }
+
+    private void selectSettingsImport(){
+        BySelector selector = By.clazz("android.widget.TextView");
+        int size = device.findObjects(selector).size();
+        for (int i = 0; i < size; i++) {
+            if (device.findObjects(selector).get(i).getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(R.string.settings_import))){
+                device.findObjects(selector).get(i).click();
+                i = size;
+            }
+        }}
 
     private void doWait(String viewId){
         UiObject2 androidRocksTextView = device
@@ -159,6 +199,22 @@ public class ImportSettingsTest {
         ResolveInfo resolveInfo = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
         return resolveInfo.activityInfo.packageName;
     }
+
+    private void getActivityInstance(){
+        waitForExternalApp();
+        goBackToOriginalApp();
+    }
+
+    private void waitForExternalApp(){
+        while (PACKAGE.equals(device.getCurrentPackageName())){
+            device.waitForIdle();
+        }
+    }
+
+    private void goBackToOriginalApp(){
+        while (!PACKAGE.equals(device.getCurrentPackageName())){
+            device.pressBack();
+        }}
 
     @NonNull
     private String getEmail() {return BuildConfig.PEP_TEST_EMAIL_ADDRESS;}
