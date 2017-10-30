@@ -122,7 +122,7 @@ public class GreyStatusEmailTestUIAutomator {
         doWait("accounts_list");
         device.findObject(By.res(PACKAGE, "accounts_list")).click();
         UiScrollable listView = new UiScrollable(new UiSelector());
-        UiObject listViewItem = null;
+        UiObject listViewItem;
         try {
             listViewItem = listView.getChildByText(new UiSelector().className(android.widget.TextView.class.getName()), description);
             listViewItem.click();
