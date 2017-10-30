@@ -56,10 +56,10 @@ public class ImportSettingsCancelTest {
         mDevice.wait(Until.findObject(By.res(PACKAGE, viewId)),TIMEOUT);
     }
 
-        private void selectImportSettings(){
-            BySelector selector = By.clazz("android.widget.TextView");
-            mDevice.findObjects(selector).get(2).click();
-        }
+    private void selectImportSettings(){
+        BySelector selector = By.clazz("android.widget.TextView");
+        mDevice.findObjects(selector).get(2).click();
+    }
 
     private String getLauncherPackageName() {
         final Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -68,11 +68,11 @@ public class ImportSettingsCancelTest {
         ResolveInfo resolveInfo = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
         return resolveInfo.activityInfo.packageName;
     }
-    public void getActivityInstance(){
+
+    private void getActivityInstance(){
         while (PACKAGE.equals(mDevice.getCurrentPackageName())){
                 mDevice.waitForIdle();
             }
-
             while (!PACKAGE.equals(mDevice.getCurrentPackageName())){
                 mDevice.pressBack();
             }
