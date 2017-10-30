@@ -7,17 +7,22 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.IdlingPolicies;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.Until;
+import android.text.format.DateUtils;
+
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.concurrent.TimeUnit;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
@@ -37,6 +42,7 @@ public class ImportSettingsTest {
 
     @Before
     public void startMainActivityFromHomeScreen() {
+        increaseTimeoutWait();
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         device.pressHome();
         final String launcherPackage = getLauncherPackageName();
@@ -217,7 +223,14 @@ public class ImportSettingsTest {
     private void goBackToOriginalApp(){
         while (!PACKAGE.equals(device.getCurrentPackageName())){
             device.pressBack();
-        }}
+        }
+    }
+
+    private void increaseTimeoutWait(){
+        long waitingTime = DateUtils.SECOND_IN_MILLIS * 150;
+        IdlingPolicies.setMasterPolicyTimeout(waitingTime, TimeUnit.MILLISECONDS);
+        IdlingPolicies.setIdlingResourceTimeout(waitingTime, TimeUnit.MILLISECONDS);
+    }
 
     @NonNull
     private String getEmail() {return BuildConfig.PEP_TEST_EMAIL_ADDRESS;}
