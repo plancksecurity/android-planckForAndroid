@@ -70,11 +70,18 @@ public class ImportSettingsCancelTest {
     }
 
     private void getActivityInstance(){
-        while (PACKAGE.equals(mDevice.getCurrentPackageName())){
-                mDevice.waitForIdle();
-            }
-            while (!PACKAGE.equals(mDevice.getCurrentPackageName())){
-                mDevice.pressBack();
-            }
+        waitForExternalApp();
+        goBackToOriginalApp();
     }
+
+    private void waitForExternalApp(){
+        while (PACKAGE.equals(mDevice.getCurrentPackageName())){
+            mDevice.waitForIdle();
+        }
+    }
+
+    private void goBackToOriginalApp(){
+        while (!PACKAGE.equals(mDevice.getCurrentPackageName())){
+            mDevice.pressBack();
+        }}
 }
