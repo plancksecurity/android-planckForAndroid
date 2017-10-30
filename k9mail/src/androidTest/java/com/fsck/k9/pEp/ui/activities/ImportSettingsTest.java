@@ -36,7 +36,7 @@ public class ImportSettingsTest {
     private static final String PACKAGE = "pep.android.k9";
     private static final String DESCRIPTION = "tester one";
     private static final String USER_NAME = "testerJ";
-    private static final int LAUNCH_TIMEOUT = 5000;
+    private static final int LAUNCH_TIMEOUT = 15000;
 
     private UiDevice device;
 
@@ -161,7 +161,6 @@ public class ImportSettingsTest {
     }
 
     private void removeAccount(){
-        device.pressBack();
         doWait("accounts_list");
         device.waitForIdle();
         longClick("accounts_list");
