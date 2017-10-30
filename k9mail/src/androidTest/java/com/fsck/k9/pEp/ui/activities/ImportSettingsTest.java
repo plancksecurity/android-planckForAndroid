@@ -54,8 +54,6 @@ public class ImportSettingsTest {
     public void greyStatusEmailTest() {
         accountConfiguration();
         accountDescription(DESCRIPTION, USER_NAME);
-        accountListSelect(DESCRIPTION);
-
         removeAccount();
     }
 
@@ -104,19 +102,6 @@ public class ImportSettingsTest {
         device.findObject(By.res(PACKAGE, "account_description")).setText(description);
         device.findObject(By.res(PACKAGE, "account_name")).setText(userName);
         device.findObject(By.res(PACKAGE, "done")).click();
-    }
-
-    private void accountListSelect(String description){
-        doWait("accounts_list");
-        device.findObject(By.res(PACKAGE, "accounts_list")).click();
-        UiScrollable listView = new UiScrollable(new UiSelector());
-        UiObject listViewItem;
-        try {
-            listViewItem = listView.getChildByText(new UiSelector().className(android.widget.TextView.class.getName()), description);
-            listViewItem.click();
-        } catch (UiObjectNotFoundException e) {
-            e.printStackTrace();
-        }
     }
 
     private void doWait(String viewId){
