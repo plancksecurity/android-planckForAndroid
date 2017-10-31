@@ -10,6 +10,7 @@ import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.Until;
+import com.fsck.k9.R;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,7 +59,13 @@ public class ImportSettingsCancelTest {
 
     private void selectImportSettings(){
         BySelector selector = By.clazz("android.widget.TextView");
-        device.findObjects(selector).get(2).click();
+        int size = device.findObjects(selector).size();
+        for (int i = 0; i < size; i++) {
+            if (device.findObjects(selector).get(i).getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(R.string.settings_import))){
+                device.findObjects(selector).get(i).click();
+                break;
+            }
+        }
     }
 
     private String getLauncherPackageName() {
