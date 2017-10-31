@@ -175,8 +175,8 @@ public class GreyStatusEmailTestUIAutomator {
     private void sendEmail(){
         doWait("send");
         device.findObject(By.res(PACKAGE, "send")).click();
-        doWait(35000);
         waitForNotExists("send");
+        device.waitForIdle();
     }
 
     private void doWait(String viewId){
