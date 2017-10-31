@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
@@ -64,12 +65,7 @@ public class ImportSettingsTest {
         device.waitForIdle();
         selectSettingsImportExport();
         device.waitForIdle();
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        //waitForMenu();
+        waitForMenu();
         selectSettingsImport();
         getActivityInstance();
         removeAccount();
@@ -124,12 +120,15 @@ public class ImportSettingsTest {
     }
 
     private void waitForMenu(){
+        device.wait(Until.hasObject(By.desc(InstrumentationRegistry.getTargetContext().getResources().getString(R.string.settings_import))), 1);
+        /*
         BySelector selector = By.clazz("android.widget.TextView");
         int size = device.findObjects(selector).size();
         String originalText = device.findObjects(selector).get(size-1).getText();
         while ((size == device.findObjects(selector).size())){
             device.waitForIdle();
         }
+        */
     }
 
     private void selectSettingsImportExport(){
@@ -138,7 +137,7 @@ public class ImportSettingsTest {
         for (int i = 0; i < size; i++) {
             if (device.findObjects(selector).get(i).getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(R.string.import_export_action))){
                 device.findObjects(selector).get(i).click();
-                i = size;
+                break;
             }
         }
     }
@@ -149,7 +148,7 @@ public class ImportSettingsTest {
         for (int i = 0; i < size; i++) {
             if (device.findObjects(selector).get(i).getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(R.string.settings_import))){
                 device.findObjects(selector).get(i).click();
-                i = size;
+                break;
             }
         }}
 
