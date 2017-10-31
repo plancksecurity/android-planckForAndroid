@@ -24,41 +24,41 @@ public class ImportSettingsCancelTest {
     private static final int TIMEOUT = 15000;
     private static final String PACKAGE = "pep.android.k9";
 
-    private UiDevice mDevice;
+    private UiDevice device;
 
     @Before
     public void startMainActivityFromHomeScreen() {
-        mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        mDevice.pressHome();
+        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        device.pressHome();
         final String launcherPackage = getLauncherPackageName();
         assertThat(launcherPackage, notNullValue());
-        mDevice.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), TIMEOUT);
+        device.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), TIMEOUT);
         Context context = InstrumentationRegistry.getContext();
         final Intent intent = context.getPackageManager().getLaunchIntentForPackage(PACKAGE);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);
-        mDevice.wait(Until.hasObject(By.pkg(PACKAGE).depth(0)), TIMEOUT);
+        device.wait(Until.hasObject(By.pkg(PACKAGE).depth(0)), TIMEOUT);
     }
 
     @Test
     public void importSettings(){
         doWait("skip");
-        mDevice.findObject(By.res(PACKAGE, "skip")).click();
-        mDevice.waitForIdle();
+        device.findObject(By.res(PACKAGE, "skip")).click();
+        device.waitForIdle();
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-        mDevice.waitForIdle();
+        device.waitForIdle();
         selectImportSettings();
         getActivityInstance();
-        mDevice.waitForIdle();
+        device.waitForIdle();
     }
 
     private void doWait(String viewId){
-        mDevice.wait(Until.findObject(By.res(PACKAGE, viewId)),TIMEOUT);
+        device.wait(Until.findObject(By.res(PACKAGE, viewId)),TIMEOUT);
     }
 
     private void selectImportSettings(){
         BySelector selector = By.clazz("android.widget.TextView");
-        mDevice.findObjects(selector).get(2).click();
+        device.findObjects(selector).get(2).click();
     }
 
     private String getLauncherPackageName() {
@@ -75,13 +75,13 @@ public class ImportSettingsCancelTest {
     }
 
     private void waitForExternalApp(){
-        while (PACKAGE.equals(mDevice.getCurrentPackageName())){
-            mDevice.waitForIdle();
+        while (PACKAGE.equals(device.getCurrentPackageName())){
+            device.waitForIdle();
         }
     }
 
     private void goBackToOriginalApp(){
-        while (!PACKAGE.equals(mDevice.getCurrentPackageName())){
-            mDevice.pressBack();
+        while (!PACKAGE.equals(device.getCurrentPackageName())){
+            device.pressBack();
         }}
 }
