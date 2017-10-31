@@ -116,14 +116,6 @@ public class ImportSettingsTest {
 
     private void waitForMenu(){
         device.wait(Until.hasObject(By.desc(InstrumentationRegistry.getTargetContext().getResources().getString(R.string.settings_import))), 1);
-        /*
-        BySelector selector = By.clazz("android.widget.TextView");
-        int size = device.findObjects(selector).size();
-        String originalText = device.findObjects(selector).get(size-1).getText();
-        while ((size == device.findObjects(selector).size())){
-            device.waitForIdle();
-        }
-        */
     }
 
     private void selectSettingsImportExport(){
