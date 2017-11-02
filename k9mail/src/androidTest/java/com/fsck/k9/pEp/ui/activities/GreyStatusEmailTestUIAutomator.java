@@ -150,8 +150,8 @@ public class GreyStatusEmailTestUIAutomator {
     private void fillEmail(String to, String subject, String message){
         doWait("to");
         device.waitForIdle();
-        device.findObject(By.res(PACKAGE, "to")).click();
-        doWait(2000);
+        device.findObject(By.res(PACKAGE, "to")).longClick();
+        device.waitForIdle();
         device.pressKeyCode(KeyEvent.KEYCODE_DEL);
         device.waitForIdle();
         onView(withId(R.id.to)).perform(typeText(to));
@@ -160,13 +160,6 @@ public class GreyStatusEmailTestUIAutomator {
         device.findObject(By.res(PACKAGE, "message_content")).click();
     }
 
-    private void doWait(int timeMillis){
-        try {
-            Thread.sleep(timeMillis);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
     private void sendEmail(){
         doWait("send");
         device.findObject(By.res(PACKAGE, "send")).click();
