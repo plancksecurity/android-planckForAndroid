@@ -650,6 +650,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void createAccountsMenu() {
+        if (navigationAccounts != null) {
+            navigationAccounts.setLayoutManager(getDrawerLayoutManager());
+        }
+
         showingAccountsMenu = true;
         foldersDrawerLayout.setVisibility(View.GONE);
         accountsDrawerLayout.setVisibility(View.VISIBLE);
@@ -703,10 +707,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         });
         ListAdapteeCollection<Account> adapteeCollection = new ListAdapteeCollection<>(accounts);
 
-        navigationAccounts.setLayoutManager(getDrawerLayoutManager());
         accountAdapter = new RVRendererAdapter<>(rendererAccountBuilder, adapteeCollection);
-
-        navigationAccounts.setAdapter(accountAdapter);
+        if (navigationAccounts != null) {
+            navigationAccounts.setAdapter(accountAdapter);
+        }
 
         setupCreateAccountListener();
         configureAccountContainer = findViewById(R.id.configure_account_container);
@@ -966,6 +970,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void populateFolders(List<LocalFolder> folders) {
+        if (navigationFolders != null) {
+            navigationFolders.setLayoutManager(getDrawerLayoutManager());
+        }
         List<LocalFolder> foldersFiltered = filterLocalFolders(folders);
 
         List<FolderModel> folderModels = new ArrayList<>(foldersFiltered.size());
@@ -992,9 +999,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         });
         ListAdapteeCollection<FolderModel> adapteeCollection = new ListAdapteeCollection<>(folderModels);
 
-        if (navigationFolders != null) {
-            navigationFolders.setLayoutManager(getDrawerLayoutManager());
-        }
         folderAdapter = new RVRendererAdapter<>(rendererFolderBuilder, adapteeCollection);
 
         if (navigationFolders != null) {
