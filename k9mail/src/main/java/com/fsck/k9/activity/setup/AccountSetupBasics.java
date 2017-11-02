@@ -45,6 +45,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
     public boolean isEditingOutgoingSettings;
     private NonConfigurationInstance nonConfigurationInstance;
     @Inject AccountSetupNavigator accountSetupNavigator;
+    private boolean isGoingBack = false;
 
     public static void actionNewAccount(Context context) {
         Intent i = new Intent(context, AccountSetupBasics.class);
@@ -167,13 +168,19 @@ public class AccountSetupBasics extends PEpImporterActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        isGoingBack = false;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.import_settings:
                 onImport();
                 break;
             case android.R.id.home:
-                goBack();
+                onBackPressed();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -190,6 +197,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
 
     @Override
     public void onBackPressed() {
+        isGoingBack = true;
         goBack();
     }
 
@@ -199,9 +207,10 @@ public class AccountSetupBasics extends PEpImporterActivity {
 
     @Override
     protected void onDestroy() {
-        if (accountSetupNavigator.shouldDeleteAccount() && isManualSetupRequired) {
+        if (accountSetupNavigator.shouldDeleteAccount() && isManualSetupRequired && isGoingBack) {
             deleteAccount();
         }
+        isGoingBack = false;
         super.onDestroy();
     }
 
