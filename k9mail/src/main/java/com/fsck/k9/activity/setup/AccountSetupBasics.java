@@ -85,11 +85,13 @@ public class AccountSetupBasics extends PEpImporterActivity {
             ft.addToBackStack("AccountSetupIncomingFragment");
             String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
             ft.add(R.id.account_setup_container, AccountSetupIncomingFragment.actionEditIncomingSettings(accountUuid)).commit();
+            accountSetupNavigator.setIsEditting(true);
         } else if (isEditingOutgoingSettings) {
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.addToBackStack("AccountSetupIncomingFragment");
             String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
             ft.add(R.id.account_setup_container, AccountSetupOutgoingFragment.intentActionEditOutgoingSettings(accountUuid)).commit();
+            accountSetupNavigator.setIsEditting(true);
         }
         else if (savedInstanceState == null) {
             accountSetupBasicsFragment = new AccountSetupBasicsFragment();
@@ -189,7 +191,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
     }
 
     private void goBack() {
-        if (accountSetupNavigator.shouldDeleteAccount()) {
+        if (accountSetupNavigator.shouldDeleteAccount() && !isEditingIncomingSettings && !isEditingOutgoingSettings) {
             deleteAccount();
         }
         accountSetupNavigator.goBack(this, getFragmentManager());
