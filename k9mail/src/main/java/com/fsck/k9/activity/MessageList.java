@@ -1472,6 +1472,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             } else if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
                 updateToolbarColorToOriginal();
                 showMessageList();
+                setDrawerEnabled(true);
             } else if (isThreadDisplayed) {
                 actionDisplaySearch(this, mSearch, false, false);
             } else {
@@ -1692,10 +1693,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         int itemId = item.getItemId();
         switch (itemId) {
             case android.R.id.home: {
-                if (isMessageViewVisible()) {
-                    setMessageViewVisible(false);
-                }
-                goBack();
+                onBackPressed();
                 return true;
             }
             case R.id.compose: {
