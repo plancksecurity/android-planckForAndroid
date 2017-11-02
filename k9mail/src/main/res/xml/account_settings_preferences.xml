@@ -281,7 +281,7 @@
             android:entries="@array/account_settings_folder_target_mode_entries"
             android:entryValues="@array/account_settings_folder_target_mode_values"
             android:dialogTitle="@string/account_settings_folder_target_mode_label" />
-
+        <!--
         <ListPreference
             android:persistent="false"
             android:key="searchable_folders"
@@ -289,7 +289,7 @@
             android:entries="@array/account_settings_searchable_entries"
             android:entryValues="@array/account_settings_searchable_values"
             android:dialogTitle="@string/account_settings_searchable_label" />
-
+        -->
         <ListPreference
             android:persistent="false"
             android:key="archive_folder"
