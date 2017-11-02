@@ -160,7 +160,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
                     && !AccountSetupNames.this.isDestroyed()){
                 dialog.dismiss();
             }
-            Accounts.listAccounts(AccountSetupNames.this);
+            Accounts.listAccountsOnStartup(AccountSetupNames.this);
         }
 
         @Override
