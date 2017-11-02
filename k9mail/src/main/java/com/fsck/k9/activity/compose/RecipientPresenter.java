@@ -10,9 +10,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.VisibleForTesting;
 import android.os.Handler;
-import timber.log.Timber;
+import android.support.annotation.VisibleForTesting;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -48,6 +47,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import timber.log.Timber;
 
 
 public class RecipientPresenter implements PermissionPingCallback {
@@ -852,7 +853,7 @@ public class RecipientPresenter implements PermissionPingCallback {
     }
 
     public boolean isAlwaysSecure() {
-        return isAlwaysSecure;
+        return isAlwaysSecure && privacyState.value >= Rating.pEpRatingUnreliable.value;
     }
 
     public void onResume() {
@@ -900,7 +901,7 @@ public class RecipientPresenter implements PermissionPingCallback {
     }
 
     public void setAlwaysSecure(Boolean alwaysSecure) {
-        isAlwaysSecure = alwaysSecure && privacyState.value >= Rating.pEpRatingUnreliable.value;
+        isAlwaysSecure = alwaysSecure;
     }
 
     public enum CryptoProviderState {
