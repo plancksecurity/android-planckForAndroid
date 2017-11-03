@@ -124,6 +124,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     // used for remote search
     public static final String EXTRA_SEARCH_ACCOUNT = "com.fsck.k9.search_account";
     private static final String EXTRA_SEARCH_FOLDER = "com.fsck.k9.search_folder";
+    private static final String EXTRA_IS_SEARCHING = "is_searching";
 
     private static final String STATE_DISPLAY_MODE = "displayMode";
     private static final String STATE_MESSAGE_LIST_WAS_DISPLAYED = "messageListWasDisplayed";
@@ -164,6 +165,12 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private Account lastUsedAccount;
     private SearchAccount unifiedInboxAccount;
     private SearchAccount allMessagesAccount;
+
+    public boolean isSearching() {
+        return isSearching;
+    }
+
+    private boolean isSearching;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
             boolean noThreading, boolean newTask) {
@@ -376,6 +383,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             final Bundle appData = new Bundle();
             appData.putString(EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
             appData.putString(EXTRA_SEARCH_FOLDER, mFolderName);
+            appData.putBoolean(EXTRA_IS_SEARCHING, true);
+            //TODO another flag for search
             triggerSearch(query, appData);
         }
     }
@@ -1265,6 +1274,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 mSearch.or(new SearchCondition(SearchField.TO, Attribute.CONTAINS, query));
 
                 Bundle appData = intent.getBundleExtra(SearchManager.APP_DATA);
+                isSearching = appData.getBoolean(EXTRA_IS_SEARCHING, false);
                 if (appData != null) {
                     mSearch.addAccountUuid(appData.getString(EXTRA_SEARCH_ACCOUNT));
                     // searches started from a folder list activity will provide an account, but no folder

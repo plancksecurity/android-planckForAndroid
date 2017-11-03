@@ -77,6 +77,7 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
+import com.fsck.k9.pEp.BooleanVariable;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageSwipeDirection;
@@ -130,6 +131,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     private FloatingActionButton fab;
     private ProgressBar loadingView;
     private Rating worstThreadRating;
+    private K9Activity k9Activity;
 
     public static MessageListFragment newInstance(LocalSearch search, boolean isThreadDisplay, boolean threadedList) {
         MessageListFragment fragment = new MessageListFragment();
@@ -377,9 +379,11 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             if (title != null) {
                 // This was a search folder; the search folder has overridden our title.
                 fragmentListener.setMessageListTitle(title);
+                k9Activity.getSearchViewStatus().setFlag(true);
             } else {
                 // This is a search result; set it to the default search result line.
                 fragmentListener.setMessageListTitle(getString(R.string.search_results));
+                k9Activity.getSearchViewStatus().setFlag(false);
             }
 
             fragmentListener.setMessageListSubTitle(null);
@@ -744,6 +748,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         super.onResume();
 
         Context appContext = getActivity().getApplicationContext();
+        k9Activity = ((K9Activity) getActivity());
 
         senderAboveSubject = K9.messageListSenderAboveSubject();
         if (!loaderJustInitialized) {
@@ -791,6 +796,21 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         } else {
             fab.show();
         }
+
+        boolean isSearching = ((MessageList) getActivity()).isSearching();
+
+        k9Activity.getSearchViewStatus().setFlag(isSearching);
+
+        k9Activity.getSearchViewStatus().setListener(new BooleanVariable.ChangeListener() {
+            @Override
+            public void onChange() {
+                if (k9Activity.getSearchViewStatus().isFlag()) {
+                    fab.hide();
+                } else {
+                    fab.show();
+                }
+            }
+        });
     }
 
     private void restartLoader() {
