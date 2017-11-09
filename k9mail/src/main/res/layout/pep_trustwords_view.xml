@@ -70,5 +70,6 @@
         tools:text="IMPORTUNER METAPHOR ARNO DIABETES SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET"
         android:textSize="24sp"
         android:ellipsize="none"
+        android:breakStrategy="simple"
         android:paddingTop="8dp"/>
 </merge>
