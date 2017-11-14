@@ -77,7 +77,7 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
-import com.fsck.k9.pEp.BooleanVariable;
+import com.fsck.k9.pEp.BooleanObservable;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageSwipeDirection;
@@ -801,7 +801,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
         k9Activity.getSearchViewStatus().setFlag(isSearching);
 
-        k9Activity.getSearchViewStatus().setListener(new BooleanVariable.ChangeListener() {
+        k9Activity.getSearchViewStatus().setListener(new BooleanObservable.ChangeListener() {
             @Override
             public void onChange() {
                 if (k9Activity.getSearchViewStatus().isFlag()) {

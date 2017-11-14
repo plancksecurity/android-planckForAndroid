@@ -23,7 +23,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
-import com.fsck.k9.pEp.BooleanVariable;
+import com.fsck.k9.pEp.BooleanObservable;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 
@@ -45,13 +45,13 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
     private K9ActivityCommon mBase;
     private View.OnClickListener onCloseSearchClickListener;
-    private BooleanVariable searchViewStatus = new BooleanVariable();
+    private BooleanObservable searchViewStatus = new BooleanObservable();
 
-    public BooleanVariable getSearchViewStatus() {
+    public BooleanObservable getSearchViewStatus() {
         return searchViewStatus;
     }
 
-    public void setSearchViewStatus(BooleanVariable searchViewStatus) {
+    public void setSearchViewStatus(BooleanObservable searchViewStatus) {
         this.searchViewStatus = searchViewStatus;
     }
 

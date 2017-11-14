@@ -1,6 +1,6 @@
 package com.fsck.k9.pEp;
 
-public class BooleanVariable {
+public class BooleanObservable {
     private boolean flag = false;
     private ChangeListener listener;
 
