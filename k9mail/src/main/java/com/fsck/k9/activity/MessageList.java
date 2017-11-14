@@ -1274,8 +1274,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 mSearch.or(new SearchCondition(SearchField.TO, Attribute.CONTAINS, query));
 
                 Bundle appData = intent.getBundleExtra(SearchManager.APP_DATA);
-                isSearching = appData.getBoolean(EXTRA_IS_SEARCHING, false);
                 if (appData != null) {
+                    isSearching = appData.getBoolean(EXTRA_IS_SEARCHING, false);
                     mSearch.addAccountUuid(appData.getString(EXTRA_SEARCH_ACCOUNT));
                     // searches started from a folder list activity will provide an account, but no folder
                     if (appData.getString(EXTRA_SEARCH_FOLDER) != null) {
