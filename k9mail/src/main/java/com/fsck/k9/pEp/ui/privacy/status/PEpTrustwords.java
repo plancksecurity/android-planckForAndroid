@@ -298,8 +298,8 @@ public class PEpTrustwords extends PepColoredActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void showFingerprints(boolean buttonPressed) {
-        if (buttonPressed) {
+    private void showFingerprints(boolean isRequestedByUser) {
+        if (isRequestedByUser) {
             showingPgpFingerprint = !showingPgpFingerprint;
         }
         invalidateOptionsMenu();
