@@ -810,8 +810,11 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     }
 
     private void showErrorDialog(int stringResource, String message) {
+        String originalString = getResources().getString(stringResource);
+        int cuttingPosition = originalString.indexOf(".");
+        String title = originalString.substring(0, cuttingPosition);
         new AlertDialog.Builder(getActivity())
-                .setTitle(getResources().getString(stringResource))
+                .setTitle(title)
                 .setMessage(message)
                 .show();
     }
