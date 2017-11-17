@@ -63,8 +63,6 @@ class TestUtils {
         this.device = device;
     }
 
-    TestUtils(){}
-
     void increaseTimeoutWait(){
         long waitingTime = DateUtils.SECOND_IN_MILLIS * 200;
         IdlingPolicies.setMasterPolicyTimeout(waitingTime, TimeUnit.MILLISECONDS);
