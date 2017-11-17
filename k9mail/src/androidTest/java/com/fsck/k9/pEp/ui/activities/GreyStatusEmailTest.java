@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 
 import com.fsck.k9.R;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,9 +39,13 @@ public class GreyStatusEmailTest {
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
 
+    @Before
+    public void startMainActivity() {
+        testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()));
+    }
+
     @Test
     public void greyStatusEmailTest() {
-        testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()));
         testUtils.increaseTimeoutWait();
         accountConfiguration();
         testUtils.accountDescription(DESCRIPTION, USER_NAME);
@@ -49,7 +54,7 @@ public class GreyStatusEmailTest {
         testStatusEmpty();
         testStatusMail(EMAIL, "Subject", "Message", Rating.pEpRatingUnencrypted.value);
         testStatusMail("", "", "", Rating.pEpRatingUndefined.value);
-        testStatusMail(EMAIL, "", "", Rating.pEpRatingUnencrypted.value);
+        testStatusMail(EMAIL, "Subject", "Message", Rating.pEpRatingUnencrypted.value);
         testUtils.sendEmail();
         testUtils.removeAccount(DESCRIPTION);
     }
@@ -59,7 +64,7 @@ public class GreyStatusEmailTest {
     }
 
     private void testStatusMail(String to, String subject, String message, int status){
-        testUtils.fillEmail(to, subject, message);
+        testUtils.fillEmail(to, subject, message, false);
         doWait(TIME);
         checkStatus(status);
     }
