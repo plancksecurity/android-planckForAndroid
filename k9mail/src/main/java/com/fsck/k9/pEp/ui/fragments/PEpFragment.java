@@ -2,6 +2,7 @@ package com.fsck.k9.pEp.ui.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.fsck.k9.K9;
@@ -41,5 +42,12 @@ public abstract class PEpFragment extends Fragment {
 
     public PEpComponent getpEpComponent() {
         return pEpComponent;
+    }
+
+    @NonNull
+    public String extractErrorDialogTitle(int stringResource) {
+        String originalString = getResources().getString(stringResource);
+        int cuttingPosition = originalString.indexOf(".");
+        return originalString.substring(0, cuttingPosition);
     }
 }

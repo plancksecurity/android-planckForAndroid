@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -810,8 +811,9 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     }
 
     private void showErrorDialog(int stringResource, String message) {
+        String title = extractErrorDialogTitle(stringResource);
         new AlertDialog.Builder(getActivity())
-                .setTitle(getResources().getString(stringResource))
+                .setTitle(title)
                 .setMessage(message)
                 .show();
     }

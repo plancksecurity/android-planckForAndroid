@@ -660,8 +660,9 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     }
 
     private void showErrorDialog(int stringResource, String message) {
+        String title = extractErrorDialogTitle(stringResource);
         new AlertDialog.Builder(getActivity())
-                .setTitle(getResources().getString(stringResource))
+                .setTitle(title)
                 .setMessage(message)
                 .show();
     }
