@@ -7,6 +7,7 @@ import android.support.test.espresso.Espresso;
 import android.support.test.espresso.action.ViewActions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.test.uiautomator.UiDevice;
 import android.test.suitebuilder.annotation.LargeTest;
 import android.view.KeyEvent;
 
@@ -39,6 +40,7 @@ public class GreyStatusEmailTest {
 
     @Test
     public void greyStatusEmailTest() {
+        testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()));
         testUtils.increaseTimeoutWait();
         accountConfiguration();
         testUtils.accountDescription(DESCRIPTION, USER_NAME);
@@ -57,7 +59,7 @@ public class GreyStatusEmailTest {
     }
 
     private void testStatusMail(String to, String subject, String message, int status){
-        fillEmail(to, subject, message);
+        testUtils.fillEmail(to, subject, message);
         doWait(TIME);
         checkStatus(status);
     }
@@ -73,17 +75,6 @@ public class GreyStatusEmailTest {
         onView(withId(R.id.pEp_indicator)).perform(click());
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
         Espresso.pressBack();
-    }
-
-    private void fillEmail(String to, String subject, String message){
-        onView(withId(R.id.to)).perform(click());
-        doWait(TIME);
-        onView(withId(R.id.to)).perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL));
-        doWait(TIME);
-        onView(withId(R.id.to)).perform(typeText(to));
-        onView(withId(R.id.subject)).perform(typeText(subject));
-        onView(withId(R.id.message_content)).perform(typeText(message));
-        onView(withId(R.id.message_content)).perform(click());
     }
 
     private void doWait(int timeMillis){
