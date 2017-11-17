@@ -685,7 +685,7 @@ public class PEpProviderImpl implements PEpProvider {
         Identity id;
         try {
             id = engine.own_message_private_key_details(message);
-            return  new KeyDetail(buildImportDialogText(context, id, message.getFrom().address), id.fpr, new Address(id.address, id.username));
+            return  new KeyDetail(id.fpr, new Address(id.address, id.username));
         } catch (Exception e) {
             Log.e(TAG, "getOwnKeyDetails: ", e);
         }
@@ -704,25 +704,25 @@ public class PEpProviderImpl implements PEpProvider {
         }
     }
 
-    private String buildImportDialogText(Context context, Identity id, String fromAddress) {
-        StringBuilder stringBuilder = new StringBuilder();
-        String formattedFpr = PEpUtils.formatFpr(id.fpr);
-        stringBuilder.append(context.getString(R.string.pep_receivedSecretKey))
-                .append("\n")
-                .append(context.getString(R.string.pep_username)).append(": ")
-                .append(id.username).append("\n")
-                .append(context.getString(R.string.pep_userAddress)).append(": ")
-                .append(id.address).append("\n")
-                .append("\n")
-                .append(formattedFpr.substring(0, formattedFpr.length()/2))
-                .append("\n")
-                .append(formattedFpr.substring(formattedFpr.length()/2))
-                .append("\n").append("\n")
-                .append(context.getString(R.string.recipient_from)).append(": ")
-                .append(fromAddress);
-
-        return stringBuilder.toString();
-    }
+//    private String buildImportDialogText(Context context, Identity id, String fromAddress) {
+//        StringBuilder stringBuilder = new StringBuilder();
+//        String formattedFpr = PEpUtils.formatFpr(id.fpr);
+//        stringBuilder.append(context.getString(R.string.pep_receivedSecretKey))
+//                .append("\n")
+//                .append(context.getString(R.string.pep_username)).append(": ")
+//                .append(id.username).append("\n")
+//                .append(context.getString(R.string.pep_userAddress)).append(": ")
+//                .append(id.address).append("\n")
+//                .append("\n")
+//                .append(formattedFpr.substring(0, formattedFpr.length()/2))
+//                .append("\n")
+//                .append(formattedFpr.substring(formattedFpr.length()/2))
+//                .append("\n").append("\n")
+//                .append(context.getString(R.string.recipient_from)).append(": ")
+//                .append(fromAddress);
+//
+//        return stringBuilder.toString();
+//    }
 
     @Override
     public synchronized void setSubjectUnprotected (boolean isUnprotected) {

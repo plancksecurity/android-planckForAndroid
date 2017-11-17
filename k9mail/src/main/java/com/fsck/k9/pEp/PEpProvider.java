@@ -204,17 +204,11 @@ public interface PEpProvider {
 
     class KeyDetail {
         private final Address address;
-        private final String detailMessage;
         private final String fpr;
 
-        public KeyDetail(String detailMessage, String fpr, Address address) {
-            this.detailMessage = detailMessage;
+        public KeyDetail(String fpr, Address address) {
             this.fpr = fpr;
             this.address = address;
-        }
-
-        public String getDetailMessage() {
-            return detailMessage;
         }
 
         public String getFpr() {
@@ -223,6 +217,14 @@ public interface PEpProvider {
 
         public Address getAddress() {
             return address;
+        }
+
+        public String getUsername() {
+            return address.getPersonal();
+        }
+
+        public String getStringAddress() {
+            return address.getAddress();
         }
     }
 
