@@ -45,7 +45,7 @@ public class AttachFilesToEmailTest {
         testUtils.composseMessageButton();
         testUtils.fillEmail(EMAIL, "Subject", "Message");
         testUtils.sendEmail();
-        testUtils.removeAccount();
+        testUtils.removeAccount("accounts_list");
     }
 
     private void accountConfiguration(){
