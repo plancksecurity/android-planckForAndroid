@@ -212,7 +212,7 @@ public class PEpTrustwords extends PepColoredActivity {
             flipper.setAnimateFirstView(false);
             flipper.setDisplayedChild(1);
             showingPgpFingerprint = true;
-            showFingerprints();
+            showFingerprints(false);
         }
         flipper.setVisibility(View.VISIBLE);
     }
@@ -276,7 +276,7 @@ public class PEpTrustwords extends PepColoredActivity {
                     menuItemtrustwordsLength.setVisible(true);
                 }
                 flipper.showNext();
-                showFingerprints();
+                showFingerprints(true);
                 return true;
             case R.id.action_language:
                 showLanguageSelectionDialog();
@@ -298,7 +298,10 @@ public class PEpTrustwords extends PepColoredActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void showFingerprints() {
+    private void showFingerprints(boolean isRequestedByUser) {
+        if (isRequestedByUser) {
+            showingPgpFingerprint = !showingPgpFingerprint;
+        }
         invalidateOptionsMenu();
     }
 
@@ -362,8 +365,10 @@ public class PEpTrustwords extends PepColoredActivity {
         showingPgpFingerprint = savedInstanceState.getBoolean(SHOWING_PGP_FINGERPRINT);
         areTrustwordsShort = savedInstanceState.getBoolean(ARE_TRUSTWORD_SHORT);
         trustwordsLanguage = savedInstanceState.getString(TRUSTWORD_LANGUAGE);
-        if (showingPgpFingerprint) flipper.showNext();
-        invalidateOptionsMenu();
+        if (showingPgpFingerprint) {
+            flipper.showNext();
+            invalidateOptionsMenu();
+        }
     }
 
     @Override
