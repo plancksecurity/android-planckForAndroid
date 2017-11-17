@@ -237,10 +237,10 @@ class TestUtils {
     }
 
     private void doWait(String viewId){
-        UiObject2 androidRocksTextView = device
+        UiObject2 waitForView = device
                 .wait(Until.findObject(By.res(APP_ID, viewId)),
                         150000);
-        assertThat(androidRocksTextView, notNullValue());
+        assertThat(waitForView, notNullValue());
     }
 
     void startActivity(){
