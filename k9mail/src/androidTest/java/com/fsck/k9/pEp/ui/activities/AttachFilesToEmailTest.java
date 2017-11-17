@@ -43,7 +43,7 @@ public class AttachFilesToEmailTest {
         testUtils.accountDescription(DESCRIPTION, USER_NAME);
         testUtils.accountListSelect(DESCRIPTION);
         testUtils.composseMessageButton();
-        testUtils.fillEmail(EMAIL, "Subject", "Message");
+        testUtils.fillEmail(EMAIL, "Subject", "Message", true);
         testUtils.sendEmail();
         testUtils.removeAccount("accounts_list");
     }
