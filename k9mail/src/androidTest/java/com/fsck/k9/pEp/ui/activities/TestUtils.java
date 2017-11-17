@@ -57,7 +57,6 @@ class TestUtils {
     private static final int LAUNCH_TIMEOUT = 5000;
 
     private UiDevice device;
-    private int fileNumber = 0;
 
     TestUtils(UiDevice device) {
         this.device = device;
@@ -148,13 +147,14 @@ class TestUtils {
     }
 
     private void attachFiles(){
-        for (; fileNumber<3; fileNumber++){
+        for (int fileNumber = 0; fileNumber<3; fileNumber++){
             intending(not(isInternal())).respondWith(createFileForActivityResultStub(FILE_NAME+fileNumber+".png"));
             doWait();
             onView(withId(R.id.add_attachment)).perform(click());
             doWait();
             onView(withId(R.id.attachments)).check(matches(hasDescendant(withText(FILE_NAME+fileNumber+".png"))));
         }
+
     }
 
     private Instrumentation.ActivityResult createFileForActivityResultStub(String fileName) {

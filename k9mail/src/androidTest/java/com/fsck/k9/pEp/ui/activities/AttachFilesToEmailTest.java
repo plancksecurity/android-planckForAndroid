@@ -38,8 +38,17 @@ public class AttachFilesToEmailTest {
 
     @Test 
     public void attachFilesToEmail() {
+        attachFilesToAccount(false);
+    }
+
+    private void attachFilesToAccount(boolean isGmail) {
         testUtils.increaseTimeoutWait();
-        accountConfiguration();
+        onView(withId(R.id.skip)).perform(click());
+        if (isGmail) {
+            testUtils.gmailAccount();
+        } else {
+            testUtils.newEmailAccount();
+        }
         testUtils.accountDescription(DESCRIPTION, USER_NAME);
         testUtils.accountListSelect(DESCRIPTION);
         testUtils.composseMessageButton();
@@ -48,8 +57,13 @@ public class AttachFilesToEmailTest {
         testUtils.removeAccount("accounts_list");
     }
 
+    @Test
+    public void attachFilesToGmail() {
+        attachFilesToAccount(true);
+    }
+
     private void accountConfiguration(){
-        onView(withId(R.id.skip)).perform(click());
+
         testUtils.newEmailAccount();
         //testUtils.gmailAccount();
     }
