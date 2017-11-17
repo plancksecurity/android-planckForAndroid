@@ -41,23 +41,24 @@ public class GreyStatusEmailTest {
     private static final String DESCRIPTION = "tester one";
     private static final String USER_NAME = "testerJ";
     private static final String EMAIL = "newemail@mail.es";
+    private TestUtils testUtils;
 
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
 
     @Test
     public void greyStatusEmailTest() {
-        increaseTimeoutWait();
+        testUtils.increaseTimeoutWait();
         accountConfiguration();
-        accountDescription(DESCRIPTION, USER_NAME);
-        accountListSelect(DESCRIPTION);
-        composseMessageButton();
+        testUtils.accountDescription(DESCRIPTION, USER_NAME);
+        testUtils.accountListSelect(DESCRIPTION);
+        testUtils.composseMessageButton();
         testStatusEmpty();
         testStatusMail(EMAIL, "Subject", "Message", Rating.pEpRatingUnencrypted.value);
         testStatusMail("", "", "", Rating.pEpRatingUndefined.value);
         testStatusMail(EMAIL, "", "", Rating.pEpRatingUnencrypted.value);
-        sendEmail();
-        removeAccount(DESCRIPTION);
+        testUtils.sendEmail();
+        testUtils.removeAccount(DESCRIPTION);
     }
 
     private void testStatusEmpty(){
@@ -72,62 +73,10 @@ public class GreyStatusEmailTest {
 
     private void accountConfiguration(){
         onView(withId(R.id.skip)).perform(click());
-        newEmailAccount();
+        testUtils.newEmailAccount();
         //gmailAccount();
     }
 
-    private void newEmailAccount(){
-        onView(withId(R.id.account_email)).perform(typeText(getEmail()));
-        onView(withId(R.id.account_password)).perform(typeText(getPassword()), closeSoftKeyboard());
-        onView(withId(R.id.manual_setup)).perform(click());
-        fillImapData();
-        onView(withId(R.id.next)).perform(click());
-        doWait(TIME);
-        fillSmptData();
-        doWait(TIME);
-        onView(withId(R.id.next)).perform(click());
-        doWait(TIME);
-        onView(withId(R.id.next)).perform(click());
-    }
-
-    private void gmailAccount(){
-        onView(withId(R.id.account_oauth2)).perform(click());
-        onView(withId(R.id.next)).perform(click());
-        onView(withId(R.id.next)).perform(click());
-        doWait(TIME);
-        onView(withId(R.id.next)).perform(click());
-        doWait(TIME);
-        onView(withId(R.id.next)).perform(click());
-    }
-
-    private void fillSmptData() {
-        fillServerData();
-    }
-
-    private void fillImapData() {
-        fillServerData();
-    }
-
-    private void fillServerData() {
-        onView(withId(R.id.account_server)).perform(replaceText(getEmailServer()));
-        onView(withId(R.id.account_username)).perform(replaceText(getEmail()));
-    }
-
-    private void accountDescription(String description, String userName) {
-        onView(withId(R.id.account_description)).perform(typeText(description));
-        onView(withId(R.id.account_name)).perform(typeText(userName));
-        doWait(TIME);
-        onView(withId(R.id.done)).perform(click());
-    }
-
-    private void accountListSelect(String description){
-        doWait(TIME);
-        onData(hasToString(startsWith(description))).inAdapterView(withId(R.id.accounts_list)).perform(click());
-    }
-
-    private void composseMessageButton(){
-        onView(withId(R.id.fab_button_compose_message)).perform(click());
-    }
 
     private void checkStatus(int status){
         onView(withId(R.id.pEp_indicator)).perform(click());
@@ -146,17 +95,6 @@ public class GreyStatusEmailTest {
         onView(withId(R.id.message_content)).perform(click());
     }
 
-    private void sendEmail(){
-        onView(withId(R.id.send)).perform(click());
-    }
-
-    private void removeAccount(String description){
-        Espresso.pressBack();
-        onData(hasToString(startsWith(description))).inAdapterView(withId(R.id.accounts_list)).perform(longClick());
-        onData(anything()).atPosition(4).perform(click());
-        onView(withId(android.R.id.button1)).perform(click());
-    }
-
     private void doWait(int timeMillis){
         try {
         Thread.sleep(timeMillis);
@@ -169,19 +107,4 @@ public class GreyStatusEmailTest {
         Context targetContext = InstrumentationRegistry.getTargetContext();
         return targetContext.getResources().getStringArray(id)[n];
     }
-
-    private void increaseTimeoutWait(){
-        long waitingTime = DateUtils.SECOND_IN_MILLIS * 150;
-        IdlingPolicies.setMasterPolicyTimeout(waitingTime, TimeUnit.MILLISECONDS);
-        IdlingPolicies.setIdlingResourceTimeout(waitingTime, TimeUnit.MILLISECONDS);
-    }
-
-    @NonNull
-    private String getEmail() {return BuildConfig.PEP_TEST_EMAIL_ADDRESS;}
-
-    @NonNull
-    private String getEmailServer() {return BuildConfig.PEP_TEST_EMAIL_SERVER;}
-
-    @NonNull
-    private String getPassword(){return  BuildConfig.PEP_TEST_EMAIL_PASSWORD;}
 }
