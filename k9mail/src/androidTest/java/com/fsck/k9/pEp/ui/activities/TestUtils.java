@@ -56,12 +56,14 @@ class TestUtils {
     private static final String FILE_NAME = "ic_test";
     private static final int LAUNCH_TIMEOUT = 5000;
 
-    private final UiDevice device;
+    private UiDevice device;
     private int fileNumber = 0;
 
     TestUtils(UiDevice device) {
         this.device = device;
     }
+
+    TestUtils(){}
 
     void increaseTimeoutWait(){
         long waitingTime = DateUtils.SECOND_IN_MILLIS * 200;
