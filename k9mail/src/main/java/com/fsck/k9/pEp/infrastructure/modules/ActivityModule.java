@@ -4,6 +4,8 @@ import android.app.Activity;
 
 import com.fsck.k9.pEp.infrastructure.PerActivity;
 
+import javax.inject.Named;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -18,6 +20,13 @@ public class ActivityModule {
     @Provides
     @PerActivity
     Activity provideActivity() {
+        return this.activity;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("ActivityContext")
+    Activity provideActivityContext() {
         return this.activity;
     }
 }

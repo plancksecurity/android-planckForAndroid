@@ -1,47 +1,22 @@
 package com.fsck.k9.activity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.app.AlertDialog;
-import android.content.*;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.GestureDetector;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.TextView;
 
-import android.util.Log;
-import android.view.*;
-import android.widget.TextView;
-import android.widget.Toast;
 import com.fsck.k9.K9;
-import com.fsck.k9.R;
 import com.fsck.k9.activity.misc.SwipeGestureDetector;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
-import com.fsck.k9.mail.Address;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
-
-import org.pEp.jniadapter.Identity;
-
-import java.util.Locale;
-import com.fsck.k9.mail.Address;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpUtils;
-import org.pEp.jniadapter.Identity;
+import com.fsck.k9.pEp.ui.keys.keyimport.KeyImportActivity;
 
 import java.util.Locale;
 
@@ -149,51 +124,6 @@ public class K9ActivityCommon {
                 new SwipeGestureDetector(mActivity, listener));
     }
 
-    private static void displayKeyImportAlert(final Context context, final String fpr, final String address, final String username, String from)
-    {
-        ContextThemeWrapper ctw = new ContextThemeWrapper(context, R.style.TextViewCustomFont);
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctw);
-        LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.import_key_dialog, null);
-        String formatedFpr = PEpUtils.formatFpr(fpr);
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(formatedFpr.substring(0, formatedFpr.length()/2-1))
-                .append("\n")
-                .append(formatedFpr.substring(formatedFpr.length()/2, formatedFpr.length()/2+ PEpProvider.HALF_FINGERPRINT_LENGTH));
-        ((TextView) dialogView.findViewById(R.id.tvFpr)).setText(stringBuilder.toString());
-        ((TextView) dialogView.findViewById(R.id.tvAddress)).setText(String.format(context.getString(R.string.pep_user_address_format), address));
-        ((TextView) dialogView.findViewById(R.id.tvUsername)).setText(String.format(context.getString(R.string.pep_user_name_format), username));
-        ((TextView) dialogView.findViewById(R.id.tvFrom)).setText(String.format(context.getString(R.string.pep_from_format), from));
-
-        alertDialogBuilder.setView(dialogView)
-//                .setTitle("Secret key replace")
-//                .setMessage(detail)
-                .setCancelable(false)
-                .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        FeedbackTools.showLongFeedback(getRootView((Activity) context), "Key replaced");
-                        Identity id = PEpUtils.createIdentity(new Address(address, username), context);
-                        id.fpr = fpr;
-                        ((K9) context.getApplicationContext()).getpEpProvider().myself(id);
-                    }
-                }).setNegativeButton("Reject", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                FeedbackTools.showLongFeedback(getRootView((Activity) context), "Key rejected");
-            }
-        });
-        AlertDialog dialog = alertDialogBuilder.create();
-//        TextView textView = (TextView) dialog.findViewById(android.R.id.message);
-//        Typeface face=Typeface.createFromAsset(getAssets(),"fonts/CourierNew.ttf");
-//        textView.setTypeface(face);
-        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_TOAST);
-        dialog.show();
-    }
-
-    private static View getRootView(Activity context) {
-        return context.getWindow().getDecorView().getRootView();
-    }
 
     public static class PrivateKeyReceiver extends BroadcastReceiver {
         public PrivateKeyReceiver() {
@@ -201,14 +131,8 @@ public class K9ActivityCommon {
 
         @Override
         public void onReceive(final Context context, Intent intent) {
-            Log.w("dec", "onReceive: ");
             abortBroadcast();
-            displayKeyImportAlert(
-                    context,
-                    intent.getExtras().getString(PEpProvider.PEP_PRIVATE_KEY_FPR),
-                    intent.getExtras().getString(PEpProvider.PEP_PRIVATE_KEY_ADDRESS),
-                    intent.getExtras().getString(PEpProvider.PEP_PRIVATE_KEY_USERNAME),
-                    intent.getExtras().getString(PEpProvider.PEP_PRIVATE_KEY_FROM));
+            KeyImportActivity.actionShowImportDialog(context, intent);
         }
     }
 

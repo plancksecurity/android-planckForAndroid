@@ -13,6 +13,7 @@ import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOptionsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
+import com.fsck.k9.pEp.ui.keys.keyimport.KeyImportActivity;
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys;
 import com.fsck.k9.pEp.ui.keysync.KeysyncManagement;
 import com.fsck.k9.pEp.ui.keysync.PEpAddDevice;
@@ -55,4 +56,6 @@ import dagger.Component;
     void inject(MessageList messageList);
 
     void inject(SelectPathFragment selectPathFragment);
+
+    void inject(KeyImportActivity keyImportActivity);
 }

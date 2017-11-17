@@ -3,4 +3,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="pep_sync_add_device_padding_vertical">8dp</dimen>
+    <dimen name="floating_width">350dp</dimen>
+    <dimen name="floating_height">380dp</dimen>
 </resources>
