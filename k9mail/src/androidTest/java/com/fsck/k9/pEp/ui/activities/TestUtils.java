@@ -130,19 +130,21 @@ class TestUtils {
         onView(withId(R.id.fab_button_compose_message)).perform(click());
     }
 
-    void fillEmail(String to, String subject, String message){
+    void fillEmail(String to, String subject, String message, boolean attachFilesToEmail){
         doWait("to");
-        device.waitForIdle();
+        doWait();
         device.findObject(By.res(APP_ID, "to")).longClick();
-        device.waitForIdle();
+        doWait();
         device.pressKeyCode(KeyEvent.KEYCODE_DEL);
-        device.waitForIdle();
+        doWait();
         onView(withId(R.id.to)).perform(typeText(to), closeSoftKeyboard());
         device.findObject(By.res(APP_ID, "subject")).setText(subject);
         device.findObject(By.res(APP_ID, "message_content")).setText(message);
         device.findObject(By.res(APP_ID, "message_content")).click();
         Espresso.closeSoftKeyboard();
-        attachFiles();
+        if (attachFilesToEmail) {
+            attachFiles();
+        }
     }
 
     private void attachFiles(){
@@ -187,12 +189,13 @@ class TestUtils {
 
     void removeAccount(String nameToRemove){
         device.pressBack();
+        doWait();
         doWait(nameToRemove);
-        device.waitForIdle();
+        doWait();
         longClick(nameToRemove);
-        device.waitForIdle();
+        doWait();
         selectRemoveAccount();
-        device.waitForIdle();
+        doWait();
         selectAcceptButton();
     }
 
