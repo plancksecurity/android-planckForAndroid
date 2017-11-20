@@ -57,15 +57,8 @@ public class AttachFilesToEmailTest {
         testUtils.removeAccount("accounts_list");
     }
 
-    @Test
+  /*  @Test
     public void attachFilesToGmail() {
         attachFilesToAccount(true);
-    }
-
-    private void accountConfiguration(){
-
-        testUtils.newEmailAccount();
-        //testUtils.gmailAccount();
-    }
-
+    }*/
 }

@@ -26,6 +26,8 @@ import android.view.KeyEvent;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
 
+import org.pEp.jniadapter.Rating;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -216,7 +218,11 @@ class TestUtils {
 
     private void selectRemoveAccount(){
         BySelector selector = By.clazz("android.widget.TextView");
-        int size = device.findObjects(selector).size();
+        int size;
+        do {
+            doWait();
+            size = device.findObjects(selector).size();
+        }while (size == 0);
         for (int i = 0; i < size; i++) {
             if (device.findObjects(selector).get(i).getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(R.string.remove_account_action))){
                 device.findObjects(selector).get(i).click();
@@ -231,6 +237,21 @@ class TestUtils {
         device.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 180);
     }
 
+    void testStatusEmpty(){
+        checkStatus(Rating.pEpRatingUndefined.value);
+    }
+
+    void testStatusMail(String to, String subject, String message, int status){
+        fillEmail(to, subject, message, false);
+        doWait();
+        checkStatus(status);
+    }
+
+    private void checkStatus(int status){
+        onView(withId(R.id.pEp_indicator)).perform(click());
+        onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
+        Espresso.pressBack();
+    }
 
     private void doWait(){
         device.waitForIdle();
@@ -241,6 +262,11 @@ class TestUtils {
                 .wait(Until.findObject(By.res(APP_ID, viewId)),
                         150000);
         assertThat(waitForView, notNullValue());
+    }
+
+    private String getResourceString(int id, int n) {
+        Context targetContext = InstrumentationRegistry.getTargetContext();
+        return targetContext.getResources().getStringArray(id)[n];
     }
 
     void startActivity(){
