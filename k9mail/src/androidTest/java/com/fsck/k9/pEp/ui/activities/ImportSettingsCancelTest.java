@@ -1,94 +1,43 @@
 package com.fsck.k9.pEp.ui.activities;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.support.test.uiautomator.By;
-import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
-import android.support.test.uiautomator.Until;
+
 import com.fsck.k9.R;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
-import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
 @RunWith(AndroidJUnit4.class)
 public class ImportSettingsCancelTest {
 
-    private static final int TIMEOUT = 15000;
-    private static final String PACKAGE = "pep.android.k9";
-
-    private UiDevice device;
+    private TestUtils testUtils;
 
     @Before
     public void startMainActivityFromHomeScreen() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        device.pressHome();
-        final String launcherPackage = getLauncherPackageName();
-        assertThat(launcherPackage, notNullValue());
-        device.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), TIMEOUT);
-        Context context = InstrumentationRegistry.getContext();
-        final Intent intent = context.getPackageManager().getLaunchIntentForPackage(PACKAGE);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        context.startActivity(intent);
-        device.wait(Until.hasObject(By.pkg(PACKAGE).depth(0)), TIMEOUT);
+        testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()));
+        testUtils.startActivity();
     }
 
     @Test
     public void importSettings(){
-        doWait("skip");
-        device.findObject(By.res(PACKAGE, "skip")).click();
-        device.waitForIdle();
-        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-        device.waitForIdle();
-        selectImportSettings();
-        getActivityInstance();
-        device.waitForIdle();
+        importSettingsTest();
     }
 
-    private void doWait(String viewId){
-        device.wait(Until.findObject(By.res(PACKAGE, viewId)),TIMEOUT);
+    public void importSettingsTest(){
+        testUtils.increaseTimeoutWait();
+        onView(withId(R.id.skip)).perform(click());
+        testUtils.doWait();
+        testUtils.openOptionsMenu();
+        testUtils.doWait();
+        testUtils.selectFromMenu(R.string.settings_import);
+        testUtils.getActivityInstance();
+        testUtils.doWait();
     }
-
-    private void selectImportSettings(){
-        BySelector selector = By.clazz("android.widget.TextView");
-        int size = device.findObjects(selector).size();
-        for (int i = 0; i < size; i++) {
-            if (device.findObjects(selector).get(i).getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(R.string.settings_import))){
-                device.findObjects(selector).get(i).click();
-                break;
-            }
-        }
-    }
-
-    private String getLauncherPackageName() {
-        final Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        PackageManager pm = InstrumentationRegistry.getContext().getPackageManager();
-        ResolveInfo resolveInfo = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        return resolveInfo.activityInfo.packageName;
-    }
-
-    private void getActivityInstance(){
-        waitForExternalApp();
-        goBackToOriginalApp();
-    }
-
-    private void waitForExternalApp(){
-        while (PACKAGE.equals(device.getCurrentPackageName())){
-            device.waitForIdle();
-        }
-    }
-
-    private void goBackToOriginalApp(){
-        while (!PACKAGE.equals(device.getCurrentPackageName())){
-            device.pressBack();
-        }}
 }
