@@ -18,7 +18,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-
 public class KeyImportActivity extends PepActivity implements KeyImportView {
     @Inject
     KeyImportPresenter presenter;
@@ -36,10 +35,13 @@ public class KeyImportActivity extends PepActivity implements KeyImportView {
         ButterKnife.bind(this);
         setupFloatingWindow();
         Intent intent = getIntent();
-        presenter.initialize(this, intent.getExtras().getString(PEpProvider.PEP_PRIVATE_KEY_FPR),
-                intent.getExtras().getString(PEpProvider.PEP_PRIVATE_KEY_ADDRESS),
-                intent.getExtras().getString(PEpProvider.PEP_PRIVATE_KEY_USERNAME),
-                intent.getExtras().getString(PEpProvider.PEP_PRIVATE_KEY_FROM));
+        if (isValidIntent(intent)) {
+            //noinspection ConstantConditions
+            presenter.initialize(this, intent.getExtras().getString(PEpProvider.PEP_PRIVATE_KEY_FPR),
+                    intent.getExtras().getString(PEpProvider.PEP_PRIVATE_KEY_ADDRESS),
+                    intent.getExtras().getString(PEpProvider.PEP_PRIVATE_KEY_USERNAME),
+                    intent.getExtras().getString(PEpProvider.PEP_PRIVATE_KEY_FROM));
+        }
     }
 
     @Override
@@ -91,16 +93,21 @@ public class KeyImportActivity extends PepActivity implements KeyImportView {
     }
 
     public static void actionShowImportDialog(Context context, Intent intent) {
+        isValidIntent(intent);
+
+        Intent dialogIntent = new Intent(context, KeyImportActivity.class);
+        dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        dialogIntent.putExtras(intent);
+        context.startActivity(dialogIntent);
+    }
+
+    private static boolean isValidIntent(Intent intent) {
         if (!intent.hasExtra(PEpProvider.PEP_PRIVATE_KEY_FPR) ||
                 !intent.hasExtra(PEpProvider.PEP_PRIVATE_KEY_ADDRESS) ||
                 !intent.hasExtra(PEpProvider.PEP_PRIVATE_KEY_USERNAME) ||
                 !intent.hasExtra(PEpProvider.PEP_PRIVATE_KEY_FROM)) {
             throw new IllegalStateException("The provided intent does not contain the required extras");
         }
-
-        Intent dialogIntent = new Intent(context, KeyImportActivity.class);
-        dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        dialogIntent.putExtras(intent);
-        context.startActivity(dialogIntent);
+        return true;
     }
 }
