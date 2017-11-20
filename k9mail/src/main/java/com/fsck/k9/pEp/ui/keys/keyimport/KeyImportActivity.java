@@ -59,7 +59,7 @@ public class KeyImportActivity extends PepActivity implements KeyImportView {
 
     @Override
     public void showPositiveFeedback() {
-        FeedbackTools.showLongFeedback(getRootView(), "Key replaced");
+        FeedbackTools.showLongFeedback(getRootView(), getString(R.string.key_import_accept_feedback));
     }
 
     @Override
@@ -68,6 +68,11 @@ public class KeyImportActivity extends PepActivity implements KeyImportView {
         tvFpr.setText(presenter.formatFingerprint(keyDetail.getFpr()));
         tvAddress.setText(String.format(getString(R.string.pep_user_address_format), keyDetail.getUsername(), keyDetail.getStringAddress()));
 
+    }
+
+    @Override
+    public void showNegativeFeedback() {
+        FeedbackTools.showLongFeedback(getRootView(), getString(R.string.key_import_reject_feedback));
     }
 
     protected void setupFloatingWindow() {

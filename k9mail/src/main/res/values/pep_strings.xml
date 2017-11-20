@@ -195,6 +195,8 @@
 
     <string name="key_import_accept">Accept</string>
     <string name="key_import_reject">Reject</string>
+    <string name="key_import_accept_feedback">Key replaced</string>
+    <string name="key_import_reject_feedback">Key rejected</string>
 
 
 </resources>

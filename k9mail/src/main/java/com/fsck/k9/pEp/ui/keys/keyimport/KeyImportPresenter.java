@@ -42,7 +42,7 @@ class KeyImportPresenter {
     }
 
     public void onReject() {
-        view.showPositiveFeedback();
+        view.showNegativeFeedback();
         view.finish();
     }
 

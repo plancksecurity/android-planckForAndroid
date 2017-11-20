@@ -13,4 +13,6 @@ public interface KeyImportView {
     Context getApplicationContext();
 
     void renderDialog(PEpProvider.KeyDetail keyDetail, String from);
+
+    void showNegativeFeedback();
 }
