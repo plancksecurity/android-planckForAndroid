@@ -279,7 +279,7 @@ class TestUtils {
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
     }
 
-    void selectSettingsFromMenu(int resource){
+    void selectFromMenu(int resource){
         BySelector selector = By.clazz("android.widget.TextView");
         int size = device.findObjects(selector).size();
         for (int i = 0; i < size; i++) {
