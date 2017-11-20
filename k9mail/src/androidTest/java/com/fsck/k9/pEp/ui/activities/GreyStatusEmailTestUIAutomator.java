@@ -41,34 +41,27 @@ public class GreyStatusEmailTestUIAutomator {
     private static final int LAUNCH_TIMEOUT = 5000;
     private static final long TIME = 6000;
 
+    private TestUtils testUtils;
     private UiDevice device;
 
     @Before
-    public void startMainActivityFromHomeScreen() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        device.pressHome();
-        final String launcherPackage = getLauncherPackageName();
-        assertThat(launcherPackage, notNullValue());
-        device.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), LAUNCH_TIMEOUT);
-        Context context = InstrumentationRegistry.getContext();
-        final Intent intent = context.getPackageManager().getLaunchIntentForPackage(PACKAGE);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        context.startActivity(intent);
-        device.wait(Until.hasObject(By.pkg(PACKAGE).depth(0)), LAUNCH_TIMEOUT);
+    public void startMainActivity() {
+        testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()));
+        testUtils.startActivity();
     }
 
     @Test
     public void greyStatusEmailTest() {
         accountConfiguration();
-        accountDescription(DESCRIPTION, USER_NAME);
-        accountListSelect(DESCRIPTION);
-        composseMessageButton();
+        testUtils.accountDescription(DESCRIPTION, USER_NAME);
+        testUtils.accountListSelect(DESCRIPTION);
+        testUtils.composseMessageButton();
         testStatusEmpty();
         testStatusMail(EMAIL, "Subject", "Message", Rating.pEpRatingUnencrypted.value);
         testStatusMail("", "", "", Rating.pEpRatingUndefined.value);
         testStatusMail(EMAIL, "Subject", "Message", Rating.pEpRatingUnencrypted.value);
-        sendEmail();
-        removeAccount();
+        testUtils.sendEmail();
+        testUtils.removeAccount("accounts_list");
     }
 
     private void accountConfiguration(){
