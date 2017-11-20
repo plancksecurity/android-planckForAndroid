@@ -14,7 +14,6 @@ import javax.inject.Named;
 class KeyImportPresenter {
 
     private final PEpProvider pEp;
-    private Context context;
     private KeyImportView view;
     private PEpProvider.KeyDetail keyDetail;
     private String from;
@@ -27,13 +26,12 @@ class KeyImportPresenter {
 
     public void initialize(KeyImportView view, String fingerprint, String address, String username, String from) {
         this.view = view;
-        context = view.getApplicationContext();
         keyDetail = new PEpProvider.KeyDetail(fingerprint, new Address(address, username));
         this.from = from;
         view.renderDialog(keyDetail, from);
     }
 
-    public void onAccept() {
+    public void onAccept(Context context) {
         view.showPositiveFeedback();
         Identity id = PEpUtils.createIdentity(keyDetail.getAddress(), context);
         id.fpr = keyDetail.getFpr();

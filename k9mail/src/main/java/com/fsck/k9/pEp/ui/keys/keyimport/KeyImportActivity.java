@@ -87,7 +87,7 @@ public class KeyImportActivity extends PepActivity implements KeyImportView {
 
     @OnClick(R.id.bAccept)
     void onAccept() {
-        presenter.onAccept();
+        presenter.onAccept(this.getApplicationContext());
     }
 
     @OnClick(R.id.bReject)
