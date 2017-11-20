@@ -33,8 +33,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.replaceText;
@@ -271,6 +273,10 @@ class TestUtils {
         while (!APP_ID.equals(device.getCurrentPackageName())){
             device.pressBack();
         }
+    }
+
+    void openOptinsMenu(){
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
     }
 
     void selectSettingsFromMenu(int resource){
