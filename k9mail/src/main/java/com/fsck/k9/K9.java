@@ -83,7 +83,6 @@ public class K9 extends Application {
     private boolean isPollingMessages;
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PEpProvider pEpProvider, pEpSyncProvider;
-    private boolean ispEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
     private Account currentAccount;
     private ApplicationComponent component;
 
@@ -312,7 +311,7 @@ public class K9 extends Application {
     private static boolean pEpPassiveMode = false;
     private static boolean pEpSubjectUnprotected = true;
     private static boolean pEpForwardWarningEnabled = false;
-
+    private static boolean pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
 
 
     private static int sPgpInlineDialogCounter;
@@ -576,6 +575,7 @@ public class K9 extends Application {
         editor.putBoolean("pEpPassiveMode", pEpPassiveMode);
         editor.putBoolean("pEpSubjectUnprotected", pEpSubjectUnprotected);
         editor.putBoolean("pEpForwardWarningEnabled", pEpForwardWarningEnabled);
+        editor.putBoolean("pepEnableSync", pEpSyncEnabled);
 
         fontSizes.save(editor);
     }
@@ -721,14 +721,14 @@ public class K9 extends Application {
 
     private void pEpInitEnvironment() {
         AndroidHelper.setup(this);
-        if (ispEpSyncEnabled) {
+        if (pEpSyncEnabled) {
             initSync();
             setupFastPoller();
         }
     }
 
     public PEpProvider getpEpSyncProvider() {
-        if (ispEpSyncEnabled) return pEpSyncProvider;
+        if (pEpSyncEnabled) return pEpSyncProvider;
         else return pEpProvider;
     }
 
@@ -921,6 +921,7 @@ public class K9 extends Application {
         pEpPassiveMode = storage.getBoolean("pEpPassiveMode", false);
         pEpSubjectUnprotected = storage.getBoolean("pEpSubjectUnprotected", true);
         pEpForwardWarningEnabled = storage.getBoolean("pEpForwardWarningEnabled", false);
+        pEpSyncEnabled = storage.getBoolean("pepEnableSync", BuildConfig.WITH_KEY_SYNC);
 
         mAttachmentDefaultPath = storage.getString("attachmentdefaultpath",
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString());
@@ -962,6 +963,7 @@ public class K9 extends Application {
         K9.setK9MessageViewThemeSetting(Theme.values()[themeValue]);
         themeValue = storage.getInt("messageComposeTheme", Theme.USE_GLOBAL.ordinal());
         K9.setK9ComposerThemeSetting(Theme.values()[themeValue]);
+        K9.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
         K9.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
     }
 
@@ -1737,11 +1739,11 @@ public class K9 extends Application {
     }
 
     public boolean ispEpSyncEnabled() {
-        return ispEpSyncEnabled;
+        return pEpSyncEnabled;
     }
 
-    public void setIspEpSyncEnabled(boolean ispEpSyncEnabled) {
-        this.ispEpSyncEnabled = ispEpSyncEnabled;
+    public static void setpEpSyncEnabled(boolean ispEpSyncEnabled) {
+        pEpSyncEnabled = ispEpSyncEnabled;
     }
 
     public boolean needsFastPoll() {
