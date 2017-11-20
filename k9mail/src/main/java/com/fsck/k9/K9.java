@@ -187,7 +187,7 @@ public class K9 extends Application {
      * Log.d, including protocol dumps.
      * Controlled by Preferences at run-time
      */
-    private static boolean DEBUG = false;
+    public static boolean DEBUG = false;
 
     /**
      * If this is enabled than logging that normally hides sensitive information
