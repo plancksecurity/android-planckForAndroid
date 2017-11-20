@@ -16,7 +16,6 @@ class KeyImportPresenter {
     private final PEpProvider pEp;
     private KeyImportView view;
     private PEpProvider.KeyDetail keyDetail;
-    private String from;
 
     @Inject
     public KeyImportPresenter(@Named("MainUI") PEpProvider pEp) {
@@ -27,11 +26,10 @@ class KeyImportPresenter {
     public void initialize(KeyImportView view, String fingerprint, String address, String username, String from) {
         this.view = view;
         keyDetail = new PEpProvider.KeyDetail(fingerprint, new Address(address, username));
-        this.from = from;
         view.renderDialog(keyDetail, from);
     }
 
-    public void onAccept(Context context) {
+    void onAccept(Context context) {
         view.showPositiveFeedback();
         Identity id = PEpUtils.createIdentity(keyDetail.getAddress(), context);
         id.fpr = keyDetail.getFpr();
@@ -39,12 +37,12 @@ class KeyImportPresenter {
         view.finish();
     }
 
-    public void onReject() {
+    void onReject() {
         view.showNegativeFeedback();
         view.finish();
     }
 
-    public String formatFingerprint(String fpr) {
+    String formatFingerprint(String fpr) {
         String formattedFpr = PEpUtils.formatFpr(fpr);
         return formattedFpr.substring(0, formattedFpr.length() / 2 - 1) +
                 "\n" + formattedFpr.substring(formattedFpr.length() / 2,

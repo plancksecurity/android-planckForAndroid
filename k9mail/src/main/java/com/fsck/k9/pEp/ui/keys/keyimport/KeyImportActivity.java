@@ -53,11 +53,6 @@ public class KeyImportActivity extends PepActivity implements KeyImportView {
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
-
-    @Override
     public void showPositiveFeedback() {
         FeedbackTools.showLongFeedback(getRootView(), getString(R.string.key_import_accept_feedback));
     }
@@ -75,7 +70,7 @@ public class KeyImportActivity extends PepActivity implements KeyImportView {
         FeedbackTools.showLongFeedback(getRootView(), getString(R.string.key_import_reject_feedback));
     }
 
-    protected void setupFloatingWindow() {
+    private void setupFloatingWindow() {
         WindowManager.LayoutParams params = getWindow().getAttributes();
         params.width = getResources().getDimensionPixelSize(R.dimen.floating_width);
         params.height = getResources().getDimensionPixelSize(R.dimen.floating_height);
