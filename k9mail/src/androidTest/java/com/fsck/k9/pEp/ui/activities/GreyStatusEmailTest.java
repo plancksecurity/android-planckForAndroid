@@ -1,9 +1,7 @@
 package com.fsck.k9.pEp.ui.activities;
 
 
-import android.content.Context;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.Espresso;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.UiDevice;
@@ -19,15 +17,12 @@ import org.pEp.jniadapter.Rating;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class GreyStatusEmailTest {
 
-    private static final int TIME = 2000;
     private static final String DESCRIPTION = "tester one";
     private static final String USER_NAME = "testerJ";
     private static final String EMAIL = "newemail@mail.es";
@@ -46,6 +41,11 @@ public class GreyStatusEmailTest {
     public void greyStatusEmail() {
         greyStatusEmailTest(false);
     }
+
+  /*  @Test
+    public void attachFilesToGmail() {
+        attachFilesToAccount(true);
+    }*/
 
     private void greyStatusEmailTest(boolean isGmail) {
         testUtils.increaseTimeoutWait();
