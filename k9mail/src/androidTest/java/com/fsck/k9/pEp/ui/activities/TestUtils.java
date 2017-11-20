@@ -189,8 +189,11 @@ class TestUtils {
         onView(withId(R.id.send)).perform(click());
     }
 
-    void removeAccount(String nameToRemove){
+    void pressBack(){
         device.pressBack();
+    }
+
+    void removeAccount(String nameToRemove){
         doWait();
         doWait(nameToRemove);
         doWait();
