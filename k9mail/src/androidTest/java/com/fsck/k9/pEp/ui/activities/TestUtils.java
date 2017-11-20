@@ -253,7 +253,35 @@ class TestUtils {
         Espresso.pressBack();
     }
 
-    private void doWait(){
+    void getActivityInstance(){
+        waitForExternalApp();
+        goBackToOriginalApp();
+    }
+
+    private void waitForExternalApp(){
+        while (APP_ID.equals(device.getCurrentPackageName())){
+            device.waitForIdle();
+        }
+    }
+
+    private void goBackToOriginalApp(){
+        while (!APP_ID.equals(device.getCurrentPackageName())){
+            device.pressBack();
+        }
+    }
+
+    void selectSettingsFromMenu(int resource){
+        BySelector selector = By.clazz("android.widget.TextView");
+        int size = device.findObjects(selector).size();
+        for (int i = 0; i < size; i++) {
+            if (device.findObjects(selector).get(i).getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(resource))){
+                device.findObjects(selector).get(i).click();
+                break;
+            }
+        }
+    }
+
+    void doWait(){
         device.waitForIdle();
     }
 
@@ -262,6 +290,10 @@ class TestUtils {
                 .wait(Until.findObject(By.res(APP_ID, viewId)),
                         150000);
         assertThat(waitForView, notNullValue());
+    }
+
+    void doWaitForResource(int resource){
+        device.wait(Until.hasObject(By.desc(InstrumentationRegistry.getTargetContext().getResources().getString(resource))), 1);
     }
 
     private String getResourceString(int id, int n) {
