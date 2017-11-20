@@ -3,7 +3,6 @@ package com.fsck.k9.pEp.ui.activities;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.UiDevice;
-import android.test.suitebuilder.annotation.LargeTest;
 
 import com.fsck.k9.R;
 
@@ -11,9 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
@@ -46,7 +43,7 @@ public class ImportSettingsTest {
         }
         testUtils.accountDescription(DESCRIPTION, USER_NAME);
         testUtils.doWait();
-        testUtils.openOptinsMenu();
+        testUtils.openOptionsMenu();
         testUtils.doWait();
         testUtils.selectSettingsFromMenu(R.string.import_export_action);
         testUtils.doWait();

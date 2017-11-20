@@ -275,7 +275,7 @@ class TestUtils {
         }
     }
 
-    void openOptinsMenu(){
+    void openOptionsMenu(){
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
     }
 
