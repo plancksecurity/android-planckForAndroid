@@ -45,10 +45,10 @@ public class ImportSettingsTest {
         testUtils.doWait();
         testUtils.openOptionsMenu();
         testUtils.doWait();
-        testUtils.selectSettingsFromMenu(R.string.import_export_action);
+        testUtils.selectFromMenu(R.string.import_export_action);
         testUtils.doWait();
         testUtils.doWaitForResource(R.string.settings_import);
-        testUtils.selectSettingsFromMenu(R.string.settings_import);
+        testUtils.selectFromMenu(R.string.settings_import);
         testUtils.getActivityInstance();
         testUtils.removeAccount("accounts_list");
         testUtils.doWait();
