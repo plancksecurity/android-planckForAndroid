@@ -46,7 +46,7 @@ public class ImportSettingsTest {
         }
         testUtils.accountDescription(DESCRIPTION, USER_NAME);
         testUtils.doWait();
-        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        testUtils.openOptinsMenu();
         testUtils.doWait();
         testUtils.selectSettingsFromMenu(R.string.import_export_action);
         testUtils.doWait();
