@@ -1,64 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:padding="24dp"
-              >
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout3"
+    android:layout_width="@dimen/floating_width"
+    android:layout_height="@dimen/floating_height"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingTop="24dp"
+    android:paddingRight="24dp"
+    android:paddingLeft="24dp"
+
+    >
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/pep_secret_key_detected"
-        android:textStyle="bold"
         android:id="@+id/title"
-        />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/pep_received_this_secret_key"
-        android:id="@+id/textView"
-        android:paddingBottom="16dp"
-        />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        tools:text="User Name: Hussein Kasem"
-        fontPath="fonts/CourierNew.ttf"
-        android:id="@+id/tvUsername"
-        android:paddingLeft="16dp"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_marginTop="-12dp"
-        tools:text="User Address: tosync@miau.xyz"
-        fontPath="fonts/CourierNew.ttf"
-        android:id="@+id/tvAddress"
-        android:paddingLeft="16dp"/>
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        tools:text="AAAA AAAA AAAA AAAA AAAA\nAAAA AAAA AAAA AAAA AAAA"
-        android:id="@+id/tvFpr"
-        android:padding="16dp"
-        android:gravity="left"
-        android:layout_gravity="left"
-        fontPath="fonts/CourierNew.ttf"/>
+        android:layout_marginStart="8dp"
+        android:text="@string/pep_secret_key_detected"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:layout_width="match_parent"
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingBottom="16dp"
+        android:text="@string/pep_received_this_secret_key"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        tools:text="From: tosync@miau.xyz"
-        android:id="@+id/tvFrom"/>
-</LinearLayout>
+        app:layout_constraintStart_toStartOf="@+id/title"
+        app:layout_constraintTop_toBottomOf="@+id/title" />
+
+    <TextView
+        android:id="@+id/tvAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/monospace_font_family"
+        android:paddingLeft="16dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        tools:text="User Address: tosync@miau.xyz" />
+
+    <TextView
+        android:id="@+id/tvFpr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/monospace_font_family"
+        android:gravity="left"
+        android:padding="16dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvAddress"
+        tools:text="AAAA AAAA AAAA AAAA AAAA\nAAAA AAAA AAAA AAAA AAAA" />
+
+    <TextView
+        android:id="@+id/tvFrom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        app:layout_constraintBottom_toTopOf="@+id/bReject"
+        app:layout_constraintStart_toStartOf="@+id/tvFpr"
+        app:layout_constraintTop_toBottomOf="@+id/tvFpr"
+        tools:text="From: tosync@miau.xyz" />
+
+
+    <Button
+        android:id="@+id/bReject"
+        style="?attr/buttonBarButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/key_import_reject"
+        android:textColor="@color/dialog_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/bAccept" />
+
+    <Button
+        android:id="@+id/bAccept"
+        style="?attr/buttonBarButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="@string/key_import_accept"
+        android:textColor="@color/dialog_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+</android.support.constraint.ConstraintLayout>

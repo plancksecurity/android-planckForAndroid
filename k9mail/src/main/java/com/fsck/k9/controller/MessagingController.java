@@ -28,6 +28,7 @@ import com.fsck.k9.K9.Intents;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.ActivityListener;
+import com.fsck.k9.activity.K9ActivityCommon;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.cache.EmailProviderCache;
@@ -1802,7 +1803,7 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
 
                 @Override
                 public void run() {
-                    Intent broadcastIntent = new Intent("PRIVATE_KEY");
+                    Intent broadcastIntent = new Intent(context, K9ActivityCommon.PrivateKeyReceiver.class);
                     broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_FROM,message.getFrom()[0].getAddress());
                     broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_FPR, result.keyDetails.getFpr());
                     broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_ADDRESS, result.keyDetails.getAddress().getAddress());

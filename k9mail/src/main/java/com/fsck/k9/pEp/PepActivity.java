@@ -11,7 +11,6 @@ import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 
 public abstract class PepActivity extends K9Activity {
-    PePUIArtefactCache uiCache;
     private PEpProvider pEp;
     private PEpComponent pEpComponent;
 
@@ -28,16 +27,11 @@ public abstract class PepActivity extends K9Activity {
     }
 
     protected void initPep() {
-        uiCache = PePUIArtefactCache.getInstance(getApplicationContext());
         pEp = ((K9) getApplication()).getpEpProvider();
     }
 
     public PEpProvider getpEp() {
         return pEp;
-    }
-
-    public PePUIArtefactCache getUiCache() {
-        return uiCache;
     }
 
     private ApplicationComponent getApplicationComponent() {

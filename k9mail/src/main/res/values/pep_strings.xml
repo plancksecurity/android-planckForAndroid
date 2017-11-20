@@ -8,7 +8,7 @@
     <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pEp_trustwords">pEp Trustwords</string>
-    <string name="pep_user_address_format" translatable="false">&lt;%1$s&gt;</string>
+    <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_user_name_format" translatable="false">%1$s</string>
 
 
@@ -192,6 +192,11 @@
     <string name="nnf_need_valid_filename">Please enter or select a valid filename</string>
     <string name="nnf_permission_external_write_denied">Permisson to access filesystem denied</string>
     <string name="nnf_filename">Filename</string>
+
+    <string name="key_import_accept">Accept</string>
+    <string name="key_import_reject">Reject</string>
+    <string name="key_import_accept_feedback">Key replaced</string>
+    <string name="key_import_reject_feedback">Key rejected</string>
 
 
 </resources>
