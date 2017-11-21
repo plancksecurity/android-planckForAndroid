@@ -1700,10 +1700,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 MessageActions.actionCompose(this, mAccount);
                 return true;
             }
-            case R.id.toggle_message_view_theme: {
-                onToggleTheme();
-                return true;
-            }
             // MessageList
             case R.id.check_mail: {
                 mMessageListFragment.checkMail();
@@ -1925,7 +1921,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             menu.findItem(R.id.refile).setVisible(false);
             menu.findItem(R.id.toggle_unread).setVisible(false);
             menu.findItem(R.id.select_text).setVisible(false);
-            menu.findItem(R.id.toggle_message_view_theme).setVisible(false);
             menu.findItem(R.id.show_headers).setVisible(false);
             menu.findItem(R.id.hide_headers).setVisible(false);
 
@@ -1948,19 +1943,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 MenuItem next = menu.findItem(R.id.next_message);
                 next.setEnabled(canDoNext);
                 next.getIcon().setAlpha(canDoNext ? 255 : 127);
-            }
-
-            MenuItem toggleTheme = menu.findItem(R.id.toggle_message_view_theme);
-            if (K9.useFixedMessageViewTheme()) {
-                toggleTheme.setVisible(false);
-            } else {
-                // Set title of menu item to switch to dark/light theme
-                if (K9.getK9MessageViewTheme() == K9.Theme.DARK) {
-                    toggleTheme.setTitle(R.string.message_view_theme_action_light);
-                } else {
-                    toggleTheme.setTitle(R.string.message_view_theme_action_dark);
-                }
-                toggleTheme.setVisible(true);
             }
 
             // Set title of menu item to toggle the read state of the currently displayed message
