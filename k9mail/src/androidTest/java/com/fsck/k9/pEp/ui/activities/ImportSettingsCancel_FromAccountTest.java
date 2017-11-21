@@ -1,25 +1,24 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
 @RunWith(AndroidJUnit4.class)
 public class ImportSettingsCancel_FromAccountTest {
+
+    private static final String DESCRIPTION = "tester one";
+    private static final String USER_NAME = "testerJ";
 
     private TestUtils testUtils;
 
@@ -30,13 +29,19 @@ public class ImportSettingsCancel_FromAccountTest {
     }
 
     @Test
-    public void importSettingsCancel(){
-        importSettingsCancelTest(false);
+    public void importSettings(){
+        importSettingsTest(false);
     }
 
-    public void importSettingsCancelTest(boolean isGmail) {
+    public void importSettingsTest(boolean isGmail) {
         testUtils.increaseTimeoutWait();
-        testUtils.createAccount(isGmail);
+        onView(withId(R.id.skip)).perform(click());
+        if (isGmail) {
+            testUtils.gmailAccount();
+        } else {
+            testUtils.newEmailAccount();
+        }
+        testUtils.accountDescription(DESCRIPTION, USER_NAME);
         testUtils.doWait();
         testUtils.pressBack();
         testUtils.doWait();
@@ -47,13 +52,7 @@ public class ImportSettingsCancel_FromAccountTest {
         testUtils.doWaitForResource(R.string.settings_import);
         testUtils.selectFromMenu(R.string.settings_import);
         testUtils.getActivityInstance();
-        testUtils.removeLastAccount();
+        testUtils.removeAccount("accounts_list");
         testUtils.doWait();
-        assertThereAreNoAccounts();
-    }
-
-    private void assertThereAreNoAccounts(){
-        onView(withId(R.id.skip))
-                .check(matches(isDisplayed()));
     }
 }
