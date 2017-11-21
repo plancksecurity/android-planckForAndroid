@@ -43,6 +43,8 @@ public class ImportSettingsTest {
         }
         testUtils.accountDescription(DESCRIPTION, USER_NAME);
         testUtils.doWait();
+        testUtils.pressBack();
+        testUtils.doWait();
         testUtils.openOptionsMenu();
         testUtils.doWait();
         testUtils.selectFromMenu(R.string.import_export_action);
