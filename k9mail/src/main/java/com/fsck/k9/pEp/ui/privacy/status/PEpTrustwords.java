@@ -335,6 +335,8 @@ public class PEpTrustwords extends PepColoredActivity {
     private void changeTrustwords(String language) {
         trustwordsLanguage = language;
         String trustwords = getpEp().trustwords(myself, partner, language, areTrustwordsShort);
+        shortTrustwords = getpEp().trustwords(myself, partner, language, true);
+        fullTrustwords = getpEp().trustwords(myself, partner, language, false);
         tvTrustwords.setText(trustwords);
     }
 
