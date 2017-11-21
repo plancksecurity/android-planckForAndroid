@@ -239,7 +239,7 @@ public class PEpTrustwords extends PepColoredActivity {
         } else {
             menu.add(Menu.NONE, R.id.action_pgp_fingerprint, Menu.NONE, R.string.pep_pgp_fingerprint);
             menu.add(Menu.NONE, R.id.action_language, Menu.NONE, R.string.settings_language_label);
-            menu.add(Menu.NONE, R.id.long_trustwords, Menu.NONE, R.string.pep_menu_long_trustwords);
+            menuItemtrustwordsLength = menu.add(Menu.NONE, R.id.long_trustwords, Menu.NONE, R.string.pep_menu_long_trustwords);
             if(areTrustwordsShort) {
                 menuItemtrustwordsLength.setTitle(getString(R.string.pep_menu_long_trustwords));
             } else {
