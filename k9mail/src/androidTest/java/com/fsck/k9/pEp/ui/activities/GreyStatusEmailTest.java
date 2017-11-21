@@ -56,7 +56,6 @@ public class GreyStatusEmailTest {
             testUtils.newEmailAccount();
         }
         testUtils.accountDescription(DESCRIPTION, USER_NAME);
-        testUtils.accountListSelect(DESCRIPTION);
         testUtils.composseMessageButton();
         testUtils.testStatusEmpty();
         testUtils.testStatusMail(EMAIL, "Subject", "Message", Rating.pEpRatingUnencrypted.value);
