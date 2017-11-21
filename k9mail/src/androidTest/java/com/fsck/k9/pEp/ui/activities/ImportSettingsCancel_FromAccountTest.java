@@ -15,7 +15,7 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
 @RunWith(AndroidJUnit4.class)
-public class ImportSettingsTest {
+public class ImportSettingsCancel_FromAccountTest {
 
     private static final String DESCRIPTION = "tester one";
     private static final String USER_NAME = "testerJ";
