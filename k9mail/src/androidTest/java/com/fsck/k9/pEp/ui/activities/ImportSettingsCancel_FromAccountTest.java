@@ -29,11 +29,11 @@ public class ImportSettingsCancel_FromAccountTest {
     }
 
     @Test
-    public void importSettings(){
-        importSettingsTest(false);
+    public void importSettingsCancel(){
+        importSettingsCancelTest(false);
     }
 
-    public void importSettingsTest(boolean isGmail) {
+    public void importSettingsCancelTest(boolean isGmail) {
         testUtils.increaseTimeoutWait();
         onView(withId(R.id.skip)).perform(click());
         if (isGmail) {
