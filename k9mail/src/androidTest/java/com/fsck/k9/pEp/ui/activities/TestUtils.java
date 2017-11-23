@@ -2,10 +2,12 @@ package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Activity;
 import android.app.Instrumentation;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
@@ -15,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingPolicies;
+import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
@@ -44,7 +47,9 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.isInternal;
+import static android.support.test.espresso.matcher.RootMatchers.isDialog;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.not;
@@ -57,7 +62,6 @@ import static org.junit.Assert.assertThat;
 class TestUtils {
 
     private static final String APP_ID = "pep.android.k9";
-    private static final String FILE_NAME = "ic_test";
     private static final int LAUNCH_TIMEOUT = 5000;
 
     private UiDevice device;
@@ -146,23 +150,30 @@ class TestUtils {
         device.findObject(By.res(APP_ID, "message_content")).click();
         Espresso.closeSoftKeyboard();
         if (attachFilesToEmail) {
-            attachFiles();
+            String fileName = "ic_test";
+            String extension = ".png";
+            attachFiles(fileName, extension);
         }
     }
 
-    private void attachFiles(){
+    private void attachFiles(String fileName, String extension){
         for (int fileNumber = 0; fileNumber<3; fileNumber++){
-            intending(not(isInternal())).respondWith(createFileForActivityResultStub(FILE_NAME+fileNumber+".png"));
+            intending(not(isInternal())).respondWith(createFileForActivityResultStub(fileName+fileNumber+".png"));
             doWait();
             onView(withId(R.id.add_attachment)).perform(click());
             doWait();
-            onView(withId(R.id.attachments)).check(matches(hasDescendant(withText(FILE_NAME+fileNumber+".png"))));
+            onView(withId(R.id.attachments)).check(matches(hasDescendant(withText(fileName+fileNumber+extension))));
         }
 
     }
 
+    void externalAppRespondWithFile(int id){
+        intending(not(isInternal()))
+                .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, insertFileIntoIntentAsData(id)));
+    }
+
     private Instrumentation.ActivityResult createFileForActivityResultStub(String fileName) {
-        convertResourceToBitmapFile(R.drawable.ic_compose_message, fileName);
+        convertResourceToBitmapFile(R.mipmap.icon, fileName);
         return new Instrumentation.ActivityResult(Activity.RESULT_OK, insertFileIntoIntentAsData(fileName));
     }
 
@@ -181,10 +192,23 @@ class TestUtils {
         }
     }
 
+    private Intent insertFileIntoIntentAsData(int id){
+        Resources resources = InstrumentationRegistry.getTargetContext().getResources();
+        Uri fileUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
+                resources.getResourcePackageName(id) +"/" +
+                resources.getResourceTypeName(id) + "/" +
+                resources.getResourceEntryName(id));
+        Intent resultData = new Intent();
+        resultData.setData(fileUri);
+        return  resultData;
+    }
+
     private Intent insertFileIntoIntentAsData(String fileName){
         Intent resultData = new Intent();
-        File filelocation = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), fileName);
-        return resultData.setData(Uri.parse( "file://"+filelocation));
+        File filelocation = new File(Environment.getExternalStorageDirectory()
+                .getAbsolutePath(), fileName);
+        resultData.setData(Uri.parse( "file://"+filelocation));
+        return  resultData;
     }
 
     void sendEmail(){
@@ -206,13 +230,28 @@ class TestUtils {
         selectAcceptButton();
     }
 
-    private void selectAcceptButton(){
-        waitForObject("android.widget.Button");
-        BySelector selector = By.clazz("android.widget.Button");
-        device.findObjects(selector).get(1).click();
+    void removeLastAccount(){
+        doWait();
+        doWait("accounts_list");
+        doWait();
+        longClick("accounts_list");
+        doWait();
+        selectRemoveAccount();
+        doWait();
+        selectAcceptButton();
     }
 
-    private void waitForObject(String object){
+    void selectAcceptButton(){
+        doWaitForObject("android.widget.Button");
+        onView(withText(R.string.okay_action)).perform(click());
+    }
+
+    void selectCancelButton(){
+        doWaitForObject("android.widget.Button");
+        onView(withText(R.string.cancel_action)).perform(click());
+    }
+
+    private void doWaitForObject(String object){
         boolean finish = false;
         do {
             if (device.findObject(By.clazz(object)) != null){
@@ -294,7 +333,7 @@ class TestUtils {
         device.waitForIdle();
     }
 
-    private void doWait(String viewId){
+    void doWait(String viewId){
         UiObject2 waitForView = device
                 .wait(Until.findObject(By.res(APP_ID, viewId)),
                         150000);
@@ -303,6 +342,14 @@ class TestUtils {
 
     void doWaitForResource(int resource){
         device.wait(Until.hasObject(By.desc(InstrumentationRegistry.getTargetContext().getResources().getString(resource))), 1);
+    }
+
+    void doWaitForAlertDialog(IntentsTestRule<SplashActivity> intent, int displayText){
+        onView(withId(intent.getActivity().getResources()
+                .getIdentifier( "alertTitle", "id", "android" )))
+                .inRoot(isDialog())
+                .check(matches(withText(displayText)))
+                .check(matches(isDisplayed()));
     }
 
     private String getResourceString(int id, int n) {

@@ -28,3 +28,4 @@ proguard-project.txt
 .idea/
 *.iml
 *.DS_Store
+k9mail/src/main/res/raw/settings.k9s
