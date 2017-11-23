@@ -15,7 +15,6 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
-import android.support.v7.widget.Toolbar;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.DeletePolicy;
@@ -23,7 +22,6 @@ import com.fsck.k9.Account.Expunge;
 import com.fsck.k9.Account.FolderMode;
 import com.fsck.k9.Account.MessageFormat;
 import com.fsck.k9.Account.QuoteStyle;
-import com.fsck.k9.Account.Searchable;
 import com.fsck.k9.Account.ShowPictures;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
@@ -33,8 +31,8 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.ChooseFolder;
 import com.fsck.k9.activity.ChooseIdentity;
 import com.fsck.k9.activity.ColorPickerDialog;
-import com.fsck.k9.activity.K9PreferenceActivity;
 import com.fsck.k9.activity.ManageIdentities;
+import com.fsck.k9.activity.settings.PEpSettingsActivity;
 import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mailstore.StorageManager;
@@ -52,7 +50,7 @@ import java.util.Map;
 import timber.log.Timber;
 
 
-public class AccountSettings extends K9PreferenceActivity {
+public class AccountSettings extends PEpSettingsActivity {
     private static final String EXTRA_ACCOUNT = "account";
 
     private static final int DIALOG_COLOR_PICKER_ACCOUNT = 1;
@@ -1150,34 +1148,20 @@ public class AccountSettings extends K9PreferenceActivity {
 
         @Override
         protected void onPostExecute(Void res) {
-            initListPreference(autoExpandFolder, account.getAutoExpandFolderName(), allFolderLabels, allFolderValues);
+            //initListPreference(autoExpandFolder, account.getAutoExpandFolderName(), allFolderLabels, allFolderValues);
             autoExpandFolder.setEnabled(true);
             if (isMoveCapable) {
-                initListPreference(archiveFolder, account.getArchiveFolderName(), allFolderLabels, allFolderValues);
-                initListPreference(draftsFolder, account.getDraftsFolderName(), allFolderLabels, allFolderValues);
-                initListPreference(sentFolder, account.getSentFolderName(), allFolderLabels, allFolderValues);
-                initListPreference(spamFolder, account.getSpamFolderName(), allFolderLabels, allFolderValues);
-                initListPreference(trashFolder, account.getTrashFolderName(), allFolderLabels, allFolderValues);
+                //initListPreference(archiveFolder, account.getArchiveFolderName(), allFolderLabels, allFolderValues);
+                //initListPreference(draftsFolder, account.getDraftsFolderName(), allFolderLabels, allFolderValues);
+                //initListPreference(sentFolder, account.getSentFolderName(), allFolderLabels, allFolderValues);
+                //initListPreference(spamFolder, account.getSpamFolderName(), allFolderLabels, allFolderValues);
+                //initListPreference(trashFolder, account.getTrashFolderName(), allFolderLabels, allFolderValues);
                 archiveFolder.setEnabled(true);
                 spamFolder.setEnabled(true);
                 draftsFolder.setEnabled(true);
                 sentFolder.setEnabled(true);
                 trashFolder.setEnabled(true);
             }
-        }
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        setupActionBar();
-    }
-
-    private void setupActionBar() {
-        Toolbar toolbar = getToolbar();
-        toolbar.setTitle(R.string.accounts_title);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
 }
