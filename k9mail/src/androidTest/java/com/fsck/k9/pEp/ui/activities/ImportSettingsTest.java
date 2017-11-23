@@ -11,11 +11,17 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.not;
 
 
 public class ImportSettingsTest {
@@ -65,8 +71,26 @@ public class ImportSettingsTest {
         testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.settings_import_activate_account_header);
         testUtils.selectCancelButton();
         testUtils.doWait();
+        assertExistsTest();
         testUtils.removeLastAccount();
         testUtils.doWait();
+        assertExistsTest();
         testUtils.removeLastAccount();
+        testUtils.doWait();
+        testUtils.doWaitForResource(R.id.skip);
+        assertNotExistsTest();
+    }
+
+    private void assertExistsTest(){
+        onData(anything())
+                .inAdapterView(withId(R.id.accounts_list))
+                .atPosition(0)
+                .onChildView(withId(R.id.description))
+                .check(matches(withText(DESCRIPTION)));
+    }
+
+    private void assertNotExistsTest(){
+        onView(withId(R.id.skip))
+                .check(matches(isDisplayed()));
     }
 }
