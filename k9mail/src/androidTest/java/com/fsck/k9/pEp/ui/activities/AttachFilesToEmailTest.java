@@ -54,7 +54,7 @@ public class AttachFilesToEmailTest {
         testUtils.fillEmail(EMAIL, "Subject", "Message", true);
         testUtils.sendEmail();
         testUtils.pressBack();
-        testUtils.removeAccount("accounts_list");
+        testUtils.removeLastAccount();
     }
 
   /*  @Test
