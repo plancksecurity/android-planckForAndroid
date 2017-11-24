@@ -2,7 +2,6 @@ package com.fsck.k9.activity.setup;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -14,11 +13,8 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceScreen;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.ArrayAdapter;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
@@ -28,7 +24,7 @@ import com.fsck.k9.K9.SplitViewMode;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.ColorPickerDialog;
-import com.fsck.k9.activity.K9PreferenceActivity;
+import com.fsck.k9.activity.settings.PEpSettingsActivity;
 import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.pEp.filepicker.FilePickerActivity;
 import com.fsck.k9.pEp.filepicker.Utils;
@@ -50,7 +46,7 @@ import java.util.Locale;
 import java.util.Set;
 
 
-public class Prefs extends K9PreferenceActivity {
+public class Prefs extends PEpSettingsActivity {
 
     /**
      * Immutable empty {@link CharSequence} array
@@ -205,15 +201,16 @@ public class Prefs extends K9PreferenceActivity {
                 entryValueVector.remove(i);
             }
         }
+        /*
         initListPreference(mLanguage, K9.getK9Language(),
                            entryVector.toArray(EMPTY_CHAR_SEQUENCE_ARRAY),
                            entryValueVector.toArray(EMPTY_CHAR_SEQUENCE_ARRAY));
-
+        */
         mLanguage.setOnPreferenceChangeListener((preference, newLanguage) -> {
             applyLanguage(newLanguage);
             return true;
         });
-
+        /*
         mTheme = setupListPreference(PREFERENCE_THEME, themeIdToName(K9.getK9Theme()));
         mFixedMessageTheme = (CheckBoxPreference) findPreference(PREFERENCE_FIXED_MESSAGE_THEME);
         mFixedMessageTheme.setChecked(K9.useFixedMessageViewTheme());
@@ -221,7 +218,7 @@ public class Prefs extends K9PreferenceActivity {
                 themeIdToName(K9.getK9MessageViewThemeSetting()));
         mComposerTheme = setupListPreference(PREFERENCE_COMPOSER_THEME,
                 themeIdToName(K9.getK9ComposerThemeSetting()));
-
+        */
         findPreference(PREFERENCE_FONT_SIZE).setOnPreferenceClickListener(
         new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
@@ -268,8 +265,8 @@ public class Prefs extends K9PreferenceActivity {
         mConfirmActions.setItems(confirmActionEntries);
         mConfirmActions.setCheckedItems(confirmActionValues);
 
-        mNotificationHideSubject = setupListPreference(PREFERENCE_NOTIFICATION_HIDE_SUBJECT,
-                K9.getNotificationHideSubject().toString());
+        //mNotificationHideSubject = setupListPreference(PREFERENCE_NOTIFICATION_HIDE_SUBJECT,
+        //        K9.getNotificationHideSubject().toString());
 
         mMeasureAccounts = (CheckBoxPreference)findPreference(PREFERENCE_MEASURE_ACCOUNTS);
         mMeasureAccounts.setChecked(K9.measureAccounts());
@@ -281,8 +278,8 @@ public class Prefs extends K9PreferenceActivity {
         mHideSpecialAccounts.setChecked(K9.isHideSpecialAccounts());
 
 
-        mPreviewLines = setupListPreference(PREFERENCE_MESSAGELIST_PREVIEW_LINES,
-                                            Integer.toString(K9.messageListPreviewLines()));
+        //mPreviewLines = setupListPreference(PREFERENCE_MESSAGELIST_PREVIEW_LINES,
+        //                                    Integer.toString(K9.messageListPreviewLines()));
 
         mSenderAboveSubject = (CheckBoxPreference)findPreference(PREFERENCE_MESSAGELIST_SENDER_ABOVE_SUBJECT);
         mSenderAboveSubject.setChecked(K9.messageListSenderAboveSubject());
@@ -373,23 +370,23 @@ public class Prefs extends K9PreferenceActivity {
             }
         });
 
-        mNotificationQuickDelete = setupListPreference(PREFERENCE_NOTIF_QUICK_DELETE,
-                K9.getNotificationQuickDeleteBehaviour().toString());
+        //mNotificationQuickDelete = setupListPreference(PREFERENCE_NOTIF_QUICK_DELETE,
+        //        K9.getNotificationQuickDeleteBehaviour().toString());
         if (!NotificationController.platformSupportsExtendedNotifications()) {
             PreferenceScreen prefs = (PreferenceScreen) findPreference("notification_preferences");
             prefs.removePreference(mNotificationQuickDelete);
             mNotificationQuickDelete = null;
         }
 
-        mLockScreenNotificationVisibility = setupListPreference(PREFERENCE_LOCK_SCREEN_NOTIFICATION_VISIBILITY,
-            K9.getLockScreenNotificationVisibility().toString());
+        //mLockScreenNotificationVisibility = setupListPreference(PREFERENCE_LOCK_SCREEN_NOTIFICATION_VISIBILITY,
+        //    K9.getLockScreenNotificationVisibility().toString());
         if (!NotificationController.platformSupportsLockScreenNotifications()) {
             ((PreferenceScreen) findPreference("notification_preferences"))
                 .removePreference(mLockScreenNotificationVisibility);
             mLockScreenNotificationVisibility = null;
         }
 
-        mBackgroundOps = setupListPreference(PREFERENCE_BACKGROUND_OPS, K9.getBackgroundOps().name());
+        //mBackgroundOps = setupListPreference(PREFERENCE_BACKGROUND_OPS, K9.getBackgroundOps().name());
 
         mDebugLogging = (CheckBoxPreference)findPreference(PREFERENCE_DEBUG_LOGGING);
         mSensitiveLogging = (CheckBoxPreference)findPreference(PREFERENCE_SENSITIVE_LOGGING);
@@ -468,8 +465,8 @@ public class Prefs extends K9PreferenceActivity {
 
         //mSplitViewMode = (ListPreference) findPreference(PREFERENCE_SPLITVIEW_MODE);
         mSplitViewMode = new ListPreference(getApplicationContext());
-        initListPreference(mSplitViewMode, K9.getSplitViewMode().name(),
-                mSplitViewMode.getEntries(), mSplitViewMode.getEntryValues());
+        //initListPreference(mSplitViewMode, K9.getSplitViewMode().name(),
+        //        mSplitViewMode.getEntries(), mSplitViewMode.getEntryValues());
 
         boolean isSyncChecked = ((K9) getApplication()).ispEpSyncEnabled();
         mPEpSyncAccount.setChecked(isSyncChecked);
@@ -660,20 +657,6 @@ public class Prefs extends K9PreferenceActivity {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        setupActionBar();
-    }
-
-    private void setupActionBar() {
-        Toolbar toolbar = getToolbar();
-        toolbar.setTitle(R.string.accounts_title);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
     }
 
     public View getRootView() {

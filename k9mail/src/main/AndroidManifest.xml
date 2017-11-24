@@ -106,7 +106,8 @@
         </activity>
         <activity
             android:name=".activity.setup.Prefs"
-            android:configChanges="locale"
+            android:theme="@style/AppTheme.SettingsTheme"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:excludeFromRecents="true"
             android:label="@string/prefs_title"
             android:taskAffinity="${applicationId}.activity.setup.Prefs" />
@@ -117,7 +118,8 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
         <activity
             android:name=".activity.setup.FontSizeSettings"
-            android:configChanges="locale"
+            android:theme="@style/AppTheme.SettingsTheme"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:label="@string/font_size_settings_title" />
         <activity
             android:name=".activity.setup.AccountSetupBasics"
@@ -190,9 +192,9 @@
             android:label="@string/account_settings_title_fmt" />
         <activity
             android:name=".activity.setup.FolderSettings"
-            android:configChanges="locale"
-            android:label="@string/folder_settings_title"
-            android:theme="@android:style/Theme.Dialog" />
+            android:theme="@style/AppTheme.SettingsTheme"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:label="@string/folder_settings_title" />
         <activity
             android:name=".activity.FolderList"
             android:configChanges="locale"

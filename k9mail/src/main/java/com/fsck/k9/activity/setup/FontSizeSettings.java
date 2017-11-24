@@ -5,13 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.support.v7.widget.Toolbar;
 
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.K9PreferenceActivity;
+import com.fsck.k9.activity.settings.PEpSettingsActivity;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 
@@ -22,7 +21,7 @@ import com.fsck.k9.preferences.StorageEditor;
  *
  * @see FontSizes
  */
-public class FontSizeSettings extends K9PreferenceActivity {
+public class FontSizeSettings extends PEpSettingsActivity {
     /*
      * Keys of the preferences defined in res/xml/font_preferences.xml
      */
@@ -79,7 +78,7 @@ public class FontSizeSettings extends K9PreferenceActivity {
 
         FontSizes fontSizes = K9.getFontSizes();
         addPreferencesFromResource(R.xml.font_preferences);
-
+        /*
         mAccountName = setupListPreference(
                            PREFERENCE_ACCOUNT_NAME_FONT,
                            Integer.toString(fontSizes.getAccountName()));
@@ -125,7 +124,7 @@ public class FontSizeSettings extends K9PreferenceActivity {
         mMessageViewDate = setupListPreference(
                                PREFERENCE_MESSAGE_VIEW_DATE_FONT,
                                Integer.toString(fontSizes.getMessageViewDate()));
-
+        */
         mMessageViewContentSlider = (SliderPreference) findPreference(
                                   PREFERENCE_MESSAGE_VIEW_CONTENT_FONT_SLIDER);
 
@@ -152,9 +151,9 @@ public class FontSizeSettings extends K9PreferenceActivity {
         mMessageViewContentSlider.getOnPreferenceChangeListener().onPreferenceChange(
                                   mMessageViewContentSlider, mMessageViewContentSlider.getValue());
 
-        mMessageComposeInput = setupListPreference(
-                PREFERENCE_MESSAGE_COMPOSE_INPUT_FONT,
-                Integer.toString(fontSizes.getMessageComposeInput()));
+        //mMessageComposeInput = setupListPreference(
+        //        PREFERENCE_MESSAGE_COMPOSE_INPUT_FONT,
+        //        Integer.toString(fontSizes.getMessageComposeInput()));
     }
 
     /**
@@ -203,19 +202,5 @@ public class FontSizeSettings extends K9PreferenceActivity {
     public void onBackPressed() {
         saveSettings();
         super.onBackPressed();
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        setupActionBar();
-    }
-
-    private void setupActionBar() {
-        Toolbar toolbar = getToolbar();
-        toolbar.setTitle(R.string.font_size_settings_title);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
     }
 }
