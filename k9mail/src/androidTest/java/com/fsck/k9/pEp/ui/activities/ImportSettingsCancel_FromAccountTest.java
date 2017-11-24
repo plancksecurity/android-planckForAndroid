@@ -52,7 +52,7 @@ public class ImportSettingsCancel_FromAccountTest {
         testUtils.doWaitForResource(R.string.settings_import);
         testUtils.selectFromMenu(R.string.settings_import);
         testUtils.getActivityInstance();
-        testUtils.removeAccount("accounts_list");
+        testUtils.removeLastAccount();
         testUtils.doWait();
     }
 }
