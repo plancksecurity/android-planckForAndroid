@@ -853,7 +853,7 @@ public class RecipientPresenter implements PermissionPingCallback {
     }
 
     public boolean isAlwaysSecure() {
-        return isAlwaysSecure && privacyState.value >= Rating.pEpRatingUnreliable.value;
+        return isAlwaysSecure || privacyState.value >= Rating.pEpRatingUnreliable.value;
     }
 
     public void onResume() {
