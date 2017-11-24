@@ -1,7 +1,6 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.ViewAssertion;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.uiautomator.UiDevice;
 
@@ -15,13 +14,10 @@ import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
-import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.anything;
-import static org.hamcrest.Matchers.not;
 
 
 public class ImportSettingsTest {
@@ -78,7 +74,7 @@ public class ImportSettingsTest {
         testUtils.removeLastAccount();
         testUtils.doWait();
         testUtils.doWaitForResource(R.id.skip);
-        assertNotExistsTest();
+        assertThereAreNoAccounts();
     }
 
     private void assertExistsTest(){
@@ -89,7 +85,7 @@ public class ImportSettingsTest {
                 .check(matches(withText(DESCRIPTION)));
     }
 
-    private void assertNotExistsTest(){
+    private void assertThereAreNoAccounts(){
         onView(withId(R.id.skip))
                 .check(matches(isDisplayed()));
     }
