@@ -12,16 +12,21 @@ import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static org.hamcrest.Matchers.is;
 
 @RunWith(AndroidJUnit4.class)
 public class ImportSettingsCancelTest {
 
     private TestUtils testUtils;
+    private UiDevice device;
+    private static final String APP_ID = "pep.android.k9";
 
     @Before
     public void startMainActivityFromHomeScreen() {
-        testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()));
+        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        testUtils = new TestUtils(device);
         testUtils.startActivity();
     }
 
@@ -34,10 +39,15 @@ public class ImportSettingsCancelTest {
         testUtils.increaseTimeoutWait();
         onView(withId(R.id.skip)).perform(click());
         testUtils.doWait();
+        assertPackageNameIsCurrentPackageName();
         testUtils.openOptionsMenu();
         testUtils.doWait();
         testUtils.selectFromMenu(R.string.settings_import);
         testUtils.getActivityInstance();
         testUtils.doWait();
+        assertPackageNameIsCurrentPackageName();
     }
+
+    private void assertPackageNameIsCurrentPackageName(){
+        assertThat(APP_ID, is((device.getCurrentPackageName())));}
 }
