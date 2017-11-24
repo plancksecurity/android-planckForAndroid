@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
-import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -54,8 +53,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.Matchers.hasToString;
-import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 
 
@@ -98,7 +95,7 @@ class TestUtils {
         onView(withId(R.id.next)).perform(click());
     }
 
-    public void gmailAccount(){
+    void gmailAccount(){
         onView(withId(R.id.account_oauth2)).perform(click());
         onView(withId(R.id.next)).perform(click());
         onView(withId(R.id.next)).perform(click());
@@ -126,11 +123,6 @@ class TestUtils {
         onView(withId(R.id.account_name)).perform(typeText(userName));
         doWait();
         onView(withId(R.id.done)).perform(click());
-    }
-
-    void accountListSelect(String description){
-        doWait();
-        onData(hasToString(startsWith(description))).inAdapterView(withId(R.id.accounts_list)).perform(click());
     }
 
     void composseMessageButton(){
@@ -164,7 +156,6 @@ class TestUtils {
             doWait();
             onView(withId(R.id.attachments)).check(matches(hasDescendant(withText(fileName+fileNumber+extension))));
         }
-
     }
 
     void externalAppRespondWithFile(int id){
@@ -217,17 +208,6 @@ class TestUtils {
 
     void pressBack(){
         device.pressBack();
-    }
-
-    void removeAccount(String nameToRemove){
-        doWait();
-        doWait(nameToRemove);
-        doWait();
-        longClick(nameToRemove);
-        doWait();
-        selectRemoveAccount();
-        doWait();
-        selectAcceptButton();
     }
 
     void removeLastAccount(){
