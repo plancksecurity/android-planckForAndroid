@@ -101,7 +101,7 @@ public class AccountSetupNavigator {
     }
 
     public void goBack(Activity activity, FragmentManager fragmentManager) {
-        if (!currentStep.equals(Step.BASICS) && !isEditting) {
+        if (currentStep != null && !currentStep.equals(Step.BASICS) && !isEditting) {
             fragmentManager.popBackStack();
         } else {
             activity.finish();
