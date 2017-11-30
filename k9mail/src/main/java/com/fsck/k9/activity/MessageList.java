@@ -1433,7 +1433,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             mActionBarPepStatus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mMessageViewFragment.onPepStatus();
+                    mMessageViewFragment.onPepStatus(MessageList.this);
                 }
             });
         } else {
@@ -1831,7 +1831,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 return true;
             }
             case R.id.pEp_indicator: {
-                mMessageViewFragment.onPepStatus();
+                mMessageViewFragment.onPepStatus(MessageList.this);
 
             }
         }
