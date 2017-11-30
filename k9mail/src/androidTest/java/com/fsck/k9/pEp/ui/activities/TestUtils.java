@@ -255,7 +255,7 @@ class TestUtils {
         }
     }
 
-    private void longClick(String view){
+    void longClick(String view){
         UiObject2 list = device.findObject(By.res(APP_ID, view));
         Rect bounds = list.getVisibleBounds();
         device.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 180);
@@ -275,6 +275,18 @@ class TestUtils {
         onView(withId(R.id.pEp_indicator)).perform(click());
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
         Espresso.pressBack();
+    }
+
+    public String getTextFromTextviewThatContainsText(String text){
+        BySelector selector = By.clazz("android.widget.TextView");
+        int size = device.findObjects(selector).size();
+        for (int i = 0; i < size; i++) {
+            device.findObjects(selector).get(i);
+            if (device.findObjects(selector).get(i).getText() != null && device.findObjects(selector).get(i).getText().contains(text)){
+                return device.findObjects(selector).get(i).getText();
+            }
+        }
+        return device.findObjects(selector).get(4).getText();
     }
 
     void getActivityInstance(){
