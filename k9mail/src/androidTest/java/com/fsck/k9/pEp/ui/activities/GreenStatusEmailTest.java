@@ -16,7 +16,6 @@ import org.pEp.jniadapter.Rating;
 @RunWith(AndroidJUnit4.class)
 public class GreenStatusEmailTest  {
 
-    private static final String EMAIL = "newemail@mail.es";
     private TestUtils testUtils;
 
     @Rule
@@ -35,14 +34,14 @@ public class GreenStatusEmailTest  {
 
     private void greenStatusEmailTest() {
         testUtils.increaseTimeoutWait();
-
         testUtils.composseMessageButton();
         testUtils.testStatusEmpty();
+        testUtils.doWait();
         testUtils.testStatusMail(EMAIL, "Subject", "Message", Rating.pEpRatingTrusted.value);
+        testUtils.doWait();
         testUtils.testStatusMail("", "", "", Rating.pEpRatingUndefined.value);
+        testUtils.doWait();
         testUtils.testStatusMail(EMAIL, "Subject", "Message", Rating.pEpRatingTrusted.value);
         testUtils.sendEmail();
-
-        //testUtils.removeLastAccount();
     }
 }
