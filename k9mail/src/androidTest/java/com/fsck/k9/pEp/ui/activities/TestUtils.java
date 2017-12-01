@@ -139,9 +139,10 @@ class TestUtils {
         device.pressKeyCode(KeyEvent.KEYCODE_DEL);
         doWait();
         onView(withId(R.id.to)).perform(typeText(to), closeSoftKeyboard());
+        device.findObject(By.res(APP_ID, "subject")).click();
         device.findObject(By.res(APP_ID, "subject")).setText(subject);
-        device.findObject(By.res(APP_ID, "message_content")).setText(message);
         device.findObject(By.res(APP_ID, "message_content")).click();
+        device.findObject(By.res(APP_ID, "message_content")).setText(message);
         Espresso.closeSoftKeyboard();
         if (attachFilesToEmail) {
             String fileName = "ic_test";
