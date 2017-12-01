@@ -43,6 +43,7 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.isInternal;
@@ -51,6 +52,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -270,6 +272,14 @@ class TestUtils {
         fillEmail(to, subject, message, false);
         doWait();
         checkStatus(status);
+        Espresso.pressBack();
+    }
+
+    void testStatusMailAndListMail(String to, String subject, String message, int status, String email){
+        fillEmail(to, subject, message, false);
+        doWait();
+        checkStatus(status);
+        onView(withText(email)).check(doesNotExist());
         Espresso.pressBack();
     }
 
