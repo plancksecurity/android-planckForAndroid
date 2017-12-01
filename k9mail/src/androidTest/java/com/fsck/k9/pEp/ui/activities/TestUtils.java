@@ -287,7 +287,7 @@ class TestUtils {
                 return device.findObjects(selector).get(i).getText();
             }
         }
-        return device.findObjects(selector).get(4).getText();
+        return "not found";
     }
 
     void getActivityInstance(){
