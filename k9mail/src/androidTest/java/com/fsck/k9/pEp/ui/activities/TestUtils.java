@@ -263,18 +263,19 @@ class TestUtils {
 
     void testStatusEmpty(){
         checkStatus(Rating.pEpRatingUndefined.value);
+        Espresso.pressBack();
     }
 
     void testStatusMail(String to, String subject, String message, int status){
         fillEmail(to, subject, message, false);
         doWait();
         checkStatus(status);
+        Espresso.pressBack();
     }
 
     private void checkStatus(int status){
         onView(withId(R.id.pEp_indicator)).perform(click());
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
-        Espresso.pressBack();
     }
 
     public String getTextFromTextviewThatContainsText(String text){
