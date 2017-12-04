@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.swipeDown;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
@@ -24,7 +25,7 @@ public class YellowStatusEmailFromBotTest {
 
     private UiDevice uiDevice;
     private TestUtils testUtils;
-    private String emailTo = "ponaquiloquequieras@test.pep-security.net";
+    private String emailTo = "test1@test.pep-security.net";
     private String emailFrom;
     private String lastEmailRecivedSubject;
     private String lastEmailRecivedFor;
@@ -46,7 +47,28 @@ public class YellowStatusEmailFromBotTest {
         testUtils.increaseTimeoutWait();
         greyStatusEmailSend();
         waitForBotEmail();
+        clickBotEmail();
+        clickReplayMessage();
+        clickMailStatus();
+        checkBotEmailColor();
         //yellowStatusEmailTest();
+    }
+
+    private void checkBotEmailColor() {
+
+    }
+
+    private void clickMailStatus() {
+        onView(withId(R.id.pEp_indicator)).perform(click());
+    }
+
+    private void clickReplayMessage() {
+        onView(withId(R.id.reply_message));
+    }
+
+    private void clickBotEmail() {
+        BySelector selector = By.clazz("android.widget.TextView");
+        uiDevice.findObjects(selector).get(lastEmailRecivedPosition).click();
     }
 
     private void waitForBotEmail() {
