@@ -69,6 +69,23 @@ public class YellowStatusEmailFromBotTest {
 
     }
 
+    public int getLastEmailRecivedPosition(){
+        BySelector selector = By.clazz("android.widget.TextView");
+        int size = uiDevice.findObjects(selector).size();
+        int i = 0;
+        for (; i < size; i++) {
+            uiDevice.findObjects(selector).get(i);
+            if (uiDevice.findObjects(selector).get(i).getText() != null && uiDevice.findObjects(selector).get(i).getText().contains("@")){
+                i++;
+                while (uiDevice.findObjects(selector).get(i).getText() == null){
+                    i++;
+                }
+                return i;
+            }
+        }
+        return i;
+    }
+
     private void yellowStatusEmailTest() {
     }
 }
