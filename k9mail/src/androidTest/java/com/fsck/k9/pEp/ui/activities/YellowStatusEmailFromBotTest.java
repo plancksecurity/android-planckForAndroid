@@ -13,7 +13,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.pEp.jniadapter.Rating;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.swipeDown;
@@ -45,12 +44,12 @@ public class YellowStatusEmailFromBotTest {
     @Test
     public void yellowStatusEmail() {
         testUtils.increaseTimeoutWait();
-        greyStatusEmailTest();
-        waitForNewEmail();
+        greyStatusEmailSend();
+        waitForBotEmail();
         //yellowStatusEmailTest();
     }
 
-    private void waitForNewEmail() {
+    private void waitForBotEmail() {
         BySelector selector = By.clazz("android.widget.TextView");
         while ((testUtils.getTextFromTextviewThatContainsText("bot").equals(uiDevice.findObjects(selector).get(lastEmailRecivedPosition).getText()))
                  &&(lastEmailRecivedDate.equals(uiDevice.findObjects(selector).get(lastEmailRecivedPosition+1).getText()))
@@ -60,7 +59,7 @@ public class YellowStatusEmailFromBotTest {
         }
     }
 
-    private void greyStatusEmailTest() {
+    private void greyStatusEmailSend() {
         emailFrom = testUtils.getTextFromTextviewThatContainsText("@");
         lastEmailRecivedPosition = getLastEmailRecivedPosition();
         BySelector selector = By.clazz("android.widget.TextView");
