@@ -50,6 +50,15 @@ public class YellowStatusEmailFromBotTest {
         //yellowStatusEmailTest();
     }
 
+    private void waitForNewEmail() {
+        BySelector selector = By.clazz("android.widget.TextView");
+        while ((lastEmailRecivedSubject == uiDevice.findObjects(selector).get(lastEmailRecivedPosition).getText())
+                // &&(lastEmailRecivedDate == uiDevice.findObjects(selector).get(lastEmailRecivedPosition+1).getText())
+                // &&(lastEmailRecivedFor == uiDevice.findObjects(selector).get(lastEmailRecivedPosition+2).getText())
+                ){
+            testUtils.doWait();
+        }
+    }
 
     private void greyStatusEmailTest() {
         emailFrom = testUtils.getTextFromTextviewThatContainsText("@");
