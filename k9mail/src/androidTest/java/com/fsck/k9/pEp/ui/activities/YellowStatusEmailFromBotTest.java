@@ -52,8 +52,8 @@ public class YellowStatusEmailFromBotTest {
 
     private void waitForNewEmail() {
         BySelector selector = By.clazz("android.widget.TextView");
-        while ((lastEmailRecivedSubject == uiDevice.findObjects(selector).get(lastEmailRecivedPosition).getText())
-                // &&(lastEmailRecivedDate == uiDevice.findObjects(selector).get(lastEmailRecivedPosition+1).getText())
+        while ((testUtils.getTextFromTextviewThatContainsText("bot").equals(uiDevice.findObjects(selector).get(lastEmailRecivedPosition).getText()))
+                 &&(lastEmailRecivedDate.equals(uiDevice.findObjects(selector).get(lastEmailRecivedPosition+1).getText()))
                 // &&(lastEmailRecivedFor == uiDevice.findObjects(selector).get(lastEmailRecivedPosition+2).getText())
                 ){
             testUtils.doWait();
@@ -67,7 +67,7 @@ public class YellowStatusEmailFromBotTest {
         onView(withId(R.id.message_list))
                 .perform(swipeDown());
         lastEmailRecivedSubject = uiDevice.findObjects(selector).get(lastEmailRecivedPosition).getText();
-        //lastEmailRecivedDate = uiDevice.findObjects(selector).get(lastEmailRecivedPosition+1).getText();
+        lastEmailRecivedDate = uiDevice.findObjects(selector).get(lastEmailRecivedPosition+1).getText();
         //lastEmailRecivedFor = uiDevice.findObjects(selector).get(lastEmailRecivedPosition+2).getText();
         testUtils.composseMessageButton();
         testUtils.testStatusEmpty();
