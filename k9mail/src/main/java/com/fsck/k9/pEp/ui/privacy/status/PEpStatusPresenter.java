@@ -37,6 +37,7 @@ public class PEpStatusPresenter implements Presenter {
     private LocalMessage localMessage;
     private boolean isMessageIncoming;
     private Address senderAddress;
+    private Rating currentRating;
 
     @Inject
     public PEpStatusPresenter(SimpleMessageLoaderHelper simpleMessageLoaderHelper, PEpIdentityMapper pEpIdentityMapper) {
@@ -135,9 +136,9 @@ public class PEpStatusPresenter implements Presenter {
     }
 
     private void onRatingChanged(Rating rating) {
+        this.currentRating = rating;
         if (localMessage != null) {
             localMessage.setpEpRating(rating);
-            view.saveLocalMessage(localMessage);
         }
         view.setRating(rating);
         view.setupBackIntent(rating);
@@ -198,6 +199,7 @@ public class PEpStatusPresenter implements Presenter {
             @Override
             public void onMessageDataLoadFinished(LocalMessage message) {
                 localMessage = message;
+                currentRating = localMessage.getpEpRating();
             }
 
             @Override
@@ -230,5 +232,9 @@ public class PEpStatusPresenter implements Presenter {
                                                                 int flagsMask, int flagValues, int extraFlags) {
             }
         };
+    }
+
+    public void saveMessage() {
+        view.saveLocalMessage(localMessage);
     }
 }

@@ -264,7 +264,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
         switch (id) {
             case android.R.id.home:
-                onBackPressed();
+                goBack();
                 return true;
             case R.id.action_explanation:
                 showExplanationDialog();
@@ -272,6 +272,11 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void goBack() {
+        presenter.saveMessage();
+        onBackPressed();
     }
 
     private void showExplanationDialog() {
