@@ -1,23 +1,34 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.intent.Checks;
+import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
+import android.view.View;
+import android.widget.EditText;
 
 import com.fsck.k9.R;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.swipeDown;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.hasTextColor;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anything;
 
 
 @RunWith(AndroidJUnit4.class)
@@ -25,7 +36,7 @@ public class YellowStatusEmailFromBotTest {
 
     private UiDevice uiDevice;
     private TestUtils testUtils;
-    private String emailTo = "test1@test.pep-security.net";
+    private String emailTo = "test2@test.pep-security.net";
     private String emailFrom;
     private String lastEmailRecivedSubject;
     private String lastEmailRecivedFor;
@@ -45,8 +56,8 @@ public class YellowStatusEmailFromBotTest {
     @Test
     public void yellowStatusEmail() {
         testUtils.increaseTimeoutWait();
-        greyStatusEmailSend();
-        waitForBotEmail();
+        /*greyStatusEmailSend();
+        waitForBotEmail();*/
         clickBotEmail();
         clickReplayMessage();
         clickMailStatus();
@@ -55,20 +66,25 @@ public class YellowStatusEmailFromBotTest {
     }
 
     private void checkBotEmailColor() {
-
+        testUtils.doWait();
+        onView(withId(R.id.recipientContainer)).check(matches(hasTextColor(R.color.pep_yellow)));
     }
 
     private void clickMailStatus() {
+        testUtils.doWait();
         onView(withId(R.id.pEp_indicator)).perform(click());
     }
 
     private void clickReplayMessage() {
-        onView(withId(R.id.reply_message));
+        testUtils.doWait();
+        onView(withId(R.id.reply_message)).perform(click());
     }
 
     private void clickBotEmail() {
+        testUtils.doWait();
         BySelector selector = By.clazz("android.widget.TextView");
-        uiDevice.findObjects(selector).get(lastEmailRecivedPosition).click();
+        //uiDevice.findObjects(selector).get(lastEmailRecivedPosition).click();
+        uiDevice.findObjects(selector).get(3).click();
     }
 
     private void waitForBotEmail() {
