@@ -70,9 +70,8 @@ public class YellowStatusEmailFromBotTest {
         lastEmailRecivedDate = uiDevice.findObjects(selector).get(lastEmailRecivedPosition+1).getText();
         //lastEmailRecivedFor = uiDevice.findObjects(selector).get(lastEmailRecivedPosition+2).getText();
         testUtils.composseMessageButton();
-        testUtils.testStatusEmpty();
         testUtils.doWait();
-        testUtils.testStatusMail(emailTo, "Subject", "Message", Rating.pEpRatingUnencrypted.value);
+        testUtils.fillEmail(emailTo, "Subject", "Message", false);
         testUtils.sendEmail();
         testUtils.doWait();
 
