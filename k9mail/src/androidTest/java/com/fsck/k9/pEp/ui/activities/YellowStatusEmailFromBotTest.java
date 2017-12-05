@@ -1,7 +1,5 @@
 package com.fsck.k9.pEp.ui.activities;
 
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.intent.Checks;
@@ -13,9 +11,7 @@ import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.fsck.k9.R;
 
@@ -27,14 +23,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
-import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.swipeDown;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
-import static android.support.test.espresso.matcher.ViewMatchers.hasTextColor;
-import static android.support.test.espresso.matcher.ViewMatchers.withChild;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.Assert.assertTrue;
@@ -79,8 +72,9 @@ public class YellowStatusEmailFromBotTest {
     private void checkBotEmailColor() {
         testUtils.doWaitForResource(R.id.toolbar_container);
         testUtils.doWait();
-        onView(allOf(withId(R.id.toolbar_container))).check(matches(withBgColor(R.color.pep_yellow)));
+        onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(R.color.pep_yellow)));
         testUtils.doWait();
+        testUtils.pressBack();
         //assertTrue(withId(R.id.toolbar_container).matches(withLayoutColor(R.color.pep_yellow)));
         //onView(allOf(withId(R.id.toolbar_container)))
         //        .check(matches(hasTextColor(R.color.white)));
@@ -164,16 +158,22 @@ public class YellowStatusEmailFromBotTest {
         };
     }
 
-    public static Matcher<View> withBgColor(final int color) {
+    public static Matcher<View> withBackgroundColor(final int color) {
         Checks.checkNotNull(color);
-        return new BoundedMatcher<View, LinearLayout>(LinearLayout.class) {
+        int color1 = ContextCompat.getColor(getTargetContext(),color);
+        return new BoundedMatcher<View, View>(View.class) {
             @Override
-            public boolean matchesSafely(LinearLayout row) {
-                return color == ((ColorDrawable) row.getBackground()).getColor();
+            public boolean matchesSafely(View view) {
+                int color2 = ((ColorDrawable) view.getBackground()).getColor();
+                if (color1 == (color2)){
+                    return true;
+                }else {
+                    return false;
+                }
             }
             @Override
             public void describeTo(Description description) {
-                description.appendText("nothing");
+
             }
         };
     }
