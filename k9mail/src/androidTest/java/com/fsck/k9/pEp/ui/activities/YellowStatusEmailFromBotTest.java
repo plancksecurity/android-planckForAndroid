@@ -27,12 +27,8 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.swipeDown;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.anything;
 
 
 @RunWith(AndroidJUnit4.class)
@@ -75,10 +71,6 @@ public class YellowStatusEmailFromBotTest {
         onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(R.color.pep_yellow)));
         testUtils.doWait();
         testUtils.pressBack();
-        //assertTrue(withId(R.id.toolbar_container).matches(withLayoutColor(R.color.pep_yellow)));
-        //onView(allOf(withId(R.id.toolbar_container)))
-        //        .check(matches(hasTextColor(R.color.white)));
-        //onView(withId(R.id.recipientContainer)).check(matches(hasTextColor(R.color.pep_yellow)));
     }
 
     private void clickMailStatus() {
@@ -143,19 +135,6 @@ public class YellowStatusEmailFromBotTest {
     }
 
     private void yellowStatusEmailTest() {
-    }
-
-    public static Matcher<View> withLayoutColor(final int color) {
-        Checks.checkNotNull(color);
-        return new BoundedMatcher<View, LinearLayout>(LinearLayout.class) {
-            @Override
-            protected boolean matchesSafely(LinearLayout item) {
-                return ContextCompat.getColor(getTargetContext(),color)==item.getSolidColor();
-            }
-            @Override
-            public void describeTo(Description description) {
-            }
-        };
     }
 
     public static Matcher<View> withBackgroundColor(final int color) {
