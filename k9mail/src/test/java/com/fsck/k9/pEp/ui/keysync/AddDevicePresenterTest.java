@@ -33,11 +33,11 @@ public class AddDevicePresenterTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         addDevicePresenter = new AddDevicePresenter();
+        addDevicePresenter.initialize(view, pEpProvider, identity(), accounts());
     }
 
     @Test
     public void shouldAcceptHandshakeOnEngineWhenAccepting() throws Exception {
-        addDevicePresenter.initialize(view, pEpProvider, identity(), accounts());
         addDevicePresenter.acceptHandshake();
 
         verify(pEpProvider).acceptHandshake(any(Identity.class));
@@ -45,15 +45,13 @@ public class AddDevicePresenterTest {
 
     @Test
     public void shouldCancelHandshakeOnEngineWhenCancelling() throws Exception {
-        addDevicePresenter.initialize(view, pEpProvider, identity(), accounts());
-        addDevicePresenter.acceptHandshake();
+        addDevicePresenter.cancelHandshake();
 
-        verify(pEpProvider).acceptHandshake(any(Identity.class));
+        verify(pEpProvider).cancelHandshake(any(Identity.class));
     }
 
     @Test
     public void shouldRejectHandshakeOnEngineWhenRejecting() throws Exception {
-        addDevicePresenter.initialize(view, pEpProvider, identity(), accounts());
         addDevicePresenter.rejectHandshake();
 
         verify(pEpProvider).rejectHandshake(any(Identity.class));
@@ -61,7 +59,6 @@ public class AddDevicePresenterTest {
 
     @Test
     public void shouldCloseViewWhenAccepting() throws Exception {
-        addDevicePresenter.initialize(view, pEpProvider, identity(), accounts());
         addDevicePresenter.acceptHandshake();
 
         verify(view).close();
@@ -69,7 +66,6 @@ public class AddDevicePresenterTest {
 
     @Test
     public void shouldCloseViewWhenRejecting() throws Exception {
-        addDevicePresenter.initialize(view, pEpProvider, identity(), accounts());
         addDevicePresenter.rejectHandshake();
 
         verify(view).close();
@@ -77,7 +73,6 @@ public class AddDevicePresenterTest {
 
     @Test
     public void shouldCloseViewWhenCancelling() throws Exception {
-        addDevicePresenter.initialize(view, pEpProvider, identity(), accounts());
         addDevicePresenter.cancelHandshake();
 
         verify(view).goBack();
