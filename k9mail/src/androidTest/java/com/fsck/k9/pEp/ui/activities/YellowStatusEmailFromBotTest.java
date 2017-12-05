@@ -145,6 +145,9 @@ public class YellowStatusEmailFromBotTest {
     }
 
     private void yellowStatusEmailTest() {
+        testUtils.fillEmail(emailTo, "Subject", "Message", false);
+        onView(withId(R.id.pEp_indicator)).perform(click());
+        testUtils.doWait();
 
     }
 
