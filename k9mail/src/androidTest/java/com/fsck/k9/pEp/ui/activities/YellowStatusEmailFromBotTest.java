@@ -28,6 +28,7 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.swipeDown;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
 
@@ -64,8 +65,16 @@ public class YellowStatusEmailFromBotTest {
         checkBotEmailColor();
         testUtils.doWait();
         testUtils.pressBack();
+        testUtils.doWait();
         testUtils.pressBack();
-        //yellowStatusEmailTest();
+        testUtils.doWait();
+        testUtils.doWaitForObject("android.widget.Button");
+        onView(withText(R.string.discard_action)).perform(click());
+        testUtils.doWait();
+        testUtils.pressBack();
+        testUtils.doWait();
+        testUtils.composseMessageButton();
+        yellowStatusEmailTest();
     }
 
     private void checkBotEmailColor() {
@@ -136,6 +145,7 @@ public class YellowStatusEmailFromBotTest {
     }
 
     private void yellowStatusEmailTest() {
+
     }
 
     public static Matcher<View> withBackgroundColor(final int color) {
