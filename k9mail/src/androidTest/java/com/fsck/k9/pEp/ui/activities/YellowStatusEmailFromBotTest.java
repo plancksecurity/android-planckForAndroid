@@ -62,6 +62,9 @@ public class YellowStatusEmailFromBotTest {
         clickReplayMessage();
         clickMailStatus();
         checkBotEmailColor();
+        testUtils.doWait();
+        testUtils.pressBack();
+        testUtils.pressBack();
         //yellowStatusEmailTest();
     }
 
@@ -69,8 +72,6 @@ public class YellowStatusEmailFromBotTest {
         testUtils.doWaitForResource(R.id.toolbar_container);
         testUtils.doWait();
         onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(R.color.pep_yellow)));
-        testUtils.doWait();
-        testUtils.pressBack();
     }
 
     private void clickMailStatus() {
