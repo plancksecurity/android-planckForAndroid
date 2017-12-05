@@ -23,11 +23,11 @@ import static org.mockito.Mockito.when;
 @RunWith(K9RobolectricTestRunner.class)
 @Config(manifest = "src/main/AndroidManifest.xml", sdk = 21)
 public class AddDevicePresenterTest {
-    public static final String PARTNER_USER_ID = "partner_user_id";
-    public static final String PARTNER_ADDRESS = "partner@address";
+    private static final String PARTNER_USER_ID = "partner_user_id";
+    private static final String PARTNER_ADDRESS = "partner@address";
     private AddDevicePresenter addDevicePresenter;
-    @Mock AddDeviceView view;
-    @Mock PEpProvider pEpProvider;
+    @Mock private AddDeviceView view;
+    @Mock private PEpProvider pEpProvider;
 
     @Before
     public void setUp() throws Exception {
