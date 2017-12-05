@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 @Config(manifest = "src/main/AndroidManifest.xml", sdk = 21)
 public class AddDevicePresenterTest {
     public static final String PARTNER_USER_ID = "partner_user_id";
-    public static final String PARTNER_ADDRESS = "partner_address";
+    public static final String PARTNER_ADDRESS = "partner@address";
     private AddDevicePresenter addDevicePresenter;
     @Mock AddDeviceView view;
     @Mock PEpProvider pEpProvider;
@@ -94,7 +94,7 @@ public class AddDevicePresenterTest {
         partner.username = "username";
         partner.user_id = PARTNER_USER_ID;
         partner.flags = 0;
-        partner.fpr = "fpr";
+        partner.fpr = "111122223333444455556666777788889999AAAA";
         partner.address = PARTNER_ADDRESS;
         partner.lang = "ES";
         return partner;
