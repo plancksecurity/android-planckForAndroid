@@ -91,6 +91,7 @@ import org.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -408,7 +409,35 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         navigationAccounts = (RecyclerView) findViewById(R.id.navigation_accounts);
         setupNavigationHeader();
 
+        setupNavigationFoldersList();
+
         createFoldersMenu();
+    }
+
+    private void setupNavigationFoldersList() {
+        if (navigationFolders != null) {
+            navigationFolders.setLayoutManager(getDrawerLayoutManager());
+        }
+        FolderRenderer folderRenderer = new FolderRenderer();
+        rendererFolderBuilder = new RendererBuilder<>(folderRenderer);
+
+        folderRenderer.setFolderClickListener(new OnFolderClickListener() {
+            @Override
+            public void onClick(LocalFolder folder) {
+                changeFolder(folder);
+            }
+
+            @Override
+            public void onClick(Integer position) {
+
+            }
+        });
+        ListAdapteeCollection<FolderModel> adapteeCollection = new ListAdapteeCollection<>(Collections.emptyList());
+
+        folderAdapter = new RVRendererAdapter<>(rendererFolderBuilder, adapteeCollection);
+        if (navigationFolders != null) {
+            navigationFolders.setAdapter(folderAdapter);
+        }
     }
 
     private void setupNavigationHeader() {
@@ -970,9 +999,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void populateFolders(List<LocalFolder> folders) {
-        if (navigationFolders != null) {
-            navigationFolders.setLayoutManager(getDrawerLayoutManager());
-        }
         List<LocalFolder> foldersFiltered = filterLocalFolders(folders);
 
         List<FolderModel> folderModels = new ArrayList<>(foldersFiltered.size());
@@ -983,27 +1009,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             folderModels.add(folderModel);
         }
 
-        FolderRenderer folderRenderer = new FolderRenderer();
-        rendererFolderBuilder = new RendererBuilder<>(folderRenderer);
-
-        folderRenderer.setFolderClickListener(new OnFolderClickListener() {
-            @Override
-            public void onClick(LocalFolder folder) {
-                changeFolder(folder);
-            }
-
-            @Override
-            public void onClick(Integer position) {
-
-            }
-        });
         ListAdapteeCollection<FolderModel> adapteeCollection = new ListAdapteeCollection<>(folderModels);
 
-        folderAdapter = new RVRendererAdapter<>(rendererFolderBuilder, adapteeCollection);
-
-        if (navigationFolders != null) {
-            navigationFolders.setAdapter(folderAdapter);
-        }
+        folderAdapter.setCollection(adapteeCollection);
+        folderAdapter.notifyDataSetChanged();
         setupMainFolders();
     }
 
