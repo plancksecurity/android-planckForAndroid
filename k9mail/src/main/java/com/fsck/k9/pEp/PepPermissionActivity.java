@@ -111,19 +111,13 @@ public abstract class PepPermissionActivity extends K9Activity {
                 .check();
     }
 
-    public void createBasicPermissionsActivity(PEpProvider.CompletedCallback completedCallback) {
+    public void createBasicPermissionsActivity(MultiplePermissionsListener listener) {
         Dexter.withActivity(this)
                 .withPermissions(
                         Manifest.permission.WRITE_CONTACTS,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ).withListener(new MultiplePermissionsListener() {
-            @Override public void onPermissionsChecked(MultiplePermissionsReport report) {
-                completedCallback.onComplete();
-            }
-            @Override public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-                completedCallback.onError(new Throwable(token.toString()));
-            }
-        }).check();
+                ).withListener(listener).onSameThread()
+                .check();
     }
 
     public abstract void inject();

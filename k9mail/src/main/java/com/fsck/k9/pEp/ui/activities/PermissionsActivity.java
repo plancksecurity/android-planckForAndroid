@@ -6,17 +6,24 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 
 import com.fsck.k9.R;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
-import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PepPermissionActivity;
 import com.fsck.k9.pEp.ui.PEpPermissionView;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -53,6 +60,12 @@ public class PermissionsActivity extends PepPermissionActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        askForBatteryOptimizationWhiteListing();
+    }
+
+    @Override
     public void showPermissionGranted(String permissionName) {
     }
 
@@ -66,16 +79,19 @@ public class PermissionsActivity extends PepPermissionActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @OnClick(R.id.action_continue)
     public void onContinueClicked() {
-        if (noPermissionGrantedOrDenied()) {
-            createBasicPermissionsActivity(permissionsCompletedCallback());
-        } else if (!isPermissionGranted(Manifest.permission.READ_CONTACTS)) {
-            showNeedPermissionsDialog();
-        } else if(!isPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            showNeedPermissionsDialog();
-        } else {
+        if(isPermissionGranted(Manifest.permission.READ_CONTACTS)
+                && isPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             goToSetupAccount();
+        } else {
+            if (shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS)
+                    || shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                showRationalePermissionsDialog();
+            } else {
+                createBasicPermissionsActivity(permissionsCompletedCallback());
+            }
         }
         shouldAskPermissions = false;
     }
@@ -99,27 +115,38 @@ public class PermissionsActivity extends PepPermissionActivity {
                 .show();
     }
 
+    private void showRationalePermissionsDialog() {
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.permissions_needed_message)
+                .setPositiveButton(R.string.okay_action, (dialog, which) -> {
+                    createBasicPermissionsActivity(permissionsCompletedCallback());
+                })
+                .setNegativeButton(R.string.cancel_action, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        goToSetupAccount();
+                    }
+                })
+                .show();
+    }
+
     @NonNull
-    private PEpProvider.CompletedCallback permissionsCompletedCallback() {
-        return new PEpProvider.CompletedCallback() {
+    private MultiplePermissionsListener permissionsCompletedCallback() {
+        return new MultiplePermissionsListener() {
+
             @Override
-            public void onComplete() {
-                if(!askBatteryPermissionShowed) {
-                    askForBatteryOptimizationWhiteListing();
-                    askBatteryPermissionShowed = !askBatteryPermissionShowed;
-                } else {
+            public void onPermissionsChecked(MultiplePermissionsReport report) {
+                if(isPermissionGranted(Manifest.permission.READ_CONTACTS)
+                        && isPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     goToSetupAccount();
+                } else {
+                    showNeedPermissionsDialog();
                 }
             }
 
             @Override
-            public void onError(Throwable throwable) {
-                if(!askBatteryPermissionShowed) {
-                    askForBatteryOptimizationWhiteListing();
-                    askBatteryPermissionShowed = !askBatteryPermissionShowed;
-                } else {
-                    goToSetupAccount();
-                }
+            public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+                token.continuePermissionRequest();
             }
         };
     }
@@ -127,16 +154,7 @@ public class PermissionsActivity extends PepPermissionActivity {
     private void goToSetupAccount() {
         AccountSetupBasics.actionNewAccount(PermissionsActivity.this);
         finish();
-    }
 
-    private boolean noPermissionGrantedOrDenied() {
-        return isPermissionDenied(Manifest.permission.READ_CONTACTS) &&
-                isPermissionDenied(Manifest.permission.WRITE_EXTERNAL_STORAGE) &&
-                shouldAskPermissions;
-    }
-
-    private boolean isPermissionDenied(String readContacts) {
-        return ContextCompat.checkSelfPermission(this, readContacts) == PackageManager.PERMISSION_DENIED;
     }
 
     private boolean isPermissionGranted(String readContacts) {
