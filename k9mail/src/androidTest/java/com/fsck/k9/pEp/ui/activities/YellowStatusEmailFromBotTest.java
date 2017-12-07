@@ -53,6 +53,7 @@ public class YellowStatusEmailFromBotTest {
 
     @Before
     public void startMainActivity() {
+        testUtils.increaseTimeoutWait();
         uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(uiDevice);
         testUtils.startActivity();
@@ -60,7 +61,6 @@ public class YellowStatusEmailFromBotTest {
 
     @Test
     public void yellowStatusEmail() {
-        testUtils.increaseTimeoutWait();
         getLastEmailRecived();
         testUtils.composseMessageButton();
         uiDevice.waitForIdle();
