@@ -170,11 +170,7 @@ public class YellowStatusEmailFromBotTest {
             @Override
             public boolean matchesSafely(View view) {
                 int color2 = ((ColorDrawable) view.getBackground()).getColor();
-                if (color1 == (color2)){
-                    return true;
-                }else {
-                    return false;
-                }
+                return color1 == (color2);
             }
             @Override
             public void describeTo(Description description) {
