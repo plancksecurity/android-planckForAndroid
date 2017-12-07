@@ -66,6 +66,11 @@ public class YellowStatusEmailFromBotTest {
     public void yellowStatusEmail() {
         testUtils.increaseTimeoutWait();
         getLastEmailRecived();
+        testUtils.composseMessageButton();
+        testUtils.doWait();
+        testUtils.fillEmail(emailTo, "Subject", "Message", false);
+        testUtils.sendEmail();
+        testUtils.doWait();
         waitForBotEmail();
         clickBotEmail();
         clickReplayMessage();
@@ -133,13 +138,6 @@ public class YellowStatusEmailFromBotTest {
             lastEmailRecivedDate = "";
             lastEmailRecivedPosition = uiDevice.findObjects(selector).size();
         }
-        //lastEmailRecivedFor = uiDevice.findObjects(selector).get(lastEmailRecivedPosition+2).getText();
-        testUtils.composseMessageButton();
-        testUtils.doWait();
-        testUtils.fillEmail(emailTo, "Subject", "Message", false);
-        testUtils.sendEmail();
-        testUtils.doWait();
-
     }
 
     public int getLastEmailRecivedPosition(){
