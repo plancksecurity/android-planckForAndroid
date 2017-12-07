@@ -1,6 +1,7 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.core.internal.deps.guava.collect.Iterables;
@@ -14,6 +15,7 @@ import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.fsck.k9.R;
@@ -21,6 +23,7 @@ import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,7 +32,9 @@ import org.junit.runner.RunWith;
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.swipeDown;
+import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.core.internal.deps.guava.base.Preconditions.checkNotNull;
@@ -53,9 +58,9 @@ public class YellowStatusEmailFromBotTest {
 
     @Before
     public void startMainActivity() {
-        testUtils.increaseTimeoutWait();
         uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(uiDevice);
+        testUtils.increaseTimeoutWait();
         testUtils.startActivity();
     }
 
@@ -79,7 +84,19 @@ public class YellowStatusEmailFromBotTest {
 
     @Test
     public void yellowAndGreyStatusEmail(){
+        testUtils.composseMessageButton();
+        uiDevice.waitForIdle();
+        testUtils.fillEmail(emailTo, "Subject", "Message", false);
+        onView(withId(R.id.to)).perform(typeText("grey@email.is"), closeSoftKeyboard());
+        uiDevice.findObject(By.res("pep.android.k9", "subject")).click();
+        uiDevice.waitForIdle();
+        clickMailStatus();
+        onView(withRecyclerView(R.id.my_recycler_view).atPosition(0)).check(matches(withBackgroundColor(R.color.pep_no_color)));
+        onView(withRecyclerView(R.id.my_recycler_view).atPosition(1)).check(matches(withBackgroundColor(R.color.pep_yellow)));
+    }
+    public static RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
 
+        return new RecyclerViewMatcher(recyclerViewId);
     }
 
     private void goBacktoEmailsRecived(){
@@ -202,5 +219,64 @@ public class YellowStatusEmailFromBotTest {
             throwable.printStackTrace();
         }
         return activity[0];
+    }
+
+    public static class RecyclerViewMatcher {
+        private final int recyclerViewId;
+
+        public RecyclerViewMatcher(int recyclerViewId) {
+            this.recyclerViewId = recyclerViewId;
+        }
+
+        public Matcher<View> atPosition(final int position) {
+            return atPositionOnView(position, -1);
+        }
+
+        public Matcher<View> atPositionOnView(final int position, final int targetViewId) {
+
+            return new TypeSafeMatcher<View>() {
+                Resources resources = null;
+                View childView;
+
+                public void describeTo(Description description) {
+                    String idDescription = Integer.toString(recyclerViewId);
+                    if (this.resources != null) {
+                        try {
+                            idDescription = this.resources.getResourceName(recyclerViewId);
+                        } catch (Resources.NotFoundException var4) {
+                            idDescription = String.format("%s (resource name not found)",
+                                    new Object[] { Integer.valueOf
+                                            (recyclerViewId) });
+                        }
+                    }
+
+                    description.appendText("with id: " + idDescription);
+                }
+
+                public boolean matchesSafely(View view) {
+
+                    this.resources = view.getResources();
+
+                    if (childView == null) {
+                        RecyclerView recyclerView =
+                                (RecyclerView) view.getRootView().findViewById(recyclerViewId);
+                        if (recyclerView != null && recyclerView.getId() == recyclerViewId) {
+                            childView = recyclerView.findViewHolderForAdapterPosition(position).itemView;
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+
+                    if (targetViewId == -1) {
+                        return view == childView;
+                    } else {
+                        View targetView = childView.findViewById(targetViewId);
+                        return view == targetView;
+                    }
+
+                }
+            };
+        }
     }
 }
