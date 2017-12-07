@@ -85,15 +85,19 @@ public class YellowStatusEmailFromBotTest {
     @Test
     public void yellowAndGreyStatusEmail(){
         testUtils.composseMessageButton();
-        uiDevice.waitForIdle();
-        testUtils.fillEmail(emailTo, "Subject", "Message", false);
-        onView(withId(R.id.to)).perform(typeText("grey@email.is"), closeSoftKeyboard());
-        uiDevice.findObject(By.res("pep.android.k9", "subject")).click();
-        uiDevice.waitForIdle();
+        fillEmail();
         clickMailStatus();
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(0)).check(matches(withBackgroundColor(R.color.pep_no_color)));
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(1)).check(matches(withBackgroundColor(R.color.pep_yellow)));
     }
+
+    private void fillEmail(){
+        uiDevice.waitForIdle();
+        testUtils.fillEmail(emailTo, "Subject", "Message", false);
+        onView(withId(R.id.to)).perform(typeText("grey@email.is"), closeSoftKeyboard());
+        uiDevice.findObject(By.res("pep.android.k9", "subject")).click();
+        uiDevice.waitForIdle();}
+
     public static RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
 
         return new RecyclerViewMatcher(recyclerViewId);
@@ -245,8 +249,7 @@ public class YellowStatusEmailFromBotTest {
                             idDescription = this.resources.getResourceName(recyclerViewId);
                         } catch (Resources.NotFoundException var4) {
                             idDescription = String.format("%s (resource name not found)",
-                                    new Object[] { Integer.valueOf
-                                            (recyclerViewId) });
+                                    recyclerViewId);
                         }
                     }
 
@@ -259,7 +262,7 @@ public class YellowStatusEmailFromBotTest {
 
                     if (childView == null) {
                         RecyclerView recyclerView =
-                                (RecyclerView) view.getRootView().findViewById(recyclerViewId);
+                                view.getRootView().findViewById(recyclerViewId);
                         if (recyclerView != null && recyclerView.getId() == recyclerViewId) {
                             childView = recyclerView.findViewHolderForAdapterPosition(position).itemView;
                         }
