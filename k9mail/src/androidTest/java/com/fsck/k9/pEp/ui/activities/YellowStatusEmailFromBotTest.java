@@ -1,7 +1,10 @@
 package com.fsck.k9.pEp.ui.activities;
 
+import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.NoMatchingViewException;
+import android.support.test.espresso.ViewAssertion;
 import android.support.test.espresso.intent.Checks;
 import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.test.rule.ActivityTestRule;
@@ -14,6 +17,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -27,9 +31,15 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.swipeDown;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.core.internal.deps.guava.base.Preconditions.checkNotNull;
+import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
+import static android.support.test.espresso.matcher.ViewMatchers.hasChildCount;
+import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.instanceOf;
 
 
 @RunWith(AndroidJUnit4.class)
@@ -148,6 +158,8 @@ public class YellowStatusEmailFromBotTest {
         testUtils.fillEmail(emailTo, "Subject", "Message", false);
         onView(withId(R.id.pEp_indicator)).perform(click());
         testUtils.doWait();
+        onView(withId(R.id.my_recycler_view)).check(matches(hasChildCount(0)));
+        assertCurrentActivityIsInstanceOf(PEpTrustwords.class);
 
     }
 
@@ -169,5 +181,12 @@ public class YellowStatusEmailFromBotTest {
 
             }
         };
+    }
+
+    public void assertCurrentActivityIsInstanceOf(Class<? extends Activity> activityClass) {
+        Activity currentActivity = splashActivityTestRule.getActivity();
+        checkNotNull(currentActivity);
+        checkNotNull(activityClass);
+        assertTrue(currentActivity.getClass().isAssignableFrom(activityClass));
     }
 }
