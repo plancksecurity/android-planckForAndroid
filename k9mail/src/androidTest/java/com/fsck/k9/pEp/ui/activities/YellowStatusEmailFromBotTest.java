@@ -63,10 +63,10 @@ public class YellowStatusEmailFromBotTest {
         testUtils.increaseTimeoutWait();
         getLastEmailRecived();
         testUtils.composseMessageButton();
-        testUtils.doWait();
+        uiDevice.waitForIdle();
         testUtils.fillEmail(emailTo, "Subject", "Message", false);
         testUtils.sendEmail();
-        testUtils.doWait();
+        uiDevice.waitForIdle();
         waitForBotEmail();
         clickBotEmail();
         clickReplayMessage();
@@ -78,36 +78,36 @@ public class YellowStatusEmailFromBotTest {
     }
 
     private void goBacktoEmailsRecived(){
-        testUtils.doWait();
+        uiDevice.waitForIdle();
         testUtils.pressBack();
-        testUtils.doWait();
+        uiDevice.waitForIdle();
         testUtils.pressBack();
-        testUtils.doWait();
+        uiDevice.waitForIdle();
         testUtils.doWaitForObject("android.widget.Button");
         onView(withText(R.string.discard_action)).perform(click());
-        testUtils.doWait();
+        uiDevice.waitForIdle();
         testUtils.pressBack();
-        testUtils.doWait();
+        uiDevice.waitForIdle();
     }
 
     private void checkBotEmailColor() {
         testUtils.doWaitForResource(R.id.toolbar_container);
-        testUtils.doWait();
+        uiDevice.waitForIdle();
         onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(R.color.pep_yellow)));
     }
 
     private void clickMailStatus() {
-        testUtils.doWait();
+        uiDevice.waitForIdle();
         onView(withId(R.id.pEp_indicator)).perform(click());
     }
 
     private void clickReplayMessage() {
-        testUtils.doWait();
+        uiDevice.waitForIdle();
         onView(withId(R.id.reply_message)).perform(click());
     }
 
     private void clickBotEmail() {
-        testUtils.doWait();
+        uiDevice.waitForIdle();
         BySelector selector = By.clazz("android.widget.TextView");
         uiDevice.findObjects(selector).get(lastEmailRecivedPosition).click();
     }
@@ -118,7 +118,7 @@ public class YellowStatusEmailFromBotTest {
                 ||(testUtils.getTextFromTextviewThatContainsText("bot").equals(uiDevice.findObjects(selector).get(lastEmailRecivedPosition).getText()))
                  &&(lastEmailRecivedDate.equals(uiDevice.findObjects(selector).get(lastEmailRecivedPosition+1).getText()))
                 ){
-            testUtils.doWait();
+            uiDevice.waitForIdle();
         }
     }
 
@@ -157,7 +157,7 @@ public class YellowStatusEmailFromBotTest {
     private void yellowStatusEmailTest() {
         testUtils.fillEmail(emailTo, "Subject", "Message", false);
         onView(withId(R.id.pEp_indicator)).perform(click());
-        testUtils.doWait();
+        uiDevice.waitForIdle();
         onView(withId(R.id.my_recycler_view)).check(doesNotExist());
         assertCurrentActivityIsInstanceOf(PEpTrustwords.class);
 
@@ -189,11 +189,9 @@ public class YellowStatusEmailFromBotTest {
     private Activity getCurrentActivity(){
         final Activity[] activity = new Activity[1];
         try {
-            splashActivityTestRule.runOnUiThread(new Runnable() {
-                public void run() {
-                    java.util.Collection<Activity> activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
-                    activity[0] = Iterables.getOnlyElement(activities);
-                }
+            splashActivityTestRule.runOnUiThread(() -> {
+                java.util.Collection<Activity> activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
+                activity[0] = Iterables.getOnlyElement(activities);
             });
         } catch (Throwable throwable) {
             throwable.printStackTrace();
