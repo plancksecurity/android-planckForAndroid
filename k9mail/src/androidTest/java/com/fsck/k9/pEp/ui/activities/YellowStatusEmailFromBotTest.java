@@ -13,6 +13,7 @@ import android.support.test.runner.lifecycle.Stage;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject2;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 
@@ -76,6 +77,12 @@ public class YellowStatusEmailFromBotTest {
         clickReplayMessage();
         clickMailStatus();
         checkBotEmailColor();
+        goBacktoEmailsRecived();
+        testUtils.composseMessageButton();
+        yellowStatusEmailTest();
+    }
+
+    private void goBacktoEmailsRecived(){
         testUtils.doWait();
         testUtils.pressBack();
         testUtils.doWait();
@@ -86,8 +93,6 @@ public class YellowStatusEmailFromBotTest {
         testUtils.doWait();
         testUtils.pressBack();
         testUtils.doWait();
-        testUtils.composseMessageButton();
-        yellowStatusEmailTest();
     }
 
     private void checkBotEmailColor() {
@@ -144,14 +149,13 @@ public class YellowStatusEmailFromBotTest {
         BySelector selector = By.clazz("android.widget.TextView");
         int size = uiDevice.findObjects(selector).size();
         for (int position = 0; position < size; position++) {
-             uiDevice.findObjects(selector).get(position);
-            if (uiDevice.findObjects(selector).get(position).getText() != null && uiDevice.findObjects(selector).get(position).getText().contains("@")){
+            String textAtPosition = uiDevice.findObjects(selector).get(position).getText();
+            if (textAtPosition != null && textAtPosition.contains("@")){
                 position++;
                 while (uiDevice.findObjects(selector).get(position).getText() == null){
                     position++;
                     if (position >= size){
-                        position = -1;
-                        return position;
+                        return -1;
                     }
                 }
                 return position;
