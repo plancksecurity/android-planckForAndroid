@@ -184,20 +184,24 @@ public class YellowStatusEmailFromBotTest {
     }
 
     public void assertCurrentActivityIsInstanceOf(Class<? extends Activity> activityClass) {
-        final Activity[] activity = new Activity[1];
-        try {
-            splashActivityTestRule.runOnUiThread(new Runnable() {
-                                       public void run() {
-                                           java.util.Collection<Activity> activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
-                                           activity[0] = Iterables.getOnlyElement(activities);
-                                       }
-                                   });
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
-        Activity currentActivity = activity[0];
+        Activity currentActivity = getCurrentActivity();
         checkNotNull(currentActivity);
         checkNotNull(activityClass);
         assertTrue(currentActivity.getClass().isAssignableFrom(activityClass));
+    }
+
+    private Activity getCurrentActivity(){
+        final Activity[] activity = new Activity[1];
+        try {
+            splashActivityTestRule.runOnUiThread(new Runnable() {
+                public void run() {
+                    java.util.Collection<Activity> activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
+                    activity[0] = Iterables.getOnlyElement(activities);
+                }
+            });
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        return activity[0];
     }
 }
