@@ -77,6 +77,11 @@ public class YellowStatusEmailFromBotTest {
         yellowStatusEmailTest();
     }
 
+    @Test
+    public void yellowAndGreyStatusEmail(){
+
+    }
+
     private void goBacktoEmailsRecived(){
         uiDevice.waitForIdle();
         testUtils.pressBack();
