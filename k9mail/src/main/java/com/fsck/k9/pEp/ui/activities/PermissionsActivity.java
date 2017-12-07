@@ -1,8 +1,8 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -31,11 +31,10 @@ import butterknife.OnClick;
 
 public class PermissionsActivity extends PepPermissionActivity {
 
+    public static final int SETTINGS_CODE = 777;
     @Bind(R.id.permission_contacts) PEpPermissionView contactsPermissionView;
     @Bind(R.id.permission_storage) PEpPermissionView storagePermissionView;
     @Bind(R.id.permission_battery) PEpPermissionView batteryPermissionView;
-    private boolean askBatteryPermissionShowed;
-    private boolean shouldAskPermissions;
 
     public static void actionAskPermissions(Context context) {
         Intent i = new Intent(context, PermissionsActivity.class);
@@ -47,7 +46,6 @@ public class PermissionsActivity extends PepPermissionActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_permissions);
         ButterKnife.bind(this);
-        shouldAskPermissions = true;
         contactsPermissionView.initialize(getResources().getString(R.string.read_permission_rationale_title),
                 getResources().getString(R.string.read_permission_first_explanation)
         );
@@ -82,6 +80,11 @@ public class PermissionsActivity extends PepPermissionActivity {
     @RequiresApi(api = Build.VERSION_CODES.M)
     @OnClick(R.id.action_continue)
     public void onContinueClicked() {
+        handlePermissionsLogic();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void handlePermissionsLogic() {
         if(isPermissionGranted(Manifest.permission.READ_CONTACTS)
                 && isPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             goToSetupAccount();
@@ -93,7 +96,6 @@ public class PermissionsActivity extends PepPermissionActivity {
                 createBasicPermissionsActivity(permissionsCompletedCallback());
             }
         }
-        shouldAskPermissions = false;
     }
 
     private void showNeedPermissionsDialog() {
@@ -104,14 +106,9 @@ public class PermissionsActivity extends PepPermissionActivity {
                     intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                     Uri uri = Uri.fromParts("package", getPackageName(), null);
                     intent.setData(uri);
-                    startActivity(intent);
+                    startActivityForResult(intent, SETTINGS_CODE);
                 })
-                .setNegativeButton(R.string.cancel_action, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        goToSetupAccount();
-                    }
-                })
+                .setNegativeButton(R.string.cancel_action, (dialog, which) -> goToSetupAccount())
                 .show();
     }
 
@@ -121,12 +118,7 @@ public class PermissionsActivity extends PepPermissionActivity {
                 .setPositiveButton(R.string.okay_action, (dialog, which) -> {
                     createBasicPermissionsActivity(permissionsCompletedCallback());
                 })
-                .setNegativeButton(R.string.cancel_action, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        goToSetupAccount();
-                    }
-                })
+                .setNegativeButton(R.string.cancel_action, (dialog, which) -> goToSetupAccount())
                 .show();
     }
 
@@ -155,6 +147,13 @@ public class PermissionsActivity extends PepPermissionActivity {
         AccountSetupBasics.actionNewAccount(PermissionsActivity.this);
         finish();
 
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        onContinueClicked();
     }
 
     private boolean isPermissionGranted(String readContacts) {
