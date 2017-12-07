@@ -3,8 +3,6 @@ package com.fsck.k9.pEp.ui.activities;
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.NoMatchingViewException;
-import android.support.test.espresso.ViewAssertion;
 import android.support.test.espresso.core.internal.deps.guava.collect.Iterables;
 import android.support.test.espresso.intent.Checks;
 import android.support.test.espresso.matcher.BoundedMatcher;
@@ -17,7 +15,6 @@ import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
-import android.widget.LinearLayout;
 
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
@@ -37,13 +34,10 @@ import static android.support.test.espresso.assertion.ViewAssertions.doesNotExis
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.core.internal.deps.guava.base.Preconditions.checkNotNull;
 import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
-import static android.support.test.espresso.matcher.ViewMatchers.hasChildCount;
-import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.instanceOf;
 
 
 @RunWith(AndroidJUnit4.class)
@@ -71,8 +65,8 @@ public class YellowStatusEmailFromBotTest {
     @Test
     public void yellowStatusEmail() {
         testUtils.increaseTimeoutWait();
-        /*greyStatusEmailSend();
-        waitForBotEmail();*/
+        getLastEmailRecived();
+        waitForBotEmail();
         clickBotEmail();
         clickReplayMessage();
         clickMailStatus();
@@ -110,13 +104,14 @@ public class YellowStatusEmailFromBotTest {
     private void clickBotEmail() {
         testUtils.doWait();
         BySelector selector = By.clazz("android.widget.TextView");
-        //uiDevice.findObjects(selector).get(lastEmailRecivedPosition).click();
-        uiDevice.findObjects(selector).get(3).click();
+        uiDevice.findObjects(selector).get(lastEmailRecivedPosition).click();
+        //uiDevice.findObjects(selector).get(3).click();
     }
 
     private void waitForBotEmail() {
         BySelector selector = By.clazz("android.widget.TextView");
-        while ((testUtils.getTextFromTextviewThatContainsText("bot").equals(uiDevice.findObjects(selector).get(lastEmailRecivedPosition).getText()))
+        while ((uiDevice.findObjects(selector).size() <= lastEmailRecivedPosition)
+                ||(testUtils.getTextFromTextviewThatContainsText("bot").equals(uiDevice.findObjects(selector).get(lastEmailRecivedPosition).getText()))
                  &&(lastEmailRecivedDate.equals(uiDevice.findObjects(selector).get(lastEmailRecivedPosition+1).getText()))
                 // &&(lastEmailRecivedFor == uiDevice.findObjects(selector).get(lastEmailRecivedPosition+2).getText())
                 ){
@@ -124,14 +119,20 @@ public class YellowStatusEmailFromBotTest {
         }
     }
 
-    private void greyStatusEmailSend() {
+    private void getLastEmailRecived() {
         emailFrom = testUtils.getTextFromTextviewThatContainsText("@");
         lastEmailRecivedPosition = getLastEmailRecivedPosition();
         BySelector selector = By.clazz("android.widget.TextView");
         onView(withId(R.id.message_list))
                 .perform(swipeDown());
-        lastEmailRecivedSubject = uiDevice.findObjects(selector).get(lastEmailRecivedPosition).getText();
-        lastEmailRecivedDate = uiDevice.findObjects(selector).get(lastEmailRecivedPosition+1).getText();
+        if (lastEmailRecivedPosition != -1) {
+            lastEmailRecivedSubject = uiDevice.findObjects(selector).get(lastEmailRecivedPosition).getText();
+            lastEmailRecivedDate = uiDevice.findObjects(selector).get(lastEmailRecivedPosition + 1).getText();
+        }else{
+            lastEmailRecivedSubject = "";
+            lastEmailRecivedDate = "";
+            lastEmailRecivedPosition = uiDevice.findObjects(selector).size();
+        }
         //lastEmailRecivedFor = uiDevice.findObjects(selector).get(lastEmailRecivedPosition+2).getText();
         testUtils.composseMessageButton();
         testUtils.doWait();
@@ -144,18 +145,21 @@ public class YellowStatusEmailFromBotTest {
     public int getLastEmailRecivedPosition(){
         BySelector selector = By.clazz("android.widget.TextView");
         int size = uiDevice.findObjects(selector).size();
-        int i = 0;
-        for (; i < size; i++) {
-            uiDevice.findObjects(selector).get(i);
-            if (uiDevice.findObjects(selector).get(i).getText() != null && uiDevice.findObjects(selector).get(i).getText().contains("@")){
-                i++;
-                while (uiDevice.findObjects(selector).get(i).getText() == null){
-                    i++;
+        for (int position = 0; position < size; position++) {
+             uiDevice.findObjects(selector).get(position);
+            if (uiDevice.findObjects(selector).get(position).getText() != null && uiDevice.findObjects(selector).get(position).getText().contains("@")){
+                position++;
+                while (uiDevice.findObjects(selector).get(position).getText() == null){
+                    position++;
+                    if (position >= size){
+                        position = -1;
+                        return position;
+                    }
                 }
-                return i;
+                return position;
             }
         }
-        return i;
+        return size;
     }
 
     private void yellowStatusEmailTest() {
