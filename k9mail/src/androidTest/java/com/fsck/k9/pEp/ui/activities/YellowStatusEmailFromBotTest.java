@@ -30,6 +30,7 @@ import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.swipeDown;
+import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.core.internal.deps.guava.base.Preconditions.checkNotNull;
 import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
@@ -158,7 +159,7 @@ public class YellowStatusEmailFromBotTest {
         testUtils.fillEmail(emailTo, "Subject", "Message", false);
         onView(withId(R.id.pEp_indicator)).perform(click());
         testUtils.doWait();
-        onView(withId(R.id.my_recycler_view)).check(matches(hasChildCount(0)));
+        onView(withId(R.id.my_recycler_view)).check(doesNotExist());
         assertCurrentActivityIsInstanceOf(PEpTrustwords.class);
 
     }
