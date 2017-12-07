@@ -5,10 +5,13 @@ import android.graphics.drawable.ColorDrawable;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.NoMatchingViewException;
 import android.support.test.espresso.ViewAssertion;
+import android.support.test.espresso.core.internal.deps.guava.collect.Iterables;
 import android.support.test.espresso.intent.Checks;
 import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
+import android.support.test.runner.lifecycle.Stage;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
@@ -185,7 +188,18 @@ public class YellowStatusEmailFromBotTest {
     }
 
     public void assertCurrentActivityIsInstanceOf(Class<? extends Activity> activityClass) {
-        Activity currentActivity = splashActivityTestRule.getActivity();
+        final Activity[] activity = new Activity[1];
+        try {
+            splashActivityTestRule.runOnUiThread(new Runnable() {
+                                       public void run() {
+                                           java.util.Collection<Activity> activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
+                                           activity[0] = Iterables.getOnlyElement(activities);
+                                       }
+                                   });
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        Activity currentActivity = activity[0];
         checkNotNull(currentActivity);
         checkNotNull(activityClass);
         assertTrue(currentActivity.getClass().isAssignableFrom(activityClass));
