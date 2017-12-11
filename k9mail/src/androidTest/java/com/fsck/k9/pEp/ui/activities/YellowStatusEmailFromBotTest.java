@@ -49,9 +49,10 @@ public class YellowStatusEmailFromBotTest {
 
     private UiDevice uiDevice;
     private TestUtils testUtils;
-    private String emailTo = "test2@test.pep-security.net";
+    private String emailTo = "test3@test.pep-security.net";
     private String lastEmailRecivedDate;
     private int lastEmailRecivedPosition;
+    private BySelector selector;
 
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
@@ -61,6 +62,7 @@ public class YellowStatusEmailFromBotTest {
         uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(uiDevice);
         testUtils.increaseTimeoutWait();
+        selector = By.clazz("android.widget.TextView");
         testUtils.startActivity();
     }
 
@@ -95,8 +97,10 @@ public class YellowStatusEmailFromBotTest {
         uiDevice.waitForIdle();
         testUtils.fillEmail(emailTo, "Subject", "Message", false);
         onView(withId(R.id.to)).perform(typeText("grey@email.is"), closeSoftKeyboard());
+        uiDevice.waitForIdle();
         uiDevice.findObject(By.res("pep.android.k9", "subject")).click();
-        uiDevice.waitForIdle();}
+        uiDevice.waitForIdle();
+    }
 
     public static RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
 
@@ -134,12 +138,10 @@ public class YellowStatusEmailFromBotTest {
 
     private void clickBotEmail() {
         uiDevice.waitForIdle();
-        BySelector selector = By.clazz("android.widget.TextView");
         uiDevice.findObjects(selector).get(lastEmailRecivedPosition).click();
     }
 
     private void waitForBotEmail() {
-        BySelector selector = By.clazz("android.widget.TextView");
         while ((uiDevice.findObjects(selector).size() <= lastEmailRecivedPosition)
                 ||(testUtils.getTextFromTextviewThatContainsText("bot").equals(uiDevice.findObjects(selector).get(lastEmailRecivedPosition).getText()))
                  &&(lastEmailRecivedDate.equals(uiDevice.findObjects(selector).get(lastEmailRecivedPosition+1).getText()))
@@ -149,10 +151,9 @@ public class YellowStatusEmailFromBotTest {
     }
 
     private void getLastEmailRecived() {
-        lastEmailRecivedPosition = getLastEmailRecivedPosition();
-        BySelector selector = By.clazz("android.widget.TextView");
         onView(withId(R.id.message_list))
                 .perform(swipeDown());
+        lastEmailRecivedPosition = getLastEmailRecivedPosition();
         if (lastEmailRecivedPosition != -1) {
             lastEmailRecivedDate = uiDevice.findObjects(selector).get(lastEmailRecivedPosition + 1).getText();
         }else{
@@ -162,7 +163,6 @@ public class YellowStatusEmailFromBotTest {
     }
 
     public int getLastEmailRecivedPosition(){
-        BySelector selector = By.clazz("android.widget.TextView");
         int size = uiDevice.findObjects(selector).size();
         for (int position = 0; position < size; position++) {
             String textAtPosition = uiDevice.findObjects(selector).get(position).getText();
