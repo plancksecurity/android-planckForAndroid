@@ -25,9 +25,11 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
@@ -44,12 +46,13 @@ import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.allOf;
 
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(AndroidJUnit4.class)
 public class YellowStatusEmailFromBotTest {
 
     private UiDevice uiDevice;
     private TestUtils testUtils;
-    private String emailTo = "test4@test.pep-security.net";
+    private String emailTo = "test7@test.pep-security.net";
     private String lastEmailRecivedDate;
     private int lastEmailRecivedPosition;
     private BySelector selector;
@@ -67,7 +70,7 @@ public class YellowStatusEmailFromBotTest {
     }
 
     @Test
-    public void yellowStatusEmail() {
+    public void sendEmailAndyellowStatusEmail() {
         getLastEmailRecived();
         testUtils.composseMessageButton();
         uiDevice.waitForIdle();
@@ -97,7 +100,7 @@ public class YellowStatusEmailFromBotTest {
     private void fillEmail(){
         uiDevice.waitForIdle();
         testUtils.fillEmail(emailTo, "Subject", "Message", false);
-        onView(withId(R.id.to)).perform(typeText("grey@email.is"), closeSoftKeyboard());
+        onView(withId(R.id.to)).perform(typeText("randomtest@email.is"), closeSoftKeyboard());
         uiDevice.waitForIdle();
         uiDevice.findObject(By.res("pep.android.k9", "subject")).longClick();
         uiDevice.waitForIdle();
