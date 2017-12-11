@@ -49,7 +49,7 @@ public class YellowStatusEmailFromBotTest {
 
     private UiDevice uiDevice;
     private TestUtils testUtils;
-    private String emailTo = "test3@test.pep-security.net";
+    private String emailTo = "test4@test.pep-security.net";
     private String lastEmailRecivedDate;
     private int lastEmailRecivedPosition;
     private BySelector selector;
@@ -89,6 +89,7 @@ public class YellowStatusEmailFromBotTest {
         testUtils.composseMessageButton();
         fillEmail();
         clickMailStatus();
+        testUtils.doWaitForResource(R.id.my_recycler_view);
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(0)).check(matches(withBackgroundColor(R.color.pep_no_color)));
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(1)).check(matches(withBackgroundColor(R.color.pep_yellow)));
     }
@@ -98,7 +99,7 @@ public class YellowStatusEmailFromBotTest {
         testUtils.fillEmail(emailTo, "Subject", "Message", false);
         onView(withId(R.id.to)).perform(typeText("grey@email.is"), closeSoftKeyboard());
         uiDevice.waitForIdle();
-        uiDevice.findObject(By.res("pep.android.k9", "subject")).click();
+        uiDevice.findObject(By.res("pep.android.k9", "subject")).longClick();
         uiDevice.waitForIdle();
     }
 
@@ -129,6 +130,7 @@ public class YellowStatusEmailFromBotTest {
     private void clickMailStatus() {
         uiDevice.waitForIdle();
         onView(withId(R.id.pEp_indicator)).perform(click());
+        uiDevice.waitForIdle();
     }
 
     private void clickReplayMessage() {
