@@ -245,11 +245,11 @@ class TestUtils {
 
     private void selectRemoveAccount(){
         BySelector selector = By.clazz("android.widget.TextView");
-        int size;
-        do {
+        int size= device.findObjects(selector).size();
+        while (size == 0){
             device.waitForIdle();
             size = device.findObjects(selector).size();
-        }while (size == 0);
+        }
         for (UiObject2 object: device.findObjects(selector)) {
             if (object.getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(R.string.remove_account_action))){
                 object.click();
