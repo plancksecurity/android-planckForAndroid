@@ -150,8 +150,8 @@ public class YellowStatusEmailFromBotTest {
 
     private void waitForBotEmail() {
         while ((uiDevice.findObjects(selector).size() <= lastEmailRecivedPosition)
-                ||(testUtils.getTextFromTextviewThatContainsText("bot").equals(uiDevice.findObjects(selector).get(lastEmailRecivedPosition).getText()))
-                 &&(lastEmailRecivedDate.equals(uiDevice.findObjects(selector).get(lastEmailRecivedPosition+1).getText()))
+                ||(testUtils.getTextFromTextviewThatContainsText("bot").equals(uiDevice.findObjects(selector).get(lastEmailRecivedPosition).getText())
+                 &&(lastEmailRecivedDate.equals(uiDevice.findObjects(selector).get(lastEmailRecivedPosition+1).getText())))
                 ){
             uiDevice.waitForIdle();
         }
