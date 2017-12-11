@@ -28,10 +28,6 @@ public class AddDevicePresenter implements Presenter {
         this.pEpProvider = pEpProvider;
         this.accounts = accounts;
         partner = partnerId;
-        loadPartner(view);
-    }
-
-    private void loadPartner(AddDeviceView view) {
     }
 
     void acceptHandshake() {
