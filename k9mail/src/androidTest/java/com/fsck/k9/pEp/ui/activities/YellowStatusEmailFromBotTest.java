@@ -53,7 +53,7 @@ public class YellowStatusEmailFromBotTest {
 
     private UiDevice uiDevice;
     private TestUtils testUtils;
-    private String emailTo = "test8@test.pep-security.net";
+    private String emailTo = "test9@test.pep-security.net";
     private String lastEmailRecivedDate;
     private int lastEmailRecivedPosition;
     private BySelector selector;
@@ -71,7 +71,7 @@ public class YellowStatusEmailFromBotTest {
     }
 
     @Test
-    public void sendEmailAndyellowStatusEmail() {
+    public void sendEmailAndYellowStatusEmail() {
         getLastEmailRecived();
         testUtils.composseMessageButton();
         uiDevice.waitForIdle();
