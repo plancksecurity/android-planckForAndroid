@@ -89,11 +89,11 @@ class TestUtils {
         onView(withId(R.id.manual_setup)).perform(click());
         fillImapData();
         onView(withId(R.id.next)).perform(click());
-        doWait();
+        device.waitForIdle();
         fillSmptData();
-        doWait();
+        device.waitForIdle();
         onView(withId(R.id.next)).perform(click());
-        doWait();
+        device.waitForIdle();
         onView(withId(R.id.next)).perform(click());
     }
 
@@ -101,9 +101,9 @@ class TestUtils {
         onView(withId(R.id.account_oauth2)).perform(click());
         onView(withId(R.id.next)).perform(click());
         onView(withId(R.id.next)).perform(click());
-        doWait();
+        device.waitForIdle();
         onView(withId(R.id.next)).perform(click());
-        doWait();
+        device.waitForIdle();
         onView(withId(R.id.next)).perform(click());
     }
 
@@ -123,7 +123,7 @@ class TestUtils {
     void accountDescription(String description, String userName) {
         onView(withId(R.id.account_description)).perform(typeText(description));
         onView(withId(R.id.account_name)).perform(typeText(userName));
-        doWait();
+        device.waitForIdle();
         onView(withId(R.id.done)).perform(click());
     }
 
@@ -133,11 +133,11 @@ class TestUtils {
 
     void fillEmail(String to, String subject, String message, boolean attachFilesToEmail){
         doWait("to");
-        doWait();
+        device.waitForIdle();
         device.findObject(By.res(APP_ID, "to")).longClick();
-        doWait();
+        device.waitForIdle();
         device.pressKeyCode(KeyEvent.KEYCODE_DEL);
-        doWait();
+        device.waitForIdle();
         onView(withId(R.id.to)).perform(typeText(to), closeSoftKeyboard());
         device.findObject(By.res(APP_ID, "subject")).click();
         device.findObject(By.res(APP_ID, "subject")).setText(subject);
@@ -154,9 +154,9 @@ class TestUtils {
     private void attachFiles(String fileName, String extension){
         for (int fileNumber = 0; fileNumber<3; fileNumber++){
             intending(not(isInternal())).respondWith(createFileForActivityResultStub(fileName+fileNumber+".png"));
-            doWait();
+            device.waitForIdle();
             onView(withId(R.id.add_attachment)).perform(click());
-            doWait();
+            device.waitForIdle();
             onView(withId(R.id.attachments)).check(matches(hasDescendant(withText(fileName+fileNumber+extension))));
         }
     }
@@ -214,13 +214,13 @@ class TestUtils {
     }
 
     void removeLastAccount(){
-        doWait();
+        device.waitForIdle();
         doWait("accounts_list");
-        doWait();
+        device.waitForIdle();
         longClick("accounts_list");
-        doWait();
+        device.waitForIdle();
         selectRemoveAccount();
-        doWait();
+        device.waitForIdle();
         selectAcceptButton();
     }
 
@@ -247,7 +247,7 @@ class TestUtils {
         BySelector selector = By.clazz("android.widget.TextView");
         int size;
         do {
-            doWait();
+            device.waitForIdle();
             size = device.findObjects(selector).size();
         }while (size == 0);
         for (int i = 0; i < size; i++) {
@@ -271,14 +271,14 @@ class TestUtils {
 
     void testStatusMail(String to, String subject, String message, int status){
         fillEmail(to, subject, message, false);
-        doWait();
+        device.waitForIdle();
         checkStatus(status);
         Espresso.pressBack();
     }
 
     void testStatusMailAndListMail(String to, String subject, String message, int status, String email){
         fillEmail(to, subject, message, false);
-        doWait();
+        device.waitForIdle();
         checkStatus(status);
         onView(withText(email)).check(doesNotExist());
         Espresso.pressBack();
