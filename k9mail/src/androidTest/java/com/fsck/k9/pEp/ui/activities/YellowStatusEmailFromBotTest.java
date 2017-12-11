@@ -53,7 +53,7 @@ public class YellowStatusEmailFromBotTest {
 
     private UiDevice uiDevice;
     private TestUtils testUtils;
-    private String emailTo = "test9@test.pep-security.net";
+    private String emailTo = "test13@test.pep-security.net";
     private String lastEmailRecivedDate;
     private int lastEmailRecivedPosition;
     private BySelector selector;
@@ -158,9 +158,10 @@ public class YellowStatusEmailFromBotTest {
     }
 
     private void getLastEmailRecived() {
+        uiDevice.waitForIdle();
+        lastEmailRecivedPosition = getLastEmailRecivedPosition();
         onView(withId(R.id.message_list))
                 .perform(swipeDown());
-        lastEmailRecivedPosition = getLastEmailRecivedPosition();
         if (lastEmailRecivedPosition != -1) {
             lastEmailRecivedDate = uiDevice.findObjects(selector).get(lastEmailRecivedPosition + 1).getText();
         }else{
