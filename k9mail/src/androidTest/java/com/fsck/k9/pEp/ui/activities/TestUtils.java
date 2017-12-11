@@ -250,10 +250,10 @@ class TestUtils {
             device.waitForIdle();
             size = device.findObjects(selector).size();
         }while (size == 0);
-        for (int i = 0; i < size; i++) {
-            if (device.findObjects(selector).get(i).getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(R.string.remove_account_action))){
-                device.findObjects(selector).get(i).click();
-                i = size;
+        for (UiObject2 object: device.findObjects(selector)) {
+            if (object.getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(R.string.remove_account_action))){
+                object.click();
+                return;
             }
         }
     }
@@ -291,11 +291,9 @@ class TestUtils {
 
     public String getTextFromTextviewThatContainsText(String text){
         BySelector selector = By.clazz("android.widget.TextView");
-        int size = device.findObjects(selector).size();
-        for (int i = 0; i < size; i++) {
-            device.findObjects(selector).get(i);
-            if (device.findObjects(selector).get(i).getText() != null && device.findObjects(selector).get(i).getText().contains(text)){
-                return device.findObjects(selector).get(i).getText();
+        for (UiObject2 object: device.findObjects(selector)) {
+            if (object.getText() != null && object.getText().contains(text)){
+                return object.getText();
             }
         }
         return "not found";
@@ -324,10 +322,9 @@ class TestUtils {
 
     void selectFromMenu(int resource){
         BySelector selector = By.clazz("android.widget.TextView");
-        int size = device.findObjects(selector).size();
-        for (int i = 0; i < size; i++) {
-            if (device.findObjects(selector).get(i).getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(resource))){
-                device.findObjects(selector).get(i).click();
+        for (UiObject2 object: device.findObjects(selector)) {
+            if (object.getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(resource))){
+                object.click();
                 break;
             }
         }
