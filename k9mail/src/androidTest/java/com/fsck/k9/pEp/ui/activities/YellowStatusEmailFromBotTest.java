@@ -35,6 +35,7 @@ import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.longClick;
 import static android.support.test.espresso.action.ViewActions.swipeDown;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
@@ -52,7 +53,7 @@ public class YellowStatusEmailFromBotTest {
 
     private UiDevice uiDevice;
     private TestUtils testUtils;
-    private String emailTo = "test7@test.pep-security.net";
+    private String emailTo = "test8@test.pep-security.net";
     private String lastEmailRecivedDate;
     private int lastEmailRecivedPosition;
     private BySelector selector;
@@ -93,6 +94,7 @@ public class YellowStatusEmailFromBotTest {
         fillEmail();
         clickMailStatus();
         testUtils.doWaitForResource(R.id.my_recycler_view);
+        uiDevice.waitForIdle();
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(0)).check(matches(withBackgroundColor(R.color.pep_no_color)));
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(1)).check(matches(withBackgroundColor(R.color.pep_yellow)));
     }
@@ -102,7 +104,7 @@ public class YellowStatusEmailFromBotTest {
         testUtils.fillEmail(emailTo, "Subject", "Message", false);
         onView(withId(R.id.to)).perform(typeText("randomtest@email.is"), closeSoftKeyboard());
         uiDevice.waitForIdle();
-        uiDevice.findObject(By.res("pep.android.k9", "subject")).longClick();
+        onView(withId(R.id.subject)).perform(longClick(), closeSoftKeyboard());
         uiDevice.waitForIdle();
     }
 
