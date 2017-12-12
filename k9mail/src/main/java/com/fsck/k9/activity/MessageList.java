@@ -1473,10 +1473,14 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     @Override
     public void onBackPressed() {
-            if (isMessageViewVisible()) {
-                setMessageViewVisible(false);
-            }
-            goBack();
+        if (drawerLayout.isDrawerOpen(Gravity.START)) {
+            drawerLayout.closeDrawer(Gravity.START);
+            return;
+        }
+        if (isMessageViewVisible()) {
+            setMessageViewVisible(false);
+        }
+        goBack();
     }
 
     private void updateToolbarColorToOriginal() {
