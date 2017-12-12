@@ -42,6 +42,8 @@ public class ImportSettingsDarkThemeTest {
         testUtils.selectFromMenu(R.string.settings_import);
         turnOnCheckBoxAndOffTheOther(R.string.settings_import_global_settings);
         testUtils.selectAcceptButton();
+        device.waitForIdle();
+        testUtils.selectAcceptButton();
     }
 
     private void turnOnCheckBoxAndOffTheOther(int resourceOn){
