@@ -949,7 +949,7 @@ public class K9 extends Application {
 
         K9.setK9Language(storage.getString("language", ""));
 
-        int themeValue = storage.getInt("theme", Theme.LIGHT.ordinal());
+        int themeValue = Theme.LIGHT.ordinal();
         // We used to save the resource ID of the theme. So convert that to the new format if
         // necessary.
         if (themeValue == Theme.DARK.ordinal() || themeValue == android.R.style.Theme) {
@@ -1049,7 +1049,7 @@ public class K9 extends Application {
     }
 
     public static Theme getK9Theme() {
-        return theme;
+        return K9.Theme.LIGHT;
     }
 
     public static void setK9Theme(Theme ntheme) {
