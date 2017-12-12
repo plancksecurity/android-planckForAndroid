@@ -1,6 +1,7 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.action.ViewActions;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
@@ -12,6 +13,9 @@ import com.fsck.k9.R;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
 
 public class ImportSettingsDarkThemeTest {
@@ -44,6 +48,7 @@ public class ImportSettingsDarkThemeTest {
         testUtils.selectAcceptButton();
         device.waitForIdle();
         testUtils.selectAcceptButton();
+        onView(withId(R.id.accounts_list)).perform(ViewActions.click());
     }
 
     private void turnOnCheckBoxAndOffTheOther(int resourceOn){
