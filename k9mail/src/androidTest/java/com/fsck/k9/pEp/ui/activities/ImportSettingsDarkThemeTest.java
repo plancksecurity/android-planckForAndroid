@@ -30,15 +30,30 @@ public class ImportSettingsDarkThemeTest {
 
     @Test
     public void importSettingDarkTheme(){
+        testUtils.externalAppRespondWithFile(R.raw.settingsthemedark);
         testUtils.pressBack();
         testUtils.openOptionsMenu();
         device.waitForIdle();
         testUtils.selectFromMenu(R.string.import_export_action);
         device.waitForIdle();
         testUtils.selectFromMenu(R.string.settings_import);
-        testUtils.externalAppRespondWithFile(R.raw.settingsthemedark);
         turnOnCheckBoxAndOffTheOther(R.string.settings_import_global_settings);
         testUtils.selectAcceptButton();
     }
 
+    private void turnOnCheckBoxAndOffTheOther(int resourceOn){
+        BySelector selector = By.clazz("android.widget.Checkbox");
+        for (UiObject2 checkBox : device.findObjects(selector))
+            {
+            if (checkBox.getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(resourceOn))){
+                if (!checkBox.isChecked()){
+                    checkBox.click();
+                }
+            }else{
+                if (checkBox.isChecked()){
+                    checkBox.click();
+                }
+            }
+        }
+    }
 }
