@@ -8,10 +8,13 @@ import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
+import android.support.test.uiautomator.UiCollection;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
+import android.support.test.uiautomator.UiSelector;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.fsck.k9.R;
 
@@ -22,9 +25,13 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withParent;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anything;
 
 
 public class ImportSettingsDarkThemeTest {
@@ -41,7 +48,7 @@ public class ImportSettingsDarkThemeTest {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(device);
         testUtils.increaseTimeoutWait();
-        testUtils.externalAppRespondWithFile(R.raw.settingsthemedark);
+        testUtils.externalAppRespondWithFile(R.raw.settingsthemelight);
         testUtils.startActivity();
     }
 
@@ -60,7 +67,28 @@ public class ImportSettingsDarkThemeTest {
         device.waitForIdle();
         onView(withId(R.id.accounts_list)).perform(ViewActions.click());
         device.waitForIdle();
-        onView(withId(R.id.message_list_container)).check(matches(withBackgroundColor(android.R.style.Theme_Holo_Light)));
+        testUtils.pressBack();
+        device.waitForIdle();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        UiObject2 uo = selectLayout();
+        uo.getText();
+        //onView(withId(R.id.message_swipe)).check(matches(withBackgroundColor(R.color.white)));
+        //onView(selectLayout()).check(matches(withBackgroundColor(R.color.white)));
+
+      /*  UiCollection list = new UiCollection( new UiSelector().className("android.widget.LinearLayout"));
+        list.getChild(new UiSelector().index(5)).*/
+
+    }
+    private UiObject2 selectLayout(){
+        BySelector selector = By.clazz("android.widget.LinearLayout");
+        if (device.findObjects(selector).get(5) != null){
+            return device.findObjects(selector).get(5);
+        }
+        return device.findObjects(selector).get(5);
     }
 
     private void turnOnCheckBoxAndOffTheOther(int resourceOn){
