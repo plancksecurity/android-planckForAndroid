@@ -3,6 +3,8 @@ package com.fsck.k9.pEp;
 import android.content.Context;
 import android.util.Log;
 
+import com.fsck.k9.Account;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.Part;
@@ -14,6 +16,7 @@ import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.mail.internet.MimeUtility;
 
 import org.pEp.jniadapter.Blob;
+import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
 import org.pEp.jniadapter.Pair;
 
@@ -24,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -182,6 +186,15 @@ class PEpMessageBuilder {
         m.setTo(PEpUtils.createIdentities(Arrays.asList(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO)), context));
         m.setCc(PEpUtils.createIdentities(Arrays.asList(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC)), context));
         m.setBcc(PEpUtils.createIdentities(Arrays.asList(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC)), context));
+
+        List<Account> accounts = Preferences.getPreferences(context).getAccounts();
+        for (Identity identity : m.getTo()) {
+            for (Account account : accounts) {
+                if(account.getEmail().equals(identity.address)) {
+                    identity.user_id = PEpProvider.PEP_OWN_USER_ID;
+                }
+            }
+        }
         m.setId(mm.getMessageId());
         m.setInReplyTo(createMessageReferences(mm.getReferences()));
         m.setSent(mm.getSentDate());
