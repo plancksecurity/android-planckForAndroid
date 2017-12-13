@@ -251,7 +251,7 @@ class TestUtils {
         onView(withText(R.string.cancel_action)).perform(click());
     }
 
-    private void doWaitForObject(String object){
+    public void doWaitForObject(String object){
         boolean finish = false;
         do {
             if (device.findObject(By.clazz(object)) != null){
@@ -301,7 +301,7 @@ class TestUtils {
         Espresso.pressBack();
     }
 
-    private void checkStatus(int status){
+    public void checkStatus(int status){
         onView(withId(R.id.pEp_indicator)).perform(click());
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
     }
@@ -370,7 +370,7 @@ class TestUtils {
                 .check(matches(isDisplayed()));
     }
 
-    private String getResourceString(int id, int position) {
+    public String getResourceString(int id, int position) {
         return resources.getStringArray(id)[position];
     }
 
