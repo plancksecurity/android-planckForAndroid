@@ -21,7 +21,6 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
-import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.models.PEpIdentity;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
@@ -181,16 +180,6 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     }
 
     @Override
-    public void saveLocalMessage(LocalMessage localMessage) {
-        try {
-            messageReference.saveLocalMessage(this, localMessage);
-        } catch (RuntimeException e) {
-            FeedbackTools.showShortFeedback(getRootView(), getString(R.string.status_loading_error));
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     public void setRating(Rating pEpRating) {
         setpEpRating(pEpRating);
         colorActionBar();
@@ -264,7 +253,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
         switch (id) {
             case android.R.id.home:
-                goBack();
+                onBackPressed();
                 return true;
             case R.id.action_explanation:
                 showExplanationDialog();
@@ -272,11 +261,6 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void goBack() {
-        presenter.saveMessage();
-        onBackPressed();
     }
 
     private void showExplanationDialog() {

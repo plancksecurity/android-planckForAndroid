@@ -233,8 +233,4 @@ public class PEpStatusPresenter implements Presenter {
             }
         };
     }
-
-    public void saveMessage() {
-        view.saveLocalMessage(localMessage);
-    }
 }
