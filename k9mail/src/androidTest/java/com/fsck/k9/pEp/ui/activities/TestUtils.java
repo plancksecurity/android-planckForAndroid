@@ -36,7 +36,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -63,9 +62,11 @@ class TestUtils {
     private static final int LAUNCH_TIMEOUT = 5000;
 
     private UiDevice device;
+    private Context context;
 
     TestUtils(UiDevice device) {
         this.device = device;
+        context = InstrumentationRegistry.getTargetContext();
     }
 
     void increaseTimeoutWait(){
@@ -171,7 +172,7 @@ class TestUtils {
     }
 
     private void convertResourceToBitmapFile(int resource, String fileName) {
-        Bitmap bm = BitmapFactory.decodeResource(InstrumentationRegistry.getTargetContext().getResources(), resource);
+        Bitmap bm = BitmapFactory.decodeResource(context.getResources(), resource);
         String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
         File fileImage = new File(extStorageDirectory, fileName);
         try {
@@ -186,7 +187,7 @@ class TestUtils {
     }
 
     private Intent insertFileIntoIntentAsData(int id){
-        Resources resources = InstrumentationRegistry.getTargetContext().getResources();
+        Resources resources = context.getResources();
         Uri fileUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
                 resources.getResourcePackageName(id) +"/" +
                 resources.getResourceTypeName(id) + "/" +
@@ -249,9 +250,9 @@ class TestUtils {
             device.waitForIdle();
             size = device.findObjects(selector).size();
         }
-        for (UiObject2 object: device.findObjects(selector)) {
-            if (object.getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(R.string.remove_account_action))){
-                object.click();
+        for (UiObject2 textView: device.findObjects(selector)) {
+            if (textView.getText().equals(context.getResources().getString(R.string.remove_account_action))){
+                textView.click();
                 return;
             }
         }
@@ -316,13 +317,13 @@ class TestUtils {
     }
 
     void openOptionsMenu(){
-        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        openActionBarOverflowOrOptionsMenu(context);
     }
 
     void selectFromMenu(int resource){
         BySelector selector = By.clazz("android.widget.TextView");
         for (UiObject2 object: device.findObjects(selector)) {
-            if (object.getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(resource))){
+            if (object.getText().equals(context.getResources().getString(resource))){
                 object.click();
                 break;
             }
@@ -341,7 +342,7 @@ class TestUtils {
     }
 
     void doWaitForResource(int resource){
-        device.wait(Until.hasObject(By.desc(InstrumentationRegistry.getTargetContext().getResources().getString(resource))), 1);
+        device.wait(Until.hasObject(By.desc(context.getResources().getString(resource))), 1);
     }
 
     void doWaitForAlertDialog(IntentsTestRule<SplashActivity> intent, int displayText){
@@ -353,7 +354,7 @@ class TestUtils {
     }
 
     private String getResourceString(int id, int n) {
-        Context targetContext = InstrumentationRegistry.getTargetContext();
+        Context targetContext = context;
         return targetContext.getResources().getStringArray(id)[n];
     }
 
