@@ -47,11 +47,11 @@ class PEpMessageBuilder {
             addHeaders(pEpMsg, context);
             addBody(pEpMsg);
             return pEpMsg;
-        } catch (Throwable t) {
-            if(pEpMsg != null) pEpMsg.close();
-            Log.e("pEp", "Could not create pep message:", t);
+        } catch (MessagingException | IOException e) {
+            pEpMsg.close();
+            Log.e("pEp", "Could not create pep message:", e);
         }
-        return null;
+        return pEpMsg;
     }
 
     private void addBody(Message pEpMsg) throws MessagingException, IOException, UnsupportedEncodingException {
