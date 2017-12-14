@@ -575,7 +575,7 @@ public class K9 extends Application {
         editor.putBoolean("pEpPassiveMode", pEpPassiveMode);
         editor.putBoolean("pEpSubjectUnprotected", pEpSubjectUnprotected);
         editor.putBoolean("pEpForwardWarningEnabled", pEpForwardWarningEnabled);
-        editor.putBoolean("pepEnableSync", pEpSyncEnabled);
+        editor.putBoolean("pEpEnableSync", pEpSyncEnabled);
 
         fontSizes.save(editor);
     }
@@ -921,7 +921,7 @@ public class K9 extends Application {
         pEpPassiveMode = storage.getBoolean("pEpPassiveMode", false);
         pEpSubjectUnprotected = storage.getBoolean("pEpSubjectUnprotected", true);
         pEpForwardWarningEnabled = storage.getBoolean("pEpForwardWarningEnabled", false);
-        pEpSyncEnabled = storage.getBoolean("pepEnableSync", BuildConfig.WITH_KEY_SYNC);
+        pEpSyncEnabled = storage.getBoolean("pEpEnableSync", BuildConfig.WITH_KEY_SYNC);
 
         mAttachmentDefaultPath = storage.getString("attachmentdefaultpath",
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString());

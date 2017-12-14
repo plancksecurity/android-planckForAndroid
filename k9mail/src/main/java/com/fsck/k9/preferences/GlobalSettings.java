@@ -299,7 +299,7 @@ public class GlobalSettings {
         s.put("pEpForwardWarningEnabled", Settings.versions(
                 new V(47, new BooleanSetting(false))
         ));
-        s.put("pepEnableSync", Settings.versions(
+        s.put("pEpEnableSync", Settings.versions(
                 new V(49, new BooleanSetting(true))
         ));
         SETTINGS = Collections.unmodifiableMap(s);
