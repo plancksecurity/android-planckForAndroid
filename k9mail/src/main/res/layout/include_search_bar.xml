@@ -8,35 +8,27 @@
     android:paddingEnd="8dp"
     tools:background="@color/colorPrimary">
 
-    <ImageView android:id="@+id/search_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical|start"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:background="?selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_action_search"
-        android:tint="@color/white" />
-
     <EditText
         android:id="@+id/search_input"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         android:background="@android:color/transparent"
         android:hint="@string/search_action"
         android:imeOptions="actionSearch"
         android:inputType="textCapSentences|textNoSuggestions"
         android:lines="1"
         android:layout_toStartOf="@id/search_clear"
-        android:layout_toEndOf="@id/search_icon"
         android:maxLines="1"
         android:textColor="@color/white"
         android:textColorHint="@color/light_primary_color"
         android:textCursorDrawable="@null"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:drawableLeft="@drawable/ic_action_search"
+        android:drawablePadding="8dp"
+        />
 
     <ImageView
         android:id="@+id/search_clear"
