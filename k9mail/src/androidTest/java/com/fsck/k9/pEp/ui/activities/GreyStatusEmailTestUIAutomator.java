@@ -33,11 +33,6 @@ public class GreyStatusEmailTestUIAutomator {
         greyStatusEmailTest(false);
     }
 
-  /*  @Test
-    public void attachFilesToGmail() {
-        attachFilesToAccount(true);
-    }*/
-
     public void greyStatusEmailTest(boolean isGmail) {
         testUtils.increaseTimeoutWait();
         testUtils.createAccount(isGmail);
