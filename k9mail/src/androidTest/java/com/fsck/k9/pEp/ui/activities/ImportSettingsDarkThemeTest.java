@@ -74,9 +74,9 @@ public class ImportSettingsDarkThemeTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        UiObject2 uo = selectLayout();
-        uo.getText();
-        //onView(withId(R.id.message_swipe)).check(matches(withBackgroundColor(R.color.white)));
+        /*UiObject2 uo = selectLayout();
+        uo.getText();*/
+        onView(withId(R.id.root_view)).check(matches(withBackgroundColor(android.R.color.background_light)));
         //onView(selectLayout()).check(matches(withBackgroundColor(R.color.white)));
 
       /*  UiCollection list = new UiCollection( new UiSelector().className("android.widget.LinearLayout"));
@@ -85,10 +85,7 @@ public class ImportSettingsDarkThemeTest {
     }
     private UiObject2 selectLayout(){
         BySelector selector = By.clazz("android.widget.LinearLayout");
-        if (device.findObjects(selector).get(5) != null){
-            return device.findObjects(selector).get(5);
-        }
-        return device.findObjects(selector).get(5);
+        return device.findObjects(selector).get(14);
     }
 
     private void turnOnCheckBoxAndOffTheOther(int resourceOn){
@@ -112,9 +109,9 @@ public class ImportSettingsDarkThemeTest {
     public static Matcher<View> withBackgroundColor(final int color) {
         Checks.checkNotNull(color);
         int color1 = ContextCompat.getColor(getTargetContext(),color);
-        return new BoundedMatcher<View, View>(View.class) {
+        return new BoundedMatcher<View, LinearLayout>(LinearLayout.class) {
             @Override
-            public boolean matchesSafely(View view) {
+            public boolean matchesSafely(LinearLayout view) {
                 int color2 = ((ColorDrawable) view.getBackground()).getColor();
                 return color1 == (color2);
             }
