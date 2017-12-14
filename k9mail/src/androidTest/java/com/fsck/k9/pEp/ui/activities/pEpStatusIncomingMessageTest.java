@@ -60,7 +60,7 @@ public class pEpStatusIncomingMessageTest {
     }
 
     @Test
-    public void whenPartnerTrustedIncomingMessageRecivedIsGreen() {
+    public void pEpStatusWhenPartnerTrustedIncomingMessageReceivedIsGreen() {
         trustInPartner();
         testUtils.pressBack();
         uiDevice.waitForIdle();
