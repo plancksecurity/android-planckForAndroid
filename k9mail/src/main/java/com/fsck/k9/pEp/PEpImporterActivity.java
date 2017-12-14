@@ -840,8 +840,13 @@ public abstract class PEpImporterActivity extends PepPermissionActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                mFileName = SettingsExporter.exportToFile(mContext, mIncludeGlobals,
-                        mAccountUuids);
+                if (mUri == null) {
+                    mFileName = SettingsExporter.exportToFile(mContext, mIncludeGlobals,
+                            mAccountUuids);
+                } else {
+                    SettingsExporter.exportToUri(mContext, mIncludeGlobals, mAccountUuids, mUri);
+                }
+
             } catch (SettingsImportExportException e) {
                 Timber.w(e, "Exception during export");
                 return false;
