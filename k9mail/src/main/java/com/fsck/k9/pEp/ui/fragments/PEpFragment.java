@@ -48,6 +48,10 @@ public abstract class PEpFragment extends Fragment {
     public String extractErrorDialogTitle(int stringResource) {
         String originalString = getResources().getString(stringResource);
         int cuttingPosition = originalString.indexOf(".");
-        return originalString.substring(0, cuttingPosition);
+        if (cuttingPosition > 0) {
+            return originalString.substring(0, cuttingPosition);
+        } else {
+            return originalString;
+        }
     }
 }
