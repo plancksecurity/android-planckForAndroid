@@ -1238,10 +1238,29 @@ public class Accounts extends PEpImporterActivity {
                 accountUuids.add(account.getUuid());
             }
 
-            //Pre-Kitkat
-            ExportAsyncTask asyncTask = new ExportAsyncTask(this, includeGlobals, accountUuids, null);
-            setNonConfigurationInstance(asyncTask);
-            asyncTask.execute();
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TITLE, SettingsExporter.EXPORT_FILENAME);
+                intent.putStringArrayListExtra(EXTRA_ACCOUNTS, accountUuids);
+                intent.putExtra(EXTRA_INC_GLOBALS, includeGlobals);
+
+                PackageManager packageManager = getPackageManager();
+                List<ResolveInfo> infos = packageManager.queryIntentActivities(intent, 0);
+
+                if (infos.size() > 0) {
+                    startActivityForResult(Intent.createChooser(intent, null), ACTIVITY_REQUEST_SAVE_SETTINGS_FILE);
+                } else {
+                    showDialog(DIALOG_NO_FILE_MANAGER);
+                }
+            } else {
+                //Pre-Kitkat
+                ExportAsyncTask asyncTask = new ExportAsyncTask(this, includeGlobals, accountUuids, null);
+                setNonConfigurationInstance(asyncTask);
+                asyncTask.execute();
+            }
         }
     }
 
