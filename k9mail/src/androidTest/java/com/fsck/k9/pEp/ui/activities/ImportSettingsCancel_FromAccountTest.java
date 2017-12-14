@@ -21,9 +21,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 @RunWith(AndroidJUnit4.class)
 public class ImportSettingsCancel_FromAccountTest {
 
-    private static final String DESCRIPTION = "tester one";
-    private static final String USER_NAME = "testerJ";
-
     private TestUtils testUtils;
 
     @Before
@@ -39,13 +36,7 @@ public class ImportSettingsCancel_FromAccountTest {
 
     public void importSettingsCancelTest(boolean isGmail) {
         testUtils.increaseTimeoutWait();
-        onView(withId(R.id.skip)).perform(click());
-        if (isGmail) {
-            testUtils.gmailAccount();
-        } else {
-            testUtils.newEmailAccount();
-        }
-        testUtils.accountDescription(DESCRIPTION, USER_NAME);
+        testUtils.createAccount(isGmail);
         testUtils.doWait();
         testUtils.pressBack();
         testUtils.doWait();

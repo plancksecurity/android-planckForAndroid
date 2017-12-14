@@ -18,12 +18,10 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.is;
 
 
 public class ImportSettingsTest {
-
-    private static final String DESCRIPTION = "tester one";
-    private static final String USER_NAME = "testerJ";
 
     private TestUtils testUtils;
 
@@ -43,14 +41,7 @@ public class ImportSettingsTest {
 
     private void importSettingsTest(boolean isGmail) {
         testUtils.increaseTimeoutWait();
-        testUtils.externalAppRespondWithFile(R.raw.settings);
-        onView(withId(R.id.skip)).perform(click());
-        if (isGmail) {
-            testUtils.gmailAccount();
-        } else {
-            testUtils.newEmailAccount();
-        }
-        testUtils.accountDescription(DESCRIPTION, USER_NAME);
+        testUtils.createAccount(isGmail);
         testUtils.pressBack();
         testUtils.doWait();
         testUtils.openOptionsMenu();
@@ -82,7 +73,7 @@ public class ImportSettingsTest {
                 .inAdapterView(withId(R.id.accounts_list))
                 .atPosition(0)
                 .onChildView(withId(R.id.description))
-                .check(matches(withText(DESCRIPTION)));
+                .check(matches(withText(testUtils.getAccountDescription())));
     }
 
     private void assertThereAreNoAccounts(){
