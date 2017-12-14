@@ -44,6 +44,5 @@ public class GreenStatusEmailTest  {
         testUtils.testStatusMail("", "", "", Rating.pEpRatingUndefined.value);
         testUtils.doWait();
         testUtils.testStatusMailAndListMail(emailFrom, "Subject", "Message", Rating.pEpRatingTrusted.value, emailFrom);
-        testUtils.sendEmail();
     }
 }
