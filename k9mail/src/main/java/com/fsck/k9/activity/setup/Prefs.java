@@ -2,7 +2,6 @@ package com.fsck.k9.activity.setup;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -14,11 +13,9 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceScreen;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.ArrayAdapter;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
@@ -475,7 +472,7 @@ public class Prefs extends K9PreferenceActivity {
         mPEpSyncAccount.setChecked(isSyncChecked);
 
         if (!isSyncChecked) {
-            mPEpManageKeysync.setEnabled(true);
+            mPEpManageKeysync.setEnabled(BuildConfig.WITH_KEY_SYNC);
         } else {
             mPEpManageKeysync.setEnabled(false);
         }
