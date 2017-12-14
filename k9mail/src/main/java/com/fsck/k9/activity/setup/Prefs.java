@@ -471,11 +471,9 @@ public class Prefs extends K9PreferenceActivity {
         boolean isSyncChecked = ((K9) getApplication()).ispEpSyncEnabled();
         mPEpSyncAccount.setChecked(isSyncChecked);
 
-        if (!isSyncChecked) {
-            mPEpManageKeysync.setEnabled(BuildConfig.WITH_KEY_SYNC);
-        } else {
-            mPEpManageKeysync.setEnabled(false);
-        }
+        //noinspection ConstantConditions
+        mPEpSyncAccount.setEnabled(BuildConfig.WITH_KEY_SYNC);
+        mPEpManageKeysync.setEnabled(!isSyncChecked && BuildConfig.WITH_KEY_SYNC);
 
         mPEpSyncAccount.setOnPreferenceChangeListener((preference, newValue) -> {
             final boolean value = (Boolean) newValue;
