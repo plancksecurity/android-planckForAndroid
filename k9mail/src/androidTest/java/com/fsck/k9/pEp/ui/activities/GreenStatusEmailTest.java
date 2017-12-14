@@ -35,10 +35,10 @@ public class GreenStatusEmailTest  {
 
     private void greenStatusEmailTest() {
         testUtils.increaseTimeoutWait();
-        testUtils.composseMessageButton();
+        testUtils.composeMessageButton();
         testUtils.testStatusEmpty();
         testUtils.doWait();
-        emailFrom = testUtils.getTextFromTextviewThatContainsText("@");
+        emailFrom = testUtils.getTextFromTextViewThatContainsText("@");
         testUtils.testStatusMailAndListMail(emailFrom, "Subject", "Message", Rating.pEpRatingTrusted.value, emailFrom);
         testUtils.doWait();
         testUtils.testStatusMail("", "", "", Rating.pEpRatingUndefined.value);
