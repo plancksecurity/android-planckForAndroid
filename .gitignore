@@ -30,3 +30,4 @@ proguard-project.txt
 *.DS_Store
 k9mail/src/main/res/raw/settings.k9s
 k9mail/src/main/res/raw/settingsthemedark.k9s
+k9mail/src/main/res/raw/settingsthemelight.k9s
