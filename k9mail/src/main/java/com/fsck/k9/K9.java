@@ -1742,7 +1742,7 @@ public class K9 extends Application {
         return pEpSyncEnabled;
     }
 
-    public static void setpEpSyncEnabled(boolean ispEpSyncEnabled) {
+    public void setpEpSyncEnabled(boolean ispEpSyncEnabled) {
         pEpSyncEnabled = ispEpSyncEnabled;
     }
 
