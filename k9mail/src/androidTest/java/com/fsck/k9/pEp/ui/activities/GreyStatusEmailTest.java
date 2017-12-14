@@ -23,8 +23,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 @RunWith(AndroidJUnit4.class)
 public class GreyStatusEmailTest {
 
-    private static final String DESCRIPTION = "tester one";
-    private static final String USER_NAME = "testerJ";
     private static final String EMAIL = "newemail@mail.es";
     private TestUtils testUtils;
 
@@ -49,13 +47,7 @@ public class GreyStatusEmailTest {
 
     private void greyStatusEmailTest(boolean isGmail) {
         testUtils.increaseTimeoutWait();
-        onView(withId(R.id.skip)).perform(click());
-        if (isGmail) {
-            testUtils.gmailAccount();
-        } else {
-            testUtils.newEmailAccount();
-        }
-        testUtils.accountDescription(DESCRIPTION, USER_NAME);
+        testUtils.createAccount(isGmail);
         testUtils.composeMessageButton();
         testUtils.testStatusEmpty();
         testUtils.testStatusMail(EMAIL, "Subject", "Message", Rating.pEpRatingUnencrypted.value);
