@@ -41,6 +41,7 @@ public class ImportSettingsTest {
 
     private void importSettingsTest(boolean isGmail) {
         testUtils.increaseTimeoutWait();
+        testUtils.externalAppRespondWithFile(R.raw.settings);
         testUtils.createAccount(isGmail);
         testUtils.pressBack();
         testUtils.doWait();
