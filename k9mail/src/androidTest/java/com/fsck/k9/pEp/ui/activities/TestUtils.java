@@ -216,9 +216,9 @@ class TestUtils {
 
     private Intent insertFileIntoIntentAsData(String fileName){
         Intent resultData = new Intent();
-        File filelocation = new File(Environment.getExternalStorageDirectory()
+        File fileLocation = new File(Environment.getExternalStorageDirectory()
                 .getAbsolutePath(), fileName);
-        resultData.setData(Uri.parse( "file://"+filelocation));
+        resultData.setData(Uri.parse( "file://"+fileLocation));
         return  resultData;
     }
 
