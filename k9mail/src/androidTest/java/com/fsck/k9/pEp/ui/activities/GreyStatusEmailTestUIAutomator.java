@@ -41,8 +41,5 @@ public class GreyStatusEmailTestUIAutomator {
         testUtils.testStatusMail(EMAIL, "Subject", "Message", Rating.pEpRatingUnencrypted.value);
         testUtils.testStatusMail("", "", "", Rating.pEpRatingUndefined.value);
         testUtils.testStatusMail(EMAIL, "Subject", "Message", Rating.pEpRatingUnencrypted.value);
-        testUtils.sendEmail();
-        testUtils.pressBack();
-        testUtils.removeLastAccount();
     }
 }
