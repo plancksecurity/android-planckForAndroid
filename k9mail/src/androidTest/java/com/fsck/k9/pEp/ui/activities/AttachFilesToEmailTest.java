@@ -19,8 +19,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 @RunWith(AndroidJUnit4.class)
 public class AttachFilesToEmailTest {
 
-    private static final String DESCRIPTION = "tester one";
-    private static final String USER_NAME = "testerJ";
     private static final String EMAIL = "juan@miau.xyz";
 
     private UiDevice device;
@@ -43,13 +41,7 @@ public class AttachFilesToEmailTest {
 
     private void attachFilesToAccount(boolean isGmail) {
         testUtils.increaseTimeoutWait();
-        onView(withId(R.id.skip)).perform(click());
-        if (isGmail) {
-            testUtils.gmailAccount();
-        } else {
-            testUtils.newEmailAccount();
-        }
-        testUtils.accountDescription(DESCRIPTION, USER_NAME);
+        testUtils.createAccount(isGmail);
         testUtils.composeMessageButton();
         testUtils.fillEmail(EMAIL, "Subject", "Message", true);
         testUtils.sendEmail();

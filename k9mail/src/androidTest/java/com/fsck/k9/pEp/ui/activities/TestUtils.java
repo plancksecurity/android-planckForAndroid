@@ -60,6 +60,8 @@ class TestUtils {
 
     private static final String APP_ID = "pep.android.k9";
     private static final int LAUNCH_TIMEOUT = 5000;
+    private static final String DESCRIPTION = "tester one";
+    private static final String USER_NAME = "testerJ";
 
     private UiDevice device;
     private Context context;
@@ -131,6 +133,20 @@ class TestUtils {
 
     void composeMessageButton(){
         onView(withId(R.id.fab_button_compose_message)).perform(click());
+    }
+
+    void createAccount(boolean isGmail){
+        onView(withId(R.id.skip)).perform(click());
+        if (isGmail) {
+            gmailAccount();
+        } else {
+            newEmailAccount();
+        }
+        accountDescription(DESCRIPTION, USER_NAME);
+    }
+
+    String getAccountDescription(){
+        return DESCRIPTION;
     }
 
     void fillEmail(String to, String subject, String message, boolean attachFilesToEmail){
