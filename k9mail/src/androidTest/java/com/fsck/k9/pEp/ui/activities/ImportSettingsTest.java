@@ -61,11 +61,11 @@ public class ImportSettingsTest {
         testUtils.selectFromMenu(R.string.settings_import);
         testUtils.doWait();
         testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.settings_import_selection);
-        testUtils.selectAcceptButton();
+        testUtils.clickAcceptButton();
         testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.settings_import_success_header);
-        testUtils.selectAcceptButton();
+        testUtils.clickAcceptButton();
         testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.settings_import_activate_account_header);
-        testUtils.selectCancelButton();
+        testUtils.clickCancelButton();
         testUtils.doWait();
         assertExistsTest();
         testUtils.removeLastAccount();
