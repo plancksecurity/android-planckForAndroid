@@ -71,7 +71,7 @@ public class IncomingMessageTest {
 
     private void trustInPartner() {
         getLastEmailRecived();
-        testUtils.composseMessageButton();
+        testUtils.composeMessageButton();
         uiDevice.waitForIdle();
         testUtils.fillEmail(emailTo, "Subject", "Message", false);
         testUtils.sendEmail();
@@ -90,7 +90,7 @@ public class IncomingMessageTest {
     }
 
     private void checkIncomingTrustedPartnerMessageIsGreen(){
-        testUtils.composseMessageButton();
+        testUtils.composeMessageButton();
         fillEmail();
         uiDevice.waitForIdle();
         onView(withId(R.id.pEp_indicator)).perform(click());
@@ -137,7 +137,7 @@ public class IncomingMessageTest {
 
     private void waitForBotEmail() {
         while ((uiDevice.findObjects(selector).size() <= lastEmailRecivedPosition)
-                ||(testUtils.getTextFromTextviewThatContainsText("bot").equals(uiDevice.findObjects(selector).get(lastEmailRecivedPosition).getText())
+                ||(testUtils.getTextFromTextViewThatContainsText("bot").equals(uiDevice.findObjects(selector).get(lastEmailRecivedPosition).getText())
                 &&(lastEmailRecivedDate.equals(uiDevice.findObjects(selector).get(lastEmailRecivedPosition+1).getText())))
                 ){
             uiDevice.waitForIdle();
