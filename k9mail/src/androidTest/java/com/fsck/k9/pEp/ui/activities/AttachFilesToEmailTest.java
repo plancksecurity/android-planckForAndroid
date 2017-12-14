@@ -50,15 +50,11 @@ public class AttachFilesToEmailTest {
             testUtils.newEmailAccount();
         }
         testUtils.accountDescription(DESCRIPTION, USER_NAME);
-        testUtils.composseMessageButton();
+        testUtils.composeMessageButton();
         testUtils.fillEmail(EMAIL, "Subject", "Message", true);
         testUtils.sendEmail();
         testUtils.pressBack();
         testUtils.removeLastAccount();
     }
 
-  /*  @Test
-    public void attachFilesToGmail() {
-        attachFilesToAccount(true);
-    }*/
 }

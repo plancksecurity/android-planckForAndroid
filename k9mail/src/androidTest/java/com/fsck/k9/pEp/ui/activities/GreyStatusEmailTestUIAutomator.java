@@ -49,7 +49,7 @@ public class GreyStatusEmailTestUIAutomator {
             testUtils.newEmailAccount();
         }
         testUtils.accountDescription(DESCRIPTION, USER_NAME);
-        testUtils.composseMessageButton();
+        testUtils.composeMessageButton();
         testUtils.testStatusEmpty();
         testUtils.testStatusMail(EMAIL, "Subject", "Message", Rating.pEpRatingUnencrypted.value);
         testUtils.testStatusMail("", "", "", Rating.pEpRatingUndefined.value);

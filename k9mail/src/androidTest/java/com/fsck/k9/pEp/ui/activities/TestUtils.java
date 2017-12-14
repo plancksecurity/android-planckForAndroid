@@ -63,10 +63,12 @@ class TestUtils {
 
     private UiDevice device;
     private Context context;
+    private Resources resources;
 
     TestUtils(UiDevice device) {
         this.device = device;
         context = InstrumentationRegistry.getTargetContext();
+        resources = context.getResources();
     }
 
     void increaseTimeoutWait(){
@@ -127,7 +129,7 @@ class TestUtils {
         onView(withId(R.id.done)).perform(click());
     }
 
-    void composseMessageButton(){
+    void composeMessageButton(){
         onView(withId(R.id.fab_button_compose_message)).perform(click());
     }
 
@@ -171,8 +173,8 @@ class TestUtils {
         return new Instrumentation.ActivityResult(Activity.RESULT_OK, insertFileIntoIntentAsData(fileName));
     }
 
-    private void convertResourceToBitmapFile(int resource, String fileName) {
-        Bitmap bm = BitmapFactory.decodeResource(context.getResources(), resource);
+    private void convertResourceToBitmapFile(int resourceId, String fileName) {
+        Bitmap bm = BitmapFactory.decodeResource(resources, resourceId);
         String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
         File fileImage = new File(extStorageDirectory, fileName);
         try {
@@ -187,7 +189,6 @@ class TestUtils {
     }
 
     private Intent insertFileIntoIntentAsData(int id){
-        Resources resources = context.getResources();
         Uri fileUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
                 resources.getResourcePackageName(id) +"/" +
                 resources.getResourceTypeName(id) + "/" +
@@ -221,15 +222,15 @@ class TestUtils {
         device.waitForIdle();
         selectRemoveAccount();
         device.waitForIdle();
-        selectAcceptButton();
+        clickAcceptButton();
     }
 
-    void selectAcceptButton(){
+    void clickAcceptButton(){
         doWaitForObject("android.widget.Button");
         onView(withText(R.string.okay_action)).perform(click());
     }
 
-    void selectCancelButton(){
+    void clickCancelButton(){
         doWaitForObject("android.widget.Button");
         onView(withText(R.string.cancel_action)).perform(click());
     }
@@ -251,7 +252,7 @@ class TestUtils {
             size = device.findObjects(selector).size();
         }
         for (UiObject2 textView: device.findObjects(selector)) {
-            if (textView.getText().equals(context.getResources().getString(R.string.remove_account_action))){
+            if (textView.getText().equals(resources.getString(R.string.remove_account_action))){
                 textView.click();
                 return;
             }
@@ -289,11 +290,11 @@ class TestUtils {
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
     }
 
-    public String getTextFromTextviewThatContainsText(String text){
+    public String getTextFromTextViewThatContainsText(String text){
         BySelector selector = By.clazz("android.widget.TextView");
-        for (UiObject2 object: device.findObjects(selector)) {
-            if (object.getText() != null && object.getText().contains(text)){
-                return object.getText();
+        for (UiObject2 textView: device.findObjects(selector)) {
+            if (textView.getText() != null && textView.getText().contains(text)){
+                return textView.getText();
             }
         }
         return "not found";
@@ -323,7 +324,7 @@ class TestUtils {
     void selectFromMenu(int resource){
         BySelector selector = By.clazz("android.widget.TextView");
         for (UiObject2 object: device.findObjects(selector)) {
-            if (object.getText().equals(context.getResources().getString(resource))){
+            if (object.getText().equals(resources.getString(resource))){
                 object.click();
                 break;
             }
@@ -342,7 +343,7 @@ class TestUtils {
     }
 
     void doWaitForResource(int resource){
-        device.wait(Until.hasObject(By.desc(context.getResources().getString(resource))), 1);
+        device.wait(Until.hasObject(By.desc(resources.getString(resource))), 1);
     }
 
     void doWaitForAlertDialog(IntentsTestRule<SplashActivity> intent, int displayText){
@@ -353,9 +354,8 @@ class TestUtils {
                 .check(matches(isDisplayed()));
     }
 
-    private String getResourceString(int id, int n) {
-        Context targetContext = context;
-        return targetContext.getResources().getStringArray(id)[n];
+    private String getResourceString(int id, int position) {
+        return resources.getStringArray(id)[position];
     }
 
     void startActivity(){
