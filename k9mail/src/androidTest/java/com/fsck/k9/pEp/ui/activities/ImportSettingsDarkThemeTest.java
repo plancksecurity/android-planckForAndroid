@@ -35,38 +35,39 @@ public class ImportSettingsDarkThemeTest {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(device);
         testUtils.increaseTimeoutWait();
-        testUtils.externalAppRespondWithFile(R.raw.settingsthemelight);
+        testUtils.externalAppRespondWithFile(R.raw.settingsthemedark);
         testUtils.startActivity();
     }
 
     @Test
-    public void importSettingDarkTheme(){
+    public void importSettingDarkTheme() {
         testUtils.pressBack();
         testUtils.openOptionsMenu();
         device.waitForIdle();
         testUtils.selectFromMenu(R.string.import_export_action);
         device.waitForIdle();
         testUtils.selectFromMenu(R.string.settings_import);
-        turnOnCheckBoxAndOffTheOther(R.string.settings_import_global_settings);
+        checkedCheckBox(R.string.settings_import_global_settings);
         testUtils.selectAcceptButton();
         device.waitForIdle();
         testUtils.selectAcceptButton();
         device.waitForIdle();
         onView(withId(R.id.accounts_list)).perform(ViewActions.click());
         device.waitForIdle();
-        Assert.assertEquals(K9.Theme.DARK, K9.getK9Theme());
+        Assert.assertEquals(K9.Theme.LIGHT, K9.getK9Theme());
+    }
 
-    private void turnOnCheckBoxAndOffTheOther(int resourceOn){
+    private void checkedCheckBox(int resourceChecked) {
         BySelector selector = By.clazz("android.widget.CheckedTextView");
         device.waitForIdle();
-        for (UiObject2 checkBox : device.findObjects(selector))
-            {device.waitForIdle();
-            if (checkBox.getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(resourceOn))){
-                if (!checkBox.isChecked()){
+        for (UiObject2 checkBox : device.findObjects(selector)) {
+            device.waitForIdle();
+            if (checkBox.getText().equals(InstrumentationRegistry.getTargetContext().getResources().getString(resourceChecked))) {
+                if (!checkBox.isChecked()) {
                     checkBox.click();
                 }
-            }else{
-                if (checkBox.isChecked()){
+            } else {
+                if (checkBox.isChecked()) {
                     checkBox.longClick();
                 }
             }
