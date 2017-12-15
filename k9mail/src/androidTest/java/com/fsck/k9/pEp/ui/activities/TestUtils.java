@@ -58,7 +58,7 @@ import static org.junit.Assert.assertThat;
 
 class TestUtils {
 
-    private static final String APP_ID = "pep.android.k9";
+    private static final String APP_ID = BuildConfig.APPLICATION_ID;
     private static final int LAUNCH_TIMEOUT = 5000;
     private static final String DESCRIPTION = "tester one";
     private static final String USER_NAME = "testerJ";
