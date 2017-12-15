@@ -55,27 +55,6 @@ public class ImportSettingsDarkThemeTest {
         onView(withId(R.id.accounts_list)).perform(ViewActions.click());
         device.waitForIdle();
         Assert.assertEquals(K9.Theme.DARK, K9.getK9Theme());
-        /*testUtils.pressBack();
-        device.waitForIdle();*/
-    /*    try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
-        /*UiObject2 uo = selectLayout();
-        uo.getText();*/
-        //onView(withId(R.id.container)).check(matches(withBackgroundColor(android.R.color.background_dark)));
-        //onView(withId(R.id.root_view)).check(matches(withBackgroundColor(android.R.color.background_light)));
-        //onView(selectLayout()).check(matches(withBackgroundColor(R.color.white)));
-
-      /*  UiCollection list = new UiCollection( new UiSelector().className("android.widget.LinearLayout"));
-        list.getChild(new UiSelector().index(5)).*/
-
-    }
-    private UiObject2 selectLayout(){
-        BySelector selector = By.clazz("android.widget.LinearLayout");
-        return device.findObjects(selector).get(14);
-    }
 
     private void turnOnCheckBoxAndOffTheOther(int resourceOn){
         BySelector selector = By.clazz("android.widget.CheckedTextView");
