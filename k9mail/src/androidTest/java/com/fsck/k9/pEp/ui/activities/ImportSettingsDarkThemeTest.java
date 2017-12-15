@@ -1,40 +1,24 @@
 package com.fsck.k9.pEp.ui.activities;
 
-import android.graphics.drawable.ColorDrawable;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.action.ViewActions;
-import android.support.test.espresso.intent.Checks;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
-import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
-import android.support.test.uiautomator.UiCollection;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
-import android.support.test.uiautomator.UiSelector;
-import android.support.v4.content.ContextCompat;
-import android.view.View;
-import android.widget.LinearLayout;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 
 import junit.framework.Assert;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static android.support.test.InstrumentationRegistry.getTargetContext;
-import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withParent;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.anything;
 
 
 public class ImportSettingsDarkThemeTest {
