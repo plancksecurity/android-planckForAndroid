@@ -16,7 +16,10 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.fsck.k9.K9;
 import com.fsck.k9.R;
+
+import junit.framework.Assert;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -67,16 +70,18 @@ public class ImportSettingsDarkThemeTest {
         device.waitForIdle();
         onView(withId(R.id.accounts_list)).perform(ViewActions.click());
         device.waitForIdle();
-        testUtils.pressBack();
-        device.waitForIdle();
-        try {
+        Assert.assertEquals(K9.Theme.DARK, K9.getK9Theme());
+        /*testUtils.pressBack();
+        device.waitForIdle();*/
+    /*    try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
+        }*/
         /*UiObject2 uo = selectLayout();
         uo.getText();*/
-        onView(withId(R.id.root_view)).check(matches(withBackgroundColor(android.R.color.background_light)));
+        //onView(withId(R.id.container)).check(matches(withBackgroundColor(android.R.color.background_dark)));
+        //onView(withId(R.id.root_view)).check(matches(withBackgroundColor(android.R.color.background_light)));
         //onView(selectLayout()).check(matches(withBackgroundColor(R.color.white)));
 
       /*  UiCollection list = new UiCollection( new UiSelector().className("android.widget.LinearLayout"));
@@ -104,21 +109,5 @@ public class ImportSettingsDarkThemeTest {
             }
         }
         device.waitForIdle();
-    }
-
-    public static Matcher<View> withBackgroundColor(final int color) {
-        Checks.checkNotNull(color);
-        int color1 = ContextCompat.getColor(getTargetContext(),color);
-        return new BoundedMatcher<View, LinearLayout>(LinearLayout.class) {
-            @Override
-            public boolean matchesSafely(LinearLayout view) {
-                int color2 = ((ColorDrawable) view.getBackground()).getColor();
-                return color1 == (color2);
-            }
-            @Override
-            public void describeTo(Description description) {
-
-            }
-        };
     }
 }
