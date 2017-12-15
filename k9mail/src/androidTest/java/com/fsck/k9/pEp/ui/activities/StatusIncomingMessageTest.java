@@ -37,7 +37,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
 
-public class pEpStatusIncomingMessageTest {
+public class StatusIncomingMessageTest {
 
     private UiDevice uiDevice;
     private TestUtils testUtils;
