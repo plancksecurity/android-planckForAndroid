@@ -53,9 +53,9 @@ public class YellowStatusEmailFromBotTest {
 
     private UiDevice uiDevice;
     private TestUtils testUtils;
-    private String emailTo = "test13@test.pep-security.net";
-    private String lastEmailRecivedDate;
-    private int lastEmailRecivedPosition;
+    private String emailTo = "random@test.pep-security.net";
+    private String lastMessageReceivedDate;
+    private int lastMessageReceivedPosition;
     private BySelector selector;
 
     @Rule
@@ -71,27 +71,27 @@ public class YellowStatusEmailFromBotTest {
     }
 
     @Test
-    public void sendEmailAndYellowStatusEmail() {
-        getLastEmailRecived();
+    public void sendMessageAndAssertYellowStatusMessage() {
+        getLastMessageRecived();
         testUtils.composseMessageButton();
         uiDevice.waitForIdle();
         testUtils.fillEmail(emailTo, "Subject", "Message", false);
         testUtils.sendEmail();
         uiDevice.waitForIdle();
-        waitForBotEmail();
-        clickBotEmail();
+        waitForBotMessage();
+        clickBotMessage();
         clickReplayMessage();
         clickMailStatus();
-        checkBotEmailColor();
-        goBacktoEmailsRecived();
+        checkBotMessageColor();
+        goBackToMessageList();
         testUtils.composseMessageButton();
-        yellowStatusEmailTest();
+        yellowStatusMessageTest();
     }
 
     @Test
-    public void yellowAndGreyStatusEmail(){
+    public void twoStatusMessageYellowAndGray() {
         testUtils.composseMessageButton();
-        fillEmail();
+        fillComposeFields();
         clickMailStatus();
         testUtils.doWaitForResource(R.id.my_recycler_view);
         uiDevice.waitForIdle();
@@ -99,10 +99,10 @@ public class YellowStatusEmailFromBotTest {
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(1)).check(matches(withBackgroundColor(R.color.pep_yellow)));
     }
 
-    private void fillEmail(){
+    private void fillComposeFields() {
         uiDevice.waitForIdle();
         testUtils.fillEmail(emailTo, "Subject", "Message", false);
-        onView(withId(R.id.to)).perform(typeText("randomtest@email.is"), closeSoftKeyboard());
+        onView(withId(R.id.to)).perform(typeText("randomtest@Message.is"), closeSoftKeyboard());
         uiDevice.waitForIdle();
         onView(withId(R.id.subject)).perform(longClick(), closeSoftKeyboard());
         uiDevice.waitForIdle();
@@ -113,7 +113,7 @@ public class YellowStatusEmailFromBotTest {
         return new RecyclerViewMatcher(recyclerViewId);
     }
 
-    private void goBacktoEmailsRecived(){
+    private void goBackToMessageList() {
         uiDevice.waitForIdle();
         testUtils.pressBack();
         uiDevice.waitForIdle();
@@ -126,7 +126,7 @@ public class YellowStatusEmailFromBotTest {
         uiDevice.waitForIdle();
     }
 
-    private void checkBotEmailColor() {
+    private void checkBotMessageColor() {
         testUtils.doWaitForResource(R.id.toolbar_container);
         uiDevice.waitForIdle();
         onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(R.color.pep_yellow)));
@@ -143,42 +143,42 @@ public class YellowStatusEmailFromBotTest {
         onView(withId(R.id.reply_message)).perform(click());
     }
 
-    private void clickBotEmail() {
+    private void clickBotMessage() {
         uiDevice.waitForIdle();
-        uiDevice.findObjects(selector).get(lastEmailRecivedPosition).click();
+        uiDevice.findObjects(selector).get(lastMessageReceivedPosition).click();
     }
 
-    private void waitForBotEmail() {
-        while ((uiDevice.findObjects(selector).size() <= lastEmailRecivedPosition)
-                ||(testUtils.getTextFromTextviewThatContainsText("bot").equals(uiDevice.findObjects(selector).get(lastEmailRecivedPosition).getText())
-                 &&(lastEmailRecivedDate.equals(uiDevice.findObjects(selector).get(lastEmailRecivedPosition+1).getText())))
-                ){
+    private void waitForBotMessage() {
+        while ((uiDevice.findObjects(selector).size() <= lastMessageReceivedPosition)
+                || (testUtils.getTextFromTextviewThatContainsText("bot").equals(uiDevice.findObjects(selector).get(lastMessageReceivedPosition).getText())
+                && (lastMessageReceivedDate.equals(uiDevice.findObjects(selector).get(lastMessageReceivedPosition + 1).getText())))
+                ) {
             uiDevice.waitForIdle();
         }
     }
 
-    private void getLastEmailRecived() {
+    private void getLastMessageRecived() {
         uiDevice.waitForIdle();
-        lastEmailRecivedPosition = getLastEmailRecivedPosition();
+        lastMessageReceivedPosition = getLastMessageReceivedPosition();
         onView(withId(R.id.message_list))
                 .perform(swipeDown());
-        if (lastEmailRecivedPosition != -1) {
-            lastEmailRecivedDate = uiDevice.findObjects(selector).get(lastEmailRecivedPosition + 1).getText();
-        }else{
-            lastEmailRecivedDate = "";
-            lastEmailRecivedPosition = uiDevice.findObjects(selector).size();
+        if (lastMessageReceivedPosition != -1) {
+            lastMessageReceivedDate = uiDevice.findObjects(selector).get(lastMessageReceivedPosition + 1).getText();
+        } else {
+            lastMessageReceivedDate = "";
+            lastMessageReceivedPosition = uiDevice.findObjects(selector).size();
         }
     }
 
-    public int getLastEmailRecivedPosition(){
+    public int getLastMessageReceivedPosition() {
         int size = uiDevice.findObjects(selector).size();
         for (int position = 0; position < size; position++) {
             String textAtPosition = uiDevice.findObjects(selector).get(position).getText();
-            if (textAtPosition != null && textAtPosition.contains("@")){
+            if (textAtPosition != null && textAtPosition.contains("@")) {
                 position++;
-                while (uiDevice.findObjects(selector).get(position).getText() == null){
+                while (uiDevice.findObjects(selector).get(position).getText() == null) {
                     position++;
-                    if (position >= size){
+                    if (position >= size) {
                         return -1;
                     }
                 }
@@ -188,7 +188,7 @@ public class YellowStatusEmailFromBotTest {
         return size;
     }
 
-    private void yellowStatusEmailTest() {
+    private void yellowStatusMessageTest() {
         testUtils.fillEmail(emailTo, "Subject", "Message", false);
         onView(withId(R.id.pEp_indicator)).perform(click());
         uiDevice.waitForIdle();
@@ -199,13 +199,14 @@ public class YellowStatusEmailFromBotTest {
 
     public static Matcher<View> withBackgroundColor(final int color) {
         Checks.checkNotNull(color);
-        int color1 = ContextCompat.getColor(getTargetContext(),color);
+        int color1 = ContextCompat.getColor(getTargetContext(), color);
         return new BoundedMatcher<View, View>(View.class) {
             @Override
             public boolean matchesSafely(View view) {
                 int color2 = ((ColorDrawable) view.getBackground()).getColor();
                 return color1 == (color2);
             }
+
             @Override
             public void describeTo(Description description) {
 
@@ -220,7 +221,7 @@ public class YellowStatusEmailFromBotTest {
         assertTrue(currentActivity.getClass().isAssignableFrom(activityClass));
     }
 
-    private Activity getCurrentActivity(){
+    private Activity getCurrentActivity() {
         final Activity[] activity = new Activity[1];
         try {
             splashActivityTestRule.runOnUiThread(() -> {
@@ -273,8 +274,7 @@ public class YellowStatusEmailFromBotTest {
                                 view.getRootView().findViewById(recyclerViewId);
                         if (recyclerView != null && recyclerView.getId() == recyclerViewId) {
                             childView = recyclerView.findViewHolderForAdapterPosition(position).itemView;
-                        }
-                        else {
+                        } else {
                             return false;
                         }
                     }
