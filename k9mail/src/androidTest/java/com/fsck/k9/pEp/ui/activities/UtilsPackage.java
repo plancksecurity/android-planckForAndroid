@@ -8,9 +8,6 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-/**
- * Created by juan on 18/12/17.
- */
 
 public class UtilsPackage {
 
