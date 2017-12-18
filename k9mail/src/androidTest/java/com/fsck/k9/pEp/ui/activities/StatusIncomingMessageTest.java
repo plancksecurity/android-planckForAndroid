@@ -40,7 +40,6 @@ public class StatusIncomingMessageTest {
     private UiDevice uiDevice;
     private TestUtils testUtils;
     private String messageTo;
-    private String time;
     private String lastMessageReceivedDate;
     private int lastMessageReceivedPosition;
     private BySelector textViewSelector;
@@ -54,8 +53,7 @@ public class StatusIncomingMessageTest {
         testUtils = new TestUtils(uiDevice);
         testUtils.increaseTimeoutWait();
         textViewSelector = By.clazz("android.widget.TextView");
-        time = Long.toString(System.currentTimeMillis());
-        messageTo = time + "@" + HOST;
+        messageTo = Long.toString(System.currentTimeMillis()) + "@" + HOST;
         testUtils.startActivity();
     }
 
