@@ -65,7 +65,7 @@ public class StatusIncomingMessageTest {
 
     @Test
     public void pEpStatusIncomingTrustedMessageShouldBeGreen() {
-        trustInPartner();
+        assertPartnerStatusIsTrusted();
         testUtils.pressBack();
         uiDevice.waitForIdle();
         testUtils.pressBack();
@@ -73,7 +73,7 @@ public class StatusIncomingMessageTest {
         assertIncomingTrustedPartnerMessageIsGreen();
     }
 
-    private void trustInPartner() {
+    private void assertPartnerStatusIsTrusted() {
         getLastMessageReceived();
         testUtils.composeMessageButton();
         uiDevice.waitForIdle();
