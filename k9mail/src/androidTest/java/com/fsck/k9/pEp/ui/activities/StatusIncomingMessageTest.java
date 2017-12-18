@@ -84,7 +84,7 @@ public class StatusIncomingMessageTest {
         clickLastMessageReceived();
         uiDevice.waitForIdle();
         clickMessageStatus();
-        assertMessageStatusColor(R.color.pep_yellow);
+        assertMessageStatus(Rating.pEpRatingReliable.value);
         uiDevice.waitForIdle();
         onView(withId(R.id.handshake_button_text)).perform(click());
         onView(withId(R.id.confirmTrustWords)).perform(click());
