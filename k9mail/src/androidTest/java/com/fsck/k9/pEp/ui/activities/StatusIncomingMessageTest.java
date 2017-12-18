@@ -119,12 +119,6 @@ public class StatusIncomingMessageTest {
         return new UtilsPackage.RecyclerViewMatcher(recyclerViewId);
     }
 
-    private void assertMessageStatusColor(int colorId) {
-        testUtils.doWaitForResource(R.id.toolbar_container);
-        uiDevice.waitForIdle();
-        onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(colorId)));
-    }
-
     private void clickMessageStatus() {
         uiDevice.waitForIdle();
         onView(withId(R.id.tvPep)).perform(click());
