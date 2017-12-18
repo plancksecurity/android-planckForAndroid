@@ -44,6 +44,7 @@ public class StatusIncomingMessageTest {
     private UiDevice uiDevice;
     private TestUtils testUtils;
     private String messageTo;
+    private String time;
     private String lastMessageReceivedDate;
     private int lastMessageReceivedPosition;
     private BySelector textViewSelector;
@@ -57,7 +58,8 @@ public class StatusIncomingMessageTest {
         testUtils = new TestUtils(uiDevice);
         testUtils.increaseTimeoutWait();
         textViewSelector = By.clazz("android.widget.TextView");
-        messageTo = Long.toString(System.currentTimeMillis()) + "@" + HOST;
+        time = Long.toString(System.currentTimeMillis());
+        messageTo = time + "@" + HOST;
         testUtils.startActivity();
     }
 
@@ -139,8 +141,10 @@ public class StatusIncomingMessageTest {
 
     private void waitForMessageWithText(String textInMessage) {
         while ((uiDevice.findObjects(textViewSelector).size() <= lastMessageReceivedPosition)
+                ||testUtils.getTextFromTextViewThatContainsText(time) != null
                 ||(testUtils.getTextFromTextViewThatContainsText(textInMessage).equals(uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition).getText())
-                &&(lastMessageReceivedDate.equals(uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition +1).getText())))
+                &&(lastMessageReceivedDate.equals(uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition +1).getText()))
+                &&(testUtils.getTextFromTextViewThatContainsText(time).equals(uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition + 2).getText())))
                 ){
             uiDevice.waitForIdle();
         }
