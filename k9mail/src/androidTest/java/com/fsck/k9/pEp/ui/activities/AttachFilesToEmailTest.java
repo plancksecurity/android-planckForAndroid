@@ -5,14 +5,11 @@ import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.UiDevice;
 
-import com.fsck.k9.R;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
@@ -43,8 +40,8 @@ public class AttachFilesToEmailTest {
         testUtils.increaseTimeoutWait();
         testUtils.createAccount(isGmail);
         testUtils.composeMessageButton();
-        testUtils.fillEmail(EMAIL, "Subject", "Message", true);
-        testUtils.sendEmail();
+        testUtils.fillMessage(EMAIL, "Subject", "Message", true);
+        testUtils.sendMessage();
         testUtils.pressBack();
         testUtils.removeLastAccount();
     }

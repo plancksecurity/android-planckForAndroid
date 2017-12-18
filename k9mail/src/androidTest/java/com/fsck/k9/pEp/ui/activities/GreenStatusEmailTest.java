@@ -17,7 +17,7 @@ import org.pEp.jniadapter.Rating;
 public class GreenStatusEmailTest  {
 
     private TestUtils testUtils;
-    private String emailFrom;
+    private String messageFrom;
 
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
@@ -29,20 +29,20 @@ public class GreenStatusEmailTest  {
     }
 
     @Test
-    public void greenStatusEmail() {
-        greenStatusEmailTest();
+    public void greenStatusMessage() {
+        greenStatusMessageTest();
     }
 
-    private void greenStatusEmailTest() {
+    private void greenStatusMessageTest() {
         testUtils.increaseTimeoutWait();
         testUtils.composeMessageButton();
         testUtils.testStatusEmpty();
         testUtils.doWait();
-        emailFrom = testUtils.getTextFromTextViewThatContainsText("@");
-        testUtils.testStatusMailAndListMail(emailFrom, "Subject", "Message", Rating.pEpRatingTrusted.value, emailFrom);
+        messageFrom = testUtils.getTextFromTextViewThatContainsText("@");
+        testUtils.testStatusMailAndListMail(messageFrom, "Subject", "Message", Rating.pEpRatingTrusted.value, messageFrom);
         testUtils.doWait();
         testUtils.testStatusMail("", "", "", Rating.pEpRatingUndefined.value);
         testUtils.doWait();
-        testUtils.testStatusMailAndListMail(emailFrom, "Subject", "Message", Rating.pEpRatingTrusted.value, emailFrom);
+        testUtils.testStatusMailAndListMail(messageFrom, "Subject", "Message", Rating.pEpRatingTrusted.value, messageFrom);
     }
 }
