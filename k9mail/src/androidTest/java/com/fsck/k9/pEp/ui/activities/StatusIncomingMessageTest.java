@@ -41,7 +41,8 @@ public class StatusIncomingMessageTest {
 
     private UiDevice uiDevice;
     private TestUtils testUtils;
-    private String emailTo = "@test.pep-security.net";
+    private static final String HOST = "test.pep-security.net";
+    private String messageTo;
     private String lastEmailReceivedDate;
     private int lastEmailReceivedPosition;
     private BySelector selector;
@@ -55,8 +56,8 @@ public class StatusIncomingMessageTest {
         testUtils = new TestUtils(uiDevice);
         testUtils.increaseTimeoutWait();
         selector = By.clazz("android.widget.TextView");
+        messageTo = String.valueOf(new Date().getTime()) + "@" + HOST;
         testUtils.startActivity();
-        emailTo = String.valueOf(new Date().getTime()) + emailTo;
     }
 
     @Test
@@ -73,7 +74,7 @@ public class StatusIncomingMessageTest {
         getLastEmailReceived();
         testUtils.composeMessageButton();
         uiDevice.waitForIdle();
-        testUtils.fillEmail(emailTo, "Subject", "Message", false);
+        testUtils.fillEmail(messageTo, "Subject", "Message", false);
         testUtils.sendEmail();
         uiDevice.waitForIdle();
         waitForEmailWithText("bot");
@@ -107,7 +108,7 @@ public class StatusIncomingMessageTest {
 
     private void fillEmail(){
         uiDevice.waitForIdle();
-        testUtils.fillEmail(emailTo, "Subject", "Message", false);
+        testUtils.fillEmail(messageTo, "Subject", "Message", false);
         uiDevice.waitForIdle();
         onView(withId(R.id.subject)).perform(longClick(), closeSoftKeyboard());
         uiDevice.waitForIdle();
