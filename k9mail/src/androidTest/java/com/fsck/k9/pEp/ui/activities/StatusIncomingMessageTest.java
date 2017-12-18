@@ -23,8 +23,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.pEp.jniadapter.Rating;
 
-import java.util.Date;
-
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -77,7 +75,7 @@ public class StatusIncomingMessageTest {
         testUtils.fillEmail(messageTo, "Subject", "Message", false);
         testUtils.sendEmail();
         uiDevice.waitForIdle();
-        waitForEmailWithText("bot");
+        waitForMessageWithText("bot");
         clickLastEmailReceived();
         uiDevice.waitForIdle();
         clickEmailStatus();
@@ -136,7 +134,7 @@ public class StatusIncomingMessageTest {
         uiDevice.findObjects(textViewSelector).get(lastEmailReceivedPosition).click();
     }
 
-    private void waitForEmailWithText(String textInEmail) {
+    private void waitForMessageWithText(String textInEmail) {
         while ((uiDevice.findObjects(textViewSelector).size() <= lastEmailReceivedPosition)
                 ||(testUtils.getTextFromTextViewThatContainsText(textInEmail).equals(uiDevice.findObjects(textViewSelector).get(lastEmailReceivedPosition).getText())
                 &&(lastEmailReceivedDate.equals(uiDevice.findObjects(textViewSelector).get(lastEmailReceivedPosition +1).getText())))
