@@ -149,7 +149,7 @@ class TestUtils {
         return DESCRIPTION;
     }
 
-    void fillEmail(String to, String subject, String message, boolean attachFilesToEmail){
+    void fillMessage(String to, String subject, String message, boolean attachFilesToMessage){
         doWait("to");
         device.waitForIdle();
         device.findObject(By.res(APP_ID, "to")).longClick();
@@ -162,7 +162,7 @@ class TestUtils {
         device.findObject(By.res(APP_ID, "message_content")).click();
         device.findObject(By.res(APP_ID, "message_content")).setText(message);
         Espresso.closeSoftKeyboard();
-        if (attachFilesToEmail) {
+        if (attachFilesToMessage) {
             String fileName = "ic_test";
             String extension = ".png";
             attachFiles(fileName, extension);
@@ -222,7 +222,7 @@ class TestUtils {
         return  resultData;
     }
 
-    void sendEmail(){
+    void sendMessage(){
         onView(withId(R.id.send)).perform(click());
     }
 
@@ -287,17 +287,17 @@ class TestUtils {
     }
 
     void testStatusMail(String to, String subject, String message, int status){
-        fillEmail(to, subject, message, false);
+        fillMessage(to, subject, message, false);
         device.waitForIdle();
         checkStatus(status);
         Espresso.pressBack();
     }
 
-    void testStatusMailAndListMail(String to, String subject, String message, int status, String email){
-        fillEmail(to, subject, message, false);
+    void testStatusMailAndListMail(String to, String subject, String message, int status, String messageFrom){
+        fillMessage(to, subject, message, false);
         device.waitForIdle();
         checkStatus(status);
-        onView(withText(email)).check(doesNotExist());
+        onView(withText(messageFrom)).check(doesNotExist());
         Espresso.pressBack();
     }
 
