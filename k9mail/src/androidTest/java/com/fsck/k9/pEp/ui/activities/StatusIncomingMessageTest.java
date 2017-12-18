@@ -44,8 +44,8 @@ public class StatusIncomingMessageTest {
     private UiDevice uiDevice;
     private TestUtils testUtils;
     private String messageTo;
-    private String lastEmailReceivedDate;
-    private int lastEmailReceivedPosition;
+    private String lastMessageReceivedDate;
+    private int lastMessageReceivedPosition;
     private BySelector textViewSelector;
 
     @Rule
@@ -72,28 +72,28 @@ public class StatusIncomingMessageTest {
     }
 
     private void trustInPartner() {
-        getLastEmailReceived();
+        getLastMessageReceived();
         testUtils.composeMessageButton();
         uiDevice.waitForIdle();
-        testUtils.fillEmail(messageTo, MESSAGE_SUBJECT, MESSAGE_BODY, false);
-        testUtils.sendEmail();
+        testUtils.fillMessage(messageTo, MESSAGE_SUBJECT, MESSAGE_BODY, false);
+        testUtils.sendMessage();
         uiDevice.waitForIdle();
         waitForMessageWithText("bot");
-        clickLastEmailReceived();
+        clickLastMessageReceived();
         uiDevice.waitForIdle();
-        clickEmailStatus();
-        assertEmailStatusColor(R.color.pep_yellow);
+        clickMessageStatus();
+        assertMessageStatusColor(R.color.pep_yellow);
         uiDevice.waitForIdle();
         onView(withId(R.id.handshake_button_text)).perform(click());
         onView(withId(R.id.confirmTrustWords)).perform(click());
         testUtils.pressBack();
-        assertEmailStatus(Rating.pEpRatingTrusted.value);
+        assertMessageStatus(Rating.pEpRatingTrusted.value);
 
     }
 
     private void assertIncomingTrustedPartnerMessageIsGreen(){
         testUtils.composeMessageButton();
-        fillEmail();
+        fillMessage();
         uiDevice.waitForIdle();
         onView(withId(R.id.pEp_indicator)).perform(click());
         uiDevice.waitForIdle();
@@ -102,14 +102,14 @@ public class StatusIncomingMessageTest {
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(0)).check(matches(withBackgroundColor(R.color.pep_green)));
     }
 
-    private void assertEmailStatus(int status){
+    private void assertMessageStatus(int status){
         onView(withId(R.id.tvPep)).perform(click());
         onView(withId(R.id.pEpTitle)).check(matches(withText(testUtils.getResourceString(R.array.pep_title, status))));
     }
 
-    private void fillEmail(){
+    private void fillMessage(){
         uiDevice.waitForIdle();
-        testUtils.fillEmail(messageTo, MESSAGE_SUBJECT, MESSAGE_BODY, false);
+        testUtils.fillMessage(messageTo, MESSAGE_SUBJECT, MESSAGE_BODY, false);
         uiDevice.waitForIdle();
         onView(withId(R.id.subject)).perform(longClick(), closeSoftKeyboard());
         uiDevice.waitForIdle();
@@ -120,46 +120,46 @@ public class StatusIncomingMessageTest {
         return new RecyclerViewMatcher(recyclerViewId);
     }
 
-    private void assertEmailStatusColor(int colorId) {
+    private void assertMessageStatusColor(int colorId) {
         testUtils.doWaitForResource(R.id.toolbar_container);
         uiDevice.waitForIdle();
         onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(colorId)));
     }
 
-    private void clickEmailStatus() {
+    private void clickMessageStatus() {
         uiDevice.waitForIdle();
         onView(withId(R.id.tvPep)).perform(click());
         uiDevice.waitForIdle();
     }
 
-    private void clickLastEmailReceived() {
+    private void clickLastMessageReceived() {
         uiDevice.waitForIdle();
-        uiDevice.findObjects(textViewSelector).get(lastEmailReceivedPosition).click();
+        uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition).click();
     }
 
-    private void waitForMessageWithText(String textInEmail) {
-        while ((uiDevice.findObjects(textViewSelector).size() <= lastEmailReceivedPosition)
-                ||(testUtils.getTextFromTextViewThatContainsText(textInEmail).equals(uiDevice.findObjects(textViewSelector).get(lastEmailReceivedPosition).getText())
-                &&(lastEmailReceivedDate.equals(uiDevice.findObjects(textViewSelector).get(lastEmailReceivedPosition +1).getText())))
+    private void waitForMessageWithText(String textInMessage) {
+        while ((uiDevice.findObjects(textViewSelector).size() <= lastMessageReceivedPosition)
+                ||(testUtils.getTextFromTextViewThatContainsText(textInMessage).equals(uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition).getText())
+                &&(lastMessageReceivedDate.equals(uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition +1).getText())))
                 ){
             uiDevice.waitForIdle();
         }
     }
 
-    private void getLastEmailReceived() {
+    private void getLastMessageReceived() {
         uiDevice.waitForIdle();
-        lastEmailReceivedPosition = getLastEmailReceivedPosition();
+        lastMessageReceivedPosition = getLastMessageReceivedPosition();
         onView(withId(R.id.message_list))
                 .perform(swipeDown());
-        if (lastEmailReceivedPosition != -1) {
-            lastEmailReceivedDate = uiDevice.findObjects(textViewSelector).get(lastEmailReceivedPosition + 1).getText();
+        if (lastMessageReceivedPosition != -1) {
+            lastMessageReceivedDate = uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1).getText();
         }else{
-            lastEmailReceivedDate = "";
-            lastEmailReceivedPosition = uiDevice.findObjects(textViewSelector).size();
+            lastMessageReceivedDate = "";
+            lastMessageReceivedPosition = uiDevice.findObjects(textViewSelector).size();
         }
     }
 
-    private int getLastEmailReceivedPosition(){
+    private int getLastMessageReceivedPosition(){
         int size = uiDevice.findObjects(textViewSelector).size();
         for (int position = 0; position < size; position++) {
             String textAtPosition = uiDevice.findObjects(textViewSelector).get(position).getText();
