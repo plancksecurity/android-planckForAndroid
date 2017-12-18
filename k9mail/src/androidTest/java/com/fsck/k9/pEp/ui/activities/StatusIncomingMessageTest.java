@@ -61,7 +61,7 @@ public class StatusIncomingMessageTest {
     }
 
     @Test
-    public void pEpStatusWhenPartnerTrustedIncomingMessageReceivedIsGreen() {
+    public void pEpStatusIncomingTrustedMessageShouldBeGreen() {
         trustInPartner();
         testUtils.pressBack();
         uiDevice.waitForIdle();
