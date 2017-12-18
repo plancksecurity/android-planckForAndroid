@@ -80,7 +80,7 @@ public class StatusIncomingMessageTest {
         testUtils.fillMessage(messageTo, MESSAGE_SUBJECT, MESSAGE_BODY, false);
         testUtils.sendMessage();
         uiDevice.waitForIdle();
-        waitForMessageWithText("bot");
+        waitForMessageWithText("bot", "bot(" + messageTo + ")");
         clickLastMessageReceived();
         uiDevice.waitForIdle();
         clickMessageStatus();
@@ -139,15 +139,19 @@ public class StatusIncomingMessageTest {
         uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition).click();
     }
 
-    private void waitForMessageWithText(String textInMessage) {
-        while ((uiDevice.findObjects(textViewSelector).size() <= lastMessageReceivedPosition)
-                ||testUtils.getTextFromTextViewThatContainsText(time) != null
-                ||(testUtils.getTextFromTextViewThatContainsText(textInMessage).equals(uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition).getText())
-                &&(lastMessageReceivedDate.equals(uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition +1).getText()))
-                &&(testUtils.getTextFromTextViewThatContainsText(time).equals(uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition + 2).getText())))
-                ){
+    private void waitForMessageWithText(String textInMessage, String preview) {
+        boolean messageSubject;
+        boolean messageDate;
+        boolean messagePreview;
+        boolean emptyMessageList;
+        do{
+            messageSubject = testUtils.getTextFromTextViewThatContainsText(textInMessage).equals(uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition).getText());
+            messageDate = !(lastMessageReceivedDate.equals(uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition +1).getText()));
+            messagePreview = testUtils.getTextFromTextViewThatContainsText(preview).equals(uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition + 2).getText());
+            emptyMessageList = uiDevice.findObjects(textViewSelector).size() <= lastMessageReceivedPosition;
             uiDevice.waitForIdle();
-        }
+        }while (!(!(emptyMessageList)
+                &&(messageSubject && messageDate && messagePreview)));
     }
 
     private void getLastMessageReceived() {
