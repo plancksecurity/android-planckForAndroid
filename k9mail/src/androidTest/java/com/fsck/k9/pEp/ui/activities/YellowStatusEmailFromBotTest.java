@@ -75,7 +75,7 @@ public class YellowStatusEmailFromBotTest {
         getLastMessageRecived();
         testUtils.composseMessageButton();
         uiDevice.waitForIdle();
-        testUtils.fillEmail(emailTo, "Subject", "Message", false);
+        testUtils.fillComposeFields(emailTo, "Subject", "Message", false);
         testUtils.sendEmail();
         uiDevice.waitForIdle();
         waitForBotMessage();
@@ -101,7 +101,7 @@ public class YellowStatusEmailFromBotTest {
 
     private void fillComposeFields() {
         uiDevice.waitForIdle();
-        testUtils.fillEmail(emailTo, "Subject", "Message", false);
+        testUtils.fillComposeFields(emailTo, "Subject", "Message", false);
         onView(withId(R.id.to)).perform(typeText("randomtest@Message.is"), closeSoftKeyboard());
         uiDevice.waitForIdle();
         onView(withId(R.id.subject)).perform(longClick(), closeSoftKeyboard());
@@ -189,7 +189,7 @@ public class YellowStatusEmailFromBotTest {
     }
 
     private void yellowStatusMessageTest() {
-        testUtils.fillEmail(emailTo, "Subject", "Message", false);
+        testUtils.fillComposeFields(emailTo, "Subject", "Message", false);
         onView(withId(R.id.pEp_indicator)).perform(click());
         uiDevice.waitForIdle();
         onView(withId(R.id.my_recycler_view)).check(doesNotExist());
