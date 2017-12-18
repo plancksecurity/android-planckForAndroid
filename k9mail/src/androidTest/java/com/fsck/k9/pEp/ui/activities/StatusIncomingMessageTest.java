@@ -176,14 +176,14 @@ public class StatusIncomingMessageTest {
         return size;
     }
 
-    private static Matcher<View> withBackgroundColor(final int color) {
-        Checks.checkNotNull(color);
-        int color1 = ContextCompat.getColor(getTargetContext(),color);
+    private static Matcher<View> withBackgroundColor(final int colorId) {
+        Checks.checkNotNull(colorId);
+        int colorFromResource = ContextCompat.getColor(getTargetContext(),colorId);
         return new BoundedMatcher<View, View>(View.class) {
             @Override
             public boolean matchesSafely(View view) {
-                int color2 = ((ColorDrawable) view.getBackground()).getColor();
-                return color1 == (color2);
+                int backGroundColor = ((ColorDrawable) view.getBackground()).getColor();
+                return colorFromResource == backGroundColor;
             }
             @Override
             public void describeTo(Description description) {
