@@ -37,9 +37,12 @@ import static org.hamcrest.Matchers.allOf;
 
 public class StatusIncomingMessageTest {
 
+    private static final String HOST = "test.pep-security.net";
+    private static final String MESSAGE_SUBJECT = "Subject";
+    private static final String MESSAGE_BODY = "Message";
+
     private UiDevice uiDevice;
     private TestUtils testUtils;
-    private static final String HOST = "test.pep-security.net";
     private String messageTo;
     private String lastEmailReceivedDate;
     private int lastEmailReceivedPosition;
@@ -72,7 +75,7 @@ public class StatusIncomingMessageTest {
         getLastEmailReceived();
         testUtils.composeMessageButton();
         uiDevice.waitForIdle();
-        testUtils.fillEmail(messageTo, "Subject", "Message", false);
+        testUtils.fillEmail(messageTo, MESSAGE_SUBJECT, MESSAGE_BODY, false);
         testUtils.sendEmail();
         uiDevice.waitForIdle();
         waitForMessageWithText("bot");
@@ -106,7 +109,7 @@ public class StatusIncomingMessageTest {
 
     private void fillEmail(){
         uiDevice.waitForIdle();
-        testUtils.fillEmail(messageTo, "Subject", "Message", false);
+        testUtils.fillEmail(messageTo, MESSAGE_SUBJECT, MESSAGE_BODY, false);
         uiDevice.waitForIdle();
         onView(withId(R.id.subject)).perform(longClick(), closeSoftKeyboard());
         uiDevice.waitForIdle();
