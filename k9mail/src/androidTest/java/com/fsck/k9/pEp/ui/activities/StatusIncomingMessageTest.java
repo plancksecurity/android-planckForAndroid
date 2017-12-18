@@ -45,7 +45,7 @@ public class StatusIncomingMessageTest {
     private String messageTo;
     private String lastEmailReceivedDate;
     private int lastEmailReceivedPosition;
-    private BySelector selector;
+    private BySelector textViewSelector;
 
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
@@ -55,7 +55,7 @@ public class StatusIncomingMessageTest {
         uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(uiDevice);
         testUtils.increaseTimeoutWait();
-        selector = By.clazz("android.widget.TextView");
+        textViewSelector = By.clazz("android.widget.TextView");
         messageTo = String.valueOf(new Date().getTime()) + "@" + HOST;
         testUtils.startActivity();
     }
@@ -133,13 +133,13 @@ public class StatusIncomingMessageTest {
 
     private void clickLastEmailReceived() {
         uiDevice.waitForIdle();
-        uiDevice.findObjects(selector).get(lastEmailReceivedPosition).click();
+        uiDevice.findObjects(textViewSelector).get(lastEmailReceivedPosition).click();
     }
 
     private void waitForEmailWithText(String textInEmail) {
-        while ((uiDevice.findObjects(selector).size() <= lastEmailReceivedPosition)
-                ||(testUtils.getTextFromTextViewThatContainsText(textInEmail).equals(uiDevice.findObjects(selector).get(lastEmailReceivedPosition).getText())
-                &&(lastEmailReceivedDate.equals(uiDevice.findObjects(selector).get(lastEmailReceivedPosition +1).getText())))
+        while ((uiDevice.findObjects(textViewSelector).size() <= lastEmailReceivedPosition)
+                ||(testUtils.getTextFromTextViewThatContainsText(textInEmail).equals(uiDevice.findObjects(textViewSelector).get(lastEmailReceivedPosition).getText())
+                &&(lastEmailReceivedDate.equals(uiDevice.findObjects(textViewSelector).get(lastEmailReceivedPosition +1).getText())))
                 ){
             uiDevice.waitForIdle();
         }
@@ -151,20 +151,20 @@ public class StatusIncomingMessageTest {
         onView(withId(R.id.message_list))
                 .perform(swipeDown());
         if (lastEmailReceivedPosition != -1) {
-            lastEmailReceivedDate = uiDevice.findObjects(selector).get(lastEmailReceivedPosition + 1).getText();
+            lastEmailReceivedDate = uiDevice.findObjects(textViewSelector).get(lastEmailReceivedPosition + 1).getText();
         }else{
             lastEmailReceivedDate = "";
-            lastEmailReceivedPosition = uiDevice.findObjects(selector).size();
+            lastEmailReceivedPosition = uiDevice.findObjects(textViewSelector).size();
         }
     }
 
     private int getLastEmailReceivedPosition(){
-        int size = uiDevice.findObjects(selector).size();
+        int size = uiDevice.findObjects(textViewSelector).size();
         for (int position = 0; position < size; position++) {
-            String textAtPosition = uiDevice.findObjects(selector).get(position).getText();
+            String textAtPosition = uiDevice.findObjects(textViewSelector).get(position).getText();
             if (textAtPosition != null && textAtPosition.contains("@")){
                 position++;
-                while (uiDevice.findObjects(selector).get(position).getText() == null){
+                while (uiDevice.findObjects(textViewSelector).get(position).getText() == null){
                     position++;
                     if (position >= size){
                         return -1;
