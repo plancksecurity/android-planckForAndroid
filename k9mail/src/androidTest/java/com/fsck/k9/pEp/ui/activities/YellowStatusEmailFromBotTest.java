@@ -95,8 +95,8 @@ public class YellowStatusEmailFromBotTest {
         clickMailStatus();
         testUtils.doWaitForResource(R.id.my_recycler_view);
         uiDevice.waitForIdle();
-        onView(withRecyclerView(R.id.my_recycler_view).atPosition(0)).check(matches(withBackgroundColor(R.color.pep_no_color)));
-        onView(withRecyclerView(R.id.my_recycler_view).atPosition(1)).check(matches(withBackgroundColor(R.color.pep_yellow)));
+        onView(withRecyclerView(R.id.my_recycler_view).atPosition(0)).check(matches(withBackgroundColor(R.color.pep_yellow)));
+        onView(withRecyclerView(R.id.my_recycler_view).atPosition(1)).check(matches(withBackgroundColor(R.color.pep_no_color)));
     }
 
     private void fillComposeFields() {
