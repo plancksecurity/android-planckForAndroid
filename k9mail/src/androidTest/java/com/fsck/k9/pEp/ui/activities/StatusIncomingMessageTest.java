@@ -82,10 +82,9 @@ public class StatusIncomingMessageTest {
         onView(withId(R.id.confirmTrustWords)).perform(click());
         testUtils.pressBack();
         assertMessageStatus(Rating.pEpRatingTrusted.value);
-
     }
 
-    private void assertIncomingTrustedPartnerMessageIsGreen(){
+    private void assertIncomingTrustedPartnerMessageIsGreen() {
         testUtils.composeMessageButton();
         fillMessage();
         uiDevice.waitForIdle();
@@ -96,14 +95,14 @@ public class StatusIncomingMessageTest {
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(0)).check(matches(withBackgroundColor(R.color.pep_green)));
     }
 
-    private void assertMessageStatus(int status){
+    private void assertMessageStatus(int status) {
         uiDevice.waitForIdle();
         clickMessageStatus();
         uiDevice.waitForIdle();
         onView(withId(R.id.pEpTitle)).check(matches(withText(testUtils.getResourceString(R.array.pep_title, status))));
     }
 
-    private void fillMessage(){
+    private void fillMessage() {
         uiDevice.waitForIdle();
         testUtils.fillMessage(messageTo, MESSAGE_SUBJECT, MESSAGE_BODY, false);
         uiDevice.waitForIdle();
@@ -132,14 +131,14 @@ public class StatusIncomingMessageTest {
         boolean messageDate;
         boolean messagePreview;
         boolean emptyMessageList;
-        do{
+        do {
             messageSubject = testUtils.getTextFromTextViewThatContainsText(textInMessage).equals(uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition).getText());
-            messageDate = !(lastMessageReceivedDate.equals(uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition +1).getText()));
+            messageDate = !(lastMessageReceivedDate.equals(uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1).getText()));
             messagePreview = testUtils.getTextFromTextViewThatContainsText(preview).equals(uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition + 2).getText());
             emptyMessageList = uiDevice.findObjects(textViewSelector).size() <= lastMessageReceivedPosition;
             uiDevice.waitForIdle();
-        }while (!(!(emptyMessageList)
-                &&(messageSubject && messageDate && messagePreview)));
+        } while (!(!(emptyMessageList)
+                && (messageSubject && messageDate && messagePreview)));
     }
 
     private void getLastMessageReceived() {
@@ -149,21 +148,21 @@ public class StatusIncomingMessageTest {
                 .perform(swipeDown());
         if (lastMessageReceivedPosition != -1) {
             lastMessageReceivedDate = uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1).getText();
-        }else{
+        } else {
             lastMessageReceivedDate = "";
             lastMessageReceivedPosition = uiDevice.findObjects(textViewSelector).size();
         }
     }
 
-    private int getLastMessageReceivedPosition(){
+    private int getLastMessageReceivedPosition() {
         int size = uiDevice.findObjects(textViewSelector).size();
         for (int position = 0; position < size; position++) {
             String textAtPosition = uiDevice.findObjects(textViewSelector).get(position).getText();
-            if (textAtPosition != null && textAtPosition.contains("@")){
+            if (textAtPosition != null && textAtPosition.contains("@")) {
                 position++;
-                while (uiDevice.findObjects(textViewSelector).get(position).getText() == null){
+                while (uiDevice.findObjects(textViewSelector).get(position).getText() == null) {
                     position++;
-                    if (position >= size){
+                    if (position >= size) {
                         return -1;
                     }
                 }
@@ -175,13 +174,14 @@ public class StatusIncomingMessageTest {
 
     private static Matcher<View> withBackgroundColor(final int colorId) {
         Checks.checkNotNull(colorId);
-        int colorFromResource = ContextCompat.getColor(getTargetContext(),colorId);
+        int colorFromResource = ContextCompat.getColor(getTargetContext(), colorId);
         return new BoundedMatcher<View, View>(View.class) {
             @Override
             public boolean matchesSafely(View view) {
                 int backGroundColor = ((ColorDrawable) view.getBackground()).getColor();
                 return colorFromResource == backGroundColor;
             }
+
             @Override
             public void describeTo(Description description) {
 
