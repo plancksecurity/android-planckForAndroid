@@ -34,6 +34,7 @@ import org.pEp.jniadapter.Rating;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -149,18 +150,18 @@ class TestUtils {
         return DESCRIPTION;
     }
 
-    void fillMessage(String to, String subject, String message, boolean attachFilesToMessage){
+    void fillMessage(BasicMessage inputMessage, boolean attachFilesToMessage){
         doWait("to");
         device.waitForIdle();
         device.findObject(By.res(APP_ID, "to")).longClick();
         device.waitForIdle();
         device.pressKeyCode(KeyEvent.KEYCODE_DEL);
         device.waitForIdle();
-        onView(withId(R.id.to)).perform(typeText(to), closeSoftKeyboard());
+        onView(withId(R.id.to)).perform(typeText(inputMessage.getTo()), closeSoftKeyboard());
         device.findObject(By.res(APP_ID, "subject")).click();
-        device.findObject(By.res(APP_ID, "subject")).setText(subject);
+        device.findObject(By.res(APP_ID, "subject")).setText(inputMessage.getSubject());
         device.findObject(By.res(APP_ID, "message_content")).click();
-        device.findObject(By.res(APP_ID, "message_content")).setText(message);
+        device.findObject(By.res(APP_ID, "message_content")).setText(inputMessage.getMessage());
         Espresso.closeSoftKeyboard();
         if (attachFilesToMessage) {
             String fileName = "ic_test";
@@ -282,28 +283,28 @@ class TestUtils {
     }
 
     void testStatusEmpty(){
-        checkStatus(Rating.pEpRatingUndefined.value);
+        checkStatus(Rating.pEpRatingUndefined);
         Espresso.pressBack();
     }
 
-    void testStatusMail(String to, String subject, String message, int status){
-        fillMessage(to, subject, message, false);
+    void testStatusMail(BasicMessage inputMessage, BasicIdentity expectedIdentity){
+        fillMessage(inputMessage, false);
         device.waitForIdle();
-        checkStatus(status);
+        checkStatus(expectedIdentity.getRating());
         Espresso.pressBack();
     }
 
-    void testStatusMailAndListMail(String to, String subject, String message, int status, String messageFrom){
-        fillMessage(to, subject, message, false);
+    void testStatusMailAndListMail(BasicMessage inputMessage, BasicIdentity expectedIdentity) {
+        fillMessage(inputMessage, false);
         device.waitForIdle();
-        checkStatus(status);
-        onView(withText(messageFrom)).check(doesNotExist());
+        checkStatus(expectedIdentity.getRating());
+        onView(withText(expectedIdentity.getAddress())).check(doesNotExist());
         Espresso.pressBack();
     }
 
-    public void checkStatus(int status){
+    public void checkStatus(Rating rating){
         onView(withId(R.id.pEp_indicator)).perform(click());
-        onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
+        onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, rating.value))));
     }
 
     public String getTextFromTextViewThatContainsText(String text){
@@ -396,4 +397,63 @@ class TestUtils {
 
     @NonNull
     private String getPassword(){return  BuildConfig.PEP_TEST_EMAIL_PASSWORD;}
+
+    public static class BasicMessage {
+        String from;
+        String message;
+        String subject;
+        String to;
+
+        BasicMessage(String from, String message, String subject, String to) {
+            this.from = from;
+            this.message = message;
+            this.subject = subject;
+            this.to = to;
+        }
+
+        BasicMessage(String from, String message, String subject) {
+            this.from = from;
+            this.message = message;
+            this.subject = subject;
+        }
+
+        public String getFrom() {
+            return from;
+        }
+
+        public String getTo() {
+            return to;
+        }
+
+        public String getSubject() {
+            return subject;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+    }
+
+    public static class BasicIdentity {
+        Rating rating;
+        String address;
+
+        BasicIdentity(Rating rating, String address){
+            this.rating = rating;
+            this.address = address;
+        }
+
+        public Rating getRating() {
+            return rating;
+        }
+
+        public String getAddress() {
+            return address;
+        }
+    }
+
+    private class SameStatusdentities {
+        List<String> addresses;
+        Rating rating;
+    }
 }
