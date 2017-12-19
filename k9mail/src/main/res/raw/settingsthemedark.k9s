@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<k9settings version="44" format="1">
+  <global>
+    <value key="animations">true</value>
+    <value key="attachmentdefaultpath">/storage/emulated/0/Download</value>
+    <value key="backgroundOperations">WHEN_CHECKED_AUTO_SYNC</value>
+    <value key="changeRegisteredNameColor">false</value>
+    <value key="confirmDelete">false</value>
+    <value key="confirmDeleteStarred">false</value>
+    <value key="confirmSpam">false</value>
+    <value key="confirmMarkAllRead">true</value>
+    <value key="countSearchMessages">true</value>
+    <value key="enableDebugLogging">false</value>
+    <value key="enableSensitiveLogging">false</value>
+    <value key="fontSizeMessageComposeInput">medium</value>
+    <value key="fontSizeMessageViewTime" />
+    <value key="gesturesEnabled">false</value>
+    <value key="hideSpecialAccounts">false</value>
+    <value key="language">default</value>
+    <value key="measureAccounts">true</value>
+    <value key="messageListCheckboxes">false</value>
+    <value key="messageListPreviewLines">2</value>
+    <value key="messageListStars">true</value>
+    <value key="messageViewFixedWidthFont">false</value>
+    <value key="messageViewReturnToList">false</value>
+    <value key="messageViewShowNext">false</value>
+    <value key="quietTimeEnabled">false</value>
+    <value key="quietTimeEnds">7:00</value>
+    <value key="quietTimeStarts">21:00</value>
+    <value key="registeredNameColor">#00008f</value>
+    <value key="showContactName">false</value>
+    <value key="showCorrespondentNames">true</value>
+    <value key="sortTypeEnum">SORT_DATE</value>
+    <value key="sortAscending">false</value>
+    <value key="startIntegratedInbox">false</value>
+    <value key="theme">dark</value>
+    <value key="messageViewTheme">use_global</value>
+    <value key="useVolumeKeysForListNavigation">false</value>
+    <value key="useVolumeKeysForNavigation">false</value>
+    <value key="wrapFolderNames">false</value>
+    <value key="notificationHideSubject">NEVER</value>
+    <value key="useBackgroundAsUnreadIndicator">true</value>
+    <value key="threadedView">true</value>
+    <value key="splitViewMode">NEVER</value>
+    <value key="messageComposeTheme">use_global</value>
+    <value key="fixedMessageViewTheme">true</value>
+    <value key="showContactPicture">true</value>
+    <value key="autofitWidth">true</value>
+    <value key="colorizeMissingContactPictures">true</value>
+    <value key="messageViewDeleteActionVisible">true</value>
+    <value key="messageViewArchiveActionVisible">false</value>
+    <value key="messageViewMoveActionVisible">false</value>
+    <value key="messageViewCopyActionVisible">false</value>
+    <value key="messageViewSpamActionVisible">false</value>
+    <value key="fontSizeMessageViewContentPercent">100</value>
+    <value key="hideUserAgent">false</value>
+    <value key="hideTimeZone">false</value>
+    <value key="lockScreenNotificationVisibility">MESSAGE_COUNT</value>
+    <value key="confirmDeleteFromNotification">true</value>
+    <value key="messageListSenderAboveSubject">false</value>
+    <value key="notificationQuickDelete">NEVER</value>
+    <value key="notificationDuringQuietTimeEnabled">true</value>
+    <value key="confirmDiscardMessage">true</value>
+    <value key="pgpInlineDialogCounter">0</value>
+  </global>
+
+</k9settings>
