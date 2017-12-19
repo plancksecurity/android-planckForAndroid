@@ -40,7 +40,7 @@ public class AttachFilesToEmailTest {
         testUtils.increaseTimeoutWait();
         testUtils.createAccount(isGmail);
         testUtils.composeMessageButton();
-        testUtils.fillMessage(EMAIL, "Subject", "Message", true);
+        testUtils.fillMessage(new TestUtils.BasicMessage("", "Subject", "Message", EMAIL), true);
         testUtils.sendMessage();
         testUtils.pressBack();
         testUtils.removeLastAccount();
