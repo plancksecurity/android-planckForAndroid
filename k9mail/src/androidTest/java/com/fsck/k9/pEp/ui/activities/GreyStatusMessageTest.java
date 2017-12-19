@@ -45,8 +45,11 @@ public class GreyStatusMessageTest {
         testUtils.createAccount(isGmail);
         testUtils.composeMessageButton();
         testUtils.testStatusEmpty();
-        testUtils.testStatusMail(EMAIL, "Subject", "Message", Rating.pEpRatingUnencrypted.value);
-        testUtils.testStatusMail("", "", "", Rating.pEpRatingUndefined.value);
-        testUtils.testStatusMail(EMAIL, "Subject", "Message", Rating.pEpRatingUnencrypted.value);
+        testUtils.testStatusMail(new TestUtils.BasicMessage("", "Subject", "Message", EMAIL),
+                 new TestUtils.BasicIdentity(Rating.pEpRatingUnencrypted, ""));
+        testUtils.testStatusMail(new TestUtils.BasicMessage("", "", "", ""),
+                 new TestUtils.BasicIdentity(Rating.pEpRatingUndefined, ""));
+        testUtils.testStatusMail(new TestUtils.BasicMessage("", "Subject", "Message", EMAIL),
+                new TestUtils.BasicIdentity(Rating.pEpRatingUnencrypted, ""));
     }
 }
