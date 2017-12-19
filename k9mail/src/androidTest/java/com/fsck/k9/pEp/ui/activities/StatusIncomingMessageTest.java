@@ -74,10 +74,8 @@ public class StatusIncomingMessageTest {
         testUtils.fillMessage(messageTo, MESSAGE_SUBJECT, MESSAGE_BODY, false);
         testUtils.sendMessage();
         uiDevice.waitForIdle();
-        waitForMessageWithText("bot", "bot(" + messageTo + ")");
+        waitForMessageWithText("bot", "bot (" + messageTo + ")");
         clickLastMessageReceived();
-        uiDevice.waitForIdle();
-        clickMessageStatus();
         assertMessageStatus(Rating.pEpRatingReliable.value);
         uiDevice.waitForIdle();
         onView(withId(R.id.handshake_button_text)).perform(click());
@@ -99,7 +97,9 @@ public class StatusIncomingMessageTest {
     }
 
     private void assertMessageStatus(int status){
-        onView(withId(R.id.tvPep)).perform(click());
+        uiDevice.waitForIdle();
+        clickMessageStatus();
+        uiDevice.waitForIdle();
         onView(withId(R.id.pEpTitle)).check(matches(withText(testUtils.getResourceString(R.array.pep_title, status))));
     }
 
