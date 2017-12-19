@@ -39,10 +39,13 @@ public class GreenStatusEmailTest  {
         testUtils.testStatusEmpty();
         testUtils.doWait();
         messageFrom = testUtils.getTextFromTextViewThatContainsText("@");
-        testUtils.testStatusMailAndListMail(messageFrom, "Subject", "Message", Rating.pEpRatingTrusted.value, messageFrom);
+        testUtils.testStatusMailAndListMail(new TestUtils.BasicMessage(messageFrom, "Subject", "Message", messageFrom) ,
+                new TestUtils.BasicIdentity(Rating.pEpRatingTrusted, messageFrom));
         testUtils.doWait();
-        testUtils.testStatusMail("", "", "", Rating.pEpRatingUndefined.value);
+        testUtils.testStatusMail(new TestUtils.BasicMessage("","","", ""),
+                new TestUtils.BasicIdentity(Rating.pEpRatingUndefined, ""));
         testUtils.doWait();
-        testUtils.testStatusMailAndListMail(messageFrom, "Subject", "Message", Rating.pEpRatingTrusted.value, messageFrom);
+        testUtils.testStatusMailAndListMail(new TestUtils.BasicMessage(messageFrom, "Subject", "Message", messageFrom) ,
+                new TestUtils.BasicIdentity(Rating.pEpRatingTrusted, messageFrom));
     }
 }
