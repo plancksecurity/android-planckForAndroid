@@ -71,7 +71,7 @@ public class StatusIncomingMessageTest {
         getLastMessageReceived();
         testUtils.composeMessageButton();
         uiDevice.waitForIdle();
-        testUtils.fillMessage(messageTo, MESSAGE_SUBJECT, MESSAGE_BODY, false);
+        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         testUtils.sendMessage();
         uiDevice.waitForIdle();
         waitForMessageWithText("bot", "bot (" + messageTo + ")");
@@ -104,7 +104,7 @@ public class StatusIncomingMessageTest {
 
     private void fillMessage() {
         uiDevice.waitForIdle();
-        testUtils.fillMessage(messageTo, MESSAGE_SUBJECT, MESSAGE_BODY, false);
+        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         uiDevice.waitForIdle();
         onView(withId(R.id.subject)).perform(longClick(), closeSoftKeyboard());
         uiDevice.waitForIdle();
