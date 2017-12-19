@@ -411,12 +411,6 @@ class TestUtils {
             this.to = to;
         }
 
-        BasicMessage(String from, String message, String subject) {
-            this.from = from;
-            this.message = message;
-            this.subject = subject;
-        }
-
         public String getFrom() {
             return from;
         }
