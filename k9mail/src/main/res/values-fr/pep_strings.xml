@@ -27,7 +27,7 @@
     <string name="pep_partner_format">Partenaire\n%1$s</string>
     <string name="pep_complete_myself_format">Moi même\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_myself_format">Moi même\n%1$s</string>
-    <string name="pep_force_unprotected">Disable protection</string>Désactiver protection
+    <string name="pep_force_unprotected">Désactiver la protection</string>Désactiver protection
     <!--<string name="pep_receivedSecretKey">Received this Secret Key:</string>-->
     <!--<string name="pep_username">User Name</string>-->
     <!--<string name="pep_userAddress">User Address</string>-->
@@ -46,14 +46,14 @@
     <string name="key_list_title">Clefs disponibles</string>
     <string name="pep_add_device_ask_trustwords">Vous êtes sur le point d\'ajouter un appareil à votre groupe d\'appareils p≡p. Veuillez confirmer en vérifiant les Trustwords suivants.</string>
     <string name="pep_device_group">Appareils liées par p≡p</string>
-    <string name="handshake_reset_dialog_message">Attention: Ce correspondant a auparavant été marqué comme suspect. Etes-vous certain de vouloir procéder a un nouveau Handshake?</string>
+    <string name="handshake_reset_dialog_message">Attention: Ce correspondant a auparavant été marqué comme indigne de confiance. Êtes-vous certain de vouloir procéder a un nouveau Handshake?</string>
     <string name="pep_gpg_compatibility">Compatibilité OpenPGP</string>
-    <string name="crash_toast_text">Oops, something went wrong</string>
-    <string name="advanced_options">Advanced options</string>
-    <string name="basic_options">Basic options</string>
+    <string name="crash_toast_text">Oups, un plantage a eu lieu</string>
+    <string name="advanced_options">Options avancées</string>
+    <string name="basic_options">Options basiques</string>
     <string name="pep_enable_auto_download">Decrypt messages</string>
-    <string name="pep_enable_sync_account">Synchronize this account</string>
-    <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
+    <string name="pep_enable_sync_account">Synchroniser ce compte</string>
+    <string name="synchronize_these_accounts_between_my_devices">Synchronise ces comptes entre mes appareils</string>
 
     <string-array name="pep_title">
         <item>Indéterminé<!--pEpRatingUndefined--></item>
