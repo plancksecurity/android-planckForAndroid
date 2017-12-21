@@ -31,6 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+import org.pEp.jniadapter.Rating;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
@@ -51,12 +52,16 @@ import static org.hamcrest.Matchers.allOf;
 @RunWith(AndroidJUnit4.class)
 public class BackButtonDeviceAfterHandshakeButtonPressedTest {
 
+    private static final String HOST = "test.pep-security.net";
+    private static final String MESSAGE_SUBJECT = "Subject";
+    private static final String MESSAGE_BODY = "Message";
+
     private UiDevice uiDevice;
     private TestUtils testUtils;
-    private String emailTo = "random@test.pep-security.net";
+    private String messageTo;
     private String lastMessageReceivedDate;
     private int lastMessageReceivedPosition;
-    private BySelector selector;
+    private BySelector textViewSelector;
 
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
@@ -66,100 +71,92 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
         uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(uiDevice);
         testUtils.increaseTimeoutWait();
-        selector = By.clazz("android.widget.TextView");
+        textViewSelector = By.clazz("android.widget.TextView");
+        messageTo = Long.toString(System.currentTimeMillis()) + "@" + HOST;
+        //messageTo = "test35" + "@" + HOST;
         testUtils.startActivity();
     }
 
     @Test
     public void backButtonDeviceAfterHandshakeButtonPressed(){
+        //testUtils.createAccount(false);
         sendMessages();
-        waitForBotMessage();
-        clickBotMessage();
-        clickReplayMessage();
-        clickMailStatus();
-        checkBotMessageColor();
+        uiDevice.waitForIdle();
+        clickLastMessageReceived();
+        assertMessageStatus(Rating.pEpRatingReliable.value);
+        uiDevice.waitForIdle();
+        onView(withId(R.id.handshake_button_text)).perform(click());
+        uiDevice.waitForIdle();
+        onView(withId(R.id.confirmTrustWords)).perform(click());
+        testUtils.pressBack();
+        testUtils.pressBack();
+    }
+
+    private void clickLastMessageReceived() {
+        uiDevice.waitForIdle();
+        uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition).click();
     }
 
     public void sendMessages() {
-        getLastMessageRecived();
-        testUtils.composseMessageButton();
         uiDevice.waitForIdle();
         for (int messages = 0; messages < 3; messages ++) {
-            testUtils.fillComposeFields(emailTo, "Subject", "Message", false);
-            testUtils.sendEmail();
+            getLastMessageReceived();
+            testUtils.composeMessageButton();
             uiDevice.waitForIdle();
-        }
-    }
-
-    public static RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
-
-        return new RecyclerViewMatcher(recyclerViewId);
-    }
-
-    private void goBackToMessageList() {
-        uiDevice.waitForIdle();
-        testUtils.pressBack();
-        uiDevice.waitForIdle();
-        testUtils.pressBack();
-        uiDevice.waitForIdle();
-        testUtils.doWaitForObject("android.widget.Button");
-        onView(withText(R.string.discard_action)).perform(click());
-        uiDevice.waitForIdle();
-        testUtils.pressBack();
-        uiDevice.waitForIdle();
-    }
-
-    private void checkBotMessageColor() {
-        testUtils.doWaitForResource(R.id.toolbar_container);
-        uiDevice.waitForIdle();
-        onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(R.color.pep_yellow)));
-    }
-
-    private void clickMailStatus() {
-        uiDevice.waitForIdle();
-        onView(withId(R.id.pEp_indicator)).perform(click());
-        uiDevice.waitForIdle();
-    }
-
-    private void clickReplayMessage() {
-        uiDevice.waitForIdle();
-        onView(withId(R.id.reply_message)).perform(click());
-    }
-
-    private void clickBotMessage() {
-        uiDevice.waitForIdle();
-        uiDevice.findObjects(selector).get(lastMessageReceivedPosition).click();
-    }
-
-    private void waitForBotMessage() {
-        while ((uiDevice.findObjects(selector).size() <= lastMessageReceivedPosition)
-                || (testUtils.getTextFromTextviewThatContainsText("bot").equals(uiDevice.findObjects(selector).get(lastMessageReceivedPosition).getText())
-                && (lastMessageReceivedDate.equals(uiDevice.findObjects(selector).get(lastMessageReceivedPosition + 1).getText())))
-                ) {
+            testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
+            testUtils.sendMessage();
             uiDevice.waitForIdle();
+            waitForMessageWithText("bot", "bot (" + messageTo + ")");
         }
     }
 
-    private void getLastMessageRecived() {
+    private void assertMessageStatus(int status) {
         uiDevice.waitForIdle();
-        lastMessageReceivedPosition = getLastMessageReceivedPosition();
-        onView(withId(R.id.message_list))
-                .perform(swipeDown());
-        if (lastMessageReceivedPosition != -1) {
-            lastMessageReceivedDate = uiDevice.findObjects(selector).get(lastMessageReceivedPosition + 1).getText();
-        } else {
-            lastMessageReceivedDate = "";
-            lastMessageReceivedPosition = uiDevice.findObjects(selector).size();
-        }
+        clickMessageStatus();
+        uiDevice.waitForIdle();
+        onView(withId(R.id.pEpTitle)).check(matches(withText(testUtils.getResourceString(R.array.pep_title, status))));
+    }
+
+    private void clickMessageStatus() {
+        uiDevice.waitForIdle();
+        onView(withId(R.id.tvPep)).perform(click());
+        uiDevice.waitForIdle();
+    }
+
+    private void waitForMessageWithText(String textInMessage, String preview) {
+        boolean messageSubject = false;
+        boolean messageDate = false;
+        boolean messagePreview = false;
+        boolean emptyMessageList;
+        do {
+            emptyMessageList = uiDevice.findObjects(textViewSelector).size() <= lastMessageReceivedPosition;
+            if (!emptyMessageList) {
+                messageSubject = testUtils.getTextFromTextViewThatContainsText(textInMessage)
+                        .equals(uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition).getText());
+                messageDate = (!(lastMessageReceivedDate
+                        .equals(uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1).getText())))
+                        || ((uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1).getText())
+                        .equals(uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition + 4).getText()));
+                messagePreview = testUtils.getTextFromTextViewThatContainsText(preview)
+                        .equals(uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition + 2).getText());
+            }
+            uiDevice.waitForIdle();
+        } while (!(!(emptyMessageList)
+                && (messageSubject && messageDate && messagePreview)));
+    }
+
+    public static UtilsPackage.RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
+
+        return new UtilsPackage.RecyclerViewMatcher(recyclerViewId);
     }
 
     public int getLastMessageReceivedPosition() {
-        int size = uiDevice.findObjects(selector).size();
+        int size = uiDevice.findObjects(textViewSelector).size();
         for (int position = 0; position < size; position++) {
-            String textAtPosition = uiDevice.findObjects(selector).get(position).getText();
+            String textAtPosition = uiDevice.findObjects(textViewSelector).get(position).getText();
             if (textAtPosition != null && textAtPosition.contains("@")) {
                 position++;
-                while (uiDevice.findObjects(selector).get(position).getText() == null) {
+                while (uiDevice.findObjects(textViewSelector).get(position).getText() == null) {
                     position++;
                     if (position >= size) {
                         return -1;
@@ -169,15 +166,6 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
             }
         }
         return size;
-    }
-
-    private void yellowStatusMessageTest() {
-        testUtils.fillComposeFields(emailTo, "Subject", "Message", false);
-        onView(withId(R.id.pEp_indicator)).perform(click());
-        uiDevice.waitForIdle();
-        onView(withId(R.id.my_recycler_view)).check(doesNotExist());
-        assertCurrentActivityIsInstanceOf(PEpTrustwords.class);
-
     }
 
     public static Matcher<View> withBackgroundColor(final int color) {
@@ -195,6 +183,19 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
 
             }
         };
+    }
+
+    private void getLastMessageReceived() {
+        uiDevice.waitForIdle();
+        lastMessageReceivedPosition = getLastMessageReceivedPosition();
+        onView(withId(R.id.message_list))
+                .perform(swipeDown());
+        if (lastMessageReceivedPosition != -1) {
+            lastMessageReceivedDate = uiDevice.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1).getText();
+        } else {
+            lastMessageReceivedDate = "";
+            lastMessageReceivedPosition = uiDevice.findObjects(textViewSelector).size();
+        }
     }
 
     public void assertCurrentActivityIsInstanceOf(Class<? extends Activity> activityClass) {
@@ -215,62 +216,5 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
             throwable.printStackTrace();
         }
         return activity[0];
-    }
-
-    public static class RecyclerViewMatcher {
-        private final int recyclerViewId;
-
-        RecyclerViewMatcher(int recyclerViewId) {
-            this.recyclerViewId = recyclerViewId;
-        }
-
-        Matcher<View> atPosition(final int position) {
-            return atPositionOnView(position, -1);
-        }
-
-        Matcher<View> atPositionOnView(final int position, final int targetViewId) {
-
-            return new TypeSafeMatcher<View>() {
-                Resources resources = null;
-                View childView;
-
-                public void describeTo(Description description) {
-                    String idDescription = Integer.toString(recyclerViewId);
-                    if (this.resources != null) {
-                        try {
-                            idDescription = this.resources.getResourceName(recyclerViewId);
-                        } catch (Resources.NotFoundException var4) {
-                            idDescription = String.format("%s (resource name not found)",
-                                    recyclerViewId);
-                        }
-                    }
-
-                    description.appendText("with id: " + idDescription);
-                }
-
-                public boolean matchesSafely(View view) {
-
-                    this.resources = view.getResources();
-
-                    if (childView == null) {
-                        RecyclerView recyclerView =
-                                view.getRootView().findViewById(recyclerViewId);
-                        if (recyclerView != null && recyclerView.getId() == recyclerViewId) {
-                            childView = recyclerView.findViewHolderForAdapterPosition(position).itemView;
-                        } else {
-                            return false;
-                        }
-                    }
-
-                    if (targetViewId == -1) {
-                        return view == childView;
-                    } else {
-                        View targetView = childView.findViewById(targetViewId);
-                        return view == targetView;
-                    }
-
-                }
-            };
-        }
     }
 }
