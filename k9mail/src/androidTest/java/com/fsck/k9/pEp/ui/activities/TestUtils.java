@@ -380,6 +380,19 @@ class TestUtils {
         return resources.getStringArray(id)[position];
     }
 
+    public void assertMessageStatus(int status) {
+        device.waitForIdle();
+        clickMessageStatus();
+        device.waitForIdle();
+        onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
+    }
+
+    public void clickMessageStatus() {
+        device.waitForIdle();
+        onView(withId(R.id.tvPep)).perform(click());
+        device.waitForIdle();
+    }
+
     public void clickLastMessageReceived() {
         device.waitForIdle();
         device.findObjects(textViewSelector).get(lastMessageReceivedPosition).click();
