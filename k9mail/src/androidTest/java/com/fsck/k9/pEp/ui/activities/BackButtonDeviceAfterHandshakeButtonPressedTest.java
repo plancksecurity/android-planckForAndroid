@@ -45,8 +45,7 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
     }
 
     @Test
-    public void backButtonDeviceAfterHandshakeButtonPressed(){
-        //testUtils.createAccount(false);
+    public void backButtonDeviceAfterHandshakeButtonPressed() {
         sendMessages();
         uiDevice.waitForIdle();
         testUtils.clickLastMessageReceived();
@@ -61,7 +60,7 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
 
     public void sendMessages() {
         uiDevice.waitForIdle();
-        for (int messages = 0; messages < 3; messages ++) {
+        for (int messages = 0; messages < 3; messages++) {
             testUtils.getLastMessageReceived();
             testUtils.composeMessageButton();
             uiDevice.waitForIdle();

@@ -441,8 +441,9 @@ class TestUtils {
                         .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition).getText());
                 messageDate = (!(lastMessageReceivedDate
                         .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1).getText())))
-                        || ((device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1).getText())
-                        .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 4).getText()));
+                        || ((device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 4) != null)
+                            &&(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1).getText())
+                            .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 4).getText()));
                 messagePreview = getTextFromTextViewThatContainsText(preview)
                         .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 2).getText());
             }

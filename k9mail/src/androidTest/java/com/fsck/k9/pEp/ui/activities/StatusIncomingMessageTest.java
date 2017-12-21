@@ -48,6 +48,7 @@ public class StatusIncomingMessageTest {
         testUtils = new TestUtils(uiDevice);
         testUtils.increaseTimeoutWait();
         messageTo = Long.toString(System.currentTimeMillis()) + "@" + HOST;
+        messageTo = "test10" + "@" + HOST;
         testUtils.startActivity();
     }
 
