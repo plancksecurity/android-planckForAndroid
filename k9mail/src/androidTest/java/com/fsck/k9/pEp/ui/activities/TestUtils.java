@@ -42,6 +42,7 @@ import static android.support.test.espresso.Espresso.openActionBarOverflowOrOpti
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.replaceText;
+import static android.support.test.espresso.action.ViewActions.swipeDown;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -67,11 +68,15 @@ class TestUtils {
     private UiDevice device;
     private Context context;
     private Resources resources;
+    private BySelector textViewSelector;
+    private String lastMessageReceivedDate;
+    private int lastMessageReceivedPosition;
 
     TestUtils(UiDevice device) {
         this.device = device;
         context = InstrumentationRegistry.getTargetContext();
         resources = context.getResources();
+        textViewSelector = By.clazz("android.widget.TextView");
     }
 
     void increaseTimeoutWait(){
@@ -373,6 +378,64 @@ class TestUtils {
 
     public String getResourceString(int id, int position) {
         return resources.getStringArray(id)[position];
+    }
+
+    public void clickLastMessageReceived() {
+        device.waitForIdle();
+        device.findObjects(textViewSelector).get(lastMessageReceivedPosition).click();
+    }
+
+    public void getLastMessageReceived() {
+        device.waitForIdle();
+        lastMessageReceivedPosition = getLastMessageReceivedPosition();
+        onView(withId(R.id.message_list))
+                .perform(swipeDown());
+        if (lastMessageReceivedPosition != -1) {
+            lastMessageReceivedDate = device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1).getText();
+        } else {
+            lastMessageReceivedDate = "";
+            lastMessageReceivedPosition = device.findObjects(textViewSelector).size();
+        }
+    }
+
+    public int getLastMessageReceivedPosition() {
+        int size = device.findObjects(textViewSelector).size();
+        for (int position = 0; position < size; position++) {
+            String textAtPosition = device.findObjects(textViewSelector).get(position).getText();
+            if (textAtPosition != null && textAtPosition.contains("@")) {
+                position++;
+                while (device.findObjects(textViewSelector).get(position).getText() == null) {
+                    position++;
+                    if (position >= size) {
+                        return -1;
+                    }
+                }
+                return position;
+            }
+        }
+        return size;
+    }
+
+    public void waitForMessageWithText(String textInMessage, String preview) {
+        boolean messageSubject = false;
+        boolean messageDate = false;
+        boolean messagePreview = false;
+        boolean emptyMessageList;
+        do {
+            emptyMessageList = device.findObjects(textViewSelector).size() <= lastMessageReceivedPosition;
+            if (!emptyMessageList) {
+                messageSubject = getTextFromTextViewThatContainsText(textInMessage)
+                        .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition).getText());
+                messageDate = (!(lastMessageReceivedDate
+                        .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1).getText())))
+                        || ((device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1).getText())
+                        .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 4).getText()));
+                messagePreview = getTextFromTextViewThatContainsText(preview)
+                        .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 2).getText());
+            }
+            device.waitForIdle();
+        } while (!(!(emptyMessageList)
+                && (messageSubject && messageDate && messagePreview)));
     }
 
     void startActivity(){
