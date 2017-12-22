@@ -67,7 +67,7 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
             testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
             testUtils.sendMessage();
             uiDevice.waitForIdle();
-            testUtils.waitForMessageWithText("bot", "bot (" + messageTo + ")");
+            testUtils.waitForMessageWithText("p≡p", "p≡pbot (" + messageTo + ")");
         }
     }
 }
