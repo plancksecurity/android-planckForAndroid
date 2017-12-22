@@ -49,7 +49,7 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
         sendMessages();
         uiDevice.waitForIdle();
         testUtils.clickLastMessageReceived();
-        testUtils.assertMessageStatus(Rating.pEpRatingReliable.value);
+        testUtils.assertMessageStatus(Rating.pEpRatingUnencrypted.value);
         uiDevice.waitForIdle();
         onView(withId(R.id.handshake_button_text)).perform(click());
         uiDevice.waitForIdle();
