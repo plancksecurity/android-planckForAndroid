@@ -69,14 +69,17 @@ class TestUtils {
     private Context context;
     private Resources resources;
     private BySelector textViewSelector;
-    private String lastMessageReceivedDate;
+    private String messageReceivedDate[];
     private int lastMessageReceivedPosition;
+    private int messagesToRead;
 
     TestUtils(UiDevice device) {
         this.device = device;
         context = InstrumentationRegistry.getTargetContext();
         resources = context.getResources();
         textViewSelector = By.clazz("android.widget.TextView");
+        messagesToRead = 6;
+        messageReceivedDate = new String[messagesToRead];
     }
 
     void increaseTimeoutWait(){
@@ -400,13 +403,20 @@ class TestUtils {
 
     public void getLastMessageReceived() {
         device.waitForIdle();
-        lastMessageReceivedPosition = getLastMessageReceivedPosition();
         onView(withId(R.id.message_list))
                 .perform(swipeDown());
+        device.waitForIdle();
+        lastMessageReceivedPosition = getLastMessageReceivedPosition();
+        int size = device.findObjects(textViewSelector).size();
+        int message = 0;
         if (lastMessageReceivedPosition != -1) {
-            lastMessageReceivedDate = device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1).getText();
-        } else {
-            lastMessageReceivedDate = "";
+            for (; (message < messagesToRead) && (lastMessageReceivedPosition + message * 3 < size); message++){
+                messageReceivedDate[message] = device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1 + message * 3).getText();
+            }
+             } else {
+            for (; message < messagesToRead; message ++) {
+                messageReceivedDate[message] = "";
+            }
             lastMessageReceivedPosition = device.findObjects(textViewSelector).size();
         }
     }
@@ -430,26 +440,35 @@ class TestUtils {
     }
 
     public void waitForMessageWithText(String textInMessage, String preview) {
-        boolean messageSubject = false;
-        boolean messageDate = false;
-        boolean messagePreview = false;
+        boolean messageSubject;
+        boolean messagePreview;
         boolean emptyMessageList;
-        do {
-            emptyMessageList = device.findObjects(textViewSelector).size() <= lastMessageReceivedPosition;
-            if (!emptyMessageList) {
+        emptyMessageList = device.findObjects(textViewSelector).size() <= lastMessageReceivedPosition;
+        if (!emptyMessageList){
+            do {
+                boolean newMessage = false;
+                do {
+                    device.waitForIdle();
+                    int size = device.findObjects(textViewSelector).size();
+                    for (int message = 0; (message < messagesToRead) && (lastMessageReceivedPosition + message * 3 < size); message++) {
+                        if (!(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1 + message * 3).getText())
+                                .equals(messageReceivedDate[message])) {
+                            newMessage = true;
+                            break;
+                        }
+                    }
+                } while (!newMessage);
+                device.waitForIdle();
                 messageSubject = getTextFromTextViewThatContainsText(textInMessage)
                         .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition).getText());
-                messageDate = (!(lastMessageReceivedDate
-                        .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1).getText())))
-                        || ((device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 4) != null)
-                            &&(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1).getText())
-                            .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 4).getText()));
                 messagePreview = getTextFromTextViewThatContainsText(preview)
                         .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 2).getText());
+            } while (!(messageSubject && messagePreview));
+        } else{
+            while (emptyMessageList){
+                emptyMessageList = device.findObjects(textViewSelector).size() <= lastMessageReceivedPosition;
             }
-            device.waitForIdle();
-        } while (!(!(emptyMessageList)
-                && (messageSubject && messageDate && messagePreview)));
+        }
     }
 
     void startActivity(){
