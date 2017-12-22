@@ -48,7 +48,6 @@ public class StatusIncomingMessageTest {
         testUtils = new TestUtils(uiDevice);
         testUtils.increaseTimeoutWait();
         messageTo = Long.toString(System.currentTimeMillis()) + "@" + HOST;
-        messageTo = "test10" + "@" + HOST;
         testUtils.startActivity();
     }
 
@@ -69,7 +68,7 @@ public class StatusIncomingMessageTest {
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         testUtils.sendMessage();
         uiDevice.waitForIdle();
-        testUtils.waitForMessageWithText("bot", "bot (" + messageTo + ")");
+        testUtils.waitForMessageWithText("p≡p", "p≡pbot (" + messageTo + ")");
         testUtils.clickLastMessageReceived();
         testUtils.assertMessageStatus(Rating.pEpRatingReliable.value);
         uiDevice.waitForIdle();
