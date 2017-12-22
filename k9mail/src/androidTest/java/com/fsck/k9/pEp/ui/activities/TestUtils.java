@@ -82,7 +82,7 @@ class TestUtils {
         messageReceivedDate = new String[messagesToRead];
     }
 
-    void increaseTimeoutWait(){
+    void increaseTimeoutWait() {
         long waitingTime = DateUtils.SECOND_IN_MILLIS * 200;
         IdlingPolicies.setMasterPolicyTimeout(waitingTime, TimeUnit.MILLISECONDS);
         IdlingPolicies.setIdlingResourceTimeout(waitingTime, TimeUnit.MILLISECONDS);
@@ -96,7 +96,7 @@ class TestUtils {
         return resolveInfo.activityInfo.packageName;
     }
 
-    void newEmailAccount(){
+    void newEmailAccount() {
         onView(withId(R.id.account_email)).perform(typeText(getEmail()));
         onView(withId(R.id.account_password)).perform(typeText(getPassword()), closeSoftKeyboard());
         onView(withId(R.id.manual_setup)).perform(click());
@@ -110,7 +110,7 @@ class TestUtils {
         onView(withId(R.id.next)).perform(click());
     }
 
-    void gmailAccount(){
+    void gmailAccount() {
         onView(withId(R.id.account_oauth2)).perform(click());
         onView(withId(R.id.next)).perform(click());
         onView(withId(R.id.next)).perform(click());
@@ -140,11 +140,11 @@ class TestUtils {
         onView(withId(R.id.done)).perform(click());
     }
 
-    void composeMessageButton(){
+    void composeMessageButton() {
         onView(withId(R.id.fab_button_compose_message)).perform(click());
     }
 
-    void createAccount(boolean isGmail){
+    void createAccount(boolean isGmail) {
         onView(withId(R.id.skip)).perform(click());
         if (isGmail) {
             gmailAccount();
@@ -154,11 +154,11 @@ class TestUtils {
         accountDescription(DESCRIPTION, USER_NAME);
     }
 
-    String getAccountDescription(){
+    String getAccountDescription() {
         return DESCRIPTION;
     }
 
-    void fillMessage(BasicMessage inputMessage, boolean attachFilesToMessage){
+    void fillMessage(BasicMessage inputMessage, boolean attachFilesToMessage) {
         doWait("to");
         device.waitForIdle();
         device.findObject(By.res(APP_ID, "to")).longClick();
@@ -178,17 +178,17 @@ class TestUtils {
         }
     }
 
-    private void attachFiles(String fileName, String extension){
-        for (int fileNumber = 0; fileNumber<3; fileNumber++){
-            intending(not(isInternal())).respondWith(createFileForActivityResultStub(fileName+fileNumber+".png"));
+    private void attachFiles(String fileName, String extension) {
+        for (int fileNumber = 0; fileNumber < 3; fileNumber++) {
+            intending(not(isInternal())).respondWith(createFileForActivityResultStub(fileName + fileNumber + ".png"));
             device.waitForIdle();
             onView(withId(R.id.add_attachment)).perform(click());
             device.waitForIdle();
-            onView(withId(R.id.attachments)).check(matches(hasDescendant(withText(fileName+fileNumber+extension))));
+            onView(withId(R.id.attachments)).check(matches(hasDescendant(withText(fileName + fileNumber + extension))));
         }
     }
 
-    void externalAppRespondWithFile(int id){
+    void externalAppRespondWithFile(int id) {
         intending(not(isInternal()))
                 .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, insertFileIntoIntentAsData(id)));
     }
@@ -213,33 +213,33 @@ class TestUtils {
         }
     }
 
-    private Intent insertFileIntoIntentAsData(int id){
+    private Intent insertFileIntoIntentAsData(int id) {
         Uri fileUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
-                resources.getResourcePackageName(id) +"/" +
+                resources.getResourcePackageName(id) + "/" +
                 resources.getResourceTypeName(id) + "/" +
                 resources.getResourceEntryName(id));
         Intent resultData = new Intent();
         resultData.setData(fileUri);
-        return  resultData;
+        return resultData;
     }
 
-    private Intent insertFileIntoIntentAsData(String fileName){
+    private Intent insertFileIntoIntentAsData(String fileName) {
         Intent resultData = new Intent();
         File fileLocation = new File(Environment.getExternalStorageDirectory()
                 .getAbsolutePath(), fileName);
-        resultData.setData(Uri.parse( "file://"+fileLocation));
-        return  resultData;
+        resultData.setData(Uri.parse("file://" + fileLocation));
+        return resultData;
     }
 
-    void sendMessage(){
+    void sendMessage() {
         onView(withId(R.id.send)).perform(click());
     }
 
-    void pressBack(){
+    void pressBack() {
         device.pressBack();
     }
 
-    void removeLastAccount(){
+    void removeLastAccount() {
         device.waitForIdle();
         doWait("accounts_list");
         device.waitForIdle();
@@ -250,52 +250,52 @@ class TestUtils {
         clickAcceptButton();
     }
 
-    void clickAcceptButton(){
+    void clickAcceptButton() {
         doWaitForObject("android.widget.Button");
         onView(withText(R.string.okay_action)).perform(click());
     }
 
-    void clickCancelButton(){
+    void clickCancelButton() {
         doWaitForObject("android.widget.Button");
         onView(withText(R.string.cancel_action)).perform(click());
     }
 
-    public void doWaitForObject(String object){
+    public void doWaitForObject(String object) {
         boolean finish = false;
         do {
-            if (device.findObject(By.clazz(object)) != null){
+            if (device.findObject(By.clazz(object)) != null) {
                 finish = true;
             }
-        }while (!finish);
+        } while (!finish);
     }
 
-    private void selectRemoveAccount(){
+    private void selectRemoveAccount() {
         BySelector selector = By.clazz("android.widget.TextView");
-        int size= device.findObjects(selector).size();
-        while (size == 0){
+        int size = device.findObjects(selector).size();
+        while (size == 0) {
             device.waitForIdle();
             size = device.findObjects(selector).size();
         }
-        for (UiObject2 textView: device.findObjects(selector)) {
-            if (textView.getText().equals(resources.getString(R.string.remove_account_action))){
+        for (UiObject2 textView : device.findObjects(selector)) {
+            if (textView.getText().equals(resources.getString(R.string.remove_account_action))) {
                 textView.click();
                 return;
             }
         }
     }
 
-    void longClick(String viewId){
+    void longClick(String viewId) {
         UiObject2 list = device.findObject(By.res(APP_ID, viewId));
         Rect bounds = list.getVisibleBounds();
         device.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 180);
     }
 
-    void testStatusEmpty(){
+    void testStatusEmpty() {
         checkStatus(Rating.pEpRatingUndefined);
         Espresso.pressBack();
     }
 
-    void testStatusMail(BasicMessage inputMessage, BasicIdentity expectedIdentity){
+    void testStatusMail(BasicMessage inputMessage, BasicIdentity expectedIdentity) {
         fillMessage(inputMessage, false);
         device.waitForIdle();
         checkStatus(expectedIdentity.getRating());
@@ -310,70 +310,70 @@ class TestUtils {
         Espresso.pressBack();
     }
 
-    public void checkStatus(Rating rating){
+    public void checkStatus(Rating rating) {
         onView(withId(R.id.pEp_indicator)).perform(click());
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, rating.value))));
     }
 
-    public String getTextFromTextViewThatContainsText(String text){
+    public String getTextFromTextViewThatContainsText(String text) {
         BySelector selector = By.clazz("android.widget.TextView");
-        for (UiObject2 textView: device.findObjects(selector)) {
-            if (textView.getText() != null && textView.getText().contains(text)){
+        for (UiObject2 textView : device.findObjects(selector)) {
+            if (textView.getText() != null && textView.getText().contains(text)) {
                 return textView.getText();
             }
         }
         return "not found";
     }
 
-    void getActivityInstance(){
+    void getActivityInstance() {
         waitForExternalApp();
         goBackToOriginalApp();
     }
 
-    private void waitForExternalApp(){
-        while (APP_ID.equals(device.getCurrentPackageName())){
+    private void waitForExternalApp() {
+        while (APP_ID.equals(device.getCurrentPackageName())) {
             device.waitForIdle();
         }
     }
 
-    private void goBackToOriginalApp(){
-        while (!APP_ID.equals(device.getCurrentPackageName())){
+    private void goBackToOriginalApp() {
+        while (!APP_ID.equals(device.getCurrentPackageName())) {
             device.pressBack();
         }
     }
 
-    void openOptionsMenu(){
+    void openOptionsMenu() {
         openActionBarOverflowOrOptionsMenu(context);
     }
 
-    void selectFromMenu(int resource){
+    void selectFromMenu(int resource) {
         BySelector selector = By.clazz("android.widget.TextView");
-        for (UiObject2 object: device.findObjects(selector)) {
-            if (object.getText().equals(resources.getString(resource))){
+        for (UiObject2 object : device.findObjects(selector)) {
+            if (object.getText().equals(resources.getString(resource))) {
                 object.click();
                 break;
             }
         }
     }
 
-    void doWait(){
+    void doWait() {
         device.waitForIdle();
     }
 
-    void doWait(String viewId){
+    void doWait(String viewId) {
         UiObject2 waitForView = device
                 .wait(Until.findObject(By.res(APP_ID, viewId)),
                         150000);
         assertThat(waitForView, notNullValue());
     }
 
-    void doWaitForResource(int resource){
+    void doWaitForResource(int resource) {
         device.wait(Until.hasObject(By.desc(resources.getString(resource))), 1);
     }
 
-    void doWaitForAlertDialog(IntentsTestRule<SplashActivity> intent, int displayText){
+    void doWaitForAlertDialog(IntentsTestRule<SplashActivity> intent, int displayText) {
         onView(withId(intent.getActivity().getResources()
-                .getIdentifier( "alertTitle", "id", "android" )))
+                .getIdentifier("alertTitle", "id", "android")))
                 .inRoot(isDialog())
                 .check(matches(withText(displayText)))
                 .check(matches(isDisplayed()));
@@ -410,11 +410,11 @@ class TestUtils {
         int size = device.findObjects(textViewSelector).size();
         int message = 0;
         if (lastMessageReceivedPosition != -1) {
-            for (; (message < messagesToRead) && (lastMessageReceivedPosition + message * 3 < size); message++){
+            for (; (message < messagesToRead) && (lastMessageReceivedPosition + message * 3 < size); message++) {
                 messageReceivedDate[message] = device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1 + message * 3).getText();
             }
-             } else {
-            for (; message < messagesToRead; message ++) {
+        } else {
+            for (; message < messagesToRead; message++) {
                 messageReceivedDate[message] = "";
             }
             lastMessageReceivedPosition = device.findObjects(textViewSelector).size();
@@ -444,7 +444,7 @@ class TestUtils {
         boolean messagePreview;
         boolean emptyMessageList;
         emptyMessageList = device.findObjects(textViewSelector).size() <= lastMessageReceivedPosition;
-        if (!emptyMessageList){
+        if (!emptyMessageList) {
             do {
                 boolean newMessage = false;
                 do {
@@ -464,14 +464,14 @@ class TestUtils {
                 messagePreview = getTextFromTextViewThatContainsText(preview)
                         .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 2).getText());
             } while (!(messageSubject && messagePreview));
-        } else{
-            while (emptyMessageList){
+        } else {
+            while (emptyMessageList) {
                 emptyMessageList = device.findObjects(textViewSelector).size() <= lastMessageReceivedPosition;
             }
         }
     }
 
-    void startActivity(){
+    void startActivity() {
         device.pressHome();
         final String launcherPackage = getLauncherPackageName();
         assertThat(launcherPackage, notNullValue());
@@ -486,13 +486,19 @@ class TestUtils {
     }
 
     @NonNull
-    private String getEmail() {return BuildConfig.PEP_TEST_EMAIL_ADDRESS;}
+    private String getEmail() {
+        return BuildConfig.PEP_TEST_EMAIL_ADDRESS;
+    }
 
     @NonNull
-    private String getEmailServer() {return BuildConfig.PEP_TEST_EMAIL_SERVER;}
+    private String getEmailServer() {
+        return BuildConfig.PEP_TEST_EMAIL_SERVER;
+    }
 
     @NonNull
-    private String getPassword(){return  BuildConfig.PEP_TEST_EMAIL_PASSWORD;}
+    private String getPassword() {
+        return BuildConfig.PEP_TEST_EMAIL_PASSWORD;
+    }
 
     public static class BasicMessage {
         String from;
@@ -528,7 +534,7 @@ class TestUtils {
         Rating rating;
         String address;
 
-        BasicIdentity(Rating rating, String address){
+        BasicIdentity(Rating rating, String address) {
             this.rating = rating;
             this.address = address;
         }
