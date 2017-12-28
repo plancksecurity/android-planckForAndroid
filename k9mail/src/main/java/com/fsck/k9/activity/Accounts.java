@@ -1356,7 +1356,7 @@ public class Accounts extends PEpImporterActivity {
                     }
                 });
             }
-            AccountStats stats = accountStats.get(account.getUuid());
+            AccountStats stats = account != null? accountStats.get(account.getUuid()) : null;
 
             if (stats != null && account instanceof Account && stats.size >= 0) {
                 holder.email.setText(SizeFormatter.formatSize(Accounts.this, stats.size));
