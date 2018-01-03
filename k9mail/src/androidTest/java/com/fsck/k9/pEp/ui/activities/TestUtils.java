@@ -410,7 +410,7 @@ class TestUtils {
         int size = device.findObjects(textViewSelector).size();
         int message = 0;
         if (lastMessageReceivedPosition != -1) {
-            for (; (message < messagesToRead) && (lastMessageReceivedPosition + message * 3 < size); message++) {
+            for (; (message < messagesToRead) && (lastMessageReceivedPosition + 1 + message * 3 < size); message++) {
                 messageReceivedDate[message] = device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1 + message * 3).getText();
             }
         } else {
@@ -450,7 +450,7 @@ class TestUtils {
                 do {
                     device.waitForIdle();
                     int size = device.findObjects(textViewSelector).size();
-                    for (int message = 0; (message < messagesToRead) && (lastMessageReceivedPosition + message * 3 < size); message++) {
+                    for (int message = 0; (message < messagesToRead) && (lastMessageReceivedPosition + 1 + message * 3 < size); message++) {
                         if (!(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1 + message * 3).getText())
                                 .equals(messageReceivedDate[message])) {
                             newMessage = true;
