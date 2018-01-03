@@ -458,7 +458,6 @@ class TestUtils {
                         }
                     }
                 } while (!newMessage);
-                device.waitForIdle();
                 messageSubject = getTextFromTextViewThatContainsText(textInMessage)
                         .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition).getText());
                 messagePreview = getTextFromTextViewThatContainsText(preview)
