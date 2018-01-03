@@ -65,6 +65,7 @@ import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
 import com.fsck.k9.pEp.ui.listeners.FragmentPermissionListener;
 import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
+import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
@@ -804,7 +805,12 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             }
         }
 
-        PEpStatus.actionShowStatus(context, pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAdress);
+        if (pePUIArtefactCache.getRecipients().size() == 1
+                && pEpRating.value == Rating.pEpRatingReliable.value) {
+            PEpTrustwords.actionRequestHandshake(context, myAdress, 0);
+        } else {
+            PEpStatus.actionShowStatus(context, pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAdress);
+        }
     }
 
     public interface MessageViewFragmentListener {
