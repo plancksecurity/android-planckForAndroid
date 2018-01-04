@@ -36,7 +36,6 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.longClick;
-import static android.support.test.espresso.action.ViewActions.swipeDown;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -56,8 +55,6 @@ public class YellowStatusEmailFromBotTest {
     private String messageTo = "random@test.pep-security.net";
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
-    private String lastMessageReceivedDate;
-    private int lastMessageReceivedPosition;
     private BySelector selector;
 
     @Rule
@@ -74,14 +71,14 @@ public class YellowStatusEmailFromBotTest {
 
     @Test
     public void sendMessageAndAssertYellowStatusMessage() {
-        getLastMessageReceived();
+        testUtils.getLastMessageReceived();
         testUtils.composeMessageButton();
         uiDevice.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         testUtils.sendMessage();
         uiDevice.waitForIdle();
-        waitForBotMessage();
-        clickBotMessage();
+        testUtils.waitForMessageWithText("p≡p", "p≡pbot (" + messageTo + ")");
+        testUtils.clickLastMessageReceived();
         clickReplayMessage();
         clickMailStatus();
         checkBotMessageColor();
@@ -143,33 +140,6 @@ public class YellowStatusEmailFromBotTest {
     private void clickReplayMessage() {
         uiDevice.waitForIdle();
         onView(withId(R.id.reply_message)).perform(click());
-    }
-
-    private void clickBotMessage() {
-        uiDevice.waitForIdle();
-        uiDevice.findObjects(selector).get(lastMessageReceivedPosition).click();
-    }
-
-    private void waitForBotMessage() {
-        while ((uiDevice.findObjects(selector).size() <= lastMessageReceivedPosition)
-                || (testUtils.getTextFromTextViewThatContainsText("bot").equals(uiDevice.findObjects(selector).get(lastMessageReceivedPosition).getText())
-                && (lastMessageReceivedDate.equals(uiDevice.findObjects(selector).get(lastMessageReceivedPosition + 1).getText())))
-                ) {
-            uiDevice.waitForIdle();
-        }
-    }
-
-    private void getLastMessageReceived() {
-        uiDevice.waitForIdle();
-        lastMessageReceivedPosition = getLastMessageReceivedPosition();
-        onView(withId(R.id.message_list))
-                .perform(swipeDown());
-        if (lastMessageReceivedPosition != -1) {
-            lastMessageReceivedDate = uiDevice.findObjects(selector).get(lastMessageReceivedPosition + 1).getText();
-        } else {
-            lastMessageReceivedDate = "";
-            lastMessageReceivedPosition = uiDevice.findObjects(selector).size();
-        }
     }
 
     public int getLastMessageReceivedPosition() {
