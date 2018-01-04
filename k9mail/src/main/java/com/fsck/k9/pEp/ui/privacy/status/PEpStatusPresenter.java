@@ -152,7 +152,7 @@ public class PEpStatusPresenter implements Presenter {
         }
     }
 
-    public void onResult() {
+    public void onRatingChanged() {
         ArrayList<Identity> recipients = cache.getRecipients();
         identities = pEpIdentityMapper.mapRecipients(recipients);
         view.updateIdentities(identities);

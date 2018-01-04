@@ -25,11 +25,14 @@ import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.models.PEpIdentity;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
-import com.fsck.k9.pEp.ui.adapters.PEpIdentitiesAdapter;
+import com.fsck.k9.pEp.ui.handshake.ExpandablePEpIdentity;
+import com.fsck.k9.pEp.ui.handshake.TrustwordsAdapter;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
+import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -59,7 +62,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     RecyclerView recipientsView;
 
 
-    PEpIdentitiesAdapter recipientsAdapter;
+    TrustwordsAdapter recipientsAdapter;
     RecyclerView.LayoutManager recipientsLayoutManager;
 
     String sender = "";
@@ -127,18 +130,25 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         ((LinearLayoutManager) recipientsLayoutManager).setOrientation(LinearLayoutManager.VERTICAL);
         recipientsView.setLayoutManager(recipientsLayoutManager);
         recipientsView.setVisibility(View.VISIBLE);
-        recipientsAdapter = new PEpIdentitiesAdapter(preferences.getAccounts(), getOnResetGreenClickListener(), getOnResetRedClickListener(), getOnHandshakeClickListener());
-        recipientsAdapter.setIdentities(pEpIdentities);
+        List<ExpandablePEpIdentity> collection = getExpandablePEpIdentities(pEpIdentities);
+        Identity myselfIdentity = PEpUtils.createIdentity(new Address(myself), this);
+        recipientsAdapter = new TrustwordsAdapter(myselfIdentity, collection, () -> presenter.onRatingChanged(),
+                getOnResetGreenClickListener(), getOnResetRedClickListener(), getOnHandshakeClickListener(), preferences.getAccounts());
         recipientsView.setAdapter(recipientsAdapter);
         recipientsView.addItemDecoration(new SimpleDividerItemDecoration(this));
 
     }
 
     @NonNull
+    private List<ExpandablePEpIdentity> getExpandablePEpIdentities(List<PEpIdentity> pEpIdentities) {
+        return Collections.singletonList(new ExpandablePEpIdentity("pEpIdentities", pEpIdentities));
+    }
+
+    @NonNull
     private View.OnClickListener getOnHandshakeClickListener() {
         return v -> {
             int partnerPosition = ((Integer) v.getTag());
-            PEpTrustwords.actionRequestHandshake(PEpStatus.this, myself, partnerPosition);
+            recipientsAdapter.onGroupClick(partnerPosition);
         };
     }
 
@@ -176,8 +186,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
     @Override
     public void updateIdentities(List<PEpIdentity> updatedIdentities) {
-        recipientsAdapter.setIdentities(updatedIdentities);
-        recipientsAdapter.notifyDataSetChanged();
+        setupRecipients(updatedIdentities);
     }
 
     @Override
@@ -245,7 +254,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PEpTrustwords.HANDSHAKE_REQUEST) {
             if (resultCode == RESULT_OK) {
-                presenter.onResult();
+                presenter.onRatingChanged();
             }
         }
     }
