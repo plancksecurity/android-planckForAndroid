@@ -44,9 +44,9 @@ public class ImportSettingsDarkThemeTest {
         testUtils.selectFromMenu(R.string.import_export_action);
         device.waitForIdle();
         testUtils.selectFromMenu(R.string.settings_import);
-        testUtils.selectAcceptButton();
+        testUtils.clickAcceptButton();
         device.waitForIdle();
-        testUtils.selectAcceptButton();
+        testUtils.clickAcceptButton();
         device.waitForIdle();
         onView(withId(R.id.accounts_list)).perform(ViewActions.click());
         device.waitForIdle();
