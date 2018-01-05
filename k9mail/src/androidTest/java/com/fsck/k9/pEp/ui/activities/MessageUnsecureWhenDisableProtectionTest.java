@@ -41,6 +41,7 @@ public class MessageUnsecureWhenDisableProtectionTest {
         //testUtils.getLastMessageReceived();
         testUtils.composeMessageButton();
         uiDevice.waitForIdle();
+        getTextFromTextViewWithText("@");
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         testUtils.openOptionsMenu();
         testUtils.selectFromMenu(R.string.pep_force_unprotected);
@@ -49,5 +50,18 @@ public class MessageUnsecureWhenDisableProtectionTest {
         uiDevice.waitForIdle();
 
 
+    }
+
+    private void getTextFromTextViewWithText(String textToFind){
+        BySelector textViewSelector = By.clazz("android.widget.TextView");
+        int size = uiDevice.findObjects(selector).size();
+        String textInPosition;
+        for (int position = 0; position < size; position++) {
+            textInPosition = uiDevice.findObjects(textViewSelector).get(position).getText();
+            if ((textInPosition != null) && (textInPosition.contains(textToFind))) {
+                messageTo = textInPosition;
+                break;
+            }
+        }
     }
 }
