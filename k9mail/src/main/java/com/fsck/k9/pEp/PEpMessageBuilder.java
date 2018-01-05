@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.fsck.k9.mail.Body;
+import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.Part;
 import com.fsck.k9.mail.internet.MessageExtractor;
@@ -205,6 +206,11 @@ class PEpMessageBuilder {
         } catch (ParseException ignore) {
         }
 
+        if (mm.isSet(Flag.X_PEP_DISABLED)) {
+            m.setEncFormat(Message.EncFormat.None);
+        } else {
+            m.setEncFormat(Message.EncFormat.PEP);
+        }
     }
 
     private void addOptionalField(ArrayList<Pair<String, String>> optionalFields, String headerKey) {
