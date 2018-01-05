@@ -3,6 +3,7 @@ package com.fsck.k9.pEp.ui.handshake;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
@@ -37,6 +38,8 @@ class HandshakeViewHolder extends ChildViewHolder {
     private final TextView myselfView;
     private final ViewSwitcher flipper;
     private final View loading;
+    private final ProgressBar progressTrustwords;
+    private final View trustwordsButtonsContainer;
     private Identity myself, partner;
     private boolean showingPgpFingerprint = false;
     private Boolean areTrustwordsShort = true;
@@ -59,6 +62,8 @@ class HandshakeViewHolder extends ChildViewHolder {
         myselfView = itemView.findViewById(R.id.tvMyself);
         flipper = itemView.findViewById(R.id.flipper);
         loading = itemView.findViewById(R.id.loading);
+        progressTrustwords = itemView.findViewById(R.id.progressTrustwords);
+        trustwordsButtonsContainer = itemView.findViewById(R.id.trustwordsButtonsContainer);
         setupShowTrustwords(itemView);
         setupShowFpr(itemView);
         setupChangeLanguage(itemView);
@@ -69,17 +74,49 @@ class HandshakeViewHolder extends ChildViewHolder {
 
     private void setupConfirmTrustwords() {
         confirmTrustWords.setOnClickListener(view -> {
-            pEpProvider.trustPersonaKey(partner);
-            handshakeListener.onTrustwordsPerformedAction();
+            setLoadingView();
+            trustPersonalKey();
+        });
+    }
+
+    private void trustPersonalKey() {
+        pEpProvider.trustPersonaKey(partner, new PEpProvider.CompletedCallback() {
+            @Override
+            public void onComplete() {
+                handshakeListener.onTrustwordsPerformedAction();
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
         });
     }
 
     private void setupWrongTrustwords() {
         wrongTrustWords.setOnClickListener(view -> {
-            pEpProvider.keyCompromised(partner);
-            pEpProvider.getRating(partner);
-            handshakeListener.onTrustwordsPerformedAction();
+            setLoadingView();
+            keyCompromised();
         });
+    }
+
+    private void keyCompromised() {
+        pEpProvider.keyCompromised(partner, new PEpProvider.CompletedCallback() {
+            @Override
+            public void onComplete() {
+                handshakeListener.onTrustwordsPerformedAction();
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+        });
+    }
+
+    private void setLoadingView() {
+        trustwordsButtonsContainer.setVisibility(View.GONE);
+        progressTrustwords.setVisibility(View.VISIBLE);
     }
 
     private void setupShowLongTrustwords(View itemView) {

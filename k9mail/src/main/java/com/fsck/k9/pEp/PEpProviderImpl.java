@@ -603,9 +603,45 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
+    public void trustPersonaKey(Identity id, CompletedCallback completedCallback) {
+        threadExecutor.execute(() -> {
+            Engine engine = null;
+            try {
+                engine = getNewEngineSession();
+                engine.trustPersonalKey(id);
+                notifyCompleted(completedCallback);
+            } catch (pEpException e) {
+                notifyError(e, completedCallback);
+            } finally {
+                if (engine != null) {
+                    engine.close();
+                }
+            }
+        });
+    }
+
+    @Override
     public synchronized void keyCompromised(Identity id) {
         createEngineInstanceIfNeeded();
         engine.keyMistrusted(id);
+    }
+
+    @Override
+    public void keyCompromised(Identity id, CompletedCallback completedCallback) {
+        threadExecutor.execute(() -> {
+            Engine engine = null;
+            try {
+                engine = getNewEngineSession();
+                engine.keyMistrusted(id);
+                notifyCompleted(completedCallback);
+            } catch (pEpException e) {
+                notifyError(e, completedCallback);
+            } finally {
+                if (engine != null) {
+                    engine.close();
+                }
+            }
+        });
     }
 
     @Override
@@ -926,6 +962,26 @@ public class PEpProviderImpl implements PEpProvider {
             Timber.e(e);
             return Rating.pEpRatingUndefined;
         }
+    }
+
+    @Override
+    public void incomingMessageRating(MimeMessage message, ResultCallback<Rating> loadedCallback) {
+        threadExecutor.execute(() -> {
+            Engine engine1 = null;
+            try {
+                engine1 = new Engine();
+                Message pEpMessage = new PEpMessageBuilder(message).createMessage(context);
+                notifyLoaded(engine.re_evaluate_message_rating(pEpMessage), loadedCallback);
+            } catch (Exception e) {
+                notifyLoaded(Rating.pEpRatingUndefined, loadedCallback);
+            } finally {
+                if (engine1 != null) {
+                    engine1.close();
+                }
+            }
+        });
+
+
     }
 
     @Override

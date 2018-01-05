@@ -131,12 +131,16 @@ public interface PEpProvider {
      */
     void trustPersonaKey(Identity id);
 
+    void trustPersonaKey(Identity id, CompletedCallback completedCallback);
+
     /**
      * Mark key as compromised
      *
      * @param id identity to mark
      */
     void keyCompromised(Identity id);
+
+    void keyCompromised(Identity id, CompletedCallback completedCallback);
 
     /**
      * Reset id trust status, to do handshake again.
@@ -197,6 +201,8 @@ public interface PEpProvider {
     void setFastPollingCallback(Sync.NeedsFastPollCallback needsFastPollCallback);
 
     Rating incomingMessageRating(MimeMessage message);
+
+    void incomingMessageRating(MimeMessage message, ResultCallback<Rating> loadedCallback);
 
     void loadOutgoingMessageRatingAfterResetTrust(Identity identity, Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback);
 

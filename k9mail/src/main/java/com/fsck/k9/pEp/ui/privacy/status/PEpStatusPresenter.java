@@ -115,6 +115,7 @@ public class PEpStatusPresenter implements Presenter {
         pEpProvider.getRating(senderAddress, addresses, Collections.emptyList(), Collections.emptyList(), new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
+                updateRecipients();
                 onRatingChanged(rating);
             }
 
@@ -153,15 +154,31 @@ public class PEpStatusPresenter implements Presenter {
     }
 
     public void onRatingChanged() {
-        ArrayList<Identity> recipients = cache.getRecipients();
-        identities = pEpIdentityMapper.mapRecipients(recipients);
-        view.updateIdentities(identities);
         if (isMessageIncoming) {
-            Rating rating = pEpProvider.incomingMessageRating(localMessage);
-            onRatingChanged(rating);
+            setupIncomingMessageRating();
         } else {
             setupOutgoingMessageRating();
         }
+    }
+
+    private void updateRecipients() {
+        ArrayList<Identity> recipients = cache.getRecipients();
+        identities = pEpIdentityMapper.mapRecipients(recipients);
+        view.updateIdentities(identities);
+    }
+
+    private void setupIncomingMessageRating() {
+        pEpProvider.incomingMessageRating(localMessage, new PEpProvider.ResultCallback<Rating>() {
+            @Override
+            public void onLoaded(Rating rating) {
+                onRatingChanged(rating);
+                updateRecipients();
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+            }
+        });
     }
 
     private List<PEpIdentity> updateRecipients(List<PEpIdentity> identities, Identity id) {
