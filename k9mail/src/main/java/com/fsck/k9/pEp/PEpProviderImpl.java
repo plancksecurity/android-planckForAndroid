@@ -457,7 +457,7 @@ public class PEpProviderImpl implements PEpProvider {
         Identity from = message.getFrom();
         from.user_id = PEP_OWN_USER_ID;
         message.setFrom(from);
-        Message currentEnc = engine.encrypt_message(message, convertExtraKeys(extraKeys));
+        Message currentEnc = engine.encrypt_message(message, convertExtraKeys(extraKeys), message.getEncFormat());
         if (currentEnc == null) currentEnc = message;
         Log.d(TAG, "encryptMessage() after encrypt");
         return getMimeMessage(source, currentEnc);
