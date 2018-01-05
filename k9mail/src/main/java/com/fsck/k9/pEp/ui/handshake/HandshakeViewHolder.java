@@ -227,8 +227,7 @@ class HandshakeViewHolder extends ChildViewHolder {
 
     private void changeTrustwords(String language) {
         trustwordsLanguage = language;
-        String trustwords = pEpProvider.trustwords(myself, partner, language, areTrustwordsShort);
-        tvTrustwords.setText(trustwords);
+        loadTrustwords();
     }
 
     private void showFingerprints(boolean isRequestedByUser) {
