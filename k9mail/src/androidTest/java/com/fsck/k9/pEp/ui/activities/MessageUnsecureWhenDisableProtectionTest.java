@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.pEp.jniadapter.Rating;
 
 @RunWith(AndroidJUnit4.class)
 public class MessageUnsecureWhenDisableProtectionTest {
@@ -43,12 +44,15 @@ public class MessageUnsecureWhenDisableProtectionTest {
         uiDevice.waitForIdle();
         messageTo = testUtils.getTextFromTextViewThatContainsText("@");
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
+        testUtils.checkStatus(Rating.pEpRatingTrusted);
+        testUtils.pressBack();
         testUtils.openOptionsMenu();
         testUtils.selectFromMenu(R.string.pep_force_unprotected);
         uiDevice.waitForIdle();
+        testUtils.checkStatus(Rating.pEpRatingUnencrypted);
+        testUtils.pressBack();
         testUtils.sendMessage();
         uiDevice.waitForIdle();
-
 
     }
 }
