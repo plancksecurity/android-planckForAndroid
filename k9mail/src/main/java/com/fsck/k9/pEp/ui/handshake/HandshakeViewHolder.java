@@ -83,7 +83,7 @@ class HandshakeViewHolder extends ChildViewHolder {
         pEpProvider.trustPersonaKey(partner, new PEpProvider.CompletedCallback() {
             @Override
             public void onComplete() {
-                handshakeListener.onTrustwordsPerformedAction();
+                handshakeListener.onTrustwordsPerformedAction(getAdapterPosition());
             }
 
             @Override
@@ -104,7 +104,7 @@ class HandshakeViewHolder extends ChildViewHolder {
         pEpProvider.keyCompromised(partner, new PEpProvider.CompletedCallback() {
             @Override
             public void onComplete() {
-                handshakeListener.onTrustwordsPerformedAction();
+                handshakeListener.onTrustwordsPerformedAction(getAdapterPosition());
             }
 
             @Override

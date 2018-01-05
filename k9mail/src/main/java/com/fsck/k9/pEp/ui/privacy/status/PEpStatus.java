@@ -132,7 +132,10 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         recipientsView.setVisibility(View.VISIBLE);
         List<ExpandablePEpIdentity> collection = getExpandablePEpIdentities(pEpIdentities);
         Identity myselfIdentity = PEpUtils.createIdentity(new Address(myself), this);
-        recipientsAdapter = new TrustwordsAdapter(myselfIdentity, collection, () -> presenter.onRatingChanged(),
+        recipientsAdapter = new TrustwordsAdapter(myselfIdentity, collection, (int adapterPosition) -> {
+            recipientsAdapter.onGroupClick(adapterPosition);
+            presenter.onRatingChanged();
+        },
                 getOnResetGreenClickListener(), getOnResetRedClickListener(), getOnHandshakeClickListener(), preferences.getAccounts());
         recipientsView.setAdapter(recipientsAdapter);
         recipientsView.addItemDecoration(new SimpleDividerItemDecoration(this));
