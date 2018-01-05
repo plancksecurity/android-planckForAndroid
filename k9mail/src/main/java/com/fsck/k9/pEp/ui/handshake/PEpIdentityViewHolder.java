@@ -1,7 +1,7 @@
 package com.fsck.k9.pEp.ui.handshake;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -9,9 +9,11 @@ import android.widget.TextView;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.helper.ContactPicture;
+import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.models.PEpIdentity;
+import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.thoughtbot.expandablerecyclerview.viewholders.GroupViewHolder;
 
 import org.pEp.jniadapter.Identity;
@@ -28,11 +30,12 @@ class PEpIdentityViewHolder extends GroupViewHolder {
     private TextView handshakeText;
     private View container;
     private Context context;
-    private ImageView badge;
+    private PEpContactBadge badge;
     private View.OnClickListener onResetGreenClickListener;
     private View.OnClickListener onResetRedClickListener;
     private View.OnClickListener onHandshakeClickListener;
     private List<String> addressesOnDevice;
+    private Rating rating;
 
     PEpIdentityViewHolder(View view, List<Account> accounts) {
         super(view);
@@ -42,12 +45,11 @@ class PEpIdentityViewHolder extends GroupViewHolder {
         handshakeButton = view.findViewById(R.id.buttonHandshake);
         handshakeText = view.findViewById(R.id.handshake_button_text);
         container = view.findViewById(R.id.recipientContainer);
-        badge = view.findViewById(R.id.status_badge);
+        badge = view.findViewById(R.id.contact_badge);
         initializeAddressesOnDevice(accounts);
     }
 
     private void renderRating(String address, Rating rating) {
-        renderColor(rating);
         if (rating.value != Rating.pEpRatingMistrust.value
                 && rating.value < Rating.pEpRatingReliable.value) {
             setHandshakeButtonVisibility(address, View.GONE);
@@ -57,28 +59,19 @@ class PEpIdentityViewHolder extends GroupViewHolder {
             handshakeText.setText(context.getString(R.string.pep_handshake));
             handshakeButton.setOnClickListener(onResetRedClickListener);
             badge.setVisibility(View.VISIBLE);
-            identityUserName.setTextColor(context.getResources().getColor(R.color.white));
-            identityAdress.setTextColor(context.getResources().getColor(R.color.white));
-            handshakeText.setTextColor(context.getResources().getColor(R.color.white));
         } else if (rating.value >= Rating.pEpRatingTrusted.value){
             setHandshakeButtonVisibility(address, View.VISIBLE);
             handshakeButton.setOnClickListener(onResetGreenClickListener);
             handshakeText.setText(context.getString(R.string.pep_reset_trust));
             badge.setVisibility(View.VISIBLE);
-            identityUserName.setTextColor(context.getResources().getColor(R.color.white));
-            identityAdress.setTextColor(context.getResources().getColor(R.color.white));
-            handshakeText.setTextColor(context.getResources().getColor(R.color.white));
         } else if (rating.value == Rating.pEpRatingReliable.value){
             setHandshakeButtonVisibility(address, View.VISIBLE);
             handshakeButton.setOnClickListener(onHandshakeClickListener);
             handshakeText.setText(context.getString(R.string.pep_handshake));
             badge.setVisibility(View.VISIBLE);
-            identityUserName.setTextColor(context.getResources().getColor(R.color.openpgp_black));
-            identityAdress.setTextColor(context.getResources().getColor(R.color.openpgp_black));
-            handshakeText.setTextColor(context.getResources().getColor(R.color.openpgp_black));
         }
-        Drawable drawableForRating = PEpUtils.getDrawableForRatingRecipient(context, rating);
-        badge.setImageDrawable(drawableForRating);
+        identityAdress.setText(rating.name());
+        badge.setPepRating(rating, true);
     }
 
     private void initializeAddressesOnDevice(List<Account> accounts) {
@@ -97,11 +90,6 @@ class PEpIdentityViewHolder extends GroupViewHolder {
         }
     }
 
-    private void renderColor(Rating rating) {
-        int colorCode = PePUIArtefactCache.getInstance(context).getColor(rating);
-        container.setBackgroundColor(colorCode);
-    }
-
     private void setPosition(int position) {
         handshakeButton.setTag(position);
         container.setTag(position);
@@ -112,6 +100,7 @@ class PEpIdentityViewHolder extends GroupViewHolder {
         this.onResetGreenClickListener = onResetGreenClickListener;
         this.onResetRedClickListener = onResetRedClickListener;
         this.onHandshakeClickListener = onHandshakeClickListener;
+        this.rating = identity.getRating();
         setOnGroupClickListener(null);
         renderRating(identity.address, identity.getRating());
         setPosition(position);
@@ -121,18 +110,28 @@ class PEpIdentityViewHolder extends GroupViewHolder {
     private void renderIdentity(Identity identity) {
         if (identity.username != null && !identity.address.equals(identity.username) && !
                 identity.username.isEmpty()) {
-            identityUserName.setText(identity.username);
-            if (identity.address != null) {
-                identityAdress.setVisibility(View.VISIBLE);
-                identityAdress.setText(identity.address);
-            } else {
-                identityAdress.setVisibility(View.VISIBLE);
-            }
-
+            String username = extractUsername(identity);
+            identityUserName.setText(username);
         } else {
-            identityUserName.setVisibility(View.GONE);
-            identityAdress.setVisibility(View.VISIBLE);
-            identityAdress.setText(identity.address);
+            identityUserName.setText(identity.address);
         }
+        setStatus();
+        setContactPhotoOrPlaceholder(badge, identity);
+    }
+
+    private void setStatus() {
+        PePUIArtefactCache artefactCache = PePUIArtefactCache.getInstance(itemView.getContext());
+        String statusTitle = artefactCache.getTitle(rating);
+        identityAdress.setText(statusTitle);
+    }
+
+    private void setContactPhotoOrPlaceholder(ImageView imageView, Identity identity) {
+        ContactPicture.getContactPictureLoader(context).loadContactPicture(new Address(identity.address), imageView);
+    }
+
+    @NonNull
+    private String extractUsername(Identity identity) {
+        int index = identity.username.indexOf("(");
+        return identity.username.substring(0, index - 1);
     }
 }
