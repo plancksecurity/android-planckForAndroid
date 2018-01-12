@@ -41,7 +41,7 @@ public class MessageUnsecureWhenDisableProtectionTest {
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
 
     @Before
-    public void startMainActivity() {
+    public void startActivity() {
         uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(uiDevice);
         testUtils.increaseTimeoutWait();
