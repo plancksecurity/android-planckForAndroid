@@ -310,7 +310,7 @@ public class K9 extends Application {
     private static String pEpExtraAccounts = "";
     private static boolean pEpUseKeyserver = false;
     private static boolean pEpPassiveMode = false;
-    private static boolean pEpSubjectUnprotected = false;
+    private static boolean pEpSubjectUnprotected = true;
     private static boolean pEpForwardWarningEnabled = false;
 
 
@@ -919,7 +919,7 @@ public class K9 extends Application {
         pEpExtraAccounts = storage.getString("pEpExtraAccounts", null);
         pEpUseKeyserver = storage.getBoolean("pEpUseKeyserver", false);
         pEpPassiveMode = storage.getBoolean("pEpPassiveMode", false);
-        pEpSubjectUnprotected = storage.getBoolean("pEpSubjectUnprotected", false);
+        pEpSubjectUnprotected = storage.getBoolean("pEpSubjectUnprotected", true);
         pEpForwardWarningEnabled = storage.getBoolean("pEpForwardWarningEnabled", false);
 
         mAttachmentDefaultPath = storage.getString("attachmentdefaultpath",
