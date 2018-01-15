@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingPolicies;
+import android.support.test.espresso.NoMatchingViewException;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
@@ -407,9 +408,10 @@ class TestUtils {
                 .perform(swipeDown());
         device.waitForIdle();
         lastMessageReceivedPosition = getLastMessageReceivedPosition();
-        int size = device.findObjects(textViewSelector).size();
         int message = 0;
         if (lastMessageReceivedPosition != -1) {
+            removeMessagesFromList();
+            int size = device.findObjects(textViewSelector).size();
             for (; (message < messagesToRead) && (lastMessageReceivedPosition + 1 + message * 3 < size); message++) {
                 messageReceivedDate[message] = device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1 + message * 3).getText();
             }
@@ -421,16 +423,36 @@ class TestUtils {
         }
     }
 
+    public void removeMessagesFromList(){
+        device.waitForIdle();
+        if (device.findObjects(textViewSelector).size() > lastMessageReceivedPosition) {
+            device.waitForIdle();
+            device.findObjects(textViewSelector).get(lastMessageReceivedPosition).click();
+            boolean emptyList = false;
+            do {
+                try {
+                    device.waitForIdle();
+                    onView(withId(R.id.delete)).check(matches(isDisplayed()));
+                    onView(withId(R.id.delete)).perform(click());
+                } catch (NoMatchingViewException e) {
+                    emptyList = true;
+                }
+            } while (!emptyList);
+        }
+    }
+
     public int getLastMessageReceivedPosition() {
         int size = device.findObjects(textViewSelector).size();
         for (int position = 0; position < size; position++) {
             String textAtPosition = device.findObjects(textViewSelector).get(position).getText();
             if (textAtPosition != null && textAtPosition.contains("@")) {
                 position++;
-                while (device.findObjects(textViewSelector).get(position).getText() == null) {
-                    position++;
-                    if (position >= size) {
-                        return -1;
+                if (position < size) {
+                    while (device.findObjects(textViewSelector).get(position).getText() == null) {
+                        position++;
+                        if (position >= size) {
+                            return -1;
+                        }
                     }
                 }
                 return position;
@@ -440,8 +462,8 @@ class TestUtils {
     }
 
     public void waitForMessageWithText(String textInMessage, String preview) {
-        boolean messageSubject;
-        boolean messagePreview;
+        boolean messageSubject = false;
+        boolean messagePreview = false;
         boolean emptyMessageList;
         emptyMessageList = device.findObjects(textViewSelector).size() <= lastMessageReceivedPosition;
         if (!emptyMessageList) {
@@ -458,10 +480,12 @@ class TestUtils {
                         }
                     }
                 } while (!newMessage);
-                messageSubject = getTextFromTextViewThatContainsText(textInMessage)
-                        .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition).getText());
-                messagePreview = getTextFromTextViewThatContainsText(preview)
-                        .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 2).getText());
+                if (device.findObjects(textViewSelector).size() >= lastMessageReceivedPosition + 2) {
+                    messageSubject = getTextFromTextViewThatContainsText(textInMessage)
+                            .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition).getText());
+                    messagePreview = getTextFromTextViewThatContainsText(preview)
+                            .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 2).getText());
+                }
             } while (!(messageSubject && messagePreview));
         } else {
             while (emptyMessageList) {
