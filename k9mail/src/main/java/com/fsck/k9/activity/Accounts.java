@@ -624,8 +624,12 @@ public class Accounts extends PEpImporterActivity {
         accountsList.setAdapter(mAdapter);
 
         List<BaseAccount> folders = new ArrayList<>(SPECIAL_ACCOUNTS_COUNT);
-        folders.add(mUnifiedInboxAccount);
-        folders.add(mAllMessagesAccount);
+
+        if (!K9.isHideSpecialAccounts() && accounts.size() > 0) {
+            folders.add(mUnifiedInboxAccount);
+            folders.add(mAllMessagesAccount);
+        }
+
         mFoldersAdapter = new FoldersAdapter(folders, new OnFolderClickListener() {
             @Override
             public void onClick(LocalFolder folder) {
