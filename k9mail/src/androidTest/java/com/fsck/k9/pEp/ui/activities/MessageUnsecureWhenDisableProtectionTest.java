@@ -128,10 +128,12 @@ public class MessageUnsecureWhenDisableProtectionTest {
             String textAtPosition = uiDevice.findObjects(textViewSelector).get(position).getText();
             if (textAtPosition != null && textAtPosition.contains("@")) {
                 position++;
-                while (uiDevice.findObjects(textViewSelector).get(position).getText() == null) {
-                    position++;
-                    if (position >= size) {
-                        return -1;
+                if (position < size) {
+                    while (uiDevice.findObjects(textViewSelector).get(position).getText() == null) {
+                        position++;
+                        if (position >= size) {
+                            return -1;
+                        }
                     }
                 }
                 return position;
