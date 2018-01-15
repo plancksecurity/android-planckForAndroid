@@ -2291,7 +2291,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
         if (account.isUntrustedSever() ||
                 localMessage.getFlags().contains(Flag.X_PEP_NEVER_UNSECURE)) { //Untrusted server
             try {
-                if (PEpUtils.ispEpDisabled(account, localMessage, null)) {
+                if (PEpUtils.ispEpDisabled(account, null)) {
                     encryptedMessage = localMessage;
                 } else if (account.getDraftsFolderName().equals(localMessage.getFolder().getName())) {
                     encryptedMessage = pEpProvider.encryptMessageToSelf(localMessage);
@@ -3039,7 +3039,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
             LocalStore localStore = account.getLocalStore();
             LocalFolder localFolder = localStore.getFolder(account.getOutboxFolderName());
             localFolder.open(Folder.OPEN_MODE_RW);
-            if (PEpUtils.ispEpDisabled(account, message, pEpProvider.getRating(message))) {
+            if (PEpUtils.ispEpDisabled(account, pEpProvider.getRating(message))) {
                 message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(Rating.pEpRatingUnencrypted));
             } else {
                 Rating privacyState = pEpProvider.getRating(message);
@@ -3206,7 +3206,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
                         Message encryptedMessage;
 //                        PEpUtils.dumpMimeMessage("beforeEncrypt", (MimeMessage) message);
                         if (message.isSet(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)
-                                || PEpUtils.ispEpDisabled(account, message, pEpProvider.getRating(message))) {
+                                || PEpUtils.ispEpDisabled(account, pEpProvider.getRating(message))) {
                             message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(Rating.pEpRatingUnencrypted));
                             sendMessage(transport, message);
                             encryptedMessage = message;

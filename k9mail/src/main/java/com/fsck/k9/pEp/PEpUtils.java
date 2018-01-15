@@ -260,6 +260,9 @@ public class PEpUtils {
     }
 
     public static Rating stringToRating(String rating) {
+        if (rating == null) {
+            return Rating.pEpRatingUndefined;
+        }
         if (rating.equalsIgnoreCase("cannot_decrypt")
                 || rating.equalsIgnoreCase("pEpRatingCannotDecrypt")) {
             return Rating.pEpRatingCannotDecrypt;
@@ -366,11 +369,10 @@ public class PEpUtils {
         return String.valueOf(fprChars);
     }
 
-    public static boolean ispEpDisabled(Account account, Message message, Rating messageRating) {
-        return message.isSet(Flag.X_PEP_DISABLED)
-                || messageRating == Rating.pEpRatingUndefined
-                || !account.ispEpPrivacyProtected();
-    }
+
+    public static boolean ispEpDisabled(Account account, Rating messageRating) {
+        return messageRating == Rating.pEpRatingUndefined
+                || !account.ispEpPrivacyProtected();    }
 
     @WorkerThread
     public static void pEpGenerateAccountKeys(Context context, Account account) {
