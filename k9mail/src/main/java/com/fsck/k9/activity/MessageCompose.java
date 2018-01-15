@@ -1028,6 +1028,8 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             case R.id.send:
                 if (!isSendButtonLocked) {
                     checkToSendMessage();
+                } else {
+                    FeedbackTools.showShortFeedback(getRootView(), getString(R.string.message_loading_error));
                 }
                 break;
             case R.id.save:
