@@ -52,8 +52,8 @@ public class MessageUnsecureWhenDisableProtectionTest {
 
     @Test
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
-        //testUtils.getLastMessageReceived();
-        getLastMessageReceived();
+        testUtils.getLastMessageReceived();
+        //getLastMessageReceived();
         testUtils.composeMessageButton();
         uiDevice.waitForIdle();
         messageTo = testUtils.getTextFromTextViewThatContainsText("@");
@@ -69,19 +69,18 @@ public class MessageUnsecureWhenDisableProtectionTest {
         uiDevice.waitForIdle();
         testUtils.sendMessage();
         uiDevice.waitForIdle();
-        //testUtils.waitForMessageWithText(MESSAGE_BODY, MESSAGE_SUBJECT);
-        waitForMessageWithText(MESSAGE_BODY, MESSAGE_SUBJECT);
-        //testUtils.clickLastMessageReceived();
-        clickLastMessageReceived();
+        testUtils.waitForMessageWithText(MESSAGE_BODY, MESSAGE_SUBJECT);
+        //waitForMessageWithText(MESSAGE_BODY, MESSAGE_SUBJECT);
+        testUtils.clickLastMessageReceived();
+        //clickLastMessageReceived();
         uiDevice.waitForIdle();
-        //testUtils.checkStatus(Rating.pEpRatingUnencrypted);
         onView(withId(R.id.tvPep)).perform(click());
         onView(withId(R.id.pEpTitle)).check(matches(withText(testUtils.getResourceString(R.array.pep_title, Rating.pEpRatingUnencrypted.value))));
         uiDevice.waitForIdle();
         testUtils.pressBack();
         uiDevice.waitForIdle();
         testUtils.pressBack();
-        //removeMessagesFromList();
+        testUtils.removeMessagesFromList();
     }
     public void getLastMessageReceived() {
         uiDevice.waitForIdle();
