@@ -10,9 +10,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-
 @RunWith(AndroidJUnit4.class)
 public class AttachFilesToEmailTest {
 
