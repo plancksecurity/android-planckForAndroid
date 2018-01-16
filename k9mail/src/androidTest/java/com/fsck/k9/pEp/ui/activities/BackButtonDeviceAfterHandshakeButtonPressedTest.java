@@ -28,7 +28,7 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
 
-    private UiDevice uiDevice;
+    private UiDevice device;
     private TestUtils testUtils;
     private String messageTo;
 
@@ -37,8 +37,8 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
 
     @Before
     public void startActivity() {
-        uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(uiDevice);
+        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        testUtils = new TestUtils(device);
         testUtils.increaseTimeoutWait();
         messageTo = Long.toString(System.currentTimeMillis()) + "@" + HOST;
         testUtils.startActivity();
@@ -46,27 +46,33 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
 
     @Test
     public void backButtonDeviceAfterHandshakeButtonPressed() {
-        sendMessages();
-        uiDevice.waitForIdle();
+        testUtils.createAccount(false);
+        sendMessages(3);
+        device.waitForIdle();
         testUtils.clickLastMessageReceived();
         testUtils.assertMessageStatus(Rating.pEpRatingReliable.value);
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         onView(withId(R.id.handshake_button_text)).perform(click());
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         onView(withId(R.id.confirmTrustWords)).perform(click());
         testUtils.pressBack();
+        device.waitForIdle();
         testUtils.pressBack();
+        device.waitForIdle();
+        testUtils.pressBack();
+        device.waitForIdle();
+        testUtils.removeLastAccount();
     }
 
-    public void sendMessages() {
-        uiDevice.waitForIdle();
-        for (int messages = 0; messages < 3; messages++) {
+    public void sendMessages(int totalMessages) {
+        device.waitForIdle();
+        for (int message = 0; message < totalMessages; message++) {
             testUtils.getLastMessageReceived();
             testUtils.composeMessageButton();
-            uiDevice.waitForIdle();
+            device.waitForIdle();
             testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_BODY, MESSAGE_SUBJECT, messageTo), false);
             testUtils.sendMessage();
-            uiDevice.waitForIdle();
+            device.waitForIdle();
             testUtils.waitForMessageWithText("p≡p", "p≡pbot (" + messageTo + ")");
         }
     }
