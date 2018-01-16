@@ -2,7 +2,7 @@ package com.fsck.k9.pEp.ui.activities;
 
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.ActivityTestRule;
+import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.UiDevice;
 import android.test.suitebuilder.annotation.LargeTest;
@@ -17,7 +17,7 @@ import org.pEp.jniadapter.Rating;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
@@ -27,7 +27,7 @@ public class GreyStatusMessageTest {
     private TestUtils testUtils;
 
     @Rule
-    public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
+    public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
 
     @Before
     public void startMainActivity() {
@@ -51,5 +51,11 @@ public class GreyStatusMessageTest {
                  new TestUtils.BasicIdentity(Rating.pEpRatingUndefined, ""));
         testUtils.testStatusMail(new TestUtils.BasicMessage("", "Subject", "Message", EMAIL),
                 new TestUtils.BasicIdentity(Rating.pEpRatingUnencrypted, ""));
+        testUtils.pressBack();
+        testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.save_or_discard_draft_message_dlg_title);
+        testUtils.doWaitForObject("android.widget.Button");
+        onView(withText(R.string.discard_action)).perform(click());
+        testUtils.pressBack();
+        testUtils.removeLastAccount();
     }
 }
