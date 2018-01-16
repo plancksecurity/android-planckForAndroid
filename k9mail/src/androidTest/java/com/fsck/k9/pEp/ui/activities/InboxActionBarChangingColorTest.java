@@ -28,7 +28,6 @@ public class InboxActionBarChangingColorTest {
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
 
-    private BySelector selector;
     private UiDevice device;
     private TestUtils testUtils;
     private String messageTo = "random@test.pep-security.net";
@@ -42,7 +41,6 @@ public class InboxActionBarChangingColorTest {
         testUtils = new TestUtils(device);
         testUtils.increaseTimeoutWait();
         messageTo = Long.toString(System.currentTimeMillis()) + "@" + HOST;
-        selector = By.clazz("android.widget.TextView");
         testUtils.startActivity();
     }
 
