@@ -233,7 +233,17 @@ class TestUtils {
     }
 
     void sendMessage() {
-        onView(withId(R.id.send)).perform(click());
+        boolean sendButtonDisplayed = true;
+        do {
+            try {
+                device.waitForIdle();
+                onView(withId(R.id.send)).check(matches(isDisplayed()));
+                onView(withId(R.id.send)).perform(click());
+                device.waitForIdle();
+            } catch (NoMatchingViewException e) {
+                sendButtonDisplayed = false;
+            }
+        }while (sendButtonDisplayed);
     }
 
     void pressBack() {
