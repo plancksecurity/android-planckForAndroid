@@ -42,6 +42,7 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.core.internal.deps.guava.base.Preconditions.checkNotNull;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.allOf;
 
@@ -167,23 +168,6 @@ public class YellowStatusEmailFromBotTest {
         onView(withId(R.id.my_recycler_view)).check(doesNotExist());
         assertCurrentActivityIsInstanceOf(PEpTrustwords.class);
 
-    }
-
-    public static Matcher<View> withBackgroundColor(final int color) {
-        Checks.checkNotNull(color);
-        int color1 = ContextCompat.getColor(getTargetContext(), color);
-        return new BoundedMatcher<View, View>(View.class) {
-            @Override
-            public boolean matchesSafely(View view) {
-                int color2 = ((ColorDrawable) view.getBackground()).getColor();
-                return color1 == (color2);
-            }
-
-            @Override
-            public void describeTo(Description description) {
-
-            }
-        };
     }
 
     public void assertCurrentActivityIsInstanceOf(Class<? extends Activity> activityClass) {
