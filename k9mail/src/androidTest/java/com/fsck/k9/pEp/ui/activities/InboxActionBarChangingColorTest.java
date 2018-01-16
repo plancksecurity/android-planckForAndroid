@@ -50,10 +50,30 @@ public class InboxActionBarChangingColorTest {
     public void assertActionBarColorIsNotChanging() {
         testUtils.increaseTimeoutWait();
         testUtils.createAccount(false);
+        assertSelfMessageColor();
         assertBotMessageColor();
         testUtils.pressBack();
         device.waitForIdle();
         testUtils.removeLastAccount();
+    }
+
+    private void assertSelfMessageColor(){
+        device.waitForIdle();
+        testUtils.getLastMessageReceived();
+        testUtils.composeMessageButton();
+        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, EMAIL), false);
+        testUtils.sendMessage();
+        device.waitForIdle();
+        testUtils.waitForMessageWithText(MESSAGE_BODY, MESSAGE_SUBJECT);
+        testUtils.clickLastMessageReceived();
+        testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
+        device.waitForIdle();
+        testUtils.pressBack();
+        onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(R.color.pep_green)));
+        device.waitForIdle();
+        testUtils.pressBack();
+        device.waitForIdle();
+        onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(R.color.pep_green)));
     }
 
     private void assertBotMessageColor(){
