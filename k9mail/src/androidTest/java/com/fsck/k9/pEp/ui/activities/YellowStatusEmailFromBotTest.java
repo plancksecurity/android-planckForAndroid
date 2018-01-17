@@ -42,6 +42,7 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.core.internal.deps.guava.base.Preconditions.checkNotNull;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.allOf;
 
@@ -50,7 +51,7 @@ import static org.hamcrest.Matchers.allOf;
 @RunWith(AndroidJUnit4.class)
 public class YellowStatusEmailFromBotTest {
 
-    private UiDevice uiDevice;
+    private UiDevice device;
     private TestUtils testUtils;
     private String messageTo = "random@test.pep-security.net";
     private static final String MESSAGE_SUBJECT = "Subject";
@@ -62,8 +63,8 @@ public class YellowStatusEmailFromBotTest {
 
     @Before
     public void startMainActivity() {
-        uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(uiDevice);
+        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        testUtils = new TestUtils(device);
         testUtils.increaseTimeoutWait();
         selector = By.clazz("android.widget.TextView");
         testUtils.startActivity();
@@ -71,12 +72,13 @@ public class YellowStatusEmailFromBotTest {
 
     @Test
     public void sendMessageAndAssertYellowStatusMessage() {
+        testUtils.createAccount(false);
         testUtils.getLastMessageReceived();
         testUtils.composeMessageButton();
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         testUtils.sendMessage();
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         testUtils.waitForMessageWithText("p≡p", "p≡pbot (" + messageTo + ")");
         testUtils.clickLastMessageReceived();
         clickReplayMessage();
@@ -93,18 +95,18 @@ public class YellowStatusEmailFromBotTest {
         fillComposeFields();
         clickMailStatus();
         testUtils.doWaitForResource(R.id.my_recycler_view);
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(0)).check(matches(withBackgroundColor(R.color.pep_yellow)));
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(1)).check(matches(withBackgroundColor(R.color.pep_no_color)));
     }
 
     private void fillComposeFields() {
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         onView(withId(R.id.to)).perform(typeText("randomtest@Message.is"), closeSoftKeyboard());
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         onView(withId(R.id.subject)).perform(longClick(), closeSoftKeyboard());
-        uiDevice.waitForIdle();
+        device.waitForIdle();
     }
 
     public static RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
@@ -113,42 +115,42 @@ public class YellowStatusEmailFromBotTest {
     }
 
     private void goBackToMessageList() {
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         testUtils.pressBack();
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         testUtils.pressBack();
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         testUtils.doWaitForObject("android.widget.Button");
         onView(withText(R.string.discard_action)).perform(click());
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         testUtils.pressBack();
-        uiDevice.waitForIdle();
+        device.waitForIdle();
     }
 
     private void checkBotMessageColor() {
         testUtils.doWaitForResource(R.id.toolbar_container);
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(R.color.pep_yellow)));
     }
 
     private void clickMailStatus() {
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         onView(withId(R.id.pEp_indicator)).perform(click());
-        uiDevice.waitForIdle();
+        device.waitForIdle();
     }
 
     private void clickReplayMessage() {
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         onView(withId(R.id.reply_message)).perform(click());
     }
 
     public int getLastMessageReceivedPosition() {
-        int size = uiDevice.findObjects(selector).size();
+        int size = device.findObjects(selector).size();
         for (int position = 0; position < size; position++) {
-            String textAtPosition = uiDevice.findObjects(selector).get(position).getText();
+            String textAtPosition = device.findObjects(selector).get(position).getText();
             if (textAtPosition != null && textAtPosition.contains("@")) {
                 position++;
-                while (uiDevice.findObjects(selector).get(position).getText() == null) {
+                while (device.findObjects(selector).get(position).getText() == null) {
                     position++;
                     if (position >= size) {
                         return -1;
@@ -163,27 +165,10 @@ public class YellowStatusEmailFromBotTest {
     private void yellowStatusMessageTest() {
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         onView(withId(R.id.pEp_indicator)).perform(click());
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         onView(withId(R.id.my_recycler_view)).check(doesNotExist());
         assertCurrentActivityIsInstanceOf(PEpTrustwords.class);
 
-    }
-
-    public static Matcher<View> withBackgroundColor(final int color) {
-        Checks.checkNotNull(color);
-        int color1 = ContextCompat.getColor(getTargetContext(), color);
-        return new BoundedMatcher<View, View>(View.class) {
-            @Override
-            public boolean matchesSafely(View view) {
-                int color2 = ((ColorDrawable) view.getBackground()).getColor();
-                return color1 == (color2);
-            }
-
-            @Override
-            public void describeTo(Description description) {
-
-            }
-        };
     }
 
     public void assertCurrentActivityIsInstanceOf(Class<? extends Activity> activityClass) {
