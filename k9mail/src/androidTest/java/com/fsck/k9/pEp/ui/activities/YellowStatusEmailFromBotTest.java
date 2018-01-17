@@ -1,29 +1,17 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Activity;
-import android.content.res.Resources;
-import android.graphics.drawable.ColorDrawable;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.core.internal.deps.guava.collect.Iterables;
-import android.support.test.espresso.intent.Checks;
-import android.support.test.espresso.matcher.BoundedMatcher;
-import android.support.test.rule.ActivityTestRule;
+import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import android.support.test.runner.lifecycle.Stage;
-import android.support.test.uiautomator.By;
-import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
@@ -31,7 +19,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
-import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -56,17 +43,15 @@ public class YellowStatusEmailFromBotTest {
     private String messageTo = "random@test.pep-security.net";
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
-    private BySelector selector;
 
     @Rule
-    public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
+    public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
 
     @Before
     public void startMainActivity() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(device);
         testUtils.increaseTimeoutWait();
-        selector = By.clazz("android.widget.TextView");
         testUtils.startActivity();
     }
 
@@ -98,6 +83,8 @@ public class YellowStatusEmailFromBotTest {
         device.waitForIdle();
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(0)).check(matches(withBackgroundColor(R.color.pep_yellow)));
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(1)).check(matches(withBackgroundColor(R.color.pep_no_color)));
+        goBackToMessageList();
+        testUtils.removeLastAccount();
     }
 
     private void fillComposeFields() {
@@ -109,9 +96,9 @@ public class YellowStatusEmailFromBotTest {
         device.waitForIdle();
     }
 
-    public static RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
+    public static UtilsPackage.RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
 
-        return new RecyclerViewMatcher(recyclerViewId);
+        return new UtilsPackage.RecyclerViewMatcher(recyclerViewId);
     }
 
     private void goBackToMessageList() {
@@ -120,6 +107,7 @@ public class YellowStatusEmailFromBotTest {
         device.waitForIdle();
         testUtils.pressBack();
         device.waitForIdle();
+        testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.save_or_discard_draft_message_dlg_title);
         testUtils.doWaitForObject("android.widget.Button");
         onView(withText(R.string.discard_action)).perform(click());
         device.waitForIdle();
@@ -142,24 +130,6 @@ public class YellowStatusEmailFromBotTest {
     private void clickReplayMessage() {
         device.waitForIdle();
         onView(withId(R.id.reply_message)).perform(click());
-    }
-
-    public int getLastMessageReceivedPosition() {
-        int size = device.findObjects(selector).size();
-        for (int position = 0; position < size; position++) {
-            String textAtPosition = device.findObjects(selector).get(position).getText();
-            if (textAtPosition != null && textAtPosition.contains("@")) {
-                position++;
-                while (device.findObjects(selector).get(position).getText() == null) {
-                    position++;
-                    if (position >= size) {
-                        return -1;
-                    }
-                }
-                return position;
-            }
-        }
-        return size;
     }
 
     private void yellowStatusMessageTest() {
@@ -189,62 +159,5 @@ public class YellowStatusEmailFromBotTest {
             throwable.printStackTrace();
         }
         return activity[0];
-    }
-
-    public static class RecyclerViewMatcher {
-        private final int recyclerViewId;
-
-        RecyclerViewMatcher(int recyclerViewId) {
-            this.recyclerViewId = recyclerViewId;
-        }
-
-        Matcher<View> atPosition(final int position) {
-            return atPositionOnView(position, -1);
-        }
-
-        Matcher<View> atPositionOnView(final int position, final int targetViewId) {
-
-            return new TypeSafeMatcher<View>() {
-                Resources resources = null;
-                View childView;
-
-                public void describeTo(Description description) {
-                    String idDescription = Integer.toString(recyclerViewId);
-                    if (this.resources != null) {
-                        try {
-                            idDescription = this.resources.getResourceName(recyclerViewId);
-                        } catch (Resources.NotFoundException var4) {
-                            idDescription = String.format("%s (resource name not found)",
-                                    recyclerViewId);
-                        }
-                    }
-
-                    description.appendText("with id: " + idDescription);
-                }
-
-                public boolean matchesSafely(View view) {
-
-                    this.resources = view.getResources();
-
-                    if (childView == null) {
-                        RecyclerView recyclerView =
-                                view.getRootView().findViewById(recyclerViewId);
-                        if (recyclerView != null && recyclerView.getId() == recyclerViewId) {
-                            childView = recyclerView.findViewHolderForAdapterPosition(position).itemView;
-                        } else {
-                            return false;
-                        }
-                    }
-
-                    if (targetViewId == -1) {
-                        return view == childView;
-                    } else {
-                        View targetView = childView.findViewById(targetViewId);
-                        return view == targetView;
-                    }
-
-                }
-            };
-        }
     }
 }
