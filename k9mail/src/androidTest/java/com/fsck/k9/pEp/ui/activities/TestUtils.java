@@ -145,13 +145,18 @@ class TestUtils {
     }
 
     void createAccount(boolean isGmail) {
-        onView(withId(R.id.skip)).perform(click());
-        if (isGmail) {
-            gmailAccount();
-        } else {
-            newEmailAccount();
+        try{
+            onView(withId(R.id.skip)).check(matches(isDisplayed()));
+            onView(withId(R.id.skip)).perform(click());
+            if (isGmail) {
+                gmailAccount();
+            } else {
+                newEmailAccount();
+            }
+            accountDescription(DESCRIPTION, USER_NAME);
+        }catch (Exception ex){
+
         }
-        accountDescription(DESCRIPTION, USER_NAME);
     }
 
     String getAccountDescription() {
