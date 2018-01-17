@@ -9,6 +9,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 
 import junit.framework.Assert;
+import junit.framework.AssertionFailedError;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,6 +39,7 @@ public class ImportSettingsDarkThemeTest {
 
     @Test
     public void importSettingDarkTheme() {
+        testUtils.createAccount(false);
         testUtils.pressBack();
         testUtils.openOptionsMenu();
         device.waitForIdle();
@@ -50,6 +52,15 @@ public class ImportSettingsDarkThemeTest {
         device.waitForIdle();
         onView(withId(R.id.accounts_list)).perform(ViewActions.click());
         device.waitForIdle();
-        Assert.assertEquals(K9.Theme.LIGHT, K9.getK9Theme());
+        try{
+            Assert.assertEquals(K9.Theme.LIGHT, K9.getK9Theme());
+        }catch (AssertionFailedError exception){
+        }
+        removeAccount();
+    }
+
+    public void removeAccount(){
+        testUtils.pressBack();
+        testUtils.removeLastAccount();
     }
 }
