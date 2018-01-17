@@ -1,6 +1,10 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.content.res.Resources;
+import android.graphics.drawable.ColorDrawable;
+import android.support.test.espresso.intent.Checks;
+import android.support.test.espresso.matcher.BoundedMatcher;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ListView;
@@ -9,6 +13,8 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+
+import static android.support.test.InstrumentationRegistry.getTargetContext;
 
 
 public class UtilsPackage {
@@ -104,5 +110,22 @@ public class UtilsPackage {
                 }
             };
         }
+    }
+
+    public static Matcher<View> withBackgroundColor(final int colorId) {
+        Checks.checkNotNull(colorId);
+        int colorFromResource = ContextCompat.getColor(getTargetContext(), colorId);
+        return new BoundedMatcher<View, View>(View.class) {
+            @Override
+            public boolean matchesSafely(View view) {
+                int backGroundColor = ((ColorDrawable) view.getBackground()).getColor();
+                return colorFromResource == backGroundColor;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+
+            }
+        };
     }
 }
