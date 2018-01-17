@@ -36,7 +36,7 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
 
     @Before
-    public void startActivity() {
+    public void startpEpApp() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(device);
         testUtils.increaseTimeoutWait();

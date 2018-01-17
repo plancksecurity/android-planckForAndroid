@@ -30,7 +30,7 @@ public class GreyStatusMessageTest {
     public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
 
     @Before
-    public void startMainActivity() {
+    public void startpEpApp() {
         testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()));
         testUtils.startActivity();
     }

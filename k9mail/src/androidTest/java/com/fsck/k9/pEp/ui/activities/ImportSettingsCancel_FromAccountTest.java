@@ -21,7 +21,7 @@ public class ImportSettingsCancel_FromAccountTest {
     private TestUtils testUtils;
 
     @Before
-    public void startMainActivityFromHomeScreen() {
+    public void startpEpApp() {
         testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()));
         testUtils.startActivity();
     }
