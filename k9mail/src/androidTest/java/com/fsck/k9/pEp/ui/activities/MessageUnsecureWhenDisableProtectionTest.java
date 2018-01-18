@@ -43,6 +43,7 @@ public class MessageUnsecureWhenDisableProtectionTest {
 
     @Test
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
+        testUtils.createAccount(false);
         testUtils.getLastMessageReceived();
         testUtils.composeMessageButton();
         uiDevice.waitForIdle();
