@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import timber.log.Timber;
 
 import com.fsck.k9.Account.QuoteStyle;
 import com.fsck.k9.Identity;
@@ -31,10 +30,15 @@ import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
 import com.fsck.k9.mailstore.TempFileBody;
+import com.fsck.k9.message.quote.InsertableHtmlContent;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.infrastructure.threading.JobExecutor;
+import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
+import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
+import com.fsck.k9.pEp.infrastructure.threading.UIThread;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
-import com.fsck.k9.message.quote.InsertableHtmlContent;
 import org.apache.james.mime4j.codec.EncoderUtil;
 import org.apache.james.mime4j.util.MimeUtil;
 import org.pEp.jniadapter.Blob;
@@ -45,6 +49,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+
+import timber.log.Timber;
 
 
 public abstract class MessageBuilder {
@@ -526,18 +532,23 @@ public abstract class MessageBuilder {
             queuedException = null;
             queuedPendingIntent = null;
         }
-        new AsyncTask<Void,Void,Void>() {
+        PEpProvider.CompletedCallback completedCallback = new PEpProvider.CompletedCallback() {
+
             @Override
-            protected Void doInBackground(Void... params) {
-                buildMessageInternal();
-                return null;
+            public void onComplete() {
+                deliverResult();
             }
 
             @Override
-            protected void onPostExecute(Void aVoid) {
-                deliverResult();
+            public void onError(Throwable throwable) {
             }
-        }.execute();
+        };
+        PostExecutionThread postExecutionThread = new UIThread();
+        ThreadExecutor threadExecutor = new JobExecutor();
+        threadExecutor.execute(() -> {
+            buildMessageInternal();
+            postExecutionThread.post(completedCallback::onComplete);
+        });
     }
 
     final public void onActivityResult(final int requestCode, int resultCode, final Intent data, Callback callback) {
