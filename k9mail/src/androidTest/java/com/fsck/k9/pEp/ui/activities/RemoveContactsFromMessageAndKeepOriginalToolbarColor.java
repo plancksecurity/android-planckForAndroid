@@ -16,10 +16,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.YellowStatusEmailFromBotTest.withBackgroundColor;
 import static org.hamcrest.Matchers.allOf;
 
@@ -46,16 +48,16 @@ public class RemoveContactsFromMessageAndKeepOriginalToolbarColor {
     @Test
     public void assertRemoveTwoDifferentColorContactsAndKeepOriginalToolbarColor() {
         testUtils.increaseTimeoutWait();
-        testUtils.composeMessageButton();
-        testUtils.testStatusEmpty();
-        testUtils.doWait();
+        testUtils.createAccount(false);
         messageFrom = testUtils.getTextFromTextViewThatContainsText("@");
-        fillMessage(messageFrom, "Subject", "Message");
-        fillMessage("unkown@user.is", "Subject", "Message");
-        onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(R.color.pep_green)));
+        assertToolBarHasNoColorWhenUnkownReceiver(messageFrom);
+        assertToolBarHasNoColorWhenUnkownReceiver("random@test.pep-security.net");
+        testUtils.pressBack();
+        device.waitForIdle();
+        testUtils.removeLastAccount();
     }
 
-    private void fillMessage(String to, String subject, String message){
+    private void fillMessageWithOneKnownReceiverAndOneUnknown(String to, String subject, String message){
         testUtils.doWait("to");
         device.waitForIdle();
         device.findObject(By.res(APP_ID, "to")).longClick();
@@ -63,8 +65,22 @@ public class RemoveContactsFromMessageAndKeepOriginalToolbarColor {
         onView(withId(R.id.to)).perform(typeText(to), closeSoftKeyboard());
         device.findObject(By.res(APP_ID, "subject")).click();
         device.findObject(By.res(APP_ID, "subject")).setText(subject);
+        onView(withId(R.id.to)).perform(typeText("unkown@user.is"), closeSoftKeyboard());
         device.findObject(By.res(APP_ID, "message_content")).click();
         device.findObject(By.res(APP_ID, "message_content")).setText(message);
         Espresso.closeSoftKeyboard();
+    }
+
+    private void assertToolBarHasNoColorWhenUnkownReceiver(String messageTo){
+        testUtils.composeMessageButton();
+        device.waitForIdle();
+        fillMessageWithOneKnownReceiverAndOneUnknown(messageTo, "Subject", "Message");
+        device.waitForIdle();
+        onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(R.color.pep_no_color)));
+        device.waitForIdle();
+        testUtils.pressBack();
+        device.waitForIdle();
+        onView(withText(R.string.discard_action)).perform(click());
+        onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(R.color.pep_green)));
     }
 }
