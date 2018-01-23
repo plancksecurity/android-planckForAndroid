@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.is;
 
 
-public class ImportSettingsTest {
+public class ImportSettingsCancelTest {
 
     private TestUtils testUtils;
 
