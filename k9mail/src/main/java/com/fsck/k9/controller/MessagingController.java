@@ -1671,10 +1671,9 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                             && message.getFrom()[0].getAddress() != null) {
                         PEpProvider.DecryptResult tempResult;
                         tempResult = decryptMessage((MimeMessage) message);
-                        if (!account.isUntrustedSever() && !message.isSet(Flag.X_PEP_NEVER_UNSECURE)) { //trusted server
+                        if (!message.isSet(Flag.X_PEP_NEVER_UNSECURE)) {
                             Rating rating = PEpUtils.extractRating(message);
                             if (!rating.equals(Rating.pEpRatingUndefined)) {
-                                // if we are on a trusted server and already had an EncStatus, then is already encrypted by someone else.
                                 alreadyDecrypted = true;
                                 tempResult = new PEpProvider.DecryptResult((MimeMessage) tempResult.msg, rating, null, tempResult.flags);
                             }
@@ -1733,7 +1732,6 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                     });
 
                     if (account.ispEpPrivacyProtected()
-                                    && !account.isUntrustedSever()
                                     && result.flags == null
                                     && !decryptedMessage.isSet(Flag.X_PEP_NEVER_UNSECURE)) {
                                 appendMessageCommand(account, localMessage, localFolder);
@@ -2211,7 +2209,6 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                 String oldUid = localMessage.getUid();
                 localMessage.setFlag(Flag.X_REMOTE_COPY_STARTED, true);
                 Message encryptedMessage;
-                // TODO: 10/11/16 check what happens on trusted and untrusted servers
                 encryptedMessage = getMessageToUploadToOwnDirectories(account, localMessage);
                 remoteFolder.appendMessages(Collections.singletonList(encryptedMessage));
 
@@ -2234,24 +2231,14 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                 Date localDate = localMessage.getInternalDate();
                 Date remoteDate = remoteMessage.getInternalDate();
                 if ((remoteDate != null && remoteDate.compareTo(localDate) > 0)) {
-                    /*
-                     * If the remote message is newer than ours we'll just
-                     * delete ours and move on. A sync will get the server message
-                     * if we need to be able to see it. And is an untrusted server.
-                     */
                     localMessage.destroy();
                 } else {
-                    /*
-                     * Otherwise we'll upload our message and then delete the remote message.
-                     * (that include trusted servers)
-                     */
                     fp = new FetchProfile();
                     fp.add(FetchProfile.Item.BODY);
                     localFolder.fetch(Collections.singletonList(localMessage), fp, null);
                     String oldUid = localMessage.getUid();
 
                     localMessage.setFlag(Flag.X_REMOTE_COPY_STARTED, true);
-                    // TODO: 10/11/16 check what happens on trusted and untrusted servers
                     Message encryptedMessage = getMessageToUploadToOwnDirectories(account, localMessage);
                     remoteFolder.appendMessages(Collections.singletonList(encryptedMessage));
                     localMessage.setUid(encryptedMessage.getUid());
@@ -2277,19 +2264,9 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
         }
     }
 private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage localMessage) throws MessagingException {
-        /*
-        *
-        * *** If we are on an Untrusted Server / save encrypted on server
-        *   If is pEp is disables -> don-t care
-        *   If is a draft ALWAYS encrypt to self
-        *   Otherwise, try to encrypt and send as it is
-        * *** Trusted server
-        *   we save/upload as it is on own folders *do not confuse with send, always send encrypted*
-        */
         Message encryptedMessage;
 
-        if (account.isUntrustedSever() ||
-                localMessage.getFlags().contains(Flag.X_PEP_NEVER_UNSECURE)) { //Untrusted server
+        if (localMessage.getFlags().contains(Flag.X_PEP_NEVER_UNSECURE)) {
             try {
                 if (PEpUtils.ispEpDisabled(account, null)) {
                     encryptedMessage = localMessage;
@@ -2305,7 +2282,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
                 Timber.e("pEp", "getMessageToUploadToOwnDirectories: ", ex);
                 throw ex;
             }
-        } else { // Trusted
+        } else {
            return localMessage;
         }
 
@@ -3316,7 +3293,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
 
 
             Rating rating = PEpUtils.extractRating(message);
-            if(!(!account.isUntrustedSever() && rating.equals(Rating.pEpRatingUndefined))) {
+            if(!(rating.equals(Rating.pEpRatingUndefined))) {
                 appendMessageCommand(account, message, localSentFolder);
             }
 
