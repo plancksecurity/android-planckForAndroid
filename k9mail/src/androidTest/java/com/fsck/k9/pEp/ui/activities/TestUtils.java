@@ -21,9 +21,12 @@ import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
+import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 
 import com.fsck.k9.BuildConfig;
@@ -36,6 +39,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import timber.log.Timber;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
@@ -145,6 +150,68 @@ class TestUtils {
     }
 
     void createAccount(boolean isGmail) {
+        Log.d("Test", "Haciendo click en next");
+        try{
+            onView(withId(R.id.next)).perform(click());
+            device.waitForIdle();
+        }catch (Exception ignoredException){
+            Log.d("Ignored", "Ignored exception");
+        }
+        try{
+            onView(withId(R.id.skip)).perform(click());
+            device.waitForIdle();
+        }catch (Exception ignoredException){
+            Log.d("Ignored", "Ignored exception");
+        }
+        try{
+            onView(withId(R.id.action_continue)).perform(click());
+            device.waitForIdle();
+        }catch (Exception ignoredException){
+            Log.d("Ignored", "Ignored exception");
+        }
+        Log.d("Test", "Permisos");
+        try{
+            UiObject allowPermissions = device.findObject(new UiSelector()
+                    .clickable(true)
+                    .checkable(false)
+                    .index(2));
+            if (allowPermissions.exists()) {
+                allowPermissions.click();
+                device.waitForIdle();
+            }
+        }catch (Exception ignoredException){
+            Timber.e(ignoredException, "There is no permissions dialog to interact with ");
+        }
+        try{
+            UiObject allowPermissions = device.findObject(new UiSelector()
+                    .clickable(true)
+                    .checkable(false)
+                    .index(2));
+            if (allowPermissions.exists()) {
+                allowPermissions.click();
+                device.waitForIdle();
+            }
+        }catch (Exception ignoredException){
+            Timber.e(ignoredException, "There is no permissions dialog to interact with ");
+        }
+        try{
+            UiObject allowPermissions = device.findObject(new UiSelector()
+                    .clickable(true)
+                    .checkable(false)
+                    .index(1));
+            if (allowPermissions.exists()) {
+                allowPermissions.click();
+                device.waitForIdle();
+            }
+        }catch (Exception ignoredException){
+            Timber.e(ignoredException, "There is no permissions dialog to interact with ");
+        }
+        try{
+            onView(withId(R.id.action_continue)).perform(click());
+            device.waitForIdle();
+        }catch (Exception ignoredException){
+            Log.d("Ignored", "Ignored exception");
+        }
         try{
             onView(withId(R.id.skip)).check(matches(isDisplayed()));
             onView(withId(R.id.skip)).perform(click());
