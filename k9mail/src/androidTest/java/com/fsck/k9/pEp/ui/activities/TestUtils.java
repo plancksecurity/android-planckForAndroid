@@ -440,6 +440,12 @@ class TestUtils {
             device.findObjects(textViewSelector).get(lastMessageReceivedPosition).click();
             boolean emptyList = false;
             do {
+                try{
+                    device.waitForIdle();
+                    doWaitForObject("android.widget.Button");
+                    onView(withText(R.string.cancel_action)).perform(click());
+                }catch (Exception ignoredException){
+                }
                 try {
                     device.waitForIdle();
                     onView(withId(R.id.delete)).check(matches(isDisplayed()));
