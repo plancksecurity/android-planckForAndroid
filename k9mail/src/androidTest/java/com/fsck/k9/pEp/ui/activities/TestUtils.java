@@ -150,79 +150,75 @@ class TestUtils {
     }
 
     void createAccount(boolean isGmail) {
-        Log.d("Test", "Haciendo click en next");
-        try{
+        try {
             onView(withId(R.id.next)).perform(click());
             device.waitForIdle();
-        }catch (Exception ignoredException){
-            Log.d("Ignored", "Ignored exception");
-        }
-        try{
-            onView(withId(R.id.skip)).perform(click());
-            device.waitForIdle();
-        }catch (Exception ignoredException){
-            Log.d("Ignored", "Ignored exception");
-        }
-        try{
-            onView(withId(R.id.action_continue)).perform(click());
-            device.waitForIdle();
-        }catch (Exception ignoredException){
-            Log.d("Ignored", "Ignored exception");
-        }
-        Log.d("Test", "Permisos");
-        try{
-            UiObject allowPermissions = device.findObject(new UiSelector()
-                    .clickable(true)
-                    .checkable(false)
-                    .index(2));
-            if (allowPermissions.exists()) {
-                allowPermissions.click();
+            try {
+                onView(withId(R.id.skip)).perform(click());
                 device.waitForIdle();
+            } catch (Exception ignoredException) {
+                Log.d("Ignored", "Ignored exception");
             }
-        }catch (Exception ignoredException){
-            Timber.e(ignoredException, "There is no permissions dialog to interact with ");
-        }
-        try{
-            UiObject allowPermissions = device.findObject(new UiSelector()
-                    .clickable(true)
-                    .checkable(false)
-                    .index(2));
-            if (allowPermissions.exists()) {
-                allowPermissions.click();
+            try {
+                onView(withId(R.id.action_continue)).perform(click());
                 device.waitForIdle();
+            } catch (Exception ignoredException) {
+                Log.d("Ignored", "Ignored exception");
             }
-        }catch (Exception ignoredException){
-            Timber.e(ignoredException, "There is no permissions dialog to interact with ");
-        }
-        try{
-            UiObject allowPermissions = device.findObject(new UiSelector()
-                    .clickable(true)
-                    .checkable(false)
-                    .index(1));
-            if (allowPermissions.exists()) {
-                allowPermissions.click();
+            try {
+                UiObject allowPermissions = device.findObject(new UiSelector()
+                        .clickable(true)
+                        .checkable(false)
+                        .index(2));
+                if (allowPermissions.exists()) {
+                    allowPermissions.click();
+                    device.waitForIdle();
+                }
+            } catch (Exception ignoredException) {
+                Timber.e(ignoredException, "There is no permissions dialog to interact with ");
+            }
+            try {
+                UiObject allowPermissions = device.findObject(new UiSelector()
+                        .clickable(true)
+                        .checkable(false)
+                        .index(2));
+                if (allowPermissions.exists()) {
+                    allowPermissions.click();
+                    device.waitForIdle();
+                }
+            } catch (Exception ignoredException) {
+                Timber.e(ignoredException, "There is no permissions dialog to interact with ");
+            }
+            try {
+                UiObject allowPermissions = device.findObject(new UiSelector()
+                        .clickable(true)
+                        .checkable(false)
+                        .index(1));
+                if (allowPermissions.exists()) {
+                    allowPermissions.click();
+                    device.waitForIdle();
+                }
+            } catch (Exception ignoredException) {
+                Timber.e(ignoredException, "There is no permissions dialog to interact with ");
+            }
+            try {
+                onView(withId(R.id.action_continue)).perform(click());
                 device.waitForIdle();
+            } catch (Exception ignoredException) {
+                Log.d("Ignored", "Ignored exception");
             }
-        }catch (Exception ignoredException){
-            Timber.e(ignoredException, "There is no permissions dialog to interact with ");
-        }
-        try{
-            onView(withId(R.id.action_continue)).perform(click());
-            device.waitForIdle();
-        }catch (Exception ignoredException){
-            Log.d("Ignored", "Ignored exception");
-        }
-        try{
-            onView(withId(R.id.skip)).check(matches(isDisplayed()));
-            onView(withId(R.id.skip)).perform(click());
-            if (isGmail) {
-                gmailAccount();
-            } else {
-                newEmailAccount();
-            }
-            accountDescription(DESCRIPTION, USER_NAME);
-        }catch (Exception ex){
+            try {
+                if (isGmail) {
+                    gmailAccount();
+                } else {
+                    newEmailAccount();
+                }
+                accountDescription(DESCRIPTION, USER_NAME);
+            } catch (Exception ex) {
 
+            }
+        } catch (Exception ignoredException) {
+            Log.d("Ignored", "Ignored exception");
         }
     }
 
