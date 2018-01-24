@@ -82,6 +82,7 @@ import org.pEp.jniadapter.Rating;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import timber.log.Timber;
@@ -808,6 +809,17 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         if (pePUIArtefactCache.getRecipients().size() == 1
                 && pEpRating.value == Rating.pEpRatingReliable.value) {
             PEpTrustwords.actionRequestHandshake(context, myAdress, 0);
+        } else if (pePUIArtefactCache.getRecipients().size() == 0 // No recipients on the recipient list: means is from an own identity
+                && mMessage.getRecipients(Message.RecipientType.TO).length == 1 // the meassege is to 1 recipient
+                && mMessage.getRecipients(Message.RecipientType.TO)[0].getAddress().equals(mMessage.getFrom()[0].getAddress()) //Same address to be sure is the same account
+                ) {
+            String keylist = mMessage.getHeader(MimeHeader.HEADER_PEP_KEY_LIST)[0];
+            List<String> keys = Arrays.asList(keylist.split(","));
+            if (keys.size() == 2 && !keys.get(0).equals(keys.get(1))) {
+                PEpTrustwords.actionRequestDirectHandshake(context, myAdress, keylist, PEpTrustwords.DEFAULT_POSITION, pEpRating);
+            } else {
+                PEpStatus.actionShowStatus(context, pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAdress);
+            }
         } else {
             PEpStatus.actionShowStatus(context, pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAdress);
         }
