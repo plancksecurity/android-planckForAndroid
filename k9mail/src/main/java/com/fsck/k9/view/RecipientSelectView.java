@@ -16,7 +16,6 @@ import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import timber.log.Timber;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -39,13 +38,17 @@ import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.tokenautocomplete.TokenCompleteTextView;
+
 import org.apache.james.mime4j.util.CharsetUtil;
+import org.pEp.jniadapter.Rating;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.List;
+
+import timber.log.Timber;
 
 
 public class RecipientSelectView extends TokenCompleteTextView<Recipient> implements LoaderCallbacks<List<Recipient>>,
@@ -140,7 +143,22 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         holder.vName.setText(recipient.getDisplayNameOrAddress());
 
         RecipientAdapter.setContactPhotoOrPlaceholder(getContext(), holder.vContactPhoto, recipient);
-        holder.vContactPhoto.setPepRating(pEp.getRating(recipient.address), account.ispEpPrivacyProtected());
+
+        pEp.getRating(recipient.address, new PEpProvider.ResultCallback<Rating>() {
+            @Override
+            public void onLoaded(Rating rating) {
+                updateRating(rating, holder, recipient);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                updateRating(Rating.pEpRatingUndefined, holder, recipient);
+            }
+        });
+    }
+
+    private void updateRating(Rating rating, RecipientTokenViewHolder holder, Recipient recipient) {
+        holder.vContactPhoto.setPepRating(rating, account.ispEpPrivacyProtected());
 
         boolean hasCryptoProvider = cryptoProvider != null;
         if (!hasCryptoProvider) {
@@ -160,6 +178,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             holder.cryptoStatusOrange.setVisibility(View.GONE);
             holder.cryptoStatusGreen.setVisibility(View.VISIBLE);
         }
+        invalidate();
     }
 
     @Override
