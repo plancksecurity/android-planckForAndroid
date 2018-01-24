@@ -41,7 +41,7 @@
                 android:entries="@array/settings_language_entries"
                 android:entryValues="@array/settings_language_values"
                 android:dialogTitle="@string/settings_language_label" />
-
+            <!--
             <ListPreference
                 android:persistent="false"
                 android:key="theme"
@@ -73,7 +73,7 @@
                 android:entries="@array/settings_message_theme_entries"
                 android:entryValues="@array/settings_message_theme_values"
                 android:dialogTitle="@string/settings_compose_theme_label" />
-
+            -->
             <Preference
                 android:persistent="false"
                 android:key="font_size"

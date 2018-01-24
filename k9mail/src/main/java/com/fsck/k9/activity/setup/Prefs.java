@@ -58,10 +58,10 @@ public class Prefs extends K9PreferenceActivity {
      * Keys of the preferences defined in res/xml/global_preferences.xml
      */
     private static final String PREFERENCE_LANGUAGE = "language";
-    private static final String PREFERENCE_THEME = "theme";
-    private static final String PREFERENCE_MESSAGE_VIEW_THEME = "messageViewTheme";
-    private static final String PREFERENCE_FIXED_MESSAGE_THEME = "fixed_message_view_theme";
-    private static final String PREFERENCE_COMPOSER_THEME = "message_compose_theme";
+    //private static final String PREFERENCE_THEME = "theme";
+    //private static final String PREFERENCE_MESSAGE_VIEW_THEME = "messageViewTheme";
+    //private static final String PREFERENCE_FIXED_MESSAGE_THEME = "fixed_message_view_theme";
+    //private static final String PREFERENCE_COMPOSER_THEME = "message_compose_theme";
     private static final String PREFERENCE_FONT_SIZE = "font_size";
     private static final String PREFERENCE_ANIMATIONS = "animations";
     private static final String PREFERENCE_GESTURES = "gestures";
@@ -126,9 +126,9 @@ public class Prefs extends K9PreferenceActivity {
     private static final int FILE_CODE = 5;
 
     private ListPreference mLanguage;
-    private ListPreference mTheme;
+    //private ListPreference mTheme;
     private CheckBoxPreference mFixedMessageTheme;
-    private ListPreference mMessageTheme;
+    //private ListPreference mMessageTheme;
     private ListPreference mComposerTheme;
     private CheckBoxPreference mAnimations;
     private CheckBoxPreference mGestures;
@@ -211,13 +211,13 @@ public class Prefs extends K9PreferenceActivity {
             return true;
         });
 
-        mTheme = setupListPreference(PREFERENCE_THEME, themeIdToName(K9.getK9Theme()));
-        mFixedMessageTheme = (CheckBoxPreference) findPreference(PREFERENCE_FIXED_MESSAGE_THEME);
-        mFixedMessageTheme.setChecked(K9.useFixedMessageViewTheme());
-        mMessageTheme = setupListPreference(PREFERENCE_MESSAGE_VIEW_THEME,
-                themeIdToName(K9.getK9MessageViewThemeSetting()));
-        mComposerTheme = setupListPreference(PREFERENCE_COMPOSER_THEME,
-                themeIdToName(K9.getK9ComposerThemeSetting()));
+        //mTheme = setupListPreference(PREFERENCE_THEME, themeIdToName(K9.getK9Theme()));
+        //mFixedMessageTheme = (CheckBoxPreference) findPreference(PREFERENCE_FIXED_MESSAGE_THEME);
+        //mFixedMessageTheme.setChecked(K9.useFixedMessageViewTheme());
+        //mMessageTheme = setupListPreference(PREFERENCE_MESSAGE_VIEW_THEME,
+        //        themeIdToName(K9.getK9MessageViewThemeSetting()));
+        //mComposerTheme = setupListPreference(PREFERENCE_COMPOSER_THEME,
+        //        themeIdToName(K9.getK9ComposerThemeSetting()));
 
         findPreference(PREFERENCE_FONT_SIZE).setOnPreferenceClickListener(
         new Preference.OnPreferenceClickListener() {
@@ -532,10 +532,10 @@ public class Prefs extends K9PreferenceActivity {
 
         K9.setK9Language(mLanguage.getValue());
 
-        K9.setK9Theme(themeNameToId(mTheme.getValue()));
-        K9.setUseFixedMessageViewTheme(mFixedMessageTheme.isChecked());
-        K9.setK9MessageViewThemeSetting(themeNameToId(mMessageTheme.getValue()));
-        K9.setK9ComposerThemeSetting(themeNameToId(mComposerTheme.getValue()));
+        //K9.setK9Theme(themeNameToId(mTheme.getValue()));
+        //K9.setUseFixedMessageViewTheme(mFixedMessageTheme.isChecked());
+        //K9.setK9MessageViewThemeSetting(themeNameToId(mMessageTheme.getValue()));
+        //K9.setK9ComposerThemeSetting(themeNameToId(mComposerTheme.getValue()));
 
         K9.setAnimations(mAnimations.isChecked());
         K9.setGesturesEnabled(mGestures.isChecked());
