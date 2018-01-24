@@ -930,6 +930,11 @@ public class RecipientPresenter implements PermissionPingCallback {
             toAdresses = initializeAdresses(toAdresses);
             ccAdresses = initializeAdresses(ccAdresses);
             bccAdresses = initializeAdresses(bccAdresses);
+            if(privacyState.value != Rating.pEpRatingUndefined.value && newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty()) {
+                showDefaultStatus();
+                recipientMvpView.unlockSendButton();
+                return;
+            }
             if (fromAddress != null
                     && (dirty
                     || addressesChanged(toAdresses, newToAdresses)
@@ -944,18 +949,28 @@ public class RecipientPresenter implements PermissionPingCallback {
                 pEp.getRating(fromAddress, toAdresses, ccAdresses, bccAdresses, new PEpProvider.ResultCallback<Rating>() {
                     @Override
                     public void onLoaded(Rating rating) {
-                        privacyState = rating;
-                        showRatingFeedback(rating);
+                        if(newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty()) {
+                            showDefaultStatus();
+                            recipientMvpView.unlockSendButton();
+                        } else {
+                            privacyState = rating;
+                            showRatingFeedback(rating);
+                        }
                     }
 
                     @Override
                     public void onError(Throwable throwable) {
-
+                        showDefaultStatus();
                     }
                 });
             }
             recipientMvpView.unlockSendButton();
         }
+    }
+
+    private void showDefaultStatus() {
+        privacyState = Rating.pEpRatingUndefined;
+        showRatingFeedback(privacyState);
     }
 
     private void showRatingFeedback(Rating rating) {
