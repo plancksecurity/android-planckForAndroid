@@ -21,7 +21,6 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
-import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.models.PEpIdentity;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
@@ -178,16 +177,6 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     public void updateIdentities(List<PEpIdentity> updatedIdentities) {
         recipientsAdapter.setIdentities(updatedIdentities);
         recipientsAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void saveLocalMessage(LocalMessage localMessage) {
-        try {
-            messageReference.saveLocalMessage(this, localMessage);
-        } catch (RuntimeException e) {
-            FeedbackTools.showShortFeedback(getRootView(), getString(R.string.status_loading_error));
-            e.printStackTrace();
-        }
     }
 
     @Override

@@ -1,20 +1,12 @@
 package com.fsck.k9.activity;
 
 
-import java.util.StringTokenizer;
-
-import android.content.Context;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
-import com.fsck.k9.Account;
-import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
 import com.fsck.k9.mail.Flag;
-import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.filter.Base64;
-import com.fsck.k9.mailstore.LocalFolder;
-import com.fsck.k9.mailstore.LocalMessage;
+
+import java.util.StringTokenizer;
 
 import static com.fsck.k9.helper.Preconditions.checkNotNull;
 
@@ -116,34 +108,6 @@ public class MessageReference {
                ", uid='" + uid + '\'' +
                ", flag=" + flag +
                '}';
-    }
-
-
-    public void saveLocalMessage(Context context, LocalMessage message) {
-        if (message != null && !message.getUid().equals(uid)) {
-            throw new RuntimeException("Trying to update another message");
-        }
-        try {
-            Account account = Preferences.getPreferences(context).getAccount(accountUuid);
-            if (account != null) {
-                LocalFolder folder = null;
-                try {
-                    folder = account.getLocalStore().getFolder(folderName);
-                } catch (MessagingException e) {
-                    Log.e(K9.LOG_TAG, "saveLocalMessage: ", e);
-                }
-                if (folder != null) {
-                    folder.storeSmallMessage(message, () -> {
-                    });
-                } else {
-                    Log.d(K9.LOG_TAG, "Could not restore message, folder " + folderName + " is unknown.");
-                }
-            } else {
-                Log.d(K9.LOG_TAG, "Could not restore message, account " + accountUuid + " is unknown.");
-            }
-        } catch (MessagingException e) {
-            Log.w(K9.LOG_TAG, "Could not retrieve message for reference.", e);
-        }
     }
 
     public String getAccountUuid() {
