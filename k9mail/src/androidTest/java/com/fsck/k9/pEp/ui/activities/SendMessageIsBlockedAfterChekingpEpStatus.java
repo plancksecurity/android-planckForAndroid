@@ -13,6 +13,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
 
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
+
 @RunWith(AndroidJUnit4.class)
 public class SendMessageIsBlockedAfterChekingpEpStatus {
     private UiDevice uiDevice;
@@ -34,7 +39,7 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
 
     @Test
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
-        //testUtils.createAccount(false);
+        testUtils.createAccount(false);
         testUtils.getLastMessageReceived();
         testUtils.composeMessageButton();
         uiDevice.waitForIdle();
@@ -43,23 +48,20 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
         uiDevice.waitForIdle();
         testUtils.checkStatus(Rating.pEpRatingUnencrypted);
         testUtils.pressBack();
-        uiDevice.waitForIdle();
         testUtils.checkStatus(Rating.pEpRatingUnencrypted);
         testUtils.pressBack();
-        uiDevice.waitForIdle();
         testUtils.sendMessage();
+        uiDevice.waitForIdle();
         testUtils.getLastMessageReceived();
         testUtils.composeMessageButton();
         uiDevice.waitForIdle();
-        messageTo = "random@email.is";
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         uiDevice.waitForIdle();
         testUtils.sendMessage();
-
+        uiDevice.waitForIdle();
+        onView(withId(R.id.actionbar_title_first)).check(matches(isDisplayed()));
         uiDevice.waitForIdle();
         testUtils.pressBack();
-        uiDevice.waitForIdle();
-        testUtils.pressBack();
-        //testUtils.removeMessagesFromList();
+        testUtils.removeLastAccount();
     }
 }
