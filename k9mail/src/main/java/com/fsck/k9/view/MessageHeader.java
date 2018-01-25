@@ -38,6 +38,7 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
 import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
@@ -315,7 +316,13 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     }
 
     public void populate(final Message message, final Account account) {
-        loadpEpRating(message.getFrom()[0], account.ispEpPrivacyProtected());
+
+        if (PEpUtils.isMessageOnOutgoingFolder(message, account)) {
+            loadpEpRating(message, account.ispEpPrivacyProtected());
+        }
+        else {
+            loadpEpRating(message.getFrom()[0], account.ispEpPrivacyProtected());
+        }
         final Contacts contacts = K9.showContactName() ? mContacts : null;
         final CharSequence from = MessageHelper.toFriendly(message.getFrom(), contacts);
         final CharSequence to = MessageHelper.toFriendly(message.getRecipients(Message.RecipientType.TO), contacts);
@@ -414,6 +421,23 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     private void loadpEpRating(Address from, boolean isPrivacyProtected) {
         PEpProvider pEp = ((K9) getContext().getApplicationContext()).getpEpProvider();
         pEp.getRating(from, new PEpProvider.ResultCallback<Rating>() {
+            @Override
+            public void onLoaded(Rating rating) {
+                pEpRating = rating;
+                mContactBadge.setPepRating(pEpRating, isPrivacyProtected);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                Timber.e(throwable);
+                pEpRating = Rating.pEpRatingUndefined;
+                mContactBadge.setPepRating(pEpRating, isPrivacyProtected);
+            }
+        });
+    }
+    private void loadpEpRating(Message message, boolean isPrivacyProtected) {
+        PEpProvider pEp = ((K9) getContext().getApplicationContext()).getpEpProvider();
+        pEp.getRating(message, new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
                 pEpRating = rating;
