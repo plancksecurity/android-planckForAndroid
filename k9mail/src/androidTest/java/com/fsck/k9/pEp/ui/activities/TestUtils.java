@@ -239,10 +239,10 @@ class TestUtils {
                 device.waitForIdle();
                 onView(withId(R.id.send)).check(matches(isDisplayed()));
                 onView(withId(R.id.send)).perform(click());
-                device.waitForIdle();
             } catch (NoMatchingViewException e) {
                 sendButtonDisplayed = false;
             }
+            device.waitForIdle();
         }while (sendButtonDisplayed);
     }
 
@@ -323,6 +323,7 @@ class TestUtils {
 
     public void checkStatus(Rating rating) {
         onView(withId(R.id.pEp_indicator)).perform(click());
+        device.waitForIdle();
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, rating.value))));
     }
 
@@ -442,15 +443,14 @@ class TestUtils {
             do {
                 try{
                     device.waitForIdle();
-                    doWaitForObject("android.widget.Button");
                     onView(withText(R.string.cancel_action)).perform(click());
-                }catch (Exception ignoredException){
+                }catch (NoMatchingViewException ignoredException){
                 }
                 try {
                     device.waitForIdle();
                     onView(withId(R.id.delete)).check(matches(isDisplayed()));
                     onView(withId(R.id.delete)).perform(click());
-                } catch (NoMatchingViewException e) {
+                } catch (NoMatchingViewException ignoredException) {
                     emptyList = true;
                 }
             } while (!emptyList);
