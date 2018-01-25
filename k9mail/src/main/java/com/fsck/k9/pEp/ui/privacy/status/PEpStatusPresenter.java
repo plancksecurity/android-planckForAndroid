@@ -40,12 +40,12 @@ public class PEpStatusPresenter implements Presenter {
     private Rating currentRating;
 
     @Inject
-    public PEpStatusPresenter(SimpleMessageLoaderHelper simpleMessageLoaderHelper, PEpIdentityMapper pEpIdentityMapper) {
+    PEpStatusPresenter(SimpleMessageLoaderHelper simpleMessageLoaderHelper, PEpIdentityMapper pEpIdentityMapper) {
         this.simpleMessageLoaderHelper = simpleMessageLoaderHelper;
         this.pEpIdentityMapper = pEpIdentityMapper;
     }
 
-    public void initilize(PEpStatusView pEpStatusView, PePUIArtefactCache uiCache, PEpProvider pEpProvider, boolean isMessageIncoming, Address senderAddress) {
+    void initilize(PEpStatusView pEpStatusView, PePUIArtefactCache uiCache, PEpProvider pEpProvider, boolean isMessageIncoming, Address senderAddress) {
         this.view = pEpStatusView;
         this.cache = uiCache;
         this.pEpProvider = pEpProvider;
@@ -54,19 +54,19 @@ public class PEpStatusPresenter implements Presenter {
         pEpIdentityMapper.initialize(pEpProvider);
     }
 
-    public void loadMessage(MessageReference messageReference) {
+    void loadMessage(MessageReference messageReference) {
         if (messageReference != null) {
             simpleMessageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, callback());
         }
     }
 
-    public void loadRecipients() {
+    void loadRecipients() {
         List<Identity> recipients = cache.getRecipients();
         identities = pEpIdentityMapper.mapRecipients(recipients);
         view.setupRecipients(identities);
     }
 
-    public void resetRecipientTrust(int position) {
+    void resetRecipientTrust(int position) {
         Identity id = identities.get(position);
         if (isMessageIncoming) {
             resetIncomingMessageTrust(id);
@@ -144,7 +144,7 @@ public class PEpStatusPresenter implements Presenter {
         view.setupBackIntent(rating);
     }
 
-    public void loadRating(Rating rating) {
+    void loadRating(Rating rating) {
         view.showPEpTexts(cache.getTitle(rating), cache.getSuggestion(rating));
         if (rating == null) {
             view.hideBadge();
@@ -153,7 +153,7 @@ public class PEpStatusPresenter implements Presenter {
         }
     }
 
-    public void onResult() {
+    void onResult() {
         ArrayList<Identity> recipients = cache.getRecipients();
         identities = pEpIdentityMapper.mapRecipients(recipients);
         view.updateIdentities(identities);

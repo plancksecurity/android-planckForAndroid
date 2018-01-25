@@ -1,20 +1,10 @@
 package com.fsck.k9.mailstore;
 
 
-import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
-
 import android.app.Application;
 
 import com.fsck.k9.GlobalsHelper;
 import com.fsck.k9.K9RobolectricTestRunner;
-import com.fsck.k9.activity.K9ActivityCommon;
-import com.fsck.k9.message.html.HtmlSanitizer;
-import com.fsck.k9.message.html.HtmlSanitizerHelper;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mail.MessagingException;
@@ -30,12 +20,20 @@ import com.fsck.k9.mail.internet.Viewable;
 import com.fsck.k9.mail.internet.Viewable.MessageHeader;
 import com.fsck.k9.mailstore.MessageViewInfoExtractor.ViewableExtractedText;
 import com.fsck.k9.message.html.HtmlProcessor;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
+
+import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertSame;
