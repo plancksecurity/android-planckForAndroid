@@ -45,6 +45,7 @@ public class PEpTrustwords extends PepColoredActivity {
     private static final String SHOWING_PGP_FINGERPRINT = "showingPgpKey";
     private static final String ARE_TRUSTWORD_SHORT = "are_trustword_short";
     private static final String TRUSTWORD_LANGUAGE = "trustword_length";
+    private static final String PEP_KEY_LIST = "keylist";
 
     private Identity partner, myself;
     private int partnerPosition;
@@ -76,6 +77,18 @@ public class PEpTrustwords extends PepColoredActivity {
     private MenuItem menuItemtrustwordsLength;
     private String fullTrustwords = "";
     private String shortTrustwords = "";
+    private boolean includeIdentityData = false;
+
+
+    public static void actionRequestDirectHandshake(Activity context, String myself, String keylist, int partnerPosition, Rating pEpRating) {
+        Intent i = new Intent(context, PEpTrustwords.class);
+        i.setAction(ACTION_SHOW_PEP_TRUSTWORDS);
+        i.putExtra(PARTNER_POSITION, partnerPosition);
+        i.putExtra(MYSELF, myself);
+        i.putExtra(PEP_KEY_LIST, keylist);
+        i.putExtra(CURRENT_RATING, pEpRating.toString());
+        context.startActivityForResult(i, HANDSHAKE_REQUEST);
+    }
 
     public static void actionRequestHandshake(Activity context, String myself, int partnerPosition) {
         Intent i = new Intent(context, PEpTrustwords.class);
@@ -110,9 +123,20 @@ public class PEpTrustwords extends PepColoredActivity {
         }
 
         if (getIntent() != null) {
+            if (intent.hasExtra(MYSELF)) {
+                myself = PEpUtils.createIdentity(new Address(intent.getStringExtra(MYSELF)), context);
+                if (!myself.username.equals(myself.address)) {
+                    myselfView.setText(String.format(getString(R.string.pep_complete_myself_format), myself.username, myself.address));
+                    myselfLabel.setText(String.format(getString(R.string.pep_complete_myself_format), myself.username, myself.address));
+                } else {
+                    myselfView.setText(String.format(getString(R.string.pep_myself_format),myself.address));
+                    myselfLabel.setText(String.format(getString(R.string.pep_myself_format),myself.address));
+                }
 
-            if (intent.hasExtra(PARTNER_POSITION)) {
-                partnerPosition = intent.getIntExtra(PARTNER_POSITION, DEFAULT_POSITION);
+            }
+
+            partnerPosition = intent.getIntExtra(PARTNER_POSITION, DEFAULT_POSITION);
+            if (partnerPosition != DEFAULT_POSITION) {
                 partner = getUiCache().getRecipients().get(partnerPosition);
                 partner = getpEp().updateIdentity(partner);
                 if (!partner.username.equals(partner.address)) {
@@ -125,18 +149,16 @@ public class PEpTrustwords extends PepColoredActivity {
 
                 loadPartnerRating();
 
-            }
-
-            if (intent.hasExtra(MYSELF)) {
-                myself = PEpUtils.createIdentity(new Address(intent.getStringExtra(MYSELF)), context);
-                if (!myself.username.equals(myself.address)) {
-                    myselfView.setText(String.format(getString(R.string.pep_complete_myself_format), myself.username, myself.address));
-                    myselfLabel.setText(String.format(getString(R.string.pep_complete_myself_format), myself.username, myself.address));
-                } else {
-                    myselfView.setText(String.format(getString(R.string.pep_myself_format),myself.address));
-                    myselfLabel.setText(String.format(getString(R.string.pep_myself_format),myself.address));
-                }
-
+            } else {
+                loadPepRating();
+                PEpUtils.colorToolbar(getUiCache(), getSupportActionBar(), pEpRating);
+                setStatusBarPepColor();
+                //in this case we know partner address = myself address
+                includeIdentityData = true;
+                myself = getpEp().myself(myself);
+                partner = PEpUtils.createIdentity(new Address(intent.getStringExtra(MYSELF)), context);
+                String keys = intent.getStringExtra(PEP_KEY_LIST);
+                partner.fpr = keys.replace(myself.fpr, "").replace(",", "");
             }
 
         }
@@ -156,7 +178,7 @@ public class PEpTrustwords extends PepColoredActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        loadTrustwords();
+        loadTrustwords(includeIdentityData);
     }
 
     private void loadPartnerRating() {
@@ -174,10 +196,10 @@ public class PEpTrustwords extends PepColoredActivity {
         });
     }
 
-    private void loadTrustwords() {
+    private void loadTrustwords(boolean shouldRetrieveIdentityData) {
         //Actually what is heavy is update identity and myself.
         getpEp().obtainTrustwords(myself, partner, trustwordsLanguage,
-                false,
+                shouldRetrieveIdentityData,
                 new PEpProvider.ResultCallback<HandshakeData>() {
             @Override
             public void onLoaded(final HandshakeData handshakeData) {

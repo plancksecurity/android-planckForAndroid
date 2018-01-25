@@ -65,6 +65,7 @@ import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
 import com.fsck.k9.pEp.ui.listeners.FragmentPermissionListener;
 import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
+import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
@@ -81,6 +82,7 @@ import org.pEp.jniadapter.Rating;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import timber.log.Timber;
@@ -240,19 +242,11 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         mMessageView.setAttachmentCallback(this);
         mMessageView.setMessageCryptoPresenter(messageCryptoPresenter);
 
-        mMessageView.setOnToggleFlagClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onToggleFlagged();
-            }
-        });
+        mMessageView.setOnToggleFlagClickListener(v -> onToggleFlagged());
 
-        mMessageView.setOnDownloadButtonClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mMessageView.disableDownloadButton();
-                messageLoaderHelper.downloadCompleteMessage();
-            }
+        mMessageView.setOnDownloadButtonClickListener(v -> {
+            mMessageView.disableDownloadButton();
+            messageLoaderHelper.downloadCompleteMessage();
         });
         // onDownloadRemainder();;
         mFragmentListener.messageHeaderViewAvailable(mMessageView.getMessageHeaderView());
@@ -264,18 +258,15 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void setMessageOptionsListener() {
-        mMessageView.getMessageHeader().setOnMessageOptionsListener(new OnMessageOptionsListener() {
-            @Override
-            public void OnMessageOptionsListener(MessageAction action) {
-                if (action.equals(MessageAction.REPLY)) {
-                    onReply();
-                } else if (action.equals(MessageAction.REPLY_ALL)) {
-                    onReplyAll();
-                } else if (action.equals(MessageAction.FORWARD)) {
-                    onForward();
-                } else if (action.equals(MessageAction.SHARE)) {
-                    onSendAlternate();
-                }
+        mMessageView.getMessageHeader().setOnMessageOptionsListener(action -> {
+            if (action.equals(MessageAction.REPLY)) {
+                onReply();
+            } else if (action.equals(MessageAction.REPLY_ALL)) {
+                onReplyAll();
+            } else if (action.equals(MessageAction.FORWARD)) {
+                onForward();
+            } else if (action.equals(MessageAction.SHARE)) {
+                onSendAlternate();
             }
         });
     }
@@ -329,7 +320,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         }
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         View decorView = activity.getWindow().getDecorView();
-        if (decorView != null) {
+        if (decorView != null && imm != null) {
             imm.hideSoftInputFromWindow(decorView.getApplicationWindowToken(), 0);
         }
     }
@@ -739,12 +730,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public void hideAttachmentLoadingDialogOnMainThread() {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                removeDialog(R.id.dialog_attachment_progress);
-                // mMessageView.enableAttachmentButtons();
-            }
+        handler.post(() -> {
+            removeDialog(R.id.dialog_attachment_progress);
+            // mMessageView.enableAttachmentButtons();
         });
     }
 
@@ -804,7 +792,23 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             }
         }
 
-        PEpStatus.actionShowStatus(context, pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAdress);
+        if (pePUIArtefactCache.getRecipients().size() == 1
+                && pEpRating.value == Rating.pEpRatingReliable.value) {
+            PEpTrustwords.actionRequestHandshake(context, myAdress, 0);
+        } else if (pePUIArtefactCache.getRecipients().size() == 0 // No recipients on the recipient list: means is from an own identity
+                && mMessage.getRecipients(Message.RecipientType.TO).length == 1 // the meassege is to 1 recipient
+                && mMessage.getRecipients(Message.RecipientType.TO)[0].getAddress().equals(mMessage.getFrom()[0].getAddress()) //Same address to be sure is the same account
+                ) {
+            String keylist = mMessage.getHeader(MimeHeader.HEADER_PEP_KEY_LIST)[0];
+            List<String> keys = Arrays.asList(keylist.split(","));
+            if (keys.size() == 2 && !keys.get(0).equals(keys.get(1))) {
+                PEpTrustwords.actionRequestDirectHandshake(context, myAdress, keylist, PEpTrustwords.DEFAULT_POSITION, pEpRating);
+            } else {
+                PEpStatus.actionShowStatus(context, pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAdress);
+            }
+        } else {
+            PEpStatus.actionShowStatus(context, pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAdress);
+        }
     }
 
     public interface MessageViewFragmentListener {
@@ -877,23 +881,13 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         @Override
         public void onDownloadErrorMessageNotFound() {
             mMessageView.enableDownloadButton();
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    FeedbackTools.showLongFeedback(getView(), getString(R.string.status_invalid_id_error));
-                }
-            });
+            getActivity().runOnUiThread(() -> FeedbackTools.showLongFeedback(getView(), getString(R.string.status_invalid_id_error)));
         }
 
         @Override
         public void onDownloadErrorNetworkError() {
             mMessageView.enableDownloadButton();
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    FeedbackTools.showLongFeedback(getView(), getString(R.string.status_network_error));
-                }
-            });
+            getActivity().runOnUiThread(() -> FeedbackTools.showLongFeedback(getView(), getString(R.string.status_network_error)));
         }
 
         @Override
@@ -935,12 +929,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private void showNeedsDecryptionFeedback(final LocalMessage message) {
         new AlertDialog.Builder(getActivity())
                 .setMessage(R.string.decrypt_message_explanation)
-                .setPositiveButton(getString(R.string.okay_action), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        decryptMessage(message);
-                    }
-                })
+                .setPositiveButton(getString(R.string.okay_action), (dialogInterface, i) -> decryptMessage(message))
                 .setNegativeButton(getString(R.string.cancel_action), null)
                 .create().show();
     }
@@ -970,7 +959,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
                     // Store the updated message locally
                     LocalFolder folder = mMessage.getFolder();
-                    LocalMessage localMessage = null;
+                    LocalMessage localMessage;
 
                     localMessage = folder.storeSmallMessage(decryptedMessage, () -> {
                     });
