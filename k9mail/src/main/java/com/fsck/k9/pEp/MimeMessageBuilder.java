@@ -177,7 +177,7 @@ class MimeMessageBuilder extends MessageBuilder {
     }
 
     private TextBody buildText(MimeMessage mimeMsg) {
-        if (isEncodedWithSMIME(mimeMsg)) {
+        if (isSMimeMessage(mimeMsg)) {
             MimeTextBodyBuilder mimeTextBodyBuilder = new MimeTextBodyBuilder("This is an S/MIME encrypted message and cannot be displayed in this version");
 
             mimeTextBodyBuilder.setIncludeQuotedText(false);
@@ -192,7 +192,7 @@ class MimeMessageBuilder extends MessageBuilder {
         }
     }
 
-    private boolean isEncodedWithSMIME(MimeMessage mimeMsg) {
+    private boolean isSMimeMessage(MimeMessage mimeMsg) {
         return mimeMsg.getHeader(MimeHeader.HEADER_CONTENT_DESCRIPTION).length > 0 &&
                 mimeMsg.getHeader(MimeHeader.HEADER_CONTENT_DESCRIPTION)[0].contains("S/MIME Encrypted Message");
     }
