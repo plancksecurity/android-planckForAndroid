@@ -1,6 +1,6 @@
-def pEpEngineRevision = 2295
-def pEpJNIAdapterRevision = 378
-def version = "0.9.11.14"
+def pEpEngineRevision = 2378
+def pEpJNIAdapterRevision = 393
+def version = "0.9.11.15"
 
 def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
 def pEpTestEmailPassword = "\"$System.env.PEP_TEST_EMAIL_PASSWORD\""
@@ -97,7 +97,7 @@ android {
 
     defaultConfig {
         applicationId "${appId}"
-        versionCode 78
+        versionCode 79
         minSdkVersion 21
         targetSdkVersion 25
         setProperty("archivesBaseName", "$version")
