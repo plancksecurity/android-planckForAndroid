@@ -520,5 +520,10 @@ public class PEpUtils {
                 languagesToShow.toArray(languagesToReturn));
     }
 
+    public static boolean isMessageOnOutgoingFolder(Message message, Account account) {
+        return message.getFolder().getName().equals(account.getSentFolderName())
+                || message.getFolder().getName().equals(account.getDraftsFolderName())
+                || message.getFolder().getName().equals(account.getOutboxFolderName());
+    }
 }
 
