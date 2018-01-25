@@ -233,12 +233,13 @@ class TestUtils {
     }
 
     void sendMessage() {
-        boolean sendButtonDisplayed = true;
+        boolean sendButtonDisplayed;
         do {
             try {
                 device.waitForIdle();
                 onView(withId(R.id.send)).check(matches(isDisplayed()));
                 onView(withId(R.id.send)).perform(click());
+                sendButtonDisplayed = false;
             } catch (NoMatchingViewException e) {
                 sendButtonDisplayed = false;
             }
