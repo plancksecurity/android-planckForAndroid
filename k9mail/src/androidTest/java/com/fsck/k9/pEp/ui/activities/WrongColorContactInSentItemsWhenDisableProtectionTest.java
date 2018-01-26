@@ -71,6 +71,8 @@ public class WrongColorContactInSentItemsWhenDisableProtectionTest {
         device.waitForIdle();
         testUtils.sendMessage();
         goToSentFolder();
+        device.waitForIdle();
+        waitForTextOnTittle(resources.getString(R.string.special_mailbox_name_sent));
         device.findObjects(textViewSelector).get(lastMessageReceivedPosition).click();
         device.waitForIdle();
         testUtils.doWaitForResource(R.id.tvPep);
@@ -96,6 +98,14 @@ public class WrongColorContactInSentItemsWhenDisableProtectionTest {
             }catch (Exception e){
             }
         }
+    }
+
+    private void waitForTextOnTittle (String text){
+        boolean textIsOk;
+        do{
+            device.waitForIdle();
+            textIsOk = testUtils.getTextFromTextViewThatContainsText(text).contains(resources.getString(R.string.special_mailbox_name_sent));
+        }while (!textIsOk);
     }
 }
 
