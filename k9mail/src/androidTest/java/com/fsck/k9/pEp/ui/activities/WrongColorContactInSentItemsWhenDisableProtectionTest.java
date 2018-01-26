@@ -67,8 +67,22 @@ public class WrongColorContactInSentItemsWhenDisableProtectionTest {
         testUtils.pressBack();
         device.waitForIdle();
         testUtils.sendMessage();
+        goToSentFolder();
+
 
     }
 
+    private void goToSentFolder() {
+        testUtils.openOptionsMenu();
+        testUtils.selectFromMenu(R.string.account_settings_folders);
+        device.waitForIdle();
+        BySelector selector = By.clazz("android.widget.TextView");
+        for (UiObject2 textView : device.findObjects(selector)) {
+                    if (textView.getText() != null && textView.getText().contains(resources.getString(R.string.special_mailbox_name_sent))) {
+                        textView.click();
+                        return;
+                    }
+        }
+    }
 }
 
