@@ -72,7 +72,10 @@ public class WrongColorContactInSentItemsWhenDisableProtectionTest {
         testUtils.sendMessage();
         goToSentFolder();
         device.findObjects(textViewSelector).get(lastMessageReceivedPosition).click();
+        device.waitForIdle();
+        testUtils.doWaitForResource(R.id.tvPep);
         testUtils.assertMessageStatus(Rating.pEpRatingUnencrypted.value);
+        device.waitForIdle();
         testUtils.pressBack();
 
     }
