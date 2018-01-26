@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.actionWithAssertions;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
@@ -58,6 +59,8 @@ public class WrongColorContactInSentItemsWhenDisableProtectionTest {
         messageTo = "unkown@user.is";
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_BODY, MESSAGE_SUBJECT, messageTo), false);
         device.waitForIdle();
+        testUtils.doWaitForResource(R.id.pEp_indicator);
+        device.waitForIdle();
         testUtils.checkStatus(Rating.pEpRatingUnencrypted);
         testUtils.pressBack();
         testUtils.openOptionsMenu();
@@ -76,14 +79,19 @@ public class WrongColorContactInSentItemsWhenDisableProtectionTest {
 
     private void goToSentFolder() {
         testUtils.openOptionsMenu();
+        device.waitForIdle();
+        //testUtils.doWaitForResource(R.id.title);
         testUtils.selectFromMenu(R.string.account_settings_folders);
         device.waitForIdle();
         BySelector selector = By.clazz("android.widget.TextView");
         for (UiObject2 textView : device.findObjects(selector)) {
-                    if (textView.getText() != null && textView.getText().contains(resources.getString(R.string.special_mailbox_name_sent))) {
-                        textView.click();
-                        return;
-                    }
+            try {
+                if (textView.findObject(selector).getText() != null && textView.findObject(selector).getText().contains(resources.getString(R.string.special_mailbox_name_sent))) {
+                    textView.click();
+                    return;
+                }
+            }catch (Exception e){
+            }
         }
     }
 }
