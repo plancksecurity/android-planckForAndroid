@@ -43,11 +43,14 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
         testUtils.getLastMessageReceived();
         testUtils.composeMessageButton();
         uiDevice.waitForIdle();
-        messageTo = "random@email.is";
+        messageTo = testUtils.getTextFromTextViewThatContainsText("@");
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         uiDevice.waitForIdle();
-        testUtils.checkStatus(Rating.pEpRatingUnencrypted);
+        testUtils.checkStatus(Rating.pEpRatingTrusted);
         testUtils.pressBack();
+        testUtils.openOptionsMenu();
+        testUtils.selectFromMenu(R.string.pep_force_unprotected);
+        uiDevice.waitForIdle();
         testUtils.checkStatus(Rating.pEpRatingUnencrypted);
         testUtils.pressBack();
         testUtils.sendMessage();
