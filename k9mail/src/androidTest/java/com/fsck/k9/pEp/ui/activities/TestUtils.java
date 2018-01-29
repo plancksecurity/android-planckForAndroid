@@ -311,7 +311,9 @@ class TestUtils {
     }
 
     public void checkStatus(Rating rating) {
+        doWaitForResource(R.id.pEp_indicator);
         onView(withId(R.id.pEp_indicator)).perform(click());
+        device.waitForIdle();
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, rating.value))));
     }
 
