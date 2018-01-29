@@ -429,7 +429,7 @@ class TestUtils {
             String textAtPosition = device.findObjects(textViewSelector).get(position).getText();
             if (textAtPosition != null && textAtPosition.contains("@")) {
                 position++;
-                while (device.findObjects(textViewSelector).get(position).getText() == null) {
+                while (position < size && device.findObjects(textViewSelector).get(position).getText() == null) {
                     position++;
                     if (position >= size) {
                         return -1;
