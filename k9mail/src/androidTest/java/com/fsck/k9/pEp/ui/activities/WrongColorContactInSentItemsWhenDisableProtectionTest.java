@@ -18,8 +18,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.actionWithAssertions;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
@@ -44,7 +42,7 @@ public class WrongColorContactInSentItemsWhenDisableProtectionTest {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(device);
         testUtils.increaseTimeoutWait();
-        textViewSelector = By.clazz("android.widget.ImageButton");
+        textViewSelector = By.clazz("android.widget.TextView");
         context = InstrumentationRegistry.getTargetContext();
         resources = context.getResources();
         testUtils.startActivity();
@@ -72,11 +70,21 @@ public class WrongColorContactInSentItemsWhenDisableProtectionTest {
         testUtils.sendMessage();
         goToSentFolder();
         device.waitForIdle();
-        waitForTextOnTittle(resources.getString(R.string.special_mailbox_name_sent));
-        device.findObjects(textViewSelector).get(lastMessageReceivedPosition).click();
+        waitForTextOnScreen(resources.getString(R.string.special_mailbox_name_sent));
+        device.waitForIdle();
+        device.findObjects(textViewSelector).get(lastMessageReceivedPosition).click();  //Se sale de rango (indice 3 y size 0)
         device.waitForIdle();
         testUtils.doWaitForResource(R.id.tvPep);
-        testUtils.assertMessageStatus(Rating.pEpRatingUnencrypted.value);
+        device.waitForIdle();
+        boolean end = false;
+        do {
+            try {
+                testUtils.assertMessageStatus(Rating.pEpRatingUnencrypted.value);  //No encuentra la vista
+                end = true;
+            }catch (Exception e){
+
+            }
+        }while (!end);
         device.waitForIdle();
         testUtils.pressBack();
 
@@ -85,26 +93,40 @@ public class WrongColorContactInSentItemsWhenDisableProtectionTest {
     private void goToSentFolder() {
         testUtils.openOptionsMenu();
         device.waitForIdle();
-        //testUtils.doWaitForResource(R.id.title);
-        testUtils.selectFromMenu(R.string.account_settings_folders);
-        device.waitForIdle();
-        BySelector selector = By.clazz("android.widget.TextView");
-        for (UiObject2 textView : device.findObjects(selector)) {
+        boolean end = false;
+        do {
             try {
-                if (textView.findObject(selector).getText() != null && textView.findObject(selector).getText().contains(resources.getString(R.string.special_mailbox_name_sent))) {
-                    textView.click();
+                testUtils.selectFromMenu(R.string.account_settings_folders);    //Selecciona un objeto null
+                end = true;
+            }catch (Exception e){
+
+            }
+        }while (!end);
+            device.waitForIdle();
+            String folder = resources.getString(R.string.special_mailbox_name_sent);
+        for (UiObject2 textView : device.findObjects(textViewSelector)) {
+            try {
+                if (textView.findObject(textViewSelector).getText() != null && textView.findObject(textViewSelector).getText().contains(folder)) {
+                    device.waitForIdle();
+                    textView.findObject(textViewSelector).click();      //Selecciona la carpeta Archivos
+                    device.waitForIdle();
                     return;
                 }
+                device.waitForIdle();
             }catch (Exception e){
             }
         }
     }
 
-    private void waitForTextOnTittle (String text){
-        boolean textIsOk;
+    private void waitForTextOnScreen(String text){
+        boolean textIsOk = false;
         do{
             device.waitForIdle();
-            textIsOk = testUtils.getTextFromTextViewThatContainsText(text).contains(resources.getString(R.string.special_mailbox_name_sent));
+            try {
+                textIsOk = testUtils.getTextFromTextViewThatContainsText(text).contains(resources.getString(R.string.special_mailbox_name_sent));
+            }catch (Exception e){
+
+            }
         }while (!textIsOk);
     }
 }
