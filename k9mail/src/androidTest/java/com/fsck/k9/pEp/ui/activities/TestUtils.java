@@ -348,6 +348,7 @@ class TestUtils {
 
     void selectFromMenu(int resource) {
         BySelector selector = By.clazz("android.widget.TextView");
+        device.waitForIdle();
         for (UiObject2 object : device.findObjects(selector)) {
             if (object.getText().equals(resources.getString(resource))) {
                 object.click();
