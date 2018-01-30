@@ -104,13 +104,13 @@ class TestUtils {
     void newEmailAccount() {
         onView(withId(R.id.account_email)).perform(typeText(getEmail()));
         onView(withId(R.id.account_password)).perform(typeText(getPassword()), closeSoftKeyboard());
-        onView(withId(R.id.manual_setup)).perform(click());
+        /*onView(withId(R.id.manual_setup)).perform(click());
         fillImapData();
         onView(withId(R.id.next)).perform(click());
         device.waitForIdle();
         fillSmptData();
         device.waitForIdle();
-        onView(withId(R.id.next)).perform(click());
+        onView(withId(R.id.next)).perform(click());*/
         device.waitForIdle();
         onView(withId(R.id.next)).perform(click());
     }
@@ -139,13 +139,17 @@ class TestUtils {
     }
 
     void accountDescription(String description, String userName) {
+        device.waitForIdle();
         onView(withId(R.id.account_description)).perform(typeText(description));
-        onView(withId(R.id.account_name)).perform(typeText(userName));
+        onView(withId(R.id.account_name)).perform(typeText(userName), closeSoftKeyboard());
         device.waitForIdle();
         onView(withId(R.id.done)).perform(click());
     }
 
     void composeMessageButton() {
+        device.waitForIdle();
+        doWaitForResource(R.id.fab_button_compose_message);
+        device.waitForIdle();
         onView(withId(R.id.fab_button_compose_message)).perform(click());
     }
 
@@ -213,8 +217,13 @@ class TestUtils {
                 } else {
                     newEmailAccount();
                 }
-                accountDescription(DESCRIPTION, USER_NAME);
             } catch (Exception ex) {
+
+            }
+            try {
+                device.waitForIdle();
+                accountDescription(DESCRIPTION, USER_NAME);
+            } catch (Exception ex){
 
             }
         } catch (Exception ignoredException) {
