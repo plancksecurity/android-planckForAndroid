@@ -18,9 +18,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
 
+import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.CoreMatchers.anything;
 
 @RunWith(AndroidJUnit4.class)
 public class WrongColorContactInSentItemsWhenDisableProtectionTest {
@@ -32,7 +33,6 @@ public class WrongColorContactInSentItemsWhenDisableProtectionTest {
     private BySelector textViewSelector;
     private Resources resources;
     private Context context;
-    private int lastMessageReceivedPosition;
 
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
@@ -50,84 +50,95 @@ public class WrongColorContactInSentItemsWhenDisableProtectionTest {
 
     @Test
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
-        //testUtils.createAccount(false);
-        lastMessageReceivedPosition = testUtils.getLastMessageReceivedPosition();
-        testUtils.composeMessageButton();
-        device.waitForIdle();
-        messageTo = "unkown@user.is";
-        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_BODY, MESSAGE_SUBJECT, messageTo), false);
-        device.waitForIdle();
-        testUtils.doWaitForResource(R.id.pEp_indicator);
-        device.waitForIdle();
-        testUtils.checkStatus(Rating.pEpRatingUnencrypted);
-        testUtils.pressBack();
-        testUtils.openOptionsMenu();
-        testUtils.selectFromMenu(R.string.pep_force_unprotected);
-        device.waitForIdle();
-        testUtils.checkStatus(Rating.pEpRatingUnencrypted);
-        testUtils.pressBack();
+        testUtils.createAccount(false);
+        composeMessage();
+        checkPEpStatus(Rating.pEpRatingTrusted);
+        selectFromMenu(R.string.pep_force_unprotected);
+        checkPEpStatus(Rating.pEpRatingUnencrypted);
         device.waitForIdle();
         testUtils.sendMessage();
         goToSentFolder();
+        selectFirstMessage();
+        assertStatus(Rating.pEpRatingTrusted.value);
+        removeAccount();
+    }
+
+    private void removeAccount() {
+        for (int pressBack = 0; pressBack < 5; pressBack++) {
+            device.waitForIdle();
+            testUtils.pressBack();
+        }
         device.waitForIdle();
-        waitForTextOnScreen(resources.getString(R.string.special_mailbox_name_sent));
-        device.waitForIdle();
-        device.findObjects(textViewSelector).get(lastMessageReceivedPosition).click();  //Se sale de rango (indice 3 y size 0)
-        device.waitForIdle();
+        testUtils.removeLastAccount();
+    }
+
+    private void assertStatus(int status) {
         testUtils.doWaitForResource(R.id.tvPep);
         device.waitForIdle();
-        boolean end = false;
-        do {
-            try {
-                testUtils.assertMessageStatus(Rating.pEpRatingUnencrypted.value);  //No encuentra la vista
-                end = true;
-            }catch (Exception e){
+        testUtils.assertMessageStatus(status);
+    }
 
-            }
-        }while (!end);
+    private void selectFirstMessage() {
         device.waitForIdle();
-        testUtils.pressBack();
+        testUtils.doWaitForResource(R.id.message_list);
+        device.waitForIdle();
+        onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
+        device.waitForIdle();
+    }
 
+    private void selectFromMenu(int textToSelect) {
+        testUtils.openOptionsMenu();
+        testUtils.selectFromMenu(textToSelect);
+    }
+
+    private void checkPEpStatus(Rating rating) {
+        device.waitForIdle();
+        testUtils.doWaitForResource(R.id.pEp_indicator);
+        device.waitForIdle();
+        testUtils.checkStatus(rating);
+        testUtils.pressBack();
+    }
+
+    private void composeMessage() {
+        testUtils.composeMessageButton();
+        device.waitForIdle();
+        messageTo = testUtils.getTextFromTextViewThatContainsText("@");
+        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_BODY, MESSAGE_SUBJECT, messageTo), false);
     }
 
     private void goToSentFolder() {
+        device.waitForIdle();
         testUtils.openOptionsMenu();
         device.waitForIdle();
-        boolean end = false;
-        do {
-            try {
-                testUtils.selectFromMenu(R.string.account_settings_folders);    //Selecciona un objeto null
-                end = true;
-            }catch (Exception e){
-
-            }
-        }while (!end);
-            device.waitForIdle();
-            String folder = resources.getString(R.string.special_mailbox_name_sent);
+        testUtils.selectFromMenu(R.string.account_settings_folders);
+        device.waitForIdle();
+        String folder = resources.getString(R.string.special_mailbox_name_sent);
         for (UiObject2 textView : device.findObjects(textViewSelector)) {
             try {
                 if (textView.findObject(textViewSelector).getText() != null && textView.findObject(textViewSelector).getText().contains(folder)) {
                     device.waitForIdle();
-                    textView.findObject(textViewSelector).click();      //Selecciona la carpeta Archivos
+                    textView.findObject(textViewSelector).click();
                     device.waitForIdle();
                     return;
                 }
                 device.waitForIdle();
-            }catch (Exception e){
+            } catch (Exception e) {
             }
         }
+        device.waitForIdle();
+        waitForTextOnScreen(resources.getString(R.string.special_mailbox_name_sent));
     }
 
-    private void waitForTextOnScreen(String text){
+    private void waitForTextOnScreen(String text) {
         boolean textIsOk = false;
-        do{
+        do {
             device.waitForIdle();
             try {
                 textIsOk = testUtils.getTextFromTextViewThatContainsText(text).contains(resources.getString(R.string.special_mailbox_name_sent));
-            }catch (Exception e){
+            } catch (Exception e) {
 
             }
-        }while (!textIsOk);
+        } while (!textIsOk);
     }
 }
 
