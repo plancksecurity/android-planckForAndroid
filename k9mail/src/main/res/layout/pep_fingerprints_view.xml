@@ -5,6 +5,33 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
         >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            tools:text="Myself:"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:id="@+id/myselfLabel"/>
+
+        <TextView
+            android:layout_width="340dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            tools:text="A629 F620 F9C4 9310 39B2 7356 FACC 6EF3 3BD4 771D "
+            android:id="@+id/myselfFpr"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:fontFamily="@font/monospace_font_family" />
+    </LinearLayout>
 
     <LinearLayout
             android:layout_width="match_parent"
@@ -29,35 +56,9 @@
                 android:textSize="20sp"
                 android:gravity="center"
                 android:layout_gravity="center"
-                fontPath="fonts/CourierNew.ttf"
+                android:fontFamily="@font/monospace_font_family"
+
             />
     </LinearLayout>
 
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:orientation="vertical"
-            android:layout_gravity="center_vertical">
-
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                tools:text="Myself:"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:id="@+id/myselfLabel"/>
-
-        <TextView
-                android:layout_width="340dp"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                tools:text="A629 F620 F9C4 9310 39B2 7356 FACC 6EF3 3BD4 771D "
-                android:id="@+id/myselfFpr"
-                android:textSize="20sp"
-                android:gravity="center"
-                android:layout_gravity="center"
-                fontPath="fonts/CourierNew.ttf"/>
-    </LinearLayout>
 </LinearLayout>
