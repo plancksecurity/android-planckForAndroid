@@ -323,6 +323,7 @@ class TestUtils {
     }
 
     public void checkStatus(Rating rating) {
+        device.waitForIdle();
         onView(withId(R.id.pEp_indicator)).perform(click());
         device.waitForIdle();
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, rating.value))));
@@ -405,6 +406,8 @@ class TestUtils {
     }
 
     public void clickMessageStatus() {
+        device.waitForIdle();
+        doWaitForResource(R.id.tvPep);
         device.waitForIdle();
         onView(withId(R.id.tvPep)).perform(click());
         device.waitForIdle();
