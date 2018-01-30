@@ -82,8 +82,10 @@ import org.pEp.jniadapter.Rating;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import timber.log.Timber;
 
@@ -799,15 +801,25 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 && mMessage.getRecipients(Message.RecipientType.TO).length == 1 // the meassege is to 1 recipient
                 && mMessage.getRecipients(Message.RecipientType.TO)[0].getAddress().equals(mMessage.getFrom()[0].getAddress()) //Same address to be sure is the same account
                 ) {
-            String keylist = mMessage.getHeader(MimeHeader.HEADER_PEP_KEY_LIST)[0];
-            List<String> keys = Arrays.asList(keylist.split(","));
-            if (keys.size() == 2 && !keys.get(0).equals(keys.get(1))) {
-                PEpTrustwords.actionRequestDirectHandshake(context, myAdress, keylist, PEpTrustwords.DEFAULT_POSITION, pEpRating);
+
+            List <String> keysList = getKeyListWithoutDuplicates(mMessage.getHeader(MimeHeader.HEADER_PEP_KEY_LIST));
+            if (keysList.size() == 2) {
+                //String keyListHeader = mMessage.getHeader(MimeHeader.HEADER_PEP_KEY_LIST)[0];
+                PEpTrustwords.actionRequestDirectHandshake(context, myAdress, keysList, PEpTrustwords.DEFAULT_POSITION, pEpRating);
             } else {
                 PEpStatus.actionShowStatus(context, pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAdress);
             }
         } else {
             PEpStatus.actionShowStatus(context, pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAdress);
+        }
+    }
+
+    private List<String> getKeyListWithoutDuplicates(String[] keyListHeaders) {
+        if (keyListHeaders.length == 0) return Collections.emptyList();
+        else {
+            Set<String> keys = new HashSet<>();
+            keys.addAll(Arrays.asList(keyListHeaders[0].split(PEpProvider.PEP_KEY_LIST_SEPARATOR)));
+            return new ArrayList<>(keys);
         }
     }
 

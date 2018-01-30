@@ -33,6 +33,7 @@ public interface PEpProvider {
     String PEP_PRIVATE_KEY_FROM = "pEpDetailsFrom";
 
     String PEP_ALWAYS_SECURE_TRUE = "yes";
+    String PEP_KEY_LIST_SEPARATOR = ",";
 
     /**
      * checks the privacy level of the addresses supplied. This method creates a pEp message and
