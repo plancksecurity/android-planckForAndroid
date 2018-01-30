@@ -237,7 +237,7 @@ class TestUtils {
         do {
             try {
                 device.waitForIdle();
-                onView(withId(R.id.send)).check(matches(isDisplayed()));
+                doWaitForResource(R.id.send);
                 onView(withId(R.id.send)).perform(click());
                 sendButtonDisplayed = false;
             } catch (NoMatchingViewException e) {
