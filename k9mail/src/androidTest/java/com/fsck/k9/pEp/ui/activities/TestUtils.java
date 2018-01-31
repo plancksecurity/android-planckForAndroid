@@ -222,6 +222,7 @@ class TestUtils {
 
             }
             try {
+                doWaitForResource(R.id.account_description);
                 device.waitForIdle();
                 accountDescription(DESCRIPTION, USER_NAME);
             } catch (Exception ex){
