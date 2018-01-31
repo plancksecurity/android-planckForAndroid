@@ -55,6 +55,7 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
         onView(withId(R.id.handshake_button_text)).perform(click());
         device.waitForIdle();
         onView(withId(R.id.confirmTrustWords)).perform(click());
+        device.waitForIdle();
         testUtils.pressBack();
         device.waitForIdle();
         testUtils.pressBack();
