@@ -302,7 +302,7 @@ public class RecipientPresenter implements PermissionPingCallback {
         }
 
         menu.findItem(R.id.pEp_indicator).setVisible(account.ispEpPrivacyProtected());
-        menu.findItem(R.id.force_unencrypted).setVisible(account.ispEpPrivacyProtected());
+        menu.findItem(R.id.force_unencrypted).setVisible(true);
 
     }
 

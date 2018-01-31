@@ -1,13 +1,6 @@
 package com.fsck.k9.activity;
 
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Pattern;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -31,7 +24,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import timber.log.Timber;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -113,6 +105,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import timber.log.Timber;
 
 
 @SuppressWarnings("deprecation") // TODO get rid of activity dialogs and indeterminate progress bars
@@ -309,6 +303,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             finish();
             return;
         }
+        encrypted = account.ispEpPrivacyProtected();
 
         contacts = Contacts.getInstance(MessageCompose.this);
 
@@ -1136,7 +1131,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 //  TODO> Review after rebase
         handlePEpState(false);       // fire once to get everything set up.
 
-        if (encrypted) {
+        if (encrypted && account.ispEpPrivacyProtected()) {
             menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_unprotected);
         } else {
             menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_protected);
