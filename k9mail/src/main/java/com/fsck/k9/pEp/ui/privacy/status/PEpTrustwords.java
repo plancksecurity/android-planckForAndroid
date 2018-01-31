@@ -24,6 +24,7 @@ import com.fsck.k9.pEp.ui.keysync.languages.PEpLanguageSelector;
 import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Rating;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -80,12 +81,16 @@ public class PEpTrustwords extends PepColoredActivity {
     private boolean includeIdentityData = false;
 
 
-    public static void actionRequestDirectHandshake(Activity context, String myself, String keylist, int partnerPosition, Rating pEpRating) {
+    public static void actionRequestDirectHandshake(Activity context, String myself, List<String> keys, int partnerPosition, Rating pEpRating) {
         Intent i = new Intent(context, PEpTrustwords.class);
         i.setAction(ACTION_SHOW_PEP_TRUSTWORDS);
         i.putExtra(PARTNER_POSITION, partnerPosition);
         i.putExtra(MYSELF, myself);
-        i.putExtra(PEP_KEY_LIST, keylist);
+        StringBuilder keyList = new StringBuilder();
+        for (String key : keys) {
+            keyList.append(key).append(PEpProvider.PEP_KEY_LIST_SEPARATOR);
+        }
+        i.putExtra(PEP_KEY_LIST, keyList.toString());
         i.putExtra(CURRENT_RATING, pEpRating.toString());
         context.startActivityForResult(i, HANDSHAKE_REQUEST);
     }

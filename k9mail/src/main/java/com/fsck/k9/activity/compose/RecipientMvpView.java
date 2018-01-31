@@ -529,7 +529,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         pEpUiCache.setRecipients(mAccount, recipients);
 
         if (pEpRating.value == Rating.pEpRatingReliable.value) {
-            if (recipients.size() == 1) {
+            if (pEpUiCache.getRecipients().size() == 1) {
                 PEpTrustwords.actionRequestHandshake(activity, getFrom(), 0);
             } else {
                 PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom());
