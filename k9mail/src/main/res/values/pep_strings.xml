@@ -197,6 +197,7 @@
     <string name="key_import_reject">Reject</string>
     <string name="key_import_accept_feedback">Key replaced</string>
     <string name="key_import_reject_feedback">Key rejected</string>
+    <string name="message_loading_error">Message rating is still loading, try again</string>
 
 
 </resources>

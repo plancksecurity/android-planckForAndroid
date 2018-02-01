@@ -1,13 +1,6 @@
 package com.fsck.k9.activity;
 
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Pattern;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -31,7 +24,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import timber.log.Timber;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -113,6 +105,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import timber.log.Timber;
 
 
 @SuppressWarnings("deprecation") // TODO get rid of activity dialogs and indeterminate progress bars
@@ -1027,7 +1021,10 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                 break;
             case R.id.send:
                 if (!isSendButtonLocked) {
+                    lockSendButton();
                     checkToSendMessage();
+                } else {
+                    FeedbackTools.showShortFeedback(getRootView(), getString(R.string.message_loading_error));
                 }
                 break;
             case R.id.save:
@@ -1511,15 +1508,23 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         final Message message;
         final Long draftId;
         final MessageReference messageReference;
+        private final PEpProvider.CompletedCallback completedCallback;
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            completedCallback.onComplete();
+        }
 
         SendMessageTask(Context context, Account account, Contacts contacts, Message message,
-                Long draftId, MessageReference messageReference) {
+                        Long draftId, MessageReference messageReference, PEpProvider.CompletedCallback completedCallback) {
             this.context = context;
             this.account = account;
             this.contacts = contacts;
             this.message = message;
             this.draftId = draftId;
             this.messageReference = messageReference;
+            this.completedCallback = completedCallback;
         }
 
         @Override
@@ -1531,6 +1536,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                 updateReferencedMessage();
             } catch (Exception e) {
                 Timber.e(e, "Failed to mark contact as contacted.");
+                completedCallback.onError(new Throwable());
             }
 
             MessagingController.getInstance(context).sendMessage(account, message, null);
@@ -1645,7 +1651,17 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         } else {
             currentMessageBuilder = null;
             new SendMessageTask(getApplicationContext(), account, contacts, message,
-                    draftId != INVALID_DRAFT_ID ? draftId : null, relatedMessageReference).execute();
+                    draftId != INVALID_DRAFT_ID ? draftId : null, relatedMessageReference, new PEpProvider.CompletedCallback() {
+                @Override
+                public void onComplete() {
+                    unlockSendButton();
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                    unlockSendButton();
+                }
+            }).execute();
             finish();
         }
     }

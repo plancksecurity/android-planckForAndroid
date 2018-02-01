@@ -961,6 +961,7 @@ public class RecipientPresenter implements PermissionPingCallback {
                     @Override
                     public void onError(Throwable throwable) {
                         showDefaultStatus();
+                        recipientMvpView.unlockSendButton();
                     }
                 });
             }
