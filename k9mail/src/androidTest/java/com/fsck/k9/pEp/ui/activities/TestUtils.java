@@ -224,7 +224,7 @@ class TestUtils {
                 doWaitForResource(R.id.account_description);
                 device.waitForIdle();
                 accountDescription(DESCRIPTION, USER_NAME);
-            } catch (Exception ex){
+            } catch (Exception ex) {
 
             }
         } catch (Exception ignoredException) {
@@ -500,6 +500,7 @@ class TestUtils {
             for (; message < messagesToRead; message++) {
                 messageReceivedDate[message] = "";
             }
+            device.waitForIdle();
             lastMessageReceivedPosition = device.findObjects(textViewSelector).size();
         }
     }
@@ -526,13 +527,29 @@ class TestUtils {
         boolean messageSubject;
         boolean messagePreview;
         boolean emptyMessageList;
+        int size;
         emptyMessageList = device.findObjects(textViewSelector).size() <= lastMessageReceivedPosition;
         if (!emptyMessageList) {
             do {
                 boolean newMessage = false;
                 do {
                     device.waitForIdle();
-                    int size = device.findObjects(textViewSelector).size();
+                    try{
+                        onView(withId(R.id.action_mode_close_button)).check(matches(isDisplayed()));
+                        device.waitForIdle();
+                        pressBack();
+                        device.waitForIdle();
+                    }catch (Exception ex){
+
+                    }
+                    onView(withId(R.id.message_list)).perform(swipeDown());
+                    device.waitForIdle();
+                    while (device.findObjects(textViewSelector).get(1) != null
+                            && device.findObjects(textViewSelector).get(1).getText()
+                            .contains(resources.getString(R.string.status_loading_account_folder))) {
+                        device.waitForIdle();
+                    }
+                    size = device.findObjects(textViewSelector).size();
                     for (int message = 0; (message < messagesToRead) && (lastMessageReceivedPosition + 1 + message * 3 < size); message++) {
                         if (!(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1 + message * 3).getText())
                                 .equals(messageReceivedDate[message])) {
@@ -541,10 +558,14 @@ class TestUtils {
                         }
                     }
                 } while (!newMessage);
+                device.waitForIdle();
                 messageSubject = getTextFromTextViewThatContainsText(textInMessage)
                         .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition).getText());
                 messagePreview = getTextFromTextViewThatContainsText(preview)
                         .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 2).getText());
+                if(size != device.findObjects(textViewSelector).size()){
+                    messageSubject = false;
+                }
             } while (!(messageSubject && messagePreview));
         } else {
             while (emptyMessageList) {
