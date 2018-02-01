@@ -172,7 +172,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     private QuotedMessagePresenter quotedMessagePresenter;
     private MessageLoaderHelper messageLoaderHelper;
     private AttachmentPresenter attachmentPresenter;
-    private boolean encrypted = true;
+    private boolean isProtectionEnabled = true;
     private CompositePermissionListener contactPermissionListener;
     private LinearLayout rootView;
     private MenuItem alwaysSecureMenuItem;
@@ -304,9 +304,9 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             return;
         }
         if (originalMessageRating != null) {
-            encrypted = account.ispEpPrivacyProtected() || originalMessageRating.value > Rating.pEpRatingUnreliable.value;
+            isProtectionEnabled = account.ispEpPrivacyProtected() || originalMessageRating.value > Rating.pEpRatingUnreliable.value;
         } else {
-            encrypted = account.ispEpPrivacyProtected();
+            isProtectionEnabled = account.ispEpPrivacyProtected();
         }
 
         contacts = Contacts.getInstance(MessageCompose.this);
@@ -1063,12 +1063,12 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                 onReadReceipt();
                 break;
             case R.id.force_unencrypted:
-                if (encrypted) {
+                if (isProtectionEnabled) {
                     item.setTitle(R.string.pep_force_protected);
                 } else {
                     item.setTitle(R.string.pep_force_unprotected);
                 }
-                encrypted = !encrypted;
+                isProtectionEnabled = !isProtectionEnabled;
                 forceUnencrypted();
                 break;
             case R.id.is_always_secure:
@@ -1135,7 +1135,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 //  TODO> Review after rebase
         handlePEpState(false);       // fire once to get everything set up.
 
-        if (encrypted) {
+        if (isProtectionEnabled) {
             menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_unprotected);
         } else {
             menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_protected);
