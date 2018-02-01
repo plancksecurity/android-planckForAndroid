@@ -225,7 +225,7 @@ class TestUtils {
                 doWaitForResource(R.id.account_description);
                 device.waitForIdle();
                 accountDescription(DESCRIPTION, USER_NAME);
-            } catch (Exception ex){
+            } catch (Exception ex) {
 
             }
         } catch (Exception ignoredException) {
@@ -513,6 +513,7 @@ class TestUtils {
             for (; message < messagesToRead; message++) {
                 messageReceivedDate[message] = "";
             }
+            device.waitForIdle();
             lastMessageReceivedPosition = device.findObjects(textViewSelector).size();
         }
     }
