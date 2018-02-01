@@ -41,18 +41,11 @@ public class MessageUnsecureWhenDisableProtectionTest {
 
     @Test
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
-        testUtils.createAccount(false);
-        testUtils.getLastMessageReceived();
-        testUtils.composeMessageButton();
-        uiDevice.waitForIdle();
-        messageTo = testUtils.getTextFromTextViewThatContainsText("@");
-        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
-        uiDevice.waitForIdle();
+        lunchTest();
+        composeMessage();
         testUtils.checkStatus(Rating.pEpRatingTrusted);
         testUtils.pressBack();
-        testUtils.openOptionsMenu();
-        testUtils.selectFromMenu(R.string.pep_force_unprotected);
-        uiDevice.waitForIdle();
+        disableProtection();
         testUtils.checkStatus(Rating.pEpRatingUnencrypted);
         testUtils.pressBack();
         uiDevice.waitForIdle();
@@ -60,9 +53,37 @@ public class MessageUnsecureWhenDisableProtectionTest {
         testUtils.waitForMessageWithText(MESSAGE_BODY, MESSAGE_SUBJECT);
         testUtils.clickLastMessageReceived();
         uiDevice.waitForIdle();
+        checkStatus();
+        removeMessageListAndAccount();
+
+    }
+
+    private void lunchTest(){
+        testUtils.createAccount(false);
+        testUtils.getLastMessageReceived();
+    }
+
+    private void composeMessage(){
+        testUtils.composeMessageButton();
+        uiDevice.waitForIdle();
+        messageTo = testUtils.getTextFromTextViewThatContainsText("@");
+        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
+        uiDevice.waitForIdle();
+    }
+
+    private void disableProtection(){
+        testUtils.openOptionsMenu();
+        testUtils.selectFromMenu(R.string.pep_force_unprotected);
+        uiDevice.waitForIdle();
+    }
+
+    private void checkStatus(){
         onView(withId(R.id.tvPep)).perform(click());
         onView(withId(R.id.pEpTitle)).check(matches(withText(testUtils.getResourceString(R.array.pep_title, Rating.pEpRatingUnencrypted.value))));
         uiDevice.waitForIdle();
+    }
+
+    private void removeMessageListAndAccount(){
         testUtils.pressBack();
         uiDevice.waitForIdle();
         testUtils.pressBack();
