@@ -303,7 +303,11 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             finish();
             return;
         }
-        encrypted = account.ispEpPrivacyProtected();
+        if (originalMessageRating != null) {
+            encrypted = account.ispEpPrivacyProtected() || originalMessageRating.value > Rating.pEpRatingUnreliable.value;
+        } else {
+            encrypted = account.ispEpPrivacyProtected();
+        }
 
         contacts = Contacts.getInstance(MessageCompose.this);
 
@@ -1131,7 +1135,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 //  TODO> Review after rebase
         handlePEpState(false);       // fire once to get everything set up.
 
-        if (encrypted && account.ispEpPrivacyProtected()) {
+        if (encrypted) {
             menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_unprotected);
         } else {
             menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_protected);
