@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 public class AttachFilesToEmailTest {
 
-    private static final String EMAIL = "juan@miau.xyz";
+    private String messageTo;
 
     private UiDevice device;
     private TestUtils testUtils;
@@ -37,7 +37,8 @@ public class AttachFilesToEmailTest {
         testUtils.increaseTimeoutWait();
         testUtils.createAccount(isGmail);
         testUtils.composeMessageButton();
-        testUtils.fillMessage(new TestUtils.BasicMessage("", "Subject", "Message", EMAIL), true);
+        messageTo = testUtils.getTextFromTextViewThatContainsText("@");
+        testUtils.fillMessage(new TestUtils.BasicMessage("", "Subject", "Message", messageTo), true);
         testUtils.sendMessage();
         testUtils.pressBack();
         testUtils.removeLastAccount();
