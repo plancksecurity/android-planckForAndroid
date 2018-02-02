@@ -111,6 +111,20 @@ class TestUtils {
         onView(withId(R.id.next)).perform(click());
     }
 
+    void newEmailAccount(String email, String password) {
+        onView(withId(R.id.account_email)).perform(typeText(email));
+        onView(withId(R.id.account_password)).perform(typeText(password), closeSoftKeyboard());
+        onView(withId(R.id.manual_setup)).perform(click());
+        fillImapData();
+        onView(withId(R.id.next)).perform(click());
+        device.waitForIdle();
+        fillSmptData();
+        device.waitForIdle();
+        onView(withId(R.id.next)).perform(click());
+        device.waitForIdle();
+        onView(withId(R.id.next)).perform(click());
+    }
+
     void gmailAccount() {
         onView(withId(R.id.account_oauth2)).perform(click());
         onView(withId(R.id.next)).perform(click());
@@ -125,7 +139,7 @@ class TestUtils {
         fillServerData();
     }
 
-    private void fillImapData() {
+    public void fillImapData() {
         fillServerData();
     }
 
