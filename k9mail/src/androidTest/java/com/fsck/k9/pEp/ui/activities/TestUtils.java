@@ -487,6 +487,7 @@ class TestUtils {
     public void getLastMessageReceived() {
         device.waitForIdle();
         doWaitForResource(R.id.message_list);
+        device.waitForIdle();
         onView(withId(R.id.message_list))
                 .perform(swipeDown());
         device.waitForIdle();
