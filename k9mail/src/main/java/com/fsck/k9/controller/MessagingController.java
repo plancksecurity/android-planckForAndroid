@@ -1677,7 +1677,7 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                             Rating rating = PEpUtils.extractRating(message);
                             if (!rating.equals(Rating.pEpRatingUndefined)) {
                                 // if we are on a trusted server and already had an EncStatus, then is already encrypted by someone else.
-                                alreadyDecrypted = true;
+                                alreadyDecrypted = controller.getAlreadyDecrypted(message, account, rating);
                                 tempResult = new PEpProvider.DecryptResult((MimeMessage) tempResult.msg, rating, null, tempResult.flags);
                             }
                         }
