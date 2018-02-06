@@ -1637,6 +1637,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
             final AtomicInteger newMessages,
             final int todo,
             FetchProfile fp) throws MessagingException {
+        TrustedMessageController controller = new TrustedMessageController();
+
         final String folder = remoteFolder.getName();
 
         final Date earliestDate = account.getEarliestPollDate();
@@ -1671,7 +1673,7 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                             && message.getFrom()[0].getAddress() != null) {
                         PEpProvider.DecryptResult tempResult;
                         tempResult = decryptMessage((MimeMessage) message);
-                        if (!account.isUntrustedSever() && !message.isSet(Flag.X_PEP_NEVER_UNSECURE)) { //trusted server
+                        if (controller.shouldAppendMessageInTrustedServer(message, account)) { //trusted server
                             Rating rating = PEpUtils.extractRating(message);
                             if (!rating.equals(Rating.pEpRatingUndefined)) {
                                 // if we are on a trusted server and already had an EncStatus, then is already encrypted by someone else.
@@ -1731,11 +1733,7 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                             progress.incrementAndGet();
                         }
                     });
-
-                    if (account.ispEpPrivacyProtected()
-                                    && !account.isUntrustedSever()
-                                    && result.flags == null
-                                    && !decryptedMessage.isSet(Flag.X_PEP_NEVER_UNSECURE)) {
+                    if (controller.shouldDownloadMessageInTrustedServer(result, decryptedMessage, account)) {
                                 appendMessageCommand(account, localMessage, localFolder);
                             }
                             Timber.d("pep", "in download loop (nr=" + number + ") post pep");// Increment the number of "new messages" if the newly downloaded message is
@@ -2277,44 +2275,11 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
         }
     }
 private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage localMessage) throws MessagingException {
-        /*
-        *
-        * *** If we are on an Untrusted Server / save encrypted on server
-        *   If is pEp is disables -> don-t care
-        *   If is a draft ALWAYS encrypt to self
-        *   Otherwise, try to encrypt and send as it is
-        * *** Trusted server
-        *   we save/upload as it is on own folders *do not confuse with send, always send encrypted*
-        */
-        Message encryptedMessage;
-
-        if (account.isUntrustedSever() ||
-                localMessage.getFlags().contains(Flag.X_PEP_NEVER_UNSECURE)) { //Untrusted server
-            try {
-                if (PEpUtils.ispEpDisabled(account, null)) {
-                    encryptedMessage = localMessage;
-                } else if (account.getDraftsFolderName().equals(localMessage.getFolder().getName())) {
-                    encryptedMessage = pEpProvider.encryptMessageToSelf(localMessage);
-                } else {
-                    Preferences preferences = Preferences.getPreferences(context);
-                    String[] keys = preferences.getMasterKeysArray(account.getUuid());
-                    encryptedMessage = pEpProvider.encryptMessage(localMessage, keys).get(0);
-                }
-
-            } catch (Exception ex) {
-                Timber.e("pEp", "getMessageToUploadToOwnDirectories: ", ex);
-                throw ex;
-            }
-        } else { // Trusted
-           return localMessage;
-        }
-
-        encryptedMessage.setUid(localMessage.getUid());
-        encryptedMessage.setInternalDate(localMessage.getInternalDate());
-        encryptedMessage.setFlags(localMessage.getFlags(), true);
-        return encryptedMessage;
-
+    TrustedMessageController controller = new TrustedMessageController();
+    return controller.getOwnMessageCopy(context, pEpProvider, account,
+            localMessage);
     }
+
     private void queueMoveOrCopy(Account account, String srcFolder, String destFolder, boolean isCopy,
             List<String> uids) {
         if (account.getErrorFolderName().equals(srcFolder)) {
@@ -3316,7 +3281,8 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
 
 
             Rating rating = PEpUtils.extractRating(message);
-            if(!(!account.isUntrustedSever() && rating.equals(Rating.pEpRatingUndefined))) {
+            TrustedMessageController controller = new TrustedMessageController();
+            if(controller.shouldAppendMessageOnUntrustedServer(account, rating)) {
                 appendMessageCommand(account, message, localSentFolder);
             }
 
