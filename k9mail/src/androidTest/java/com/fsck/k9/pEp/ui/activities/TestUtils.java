@@ -100,20 +100,13 @@ class TestUtils {
     void newEmailAccount() {
         onView(withId(R.id.account_email)).perform(typeText(getEmail()));
         onView(withId(R.id.account_password)).perform(typeText(getPassword()), closeSoftKeyboard());
-        onView(withId(R.id.manual_setup)).perform(click());
-        fillImapData();
-        onView(withId(R.id.next)).perform(click());
-        device.waitForIdle();
-        fillSmptData();
-        device.waitForIdle();
-        onView(withId(R.id.next)).perform(click());
         device.waitForIdle();
         onView(withId(R.id.next)).perform(click());
     }
 
-    void newEmailAccount(String email, String password) {
-        onView(withId(R.id.account_email)).perform(typeText(email));
-        onView(withId(R.id.account_password)).perform(typeText(password), closeSoftKeyboard());
+    void newEmailAccountManual(){
+        onView(withId(R.id.account_email)).perform(typeText(getEmail()));
+        onView(withId(R.id.account_password)).perform(typeText(getPassword()), closeSoftKeyboard());
         onView(withId(R.id.manual_setup)).perform(click());
         fillImapData();
         onView(withId(R.id.next)).perform(click());
@@ -121,6 +114,12 @@ class TestUtils {
         fillSmptData();
         device.waitForIdle();
         onView(withId(R.id.next)).perform(click());
+        device.waitForIdle();
+        onView(withId(R.id.next)).perform(click());}
+
+    void newEmailAccount(String email, String password) {
+        onView(withId(R.id.account_email)).perform(typeText(email));
+        onView(withId(R.id.account_password)).perform(typeText(password), closeSoftKeyboard());
         device.waitForIdle();
         onView(withId(R.id.next)).perform(click());
     }
@@ -149,6 +148,7 @@ class TestUtils {
     }
 
     void accountDescription(String description, String userName) {
+        device.waitForIdle();
         onView(withId(R.id.account_description)).perform(typeText(description));
         onView(withId(R.id.account_name)).perform(typeText(userName));
         device.waitForIdle();
@@ -378,7 +378,7 @@ class TestUtils {
         BySelector selector = By.clazz("android.widget.TextView");
         device.waitForIdle();
         for (UiObject2 object : device.findObjects(selector)) {
-            if (object.getText().equals(resources.getString(resource))) {
+            if (object.getText() != null && object.getText().equals(resources.getString(resource))) {
                 object.click();
                 break;
             }
@@ -478,7 +478,7 @@ class TestUtils {
 
     public int getLastMessageReceivedPosition() {
         int size = device.findObjects(textViewSelector).size();
-        for (int position = 0; position < size; position++) {
+        for (int position = 2; position < size; position++) {
             String textAtPosition = device.findObjects(textViewSelector).get(position).getText();
             if (textAtPosition != null && textAtPosition.contains("@")) {
                 position++;
