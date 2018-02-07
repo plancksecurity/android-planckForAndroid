@@ -39,7 +39,7 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
 
     @Test
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
-        lunchApp();
+        launchApp();
         composeSelfMessage();
         testUtils.checkStatus(Rating.pEpRatingTrusted);
         testUtils.pressBack();
@@ -60,7 +60,7 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
         testUtils.removeLastAccount();
     }
 
-    private void lunchApp(){
+    private void launchApp(){
         testUtils.createAccount(true);
         testUtils.getLastMessageReceived();
     }
