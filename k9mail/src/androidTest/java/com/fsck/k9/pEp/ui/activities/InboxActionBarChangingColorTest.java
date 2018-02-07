@@ -22,9 +22,10 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 public class InboxActionBarChangingColorTest {
 
     private static final String HOST = "test.pep-security.net";
-    private static final String EMAIL = "juan@miau.xyz";
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
+
+    private String selfMessage = "";
 
     private UiDevice device;
     private TestUtils testUtils;
@@ -57,7 +58,8 @@ public class InboxActionBarChangingColorTest {
         device.waitForIdle();
         testUtils.getLastMessageReceived();
         testUtils.composeMessageButton();
-        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, EMAIL), false);
+        selfMessage = testUtils.getTextFromTextViewThatContainsText("@");
+        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, selfMessage), false);
         testUtils.sendMessage();
         device.waitForIdle();
         testUtils.waitForMessageWithText(MESSAGE_BODY, MESSAGE_SUBJECT);
