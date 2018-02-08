@@ -13,9 +13,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
 
@@ -37,38 +36,25 @@ public class ConfigureSeveralAccountsRemoveThemAndSetUpNewOne {
     }
 
     @Test
-    public void ConfigureAccountRemoveThemSetUpNewAccount(){
-        testUtils.createAccount(false);
-        int total = 4;
-        for (int account = 0; account < total; account++){
+    public void ConfigureAccountRemoveThemSetUpNewAccount() {
+        int total = 14;
+        for (int account = 0; account < total; account++) {
+            testUtils.createAccount(false);
+            goBackAndRemoveAccount();
             device.waitForIdle();
-            testUtils.pressBack();
-            device.waitForIdle();
-            testUtils.selectFromMenu(R.string.add_account_action);
-            device.waitForIdle();
-            testUtils.newEmailAccount("email" + account, "password");
-            testUtils.accountDescription("desciption" + account, "username" + account);
         }
-        device.pressBack();
-        for (int account = 0; account < total; account++){
-            testUtils.removeLastAccount();
-        }
-        createNewEmailAccount();
     }
-    void createNewEmailAccount() {
-        device.waitForIdle();
-        testUtils.selectFromMenu(R.string.add_account_action);
-        device.waitForIdle();
-        onView(withId(R.id.account_email)).perform(typeText("email"));
-        onView(withId(R.id.account_password)).perform(typeText("password"), closeSoftKeyboard());
-        onView(withId(R.id.manual_setup)).perform(click());
-        testUtils.fillImapData();
-        onView(withId(R.id.next)).perform(click());
-        device.waitForIdle();
-        device.pressBack();
-        device.waitForIdle();
-        device.pressBack();
-        device.waitForIdle();
-        onView(withId(R.id.next)).perform(click());
+
+    private void goBackAndRemoveAccount(){
+        try{
+            device.waitForIdle();
+            device.pressBack();
+            device.waitForIdle();
+            onView(withId(R.id.accounts_list)).check(matches(isDisplayed()));
+            testUtils.removeLastAccount();
+        } catch (Exception ex){
+            device.waitForIdle();
+            goBackAndRemoveAccount();
+        }
     }
 }
