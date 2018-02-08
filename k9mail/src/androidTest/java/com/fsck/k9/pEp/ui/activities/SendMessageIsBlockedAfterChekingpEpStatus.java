@@ -39,29 +39,42 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
 
     @Test
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
-        testUtils.createAccount(false);
-        testUtils.getLastMessageReceived();
-        testUtils.composeMessageButton();
-        uiDevice.waitForIdle();
-        messageTo = "random@email.is";
-        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
-        uiDevice.waitForIdle();
-        testUtils.checkStatus(Rating.pEpRatingUnencrypted);
+        launchApp();
+        composeSelfMessage();
+        testUtils.checkStatus(Rating.pEpRatingTrusted);
         testUtils.pressBack();
+        disableProtection();
+        uiDevice.waitForIdle();
         testUtils.checkStatus(Rating.pEpRatingUnencrypted);
         testUtils.pressBack();
         testUtils.sendMessage();
         uiDevice.waitForIdle();
         testUtils.getLastMessageReceived();
-        testUtils.composeMessageButton();
-        uiDevice.waitForIdle();
-        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
-        uiDevice.waitForIdle();
+        composeSelfMessage();
         testUtils.sendMessage();
         uiDevice.waitForIdle();
+        testUtils.doWaitForResource(R.id.actionbar_title_first);
         onView(withId(R.id.actionbar_title_first)).check(matches(isDisplayed()));
         uiDevice.waitForIdle();
         testUtils.pressBack();
         testUtils.removeLastAccount();
+    }
+
+    private void launchApp(){
+        testUtils.createAccount(true);
+        testUtils.getLastMessageReceived();
+    }
+
+    private void composeSelfMessage(){
+        testUtils.composeMessageButton();
+        uiDevice.waitForIdle();
+        messageTo = testUtils.getTextFromTextViewThatContainsText("@");
+        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
+        uiDevice.waitForIdle();
+    }
+
+    private void disableProtection(){
+        testUtils.openOptionsMenu();
+        testUtils.selectFromMenu(R.string.pep_force_unprotected);
     }
 }

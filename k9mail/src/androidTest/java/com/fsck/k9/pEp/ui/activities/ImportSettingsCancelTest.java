@@ -45,8 +45,6 @@ public class ImportSettingsCancelTest {
         testUtils.createAccount(isGmail);
         testUtils.pressBack();
         testUtils.doWait();
-        testUtils.pressBack();
-        testUtils.doWait();
         testUtils.openOptionsMenu();
         testUtils.doWait();
         testUtils.selectFromMenu(R.string.import_export_action);
