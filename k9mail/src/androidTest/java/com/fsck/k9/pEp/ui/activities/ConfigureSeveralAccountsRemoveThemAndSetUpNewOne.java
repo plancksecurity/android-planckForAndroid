@@ -40,21 +40,9 @@ public class ConfigureSeveralAccountsRemoveThemAndSetUpNewOne {
         int total = 14;
         for (int account = 0; account < total; account++) {
             testUtils.createAccount(false);
-            goBackAndRemoveAccount();
+            testUtils.goBackAndRemoveAccount();
             device.waitForIdle();
         }
     }
 
-    private void goBackAndRemoveAccount(){
-        try{
-            device.waitForIdle();
-            device.pressBack();
-            device.waitForIdle();
-            onView(withId(R.id.accounts_list)).check(matches(isDisplayed()));
-            testUtils.removeLastAccount();
-        } catch (Exception ex){
-            device.waitForIdle();
-            goBackAndRemoveAccount();
-        }
-    }
 }

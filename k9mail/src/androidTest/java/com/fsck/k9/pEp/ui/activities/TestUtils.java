@@ -547,6 +547,19 @@ class TestUtils {
         }
     }
 
+    void goBackAndRemoveAccount(){
+        try{
+            device.waitForIdle();
+            device.pressBack();
+            device.waitForIdle();
+            onView(withId(R.id.accounts_list)).check(matches(isDisplayed()));
+            removeLastAccount();
+        } catch (Exception ex){
+            device.waitForIdle();
+            goBackAndRemoveAccount();
+        }
+    }
+
     void startActivity() {
         device.pressHome();
         final String launcherPackage = getLauncherPackageName();
