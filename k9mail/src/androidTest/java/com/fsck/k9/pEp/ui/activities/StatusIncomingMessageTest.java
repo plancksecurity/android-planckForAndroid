@@ -27,6 +27,7 @@ import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard
 import static android.support.test.espresso.action.ViewActions.longClick;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 
 
 public class StatusIncomingMessageTest {
@@ -100,22 +101,5 @@ public class StatusIncomingMessageTest {
     private static UtilsPackage.RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
 
         return new UtilsPackage.RecyclerViewMatcher(recyclerViewId);
-    }
-
-    private static Matcher<View> withBackgroundColor(final int colorId) {
-        Checks.checkNotNull(colorId);
-        int colorFromResource = ContextCompat.getColor(getTargetContext(), colorId);
-        return new BoundedMatcher<View, View>(View.class) {
-            @Override
-            public boolean matchesSafely(View view) {
-                int backGroundColor = ((ColorDrawable) view.getBackground()).getColor();
-                return colorFromResource == backGroundColor;
-            }
-
-            @Override
-            public void describeTo(Description description) {
-
-            }
-        };
     }
 }
