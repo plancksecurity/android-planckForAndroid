@@ -161,13 +161,13 @@ class TestUtils {
                 onView(withId(R.id.skip)).perform(click());
                 device.waitForIdle();
             } catch (Exception ignoredException) {
-                Log.d("Ignored", "Ignored exception");
+                Timber.e("Ignored", "Ignored exception");
             }
             try {
                 onView(withId(R.id.action_continue)).perform(click());
                 device.waitForIdle();
             } catch (Exception ignoredException) {
-                Log.d("Ignored", "Ignored exception");
+                Timber.e("Ignored", "Ignored exception");
             }
             try {
                 UiObject allowPermissions = device.findObject(new UiSelector()
@@ -209,7 +209,7 @@ class TestUtils {
                 onView(withId(R.id.action_continue)).perform(click());
                 device.waitForIdle();
             } catch (Exception ignoredException) {
-                Log.d("Ignored", "Ignored exception");
+                Timber.e("Ignored", "Ignored exception");
             }
             try {
                 if (isGmail) {
@@ -218,7 +218,7 @@ class TestUtils {
                     newEmailAccount();
                 }
             } catch (Exception ex) {
-
+                Timber.e("Ignored", "Exists account");
             }
             try {
                 doWaitForResource(R.id.account_description);
@@ -525,7 +525,7 @@ class TestUtils {
         return size;
     }
 
-    public void waitForMessageWithText(String textInMessage, String preview) {
+    void waitForMessageWithText(String textInMessage, String preview) {
         boolean messageSubject;
         boolean messagePreview;
         boolean emptyMessageList;
@@ -542,7 +542,7 @@ class TestUtils {
                         pressBack();
                         device.waitForIdle();
                     }catch (Exception ex){
-
+                        Timber.e(ex);
                     }
                     onView(withId(R.id.message_list)).perform(swipeDown());
                     device.waitForIdle();
