@@ -71,7 +71,7 @@ public class YellowStatusEmailFromBotTest {
         testUtils.clickLastMessageReceived();
         clickReplayMessage();
         clickMailStatus();
-        checkBotMessageColor();
+        testUtils.checkToolBarColor(R.color.pep_yellow);
         goBackToMessageList();
         testUtils.composeMessageButton();
         yellowStatusMessageTest();
@@ -118,11 +118,6 @@ public class YellowStatusEmailFromBotTest {
         device.waitForIdle();
     }
 
-    private void checkBotMessageColor() {
-        testUtils.doWaitForResource(R.id.toolbar_container);
-        device.waitForIdle();
-        onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(R.color.pep_yellow)));
-    }
 
     private void clickMailStatus() {
         device.waitForIdle();

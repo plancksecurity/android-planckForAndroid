@@ -59,8 +59,10 @@ import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertThat;
 
 
@@ -621,6 +623,12 @@ class TestUtils {
                 emptyMessageList = device.findObjects(textViewSelector).size() <= lastMessageReceivedPosition;
             }
         }
+    }
+
+    void checkToolBarColor(int color) {
+        doWaitForResource(R.id.toolbar_container);
+        device.waitForIdle();
+        onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(color)));
     }
 
     void startActivity() {
