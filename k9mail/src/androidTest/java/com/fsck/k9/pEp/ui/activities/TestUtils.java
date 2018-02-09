@@ -605,10 +605,12 @@ class TestUtils {
                     }
                 } while (!newMessage);
                 device.waitForIdle();
-                messageSubject = getTextFromTextViewThatContainsText(textInMessage)
-                        .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition).getText());
-                messagePreview = getTextFromTextViewThatContainsText(preview)
-                        .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 2).getText());
+                if(lastMessageReceivedPosition + 2 < device.findObjects(textViewSelector).size()) {
+                    messageSubject = getTextFromTextViewThatContainsText(textInMessage)
+                            .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition).getText());
+                    messagePreview = getTextFromTextViewThatContainsText(preview)
+                            .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 2).getText());
+                }
                 if(size != device.findObjects(textViewSelector).size()){
                     messageSubject = false;
                 }
