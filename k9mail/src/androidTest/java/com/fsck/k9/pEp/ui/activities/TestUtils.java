@@ -159,42 +159,21 @@ class TestUtils {
             onView(withId(R.id.next)).perform(click());
             device.waitForIdle();
             try {
+                device.waitForIdle();
                 onView(withId(R.id.skip)).perform(click());
                 device.waitForIdle();
             } catch (Exception ignoredException) {
                 Timber.e("Ignored", "Ignored exception");
             }
             try {
+                device.waitForIdle();
                 onView(withId(R.id.action_continue)).perform(click());
                 device.waitForIdle();
             } catch (Exception ignoredException) {
                 Timber.e("Ignored", "Ignored exception");
             }
             try {
-                UiObject allowPermissions = device.findObject(new UiSelector()
-                        .clickable(true)
-                        .checkable(false)
-                        .index(2));
-                if (allowPermissions.exists()) {
-                    allowPermissions.click();
-                    device.waitForIdle();
-                }
-            } catch (Exception ignoredException) {
-                Timber.e(ignoredException, "There is no permissions dialog to interact with ");
-            }
-            try {
-                UiObject allowPermissions = device.findObject(new UiSelector()
-                        .clickable(true)
-                        .checkable(false)
-                        .index(2));
-                if (allowPermissions.exists()) {
-                    allowPermissions.click();
-                    device.waitForIdle();
-                }
-            } catch (Exception ignoredException) {
-                Timber.e(ignoredException, "There is no permissions dialog to interact with ");
-            }
-            try {
+                device.waitForIdle();
                 UiObject allowPermissions = device.findObject(new UiSelector()
                         .clickable(true)
                         .checkable(false)
@@ -207,6 +186,33 @@ class TestUtils {
                 Timber.e(ignoredException, "There is no permissions dialog to interact with ");
             }
             try {
+                device.waitForIdle();
+                UiObject allowPermissions = device.findObject(new UiSelector()
+                        .clickable(true)
+                        .checkable(false)
+                        .index(1));
+                if (allowPermissions.exists()) {
+                    allowPermissions.click();
+                    device.waitForIdle();
+                }
+            } catch (Exception ignoredException) {
+                Timber.e(ignoredException, "There is no permissions dialog to interact with ");
+            }
+            try {
+                device.waitForIdle();
+                UiObject allowPermissions = device.findObject(new UiSelector()
+                        .clickable(true)
+                        .checkable(false)
+                        .index(1));
+                if (allowPermissions.exists()) {
+                    allowPermissions.click();
+                    device.waitForIdle();
+                }
+            } catch (Exception ignoredException) {
+                Timber.e(ignoredException, "There is no permissions dialog to interact with ");
+            }
+            try {
+                device.waitForIdle();
                 onView(withId(R.id.action_continue)).perform(click());
                 device.waitForIdle();
             } catch (Exception ignoredException) {
