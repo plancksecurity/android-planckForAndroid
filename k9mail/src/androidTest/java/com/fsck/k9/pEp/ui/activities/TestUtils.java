@@ -232,10 +232,10 @@ class TestUtils {
                 device.waitForIdle();
                 accountDescription(DESCRIPTION, USER_NAME);
             } catch (Exception ex) {
-
+                Timber.e("Ignored", "Ignored exception");
             }
         } catch (Exception ignoredException) {
-            Log.d("Ignored", "Ignored exception");
+            Timber.e("Ignored", "Ignored exception");
         }
     }
 
@@ -537,6 +537,7 @@ class TestUtils {
                     device.waitForIdle();
                     onView(withText(R.string.cancel_action)).perform(click());
                 }catch (NoMatchingViewException ignoredException){
+                    Timber.e("Ignored exception");
                 }
                 try {
                     device.waitForIdle();
