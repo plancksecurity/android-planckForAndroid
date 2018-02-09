@@ -138,7 +138,7 @@ class TestUtils {
         fillServerData();
     }
 
-    public void fillImapData() {
+    private void fillImapData() {
         fillServerData();
     }
 
