@@ -19,6 +19,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
+import timber.log.Timber;
+
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -27,6 +29,7 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.core.internal.deps.guava.base.Preconditions.checkNotNull;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
@@ -128,8 +131,17 @@ public class YellowStatusEmailFromBotTest {
     }
 
     private void clickReplayMessage() {
-        device.waitForIdle();
-        onView(withId(R.id.reply_message)).perform(click());
+        boolean clickedButton = false;
+        do {
+            try {
+                device.waitForIdle();
+                onView(withId(R.id.reply_message)).check(matches(isDisplayed()));
+                onView(withId(R.id.reply_message)).perform(click());
+                clickedButton = true;
+            } catch (Exception ex){
+                Timber.e(ex);
+            }
+        } while (!clickedButton);
     }
 
     private void yellowStatusMessageTest() {
