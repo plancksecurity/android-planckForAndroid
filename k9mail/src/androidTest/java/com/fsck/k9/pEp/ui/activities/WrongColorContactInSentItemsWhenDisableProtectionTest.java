@@ -50,7 +50,7 @@ public class WrongColorContactInSentItemsWhenDisableProtectionTest {
 
     @Test
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
-        //testUtils.createAccount(false);
+        testUtils.createAccount(false);
         composeMessage();
         checkPEpStatus(Rating.pEpRatingTrusted);
         selectFromMenu(R.string.pep_force_unprotected);
