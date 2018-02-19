@@ -39,10 +39,10 @@ public class ImportSettingsCancelFromAccountTest {
         testUtils.doWait();
         testUtils.openOptionsMenu();
         testUtils.doWait();
-        testUtils.selectFromMenu(R.string.import_export_action);
+        testUtils.selectFromScreen(R.string.import_export_action);
         testUtils.doWait();
         testUtils.doWaitForResource(R.string.settings_import);
-        testUtils.selectFromMenu(R.string.settings_import);
+        testUtils.selectFromScreen(R.string.settings_import);
         testUtils.getActivityInstance();
         testUtils.goBackAndRemoveAccount();
         testUtils.doWait();

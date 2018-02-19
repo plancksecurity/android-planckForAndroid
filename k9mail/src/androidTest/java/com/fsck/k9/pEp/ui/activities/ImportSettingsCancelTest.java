@@ -49,10 +49,10 @@ public class ImportSettingsCancelTest {
         testUtils.doWait();
         testUtils.openOptionsMenu();
         testUtils.doWait();
-        testUtils.selectFromMenu(R.string.import_export_action);
+        testUtils.selectFromScreen(R.string.import_export_action);
         testUtils.doWait();
         testUtils.doWaitForResource(R.string.settings_import);
-        testUtils.selectFromMenu(R.string.settings_import);
+        testUtils.selectFromScreen(R.string.settings_import);
         testUtils.doWait();
         testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.settings_import_selection);
         testUtils.clickAcceptButton();

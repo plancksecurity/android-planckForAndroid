@@ -43,9 +43,9 @@ public class ImportSettingsDarkThemeTest {
         testUtils.pressBack();
         testUtils.openOptionsMenu();
         device.waitForIdle();
-        testUtils.selectFromMenu(R.string.import_export_action);
+        testUtils.selectFromScreen(R.string.import_export_action);
         device.waitForIdle();
-        testUtils.selectFromMenu(R.string.settings_import);
+        testUtils.selectFromScreen(R.string.settings_import);
         testUtils.clickAcceptButton();
         device.waitForIdle();
         testUtils.clickAcceptButton();

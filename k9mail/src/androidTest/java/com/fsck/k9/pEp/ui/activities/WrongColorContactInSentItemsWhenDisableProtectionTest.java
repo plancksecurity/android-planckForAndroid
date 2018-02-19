@@ -79,7 +79,7 @@ public class WrongColorContactInSentItemsWhenDisableProtectionTest {
 
     private void selectFromMenu(int textToSelect) {
         testUtils.openOptionsMenu();
-        testUtils.selectFromMenu(textToSelect);
+        testUtils.selectFromScreen(textToSelect);
     }
 
     private void checkPEpStatus(Rating rating) {
@@ -101,7 +101,7 @@ public class WrongColorContactInSentItemsWhenDisableProtectionTest {
         device.waitForIdle();
         testUtils.openOptionsMenu();
         device.waitForIdle();
-        testUtils.selectFromMenu(R.string.account_settings_folders);
+        testUtils.selectFromScreen(R.string.account_settings_folders);
         device.waitForIdle();
         String folder = resources.getString(R.string.special_mailbox_name_sent);
         for (UiObject2 textView : device.findObjects(textViewSelector)) {

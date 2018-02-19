@@ -73,7 +73,7 @@ public class MessageUnsecureWhenDisableProtectionTest {
 
     private void disableProtection(){
         testUtils.openOptionsMenu();
-        testUtils.selectFromMenu(R.string.pep_force_unprotected);
+        testUtils.selectFromScreen(R.string.pep_force_unprotected);
         uiDevice.waitForIdle();
     }
 

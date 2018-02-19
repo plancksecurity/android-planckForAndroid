@@ -474,7 +474,7 @@ class TestUtils {
         openActionBarOverflowOrOptionsMenu(context);
     }
 
-    void selectFromMenu(int resource) {
+    void selectFromScreen(int resource) {
         BySelector selector = By.clazz("android.widget.TextView");
         device.waitForIdle();
         for (UiObject2 object : device.findObjects(selector)) {
