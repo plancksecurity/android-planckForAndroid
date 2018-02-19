@@ -14,7 +14,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-import org.pEp.jniadapter.Rating;
+
+import timber.log.Timber;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -52,9 +53,7 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
         sendMessages(3);
         device.waitForIdle();
         testUtils.clickLastMessageReceived();
-        testUtils.assertMessageStatus(Rating.pEpRatingReliable.value);
-        device.waitForIdle();
-        onView(withId(R.id.handshake_button_text)).perform(click());
+        testUtils.clickMessageStatus();
         device.waitForIdle();
         onView(withId(R.id.confirmTrustWords)).perform(click());
         goBackAndRemoveAccount();
@@ -68,6 +67,7 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
             onView(withId(R.id.accounts_list)).check(matches(isDisplayed()));
             testUtils.removeLastAccount();
         } catch (Exception ex){
+            Timber.e("View not found, do goBackAndRemoveAccount method again");
             goBackAndRemoveAccount();
         }
 
@@ -76,13 +76,12 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
     public void sendMessages(int totalMessages) {
         device.waitForIdle();
         for (int message = 0; message < totalMessages; message++) {
-            testUtils.getLastMessageReceived();
             testUtils.composeMessageButton();
             device.waitForIdle();
             testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_BODY, MESSAGE_SUBJECT, messageTo), false);
             testUtils.sendMessage();
             device.waitForIdle();
-            testUtils.waitForMessageWithText("p≡p", "p≡pbot (" + messageTo + ")");
+            testUtils.waitForNewMessage();
         }
     }
 }

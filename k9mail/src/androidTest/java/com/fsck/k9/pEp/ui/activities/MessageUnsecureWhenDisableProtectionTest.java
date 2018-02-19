@@ -50,7 +50,7 @@ public class MessageUnsecureWhenDisableProtectionTest {
         testUtils.pressBack();
         uiDevice.waitForIdle();
         testUtils.sendMessage();
-        testUtils.waitForMessageWithText(MESSAGE_BODY, MESSAGE_SUBJECT);
+        testUtils.waitForNewMessage();
         testUtils.clickLastMessageReceived();
         uiDevice.waitForIdle();
         checkStatus();
@@ -60,7 +60,7 @@ public class MessageUnsecureWhenDisableProtectionTest {
 
     private void launchTest(){
         testUtils.createAccount(false);
-        testUtils.getLastMessageReceived();
+        testUtils.waitForNewMessage();
     }
 
     private void composeMessage(){

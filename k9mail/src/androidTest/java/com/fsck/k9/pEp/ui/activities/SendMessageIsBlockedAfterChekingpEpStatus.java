@@ -49,7 +49,7 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
         testUtils.pressBack();
         testUtils.sendMessage();
         uiDevice.waitForIdle();
-        testUtils.getLastMessageReceived();
+        testUtils.waitForNewMessage();
         composeSelfMessage();
         testUtils.sendMessage();
         uiDevice.waitForIdle();
@@ -62,7 +62,7 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
 
     private void launchApp(){
         testUtils.createAccount(true);
-        testUtils.getLastMessageReceived();
+        testUtils.waitForNewMessage();
     }
 
     private void composeSelfMessage(){

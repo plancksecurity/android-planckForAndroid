@@ -51,19 +51,15 @@ public class StatusIncomingMessageTest {
 
     private void assertPartnerStatusIsTrusted() {
         testUtils.createAccount(false);
-        testUtils.getLastMessageReceived();
         testUtils.composeMessageButton();
         device.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         testUtils.sendMessage();
         device.waitForIdle();
-        testUtils.waitForMessageWithText("p≡p", "p≡pbot (" + messageTo + ")");
+        testUtils.waitForNewMessage();
         testUtils.clickLastMessageReceived();
-        testUtils.assertMessageStatus(Rating.pEpRatingReliable.value);
-        device.waitForIdle();
-        onView(withId(R.id.handshake_button_text)).perform(click());
+        testUtils.clickMessageStatus();
         onView(withId(R.id.confirmTrustWords)).perform(click());
-        testUtils.pressBack();
         testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
         device.waitForIdle();
         testUtils.pressBack();

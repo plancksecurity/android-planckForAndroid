@@ -61,13 +61,13 @@ public class YellowStatusEmailFromBotTest {
     @Test
     public void sendMessageAndAssertYellowStatusMessage() {
         testUtils.createAccount(false);
-        testUtils.getLastMessageReceived();
+        testUtils.waitForNewMessage();
         testUtils.composeMessageButton();
         device.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         testUtils.sendMessage();
         device.waitForIdle();
-        testUtils.waitForMessageWithText("p≡p", "p≡pbot (" + messageTo + ")");
+        testUtils.waitForNewMessage();
         testUtils.clickLastMessageReceived();
         clickReplayMessage();
         clickMailStatus();
