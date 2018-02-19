@@ -352,7 +352,7 @@ class TestUtils {
         device.pressBack();
     }
 
-    void removeLastAccount() {
+    private void removeLastAccount() {
         device.waitForIdle();
         doWait("accounts_list");
         device.waitForIdle();
@@ -361,6 +361,19 @@ class TestUtils {
         selectRemoveAccount();
         device.waitForIdle();
         clickAcceptButton();
+    }
+
+    public void goBackAndRemoveAccount(){
+        try {
+            device.waitForIdle();
+            pressBack();
+            device.waitForIdle();
+            onView(withId(R.id.accounts_list)).check(matches(isDisplayed()));
+            removeLastAccount();
+        } catch (Exception ex){
+            Timber.e("View not found, do goBackAndRemoveAccount method again");
+            goBackAndRemoveAccount();
+        }
     }
 
     void clickAcceptButton() {

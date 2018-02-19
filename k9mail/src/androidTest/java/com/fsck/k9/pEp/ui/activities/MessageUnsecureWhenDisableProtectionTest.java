@@ -88,7 +88,6 @@ public class MessageUnsecureWhenDisableProtectionTest {
         uiDevice.waitForIdle();
         testUtils.pressBack();
         testUtils.removeMessagesFromList();
-        testUtils.pressBack();
-        testUtils.removeLastAccount();
+        testUtils.goBackAndRemoveAccount();
     }
 }

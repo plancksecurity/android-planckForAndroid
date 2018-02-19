@@ -40,8 +40,7 @@ public class AttachFilesToEmailTest {
         messageTo = testUtils.getTextFromTextViewThatContainsText("@");
         testUtils.fillMessage(new TestUtils.BasicMessage("", "Subject", "Message", messageTo), true);
         testUtils.sendMessage();
-        testUtils.pressBack();
-        testUtils.removeLastAccount();
+        testUtils.goBackAndRemoveAccount();
     }
 
 }

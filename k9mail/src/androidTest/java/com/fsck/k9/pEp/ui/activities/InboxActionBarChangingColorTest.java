@@ -49,9 +49,7 @@ public class InboxActionBarChangingColorTest {
         testUtils.createAccount(false);
         assertSelfMessageColor();
         assertBotMessageColor();
-        testUtils.pressBack();
-        device.waitForIdle();
-        testUtils.removeLastAccount();
+        testUtils.goBackAndRemoveAccount();
     }
 
     private void assertSelfMessageColor(){

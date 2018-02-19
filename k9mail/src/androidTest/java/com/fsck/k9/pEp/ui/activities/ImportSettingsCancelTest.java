@@ -62,10 +62,10 @@ public class ImportSettingsCancelTest {
         testUtils.clickCancelButton();
         testUtils.doWait();
         assertExistsTest();
-        testUtils.removeLastAccount();
+        testUtils.goBackAndRemoveAccount();
         testUtils.doWait();
         assertExistsTest();
-        testUtils.removeLastAccount();
+        testUtils.goBackAndRemoveAccount();
         testUtils.doWait();
         testUtils.doWaitForResource(R.id.skip);
         assertThereAreNoAccounts();

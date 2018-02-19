@@ -52,9 +52,7 @@ public class RemoveContactsFromMessageAndKeepOriginalToolbarColor {
         messageFrom = testUtils.getTextFromTextViewThatContainsText("@");
         assertToolBarHasNoColorWhenUnkownReceiver(messageFrom);
         assertToolBarHasNoColorWhenUnkownReceiver("random@test.pep-security.net");
-        testUtils.pressBack();
-        device.waitForIdle();
-        testUtils.removeLastAccount();
+        testUtils.goBackAndRemoveAccount();
     }
 
     private void fillMessageWithOneKnownReceiverAndOneUnknown(String to, String subject, String message){

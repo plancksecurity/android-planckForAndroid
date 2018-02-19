@@ -60,16 +60,7 @@ public class WrongColorContactInSentItemsWhenDisableProtectionTest {
         goToSentFolder();
         selectFirstMessage();
         assertStatus(Rating.pEpRatingTrusted.value);
-        removeAccount();
-    }
-
-    private void removeAccount() {
-        for (int pressBack = 0; pressBack < 5; pressBack++) {
-            device.waitForIdle();
-            testUtils.pressBack();
-        }
-        device.waitForIdle();
-        testUtils.removeLastAccount();
+        testUtils.goBackAndRemoveAccount();
     }
 
     private void assertStatus(int status) {

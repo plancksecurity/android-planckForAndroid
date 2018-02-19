@@ -56,21 +56,7 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
         testUtils.clickMessageStatus();
         device.waitForIdle();
         onView(withId(R.id.confirmTrustWords)).perform(click());
-        goBackAndRemoveAccount();
-    }
-
-    public void goBackAndRemoveAccount(){
-        try {
-            device.waitForIdle();
-            testUtils.pressBack();
-            device.waitForIdle();
-            onView(withId(R.id.accounts_list)).check(matches(isDisplayed()));
-            testUtils.removeLastAccount();
-        } catch (Exception ex){
-            Timber.e("View not found, do goBackAndRemoveAccount method again");
-            goBackAndRemoveAccount();
-        }
-
+        testUtils.goBackAndRemoveAccount();
     }
 
     public void sendMessages(int totalMessages) {

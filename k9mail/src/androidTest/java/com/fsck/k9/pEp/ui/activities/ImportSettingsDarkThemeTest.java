@@ -56,11 +56,6 @@ public class ImportSettingsDarkThemeTest {
             Assert.assertEquals(K9.Theme.LIGHT, K9.getK9Theme());
         }catch (AssertionFailedError exception){
         }
-        removeAccount();
-    }
-
-    public void removeAccount(){
-        testUtils.pressBack();
-        testUtils.removeLastAccount();
+        testUtils.goBackAndRemoveAccount();
     }
 }

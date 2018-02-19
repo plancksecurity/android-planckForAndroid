@@ -55,7 +55,6 @@ public class GreyStatusMessageTest {
         testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.save_or_discard_draft_message_dlg_title);
         testUtils.doWaitForObject("android.widget.Button");
         onView(withText(R.string.discard_action)).perform(click());
-        testUtils.pressBack();
-        testUtils.removeLastAccount();
+        testUtils.goBackAndRemoveAccount();
     }
 }

@@ -56,8 +56,7 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
         testUtils.doWaitForResource(R.id.actionbar_title_first);
         onView(withId(R.id.actionbar_title_first)).check(matches(isDisplayed()));
         uiDevice.waitForIdle();
-        testUtils.pressBack();
-        testUtils.removeLastAccount();
+        testUtils.goBackAndRemoveAccount();
     }
 
     private void launchApp(){

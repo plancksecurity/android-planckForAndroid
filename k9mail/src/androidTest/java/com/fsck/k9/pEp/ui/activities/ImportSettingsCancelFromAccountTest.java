@@ -44,7 +44,7 @@ public class ImportSettingsCancelFromAccountTest {
         testUtils.doWaitForResource(R.string.settings_import);
         testUtils.selectFromMenu(R.string.settings_import);
         testUtils.getActivityInstance();
-        testUtils.removeLastAccount();
+        testUtils.goBackAndRemoveAccount();
         testUtils.doWait();
         assertThereAreNoAccounts();
     }
