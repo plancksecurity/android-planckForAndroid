@@ -366,11 +366,11 @@ class TestUtils {
     public void goBackAndRemoveAccount(){
         try {
             device.waitForIdle();
-            pressBack();
-            device.waitForIdle();
             onView(withId(R.id.accounts_list)).check(matches(isDisplayed()));
             removeLastAccount();
         } catch (Exception ex){
+            device.waitForIdle();
+            pressBack();
             Timber.e("View not found, do goBackAndRemoveAccount method again");
             goBackAndRemoveAccount();
         }
