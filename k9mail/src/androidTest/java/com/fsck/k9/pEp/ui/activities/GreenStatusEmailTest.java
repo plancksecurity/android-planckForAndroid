@@ -22,6 +22,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 @RunWith(AndroidJUnit4.class)
 public class GreenStatusEmailTest  {
 
+    private UiDevice device;
     private TestUtils testUtils;
     private String messageFrom;
 
@@ -31,6 +32,9 @@ public class GreenStatusEmailTest  {
     @Before
     public void startpEpApp() {
         testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()));
+        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        testUtils = new TestUtils(device);
+        testUtils.increaseTimeoutWait();
         testUtils.startActivity();
     }
 
@@ -44,14 +48,14 @@ public class GreenStatusEmailTest  {
         testUtils.createAccount(false);
         testUtils.composeMessageButton();
         testUtils.testStatusEmpty();
-        testUtils.doWait();
+        device.waitForIdle();
         messageFrom = testUtils.getTextFromTextViewThatContainsText("@");
         testUtils.testStatusMailAndListMail(new TestUtils.BasicMessage(messageFrom, "Subject", "Message", messageFrom) ,
                 new TestUtils.BasicIdentity(Rating.pEpRatingTrusted, messageFrom));
-        testUtils.doWait();
+        device.waitForIdle();
         testUtils.testStatusMail(new TestUtils.BasicMessage("","","", ""),
                 new TestUtils.BasicIdentity(Rating.pEpRatingUndefined, ""));
-        testUtils.doWait();
+        device.waitForIdle();
         testUtils.testStatusMailAndListMail(new TestUtils.BasicMessage(messageFrom, "Subject", "Message", messageFrom) ,
                 new TestUtils.BasicIdentity(Rating.pEpRatingTrusted, messageFrom));
         testUtils.pressBack();

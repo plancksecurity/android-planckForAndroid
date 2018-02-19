@@ -19,10 +19,14 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 public class ImportSettingsCancelFromAccountTest {
 
     private TestUtils testUtils;
+    private UiDevice device;
 
     @Before
     public void startpEpApp() {
         testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()));
+        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        testUtils = new TestUtils(device);
+        testUtils.increaseTimeoutWait();
         testUtils.startActivity();
     }
 
@@ -34,18 +38,18 @@ public class ImportSettingsCancelFromAccountTest {
     public void importSettingsCancelTest(boolean isGmail) {
         testUtils.increaseTimeoutWait();
         testUtils.createAccount(isGmail);
-        testUtils.doWait();
+        device.waitForIdle();
         testUtils.pressBack();
-        testUtils.doWait();
+        device.waitForIdle();
         testUtils.openOptionsMenu();
-        testUtils.doWait();
+        device.waitForIdle();
         testUtils.selectFromScreen(R.string.import_export_action);
-        testUtils.doWait();
+        device.waitForIdle();
         testUtils.doWaitForResource(R.string.settings_import);
         testUtils.selectFromScreen(R.string.settings_import);
         testUtils.getActivityInstance();
         testUtils.goBackAndRemoveAccount();
-        testUtils.doWait();
+        device.waitForIdle();
         assertThereAreNoAccounts();
     }
 

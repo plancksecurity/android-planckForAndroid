@@ -485,10 +485,6 @@ class TestUtils {
         }
     }
 
-    void doWait() {
-        device.waitForIdle();
-    }
-
     void doWait(String viewId) {
         UiObject2 waitForView = device
                 .wait(Until.findObject(By.res(APP_ID, viewId)),

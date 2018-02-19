@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.is;
 public class ImportSettingsCancelTest {
 
     private TestUtils testUtils;
+    private UiDevice device;
 
     @Rule
     public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
@@ -31,6 +32,9 @@ public class ImportSettingsCancelTest {
     @Before
     public void startpEpApp() {
         testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()));
+        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        testUtils = new TestUtils(device);
+        testUtils.increaseTimeoutWait();
         testUtils.startActivity();
     }
 
@@ -44,29 +48,29 @@ public class ImportSettingsCancelTest {
         testUtils.externalAppRespondWithFile(R.raw.settings);
         testUtils.createAccount(isGmail);
         testUtils.pressBack();
-        testUtils.doWait();
+        device.waitForIdle();
         testUtils.pressBack();
-        testUtils.doWait();
+        device.waitForIdle();
         testUtils.openOptionsMenu();
-        testUtils.doWait();
+        device.waitForIdle();
         testUtils.selectFromScreen(R.string.import_export_action);
-        testUtils.doWait();
+        device.waitForIdle();
         testUtils.doWaitForResource(R.string.settings_import);
         testUtils.selectFromScreen(R.string.settings_import);
-        testUtils.doWait();
+        device.waitForIdle();
         testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.settings_import_selection);
         testUtils.clickAcceptButton();
         testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.settings_import_success_header);
         testUtils.clickAcceptButton();
         testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.settings_import_activate_account_header);
         testUtils.clickCancelButton();
-        testUtils.doWait();
+        device.waitForIdle();
         assertExistsTest();
         testUtils.goBackAndRemoveAccount();
-        testUtils.doWait();
+        device.waitForIdle();
         assertExistsTest();
         testUtils.goBackAndRemoveAccount();
-        testUtils.doWait();
+        device.waitForIdle();
         testUtils.doWaitForResource(R.id.skip);
         assertThereAreNoAccounts();
     }
