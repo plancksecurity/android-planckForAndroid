@@ -27,7 +27,6 @@ import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 
 import com.fsck.k9.BuildConfig;
@@ -43,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 
 import timber.log.Timber;
 
+import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -54,15 +54,20 @@ import static android.support.test.espresso.assertion.ViewAssertions.doesNotExis
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.isInternal;
+import static android.support.test.espresso.matcher.CursorMatchers.withRowString;
 import static android.support.test.espresso.matcher.RootMatchers.isDialog;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.returnElementsSize;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.saveSizeInInt;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 
@@ -79,7 +84,10 @@ class TestUtils {
     private BySelector textViewSelector;
     private String messageReceivedDate[];
     private int lastMessageReceivedPosition;
+    private int hashCodeOfRecivedMessages[];
+    private String messagesSubject[];
     private int messagesToRead;
+    private Activity currentActivity;
 
     TestUtils(UiDevice device) {
         this.device = device;
@@ -88,6 +96,8 @@ class TestUtils {
         textViewSelector = By.clazz("android.widget.TextView");
         messagesToRead = 6;
         messageReceivedDate = new String[messagesToRead];
+        hashCodeOfRecivedMessages = new int[messagesToRead];
+        messagesSubject = new String[messagesToRead];
     }
 
     void increaseTimeoutWait() {
@@ -154,6 +164,10 @@ class TestUtils {
         doWaitForResource(R.id.fab_button_compose_message);
         device.waitForIdle();
         onView(withId(R.id.fab_button_compose_message)).perform(click());
+        device.waitForIdle();
+        //Instrumentation.ActivityMonitor monitor =  getInstrumentation().addMonitor(MessageCompose.class.getName(), null, false);
+        //currentActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 5);
+        //currentActivity.findViewById(R.id.toolbar_container).getBackground();
     }
 
     void createAccount(boolean isGmail) {
@@ -239,6 +253,7 @@ class TestUtils {
         } catch (Exception ignoredException) {
             Timber.e("Ignored", "Ignored exception");
         }
+        removeMessagesFromList();
     }
 
     String getAccountDescription() {
@@ -501,38 +516,44 @@ class TestUtils {
 
     public void clickLastMessageReceived() {
         device.waitForIdle();
-        device.findObjects(textViewSelector).get(lastMessageReceivedPosition).click();
+        onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
     }
 
-    public void getLastMessageReceived() {
-        device.waitForIdle();
-        doWaitForResource(R.id.message_list);
-        device.waitForIdle();
-        onView(withId(R.id.message_list))
-                .perform(swipeDown());
-        device.waitForIdle();
-        lastMessageReceivedPosition = getLastMessageReceivedPosition();
-        int message = 0;
-        if (lastMessageReceivedPosition != -1) {
-            removeMessagesFromList();
-            int size = device.findObjects(textViewSelector).size();
-            for (; (message < messagesToRead) && (lastMessageReceivedPosition + 1 + message * 3 < size); message++) {
-                messageReceivedDate[message] = device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1 + message * 3).getText();
+    public void waitForNewMessage() {
+        int messageListSize[] = new int[2];
+        boolean newEmail = false;
+        onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
+        while (!newEmail) {
+            try {
+                device.waitForIdle();
+                swipeDownMessageList();
+                device.waitForIdle();
+                onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 1));
+                if (messageListSize[1] > messageListSize[0]){
+                    newEmail = true;
+                }
+            } catch (Exception ex) {
+                Timber.e(ex);
             }
-        } else {
-            for (; message < messagesToRead; message++) {
-                messageReceivedDate[message] = "";
-            }
+        }
+    }
+
+    private void swipeDownMessageList (){
+        try{
             device.waitForIdle();
-            lastMessageReceivedPosition = device.findObjects(textViewSelector).size();
+            onView(withId(R.id.message_list)).check(matches(isDisplayed()));
+            onView(withId(R.id.message_list)).perform(swipeDown());
+            Timber.e("Message list found");
+        } catch (Exception ex){
+            Timber.e("Message list not found, waiting for view...");
+            swipeDownMessageList();
         }
     }
 
     public void removeMessagesFromList(){
         device.waitForIdle();
-        if (device.findObjects(textViewSelector).size() > lastMessageReceivedPosition) {
-            device.waitForIdle();
-            device.findObjects(textViewSelector).get(lastMessageReceivedPosition).click();
+        try {
+            onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
             boolean emptyList = false;
             do {
                 try{
@@ -549,79 +570,8 @@ class TestUtils {
                     emptyList = true;
                 }
             } while (!emptyList);
-        }
-    }
-
-    public int getLastMessageReceivedPosition() {
-        int size = device.findObjects(textViewSelector).size();
-        for (int position = 0; position < size; position++) {
-            String textAtPosition = device.findObjects(textViewSelector).get(position).getText();
-            if (textAtPosition != null && textAtPosition.contains("@")) {
-                position++;
-                if (position < size) {
-                    while (device.findObjects(textViewSelector).get(position).getText() == null) {
-                        position++;
-                        if (position >= size) {
-                            return -1;
-                        }
-                    }
-                }
-                return position;
-            }
-        }
-        return size;
-    }
-
-    void waitForMessageWithText(String textInMessage, String preview) {
-        boolean messageSubject = false;
-        boolean messagePreview = false;
-        boolean emptyMessageList;
-        int size;
-        emptyMessageList = device.findObjects(textViewSelector).size() <= lastMessageReceivedPosition;
-        if (!emptyMessageList) {
-            do {
-                boolean newMessage = false;
-                do {
-                    device.waitForIdle();
-                    try{
-                        onView(withId(R.id.action_mode_close_button)).check(matches(isDisplayed()));
-                        device.waitForIdle();
-                        pressBack();
-                        device.waitForIdle();
-                    }catch (Exception ex){
-                        Timber.e(ex);
-                    }
-                    onView(withId(R.id.message_list)).perform(swipeDown());
-                    device.waitForIdle();
-                    while (device.findObjects(textViewSelector).get(1) != null
-                            && device.findObjects(textViewSelector).get(1).getText()
-                            .contains(resources.getString(R.string.status_loading_account_folder))) {
-                        device.waitForIdle();
-                    }
-                    size = device.findObjects(textViewSelector).size();
-                    for (int message = 0; (message < messagesToRead) && (lastMessageReceivedPosition + 1 + message * 3 < size); message++) {
-                        if (!(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1 + message * 3).getText())
-                                .equals(messageReceivedDate[message])) {
-                            newMessage = true;
-                            break;
-                        }
-                    }
-                } while (!newMessage);
-                device.waitForIdle();
-                if(lastMessageReceivedPosition + 2 < device.findObjects(textViewSelector).size()) {
-                    messageSubject = getTextFromTextViewThatContainsText(textInMessage)
-                            .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition).getText());
-                    messagePreview = getTextFromTextViewThatContainsText(preview)
-                            .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 2).getText());
-                }
-                if(size != device.findObjects(textViewSelector).size()){
-                    messageSubject = false;
-                }
-            } while (!(messageSubject && messagePreview));
-        } else {
-            while (emptyMessageList) {
-                emptyMessageList = device.findObjects(textViewSelector).size() <= lastMessageReceivedPosition;
-            }
+        } catch (Exception ex){
+            Timber.e("Message list is empty");
         }
     }
 
