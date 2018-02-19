@@ -94,7 +94,7 @@ public class WrongColorContactInSentItemsWhenDisableProtectionTest {
         testUtils.composeMessageButton();
         device.waitForIdle();
         messageTo = testUtils.getTextFromTextViewThatContainsText("@");
-        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_BODY, MESSAGE_SUBJECT, messageTo), false);
+        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
     }
 
     private void goToSentFolder() {

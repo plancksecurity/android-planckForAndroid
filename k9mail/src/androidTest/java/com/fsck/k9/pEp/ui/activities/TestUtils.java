@@ -625,7 +625,7 @@ class TestUtils {
         String subject;
         String to;
 
-        BasicMessage(String from, String message, String subject, String to) {
+        BasicMessage(String from, String subject, String message, String to) {
             this.from = from;
             this.message = message;
             this.subject = subject;
