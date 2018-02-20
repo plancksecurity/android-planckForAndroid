@@ -39,7 +39,7 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
 
     @Test
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
-        launchApp();
+        testUtils.createAccount(true);
         composeSelfMessage();
         testUtils.checkStatus(Rating.pEpRatingTrusted);
         testUtils.pressBack();
@@ -57,11 +57,6 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
         onView(withId(R.id.actionbar_title_first)).check(matches(isDisplayed()));
         uiDevice.waitForIdle();
         testUtils.goBackAndRemoveAccount();
-    }
-
-    private void launchApp(){
-        testUtils.createAccount(true);
-        testUtils.waitForNewMessage();
     }
 
     private void composeSelfMessage(){

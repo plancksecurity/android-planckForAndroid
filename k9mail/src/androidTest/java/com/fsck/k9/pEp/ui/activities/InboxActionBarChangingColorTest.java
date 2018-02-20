@@ -54,7 +54,6 @@ public class InboxActionBarChangingColorTest {
 
     private void assertSelfMessageColor(){
         device.waitForIdle();
-        testUtils.waitForNewMessage();
         testUtils.composeMessageButton();
         selfMessage = testUtils.getTextFromTextViewThatContainsText("@");
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, selfMessage), false);
@@ -74,16 +73,12 @@ public class InboxActionBarChangingColorTest {
 
     private void assertBotMessageColor(){
         device.waitForIdle();
-        testUtils.waitForNewMessage();
         testUtils.composeMessageButton();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         testUtils.sendMessage();
         device.waitForIdle();
         testUtils.waitForNewMessage();
         testUtils.clickLastMessageReceived();
-        /*testUtils.assertMessageStatus(Rating.pEpRatingReliable.value);
-        device.waitForIdle();
-        testUtils.pressBack();*/
         onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(R.color.pep_yellow)));
         device.waitForIdle();
         testUtils.pressBack();

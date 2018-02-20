@@ -41,7 +41,7 @@ public class MessageUnsecureWhenDisableProtectionTest {
 
     @Test
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
-        launchTest();
+        testUtils.createAccount(false);
         composeMessage();
         testUtils.checkStatus(Rating.pEpRatingTrusted);
         testUtils.pressBack();
@@ -55,12 +55,6 @@ public class MessageUnsecureWhenDisableProtectionTest {
         uiDevice.waitForIdle();
         checkStatus();
         removeMessageListAndAccount();
-
-    }
-
-    private void launchTest(){
-        testUtils.createAccount(false);
-        testUtils.waitForNewMessage();
     }
 
     private void composeMessage(){
