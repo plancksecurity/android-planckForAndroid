@@ -61,7 +61,6 @@ public class YellowStatusEmailFromBotTest {
     @Test
     public void sendMessageAndAssertYellowStatusMessage() {
         testUtils.createAccount(false);
-        testUtils.waitForNewMessage();
         testUtils.composeMessageButton();
         device.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
