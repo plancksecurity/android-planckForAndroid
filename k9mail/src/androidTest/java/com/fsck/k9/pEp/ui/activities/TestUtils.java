@@ -531,9 +531,9 @@ class TestUtils {
     public void waitForNewMessage() {
         int messageListSize[] = new int[2];
         boolean newEmail = false;
-        onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
         while (!newEmail) {
             try {
+                onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
                 device.waitForIdle();
                 swipeDownMessageList();
                 device.waitForIdle();
