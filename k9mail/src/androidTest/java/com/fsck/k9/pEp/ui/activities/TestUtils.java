@@ -54,20 +54,17 @@ import static android.support.test.espresso.assertion.ViewAssertions.doesNotExis
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.isInternal;
-import static android.support.test.espresso.matcher.CursorMatchers.withRowString;
 import static android.support.test.espresso.matcher.RootMatchers.isDialog;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.returnElementsSize;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.saveSizeInInt;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 
@@ -81,23 +78,11 @@ class TestUtils {
     private UiDevice device;
     private Context context;
     private Resources resources;
-    private BySelector textViewSelector;
-    private String messageReceivedDate[];
-    private int lastMessageReceivedPosition;
-    private int hashCodeOfRecivedMessages[];
-    private String messagesSubject[];
-    private int messagesToRead;
-    private Activity currentActivity;
 
     TestUtils(UiDevice device) {
         this.device = device;
         context = InstrumentationRegistry.getTargetContext();
         resources = context.getResources();
-        textViewSelector = By.clazz("android.widget.TextView");
-        messagesToRead = 6;
-        messageReceivedDate = new String[messagesToRead];
-        hashCodeOfRecivedMessages = new int[messagesToRead];
-        messagesSubject = new String[messagesToRead];
     }
 
     void increaseTimeoutWait() {
@@ -117,13 +102,6 @@ class TestUtils {
     void newEmailAccount() {
         onView(withId(R.id.account_email)).perform(typeText(getEmail()));
         onView(withId(R.id.account_password)).perform(typeText(getPassword()), closeSoftKeyboard());
-        /*onView(withId(R.id.manual_setup)).perform(click());
-        fillImapData();
-        onView(withId(R.id.next)).perform(click());
-        device.waitForIdle();
-        fillSmptData();
-        device.waitForIdle();
-        onView(withId(R.id.next)).perform(click());*/
         device.waitForIdle();
         onView(withId(R.id.next)).perform(click());
     }
@@ -136,19 +114,6 @@ class TestUtils {
         onView(withId(R.id.next)).perform(click());
         device.waitForIdle();
         onView(withId(R.id.next)).perform(click());
-    }
-
-    private void fillSmptData() {
-        fillServerData();
-    }
-
-    private void fillImapData() {
-        fillServerData();
-    }
-
-    private void fillServerData() {
-        onView(withId(R.id.account_server)).perform(replaceText(getEmailServer()));
-        onView(withId(R.id.account_username)).perform(replaceText(getEmail()));
     }
 
     void accountDescription(String description, String userName) {
@@ -165,9 +130,6 @@ class TestUtils {
         device.waitForIdle();
         onView(withId(R.id.fab_button_compose_message)).perform(click());
         device.waitForIdle();
-        //Instrumentation.ActivityMonitor monitor =  getInstrumentation().addMonitor(MessageCompose.class.getName(), null, false);
-        //currentActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 5);
-        //currentActivity.findViewById(R.id.toolbar_container).getBackground();
     }
 
     void createAccount(boolean isGmail) {
@@ -610,11 +572,6 @@ class TestUtils {
     }
 
     @NonNull
-    private String getEmailServer() {
-        return BuildConfig.PEP_TEST_EMAIL_SERVER;
-    }
-
-    @NonNull
     private String getPassword() {
         return BuildConfig.PEP_TEST_EMAIL_PASSWORD;
     }
@@ -665,10 +622,5 @@ class TestUtils {
         public String getAddress() {
             return address;
         }
-    }
-
-    private class SameStatusdentities {
-        List<String> addresses;
-        Rating rating;
     }
 }
