@@ -297,17 +297,18 @@ class TestUtils {
 
     void sendMessage() {
         boolean sendButtonDisplayed = true;
-        do {
+        while (sendButtonDisplayed){
             try {
                 device.waitForIdle();
-                doWaitForResource(R.id.send);
+                onView(withId(R.id.send)).check(matches(isDisplayed()));
+                device.waitForIdle();
                 onView(withId(R.id.send)).perform(click());
                 sendButtonDisplayed = false;
             } catch (NoMatchingViewException e) {
                 Timber.e("Button not displayed");
             }
             device.waitForIdle();
-        }while (sendButtonDisplayed);
+        }
     }
 
     void pressBack() {
@@ -350,11 +351,11 @@ class TestUtils {
 
     void doWaitForObject(String object) {
         boolean finish = false;
-        do {
+        while (!finish){
             if (device.findObject(By.clazz(object)) != null) {
                 finish = true;
             }
-        } while (!finish);
+        }
     }
 
     private void selectRemoveAccount() {
@@ -526,7 +527,7 @@ class TestUtils {
         try {
             onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
             boolean emptyList = false;
-            do {
+            while (!emptyList){
                 try{
                     device.waitForIdle();
                     onView(withText(R.string.cancel_action)).perform(click());
@@ -540,7 +541,7 @@ class TestUtils {
                 } catch (NoMatchingViewException ignoredException) {
                     emptyList = true;
                 }
-            } while (!emptyList);
+            }
         } catch (Exception ex){
             Timber.e("Message list is empty");
         }
