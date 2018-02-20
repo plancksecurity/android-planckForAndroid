@@ -99,14 +99,14 @@ class TestUtils {
         return resolveInfo.activityInfo.packageName;
     }
 
-    void newEmailAccount() {
+    private void newEmailAccount() {
         onView(withId(R.id.account_email)).perform(typeText(getEmail()));
         onView(withId(R.id.account_password)).perform(typeText(getPassword()), closeSoftKeyboard());
         device.waitForIdle();
         onView(withId(R.id.next)).perform(click());
     }
 
-    void gmailAccount() {
+    private void gmailAccount() {
         onView(withId(R.id.account_oauth2)).perform(click());
         onView(withId(R.id.next)).perform(click());
         onView(withId(R.id.next)).perform(click());
@@ -116,7 +116,7 @@ class TestUtils {
         onView(withId(R.id.next)).perform(click());
     }
 
-    void accountDescription(String description, String userName) {
+    private void accountDescription(String description, String userName) {
         device.waitForIdle();
         onView(withId(R.id.account_description)).perform(typeText(description));
         onView(withId(R.id.account_name)).perform(typeText(userName), closeSoftKeyboard());
@@ -348,7 +348,7 @@ class TestUtils {
         onView(withText(R.string.cancel_action)).perform(click());
     }
 
-    public void doWaitForObject(String object) {
+    void doWaitForObject(String object) {
         boolean finish = false;
         do {
             if (device.findObject(By.clazz(object)) != null) {
@@ -372,7 +372,7 @@ class TestUtils {
         }
     }
 
-    void longClick(String viewId) {
+    private void longClick(String viewId) {
         UiObject2 list = device.findObject(By.res(APP_ID, viewId));
         Rect bounds = list.getVisibleBounds();
         device.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 180);
@@ -398,14 +398,14 @@ class TestUtils {
         Espresso.pressBack();
     }
 
-    public void checkStatus(Rating rating) {
+    void checkStatus(Rating rating) {
         device.waitForIdle();
         onView(withId(R.id.pEp_indicator)).perform(click());
         device.waitForIdle();
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, rating.value))));
     }
 
-    public String getTextFromTextViewThatContainsText(String text) {
+    String getTextFromTextViewThatContainsText(String text) {
         BySelector selector = By.clazz("android.widget.TextView");
         for (UiObject2 textView : device.findObjects(selector)) {
             if (textView.getText() != null && textView.getText().contains(text)) {
@@ -466,18 +466,18 @@ class TestUtils {
                 .check(matches(isDisplayed()));
     }
 
-    public String getResourceString(int id, int position) {
+    String getResourceString(int id, int position) {
         return resources.getStringArray(id)[position];
     }
 
-    public void assertMessageStatus(int status) {
+    void assertMessageStatus(int status) {
         device.waitForIdle();
         clickMessageStatus();
         device.waitForIdle();
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
     }
 
-    public void clickMessageStatus() {
+    void clickMessageStatus() {
         device.waitForIdle();
         doWaitForResource(R.id.tvPep);
         device.waitForIdle();
@@ -485,12 +485,12 @@ class TestUtils {
         device.waitForIdle();
     }
 
-    public void clickLastMessageReceived() {
+    void clickLastMessageReceived() {
         device.waitForIdle();
         onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
     }
 
-    public void waitForNewMessage() {
+    void waitForNewMessage() {
         int messageListSize[] = new int[2];
         boolean newEmail = false;
         while (!newEmail) {
@@ -521,7 +521,7 @@ class TestUtils {
         }
     }
 
-    public void removeMessagesFromList(){
+    void removeMessagesFromList(){
         device.waitForIdle();
         try {
             onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
