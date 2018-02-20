@@ -493,7 +493,7 @@ class TestUtils {
     }
 
     void doWaitForResource(int resource) {
-        device.wait(Until.hasObject(By.desc(resources.getString(resource))), 1);
+        device.wait(Until.hasObject(By.desc(resources.getString(resource))), 10);
     }
 
     void doWaitForAlertDialog(IntentsTestRule<SplashActivity> intent, int displayText) {
