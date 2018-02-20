@@ -296,7 +296,7 @@ class TestUtils {
     }
 
     void sendMessage() {
-        boolean sendButtonDisplayed;
+        boolean sendButtonDisplayed = true;
         do {
             try {
                 device.waitForIdle();
@@ -304,7 +304,7 @@ class TestUtils {
                 onView(withId(R.id.send)).perform(click());
                 sendButtonDisplayed = false;
             } catch (NoMatchingViewException e) {
-                sendButtonDisplayed = false;
+                Timber.e("Button not displayed");
             }
             device.waitForIdle();
         }while (sendButtonDisplayed);
