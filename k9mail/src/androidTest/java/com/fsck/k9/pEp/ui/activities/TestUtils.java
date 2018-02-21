@@ -133,6 +133,11 @@ class TestUtils {
     }
 
     void createAccount(boolean isGmail) {
+        createNewAccountWithPermissions(isGmail);
+        removeMessagesFromList();
+    }
+
+    private void createNewAccountWithPermissions(boolean isGmail){
         try {
             onView(withId(R.id.next)).perform(click());
             device.waitForIdle();
@@ -215,7 +220,6 @@ class TestUtils {
         } catch (Exception ignoredException) {
             Timber.e("Ignored", "Ignored exception");
         }
-        removeMessagesFromList();
     }
 
     String getAccountDescription() {
