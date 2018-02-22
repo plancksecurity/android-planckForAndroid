@@ -52,5 +52,9 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
         testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.save_or_discard_draft_message_dlg_title);
         testUtils.doWaitForObject("android.widget.Button");
         onView(withText(R.string.save_draft_action)).perform(click());
+        device.waitForIdle();
+        testUtils.openOptionsMenu();
+        testUtils.selectFromMenu(R.string.account_settings_folders);
+
     }
 }
