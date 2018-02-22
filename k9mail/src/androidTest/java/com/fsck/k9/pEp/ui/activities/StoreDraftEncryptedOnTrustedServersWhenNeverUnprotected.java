@@ -1,7 +1,7 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.ActivityTestRule;
+import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.UiDevice;
 
@@ -13,6 +13,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
 
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
+
 @RunWith(AndroidJUnit4.class)
 public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
     private UiDevice device;
@@ -22,7 +26,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
     private static final String MESSAGE_BODY = "Message";
 
     @Rule
-    public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
+    public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
 
     @Before
     public void startActivity() {
@@ -45,5 +49,8 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
         testUtils.selectFromMenu(R.id.is_always_secure);
         device.waitForIdle();
         device.pressBack();
+        testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.save_or_discard_draft_message_dlg_title);
+        testUtils.doWaitForObject("android.widget.Button");
+        onView(withText(R.string.save_draft_action)).perform(click());
     }
 }
