@@ -14,12 +14,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-import org.pEp.jniadapter.Rating;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -52,37 +49,21 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
         sendMessages(3);
         device.waitForIdle();
         testUtils.clickLastMessageReceived();
-        testUtils.assertMessageStatus(Rating.pEpRatingReliable.value);
-        device.waitForIdle();
-        onView(withId(R.id.handshake_button_text)).perform(click());
+        testUtils.clickMessageStatus();
         device.waitForIdle();
         onView(withId(R.id.confirmTrustWords)).perform(click());
-        goBackAndRemoveAccount();
-    }
-
-    public void goBackAndRemoveAccount(){
-        try {
-            device.waitForIdle();
-            testUtils.pressBack();
-            device.waitForIdle();
-            onView(withId(R.id.accounts_list)).check(matches(isDisplayed()));
-            testUtils.removeLastAccount();
-        } catch (Exception ex){
-            goBackAndRemoveAccount();
-        }
-
+        testUtils.goBackAndRemoveAccount();
     }
 
     public void sendMessages(int totalMessages) {
         device.waitForIdle();
         for (int message = 0; message < totalMessages; message++) {
-            testUtils.getLastMessageReceived();
             testUtils.composeMessageButton();
             device.waitForIdle();
             testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_BODY, MESSAGE_SUBJECT, messageTo), false);
             testUtils.sendMessage();
             device.waitForIdle();
-            testUtils.waitForMessageWithText("p≡p", "p≡pbot (" + messageTo + ")");
+            testUtils.waitForNewMessage();
         }
     }
 }
