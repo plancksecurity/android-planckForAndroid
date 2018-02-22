@@ -125,11 +125,23 @@ class TestUtils {
     }
 
     void composeMessageButton() {
-        device.waitForIdle();
-        doWaitForResource(R.id.fab_button_compose_message);
-        device.waitForIdle();
-        onView(withId(R.id.fab_button_compose_message)).perform(click());
-        device.waitForIdle();
+        clickView(R.id.fab_button_compose_message);
+    }
+
+    void clickView(int viewId){
+        boolean buttonClicked = false;
+        while (!buttonClicked){
+            try{
+                device.waitForIdle();
+                onView(withId(viewId)).check(matches(isDisplayed()));
+                device.waitForIdle();
+                onView(withId(viewId)).perform(click());
+                buttonClicked = true;
+                device.waitForIdle();
+            } catch (Exception ex){
+                Timber.e("View not found: " + ex);
+            }
+        }
     }
 
     void createAccount(boolean isGmail) {
@@ -393,7 +405,7 @@ class TestUtils {
 
     void checkStatus(Rating rating) {
         device.waitForIdle();
-        onView(withId(R.id.pEp_indicator)).perform(click());
+        clickView(R.id.pEp_indicator);
         device.waitForIdle();
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, rating.value))));
     }
@@ -464,18 +476,23 @@ class TestUtils {
     }
 
     void assertMessageStatus(int status) {
-        device.waitForIdle();
-        clickMessageStatus();
-        device.waitForIdle();
+        boolean viewDisplayed = false;
+        while (!viewDisplayed){
+            try{
+                device.waitForIdle();
+                onView(withId(R.id.pEpTitle)).check(matches(isDisplayed()));
+                viewDisplayed = true;
+                device.waitForIdle();
+            } catch (Exception ex){
+                Timber.e("View not found: " + ex);
+            }
+        }
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
+        device.waitForIdle();
     }
 
     void clickMessageStatus() {
-        device.waitForIdle();
-        doWaitForResource(R.id.tvPep);
-        device.waitForIdle();
-        onView(withId(R.id.tvPep)).perform(click());
-        device.waitForIdle();
+        clickView(R.id.tvPep);
     }
 
     void clickLastMessageReceived() {
@@ -502,7 +519,7 @@ class TestUtils {
         }
     }
 
-    private void swipeDownMessageList (){
+    void swipeDownMessageList (){
         try{
             device.waitForIdle();
             onView(withId(R.id.message_list)).check(matches(isDisplayed()));
