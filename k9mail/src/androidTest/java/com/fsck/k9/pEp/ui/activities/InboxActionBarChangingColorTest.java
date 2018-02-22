@@ -61,6 +61,7 @@ public class InboxActionBarChangingColorTest {
         device.waitForIdle();
         testUtils.waitForNewMessage();
         testUtils.clickLastMessageReceived();
+        testUtils.clickView(R.id.tvPep);
         testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
         device.waitForIdle();
         testUtils.pressBack();
