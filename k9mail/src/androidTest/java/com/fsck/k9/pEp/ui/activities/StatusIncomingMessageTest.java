@@ -59,7 +59,8 @@ public class StatusIncomingMessageTest {
         testUtils.waitForNewMessage();
         testUtils.clickLastMessageReceived();
         testUtils.clickMessageStatus();
-        onView(withId(R.id.confirmTrustWords)).perform(click());
+        testUtils.clickView(R.id.confirmTrustWords);
+        testUtils.clickView(R.id.tvPep);
         testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
         device.waitForIdle();
         testUtils.pressBack();
