@@ -18,6 +18,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
 
+import timber.log.Timber;
+
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -59,22 +61,25 @@ public class WrongColorContactInSentItemsWhenDisableProtectionTest {
         testUtils.sendMessage();
         goToSentFolder();
         selectFirstMessage();
-        assertStatus(Rating.pEpRatingTrusted.value);
+        testUtils.clickView(R.id.tvPep);
+        testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
         testUtils.goBackAndRemoveAccount();
     }
 
-    private void assertStatus(int status) {
-        testUtils.doWaitForResource(R.id.tvPep);
-        device.waitForIdle();
-        testUtils.assertMessageStatus(status);
-    }
-
     private void selectFirstMessage() {
-        device.waitForIdle();
-        testUtils.doWaitForResource(R.id.message_list);
-        device.waitForIdle();
-        onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
-        device.waitForIdle();
+        boolean firstMessageClicked = false;
+        while (!firstMessageClicked){
+            try {
+                device.waitForIdle();
+                testUtils.swipeDownMessageList();
+                device.waitForIdle();
+                onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
+                firstMessageClicked = true;
+                device.waitForIdle();
+            } catch (Exception ex){
+                Timber.e("Message list view not found");
+            }
+        }
     }
 
     private void selectFromMenu(int textToSelect) {
@@ -114,6 +119,7 @@ public class WrongColorContactInSentItemsWhenDisableProtectionTest {
                 }
                 device.waitForIdle();
             } catch (Exception e) {
+                Timber.e("View is not sent folder");
             }
         }
         device.waitForIdle();
