@@ -468,7 +468,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
         setTitle();
 
-        currentMessageBuilder = (MessageBuilder) getLastNonConfigurationInstance();
+        currentMessageBuilder = (MessageBuilder) getLastCustomNonConfigurationInstance();
         if (currentMessageBuilder != null) {
             setProgressBarIndeterminateVisibility(true);
             currentMessageBuilder.reattachCallback(this);

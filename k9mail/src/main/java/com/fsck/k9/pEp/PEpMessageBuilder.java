@@ -192,6 +192,7 @@ class PEpMessageBuilder {
 
         // TODO: other headers
         ArrayList<Pair<String, String>> optionalFields = new ArrayList<>();
+        addOptionalField(optionalFields, MimeHeader.HEADER_PEP_VERSION);
         addOptionalField(optionalFields, MimeHeader.HEADER_PEP_AUTOCONSUME);
         addOptionalField(optionalFields, MimeHeader.HEADER_PEP_KEY_LIST);
         addOptionalField(optionalFields, MimeHeader.HEADER_PEP_ALWAYS_SECURE);

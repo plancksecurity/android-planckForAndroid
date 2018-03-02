@@ -74,14 +74,15 @@ public class PEpUtils {
         if (adr.getPersonal() != null) {
             id.username = adr.getPersonal();
         }
-        if (isMyself(context, adr)) {
-            id.user_id = PEpProvider.PEP_OWN_USER_ID;
-            return id;
-        }
+//        if (isMyself(context, adr)) {
+//            id.user_id = PEpProvider.PEP_OWN_USER_ID;
+//            return id;
+//        }
         try {
             id.user_id = Contacts.getInstance(context).getContactId(adr.getAddress());
-        } catch (Exception e) {
-            id.user_id = adr.getAddress();
+        } catch (Exception ignore) {
+            //we ignore it as we decided to do nothing if the user is not found,
+            // or there is no permission
         }
 //        PEpProvider provider = PEpProviderFactory.createProvider();
 //        id = provider.updateIdentity(id);
