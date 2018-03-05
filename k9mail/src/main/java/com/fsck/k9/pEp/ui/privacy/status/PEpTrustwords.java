@@ -367,6 +367,11 @@ public class PEpTrustwords extends PepColoredActivity {
 
     @OnClick(R.id.confirmTrustWords)
     public void confirmTrustwords() {
+        if (partner.user_id.isEmpty()) {
+            String tempFpr = partner.fpr;
+            partner = getpEp().updateIdentity(partner);
+            partner.fpr = tempFpr;
+        }
         getpEp().trustPersonaKey(partner);
         Intent returnIntent = new Intent();
         returnIntent.putExtra(PARTNER_POSITION, partnerPosition);
