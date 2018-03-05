@@ -566,6 +566,7 @@ public class PEpProviderImpl implements PEpProvider {
                 Identity myself;
                 Identity another;
                 if (!areKeysyncTrustwords) {
+                    self.user_id = PEP_OWN_USER_ID;
                     myself = engine.myself(self);
                     another = engine.updateIdentity(other);
                 } else {
@@ -597,7 +598,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized  void trustPersonaKey(Identity id) {
+    public synchronized void trustPersonaKey(Identity id) {
         createEngineInstanceIfNeeded();
         engine.trustPersonalKey(id);
     }
@@ -659,6 +660,12 @@ public class PEpProviderImpl implements PEpProvider {
         createEngineInstanceIfNeeded();
         myId.user_id = PEP_OWN_USER_ID;
         return engine.myself(myId);
+    }
+
+    @Override
+    public synchronized void setOwnIdentity(Identity id, String fpr) {
+        createEngineInstanceIfNeeded();
+        engine.setOwnKey(id, fpr);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.fsck.k9.pEp.ui.keysync;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -84,7 +85,7 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
         super.onCreate(savedInstanceState);
         final Intent intent = getIntent();
 
-        receiver = new DismissKeysyncDialogReceiver();
+        receiver = new DismissKeysyncDialogReceiver(this);
         filter = new IntentFilter();
         filter.addAction("KEYSYNC_DISMISS");
         filter.setPriority(1);
@@ -362,13 +363,19 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
         changeTrustwordsLength(areTrustwordsShort);
     }
 
-    public class DismissKeysyncDialogReceiver extends BroadcastReceiver {
+    public static class DismissKeysyncDialogReceiver extends BroadcastReceiver {
+
+        private Activity activity;
+
+        public DismissKeysyncDialogReceiver(Activity activity) {
+            this.activity = activity;
+        }
         public DismissKeysyncDialogReceiver() {
         }
 
         @Override
         public void onReceive(final Context context, Intent intent) {
-            PEpAddDevice.this.finish();
+            activity.finish();
         }
     }
 

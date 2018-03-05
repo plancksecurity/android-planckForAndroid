@@ -232,7 +232,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PEpTrustwords.HANDSHAKE_REQUEST) {
+        if (requestCode == PEpTrustwords.REQUEST_HANDSHAKE) {
             if (resultCode == RESULT_OK) {
                 presenter.onResult();
             }
