@@ -40,7 +40,7 @@ public class PEpTrustwords extends PepColoredActivity {
     private static final String ACTION_SHOW_PEP_TRUSTWORDS = "com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS";
     public static final String PARTNER_POSITION = "partnerPositionKey";
     public static final int DEFAULT_POSITION = -1;
-    public static final int HANDSHAKE_REQUEST = 1;
+    public static final int REQUEST_HANDSHAKE = 1;
     private static final String MYSELF = "myselfKey";
     private static final String PARTNER_PREFIX = "Partner: ";
     private static final String SHOWING_PGP_FINGERPRINT = "showingPgpKey";
@@ -92,7 +92,7 @@ public class PEpTrustwords extends PepColoredActivity {
         }
         i.putExtra(PEP_KEY_LIST, keyList.toString());
         i.putExtra(CURRENT_RATING, pEpRating.toString());
-        context.startActivityForResult(i, HANDSHAKE_REQUEST);
+        context.startActivityForResult(i, REQUEST_HANDSHAKE);
     }
 
     public static void actionRequestHandshake(Activity context, String myself, int partnerPosition) {
@@ -100,7 +100,7 @@ public class PEpTrustwords extends PepColoredActivity {
         i.setAction(ACTION_SHOW_PEP_TRUSTWORDS);
         i.putExtra(PARTNER_POSITION, partnerPosition);
         i.putExtra(MYSELF, myself);
-        context.startActivityForResult(i, HANDSHAKE_REQUEST);
+        context.startActivityForResult(i, REQUEST_HANDSHAKE);
 
     }
 

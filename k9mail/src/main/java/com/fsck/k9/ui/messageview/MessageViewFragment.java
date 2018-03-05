@@ -9,7 +9,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
@@ -22,7 +21,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
@@ -63,7 +61,6 @@ import com.fsck.k9.pEp.ui.PermissionErrorListener;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
 import com.fsck.k9.pEp.ui.listeners.FragmentPermissionListener;
-import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -300,14 +297,16 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             messageCryptoPresenter.onActivityResult(requestCode, resultCode, data);
         }
 
-        if (resultCode == RESULT_OK && requestCode == PEpStatus.REQUEST_STATUS) {
-            pEpRating = (Rating) data.getSerializableExtra(PEpStatus.CURRENT_RATING);
+        if (resultCode == RESULT_OK && requestCode == PEpStatus.REQUEST_STATUS || requestCode == PEpTrustwords.REQUEST_HANDSHAKE) {
+            if (requestCode == PEpStatus.REQUEST_STATUS)  pEpRating = (Rating) data.getSerializableExtra(PEpStatus.CURRENT_RATING);
+            else pEpRating = ((K9) getApplicationContext()).getpEpProvider().incomingMessageRating(mMessage);
+
             K9Activity activity = (K9Activity) getActivity();
             if (mAccount.ispEpPrivacyProtected()) {
-                PEpUtils.colorToolbar(activity.getToolbar(), PEpUtils.getRatingColor(pEpRating, getActivity()));
+                PEpUtils.colorToolbar(activity.getToolbar(), PEpUtils.getRatingColor(pEpRating, activity));
                 mMessage.setpEpRating(pEpRating);
             } else {
-                PEpUtils.colorToolbar(activity.getToolbar(), PEpUtils.getRatingColor(Rating.pEpRatingUndefined, getActivity()));
+                PEpUtils.colorToolbar(activity.getToolbar(), PEpUtils.getRatingColor(Rating.pEpRatingUndefined, activity));
                 mMessage.setpEpRating(Rating.pEpRatingUndefined);
             }
             activity.setStatusBarPepColor(pEpRating);
@@ -796,6 +795,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
         if (pePUIArtefactCache.getRecipients().size() == 1
                 && pEpRating.value == Rating.pEpRatingReliable.value) {
+            //// TODO: 05/03/18 use directRequest / At least check
             PEpTrustwords.actionRequestHandshake(context, myAdress, 0);
         } else if (pePUIArtefactCache.getRecipients().size() == 0 // No recipients on the recipient list: means is from an own identity
                 && mMessage.getRecipients(Message.RecipientType.TO).length == 1 // the meassege is to 1 recipient
