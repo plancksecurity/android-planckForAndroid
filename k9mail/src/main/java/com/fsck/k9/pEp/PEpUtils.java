@@ -422,12 +422,12 @@ public class PEpUtils {
 
         for (int i = 0; i < recipients.size(); i++) {
             Identity identity = recipients.get(i);
-            if (!identity.address.equals(account.getEmail())) {
+            if (!identity.address.equalsIgnoreCase(account.getEmail())) {
                 if (identities.size() == 0) {
                     identities.add(identity);
                 } else {
                     Identity previousIdentity = recipients.get(i - 1);
-                    if (!previousIdentity.address.equals(identity.address)) {
+                    if (!previousIdentity.address.equalsIgnoreCase(identity.address)) {
                         identities.add(identity);
                     }
                 }
