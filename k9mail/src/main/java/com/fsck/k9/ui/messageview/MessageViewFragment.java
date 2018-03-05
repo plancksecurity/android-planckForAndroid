@@ -795,7 +795,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
         if (pePUIArtefactCache.getRecipients().size() == 1
                 && pEpRating.value == Rating.pEpRatingReliable.value) {
-            //// TODO: 05/03/18 use directRequest / At least check
             PEpTrustwords.actionRequestHandshake(context, myAdress, 0);
         } else if (pePUIArtefactCache.getRecipients().size() == 0 // No recipients on the recipient list: means is from an own identity
                 && mMessage.getRecipients(Message.RecipientType.TO).length == 1 // the meassege is to 1 recipient
@@ -805,7 +804,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             List <String> keysList = getKeyListWithoutDuplicates(mMessage.getHeader(MimeHeader.HEADER_PEP_KEY_LIST));
             if (keysList.size() == 2) {
                 //String keyListHeader = mMessage.getHeader(MimeHeader.HEADER_PEP_KEY_LIST)[0];
-                PEpTrustwords.actionRequestDirectHandshake(context, myAdress, keysList, PEpTrustwords.DEFAULT_POSITION, pEpRating);
+                PEpTrustwords.actionRequestMultipleOwnAccountIdsHandshake(context, myAdress, keysList, PEpTrustwords.DEFAULT_POSITION, pEpRating);
             } else {
                 PEpStatus.actionShowStatus(context, pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAdress);
             }

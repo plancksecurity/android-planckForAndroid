@@ -81,7 +81,7 @@ public class PEpTrustwords extends PepColoredActivity {
     private boolean includeIdentityData = false;
 
 
-    public static void actionRequestDirectHandshake(Activity context, String myself, List<String> keys, int partnerPosition, Rating pEpRating) {
+    public static void actionRequestMultipleOwnAccountIdsHandshake(Activity context, String myself, List<String> keys, int partnerPosition, Rating pEpRating) {
         Intent i = new Intent(context, PEpTrustwords.class);
         i.setAction(ACTION_SHOW_PEP_TRUSTWORDS);
         i.putExtra(PARTNER_POSITION, partnerPosition);
