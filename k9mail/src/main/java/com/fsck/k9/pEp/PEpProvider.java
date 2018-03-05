@@ -148,6 +148,8 @@ public interface PEpProvider {
 
     Identity myself(Identity myId);
 
+    void setOwnIdentity(Identity id, String fpr);
+
     void setPassiveModeEnabled(boolean enable);
 
     void startKeyserverLookup();

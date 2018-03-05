@@ -663,6 +663,12 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
+    public synchronized void setOwnIdentity(Identity id, String fpr) {
+        createEngineInstanceIfNeeded();
+        engine.setOwnKey(id, fpr);
+    }
+
+    @Override
     public synchronized void setPassiveModeEnabled(boolean enable) {
         createEngineInstanceIfNeeded();
         engine.config_passive_mode(enable);
