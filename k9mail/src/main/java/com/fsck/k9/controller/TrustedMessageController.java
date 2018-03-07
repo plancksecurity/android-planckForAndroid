@@ -51,8 +51,8 @@ class TrustedMessageController {
         */
         Message encryptedMessage;
 
-        if (account.isUntrustedSever() || localMessage.getFlags().contains(Flag.X_PEP_NEVER_UNSECURE)
-                || !localMessage.getFlags().contains(Flag.X_PEP_DISABLED)) {//Untrusted server
+        if (account.isUntrustedSever() ||
+                localMessage.getFlags().contains(Flag.X_PEP_NEVER_UNSECURE)) { //Untrusted server
             encryptedMessage = encryptUntrustedMessage(context, pEpProvider, account, localMessage);
         } else { // Trusted
             return localMessage;
