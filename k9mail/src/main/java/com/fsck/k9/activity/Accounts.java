@@ -1045,9 +1045,6 @@ public class Accounts extends PEpImporterActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case R.id.add_new_account:
-            onAddNewAccount();
-            break;
         case R.id.settings:
             onEditSettings();
             break;
