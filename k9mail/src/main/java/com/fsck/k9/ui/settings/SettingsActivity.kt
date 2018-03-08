@@ -24,7 +24,7 @@ class SettingsActivity : K9Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+        bindViews(R.layout.activity_settings)
 
         initializeActionBar()
         initializeSettingsList()
@@ -33,7 +33,7 @@ class SettingsActivity : K9Activity() {
     }
 
     private fun initializeActionBar() {
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        setUpToolbar(true)
     }
 
     private fun initializeSettingsList() {
