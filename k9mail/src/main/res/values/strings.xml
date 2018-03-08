@@ -1234,4 +1234,26 @@
     <string name="mail_list_widget_text">p≡p Message List</string>
     <string name="mail_list_widget_loading">Loading messages…</string>
     <string name="fetching_folders_failed">Fetching folder list failed</string>
+    <string name="messageview_crypto_warning_details">Show Details</string>
+    <string name="error_recipient_crypto_retrieve">Error retrieving recipient status from OpenPGP provider!</string>
+
+    <string name="openpgp_enabled_error_title">Encryption not possible</string>
+    <string name="openpgp_enabled_error_msg">Some of the selected recipients don\'t support this feature!</string>
+    <string name="enable_encryption">Enable Encryption</string>
+    <string name="disable_encryption">Disable Encryption</string>
+    <string name="openpgp_description_text1">Encrypting messages ensures they can be read by the recipient, and nobody else.</string>
+    <string name="openpgp_description_text3">Encryption will only show up if supported by all recipients, and they must have sent you an email before.</string>
+    <string name="openpgp_description_text2">Toggle encryption by clicking this icon.</string>
+    <string name="openpgp_enabled_error_gotit">Got it</string>
+    <string name="openpgp_enabled_error_back">Back</string>
+    <string name="openpgp_enabled_error_disable">Disable Encryption</string>
+    <string name="openpgp_encryption">OpenPGP Encryption</string>
+
+    <string name="account_settings_crypto_prefer_encrypt">Autocrypt mutual mode</string>
+    <string name="dialog_autocrypt_mutual_title">Autocrypt mutual mode</string>
+    <string name="dialog_autocrypt_mutual_description_1">Messages will normally be encrypted by choice, or when replying to an encrypted message.</string>
+    <string name="dialog_autocrypt_mutual_description_2">If both sender and recipients enable mutual mode, encryption will be enabled by default.</string>
+    <string name="dialog_autocrypt_mutual_learn_more">You can <a href="https://k9mail.github.io/2018/02/26/OpenPGP-Considerations-Part-III-Autocrypt.html">click here</a> to learn more.</string>
+
+    <string name="general_settings_title">General settings</string>
 </resources>

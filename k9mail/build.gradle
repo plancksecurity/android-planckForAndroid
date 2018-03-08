@@ -20,6 +20,8 @@ buildscript {
 
 apply plugin: "com.android.application"
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
 
 if (!rootProject.optimizeForDevelopment) {
     apply from: "../gradle/plugins/checkstyle-android.gradle"
@@ -95,6 +97,10 @@ dependencies {
     annotationProcessor "com.google.dagger:dagger-compiler:2.4"
     implementation "com.google.dagger:dagger:2.4"
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation "android.arch.lifecycle:extensions:1.1.0"
+    implementation 'com.xwray:groupie:2.0.3'
+    implementation 'com.xwray:groupie-kotlin-android-extensions:2.0.3'
+    implementation "org.jetbrains.anko:anko-coroutines:0.10.4"
 
     androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
 
@@ -130,7 +136,7 @@ android {
         buildConfigField "String", "PEP_DRAGON_EMAIL_ADDRESS", "${pEpDragonEmail}"
         buildConfigField "String", "PEP_DRAGON_PASSWORD", "${pEpDragonPassword}"
         buildConfigField "String", "PEP_DRAGON_SERVER", "${pEpDragonServer}"
-        
+
         buildConfigField "String", "PEP_DRAGON_USERNAME", "${pEpDragonUsername}"
 
         javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true
@@ -210,6 +216,16 @@ android {
         }
     }
 
+}
+
+androidExtensions {
+    experimental = true
+}
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
 }
 
 if (project.hasProperty("keyAlias")) {
