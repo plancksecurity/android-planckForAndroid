@@ -116,7 +116,7 @@ public class Accounts extends PEpImporterActivity {
 
     private MenuItem mRefreshMenuItem;
 
-    private TextView mActionBarTitle;
+    //private TextView mActionBarTitle;
     private TextView mActionBarSubTitle;
     private TextView mActionBarUnread;
 
@@ -141,22 +141,14 @@ public class Accounts extends PEpImporterActivity {
 
     class AccountsHandler extends Handler {
         private void setViewTitle() {
-            mActionBarTitle.setText(getString(R.string.accounts_title));
-
-            if (mUnreadMessageCount == 0) {
-                mActionBarUnread.setVisibility(View.GONE);
-            } else {
-                mActionBarUnread.setText(String.format("%d", mUnreadMessageCount));
-                mActionBarUnread.setVisibility(View.GONE);
-            }
+            getToolbar().setTitle(R.string.accounts_title);
 
             String operation = mListener.getOperation(Accounts.this);
             operation = operation.trim();
             if (operation.length() < 1) {
-                mActionBarSubTitle.setVisibility(View.GONE);
+                getToolbar().setSubtitle(null);
             } else {
-                mActionBarSubTitle.setVisibility(View.VISIBLE);
-                mActionBarSubTitle.setText(operation);
+                getToolbar().setSubtitle(operation);
             }
         }
         public void refreshTitle() {
@@ -488,12 +480,8 @@ public class Accounts extends PEpImporterActivity {
 
     private void initializeActionBar() {
         setUpToolbar(false);
-        View customView = getToolbar().findViewById(R.id.actionbar_custom);
+        //View customView = getToolbar().findViewById(R.id.actionbar_custom);
         setStatusBarPepColor(Rating.pEpRatingFullyAnonymous);
-
-        mActionBarTitle = (TextView) customView.findViewById(R.id.actionbar_title_first);
-        mActionBarSubTitle = (TextView) customView.findViewById(R.id.actionbar_title_sub);
-        mActionBarUnread = (TextView) customView.findViewById(R.id.actionbar_unread_count);
     }
 
     /**
@@ -847,7 +835,6 @@ public class Accounts extends PEpImporterActivity {
                         K9.setServicesEnabled(Accounts.this);
                         refresh();
 
-                        refreshAccountsStats(realAccount);
                     }
                 }
             });
@@ -918,20 +905,6 @@ public class Accounts extends PEpImporterActivity {
         }
 
         return super.onCreateDialog(id);
-    }
-
-    private void refreshAccountsStats(Account realAccount) {
-        AccountStats oldStats = accountStats.get(realAccount.getUuid());
-        if (oldStats != null) {
-            int oldUnreadMessageCount = oldStats.unreadMessageCount;
-            mUnreadMessageCount -= oldUnreadMessageCount;
-        }
-        mHandler.setViewTitle();
-        if (accounts.size() < 1) {
-            accountStats.clear();
-            WelcomeMessage.showWelcomeMessage(this);
-            finish();
-        }
     }
 
     @Override

@@ -17,6 +17,15 @@
         app:theme="@style/ToolbarTheme">
     </android.support.v7.widget.Toolbar>
 
+    <FrameLayout
+        android:id="@+id/toolbar_search_container"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:clipChildren="false"
+        android:visibility="gone"
+        android:background="@color/colorPrimary">
 
+        <include layout="@layout/include_search_bar" />
+    </FrameLayout>
 
 </android.support.design.widget.AppBarLayout>
