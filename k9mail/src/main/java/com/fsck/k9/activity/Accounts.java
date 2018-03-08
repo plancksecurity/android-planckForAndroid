@@ -65,6 +65,7 @@ import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
+import com.fsck.k9.ui.settings.SettingsActivity;
 import com.karumi.dexter.listener.single.CompositePermissionListener;
 
 import foundation.pEp.jniadapter.Rating;
@@ -76,7 +77,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
 import timber.log.Timber;
 
 
@@ -471,7 +471,7 @@ public class Accounts extends PEpImporterActivity {
         settingsButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                onEditPrefs();
+                onEditSettings();
             }
         });
     }
@@ -708,8 +708,8 @@ public class Accounts extends PEpImporterActivity {
         AccountSetupBasics.actionNewAccount(this);
     }
 
-    private void onEditPrefs() {
-        Prefs.actionPrefs(this);
+    private void onEditSettings() {
+        SettingsActivity.launch(this);
     }
 
 
@@ -1047,6 +1047,9 @@ public class Accounts extends PEpImporterActivity {
         switch (item.getItemId()) {
         case R.id.add_new_account:
             onAddNewAccount();
+            break;
+        case R.id.settings:
+            onEditSettings();
             break;
         case R.id.check_mail:
             onCheckMail(null);

@@ -1,5 +1,12 @@
 package com.fsck.k9.activity;
 
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -43,9 +50,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.MessageActions;
-import com.fsck.k9.activity.setup.AccountSettings;
 import com.fsck.k9.activity.setup.FolderSettings;
-import com.fsck.k9.activity.setup.Prefs;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.controller.SimpleMessagingListener;
@@ -62,6 +67,7 @@ import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
+import com.fsck.k9.ui.settings.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -72,6 +78,7 @@ import java.util.Locale;
 import timber.log.Timber;
 
 import static com.fsck.k9.activity.MessageList.EXTRA_SEARCH_ACCOUNT;
+import timber.log.Timber;
 
 /**
  * FolderList is the primary user interface for the program. This
@@ -493,7 +500,7 @@ public class FolderList extends K9ListActivity {
         }
 
         case KeyEvent.KEYCODE_S: {
-            onEditAccount();
+            onEditSettings();
             return true;
         }
 
@@ -541,11 +548,8 @@ public class FolderList extends K9ListActivity {
 
     }
 
-    private void onEditPrefs() {
-        Prefs.actionPrefs(this);
-    }
-    private void onEditAccount() {
-        AccountSettings.actionSettings(this, mAccount);
+    private void onEditSettings() {
+        SettingsActivity.launch(this);
     }
 
     private void onAccounts() {
@@ -599,14 +603,8 @@ public class FolderList extends K9ListActivity {
 
             return true;
 
-        case R.id.account_settings:
-            onEditAccount();
-
-            return true;
-
-        case R.id.app_settings:
-            onEditPrefs();
-
+        case R.id.settings:
+            onEditSettings();
             return true;
 
         case R.id.empty_trash:

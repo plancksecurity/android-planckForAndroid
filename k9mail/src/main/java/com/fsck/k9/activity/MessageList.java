@@ -44,6 +44,7 @@ import com.fsck.k9.K9.SplitViewMode;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.MessageActions;
+import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.activity.setup.AccountSettings;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.setup.FolderSettings;
@@ -81,6 +82,7 @@ import com.fsck.k9.search.SearchSpecification.SearchCondition;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.ui.messageview.MessageViewFragment;
 import com.fsck.k9.ui.messageview.MessageViewFragment.MessageViewFragmentListener;
+import com.fsck.k9.ui.settings.SettingsActivity;
 import com.fsck.k9.view.MessageHeader;
 import com.fsck.k9.view.MessageTitleView;
 import com.fsck.k9.view.ViewSwitcher;
@@ -98,6 +100,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
 import timber.log.Timber;
 
 
@@ -1111,9 +1114,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         removeMessageListFragment();
         removeMessageViewFragment();
 
-        mMessageReference = null;
-        mSearch = null;
-        mFolderName = null;
+        messageReference = null;
+        search = null;
 
         initializeActionBar();
         if (!decodeExtras(intent)) {
@@ -1355,10 +1357,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             Timber.i("not opening MessageList of unavailable account");
             onAccountUnavailable();
             return false;
-        }
-
-        if (mSingleFolderMode) {
-            mFolderName = mSearch.getFolderNames().get(0);
         }
 
         // now we know if we are in single account mode and need a subtitle
@@ -1696,12 +1694,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         FolderList.actionHandleAccount(this, mAccount);
     }
 
-    private void onEditPrefs() {
-        Prefs.actionPrefs(this);
-    }
-
-    private void onEditAccount() {
-        AccountSettings.actionSettings(this, mAccount);
+    private void onEditSettings() {
+        SettingsActivity.launch(this);
     }
 
     @Override
@@ -1753,12 +1747,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 mMessageListFragment.selectAll();
                 return true;
             }
-            case R.id.app_settings: {
-                onEditPrefs();
-                return true;
-            }
-            case R.id.account_settings: {
-                onEditAccount();
+            case R.id.settings: {
+                onEditSettings();
                 return true;
             }
             case R.id.search: {
@@ -1859,12 +1849,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 mMessageListFragment.onSendPendingMessages();
                 return true;
             }
-            case R.id.folder_settings: {
-                if (mFolderName != null) {
-                    FolderSettings.actionSettings(this, mAccount, mFolderName);
-                }
-                return true;
-            }
             case R.id.expunge: {
                 mMessageListFragment.onExpunge();
                 return true;
@@ -1905,17 +1889,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private void configureMenu(Menu menu) {
         if (menu == null) {
             return;
-        }
-
-        // Set visibility of account/folder settings menu items
-        if (mMessageListFragment == null) {
-            menu.findItem(R.id.account_settings).setVisible(false);
-            menu.findItem(R.id.folder_settings).setVisible(false);
-        } else {
-            menu.findItem(R.id.account_settings).setVisible(
-                    mMessageListFragment.isSingleAccountMode());
-            menu.findItem(R.id.folder_settings).setVisible(
-                    mMessageListFragment.isSingleFolderMode());
         }
 
         /*
