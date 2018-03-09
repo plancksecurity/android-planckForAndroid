@@ -17,6 +17,7 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
 
 @RunWith(AndroidJUnit4.class)
 public class SendMessageIsBlockedAfterChekingpEpStatus {
@@ -37,14 +38,13 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
         testUtils.startActivity();
     }
 
-    @Test
+    @Test (timeout = TIMEOUT_TEST)
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
         testUtils.createAccount(true);
         composeSelfMessage();
         testUtils.checkStatus(Rating.pEpRatingTrusted);
         testUtils.pressBack();
         disableProtection();
-        uiDevice.waitForIdle();
         testUtils.checkStatus(Rating.pEpRatingUnencrypted);
         testUtils.pressBack();
         testUtils.sendMessage();

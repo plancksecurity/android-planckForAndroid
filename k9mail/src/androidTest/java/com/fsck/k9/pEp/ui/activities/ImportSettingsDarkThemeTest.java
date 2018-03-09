@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
 
 
 public class ImportSettingsDarkThemeTest {
@@ -37,7 +38,7 @@ public class ImportSettingsDarkThemeTest {
         testUtils.startActivity();
     }
 
-    @Test
+    @Test (timeout = TIMEOUT_TEST)
     public void importSettingDarkTheme() {
         testUtils.createAccount(false);
         testUtils.pressBack();

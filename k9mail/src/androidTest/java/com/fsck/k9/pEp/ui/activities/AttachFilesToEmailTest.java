@@ -10,6 +10,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
+
 @RunWith(AndroidJUnit4.class)
 public class AttachFilesToEmailTest {
 
@@ -28,7 +30,7 @@ public class AttachFilesToEmailTest {
         testUtils.startActivity();
     }
 
-    @Test 
+    @Test (timeout = TIMEOUT_TEST)
     public void attachFilesToEmail() {
         attachFilesToAccount(false);
     }

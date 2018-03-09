@@ -18,6 +18,7 @@ import org.junit.runners.MethodSorters;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(AndroidJUnit4.class)
@@ -43,7 +44,7 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
         testUtils.startActivity();
     }
 
-    @Test
+    @Test (timeout = TIMEOUT_TEST)
     public void backButtonDeviceAfterHandshakeButtonPressed() {
         testUtils.createAccount(false);
         sendMessages(3);

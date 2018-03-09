@@ -16,6 +16,7 @@ import org.pEp.jniadapter.Rating;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 
 @RunWith(AndroidJUnit4.class)
@@ -43,7 +44,7 @@ public class InboxActionBarChangingColorTest {
         testUtils.startActivity();
     }
 
-    @Test
+    @Test (timeout = TIMEOUT_TEST)
     public void assertActionBarColorIsNotChanging() {
         testUtils.increaseTimeoutWait();
         testUtils.createAccount(false);

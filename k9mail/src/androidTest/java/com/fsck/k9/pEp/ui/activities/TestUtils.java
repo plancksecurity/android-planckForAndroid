@@ -80,10 +80,15 @@ class TestUtils {
     private static final int LAUNCH_TIMEOUT = 5000;
     private static final String DESCRIPTION = "tester one";
     private static final String USER_NAME = "testerJ";
+    private static final int FIVE_MINUTES = 5;
+    private static final int MINUTE_IN_SECONDS = 60;
+    private static final int SECOND_IN_MILIS = 1000;
 
     private UiDevice device;
     private Context context;
     private Resources resources;
+
+    public static final int TIMEOUT_TEST = FIVE_MINUTES * MINUTE_IN_SECONDS * SECOND_IN_MILIS;
 
     TestUtils(UiDevice device) {
         this.device = device;

@@ -32,6 +32,7 @@ import static android.support.test.espresso.core.internal.deps.guava.base.Precon
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static junit.framework.Assert.assertTrue;
 
@@ -57,7 +58,7 @@ public class YellowStatusEmailFromBotTest {
         testUtils.startActivity();
     }
 
-    @Test
+    @Test (timeout = TIMEOUT_TEST)
     public void sendMessageAndAssertYellowStatusMessage() {
         testUtils.createAccount(false);
         testUtils.composeMessageButton();
