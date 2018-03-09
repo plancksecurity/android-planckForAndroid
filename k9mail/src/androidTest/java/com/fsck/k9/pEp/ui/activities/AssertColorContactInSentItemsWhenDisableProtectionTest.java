@@ -26,7 +26,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.CoreMatchers.anything;
 
 @RunWith(AndroidJUnit4.class)
-public class WrongColorContactInSentItemsWhenDisableProtectionTest {
+public class AssertColorContactInSentItemsWhenDisableProtectionTest {
     private UiDevice device;
     private TestUtils testUtils;
     private String messageTo = "";
