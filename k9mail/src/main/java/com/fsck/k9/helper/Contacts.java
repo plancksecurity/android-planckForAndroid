@@ -293,12 +293,12 @@ public class Contacts {
         String result;
         final Cursor c = getContactByAddress(address);
         if (c == null) {
-            return address;
+            return null;
         }
 
         try {
             if (!c.moveToFirst()) {
-                return address;
+                return null;
             }
 
              result = c.getString(CONTACT_ID_INDEX);

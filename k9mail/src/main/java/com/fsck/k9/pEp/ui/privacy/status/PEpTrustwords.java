@@ -40,7 +40,7 @@ public class PEpTrustwords extends PepColoredActivity {
     private static final String ACTION_SHOW_PEP_TRUSTWORDS = "com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS";
     public static final String PARTNER_POSITION = "partnerPositionKey";
     public static final int DEFAULT_POSITION = -1;
-    public static final int HANDSHAKE_REQUEST = 1;
+    public static final int REQUEST_HANDSHAKE = 1;
     private static final String MYSELF = "myselfKey";
     private static final String PARTNER_PREFIX = "Partner: ";
     private static final String SHOWING_PGP_FINGERPRINT = "showingPgpKey";
@@ -81,7 +81,7 @@ public class PEpTrustwords extends PepColoredActivity {
     private boolean includeIdentityData = false;
 
 
-    public static void actionRequestDirectHandshake(Activity context, String myself, List<String> keys, int partnerPosition, Rating pEpRating) {
+    public static void actionRequestMultipleOwnAccountIdsHandshake(Activity context, String myself, List<String> keys, int partnerPosition, Rating pEpRating) {
         Intent i = new Intent(context, PEpTrustwords.class);
         i.setAction(ACTION_SHOW_PEP_TRUSTWORDS);
         i.putExtra(PARTNER_POSITION, partnerPosition);
@@ -92,7 +92,7 @@ public class PEpTrustwords extends PepColoredActivity {
         }
         i.putExtra(PEP_KEY_LIST, keyList.toString());
         i.putExtra(CURRENT_RATING, pEpRating.toString());
-        context.startActivityForResult(i, HANDSHAKE_REQUEST);
+        context.startActivityForResult(i, REQUEST_HANDSHAKE);
     }
 
     public static void actionRequestHandshake(Activity context, String myself, int partnerPosition) {
@@ -100,7 +100,7 @@ public class PEpTrustwords extends PepColoredActivity {
         i.setAction(ACTION_SHOW_PEP_TRUSTWORDS);
         i.putExtra(PARTNER_POSITION, partnerPosition);
         i.putExtra(MYSELF, myself);
-        context.startActivityForResult(i, HANDSHAKE_REQUEST);
+        context.startActivityForResult(i, REQUEST_HANDSHAKE);
 
     }
 
@@ -266,7 +266,7 @@ public class PEpTrustwords extends PepColoredActivity {
         } else {
             menu.add(Menu.NONE, R.id.action_pgp_fingerprint, Menu.NONE, R.string.pep_pgp_fingerprint);
             menu.add(Menu.NONE, R.id.action_language, Menu.NONE, R.string.settings_language_label);
-            menu.add(Menu.NONE, R.id.long_trustwords, Menu.NONE, R.string.pep_menu_long_trustwords);
+            menuItemtrustwordsLength = menu.add(Menu.NONE, R.id.long_trustwords, Menu.NONE, R.string.pep_menu_long_trustwords);
             if(areTrustwordsShort) {
                 menuItemtrustwordsLength.setTitle(getString(R.string.pep_menu_long_trustwords));
             } else {
@@ -362,11 +362,18 @@ public class PEpTrustwords extends PepColoredActivity {
     private void changeTrustwords(String language) {
         trustwordsLanguage = language;
         String trustwords = getpEp().trustwords(myself, partner, language, areTrustwordsShort);
+        shortTrustwords = getpEp().trustwords(myself, partner, language, true);
+        fullTrustwords = getpEp().trustwords(myself, partner, language, false);
         tvTrustwords.setText(trustwords);
     }
 
     @OnClick(R.id.confirmTrustWords)
     public void confirmTrustwords() {
+        if (partner.user_id.isEmpty()) {
+            String tempFpr = partner.fpr;
+            partner = getpEp().updateIdentity(partner);
+            partner.fpr = tempFpr;
+        }
         getpEp().trustPersonaKey(partner);
         Intent returnIntent = new Intent();
         returnIntent.putExtra(PARTNER_POSITION, partnerPosition);

@@ -31,8 +31,6 @@ import org.pEp.jniadapter.Blob;
 import org.pEp.jniadapter.Message;
 import org.pEp.jniadapter.Pair;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -138,7 +136,7 @@ class MimeMessageBuilder extends MessageBuilder {
         //buildBody(mimeMsg);
         // FIXME: 9/01/17 and we should remove the following
         // the following copied from MessageBuilder...
-        TextBody body = buildText();        // builds eitehr plain or html
+        TextBody body = buildText(mimeMsg);        // builds eitehr plain or html
         // text/plain part when messageFormat == MessageFormat.HTML
         TextBody bodyPlain;
         boolean hasAttachments = pEpMessage.getAttachments() != null;
@@ -178,8 +176,25 @@ class MimeMessageBuilder extends MessageBuilder {
         }
     }
 
-    private TextBody buildText() {
-        return buildText(messageFormat);
+    private TextBody buildText(MimeMessage mimeMsg) {
+        if (isSMimeMessage(mimeMsg)) {
+            MimeTextBodyBuilder mimeTextBodyBuilder = new MimeTextBodyBuilder("This is an S/MIME encrypted message and cannot be displayed in this version");
+
+            mimeTextBodyBuilder.setIncludeQuotedText(false);
+
+            mimeTextBodyBuilder.setInsertSeparator(false);
+
+            mimeTextBodyBuilder.setAppendSignature(false);
+
+            return mimeTextBodyBuilder.buildTextPlain();
+        } else {
+            return buildText(messageFormat);
+        }
+    }
+
+    private boolean isSMimeMessage(MimeMessage mimeMsg) {
+        return mimeMsg.getHeader(MimeHeader.HEADER_CONTENT_DESCRIPTION).length > 0 &&
+                mimeMsg.getHeader(MimeHeader.HEADER_CONTENT_DESCRIPTION)[0].contains("S/MIME Encrypted Message");
     }
 
     /**
