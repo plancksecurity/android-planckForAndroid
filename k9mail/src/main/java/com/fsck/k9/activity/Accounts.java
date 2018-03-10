@@ -435,7 +435,7 @@ public class Accounts extends PEpImporterActivity {
         mHandler.setViewTitle();
 
         // Handle activity restarts because of a configuration change (e.g. rotating the screen)
-        mNonConfigurationInstance = (NonConfigurationInstance) getLastNonConfigurationInstance();
+        mNonConfigurationInstance = (NonConfigurationInstance) getLastCustomNonConfigurationInstance();
         if (mNonConfigurationInstance != null) {
             mNonConfigurationInstance.restore(this);
         }
