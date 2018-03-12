@@ -147,7 +147,7 @@ class TestUtils {
                 onView(withId(viewId)).perform(click());
                 buttonClicked = true;
             } catch (Exception ex) {
-                Timber.e("View not found: " + ex);
+                Timber.i("View not found: " + ex);
             }
         }
     }
@@ -178,14 +178,14 @@ class TestUtils {
                 onView(withId(R.id.skip)).perform(click());
                 device.waitForIdle();
             } catch (Exception ignoredException) {
-                Timber.e("Ignored", "Ignored exception");
+                Timber.i("Ignored", "Ignored exception");
             }
             try {
                 device.waitForIdle();
                 onView(withId(R.id.action_continue)).perform(click());
                 device.waitForIdle();
             } catch (Exception ignoredException) {
-                Timber.e("Ignored", "Ignored exception");
+                Timber.i("Ignored", "Ignored exception");
             }
             try {
                 device.waitForIdle();
@@ -198,7 +198,7 @@ class TestUtils {
                     device.waitForIdle();
                 }
             } catch (Exception ignoredException) {
-                Timber.e(ignoredException, "There is no permissions dialog to interact with ");
+                Timber.i(ignoredException, "There is no permissions dialog to interact with ");
             }
             try {
                 device.waitForIdle();
@@ -211,7 +211,7 @@ class TestUtils {
                     device.waitForIdle();
                 }
             } catch (Exception ignoredException) {
-                Timber.e(ignoredException, "There is no permissions dialog to interact with ");
+                Timber.i(ignoredException, "There is no permissions dialog to interact with ");
             }
             try {
                 device.waitForIdle();
@@ -224,14 +224,14 @@ class TestUtils {
                     device.waitForIdle();
                 }
             } catch (Exception ignoredException) {
-                Timber.e(ignoredException, "There is no permissions dialog to interact with ");
+                Timber.i(ignoredException, "There is no permissions dialog to interact with ");
             }
             try {
                 device.waitForIdle();
                 onView(withId(R.id.action_continue)).perform(click());
                 device.waitForIdle();
             } catch (Exception ignoredException) {
-                Timber.e("Ignored", "Ignored exception");
+                Timber.i("Ignored", "Ignored exception");
             }
             try {
                 if (isGmail) {
@@ -240,17 +240,17 @@ class TestUtils {
                     newEmailAccount();
                 }
             } catch (Exception ex) {
-                Timber.e("Ignored", "Exists account");
+                Timber.i("Ignored", "Exists account");
             }
             try {
                 doWaitForResource(R.id.account_description);
                 device.waitForIdle();
                 accountDescription(DESCRIPTION, USER_NAME);
             } catch (Exception ex) {
-                Timber.e("Ignored", "Ignored exception");
+                Timber.i("Ignored", "Ignored exception");
             }
         } catch (Exception ignoredException) {
-            Timber.e("Ignored", "Ignored exception");
+            Timber.i("Ignored", "Ignored exception");
         }
     }
 
@@ -374,7 +374,7 @@ class TestUtils {
             } catch (Exception ex) {
                 device.waitForIdle();
                 pressBack();
-                Timber.e("View not found, pressBack to previous activity");
+                Timber.i("View not found, pressBack to previous activity");
             }
         }
     }
@@ -532,7 +532,7 @@ class TestUtils {
                 viewDisplayed = true;
                 device.waitForIdle();
             } catch (Exception ex){
-                Timber.e("View not found: " + ex);
+                Timber.i("View not found: " + ex);
             }
         }
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
@@ -550,7 +550,7 @@ class TestUtils {
             device.waitForIdle();
             onView(withText(R.string.cancel_action)).perform(click());
         }catch (NoMatchingViewException ignoredException){
-            Timber.e("Ignored exception. Email is not encrypted");
+            Timber.i("Ignored exception. Email is not encrypted");
         }
     }
 
@@ -568,7 +568,7 @@ class TestUtils {
                     newEmail = true;
                 }
             } catch (Exception ex) {
-                Timber.e(ex);
+                Timber.i(ex);
             }
         }
     }
@@ -579,10 +579,10 @@ class TestUtils {
             try {
                 device.waitForIdle();
                 onView(withId(R.id.message_list)).perform(swipeDown());
-                Timber.e("Message list found");
+                Timber.i("Message list found");
                 actionPerformed = true;
             } catch (Exception ex) {
-                Timber.e("Message list not found, waiting for view...");
+                Timber.i("Message list not found, waiting for view...");
             }
         }
     }
@@ -597,7 +597,7 @@ class TestUtils {
                     device.waitForIdle();
                     onView(withText(R.string.cancel_action)).perform(click());
                 }catch (NoMatchingViewException ignoredException){
-                    Timber.e("Ignored exception");
+                    Timber.i("Ignored exception");
                 }
                 try {
                     device.waitForIdle();
@@ -607,7 +607,7 @@ class TestUtils {
                 }
             }
         } catch (Exception ex){
-            Timber.e("Message list is empty");
+            Timber.i("Message list is empty");
         }
     }
 

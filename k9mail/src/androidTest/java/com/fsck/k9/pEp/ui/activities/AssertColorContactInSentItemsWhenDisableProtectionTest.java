@@ -78,7 +78,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
                 firstMessageClicked = true;
                 device.waitForIdle();
             } catch (Exception ex){
-                Timber.e("Message list view not found");
+                Timber.i("Message list view not found");
             }
         }
     }
@@ -118,7 +118,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
                 }
                 device.waitForIdle();
             } catch (Exception e) {
-                Timber.e("View is not sent folder");
+                Timber.i("View is not sent folder");
             }
         }
         device.waitForIdle();
