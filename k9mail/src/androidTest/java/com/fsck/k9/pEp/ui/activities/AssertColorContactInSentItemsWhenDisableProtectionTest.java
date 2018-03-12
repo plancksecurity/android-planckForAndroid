@@ -58,8 +58,8 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
         checkPEpStatus(Rating.pEpRatingTrusted);
         selectFromMenu(R.string.pep_force_unprotected);
         checkPEpStatus(Rating.pEpRatingUnencrypted);
-        device.waitForIdle();
         testUtils.sendMessage();
+        testUtils.waitForNewMessage();
         goToSentFolder();
         selectFirstMessage();
         testUtils.clickView(R.id.tvPep);
@@ -89,9 +89,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
     }
 
     private void checkPEpStatus(Rating rating) {
-        device.waitForIdle();
         testUtils.doWaitForResource(R.id.pEp_indicator);
-        device.waitForIdle();
         testUtils.checkStatus(rating);
         testUtils.pressBack();
     }
