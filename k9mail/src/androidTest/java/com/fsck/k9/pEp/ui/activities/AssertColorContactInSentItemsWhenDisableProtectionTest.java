@@ -108,17 +108,20 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
         testUtils.selectFromScreen(R.string.account_settings_folders);
         device.waitForIdle();
         String folder = resources.getString(R.string.special_mailbox_name_sent);
-        for (UiObject2 textView : device.findObjects(textViewSelector)) {
-            try {
-                if (textView.findObject(textViewSelector).getText() != null && textView.findObject(textViewSelector).getText().contains(folder)) {
+        boolean folderClicked = false;
+        while (!folderClicked) {
+            for (UiObject2 textView : device.findObjects(textViewSelector)) {
+                try {
+                    if (textView.findObject(textViewSelector).getText() != null && textView.findObject(textViewSelector).getText().contains(folder)) {
+                        device.waitForIdle();
+                        textView.findObject(textViewSelector).click();
+                        folderClicked = true;
+                        return;
+                    }
                     device.waitForIdle();
-                    textView.findObject(textViewSelector).click();
-                    device.waitForIdle();
-                    return;
+                } catch (Exception e) {
+                    Timber.i("View is not sent folder");
                 }
-                device.waitForIdle();
-            } catch (Exception e) {
-                Timber.i("View is not sent folder");
             }
         }
         device.waitForIdle();
