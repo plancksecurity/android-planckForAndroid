@@ -366,14 +366,16 @@ class TestUtils {
     }
 
     public void goBackAndRemoveAccount(){
-        try {
-            device.waitForIdle();
-            removeLastAccount();
-        } catch (Exception ex){
-            device.waitForIdle();
-            pressBack();
-            Timber.e("View not found, do goBackAndRemoveAccount method again");
-            goBackAndRemoveAccount();
+        boolean accountRemoved = false;
+        while (!accountRemoved) {
+            try {
+                removeLastAccount();
+                accountRemoved = true;
+            } catch (Exception ex) {
+                device.waitForIdle();
+                pressBack();
+                Timber.e("View not found, pressBack to previous activity");
+            }
         }
     }
 
