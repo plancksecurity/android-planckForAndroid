@@ -369,7 +369,7 @@ public class PEpTrustwords extends PepColoredActivity {
 
     @OnClick(R.id.confirmTrustWords)
     public void confirmTrustwords() {
-        if (partner.user_id.isEmpty()) {
+        if (partner.user_id == null || partner.user_id.isEmpty()) {
             String tempFpr = partner.fpr;
             partner = getpEp().updateIdentity(partner);
             partner.fpr = tempFpr;

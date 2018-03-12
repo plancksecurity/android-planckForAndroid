@@ -799,7 +799,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         } else if (pePUIArtefactCache.getRecipients().size() == 0 // No recipients on the recipient list: means is from an own identity
                 && mMessage.getRecipients(Message.RecipientType.TO).length == 1 // the meassege is to 1 recipient
                 && mMessage.getRecipients(Message.RecipientType.TO)[0].getAddress().equals(mMessage.getFrom()[0].getAddress()) //Same address to be sure is the same account
-                ) {
+                && mMessage.getpEpRating().value == Rating.pEpRatingReliable.value) {
 
             List <String> keysList = getKeyListWithoutDuplicates(mMessage.getHeader(MimeHeader.HEADER_PEP_KEY_LIST));
             if (keysList.size() == 2) {
