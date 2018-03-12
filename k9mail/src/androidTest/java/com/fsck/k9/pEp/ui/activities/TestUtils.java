@@ -544,6 +544,12 @@ class TestUtils {
     void clickLastMessageReceived() {
         device.waitForIdle();
         onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
+        try{
+            device.waitForIdle();
+            onView(withText(R.string.cancel_action)).perform(click());
+        }catch (NoMatchingViewException ignoredException){
+            Timber.e("Ignored exception. Email is not encrypted");
+        }
     }
 
     void waitForNewMessage() {
