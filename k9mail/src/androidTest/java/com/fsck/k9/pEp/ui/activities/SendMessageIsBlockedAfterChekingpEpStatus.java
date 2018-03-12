@@ -40,7 +40,7 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
 
     @Test (timeout = TIMEOUT_TEST)
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
-        testUtils.createAccount(true);
+        testUtils.createAccount(false);
         composeSelfMessage();
         testUtils.checkStatus(Rating.pEpRatingTrusted);
         testUtils.pressBack();
