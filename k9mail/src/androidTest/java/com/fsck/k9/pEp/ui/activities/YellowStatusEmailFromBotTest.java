@@ -70,7 +70,7 @@ public class YellowStatusEmailFromBotTest {
         device.waitForIdle();
         testUtils.waitForNewMessage();
         testUtils.clickLastMessageReceived();
-        clickReplayMessage();
+        testUtils.clickView(R.id.reply_message);
         clickMailStatus();
         testUtils.checkToolBarColor(R.color.pep_yellow);
         goBackToMessageList();
@@ -121,9 +121,7 @@ public class YellowStatusEmailFromBotTest {
 
 
     private void clickMailStatus() {
-        device.waitForIdle();
-        onView(withId(R.id.pEp_indicator)).perform(click());
-        device.waitForIdle();
+        testUtils.clickView(R.id.pEp_indicator);
     }
 
     private void clickReplayMessage() {
