@@ -18,14 +18,21 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingPolicies;
 import android.support.test.espresso.NoMatchingViewException;
+import android.support.test.espresso.ViewAssertion;
+import android.support.test.espresso.core.internal.deps.guava.collect.Iterables;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
+import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
+import android.support.test.runner.lifecycle.Stage;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
+import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
 import android.text.format.DateUtils;
 import android.view.KeyEvent;
+import android.view.View;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
@@ -38,6 +45,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import timber.log.Timber;
+
+import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -52,10 +62,15 @@ import static android.support.test.espresso.intent.matcher.IntentMatchers.isInte
 import static android.support.test.espresso.matcher.RootMatchers.isDialog;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.saveSizeInInt;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertThat;
 
 
@@ -65,22 +80,21 @@ class TestUtils {
     private static final int LAUNCH_TIMEOUT = 5000;
     private static final String DESCRIPTION = "tester one";
     private static final String USER_NAME = "testerJ";
+    private static final int FIVE_MINUTES = 5;
+    private static final int MINUTE_IN_SECONDS = 60;
+    private static final int SECOND_IN_MILIS = 1000;
 
     private UiDevice device;
     private Context context;
     private Resources resources;
-    private BySelector textViewSelector;
-    private String messageReceivedDate[];
-    private int lastMessageReceivedPosition;
-    private int messagesToRead;
+    int messageListSize[] = new int[2];
+
+    public static final int TIMEOUT_TEST = FIVE_MINUTES * MINUTE_IN_SECONDS * SECOND_IN_MILIS;
 
     TestUtils(UiDevice device) {
         this.device = device;
         context = InstrumentationRegistry.getTargetContext();
         resources = context.getResources();
-        textViewSelector = By.clazz("android.widget.TextView");
-        messagesToRead = 6;
-        messageReceivedDate = new String[messagesToRead];
     }
 
     void increaseTimeoutWait() {
@@ -97,34 +111,14 @@ class TestUtils {
         return resolveInfo.activityInfo.packageName;
     }
 
-    void newEmailAccount() {
+    private void newEmailAccount() {
         onView(withId(R.id.account_email)).perform(typeText(getEmail()));
         onView(withId(R.id.account_password)).perform(typeText(getPassword()), closeSoftKeyboard());
         device.waitForIdle();
         onView(withId(R.id.next)).perform(click());
     }
 
-    void newEmailAccountManual(){
-        onView(withId(R.id.account_email)).perform(typeText(getEmail()));
-        onView(withId(R.id.account_password)).perform(typeText(getPassword()), closeSoftKeyboard());
-        onView(withId(R.id.manual_setup)).perform(click());
-        fillImapData();
-        onView(withId(R.id.next)).perform(click());
-        device.waitForIdle();
-        fillSmptData();
-        device.waitForIdle();
-        onView(withId(R.id.next)).perform(click());
-        device.waitForIdle();
-        onView(withId(R.id.next)).perform(click());}
-
-    void newEmailAccount(String email, String password) {
-        onView(withId(R.id.account_email)).perform(typeText(email));
-        onView(withId(R.id.account_password)).perform(typeText(password), closeSoftKeyboard());
-        device.waitForIdle();
-        onView(withId(R.id.next)).perform(click());
-    }
-
-    void gmailAccount() {
+    private void gmailAccount() {
         onView(withId(R.id.account_oauth2)).perform(click());
         onView(withId(R.id.next)).perform(click());
         onView(withId(R.id.next)).perform(click());
@@ -134,39 +128,132 @@ class TestUtils {
         onView(withId(R.id.next)).perform(click());
     }
 
-    private void fillSmptData() {
-        fillServerData();
-    }
-
-    private void fillImapData() {
-        fillServerData();
-    }
-
-    private void fillServerData() {
-        onView(withId(R.id.account_server)).perform(replaceText(getEmailServer()));
-        onView(withId(R.id.account_username)).perform(replaceText(getEmail()));
-    }
-
-    void accountDescription(String description, String userName) {
+    private void accountDescription(String description, String userName) {
         device.waitForIdle();
         onView(withId(R.id.account_description)).perform(typeText(description));
-        onView(withId(R.id.account_name)).perform(typeText(userName));
+        onView(withId(R.id.account_name)).perform(typeText(userName), closeSoftKeyboard());
         device.waitForIdle();
         onView(withId(R.id.done)).perform(click());
     }
 
     void composeMessageButton() {
-        onView(withId(R.id.fab_button_compose_message)).perform(click());
+        clickView(R.id.fab_button_compose_message);
+    }
+
+    void clickView(int viewId) {
+        boolean buttonClicked = false;
+        while (!buttonClicked) {
+            try {
+                doWaitForResource(viewId);
+                onView(withId(viewId)).perform(click());
+                buttonClicked = true;
+            } catch (Exception ex) {
+                Timber.i("View not found: " + ex);
+            }
+        }
+    }
+
+    private Activity getCurrentActivity() {
+        final Activity[] activity = new Activity[1];
+        onView(isRoot()).check(new ViewAssertion() {
+            @Override
+            public void check(View view, NoMatchingViewException noViewFoundException) {
+                java.util.Collection<Activity> activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
+                activity[0] = Iterables.getOnlyElement(activities);
+            }
+        });
+        return activity[0];
     }
 
     void createAccount(boolean isGmail) {
-        onView(withId(R.id.skip)).perform(click());
-        if (isGmail) {
-            gmailAccount();
-        } else {
-            newEmailAccount();
+        createNewAccountWithPermissions(isGmail);
+        removeMessagesFromList();
+        getMessageListSize();
+    }
+
+    private void createNewAccountWithPermissions(boolean isGmail){
+        try {
+            onView(withId(R.id.next)).perform(click());
+            device.waitForIdle();
+            try {
+                device.waitForIdle();
+                onView(withId(R.id.skip)).perform(click());
+                device.waitForIdle();
+            } catch (Exception ignoredException) {
+                Timber.i("Ignored", "Ignored exception");
+            }
+            try {
+                device.waitForIdle();
+                onView(withId(R.id.action_continue)).perform(click());
+                device.waitForIdle();
+            } catch (Exception ignoredException) {
+                Timber.i("Ignored", "Ignored exception");
+            }
+            try {
+                device.waitForIdle();
+                UiObject allowPermissions = device.findObject(new UiSelector()
+                        .clickable(true)
+                        .checkable(false)
+                        .index(1));
+                if (allowPermissions.exists()) {
+                    allowPermissions.click();
+                    device.waitForIdle();
+                }
+            } catch (Exception ignoredException) {
+                Timber.i(ignoredException, "There is no permissions dialog to interact with ");
+            }
+            try {
+                device.waitForIdle();
+                UiObject allowPermissions = device.findObject(new UiSelector()
+                        .clickable(true)
+                        .checkable(false)
+                        .index(1));
+                if (allowPermissions.exists()) {
+                    allowPermissions.click();
+                    device.waitForIdle();
+                }
+            } catch (Exception ignoredException) {
+                Timber.i(ignoredException, "There is no permissions dialog to interact with ");
+            }
+            try {
+                device.waitForIdle();
+                UiObject allowPermissions = device.findObject(new UiSelector()
+                        .clickable(true)
+                        .checkable(false)
+                        .index(1));
+                if (allowPermissions.exists()) {
+                    allowPermissions.click();
+                    device.waitForIdle();
+                }
+            } catch (Exception ignoredException) {
+                Timber.i(ignoredException, "There is no permissions dialog to interact with ");
+            }
+            try {
+                device.waitForIdle();
+                onView(withId(R.id.action_continue)).perform(click());
+                device.waitForIdle();
+            } catch (Exception ignoredException) {
+                Timber.i("Ignored", "Ignored exception");
+            }
+            try {
+                if (isGmail) {
+                    gmailAccount();
+                } else {
+                    newEmailAccount();
+                }
+            } catch (Exception ex) {
+                Timber.i("Ignored", "Exists account");
+            }
+            try {
+                doWaitForResource(R.id.account_description);
+                device.waitForIdle();
+                accountDescription(DESCRIPTION, USER_NAME);
+            } catch (Exception ex) {
+                Timber.i("Ignored", "Ignored exception");
+            }
+        } catch (Exception ignoredException) {
+            Timber.i("Ignored", "Ignored exception");
         }
-        accountDescription(DESCRIPTION, USER_NAME);
     }
 
     String getAccountDescription() {
@@ -174,17 +261,34 @@ class TestUtils {
     }
 
     void fillMessage(BasicMessage inputMessage, boolean attachFilesToMessage) {
-        doWait("to");
-        device.waitForIdle();
-        device.findObject(By.res(APP_ID, "to")).longClick();
-        device.waitForIdle();
-        device.pressKeyCode(KeyEvent.KEYCODE_DEL);
-        device.waitForIdle();
-        onView(withId(R.id.to)).perform(typeText(inputMessage.getTo()), closeSoftKeyboard());
-        device.findObject(By.res(APP_ID, "subject")).click();
-        device.findObject(By.res(APP_ID, "subject")).setText(inputMessage.getSubject());
-        device.findObject(By.res(APP_ID, "message_content")).click();
-        device.findObject(By.res(APP_ID, "message_content")).setText(inputMessage.getMessage());
+        boolean messageFilled = false;
+        while (!messageFilled){
+            try {
+                doWaitForResource(R.id.to);
+                device.waitForIdle();
+                device.findObject(By.res(APP_ID, "to")).longClick();
+                device.waitForIdle();
+                device.pressKeyCode(KeyEvent.KEYCODE_DEL);
+                device.waitForIdle();
+                onView(withId(R.id.to)).perform(typeText(inputMessage.getTo()), closeSoftKeyboard());
+                device.waitForIdle();
+                device.findObject(By.res(APP_ID, "subject")).click();
+                device.findObject(By.res(APP_ID, "subject")).setText(inputMessage.getSubject());
+                device.waitForIdle();
+                device.findObject(By.res(APP_ID, "message_content")).click();
+                device.findObject(By.res(APP_ID, "message_content")).setText(inputMessage.getMessage());
+                device.waitForIdle();
+                onView(withId(R.id.subject)).perform(click());
+                device.waitForIdle();
+                onView(withId(R.id.message_content)).perform(click());
+                device.waitForIdle();
+                onView(withId(R.id.to)).perform(click());
+                device.waitForIdle();
+                messageFilled = true;
+            } catch (Exception ex){
+                Timber.i("Could not fill message: " + ex);
+            }
+        }
         Espresso.closeSoftKeyboard();
         if (attachFilesToMessage) {
             String fileName = "ic_test";
@@ -247,33 +351,34 @@ class TestUtils {
     }
 
     void sendMessage() {
-        boolean sendButtonDisplayed;
-        do {
-            try {
-                device.waitForIdle();
-                doWaitForResource(R.id.send);
-                onView(withId(R.id.send)).perform(click());
-                sendButtonDisplayed = false;
-            } catch (NoMatchingViewException e) {
-                sendButtonDisplayed = false;
-            }
-            device.waitForIdle();
-        }while (sendButtonDisplayed);
+        onView(withId(R.id.send)).perform(click());
     }
 
     void pressBack() {
         device.pressBack();
     }
 
-    void removeLastAccount() {
-        device.waitForIdle();
-        doWait("accounts_list");
+    private void removeLastAccount() {
         device.waitForIdle();
         longClick("accounts_list");
         device.waitForIdle();
         selectRemoveAccount();
         device.waitForIdle();
         clickAcceptButton();
+    }
+
+    public void goBackAndRemoveAccount(){
+        boolean accountRemoved = false;
+        while (!accountRemoved) {
+            try {
+                removeLastAccount();
+                accountRemoved = true;
+            } catch (Exception ex) {
+                device.waitForIdle();
+                pressBack();
+                Timber.i("View not found, pressBack to previous activity");
+            }
+        }
     }
 
     void clickAcceptButton() {
@@ -286,13 +391,13 @@ class TestUtils {
         onView(withText(R.string.cancel_action)).perform(click());
     }
 
-    public void doWaitForObject(String object) {
+    void doWaitForObject(String object) {
         boolean finish = false;
-        do {
+        while (!finish){
             if (device.findObject(By.clazz(object)) != null) {
                 finish = true;
             }
-        } while (!finish);
+        }
     }
 
     private void selectRemoveAccount() {
@@ -310,7 +415,7 @@ class TestUtils {
         }
     }
 
-    void longClick(String viewId) {
+    private void longClick(String viewId) {
         UiObject2 list = device.findObject(By.res(APP_ID, viewId));
         Rect bounds = list.getVisibleBounds();
         device.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 180);
@@ -336,14 +441,13 @@ class TestUtils {
         Espresso.pressBack();
     }
 
-    public void checkStatus(Rating rating) {
-        device.waitForIdle();
-        onView(withId(R.id.pEp_indicator)).perform(click());
+    void checkStatus(Rating rating) {
+        clickView(R.id.pEp_indicator);
         device.waitForIdle();
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, rating.value))));
     }
 
-    public String getTextFromTextViewThatContainsText(String text) {
+    String getTextFromTextViewThatContainsText(String text) {
         BySelector selector = By.clazz("android.widget.TextView");
         for (UiObject2 textView : device.findObjects(selector)) {
             if (textView.getText() != null && textView.getText().contains(text)) {
@@ -374,19 +478,19 @@ class TestUtils {
         openActionBarOverflowOrOptionsMenu(context);
     }
 
-    void selectFromMenu(int resource) {
-        BySelector selector = By.clazz("android.widget.TextView");
-        device.waitForIdle();
-        for (UiObject2 object : device.findObjects(selector)) {
-            if (object.getText() != null && object.getText().equals(resources.getString(resource))) {
-                object.click();
-                break;
+    void selectFromScreen(int resource) {
+        boolean textViewFound = false;
+        while (!textViewFound) {
+            BySelector selector = By.clazz("android.widget.TextView");
+            device.waitForIdle();
+            for (UiObject2 object : device.findObjects(selector)) {
+                if (object.getText().equals(resources.getString(resource))) {
+                    object.click();
+                    textViewFound = true;
+                    break;
+                }
             }
         }
-    }
-
-    void doWait() {
-        device.waitForIdle();
     }
 
     void doWait(String viewId) {
@@ -397,7 +501,16 @@ class TestUtils {
     }
 
     void doWaitForResource(int resource) {
-        device.wait(Until.hasObject(By.desc(resources.getString(resource))), 1);
+        boolean resourceExists = false;
+        while (!resourceExists){
+            try {
+                new ViewVisibilityIdlingResource(getCurrentActivity(), resource, View.VISIBLE);
+                resourceExists = true;
+            } catch (Exception ex){
+                Timber.i("Resource does not exist, trying again: " + ex);
+            }
+        }
+        //device.wait(Until.hasObject(By.desc(resources.getString(resource))), 10);
     }
 
     void doWaitForAlertDialog(IntentsTestRule<SplashActivity> intent, int displayText) {
@@ -408,156 +521,104 @@ class TestUtils {
                 .check(matches(isDisplayed()));
     }
 
-    public String getResourceString(int id, int position) {
+    String getResourceString(int id, int position) {
         return resources.getStringArray(id)[position];
     }
 
-    public void assertMessageStatus(int status) {
-        device.waitForIdle();
-        clickMessageStatus();
-        device.waitForIdle();
+    void assertMessageStatus(int status) {
+        boolean viewDisplayed = false;
+        while (!viewDisplayed){
+            try{
+                device.waitForIdle();
+                doWaitForResource(R.id.pEpTitle);
+                viewDisplayed = true;
+                device.waitForIdle();
+            } catch (Exception ex){
+                Timber.i("View not found: " + ex);
+            }
+        }
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
-    }
-
-    public void clickMessageStatus() {
-        device.waitForIdle();
-        doWaitForResource(R.id.tvPep);
-        device.waitForIdle();
-        onView(withId(R.id.tvPep)).perform(click());
         device.waitForIdle();
     }
 
-    public void clickLastMessageReceived() {
-        device.waitForIdle();
-        device.findObjects(textViewSelector).get(lastMessageReceivedPosition).click();
+    void clickMessageStatus() {
+        clickView(R.id.tvPep);
     }
 
-    public void getLastMessageReceived() {
+    void clickLastMessageReceived() {
         device.waitForIdle();
-        onView(withId(R.id.message_list))
-                .perform(swipeDown());
-        device.waitForIdle();
-        lastMessageReceivedPosition = getLastMessageReceivedPosition();
-        int message = 0;
-        if (lastMessageReceivedPosition != -1) {
-            removeMessagesFromList();
-            int size = device.findObjects(textViewSelector).size();
-            for (; (message < messagesToRead) && (lastMessageReceivedPosition + 1 + message * 3 < size); message++) {
-                messageReceivedDate[message] = device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1 + message * 3).getText();
-            }
-        } else {
-            for (; message < messagesToRead; message++) {
-                messageReceivedDate[message] = "";
-            }
-            lastMessageReceivedPosition = device.findObjects(textViewSelector).size();
+        onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
+        try{
+            device.waitForIdle();
+            onView(withText(R.string.cancel_action)).perform(click());
+        }catch (NoMatchingViewException ignoredException){
+            Timber.i("Ignored exception. Email is not encrypted");
         }
     }
 
-    public void removeMessagesFromList(){
+    void waitForNewMessage() {
+        boolean newEmail = false;
+        while (!newEmail) {
+            try {
+                device.waitForIdle();
+                swipeDownMessageList();
+                device.waitForIdle();
+                onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 1));
+                if (messageListSize[1] > messageListSize[0]){
+                    newEmail = true;
+                }
+            } catch (Exception ex) {
+                Timber.i("Waiting for new message : " + ex);
+            }
+        }
+        getMessageListSize();
+    }
+
+    void getMessageListSize(){
+        onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));}
+
+    void swipeDownMessageList (){
+        boolean actionPerformed = false;
+        while (!actionPerformed) {
+            try {
+                device.waitForIdle();
+                onView(withId(R.id.message_list)).perform(swipeDown());
+                Timber.i("Message list found");
+                actionPerformed = true;
+            } catch (Exception ex) {
+                Timber.i("Message list not found, waiting for view...");
+            }
+        }
+    }
+
+    void removeMessagesFromList(){
         device.waitForIdle();
-        if (device.findObjects(textViewSelector).size() > lastMessageReceivedPosition) {
-            device.waitForIdle();
-            device.findObjects(textViewSelector).get(lastMessageReceivedPosition).click();
+        try {
+            onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
             boolean emptyList = false;
-            do {
+            while (!emptyList){
                 try{
                     device.waitForIdle();
                     onView(withText(R.string.cancel_action)).perform(click());
                 }catch (NoMatchingViewException ignoredException){
+                    Timber.i("Ignored exception");
                 }
                 try {
                     device.waitForIdle();
-                    onView(withId(R.id.delete)).check(matches(isDisplayed()));
                     onView(withId(R.id.delete)).perform(click());
                 } catch (NoMatchingViewException ignoredException) {
                     emptyList = true;
                 }
-            } while (!emptyList);
-        }
-    }
-
-    public int getLastMessageReceivedPosition() {
-        int size = device.findObjects(textViewSelector).size();
-        for (int position = 2; position < size; position++) {
-            String textAtPosition = device.findObjects(textViewSelector).get(position).getText();
-            if (textAtPosition != null && textAtPosition.contains("@")) {
-                position++;
-                if (position < size) {
-                    while (device.findObjects(textViewSelector).get(position).getText() == null) {
-                        position++;
-                        if (position >= size) {
-                            return -1;
-                        }
-                    }
-                }
-                return position;
             }
-        }
-        return size;
-    }
-
-    public void waitForMessageWithText(String textInMessage, String preview) {
-        boolean messageSubject = false;
-        boolean messagePreview = false;
-        boolean emptyMessageList;
-        int size;
-        emptyMessageList = device.findObjects(textViewSelector).size() <= lastMessageReceivedPosition;
-        if (!emptyMessageList) {
-            do {
-                boolean newMessage = false;
-                do {
-                    device.waitForIdle();
-                    try{
-                        onView(withId(R.id.action_mode_close_button)).check(matches(isDisplayed()));
-                        device.waitForIdle();
-                        pressBack();
-                        device.waitForIdle();
-                    }catch (Exception ex){
-
-                    }
-                    onView(withId(R.id.message_list)).perform(swipeDown());
-                    device.waitForIdle();
-                    while (device.findObjects(textViewSelector).get(1) != null
-                            && device.findObjects(textViewSelector).get(1).getText()
-                            .contains(resources.getString(R.string.status_loading_account_folder))) {
-                        device.waitForIdle();
-                    }
-                    size = device.findObjects(textViewSelector).size();
-                    for (int message = 0; (message < messagesToRead) && (lastMessageReceivedPosition + 1 + message * 3 < size); message++) {
-                        if (!(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 1 + message * 3).getText())
-                                .equals(messageReceivedDate[message])) {
-                            newMessage = true;
-                            break;
-                        }
-                    }
-                } while (!newMessage);
-                device.waitForIdle();
-                messageSubject = getTextFromTextViewThatContainsText(textInMessage)
-                        .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition).getText());
-                messagePreview = getTextFromTextViewThatContainsText(preview)
-                        .equals(device.findObjects(textViewSelector).get(lastMessageReceivedPosition + 2).getText());
-                if(size != device.findObjects(textViewSelector).size()){
-                    messageSubject = false;
-                }
-            } while (!(messageSubject && messagePreview));
-        } else {
-            while (emptyMessageList) {
-                emptyMessageList = device.findObjects(textViewSelector).size() <= lastMessageReceivedPosition;
-            }
-        }
-    }
-
-    void goBackAndRemoveAccount(){
-        try{
-            device.waitForIdle();
-            device.pressBack();
-            device.waitForIdle();
-            onView(withId(R.id.accounts_list)).check(matches(isDisplayed()));
-            removeLastAccount();
         } catch (Exception ex){
-            device.waitForIdle();
-            goBackAndRemoveAccount();
+            Timber.i("Message list is empty");
         }
+    }
+
+    void checkToolBarColor(int color) {
+        doWaitForResource(R.id.toolbar_container);
+        device.waitForIdle();
+        onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(color)));
     }
 
     void startActivity() {
@@ -580,11 +641,6 @@ class TestUtils {
     }
 
     @NonNull
-    private String getEmailServer() {
-        return BuildConfig.PEP_TEST_EMAIL_SERVER;
-    }
-
-    @NonNull
     private String getPassword() {
         return BuildConfig.PEP_TEST_EMAIL_PASSWORD;
     }
@@ -595,7 +651,7 @@ class TestUtils {
         String subject;
         String to;
 
-        BasicMessage(String from, String message, String subject, String to) {
+        BasicMessage(String from, String subject, String message, String to) {
             this.from = from;
             this.message = message;
             this.subject = subject;
@@ -635,10 +691,5 @@ class TestUtils {
         public String getAddress() {
             return address;
         }
-    }
-
-    private class SameStatusdentities {
-        List<String> addresses;
-        Rating rating;
     }
 }

@@ -19,6 +19,7 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
 
 @RunWith(AndroidJUnit4.class)
 public class MessageUnsecureWhenDisableProtectionTest {
@@ -39,9 +40,9 @@ public class MessageUnsecureWhenDisableProtectionTest {
         testUtils.startActivity();
     }
 
-    @Test
+    @Test (timeout = TIMEOUT_TEST)
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
-        launchTest();
+        testUtils.createAccount(false);
         composeMessage();
         testUtils.checkStatus(Rating.pEpRatingTrusted);
         testUtils.pressBack();
@@ -50,17 +51,11 @@ public class MessageUnsecureWhenDisableProtectionTest {
         testUtils.pressBack();
         uiDevice.waitForIdle();
         testUtils.sendMessage();
-        testUtils.waitForMessageWithText(MESSAGE_BODY, MESSAGE_SUBJECT);
+        testUtils.waitForNewMessage();
         testUtils.clickLastMessageReceived();
         uiDevice.waitForIdle();
         checkStatus();
         removeMessageListAndAccount();
-
-    }
-
-    private void launchTest(){
-        testUtils.createAccount(false);
-        testUtils.getLastMessageReceived();
     }
 
     private void composeMessage(){
@@ -73,7 +68,7 @@ public class MessageUnsecureWhenDisableProtectionTest {
 
     private void disableProtection(){
         testUtils.openOptionsMenu();
-        testUtils.selectFromMenu(R.string.pep_force_unprotected);
+        testUtils.selectFromScreen(R.string.pep_force_unprotected);
         uiDevice.waitForIdle();
     }
 
@@ -88,7 +83,6 @@ public class MessageUnsecureWhenDisableProtectionTest {
         uiDevice.waitForIdle();
         testUtils.pressBack();
         testUtils.removeMessagesFromList();
-        testUtils.pressBack();
-        testUtils.removeLastAccount();
+        testUtils.goBackAndRemoveAccount();
     }
 }

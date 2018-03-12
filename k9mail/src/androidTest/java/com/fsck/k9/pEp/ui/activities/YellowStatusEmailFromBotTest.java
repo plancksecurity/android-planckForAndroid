@@ -1,29 +1,17 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Activity;
-import android.content.res.Resources;
-import android.graphics.drawable.ColorDrawable;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.core.internal.deps.guava.collect.Iterables;
-import android.support.test.espresso.intent.Checks;
-import android.support.test.espresso.matcher.BoundedMatcher;
-import android.support.test.rule.ActivityTestRule;
+import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import android.support.test.runner.lifecycle.Stage;
-import android.support.test.uiautomator.By;
-import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
@@ -31,7 +19,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
-import static android.support.test.InstrumentationRegistry.getTargetContext;
+import timber.log.Timber;
+
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -40,49 +29,50 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.core.internal.deps.guava.base.Preconditions.checkNotNull;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static junit.framework.Assert.assertTrue;
-import static org.hamcrest.Matchers.allOf;
 
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(AndroidJUnit4.class)
 public class YellowStatusEmailFromBotTest {
 
-    private UiDevice uiDevice;
+    private UiDevice device;
     private TestUtils testUtils;
-    private String messageTo = "random@test.pep-security.net";
+    private String messageTo = "";
+    private static final String HOST = "test.pep-security.net";
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
-    private BySelector selector;
 
     @Rule
-    public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
+    public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
 
     @Before
-    public void startMainActivity() {
-        uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(uiDevice);
+    public void startpEpApp() {
+        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        testUtils = new TestUtils(device);
         testUtils.increaseTimeoutWait();
-        selector = By.clazz("android.widget.TextView");
+        messageTo = Long.toString(System.currentTimeMillis()) + "@" + HOST;
         testUtils.startActivity();
     }
 
-    @Test
+    @Test (timeout = TIMEOUT_TEST)
     public void sendMessageAndAssertYellowStatusMessage() {
-        testUtils.getLastMessageReceived();
+        testUtils.createAccount(false);
         testUtils.composeMessageButton();
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         testUtils.sendMessage();
-        uiDevice.waitForIdle();
-        testUtils.waitForMessageWithText("p≡p", "p≡pbot (" + messageTo + ")");
+        device.waitForIdle();
+        testUtils.waitForNewMessage();
         testUtils.clickLastMessageReceived();
-        clickReplayMessage();
+        testUtils.clickView(R.id.reply_message);
         clickMailStatus();
-        checkBotMessageColor();
+        testUtils.checkToolBarColor(R.color.pep_yellow);
         goBackToMessageList();
         testUtils.composeMessageButton();
         yellowStatusMessageTest();
@@ -94,18 +84,20 @@ public class YellowStatusEmailFromBotTest {
         fillComposeFields();
         clickMailStatus();
         testUtils.doWaitForResource(R.id.my_recycler_view);
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(0)).check(matches(withBackgroundColor(R.color.pep_yellow)));
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(1)).check(matches(withBackgroundColor(R.color.pep_no_color)));
+        goBackToMessageList();
+        testUtils.goBackAndRemoveAccount();
     }
 
     private void fillComposeFields() {
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
-        onView(withId(R.id.to)).perform(typeText("randomtest@Message.is"), closeSoftKeyboard());
-        uiDevice.waitForIdle();
+        onView(withId(R.id.to)).perform(typeText(messageTo), closeSoftKeyboard());
+        device.waitForIdle();
         onView(withId(R.id.subject)).perform(longClick(), closeSoftKeyboard());
-        uiDevice.waitForIdle();
+        device.waitForIdle();
     }
 
     public static UtilsPackage.RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
@@ -114,57 +106,28 @@ public class YellowStatusEmailFromBotTest {
     }
 
     private void goBackToMessageList() {
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         testUtils.pressBack();
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         testUtils.pressBack();
-        uiDevice.waitForIdle();
+        device.waitForIdle();
+        testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.save_or_discard_draft_message_dlg_title);
         testUtils.doWaitForObject("android.widget.Button");
         onView(withText(R.string.discard_action)).perform(click());
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         testUtils.pressBack();
-        uiDevice.waitForIdle();
+        device.waitForIdle();
     }
 
-    private void checkBotMessageColor() {
-        testUtils.doWaitForResource(R.id.toolbar_container);
-        uiDevice.waitForIdle();
-        onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(R.color.pep_yellow)));
-    }
 
     private void clickMailStatus() {
-        uiDevice.waitForIdle();
-        onView(withId(R.id.pEp_indicator)).perform(click());
-        uiDevice.waitForIdle();
-    }
-
-    private void clickReplayMessage() {
-        uiDevice.waitForIdle();
-        onView(withId(R.id.reply_message)).perform(click());
-    }
-
-    public int getLastMessageReceivedPosition() {
-        int size = uiDevice.findObjects(selector).size();
-        for (int position = 0; position < size; position++) {
-            String textAtPosition = uiDevice.findObjects(selector).get(position).getText();
-            if (textAtPosition != null && textAtPosition.contains("@")) {
-                position++;
-                while (uiDevice.findObjects(selector).get(position).getText() == null) {
-                    position++;
-                    if (position >= size) {
-                        return -1;
-                    }
-                }
-                return position;
-            }
-        }
-        return size;
+        testUtils.clickView(R.id.pEp_indicator);
     }
 
     private void yellowStatusMessageTest() {
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         onView(withId(R.id.pEp_indicator)).perform(click());
-        uiDevice.waitForIdle();
+        device.waitForIdle();
         onView(withId(R.id.my_recycler_view)).check(doesNotExist());
         assertCurrentActivityIsInstanceOf(PEpTrustwords.class);
 
@@ -189,5 +152,4 @@ public class YellowStatusEmailFromBotTest {
         }
         return activity[0];
     }
-
 }

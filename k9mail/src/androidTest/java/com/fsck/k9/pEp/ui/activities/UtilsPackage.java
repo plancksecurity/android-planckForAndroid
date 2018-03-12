@@ -2,12 +2,18 @@ package com.fsck.k9.pEp.ui.activities;
 
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
+import android.support.test.espresso.UiController;
+import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.intent.Checks;
 import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -15,6 +21,10 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static org.hamcrest.Matchers.allOf;
 
 
 public class UtilsPackage {
@@ -98,8 +108,7 @@ public class UtilsPackage {
         };
     }
 
-    public class Matchers {
-        public Matcher<View> withListSize(final int size) {
+        public static Matcher<View> withListSize(final int size) {
             return new TypeSafeMatcher<View> () {
                 @Override public boolean matchesSafely (final View view) {
                     return ((ListView) view).getCount () == size;
@@ -110,7 +119,6 @@ public class UtilsPackage {
                 }
             };
         }
-    }
 
     public static Matcher<View> withBackgroundColor(final int colorId) {
         Checks.checkNotNull(colorId);
@@ -125,6 +133,129 @@ public class UtilsPackage {
             @Override
             public void describeTo(Description description) {
 
+            }
+        };
+    }
+
+    public static Matcher<View> childAtPosition(final Matcher<View> parentMatcher, final int position) {
+        return new TypeSafeMatcher<View>() {
+            @Override
+            public boolean matchesSafely(View view) {
+                ViewParent parent = view.getParent();
+                return parent instanceof ViewGroup
+                        && parentMatcher.matches(parent)
+                        && view.equals(((ViewGroup)parent).getChildAt(position));
+            }
+            @Override
+            public void describeTo(Description description) {
+
+            }
+        };
+    }
+
+    public static Matcher<View> returnElementsSize(int size[]) {
+        return new TypeSafeMatcher<View>() {
+            @Override
+            public boolean matchesSafely(View view) {
+                size[0] = ((ListView) view).getCount ();
+                return size[0]!=0;
+            }
+            @Override
+            public void describeTo(Description description) {
+
+            }
+        };
+    }
+
+    public static Matcher<View> hasValueEqualTo(final String content) {
+
+        return new TypeSafeMatcher<View>() {
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Has EditText/TextView the value:  " + content);
+            }
+
+            @Override
+            public boolean matchesSafely(View view) {
+                if (!(view instanceof TextView) && !(view instanceof EditText)) {
+                    return false;
+                }
+                if (view != null) {
+                    String text;
+                    if (view instanceof TextView) {
+                        text = ((TextView) view).getText().toString();
+                    } else {
+                        text = ((EditText) view).getText().toString();
+                    }
+
+                    return (text.equalsIgnoreCase(content));
+                }
+                return false;
+            }
+        };
+    }
+
+    static ViewAction getTextInElement(String textToReturn[], int position){
+        return new ViewAction() {
+
+            @Override
+            public Matcher<View> getConstraints() {
+                return allOf(isDisplayed(), isAssignableFrom(TextView.class));
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                textToReturn[position] = "empty";
+                TextView tv = (TextView)view;
+                textToReturn[position] = tv.getText().toString();
+            }
+
+            @Override
+            public String getDescription() {
+                return "TextView";
+            }
+        };
+    }
+
+    String getText(final Matcher<View> matcher) {
+        final String[] stringHolder = { null };
+        onView(matcher).perform(new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return isAssignableFrom(TextView.class);
+            }
+
+            @Override
+            public String getDescription() {
+                return "getting text from a TextView";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                TextView tv = (TextView)view; //Save, because of check in getConstraints()
+                stringHolder[0] = tv.getText().toString();
+            }
+        });
+        return stringHolder[0];
+    }
+
+    static ViewAction saveSizeInInt(int size[], int position){
+        return new ViewAction() {
+
+            @Override
+            public Matcher<View> getConstraints() {
+                return allOf(isDisplayed(), isAssignableFrom(ListView.class));
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                size[position] = ((ListView) view).getCount ();
+            }
+
+            @Override
+            public String getDescription() {
+                return "List size";
             }
         };
     }

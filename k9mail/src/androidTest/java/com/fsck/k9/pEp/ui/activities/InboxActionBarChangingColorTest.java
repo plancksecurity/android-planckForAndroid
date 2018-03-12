@@ -16,6 +16,7 @@ import org.pEp.jniadapter.Rating;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 
 @RunWith(AndroidJUnit4.class)
@@ -43,27 +44,25 @@ public class InboxActionBarChangingColorTest {
         testUtils.startActivity();
     }
 
-    @Test
+    @Test (timeout = TIMEOUT_TEST)
     public void assertActionBarColorIsNotChanging() {
         testUtils.increaseTimeoutWait();
         testUtils.createAccount(false);
         assertSelfMessageColor();
         assertBotMessageColor();
-        testUtils.pressBack();
-        device.waitForIdle();
-        testUtils.removeLastAccount();
+        testUtils.goBackAndRemoveAccount();
     }
 
     private void assertSelfMessageColor(){
         device.waitForIdle();
-        testUtils.getLastMessageReceived();
         testUtils.composeMessageButton();
         selfMessage = testUtils.getTextFromTextViewThatContainsText("@");
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, selfMessage), false);
         testUtils.sendMessage();
         device.waitForIdle();
-        testUtils.waitForMessageWithText(MESSAGE_BODY, MESSAGE_SUBJECT);
+        testUtils.waitForNewMessage();
         testUtils.clickLastMessageReceived();
+        testUtils.clickView(R.id.tvPep);
         testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
         device.waitForIdle();
         testUtils.pressBack();
@@ -76,16 +75,12 @@ public class InboxActionBarChangingColorTest {
 
     private void assertBotMessageColor(){
         device.waitForIdle();
-        testUtils.getLastMessageReceived();
         testUtils.composeMessageButton();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         testUtils.sendMessage();
         device.waitForIdle();
-        testUtils.waitForMessageWithText("p≡p", "p≡pbot (" + messageTo + ")");
+        testUtils.waitForNewMessage();
         testUtils.clickLastMessageReceived();
-        testUtils.assertMessageStatus(Rating.pEpRatingReliable.value);
-        device.waitForIdle();
-        testUtils.pressBack();
         onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(R.color.pep_yellow)));
         device.waitForIdle();
         testUtils.pressBack();

@@ -14,38 +14,42 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
 
 @RunWith(AndroidJUnit4.class)
 public class ImportSettingsCancelFromAccountTest {
 
     private TestUtils testUtils;
+    private UiDevice device;
 
     @Before
     public void startpEpApp() {
         testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()));
+        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        testUtils = new TestUtils(device);
+        testUtils.increaseTimeoutWait();
         testUtils.startActivity();
     }
 
-    @Test
+    @Test (timeout = TIMEOUT_TEST)
     public void importSettingsCancel() {
         importSettingsCancelTest(false);
     }
 
     public void importSettingsCancelTest(boolean isGmail) {
         testUtils.increaseTimeoutWait();
-        //testUtils.createAccount(isGmail);
-        testUtils.doWait();
+        testUtils.createAccount(isGmail);
+        device.waitForIdle();
         testUtils.pressBack();
-        testUtils.doWait();
+        device.waitForIdle();
         testUtils.openOptionsMenu();
-        testUtils.doWait();
-        testUtils.selectFromMenu(R.string.import_export_action);
-        testUtils.doWait();
-        testUtils.doWaitForResource(R.string.settings_import);
-        testUtils.selectFromMenu(R.string.settings_import);
+        device.waitForIdle();
+        testUtils.selectFromScreen(R.string.import_export_action);
+        device.waitForIdle();
+        testUtils.selectFromScreen(R.string.settings_import);
         testUtils.getActivityInstance();
-        testUtils.removeLastAccount();
-        testUtils.doWait();
+        testUtils.goBackAndRemoveAccount();
+        device.waitForIdle();
         assertThereAreNoAccounts();
     }
 

@@ -22,6 +22,7 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static org.hamcrest.Matchers.allOf;
 
@@ -45,16 +46,14 @@ public class RemoveContactsFromMessageAndKeepOriginalToolbarColor {
         testUtils.startActivity();
     }
 
-    @Test
+    @Test (timeout = TIMEOUT_TEST)
     public void assertRemoveTwoDifferentColorContactsAndKeepOriginalToolbarColor() {
         testUtils.increaseTimeoutWait();
         testUtils.createAccount(false);
         messageFrom = testUtils.getTextFromTextViewThatContainsText("@");
         assertToolBarHasNoColorWhenUnkownReceiver(messageFrom);
         assertToolBarHasNoColorWhenUnkownReceiver("random@test.pep-security.net");
-        testUtils.pressBack();
-        device.waitForIdle();
-        testUtils.removeLastAccount();
+        testUtils.goBackAndRemoveAccount();
     }
 
     private void fillMessageWithOneKnownReceiverAndOneUnknown(String to, String subject, String message){

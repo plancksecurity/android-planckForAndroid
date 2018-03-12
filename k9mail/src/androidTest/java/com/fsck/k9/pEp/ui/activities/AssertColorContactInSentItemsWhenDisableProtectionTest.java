@@ -18,13 +18,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
 
+import timber.log.Timber;
+
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
 import static org.hamcrest.CoreMatchers.anything;
 
 @RunWith(AndroidJUnit4.class)
-public class WrongColorContactInSentItemsWhenDisableProtectionTest {
+public class AssertColorContactInSentItemsWhenDisableProtectionTest {
     private UiDevice device;
     private TestUtils testUtils;
     private String messageTo = "";
@@ -48,44 +51,45 @@ public class WrongColorContactInSentItemsWhenDisableProtectionTest {
         testUtils.startActivity();
     }
 
-    @Test
+    @Test (timeout = TIMEOUT_TEST)
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
         testUtils.createAccount(false);
         composeMessage();
         checkPEpStatus(Rating.pEpRatingTrusted);
         selectFromMenu(R.string.pep_force_unprotected);
         checkPEpStatus(Rating.pEpRatingUnencrypted);
-        device.waitForIdle();
         testUtils.sendMessage();
+        testUtils.waitForNewMessage();
         goToSentFolder();
         selectFirstMessage();
-        assertStatus(Rating.pEpRatingTrusted.value);
+        testUtils.clickView(R.id.tvPep);
+        testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
         testUtils.goBackAndRemoveAccount();
     }
 
-    private void assertStatus(int status) {
-        testUtils.doWaitForResource(R.id.tvPep);
-        device.waitForIdle();
-        testUtils.assertMessageStatus(status);
-    }
-
     private void selectFirstMessage() {
-        device.waitForIdle();
-        testUtils.doWaitForResource(R.id.message_list);
-        device.waitForIdle();
-        onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
-        device.waitForIdle();
+        boolean firstMessageClicked = false;
+        while (!firstMessageClicked){
+            try {
+                device.waitForIdle();
+                testUtils.swipeDownMessageList();
+                device.waitForIdle();
+                onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
+                firstMessageClicked = true;
+                device.waitForIdle();
+            } catch (Exception ex){
+                Timber.i("Message list view not found");
+            }
+        }
     }
 
     private void selectFromMenu(int textToSelect) {
         testUtils.openOptionsMenu();
-        testUtils.selectFromMenu(textToSelect);
+        testUtils.selectFromScreen(textToSelect);
     }
 
     private void checkPEpStatus(Rating rating) {
-        device.waitForIdle();
         testUtils.doWaitForResource(R.id.pEp_indicator);
-        device.waitForIdle();
         testUtils.checkStatus(rating);
         testUtils.pressBack();
     }
@@ -94,26 +98,30 @@ public class WrongColorContactInSentItemsWhenDisableProtectionTest {
         testUtils.composeMessageButton();
         device.waitForIdle();
         messageTo = testUtils.getTextFromTextViewThatContainsText("@");
-        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_BODY, MESSAGE_SUBJECT, messageTo), false);
+        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
     }
 
     private void goToSentFolder() {
         device.waitForIdle();
         testUtils.openOptionsMenu();
         device.waitForIdle();
-        testUtils.selectFromMenu(R.string.account_settings_folders);
+        testUtils.selectFromScreen(R.string.account_settings_folders);
         device.waitForIdle();
         String folder = resources.getString(R.string.special_mailbox_name_sent);
-        for (UiObject2 textView : device.findObjects(textViewSelector)) {
-            try {
-                if (textView.findObject(textViewSelector).getText() != null && textView.findObject(textViewSelector).getText().contains(folder)) {
+        boolean folderClicked = false;
+        while (!folderClicked) {
+            for (UiObject2 textView : device.findObjects(textViewSelector)) {
+                try {
+                    if (textView.findObject(textViewSelector).getText() != null && textView.findObject(textViewSelector).getText().contains(folder)) {
+                        device.waitForIdle();
+                        textView.findObject(textViewSelector).click();
+                        folderClicked = true;
+                        return;
+                    }
                     device.waitForIdle();
-                    textView.findObject(textViewSelector).click();
-                    device.waitForIdle();
-                    return;
+                } catch (Exception e) {
+                    Timber.i("View is not sent folder");
                 }
-                device.waitForIdle();
-            } catch (Exception e) {
             }
         }
         device.waitForIdle();

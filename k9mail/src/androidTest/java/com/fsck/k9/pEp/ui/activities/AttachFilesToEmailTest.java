@@ -10,13 +10,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
 
 @RunWith(AndroidJUnit4.class)
 public class AttachFilesToEmailTest {
 
-    private static final String EMAIL = "juan@miau.xyz";
+    private String messageTo;
 
     private UiDevice device;
     private TestUtils testUtils;
@@ -25,13 +24,13 @@ public class AttachFilesToEmailTest {
     public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
 
     @Before
-    public void startMainActivityFromHomeScreen() {
+    public void startpEpApp() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(device);
         testUtils.startActivity();
     }
 
-    @Test 
+    @Test (timeout = TIMEOUT_TEST)
     public void attachFilesToEmail() {
         attachFilesToAccount(false);
     }
@@ -40,10 +39,10 @@ public class AttachFilesToEmailTest {
         testUtils.increaseTimeoutWait();
         testUtils.createAccount(isGmail);
         testUtils.composeMessageButton();
-        testUtils.fillMessage(new TestUtils.BasicMessage("", "Subject", "Message", EMAIL), true);
+        messageTo = testUtils.getTextFromTextViewThatContainsText("@");
+        testUtils.fillMessage(new TestUtils.BasicMessage("", "Subject", "Message", messageTo), true);
         testUtils.sendMessage();
-        testUtils.pressBack();
-        testUtils.removeLastAccount();
+        testUtils.goBackAndRemoveAccount();
     }
 
 }

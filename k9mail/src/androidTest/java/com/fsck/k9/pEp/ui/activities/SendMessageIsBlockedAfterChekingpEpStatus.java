@@ -17,6 +17,7 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
 
 @RunWith(AndroidJUnit4.class)
 public class SendMessageIsBlockedAfterChekingpEpStatus {
@@ -37,32 +38,25 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
         testUtils.startActivity();
     }
 
-    @Test
+    @Test (timeout = TIMEOUT_TEST)
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
-        launchApp();
+        testUtils.createAccount(false);
         composeSelfMessage();
         testUtils.checkStatus(Rating.pEpRatingTrusted);
         testUtils.pressBack();
         disableProtection();
-        uiDevice.waitForIdle();
         testUtils.checkStatus(Rating.pEpRatingUnencrypted);
         testUtils.pressBack();
         testUtils.sendMessage();
         uiDevice.waitForIdle();
-        testUtils.getLastMessageReceived();
+        testUtils.waitForNewMessage();
         composeSelfMessage();
         testUtils.sendMessage();
         uiDevice.waitForIdle();
         testUtils.doWaitForResource(R.id.actionbar_title_first);
         onView(withId(R.id.actionbar_title_first)).check(matches(isDisplayed()));
         uiDevice.waitForIdle();
-        testUtils.pressBack();
-        testUtils.removeLastAccount();
-    }
-
-    private void launchApp(){
-        testUtils.createAccount(true);
-        testUtils.getLastMessageReceived();
+        testUtils.goBackAndRemoveAccount();
     }
 
     private void composeSelfMessage(){
@@ -75,6 +69,6 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
 
     private void disableProtection(){
         testUtils.openOptionsMenu();
-        testUtils.selectFromMenu(R.string.pep_force_unprotected);
+        testUtils.selectFromScreen(R.string.pep_force_unprotected);
     }
 }

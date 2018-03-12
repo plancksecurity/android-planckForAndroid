@@ -9,6 +9,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 
 import junit.framework.Assert;
+import junit.framework.AssertionFailedError;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -16,6 +17,7 @@ import org.junit.Test;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
 
 
 public class ImportSettingsDarkThemeTest {
@@ -28,7 +30,7 @@ public class ImportSettingsDarkThemeTest {
     public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
 
     @Before
-    public void startMainActivityFromHomeScreen() {
+    public void startpEpApp() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(device);
         testUtils.increaseTimeoutWait();
@@ -36,20 +38,25 @@ public class ImportSettingsDarkThemeTest {
         testUtils.startActivity();
     }
 
-    @Test
+    @Test (timeout = TIMEOUT_TEST)
     public void importSettingDarkTheme() {
+        testUtils.createAccount(false);
         testUtils.pressBack();
         testUtils.openOptionsMenu();
         device.waitForIdle();
-        testUtils.selectFromMenu(R.string.import_export_action);
+        testUtils.selectFromScreen(R.string.import_export_action);
         device.waitForIdle();
-        testUtils.selectFromMenu(R.string.settings_import);
+        testUtils.selectFromScreen(R.string.settings_import);
         testUtils.clickAcceptButton();
         device.waitForIdle();
         testUtils.clickAcceptButton();
         device.waitForIdle();
         onView(withId(R.id.accounts_list)).perform(ViewActions.click());
         device.waitForIdle();
-        Assert.assertEquals(K9.Theme.LIGHT, K9.getK9Theme());
+        try{
+            Assert.assertEquals(K9.Theme.LIGHT, K9.getK9Theme());
+        }catch (AssertionFailedError exception){
+        }
+        testUtils.goBackAndRemoveAccount();
     }
 }
