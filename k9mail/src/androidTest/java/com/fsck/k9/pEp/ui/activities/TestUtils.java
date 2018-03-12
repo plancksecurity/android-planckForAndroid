@@ -87,6 +87,7 @@ class TestUtils {
     private UiDevice device;
     private Context context;
     private Resources resources;
+    int messageListSize[] = new int[2];
 
     public static final int TIMEOUT_TEST = FIVE_MINUTES * MINUTE_IN_SECONDS * SECOND_IN_MILIS;
 
@@ -167,6 +168,7 @@ class TestUtils {
     void createAccount(boolean isGmail) {
         createNewAccountWithPermissions(isGmail);
         removeMessagesFromList();
+        getMessageListSize();
     }
 
     private void createNewAccountWithPermissions(boolean isGmail){
@@ -560,11 +562,9 @@ class TestUtils {
     }
 
     void waitForNewMessage() {
-        int messageListSize[] = new int[2];
         boolean newEmail = false;
         while (!newEmail) {
             try {
-                onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
                 device.waitForIdle();
                 swipeDownMessageList();
                 device.waitForIdle();
@@ -576,7 +576,11 @@ class TestUtils {
                 Timber.i("Waiting for new message : " + ex);
             }
         }
+        getMessageListSize();
     }
+
+    void getMessageListSize(){
+        onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));}
 
     void swipeDownMessageList (){
         boolean actionPerformed = false;
