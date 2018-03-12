@@ -124,20 +124,6 @@ public class YellowStatusEmailFromBotTest {
         testUtils.clickView(R.id.pEp_indicator);
     }
 
-    private void clickReplayMessage() {
-        boolean clickedButton = false;
-        do {
-            try {
-                device.waitForIdle();
-                onView(withId(R.id.reply_message)).check(matches(isDisplayed()));
-                onView(withId(R.id.reply_message)).perform(click());
-                clickedButton = true;
-            } catch (Exception ex){
-                Timber.e(ex);
-            }
-        } while (!clickedButton);
-    }
-
     private void yellowStatusMessageTest() {
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         onView(withId(R.id.pEp_indicator)).perform(click());
