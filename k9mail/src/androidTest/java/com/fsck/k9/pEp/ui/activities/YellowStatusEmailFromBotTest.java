@@ -43,7 +43,8 @@ public class YellowStatusEmailFromBotTest {
 
     private UiDevice device;
     private TestUtils testUtils;
-    private String messageTo = "random@test.pep-security.net";
+    private String messageTo = "";
+    private static final String HOST = "test.pep-security.net";
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
 
@@ -55,6 +56,7 @@ public class YellowStatusEmailFromBotTest {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(device);
         testUtils.increaseTimeoutWait();
+        messageTo = Long.toString(System.currentTimeMillis()) + "@" + HOST;
         testUtils.startActivity();
     }
 
@@ -92,7 +94,7 @@ public class YellowStatusEmailFromBotTest {
     private void fillComposeFields() {
         device.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
-        onView(withId(R.id.to)).perform(typeText("randomtest@Message.is"), closeSoftKeyboard());
+        onView(withId(R.id.to)).perform(typeText(messageTo), closeSoftKeyboard());
         device.waitForIdle();
         onView(withId(R.id.subject)).perform(longClick(), closeSoftKeyboard());
         device.waitForIdle();
