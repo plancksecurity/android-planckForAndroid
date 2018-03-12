@@ -440,6 +440,11 @@ class TestUtils {
     }
 
     void checkStatus(Rating rating) {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         clickView(R.id.pEp_indicator);
         device.waitForIdle();
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, rating.value))));
@@ -568,7 +573,7 @@ class TestUtils {
                     newEmail = true;
                 }
             } catch (Exception ex) {
-                Timber.i(ex);
+                Timber.i("Waiting for new message : " + ex);
             }
         }
     }
