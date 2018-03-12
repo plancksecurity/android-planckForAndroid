@@ -143,12 +143,9 @@ class TestUtils {
         boolean buttonClicked = false;
         while (!buttonClicked) {
             try {
-                device.waitForIdle();
                 doWaitForResource(viewId);
-                device.waitForIdle();
                 onView(withId(viewId)).perform(click());
                 buttonClicked = true;
-                device.waitForIdle();
             } catch (Exception ex) {
                 Timber.e("View not found: " + ex);
             }
@@ -361,8 +358,6 @@ class TestUtils {
 
     private void removeLastAccount() {
         device.waitForIdle();
-        doWait("accounts_list");
-        device.waitForIdle();
         longClick("accounts_list");
         device.waitForIdle();
         selectRemoveAccount();
@@ -373,7 +368,6 @@ class TestUtils {
     public void goBackAndRemoveAccount(){
         try {
             device.waitForIdle();
-            onView(withId(R.id.accounts_list)).check(matches(isDisplayed()));
             removeLastAccount();
         } catch (Exception ex){
             device.waitForIdle();
@@ -532,7 +526,7 @@ class TestUtils {
         while (!viewDisplayed){
             try{
                 device.waitForIdle();
-                onView(withId(R.id.pEpTitle)).check(matches(isDisplayed()));
+                doWaitForResource(R.id.pEpTitle);
                 viewDisplayed = true;
                 device.waitForIdle();
             } catch (Exception ex){
@@ -572,14 +566,16 @@ class TestUtils {
     }
 
     void swipeDownMessageList (){
-        try{
-            device.waitForIdle();
-            onView(withId(R.id.message_list)).check(matches(isDisplayed()));
-            onView(withId(R.id.message_list)).perform(swipeDown());
-            Timber.e("Message list found");
-        } catch (Exception ex){
-            Timber.e("Message list not found, waiting for view...");
-            swipeDownMessageList();
+        boolean actionPerformed = false;
+        while (!actionPerformed) {
+            try {
+                device.waitForIdle();
+                onView(withId(R.id.message_list)).perform(swipeDown());
+                Timber.e("Message list found");
+                actionPerformed = true;
+            } catch (Exception ex) {
+                Timber.e("Message list not found, waiting for view...");
+            }
         }
     }
 
@@ -597,7 +593,6 @@ class TestUtils {
                 }
                 try {
                     device.waitForIdle();
-                    onView(withId(R.id.delete)).check(matches(isDisplayed()));
                     onView(withId(R.id.delete)).perform(click());
                 } catch (NoMatchingViewException ignoredException) {
                     emptyList = true;
