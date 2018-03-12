@@ -1021,7 +1021,9 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                 break;
             case R.id.send:
                 if (!isSendButtonLocked) {
-                    lockSendButton();
+                    if (isLookNeeded()) {
+                        lockSendButton();
+                    }
                     checkToSendMessage();
                 } else {
                     FeedbackTools.showShortFeedback(getRootView(), getString(R.string.message_loading_error));
@@ -1080,6 +1082,11 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean isLookNeeded() {
+        return !recipientPresenter.isForceUnencrypted()
+                && account.ispEpPrivacyProtected();
     }
 
     private void forceUnencrypted() {

@@ -951,11 +951,11 @@ public class RecipientPresenter implements PermissionPingCallback {
                     public void onLoaded(Rating rating) {
                         if(newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty()) {
                             showDefaultStatus();
-                            recipientMvpView.unlockSendButton();
                         } else {
                             privacyState = rating;
                             showRatingFeedback(rating);
                         }
+                        recipientMvpView.unlockSendButton();
                     }
 
                     @Override
