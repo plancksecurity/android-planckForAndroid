@@ -442,11 +442,6 @@ class TestUtils {
     }
 
     void checkStatus(Rating rating) {
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         clickView(R.id.pEp_indicator);
         device.waitForIdle();
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, rating.value))));
