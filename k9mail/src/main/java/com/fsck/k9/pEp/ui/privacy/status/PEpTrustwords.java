@@ -122,7 +122,7 @@ public class PEpTrustwords extends PepColoredActivity {
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initPep();
 
-        String language = Locale.getDefault().getLanguage();
+        String language = K9.getK9Language().isEmpty() ? Locale.getDefault().getLanguage() : K9.getK9Language();
         if (isLanguageInPEPLanguages(language)) {
             trustwordsLanguage = language;
         }
