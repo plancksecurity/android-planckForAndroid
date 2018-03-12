@@ -46,7 +46,6 @@ public class ImportSettingsCancelFromAccountTest {
         device.waitForIdle();
         testUtils.selectFromScreen(R.string.import_export_action);
         device.waitForIdle();
-        testUtils.doWaitForResource(R.string.settings_import);
         testUtils.selectFromScreen(R.string.settings_import);
         testUtils.getActivityInstance();
         testUtils.goBackAndRemoveAccount();
