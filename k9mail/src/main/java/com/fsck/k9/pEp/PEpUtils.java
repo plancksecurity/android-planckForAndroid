@@ -78,19 +78,21 @@ public class PEpUtils {
 //            id.user_id = PEpProvider.PEP_OWN_USER_ID;
 //            return id;
 //        }
-        try {
-            id.user_id = Contacts.getInstance(context).getContactId(adr.getAddress());
-        } catch (Exception ignore) {
-            //we ignore it as we decided to do nothing if the user is not found,
-            // or there is no permission
-        }
-//        PEpProvider provider = PEpProviderFactory.createProvider();
-//        id = provider.updateIdentity(id);
-//        provider.close();
-//        provider = null;
-        // hack to get an unique ID...
 
-        // TODO: do I have any kind of unique id for user_id? (no, I don't, see hack from above)
+        // TODO: 15/03/18 Avoid managing user id (delegate on the engine) until we have our own address book.
+//        try {
+//            id.user_id = Contacts.getInstance(context).getContactId(adr.getAddress());
+//        } catch (Exception ignore) {
+//            //we ignore it as we decided to do nothing if the user is not found,
+//            // or there is no permission
+//        }
+////        PEpProvider provider = PEpProviderFactory.createProvider();
+////        id = provider.updateIdentity(id);
+////        provider.close();
+////        provider = null;
+//        // hack to get an unique ID...
+//
+//        // TODO: do I have any kind of unique id for user_id? (no, I don't, see hack from above)
         return id;
     }
 
