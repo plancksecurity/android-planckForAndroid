@@ -1,5 +1,6 @@
 package com.fsck.k9.pEp.ui.activities;
 
+import android.app.Instrumentation;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -24,6 +25,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
     private String messageTo = "username@email.com";
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
+    private Instrumentation instrumentation;
 
     @Rule
     public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
@@ -31,7 +33,8 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
     @Before
     public void startActivity() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(device);
+        instrumentation = InstrumentationRegistry.getInstrumentation();
+        testUtils = new TestUtils(device, instrumentation);
         testUtils.increaseTimeoutWait();
         testUtils.startActivity();
     }
@@ -46,7 +49,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
         testUtils.checkStatus(Rating.pEpRatingUnencrypted);
         testUtils.pressBack();
         testUtils.openOptionsMenu();
-        testUtils.selectFromMenu(R.id.is_always_secure);
+        testUtils.selectFromScreen(R.id.is_always_secure);
         device.waitForIdle();
         device.pressBack();
         testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.save_or_discard_draft_message_dlg_title);
@@ -54,7 +57,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
         onView(withText(R.string.save_draft_action)).perform(click());
         device.waitForIdle();
         testUtils.openOptionsMenu();
-        testUtils.selectFromMenu(R.string.account_settings_folders);
+        testUtils.selectFromScreen(R.string.account_settings_folders);
 
     }
 }

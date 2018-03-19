@@ -32,7 +32,7 @@ public class GreyStatusMessageTest {
 
     @Before
     public void startpEpApp() {
-        testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()));
+        testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()), InstrumentationRegistry.getInstrumentation());
         testUtils.startActivity();
     }
 

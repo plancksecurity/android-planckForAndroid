@@ -32,7 +32,7 @@ public class ImportSettingsDarkThemeTest {
     @Before
     public void startpEpApp() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(device);
+        testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
         testUtils.increaseTimeoutWait();
         testUtils.externalAppRespondWithFile(R.raw.settingsthemedark);
         testUtils.startActivity();

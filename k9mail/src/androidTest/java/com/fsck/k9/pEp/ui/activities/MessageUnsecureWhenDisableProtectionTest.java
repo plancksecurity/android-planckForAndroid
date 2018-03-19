@@ -1,6 +1,7 @@
 package com.fsck.k9.pEp.ui.activities;
 
 
+import android.app.Instrumentation;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -28,6 +29,7 @@ public class MessageUnsecureWhenDisableProtectionTest {
     private String messageTo = "";
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
+    private Instrumentation instrumentation;
 
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
@@ -35,7 +37,8 @@ public class MessageUnsecureWhenDisableProtectionTest {
     @Before
     public void startActivity() {
         uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(uiDevice);
+        instrumentation = InstrumentationRegistry.getInstrumentation();
+        testUtils = new TestUtils(uiDevice, InstrumentationRegistry.getInstrumentation());
         testUtils.increaseTimeoutWait();
         testUtils.startActivity();
     }

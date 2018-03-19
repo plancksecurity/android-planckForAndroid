@@ -1,5 +1,6 @@
 package com.fsck.k9.pEp.ui.activities;
 
+import android.app.Instrumentation;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -31,6 +32,7 @@ public class InboxActionBarChangingColorTest {
     private UiDevice device;
     private TestUtils testUtils;
     private String messageTo = "random@test.pep-security.net";
+    private Instrumentation instrumentation;
 
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
@@ -38,7 +40,8 @@ public class InboxActionBarChangingColorTest {
     @Before
     public void startpEpApp() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(device);
+        instrumentation = InstrumentationRegistry.getInstrumentation();
+        testUtils = new TestUtils(device, instrumentation);
         testUtils.increaseTimeoutWait();
         messageTo = Long.toString(System.currentTimeMillis()) + "@" + HOST;
         testUtils.startActivity();

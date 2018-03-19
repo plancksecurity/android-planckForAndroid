@@ -1,5 +1,6 @@
 package com.fsck.k9.pEp.ui.activities;
 
+import android.app.Instrumentation;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
 import android.support.test.rule.ActivityTestRule;
@@ -35,6 +36,7 @@ public class RemoveContactsFromMessageAndKeepOriginalToolbarColor {
     private TestUtils testUtils;
     private UiDevice device;
     private String messageFrom;
+    private Instrumentation instrumentation;
 
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
@@ -42,7 +44,8 @@ public class RemoveContactsFromMessageAndKeepOriginalToolbarColor {
     @Before
     public void startpEpApp() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(device);
+        instrumentation = InstrumentationRegistry.getInstrumentation();
+        testUtils = new TestUtils(device, instrumentation);
         testUtils.startActivity();
     }
 

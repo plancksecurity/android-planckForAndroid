@@ -1,5 +1,6 @@
 package com.fsck.k9.pEp.ui.activities;
 
+import android.app.Instrumentation;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -32,9 +33,10 @@ public class GreenStatusEmailTest  {
 
     @Before
     public void startpEpApp() {
-        testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()));
+
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(device);
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        testUtils = new TestUtils(device, instrumentation);
         testUtils.increaseTimeoutWait();
         testUtils.startActivity();
     }

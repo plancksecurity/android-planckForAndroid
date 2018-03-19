@@ -30,9 +30,8 @@ public class ImportSettingsCancelTest {
 
     @Before
     public void startpEpApp() {
-        testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()));
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(device);
+        testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
         testUtils.increaseTimeoutWait();
         testUtils.startActivity();
     }

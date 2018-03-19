@@ -1,6 +1,7 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Activity;
+import android.app.Instrumentation;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.core.internal.deps.guava.collect.Iterables;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
@@ -47,6 +48,7 @@ public class YellowStatusEmailFromBotTest {
     private static final String HOST = "test.pep-security.net";
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
+    private Instrumentation instrumentation;
 
     @Rule
     public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
@@ -54,7 +56,8 @@ public class YellowStatusEmailFromBotTest {
     @Before
     public void startpEpApp() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(device);
+        instrumentation = InstrumentationRegistry.getInstrumentation();
+        testUtils = new TestUtils(device, instrumentation);
         testUtils.increaseTimeoutWait();
         messageTo = Long.toString(System.currentTimeMillis()) + "@" + HOST;
         testUtils.startActivity();

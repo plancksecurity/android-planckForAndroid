@@ -1,5 +1,6 @@
 package com.fsck.k9.pEp.ui.activities;
 
+import android.app.Instrumentation;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.test.InstrumentationRegistry;
@@ -36,6 +37,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
     private BySelector textViewSelector;
     private Resources resources;
     private Context context;
+    private Instrumentation instrumentation;
 
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
@@ -43,7 +45,8 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
     @Before
     public void startActivity() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(device);
+        instrumentation = InstrumentationRegistry.getInstrumentation();
+        testUtils = new TestUtils(device, instrumentation);
         testUtils.increaseTimeoutWait();
         textViewSelector = By.clazz("android.widget.TextView");
         context = InstrumentationRegistry.getTargetContext();

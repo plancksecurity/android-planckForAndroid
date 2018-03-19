@@ -87,12 +87,14 @@ class TestUtils {
     private UiDevice device;
     private Context context;
     private Resources resources;
+    private Instrumentation instrumentation;
     int messageListSize[] = new int[2];
 
     public static final int TIMEOUT_TEST = FIVE_MINUTES * MINUTE_IN_SECONDS * SECOND_IN_MILIS;
 
-    TestUtils(UiDevice device) {
+    TestUtils(UiDevice device, Instrumentation instrumentation) {
         this.device = device;
+        this.instrumentation = instrumentation;
         context = InstrumentationRegistry.getTargetContext();
         resources = context.getResources();
     }
