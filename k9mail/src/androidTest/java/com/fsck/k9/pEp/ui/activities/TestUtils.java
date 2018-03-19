@@ -278,11 +278,9 @@ class TestUtils {
                 device.findObject(By.res(APP_ID, "message_content")).click();
                 device.findObject(By.res(APP_ID, "message_content")).setText(inputMessage.getMessage());
                 device.waitForIdle();
-                onView(withId(R.id.subject)).perform(click());
+                longClick("subject");
                 device.waitForIdle();
-                onView(withId(R.id.message_content)).perform(click());
-                device.waitForIdle();
-                onView(withId(R.id.to)).perform(click());
+                longClick("message_content");
                 device.waitForIdle();
                 messageFilled = true;
             } catch (Exception ex){
@@ -351,6 +349,7 @@ class TestUtils {
     }
 
     void sendMessage() {
+        doWaitForResource(R.id.send);
         onView(withId(R.id.send)).perform(click());
     }
 
@@ -415,10 +414,10 @@ class TestUtils {
         }
     }
 
-    private void longClick(String viewId) {
+    void longClick(String viewId) {
         UiObject2 list = device.findObject(By.res(APP_ID, viewId));
         Rect bounds = list.getVisibleBounds();
-        device.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 180);
+        device.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 450);
     }
 
     void testStatusEmpty() {
