@@ -54,7 +54,6 @@ public class ImportSettingsCancelTest {
         device.waitForIdle();
         testUtils.selectFromScreen(R.string.import_export_action);
         device.waitForIdle();
-        testUtils.doWaitForResource(R.string.settings_import);
         testUtils.selectFromScreen(R.string.settings_import);
         device.waitForIdle();
         testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.settings_import_selection);
