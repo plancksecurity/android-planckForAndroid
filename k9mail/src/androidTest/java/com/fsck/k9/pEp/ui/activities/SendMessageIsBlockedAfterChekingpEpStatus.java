@@ -70,5 +70,9 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
     private void disableProtection(){
         testUtils.openOptionsMenu();
         testUtils.selectFromScreen(R.string.pep_force_unprotected);
+        testUtils.doWaitForResource(R.id.subject);
+        uiDevice.waitForIdle();
+        testUtils.longClick("subject");
+        uiDevice.waitForIdle();
     }
 }
