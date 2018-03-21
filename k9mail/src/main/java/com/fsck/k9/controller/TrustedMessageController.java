@@ -65,7 +65,8 @@ class TrustedMessageController {
         try {
             if (PEpUtils.ispEpDisabled(account, null)) {
                 encryptedMessage = localMessage;
-            } else if (account.getDraftsFolderName().equals(localMessage.getFolder().getName())) {
+            } else if (account.getDraftsFolderName().equals(localMessage.getFolder().getName()) ||
+                    account.getTrashFolderName().equals(localMessage.getFolder().getName()) ) {
                 encryptedMessage = pEpProvider.encryptMessageToSelf(localMessage);
             } else {
                 Preferences preferences = Preferences.getPreferences(context);
