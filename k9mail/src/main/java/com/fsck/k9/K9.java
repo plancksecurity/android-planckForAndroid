@@ -1435,6 +1435,18 @@ public class K9 extends MultiDexApplication {
         mHideTimeZone = state;
     }
 
+    public static boolean isOpenPgpProviderConfigured() {
+        return false;
+    }
+
+    public static String getOpenPgpProvider() {
+        return openPgpProvider;
+    }
+
+    public static void setOpenPgpProvider(String openPgpProvider) {
+        K9.openPgpProvider = openPgpProvider;
+    }
+
     public static String getAttachmentDefaultPath() {
         return mAttachmentDefaultPath;
     }

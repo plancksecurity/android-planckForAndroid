@@ -16,6 +16,7 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.support.v7.widget.Toolbar;
+import android.preference.SwitchPreference;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.DeletePolicy;
@@ -50,6 +51,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.openintents.openpgp.util.OpenPgpProviderUtil;
 import timber.log.Timber;
 
 
@@ -113,9 +115,11 @@ public class AccountSettings extends K9PreferenceActivity {
     private static final String PREFERENCE_REPLY_AFTER_QUOTE = "reply_after_quote";
     private static final String PREFERENCE_STRIP_SIGNATURE = "strip_signature";
     private static final String PREFERENCE_SYNC_REMOTE_DELETIONS = "account_sync_remote_deletetions";
-    private static final String PREFERENCE_CRYPTO = "crypto";
-    private static final String PREFERENCE_CRYPTO_APP = "crypto_app";
-    private static final String PREFERENCE_CRYPTO_KEY = "crypto_key";
+    private static final String PREFERENCE_CRYPTO = "openpgp";
+    private static final String PREFERENCE_CRYPTO_PROVIDER = "openpgp_provider";
+    private static final String PREFERENCE_CRYPTO_KEY = "openpgp_key";
+    private static final String PREFERENCE_CRYPTO_HIDE_SIGN_ONLY = "openpgp_hide_sign_only";
+    private static final String PREFERENCE_AUTOCRYPT_PREFER_ENCRYPT = "autocrypt_prefer_encrypt";
     private static final String PREFERENCE_CLOUD_SEARCH_ENABLED = "remote_search_enabled";
     private static final String PREFERENCE_REMOTE_SEARCH_NUM_RESULTS = "account_remote_search_num_results";
     private static final String PREFERENCE_REMOTE_SEARCH_FULL_TEXT = "account_remote_search_full_text";
@@ -184,7 +188,6 @@ public class AccountSettings extends K9PreferenceActivity {
     private CheckBoxPreference pushPollOnConnect;
     private ListPreference idleRefreshPeriod;
     private ListPreference mMaxPushFolders;
-   // private boolean hasPgpCrypto = false;
     private OpenPgpKeyPreference pgpCryptoKey;
     private OpenPgpAppPreference mCryptoApp;
     private CheckBoxPreference pgpSupportSignOnly;
@@ -193,6 +196,7 @@ public class AccountSettings extends K9PreferenceActivity {
     private CheckBoxPreference pEpDisablePrivacyProtection;
     //private CheckBoxPreference mPEpSyncAccount;
     private Preference mPepExtraKeys;
+    private SwitchPreference pgpHideSignOnly;
 
     private PreferenceScreen searchScreen;
     private CheckBoxPreference cloudSearchEnabled;
@@ -211,6 +215,7 @@ public class AccountSettings extends K9PreferenceActivity {
     private ListPreference spamFolder;
     private ListPreference trashFolder;
     private CheckBoxPreference alwaysShowCcBcc;
+    private SwitchPreference pgpEnable;
 
     private final K9JobManager jobManager = K9.jobManager;
 
@@ -714,6 +719,11 @@ public class AccountSettings extends K9PreferenceActivity {
                 return true;
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
 //        mHasCrypto = OpenPgpUtils.isAvailable(this);
 //        if (mHasCrypto) {

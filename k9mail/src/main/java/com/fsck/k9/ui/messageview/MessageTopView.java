@@ -118,7 +118,7 @@ public class MessageTopView extends LinearLayout {
                 containerView, false);
         containerView.addView(view);
 
-        boolean hideUnsignedTextDivider = !account.getCryptoSupportSignOnly();
+        boolean hideUnsignedTextDivider = account.getPgpHideSignOnly();
         view.displayMessageViewContainer(messageViewInfo, new OnRenderingFinishedListener() {
             @Override
             public void onLoadFinished() {

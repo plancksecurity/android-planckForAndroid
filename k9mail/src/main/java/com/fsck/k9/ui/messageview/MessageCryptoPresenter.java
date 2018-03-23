@@ -59,10 +59,9 @@ public class MessageCryptoPresenter implements OnCryptoClickListener {
             return false;
         }
 
-        boolean suppressSignOnlyMessages = !account.getCryptoSupportSignOnly();
-        if (suppressSignOnlyMessages && displayStatus.isUnencryptedSigned()) {
-            return false;
-        }
+        /*if (cryptoResultAnnotation.isOverrideSecurityWarning()) {
+            overrideCryptoWarning = true;
+        }*/
 
         messageView.getMessageHeaderView().setCryptoStatus(displayStatus);
 

@@ -584,10 +584,13 @@
     <string name="account_settings_sync">Fetching mail</string>
     <string name="account_settings_folders">Folders</string>
     <string name="account_settings_quote_prefix_label">Quoted text prefix</string>
-    <string name="account_settings_crypto">Advanced cryptography</string>
-    <string name="account_settings_crypto_app">OpenPGP app</string>
-    <string name="account_settings_crypto_key">My Key</string>
-    <string name="account_settings_no_openpgp_provider_installed">No OpenPGP app installed</string>
+    <string name="account_settings_crypto">End-to-end encryption</string>
+    <string name="account_settings_crypto_app">Enable OpenPGP support</string>
+    <string name="account_settings_crypto_key">Configure end-to-end key</string>
+    <string name="account_settings_crypto_summary_off">No OpenPGP app configured</string>
+    <string name="account_settings_crypto_summary_on">Connected to %s</string>
+    <string name="account_settings_no_openpgp_provider_configured">No OpenPGP app configured</string>
+    <string name="account_settings_no_openpgp_provider_installed">No OpenPGP app found - click to install</string>
 
     <string name="account_settings_mail_check_frequency_label">Folder poll frequency</string>
 
@@ -1207,7 +1210,9 @@
     <string name="messageview_crypto_warning_show_anyway">Show message anyway</string>
     <string name="recipient_error_non_ascii">Special characters are currently not supported!</string>
     <string name="recipient_error_parse_failed">Error parsing address!</string>
-    <string name="account_settings_crypto_support_sign_only">Support signing of unencrypted messages</string>
+    <string name="account_settings_crypto_hide_sign_only">Hide unencrypted signatures</string>
+    <string name="account_settings_crypto_hide_sign_only_on">Only encrypted signatures will be displayed</string>
+    <string name="account_settings_crypto_hide_sign_only_off">All signatures will be displayed</string>
     <string name="error_sign_only_no_encryption">Encryption unavailable in sign-only mode!</string>
     <string name="unsigned_text_divider_label">Unsigned Text</string>
 
