@@ -1,5 +1,13 @@
 package com.fsck.k9.activity.setup;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -38,14 +46,6 @@ import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.preferences.TimePickerPreference;
 import com.fsck.k9.service.MailServiceLegacy;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 
 public class Prefs extends K9PreferenceActivity {
@@ -108,6 +108,7 @@ public class Prefs extends K9PreferenceActivity {
     private static final String PREFERENCE_THREADED_VIEW = "threaded_view";
     private static final String PREFERENCE_FOLDERLIST_WRAP_NAME = "folderlist_wrap_folder_name";
     private static final String PREFERENCE_SPLITVIEW_MODE = "splitview_mode";
+
     private static final String PEP_EXTRA_ACCOUNTS = "pep_extra_accounts";
     private static final String PEP_USE_KEYSERVER = "pep_use_keyserver";
     private static final String PEP_PASSIVE_MODE = "pep_passive_mode";
