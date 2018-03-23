@@ -766,6 +766,7 @@ public class AccountSettings extends K9PreferenceActivity {
 
         pEpDisablePrivacyProtection = (CheckBoxPreference) findPreference(PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION);
         pEpDisablePrivacyProtection.setChecked(account.ispEpPrivacyProtected());
+        boolean isKeyConfigured = account.hasCryptoKey();
 
         //mPEpSyncAccount = (CheckBoxPreference) findPreference(PEP_ENABLE_SYNC_ACCOUNT);
         mPepExtraKeys = findPreference(PEP_EXTRA_KEYS);

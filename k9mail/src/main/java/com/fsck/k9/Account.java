@@ -1660,6 +1660,10 @@ public class Account implements BaseAccount, StoreConfig {
         pgpCryptoKey = NO_OPENPGP_KEY;
     }
 
+    public boolean hasCryptoKey() {
+        return pgpCryptoKey != NO_OPENPGP_KEY;
+    }
+
     public boolean getCryptoSupportSignOnly() {
         return mCryptoSupportSignOnly;
     }
