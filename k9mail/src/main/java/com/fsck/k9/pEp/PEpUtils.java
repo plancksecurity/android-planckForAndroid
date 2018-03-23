@@ -74,7 +74,7 @@ public class PEpUtils {
         if (adr.getPersonal() != null) {
             id.username = adr.getPersonal();
         }
-        if (isMyself(context, adr)) {
+       if (isMyself(context, adr)) {
             id.user_id = PEpProvider.PEP_OWN_USER_ID;
             return id;
         }

@@ -235,7 +235,7 @@ public class PEpTrustwords extends PepColoredActivity {
         wrongTrustWords.setVisibility(View.VISIBLE);
         confirmTrustWords.setVisibility(View.VISIBLE);
 
-        if (!PEpUtils.isPEpUser(partner) && showingPgpFingerprint) {
+        if ((!PEpUtils.isPEpUser(partner) && showingPgpFingerprint) || partnerPosition == DEFAULT_POSITION) {
             flipper.setAnimateFirstView(false);
             flipper.setDisplayedChild(1);
             showingPgpFingerprint = true;

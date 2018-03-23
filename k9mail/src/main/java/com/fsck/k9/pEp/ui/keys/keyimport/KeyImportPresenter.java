@@ -32,6 +32,7 @@ class KeyImportPresenter {
     void onAccept(Context context) {
         view.showPositiveFeedback();
         Identity id = PEpUtils.createIdentity(keyDetail.getAddress(), context);
+        id.user_id = PEpProvider.PEP_OWN_USER_ID;
         pEp.setOwnIdentity(id, keyDetail.getFpr());
         view.finish();
     }
