@@ -73,7 +73,7 @@ public class RecipientPresenterTest {
         listener = mock(RecipientPresenter.RecipientsChangedListener.class);
 
         recipientPresenter = new RecipientPresenter(
-                context, loaderManager, recipientMvpView, account, composePgpInlineDecider, replyToParser, listener);
+                context, getLifecycle(), loaderManager, recipientMvpView, account, composePgpInlineDecider, replyToParser, listener);
         recipientPresenter.updateCryptoStatus();
     }
 

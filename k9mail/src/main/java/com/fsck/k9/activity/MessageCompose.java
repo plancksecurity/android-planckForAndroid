@@ -313,7 +313,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
         recipientMvpView = new RecipientMvpView(this);
         ComposePgpInlineDecider composePgpInlineDecider = new ComposePgpInlineDecider();
-        recipientPresenter = new RecipientPresenter(getApplicationContext(), getLoaderManager(), recipientMvpView,
+        recipientPresenter = new RecipientPresenter(getApplicationContext(), getLifecycle(), getLoaderManager(), recipientMvpView,
                 account, composePgpInlineDecider, new ReplyToParser(), this);
         recipientPresenter.updateCryptoStatus();
 
@@ -494,15 +494,6 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                     .build();
 
             shortcutManager.setDynamicShortcuts(Collections.singletonList(composeShortcut));
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (recipientPresenter != null) {
-            recipientPresenter.onActivityDestroy();
         }
     }
 
