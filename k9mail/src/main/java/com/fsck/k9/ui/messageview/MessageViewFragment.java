@@ -35,6 +35,7 @@ import com.fsck.k9.activity.MessageLoaderHelper;
 import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderCallbacks;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
+import com.fsck.k9.activity.setup.AccountSettings;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmentListener;
