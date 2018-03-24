@@ -18,6 +18,7 @@ import android.preference.RingtonePreference;
 import android.support.v7.widget.Toolbar;
 import android.preference.SwitchPreference;
 import android.widget.ListAdapter;
+import android.widget.Toast;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.DeletePolicy;
