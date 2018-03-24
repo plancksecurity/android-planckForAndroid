@@ -612,6 +612,7 @@ public class K9 extends MultiDexApplication {
         ACRA.init(this);
         pEpSetupUiEngineSession();
         app = this;
+        DI.start(this);
         Globals.setContext(this);
         oAuth2TokenStore = new AndroidAccountOAuth2TokenStore(this);
         K9MailLib.setDebugStatus(new K9MailLib.DebugStatus() {

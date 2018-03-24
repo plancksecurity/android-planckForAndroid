@@ -101,16 +101,24 @@ dependencies {
     implementation 'com.xwray:groupie:2.0.3'
     implementation 'com.xwray:groupie-kotlin-android-extensions:2.0.3'
     implementation "org.jetbrains.anko:anko-coroutines:0.10.4"
+    implementation "org.koin:koin-android-architecture:${koinVersion}"
 
     androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
 
     implementation 'com.android.support.test.espresso:espresso-idling-resource:3.0.1'
     androidTestImplementation "com.android.support.test.espresso.idling:idling-concurrent:3.0.1"
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:${kotlinVersion}"
+    testImplementation "org.robolectric:robolectric:${robolectricVersion}"
+    testImplementation "junit:junit:${junitVersion}"
+    testImplementation "com.google.truth:truth:${truthVersion}"
+    testImplementation "org.mockito:mockito-core:${mockitoVersion}"
+    testImplementation "org.jdom:jdom2:2.0.6"
+    testImplementation "org.koin:koin-test:${koinVersion}"
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1'
     implementation 'com.android.support:multidex:1.0.3'
-
 }
 
 android {
