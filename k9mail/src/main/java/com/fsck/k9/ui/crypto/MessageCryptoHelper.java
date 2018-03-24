@@ -63,7 +63,7 @@ public class MessageCryptoHelper {
 
 
     private final Context context;
-    private final String openPgpProviderPackage;
+    private final String openPgpProvider;
     private final Object callbackLock = new Object();
     private final Deque<CryptoPart> partsToDecryptOrVerify = new ArrayDeque<>();
 
@@ -88,17 +88,22 @@ public class MessageCryptoHelper {
     private OpenPgpServiceConnection openPgpServiceConnection;
 
 
-    public MessageCryptoHelper(Context context, String openPgpProviderPackage) {
+    public MessageCryptoHelper(Context context, OpenPgpApiFactory openPgpApiFactory,
+            AutocryptOperations autocryptOperations, @NonNull String openPgpProvider) {
         this.context = context.getApplicationContext();
         this.openPgpProviderPackage = openPgpProviderPackage;
 
-        if (openPgpProviderPackage == null || Account.NO_OPENPGP_PROVIDER.equals(openPgpProviderPackage)) {
-            throw new IllegalStateException("MessageCryptoHelper must only be called with a openpgp provider!");
-        }
+        this.autocryptOperations = autocryptOperations;
+        this.openPgpApiFactory = openPgpApiFactory;
+        this.openPgpProvider = openPgpProvider;
+    }
+
+    public boolean isConfiguredForOpenPgpProvider(String openPgpProvider) {
+        return this.openPgpProvider.equals(openPgpProvider);
     }
 
     public void asyncStartOrResumeProcessingMessage(LocalMessage message, MessageCryptoCallback callback,
-            OpenPgpDecryptionResult cachedDecryptionResult) {
+            OpenPgpDecryptionResult cachedDecryptionResult, boolean processSignedOnly) {
         if (this.currentMessage != null) {
             reattachCallback(message, callback);
             return;
@@ -210,7 +215,7 @@ public class MessageCryptoHelper {
     }
 
     private void connectToCryptoProviderService() {
-        openPgpServiceConnection = new OpenPgpServiceConnection(context, openPgpProviderPackage,
+        openPgpServiceConnection = new OpenPgpServiceConnection(context, openPgpProvider,
                 new OnBound() {
                     @Override
                     public void onBound(IOpenPgpService2 service) {

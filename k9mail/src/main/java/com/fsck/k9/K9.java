@@ -115,6 +115,9 @@ public class K9 extends MultiDexApplication {
         needsFastPoll = false;
     }
 
+
+    public static final int VERSION_MIGRATE_OPENPGP_TO_ACCOUNTS = 63;
+
     /**
      * Components that are interested in knowing when the K9 instance is
      * available and ready (Android invokes Application.onCreate() after other
@@ -380,7 +383,6 @@ public class K9 extends MultiDexApplication {
 
     public static final int BOOT_RECEIVER_WAKE_LOCK_TIMEOUT = 60000;
 
-
     public static class Intents {
 
         public static class EmailReceived {
@@ -549,6 +551,8 @@ public class K9 extends MultiDexApplication {
         editor.putBoolean("wrapFolderNames", mWrapFolderNames);
         editor.putBoolean("hideUserAgent", mHideUserAgent);
         editor.putBoolean("hideTimeZone", mHideTimeZone);
+        //editor.putBoolean("hideHostnameWhenConnecting", hideHostnameWhenConnecting);
+
 
         editor.putString("language", language);
         editor.putInt("theme", theme.ordinal());
@@ -831,6 +835,27 @@ public class K9 extends MultiDexApplication {
         if (cachedVersion >= LocalStore.DB_VERSION) {
             K9.setDatabasesUpToDate(false);
         }
+        if (cachedVersion < VERSION_MIGRATE_OPENPGP_TO_ACCOUNTS) {
+            migrateOpenPgpGlobalToAccountSettings();
+        }
+    }
+
+    private void migrateOpenPgpGlobalToAccountSettings() {
+        Preferences preferences = Preferences.getPreferences(this);
+        Storage storage = preferences.getStorage();
+
+        String openPgpProvider = storage.getString("openPgpProvider", null);
+        boolean openPgpSupportSignOnly = storage.getBoolean("openPgpSupportSignOnly", false);
+
+        for (Account account : preferences.getAccounts()) {
+            account.setOpenPgpProvider(openPgpProvider);
+            account.setOpenPgpHideSignOnly(!openPgpSupportSignOnly);
+        }
+
+        storage.edit()
+                .remove("openPgpProvider")
+                .remove("openPgpSupportSignOnly")
+                .commit();
     }
 
     /**
@@ -1433,18 +1458,6 @@ public class K9 extends MultiDexApplication {
     }
     public static void setHideTimeZone(final boolean state) {
         mHideTimeZone = state;
-    }
-
-    public static boolean isOpenPgpProviderConfigured() {
-        return false;
-    }
-
-    public static String getOpenPgpProvider() {
-        return openPgpProvider;
-    }
-
-    public static void setOpenPgpProvider(String openPgpProvider) {
-        K9.openPgpProvider = openPgpProvider;
     }
 
     public static String getAttachmentDefaultPath() {

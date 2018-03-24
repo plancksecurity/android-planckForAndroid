@@ -291,10 +291,24 @@ public class RecipientPresenter implements PermissionPingCallback {
         menu.findItem(R.id.openpgp_inline_enable).setVisible(isCryptoConfigured && !cryptoEnablePgpInline);
         menu.findItem(R.id.openpgp_inline_disable).setVisible(isCryptoConfigured && cryptoEnablePgpInline);
 
-        boolean showSignOnly = isCryptoConfigured && account.getCryptoSupportSignOnly();
-        boolean isSignOnly = cachedCryptoStatus.isSignOnly();
-        //menu.findItem(R.id.openpgp_sign_only).setVisible(showSignOnly && !isSignOnly);
-        //menu.findItem(R.id.openpgp_sign_only_disable).setVisible(showSignOnly && isSignOnly);
+  /*
+            boolean hideSignOnly = account.getOpenPgpHideSignOnly();
+            boolean isSignOnly = currentCryptoStatus.isSignOnly();
+            menu.findItem(R.id.openpgp_sign_only).setVisible(!hideSignOnly && !isSignOnly);
+            menu.findItem(R.id.openpgp_sign_only_disable).setVisible(!hideSignOnly && isSignOnly);
+
+            boolean pgpInlineModeEnabled = currentCryptoStatus.isPgpInlineModeEnabled();
+            boolean showPgpInlineEnable = (isEncrypting || isSignOnly) && !pgpInlineModeEnabled;
+            menu.findItem(R.id.openpgp_inline_enable).setVisible(showPgpInlineEnable);
+            menu.findItem(R.id.openpgp_inline_disable).setVisible(pgpInlineModeEnabled);
+        } else {
+            menu.findItem(R.id.openpgp_inline_enable).setVisible(false);
+            menu.findItem(R.id.openpgp_inline_disable).setVisible(false);
+            menu.findItem(R.id.openpgp_encrypt_enable).setVisible(false);
+            menu.findItem(R.id.openpgp_encrypt_disable).setVisible(false);
+            menu.findItem(R.id.openpgp_sign_only).setVisible(false);
+            menu.findItem(R.id.openpgp_sign_only_disable).setVisible(false);
+        }*/
 
         boolean noContactPickerAvailable = !hasContactPicker();
         if (noContactPickerAvailable) {
@@ -315,8 +329,8 @@ public class RecipientPresenter implements PermissionPingCallback {
             updateRecipientExpanderVisibility();
         }
 
-        String cryptoProvider = account.getOpenPgpProvider();
-        setCryptoProvider(cryptoProvider);
+        // This does not strictly depend on the account, but this is as good a point to set this as any
+        setupCryptoProvider(account.getOpenPgpProvider());
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -397,9 +411,10 @@ public class RecipientPresenter implements PermissionPingCallback {
             pendingUserInteractionIntent = null;
         }
 
-        recipientMvpView.showCryptoStatus(getCurrentCryptoStatus().getCryptoStatusDisplayType());
-        recipientMvpView.showCryptoSpecialMode(getCurrentCryptoStatus().getCryptoSpecialModeDisplayType());
-    }
+        Long accountCryptoKey = account.getOpenPgpKey();
+        if (accountCryptoKey == Account.NO_OPENPGP_KEY) {
+            accountCryptoKey = null;
+        }
 
     public ComposeCryptoStatus getCurrentCryptoStatus() {
         if (cachedCryptoStatus == null) {
@@ -659,7 +674,10 @@ public class RecipientPresenter implements PermissionPingCallback {
         }
     }
 
-    private void setCryptoProvider(String cryptoProvider) {
+    private void setupCryptoProvider(String openPgpProvider) {
+        if (TextUtils.isEmpty(openPgpProvider)) {
+            openPgpProvider = null;
+        }
 
         boolean providerIsBound = openPgpServiceConnection != null && openPgpServiceConnection.isBound();
         boolean isSameProvider = cryptoProvider != null && cryptoProvider.equals(this.cryptoProvider);
@@ -747,7 +765,32 @@ public class RecipientPresenter implements PermissionPingCallback {
                 cryptoProviderState = CryptoProviderState.ERROR;
                 break;
         }
-        updateCryptoStatus();
+    }
+
+    private void handleOpenPgpError(OpenPgpError error) {
+        Timber.e("OpenPGP Api error: %s", error);
+
+        if (error.getErrorId() == OpenPgpError.INCOMPATIBLE_API_VERSIONS) {
+            // nothing we can do here, this is irrecoverable!
+            openPgpProvider = null;
+            account.setOpenPgpProvider(null);
+            recipientMvpView.showErrorOpenPgpIncompatible();
+            setCryptoProviderState(CryptoProviderState.UNCONFIGURED);
+        } else {
+            recipientMvpView.showErrorOpenPgpConnection();
+        }
+    }
+
+    private void setCryptoProviderState(CryptoProviderState state) {
+        cryptoProviderState = state;
+
+        if (state == CryptoProviderState.OK) {
+            recipientMvpView.setCryptoProvider(openPgpProvider);
+        } else {
+            recipientMvpView.setCryptoProvider(null);
+        }
+
+        asyncUpdateCryptoStatus();
     }
 
     public void onActivityDestroy() {

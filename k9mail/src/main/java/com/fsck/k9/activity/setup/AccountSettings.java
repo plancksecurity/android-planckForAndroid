@@ -766,7 +766,6 @@ public class AccountSettings extends K9PreferenceActivity {
 
         pEpDisablePrivacyProtection = (CheckBoxPreference) findPreference(PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION);
         pEpDisablePrivacyProtection.setChecked(account.ispEpPrivacyProtected());
-        boolean isKeyConfigured = account.hasCryptoKey();
 
         //mPEpSyncAccount = (CheckBoxPreference) findPreference(PEP_ENABLE_SYNC_ACCOUNT);
         mPepExtraKeys = findPreference(PEP_EXTRA_KEYS);
@@ -876,11 +875,10 @@ public class AccountSettings extends K9PreferenceActivity {
         account.setReplyAfterQuote(replyAfterQuote.isChecked());
         account.setStripSignature(stripSignature.isChecked());
         account.setLocalStorageProviderId(localStorageProvider.getValue());
-//        if (hasPgpCrypto) {
-//            account.setCryptoKey(pgpCryptoKey.getValue());
-//        } else {
-//            account.setCryptoKey(Account.NO_OPENPGP_KEY);
-//        }
+        //if (pgpCryptoKey != null) {
+        //    account.setOpenPgpKey(pgpCryptoKey.getValue());
+        //}
+        //account.setOpenPgpHideSignOnly(pgpHideSignOnly.isChecked());
 
         // In webdav account we use the exact folder name also for inbox,
         // since it varies because of internationalization

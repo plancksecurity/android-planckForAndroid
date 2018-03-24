@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.support.annotation.StringRes;
 import timber.log.Timber;
 
@@ -92,20 +93,20 @@ public class MessageCryptoPresenter implements OnCryptoClickListener {
             }
 
             case CANCELLED: {
-                Drawable providerIcon = getOpenPgpApiProviderIcon(messageView.getContext(), account);
+                Drawable providerIcon = getOpenPgpApiProviderIcon(messageView.getContext(), account.getOpenPgpProvider());
                 messageView.showMessageCryptoCancelledView(messageViewInfo, providerIcon);
                 break;
             }
 
             case INCOMPLETE_ENCRYPTED: {
-                Drawable providerIcon = getOpenPgpApiProviderIcon(messageView.getContext(), account);
+                Drawable providerIcon = getOpenPgpApiProviderIcon(messageView.getContext(), account.getOpenPgpProvider());
                 messageView.showMessageEncryptedButIncomplete(messageViewInfo, providerIcon);
                 break;
             }
 
             case ENCRYPTED_ERROR:
             case UNSUPPORTED_ENCRYPTED: {
-                Drawable providerIcon = getOpenPgpApiProviderIcon(messageView.getContext(), account);
+                Drawable providerIcon = getOpenPgpApiProviderIcon(messageView.getContext(), account.getOpenPgpProvider());
                 messageView.showMessageCryptoErrorView(messageViewInfo, providerIcon);
                 break;
             }
@@ -214,10 +215,9 @@ public class MessageCryptoPresenter implements OnCryptoClickListener {
     }
 
     @Nullable
-    private static Drawable getOpenPgpApiProviderIcon(Context context, Account account) {
+    private static Drawable getOpenPgpApiProviderIcon(Context context, String openPgpProvider) {
         try {
-            String openPgpProvider = account.getOpenPgpProvider();
-            if (Account.NO_OPENPGP_PROVIDER.equals(openPgpProvider)) {
+            if (TextUtils.isEmpty(openPgpProvider)) {
                 return null;
             }
             return context.getPackageManager().getApplicationIcon(openPgpProvider);

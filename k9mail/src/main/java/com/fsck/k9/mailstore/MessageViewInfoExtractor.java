@@ -68,7 +68,39 @@ public class MessageViewInfoExtractor {
     }
 
     @WorkerThread
-    public MessageViewInfo extractMessageForView(Message message, @Nullable MessageCryptoAnnotations annotations)
+    public MessageViewInfo extractMessageForView(Message message, @Nullable MessageCryptoAnnotations cryptoAnnotations,
+            boolean openPgpProviderConfigured) throws MessagingException {
+        ArrayList<Part> extraParts = new ArrayList<>();
+        Part cryptoContentPart = MessageCryptoStructureDetector.findPrimaryEncryptedOrSignedPart(message, extraParts);
+
+        if (cryptoContentPart == null) {
+            if (cryptoAnnotations != null && !cryptoAnnotations.isEmpty()) {
+                Timber.e("Got crypto message cryptoContentAnnotations but no crypto root part!");
+            }
+            return extractSimpleMessageForView(message, message);
+        }
+
+        boolean isOpenPgpEncrypted = (MessageCryptoStructureDetector.isPartMultipartEncrypted(cryptoContentPart) &&
+                        MessageCryptoStructureDetector.isMultipartEncryptedOpenPgpProtocol(cryptoContentPart)) ||
+                        MessageCryptoStructureDetector.isPartPgpInlineEncrypted(cryptoContentPart);
+        if (!openPgpProviderConfigured && isOpenPgpEncrypted) {
+            CryptoResultAnnotation noProviderAnnotation = CryptoResultAnnotation.createErrorAnnotation(
+                    CryptoError.OPENPGP_ENCRYPTED_NO_PROVIDER, null);
+            return MessageViewInfo.createWithErrorState(message, false)
+                    .withCryptoData(noProviderAnnotation, null, null);
+        }
+
+        CryptoResultAnnotation cryptoContentPartAnnotation =
+                cryptoAnnotations != null ? cryptoAnnotations.get(cryptoContentPart) : null;
+        if (cryptoContentPartAnnotation != null) {
+            return extractCryptoMessageForView(message, extraParts, cryptoContentPart, cryptoContentPartAnnotation);
+        }
+
+        return extractSimpleMessageForView(message, message);
+    }
+
+    private MessageViewInfo extractCryptoMessageForView(Message message,
+            ArrayList<Part> extraParts, Part cryptoContentPart, CryptoResultAnnotation cryptoContentPartAnnotation)
             throws MessagingException {
         Part rootPart;
         CryptoResultAnnotation cryptoResultAnnotation;
