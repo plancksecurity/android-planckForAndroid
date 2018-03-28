@@ -90,7 +90,6 @@ public class RecipientPresenter {
     private ComposeCryptoStatus cachedCryptoStatus;
     private OpenPgpApiManager openPgpApiManager;
 
-    private CryptoProviderState cryptoProviderState = CryptoProviderState.UNCONFIGURED;
     private OpenPgpServiceConnection openPgpServiceConnection;
     private PEpProvider pEp;
 
@@ -296,11 +295,10 @@ public class RecipientPresenter {
     }
 
     public void onPrepareOptionsMenu(Menu menu) {
-        boolean isCryptoConfigured = cryptoProviderState != CryptoProviderState.UNCONFIGURED;
-        menu.findItem(R.id.openpgp_inline_enable).setVisible(isCryptoConfigured && !cryptoEnablePgpInline);
-        menu.findItem(R.id.openpgp_inline_disable).setVisible(isCryptoConfigured && cryptoEnablePgpInline);
-
   /*
+            boolean isCryptoConfigured = false;
+            menu.findItem(R.id.openpgp_inline_enable).setVisible(isCryptoConfigured && !cryptoEnablePgpInline);
+            menu.findItem(R.id.openpgp_inline_disable).setVisible(isCryptoConfigured && cryptoEnablePgpInline);
             boolean showSignOnly = !account.getOpenPgpHideSignOnly();
             boolean isSignOnly = currentCryptoStatus.isSignOnly();
             menu.findItem(R.id.openpgp_sign_only).setVisible(showSignOnly && !isSignOnly);
@@ -425,7 +423,7 @@ public class RecipientPresenter {
     public ComposeCryptoStatus getCurrentCryptoStatus() {
         if (cachedCryptoStatus == null) {
             ComposeCryptoStatusBuilder builder = new ComposeCryptoStatusBuilder()
-                    //.setCryptoProviderState(cryptoProviderState)
+                    .setOpenPgpProviderState(OpenPgpProviderState.UNCONFIGURED)
                     .setCryptoMode(currentCryptoMode)
                     .setEnablePgpInline(cryptoEnablePgpInline)
                     .setRecipients(getAllRecipients());
