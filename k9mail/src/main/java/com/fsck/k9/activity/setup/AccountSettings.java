@@ -17,7 +17,6 @@ import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.support.v7.widget.Toolbar;
 import android.preference.SwitchPreference;
-import android.text.TextUtils;
 import android.widget.ListAdapter;
 import android.widget.Toast;
 
@@ -47,6 +46,7 @@ import com.fsck.k9.pEp.ui.keys.PepExtraKeys;
 import com.fsck.k9.service.MailServiceLegacy;
 
 import org.openintents.openpgp.util.OpenPgpAppPreference;
+import org.openintents.openpgp.OpenPgpApiManager;
 import org.openintents.openpgp.util.OpenPgpKeyPreference;
 
 import java.util.Iterator;
@@ -220,6 +220,7 @@ public class AccountSettings extends K9PreferenceActivity {
     private ListPreference trashFolder;
     private CheckBoxPreference alwaysShowCcBcc;
     private SwitchPreference pgpEnable;
+    private OpenPgpApiManager openPgpApiManager;
 
     private final K9JobManager jobManager = K9.jobManager;
 
@@ -238,6 +239,8 @@ public class AccountSettings extends K9PreferenceActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        openPgpApiManager = new OpenPgpApiManager(getApplicationContext(), getLifecycle());
 
         String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
         account = Preferences.getPreferences(this).getAccount(accountUuid);
