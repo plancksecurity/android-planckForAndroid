@@ -37,11 +37,12 @@ import com.fsck.k9.message.MessageBuilder;
 import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.Poller;
-import org.openintents.openpgp.OpenPgpApiManager;
-import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderError;
-import org.openintents.openpgp.OpenPgpApiManager.OpenPgpApiManagerCallback;
-import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderState;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
+import org.openintents.openpgp.OpenPgpApiManager;
+import org.openintents.openpgp.OpenPgpApiManager.OpenPgpApiManagerCallback;
+import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderError;
+import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderState;
+import org.openintents.openpgp.util.OpenPgpApi;
 
 import org.openintents.openpgp.IOpenPgpService2;
 import org.openintents.openpgp.util.OpenPgpApi;
@@ -54,7 +55,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import timber.log.Timber;
 
 
@@ -412,7 +412,7 @@ public class RecipientPresenter {
         cachedCryptoStatus = null;
         handlepEpState();
 
-        final OpenPgpProviderState openPgpProviderState = openPgpApiManager.getOpenPgpProviderState();
+        OpenPgpProviderState openPgpProviderState = openPgpApiManager.getOpenPgpProviderState();
 
         Long accountCryptoKey = account.getOpenPgpKey();
         if (accountCryptoKey == Account.NO_OPENPGP_KEY) {
@@ -626,6 +626,12 @@ public class RecipientPresenter {
                 }
                 return;
 
+            case UI_REQUIRED:
+                // TODO show openpgp settings
+                PendingIntent pendingIntent = openPgpApiManager.getUserInteractionPendingIntent();
+                recipientMvpView.launchUserInteractionPendingIntent(pendingIntent, OPENPGP_USER_INTERACTION);
+                break;
+
             case LOST_CONNECTION:
             case UNINITIALIZED:
             case ERROR:
@@ -837,24 +843,19 @@ public class RecipientPresenter {
 
     private final OpenPgpApiManagerCallback openPgpCallback = new OpenPgpApiManagerCallback() {
         @Override
-        public void launchUserInteractionPendingIntent(PendingIntent pendingIntent) {
-            recipientMvpView.launchUserInteractionPendingIntent(pendingIntent, 0);
-        }
-
-        @Override
         public void onOpenPgpProviderStatusChanged() {
             updatepEpState();
             //asyncUpdateCryptoStatus();
-        }
+            if (openPgpApiManager.getOpenPgpProviderState() == OpenPgpProviderState.UI_REQUIRED) {
+                recipientMvpView.showErrorOpenPgpUserInteractionRequired();
+            }
+            }
 
         @Override
         public void onOpenPgpProviderError(OpenPgpProviderError error) {
             switch (error) {
                 case VersionIncompatible:
                     //recipientMvpView.showErrorOpenPgpIncompatible();
-                    break;
-                case UserInteractionRequired:
-                    recipientMvpView.showErrorOpenPgpUserInteractionRequired();
                     break;
                 case ConnectionFailed:
                 default:
