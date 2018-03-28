@@ -4,7 +4,6 @@ package com.fsck.k9.activity.compose;
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.app.PendingIntent;
-import android.arch.lifecycle.Lifecycle;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -106,16 +105,18 @@ public class RecipientPresenter {
     private Rating privacyState = Rating.pEpRatingUnencrypted;
     private boolean dirty;
 
-    public RecipientPresenter(Context context, Lifecycle lifecycle, LoaderManager loaderManager, RecipientMvpView recipientMvpView,
-                              Account account, ComposePgpInlineDecider composePgpInlineDecider, ReplyToParser replyToParser,
-            RecipientsChangedListener recipientsChangedListener) {
+
+    public RecipientPresenter(Context context,  LoaderManager loaderManager,
+           OpenPgpApiManager openPgpApiManager, RecipientMvpView recipientMvpView, Account account, ComposePgpInlineDecider composePgpInlineDecider,
+
+            ReplyToParser replyToParser, RecipientsChangedListener recipientsChangedListener) {
         this.recipientMvpView = recipientMvpView;
         this.context = context;
         this.composePgpInlineDecider = composePgpInlineDecider;
         this.replyToParser = replyToParser;
         pEp = ((K9) context.getApplicationContext()).getpEpProvider();
         this.listener = recipientsChangedListener;
-        this.openPgpApiManager = new OpenPgpApiManager(context, lifecycle, openPgpCallback, account.getOpenPgpProvider());
+        this.openPgpApiManager = openPgpApiManager;
 
         recipientMvpView.setPresenter(this);
         recipientMvpView.setLoaderManager(loaderManager);
@@ -338,7 +339,7 @@ public class RecipientPresenter {
 
         String openPgpProvider = account.getOpenPgpProvider();
         recipientMvpView.setCryptoProvider(openPgpProvider);
-        // openPgpApiManager.setOpenPgpProvider(openPgpProvider);
+        openPgpApiManager.setOpenPgpProvider(openPgpProvider, openPgpCallback);
     }
 
     @SuppressWarnings("UnusedParameters")

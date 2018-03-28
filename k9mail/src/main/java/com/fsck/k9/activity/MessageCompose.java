@@ -106,6 +106,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.openintents.openpgp.OpenPgpApiManager;
+import org.openintents.openpgp.util.OpenPgpApi;
 import timber.log.Timber;
 
 
@@ -313,8 +315,10 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
         recipientMvpView = new RecipientMvpView(this);
         ComposePgpInlineDecider composePgpInlineDecider = new ComposePgpInlineDecider();
-        recipientPresenter = new RecipientPresenter(getApplicationContext(), getLifecycle(), getLoaderManager(), recipientMvpView,
-                account, composePgpInlineDecider, new ReplyToParser(), this);
+        OpenPgpApiManager openPgpApiManager = new OpenPgpApiManager(getApplicationContext(), getLifecycle());
+        recipientPresenter = new RecipientPresenter(getApplicationContext(), getLoaderManager(), openPgpApiManager,
+                recipientMvpView, account, composePgpInlineDecider, new ReplyToParser(), this
+        );
         recipientPresenter.updateCryptoStatus();
 
 
