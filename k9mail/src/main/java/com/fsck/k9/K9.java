@@ -850,6 +850,7 @@ public class K9 extends MultiDexApplication {
         for (Account account : preferences.getAccounts()) {
             account.setOpenPgpProvider(openPgpProvider);
             account.setOpenPgpHideSignOnly(!openPgpSupportSignOnly);
+            account.save(preferences);
         }
 
         storage.edit()

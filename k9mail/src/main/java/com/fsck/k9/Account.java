@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import timber.log.Timber;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
@@ -497,8 +498,10 @@ public class Account implements BaseAccount, StoreConfig {
         isSignatureBeforeQuotedText = storage.getBoolean(accountUuid + ".signatureBeforeQuotedText", false);
         identities = loadIdentities(storage);
 
+        openPgpProvider = storage.getString(accountUuid + ".openPgpProvider", "");
         openPgpKey = storage.getLong(accountUuid + ".cryptoKey", NO_OPENPGP_KEY);
         openPgpHideSignOnly = storage.getBoolean(accountUuid + ".openPgpHideSignOnly", true);
+        autocryptPreferEncryptMutual = storage.getBoolean(accountUuid + ".autocryptMutualMode", false);
         allowRemoteSearch = storage.getBoolean(accountUuid + ".allowRemoteSearch", false);
         remoteSearchFullText = storage.getBoolean(accountUuid + ".remoteSearchFullText", false);
         remoteSearchNumResults = storage.getInt(accountUuid + ".remoteSearchNumResults", DEFAULT_REMOTE_SEARCH_NUM_RESULTS);
@@ -770,6 +773,8 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putBoolean(accountUuid + ".stripSignature", stripSignature);
         editor.putLong(accountUuid + ".cryptoKey", openPgpKey);
         editor.putBoolean(accountUuid + ".openPgpHideSignOnly", openPgpHideSignOnly);
+        editor.putString(accountUuid + ".openPgpProvider", openPgpProvider);
+        editor.putBoolean(accountUuid + ".autocryptMutualMode", autocryptPreferEncryptMutual);
         editor.putBoolean(accountUuid + ".allowRemoteSearch", allowRemoteSearch);
         editor.putBoolean(accountUuid + ".remoteSearchFullText", remoteSearchFullText);
         editor.putInt(accountUuid + ".remoteSearchNumResults", remoteSearchNumResults);

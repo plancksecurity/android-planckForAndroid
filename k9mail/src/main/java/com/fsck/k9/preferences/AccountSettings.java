@@ -225,7 +225,7 @@ public class AccountSettings {
                 new V(18, new BooleanSetting(false))
         ));
         s.put("notifyContactsMailOnly", Settings.versions(
-                new V(44, new BooleanSetting(false))
+                new V(42, new BooleanSetting(false))
             ));
         s.put("pEpPrivacyProtected", Settings.versions(
                 new V(45, new BooleanSetting(true))
