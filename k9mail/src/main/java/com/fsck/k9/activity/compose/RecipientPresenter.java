@@ -822,7 +822,7 @@ public class RecipientPresenter {
     @VisibleForTesting
     void setOpenPgpServiceConnection(OpenPgpServiceConnection openPgpServiceConnection, String cryptoProvider) {
         this.openPgpServiceConnection = openPgpServiceConnection;
-        this.cryptoProvider = cryptoProvider;
+        //this.cryptoProvider = cryptoProvider;
     }
 
     public void setAlwaysSecure(Boolean alwaysSecure) {
@@ -942,9 +942,5 @@ public class RecipientPresenter {
 
     private boolean addressesChanged(List<Address> oldAdresses, List<Address> newAdresses) {
         return !oldAdresses.equals(newAdresses);
-    }
-
-    public static interface RecipientsChangedListener {
-        public void onRecipientsChanged();
     }
 }
