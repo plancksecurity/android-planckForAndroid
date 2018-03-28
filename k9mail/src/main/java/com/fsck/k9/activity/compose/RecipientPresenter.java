@@ -37,10 +37,10 @@ import com.fsck.k9.message.MessageBuilder;
 import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.Poller;
-import com.fsck.k9.ui.crypto.OpenPgpApiManager;
-import com.fsck.k9.ui.crypto.OpenPgpApiManager.CryptoProviderError;
-import com.fsck.k9.ui.crypto.OpenPgpApiManager.OpenPgpApiManagerCallback;
-import com.fsck.k9.ui.crypto.OpenPgpApiManager.CryptoProviderState;
+import org.openintents.openpgp.OpenPgpApiManager;
+import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderError;
+import org.openintents.openpgp.OpenPgpApiManager.OpenPgpApiManagerCallback;
+import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderState;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 
 import org.openintents.openpgp.IOpenPgpService2;
@@ -414,7 +414,7 @@ public class RecipientPresenter {
         cachedCryptoStatus = null;
         handlepEpState();
 
-        final CryptoProviderState cryptoProviderState = openPgpApiManager.getCryptoProviderState();
+        final OpenPgpProviderState openPgpProviderState = openPgpApiManager.getOpenPgpProviderState();
 
         Long accountCryptoKey = account.getOpenPgpKey();
         if (accountCryptoKey == Account.NO_OPENPGP_KEY) {
@@ -616,7 +616,7 @@ public class RecipientPresenter {
     }
 
     void onClickCryptoStatus() {
-        switch (openPgpApiManager.getCryptoProviderState()) {
+        switch (openPgpApiManager.getOpenPgpProviderState()) {
             case UNCONFIGURED:
                 Timber.e("click on crypto status while unconfigured - this should not really happen?!");
                 return;
@@ -844,13 +844,13 @@ public class RecipientPresenter {
         }
 
         @Override
-        public void onCryptoStatusChanged() {
+        public void onOpenPgpProviderStatusChanged() {
             updatepEpState();
             //asyncUpdateCryptoStatus();
         }
 
         @Override
-        public void onCryptoProviderError(CryptoProviderError error) {
+        public void onOpenPgpProviderError(OpenPgpProviderError error) {
             switch (error) {
                 case VersionIncompatible:
                     //recipientMvpView.showErrorOpenPgpIncompatible();

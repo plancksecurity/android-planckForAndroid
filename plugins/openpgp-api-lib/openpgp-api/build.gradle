@@ -17,6 +17,11 @@ android {
     }
 }
 
+dependencies {
+    implementation "android.arch.lifecycle:extensions:1.1.0"
+    implementation "com.jakewharton.timber:timber:${timberVersion}"
+}
+
 /*
 publish {
     userOrg = 'sufficientlysecure'
