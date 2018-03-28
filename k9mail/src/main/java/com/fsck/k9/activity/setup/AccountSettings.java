@@ -17,6 +17,7 @@ import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.support.v7.widget.Toolbar;
 import android.preference.SwitchPreference;
+import android.text.TextUtils;
 import android.widget.ListAdapter;
 import android.widget.Toast;
 
