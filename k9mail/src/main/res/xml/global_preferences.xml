@@ -27,6 +27,7 @@
 
     <PreferenceScreen
         android:key="display_preferences"
+        android:icon="?attr/iconPreferencesDisplay"
         android:title="@string/display_preferences">
 
         <PreferenceCategory
@@ -243,6 +244,7 @@
 
     <PreferenceScreen
         android:key="interaction_preferences"
+        android:icon="?attr/iconPreferencesInteraction"
         android:title="@string/interaction_preferences">
 
         <CheckBoxPreference
@@ -289,8 +291,9 @@
     </PreferenceScreen>
 
     <PreferenceScreen
-        android:key="notification_preferences"
-        android:title="@string/notifications_title">
+        android:title="@string/notifications_title"
+        android:icon="?attr/iconPreferencesNotifications"
+        android:key="notification_preferences">
 
         <CheckBoxPreference
             android:key="quiet_time_enabled"
@@ -337,6 +340,7 @@
 
     <!--PreferenceScreen
         android:key="network_preferences"
+        android:icon="?attr/iconPreferencesNetwork"
         android:title="@string/network_preferences">
 
         <ListPreference
@@ -350,8 +354,9 @@
     </PreferenceScreen-->
 
     <PreferenceScreen
-        android:key="misc_preferences"
-        android:title="@string/miscellaneous_preferences">
+        android:title="@string/miscellaneous_preferences"
+        android:icon="?attr/iconPreferencesVarious"
+        android:key="misc_preferences">
 
         <Preference
             android:key="attachment_default_path"
@@ -370,6 +375,7 @@
 
     <PreferenceScreen
         android:key="privacy_preferences"
+        android:icon="?attr/iconPreferencesPrivacy"
         android:title="@string/privacy_preferences">
 
         <ListPreference
@@ -394,7 +400,9 @@
 
     <PreferenceScreen
         android:key="pep_global"
+        android:icon="@drawable/ic_peplogo"
         android:title="@string/pep">
+
         <!--<EditTextPreference-->
         <!--android:persistent="false"-->
         <!--android:key="pep_extra_accounts"-->
@@ -495,6 +503,7 @@
 
     <PreferenceScreen
         android:key="debug_preferences"
+        android:icon="?attr/iconPreferencesDebug"
         android:title="@string/debug_preferences">
 
         <CheckBoxPreference
