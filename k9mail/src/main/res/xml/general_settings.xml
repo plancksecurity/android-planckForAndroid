@@ -253,9 +253,9 @@
     </PreferenceScreen>
 
     <PreferenceScreen
+        android:title="@string/notifications_title"
         android:icon="?attr/iconPreferencesNotifications"
-        android:key="notification_preferences"
-        android:title="@string/notifications_title">
+        android:key="notification_preferences">
 
         <CheckBoxPreference
             android:key="quiet_time_enabled"
@@ -303,6 +303,7 @@
     <!--PreferenceScreen
         android:icon="?attr/iconPreferencesNetwork"
         android:key="network_preferences"
+        android:icon="?attr/iconPreferencesNetwork"
         android:title="@string/network_preferences">
 
         <ListPreference
@@ -316,9 +317,9 @@
     </PreferenceScreen-->
 
     <PreferenceScreen
+        android:title="@string/miscellaneous_preferences"
         android:icon="?attr/iconPreferencesVarious"
-        android:key="misc_preferences"
-        android:title="@string/miscellaneous_preferences">
+        android:key="misc_preferences">
 
         <Preference
             android:key="attachment_default_path"
@@ -366,6 +367,7 @@
 
     <PreferenceScreen
         android:key="pep_global"
+        android:icon="@drawable/ic_peplogo"
         android:title="@string/pep">
 
         <!--<EditTextPreference-->
