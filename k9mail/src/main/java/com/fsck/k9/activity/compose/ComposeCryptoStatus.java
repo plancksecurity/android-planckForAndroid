@@ -28,6 +28,8 @@ public class ComposeCryptoStatus {
     private String[] recipientAddresses;
     private boolean enablePgpInline;
 
+    private boolean preferEncryptMutual;
+    private boolean isReplyToEncrypted;
 
     public long[] getEncryptKeyIds() {
         if (selfEncryptKeyId == null) {

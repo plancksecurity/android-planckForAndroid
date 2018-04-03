@@ -104,6 +104,7 @@ public class RecipientPresenter {
     private List<Address> bccAdresses;
     private Rating privacyState = Rating.pEpRatingUnencrypted;
     private boolean dirty;
+    private boolean isReplyToEncryptedMessage = false;
 
 
     public RecipientPresenter(Context context,  LoaderManager loaderManager,
