@@ -1,6 +1,6 @@
-def pEpEngineRevision = 2585
-def pEpJNIAdapterRevision = 402
-def version = "0.9.13"
+def pEpEngineRevision = 2587
+def pEpJNIAdapterRevision = 405
+def version = "1.0.099"
 
 def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
 def pEpTestEmailPassword = "\"$System.env.PEP_TEST_EMAIL_PASSWORD\""
@@ -99,7 +99,7 @@ android {
 
     defaultConfig {
         applicationId "${appId}"
-        versionCode 81
+        versionCode 1
         minSdkVersion 21
         targetSdkVersion 25
         setProperty("archivesBaseName", "$version")
@@ -133,7 +133,7 @@ android {
             dimension "playStore"
 
         }
-        withthoutkeysync {
+        withoutkeysync {
             buildConfigField "boolean", "WITH_KEY_SYNC", "false"
             versionName "${version}" + ".withoutKeysync"
             dimension "playStore"
