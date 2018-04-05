@@ -85,6 +85,9 @@ dependencies {
     implementation "android.arch.work:work-runtime:$work_version"
 
 
+    implementation "com.android.support:preference-v14:${androidSupportLibraryVersion}"
+    implementation 'com.takisoft.fix:preference-v7-datetimepicker:27.1.1.1'
+    implementation 'com.takisoft.fix:preference-v7-colorpicker:27.1.1.1'
     androidTestImplementation "com.android.support.test.espresso:espresso-intents:${espressoVersion}"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:${espressoVersion}"
 
@@ -102,6 +105,7 @@ dependencies {
     implementation 'com.xwray:groupie-kotlin-android-extensions:2.0.3'
     implementation "org.jetbrains.anko:anko-coroutines:0.10.4"
     implementation "org.koin:koin-android-architecture:${koinVersion}"
+    implementation 'androidx.core:core-ktx:0.3'
 
     androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
 

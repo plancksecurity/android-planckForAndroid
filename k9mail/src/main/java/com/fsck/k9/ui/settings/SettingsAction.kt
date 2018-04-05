@@ -2,12 +2,13 @@ package com.fsck.k9.ui.settings
 
 import android.app.Activity
 import com.fsck.k9.activity.setup.AccountSetupBasics
-import com.fsck.k9.activity.setup.Prefs
+import com.fsck.k9.ui.settings.general.GeneralSettingsActivity
+import com.fsck.k9.pEp.ui.AboutActivity
 
 internal enum class SettingsAction {
     GENERAL_SETTINGS {
         override fun execute(activity: Activity) {
-            Prefs.actionPrefs(activity)
+            GeneralSettingsActivity.start(activity)
         }
     },
     ADD_ACCOUNT {

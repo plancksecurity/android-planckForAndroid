@@ -300,6 +300,10 @@
             android:name=".ui.settings.SettingsActivity"
             android:label="@string/prefs_title" />
 
+        <activity
+            android:name=".ui.settings.general.GeneralSettingsActivity"
+            android:label="@string/general_settings_title" />
+
         <receiver
             android:name=".service.BootReceiver"
             android:enabled="true">
