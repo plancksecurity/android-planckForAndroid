@@ -879,6 +879,8 @@ class ImapFolder extends Folder<ImapMessage> {
                         message.setFlagInternal(Flag.FORWARDED, true);
                         /* a message contains FORWARDED FLAG -> so we can also create them */
                         store.getPermanentFlagsIndex().add(Flag.FORWARDED);
+                    } else if (flag.equalsIgnoreCase("\\Draft")){
+                        message.setFlagInternal(Flag.DRAFT, true);
                     }
                 }
             }
@@ -1301,6 +1303,8 @@ class ImapFolder extends Folder<ImapMessage> {
             } else if (flag == Flag.FORWARDED
                     && (canCreateKeywords || store.getPermanentFlagsIndex().contains(Flag.FORWARDED))) {
                 flagNames.add("$Forwarded");
+            } else if (flag == Flag.DRAFT) {
+                flagNames.add("\\Draft");
             }
         }
 
