@@ -614,7 +614,7 @@ public class Prefs extends K9PreferenceActivity {
         app.setpEpSubjectUnprotected(mPEpSubjectUnprotected.isChecked());
         app.setpEpForwardWarningEnabled(mPepForwardWarning.isChecked());
 
-        app.setIspEpSyncEnabled(mPEpSyncAccount.isChecked());
+        app.setpEpSyncEnabled(mPEpSyncAccount.isChecked());
 
         StorageEditor editor = storage.edit();
         K9.save(editor);

@@ -2246,7 +2246,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
             // we don't support cross account actions atm
             if (!singleAccountMode) {
-                // show all
+                // show alls
                 menu.findItem(R.id.move).setVisible(true);
                 menu.findItem(R.id.archive).setVisible(true);
                 menu.findItem(R.id.spam).setVisible(true);

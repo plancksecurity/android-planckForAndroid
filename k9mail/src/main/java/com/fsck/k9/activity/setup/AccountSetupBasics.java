@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -99,13 +98,13 @@ public class AccountSetupBasics extends PEpImporterActivity {
             ft.addToBackStack("AccountSetupIncomingFragment");
             String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
             ft.add(R.id.account_setup_container, AccountSetupIncomingFragment.actionEditIncomingSettings(accountUuid)).commit();
-            accountSetupNavigator.setIsEditting(true);
+            accountSetupNavigator.setIsEditing(true);
         } else if (isEditingOutgoingSettings) {
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.addToBackStack("AccountSetupIncomingFragment");
             String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
             ft.add(R.id.account_setup_container, AccountSetupOutgoingFragment.intentActionEditOutgoingSettings(accountUuid)).commit();
-            accountSetupNavigator.setIsEditting(true);
+            accountSetupNavigator.setIsEditing(true);
         } else if (isBackOutgoingSettings) {
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.addToBackStack("AccountSetupIncomingFragment");
