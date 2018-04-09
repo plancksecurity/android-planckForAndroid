@@ -12,6 +12,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -115,6 +116,9 @@ public class Accounts extends PEpImporterActivity {
     private TextView mActionBarTitle;
     private TextView mActionBarSubTitle;
     private TextView mActionBarUnread;
+
+    private boolean exportGlobalSettings;
+    private ArrayList<String> exportAccountUuids;
 
     /**
      * Contains information about objects that need to be retained on configuration changes.
@@ -313,6 +317,8 @@ public class Accounts extends PEpImporterActivity {
 
     private static String STATE_UNREAD_COUNT = "unreadCount";
     private static String SELECTED_CONTEXT_ACCOUNT = "selectedContextAccount";
+    private static final String STATE_EXPORT_GLOBAL_SETTINGS = "exportGlobalSettings";
+    private static final String STATE_EXPORT_ACCOUNTS = "exportAccountUuids";
     public static final String EXTRA_STARTUP = "startup";
 
 
@@ -512,6 +518,17 @@ public class Accounts extends PEpImporterActivity {
         }
         outState.putSerializable(STATE_UNREAD_COUNT, mUnreadMessageCount);
         outState.putSerializable(ACCOUNT_STATS, accountStats);
+
+        outState.putBoolean(STATE_EXPORT_GLOBAL_SETTINGS, exportGlobalSettings);
+        outState.putStringArrayList(STATE_EXPORT_ACCOUNTS, exportAccountUuids);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle state) {
+        super.onRestoreInstanceState(state);
+
+        exportGlobalSettings = state.getBoolean(STATE_EXPORT_GLOBAL_SETTINGS, false);
+        exportAccountUuids = state.getStringArrayList(STATE_EXPORT_ACCOUNTS);
     }
 
     private StorageManager.StorageListener storageListener = new StorageManager.StorageListener() {
@@ -1225,9 +1242,6 @@ public class Accounts extends PEpImporterActivity {
 
     }
 
-    public static final String EXTRA_INC_GLOBALS = "include_globals";
-    public static final String EXTRA_ACCOUNTS = "accountUuids";
-
     public void onExport(final boolean includeGlobals, final Account account) {
 
         createStoragePermissionListeners();
@@ -1238,41 +1252,35 @@ public class Accounts extends PEpImporterActivity {
                 accountUuids.add(account.getUuid());
             }
 
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                exportGlobalSettings = includeGlobals;
+                exportAccountUuids = accountUuids;
+
                 Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
 
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("text/plain");
+                intent.setType("application/octet-stream");
                 intent.putExtra(Intent.EXTRA_TITLE, SettingsExporter.EXPORT_FILENAME);
-                intent.putStringArrayListExtra(EXTRA_ACCOUNTS, accountUuids);
-                intent.putExtra(EXTRA_INC_GLOBALS, includeGlobals);
 
-                PackageManager packageManager = getPackageManager();
-                List<ResolveInfo> infos = packageManager.queryIntentActivities(intent, 0);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                startActivityForResult(intent, ACTIVITY_REQUEST_SAVE_SETTINGS_FILE);
 
-                if (infos.size() > 0) {
-                    startActivityForResult(Intent.createChooser(intent, null), ACTIVITY_REQUEST_SAVE_SETTINGS_FILE);
-                } else {
-                    showDialog(DIALOG_NO_FILE_MANAGER);
-                }
             } else {
                 //Pre-Kitkat
-                ExportAsyncTask asyncTask = new ExportAsyncTask(this, includeGlobals, accountUuids, null);
-                setNonConfigurationInstance(asyncTask);
-                asyncTask.execute();
+                startExport(includeGlobals, accountUuids, null);
             }
         }
     }
 
     public void onExport(Intent intent) {
-        boolean includeGlobals = intent.getBooleanExtra(EXTRA_INC_GLOBALS, false);
-        ArrayList<String> accountUuids = intent.getStringArrayListExtra(EXTRA_ACCOUNTS);
+        Uri documentsUri = intent.getData();
+        startExport(exportGlobalSettings, exportAccountUuids, documentsUri);
+    }
 
-        ExportAsyncTask asyncTask = new ExportAsyncTask(this, includeGlobals, accountUuids, intent.getData());
+    private void startExport(boolean exportGlobalSettings, ArrayList<String> exportAccountUuids, Uri documentsUri) {
+        ExportAsyncTask asyncTask = new ExportAsyncTask(this, exportGlobalSettings, exportAccountUuids, documentsUri);
         setNonConfigurationInstance(asyncTask);
         asyncTask.execute();
     }
-
 
     private boolean hasWriteExternalPermission() {
         int res = getApplicationContext().checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
