@@ -18,7 +18,7 @@ import javax.inject.Inject;
 
 public class AccountSetupNavigator {
 
-    private Boolean isEditting;
+    private Boolean isEditing = false;
 
     public enum Step {
         BASICS,
@@ -101,7 +101,7 @@ public class AccountSetupNavigator {
     }
 
     public void goBack(Activity activity, FragmentManager fragmentManager) {
-        if (currentStep != null && !currentStep.equals(Step.BASICS) && !isEditting) {
+        if (currentStep != null && !currentStep.equals(Step.BASICS) && !isEditing) {
             fragmentManager.popBackStack();
         } else {
             activity.finish();
@@ -121,8 +121,8 @@ public class AccountSetupNavigator {
         this.account = account;
     }
 
-    public void setIsEditting(Boolean isEditting) {
-        this.isEditting = isEditting;
+    public void setIsEditing(Boolean isEditing) {
+        this.isEditing = isEditing;
     }
 
     public Account getAccount() {
