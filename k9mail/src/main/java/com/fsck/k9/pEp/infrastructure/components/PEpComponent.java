@@ -27,21 +27,21 @@ import dagger.Component;
         ActivityModule.class, PEpModule.class
 }) public interface PEpComponent extends ActivityComponent {
 
-    void inject(PEpStatus pEpStatus);
+    void inject(PEpStatus activity);
 
-    void inject(PEpTrustwords pEpTrustwords);
+    void inject(PEpTrustwords activity);
 
-    void inject(PEpAddDevice pEpStatus);
+    void inject(PEpAddDevice activity);
 
-    void inject(KeysyncManagement pEpStatus);
+    void inject(KeysyncManagement activity);
 
-    void inject(About about);
+    void inject(About activity);
 
-    void inject(PermissionsActivity permissionsActivity);
+    void inject(PermissionsActivity activity);
 
-    void inject(PepExtraKeys pepExtraKeys);
+    void inject(PepExtraKeys activity);
 
-    void inject(PepBlacklist pepBlacklist);
+    void inject(PepBlacklist activity);
 
     void inject(AccountSetupBasicsFragment accountSetupBasicsFragment);
 
@@ -53,9 +53,9 @@ import dagger.Component;
 
     void inject(AccountSetupOptionsFragment accountSetupOptionsFragment);
 
-    void inject(MessageList messageList);
+    void inject(MessageList activity);
 
     void inject(SelectPathFragment selectPathFragment);
 
-    void inject(KeyImportActivity keyImportActivity);
+    void inject(KeyImportActivity activity);
 }
