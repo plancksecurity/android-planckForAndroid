@@ -63,7 +63,7 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
         disableProtection();
         onView(withId(R.id.subject)).perform(typeText(" "));
         testUtils.checkStatus(Rating.pEpRatingUnencrypted);
-        testUtils.pressBack();
+        goBackToMessageCompose();
         testUtils.sendMessage();
         uiDevice.waitForIdle();
         testUtils.waitForNewMessage();
@@ -75,6 +75,19 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
         onView(withId(R.id.actionbar_title_first)).check(matches(isDisplayed()));
         uiDevice.waitForIdle();
         testUtils.goBackAndRemoveAccount();
+    }
+
+    private void goBackToMessageCompose() {
+        boolean backToMessageCompose = false;
+        while (!backToMessageCompose){
+            try {
+                testUtils.pressBack();
+                onView(withId(R.id.send)).check(matches(isDisplayed()));
+                backToMessageCompose = true;
+            } catch (Exception ex){
+                Timber.i("View not found");
+            }
+        }
     }
 
     private void composeSelfMessage(){
