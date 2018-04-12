@@ -20,7 +20,6 @@ import org.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -60,7 +59,7 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
         composeSelfMessage();
         testUtils.checkStatus(Rating.pEpRatingTrusted);
         testUtils.pressBack();
-        disableProtection();
+        testUtils.disableProtection();
         onView(withId(R.id.subject)).perform(typeText(" "));
         testUtils.checkStatus(Rating.pEpRatingUnencrypted);
         goBackToMessageCompose();
@@ -96,21 +95,5 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
         messageTo = testUtils.getTextFromTextViewThatContainsText("@");
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         uiDevice.waitForIdle();
-    }
-
-    private void disableProtection(){
-        testUtils.openOptionsMenu();
-        testUtils.selectFromScreen(R.string.pep_force_unprotected);
-        instrumentation.waitForIdleSync();
-        boolean toolbarClosed = false;
-        while (!toolbarClosed){
-            try{
-                onView(withId(R.id.message_content)).perform(typeText(""));
-                toolbarClosed = true;
-            } catch (Exception ex){
-                Timber.i("Toolbar is not closed yet");
-            }
-        }
-        onView(withId(R.id.subject)).perform(click());
     }
 }

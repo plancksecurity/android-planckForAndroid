@@ -441,6 +441,22 @@ class TestUtils {
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, rating.value))));
     }
 
+    void disableProtection(){
+        openOptionsMenu();
+        selectFromScreen(R.string.pep_force_unprotected);
+        instrumentation.waitForIdleSync();
+        boolean toolbarClosed = false;
+        while (!toolbarClosed){
+            try{
+                onView(withId(R.id.message_content)).perform(typeText(""));
+                toolbarClosed = true;
+            } catch (Exception ex){
+                Timber.i("Toolbar is not closed yet");
+            }
+        }
+        onView(withId(R.id.subject)).perform(click());
+    }
+
     String getTextFromTextViewThatContainsText(String text) {
         BySelector selector = By.clazz("android.widget.TextView");
         for (UiObject2 textView : device.findObjects(selector)) {
