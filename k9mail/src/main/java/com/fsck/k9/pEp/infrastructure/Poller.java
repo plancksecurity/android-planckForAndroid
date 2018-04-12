@@ -2,6 +2,10 @@ package com.fsck.k9.pEp.infrastructure;
 
 import android.os.Handler;
 
+import com.fsck.k9.pEp.EspressoTestingIdlingResource;
+
+import timber.log.Timber;
+
 public class Poller {
 
     private final Handler handler;
@@ -18,10 +22,13 @@ public class Poller {
         this.intervalMilliseconds = intervalMilliseconds;
         this.polledRunnable = polledRunnable;
         recursiveRunnable = new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 if (isPolling) {
-                    pollNow();
-                    scheduleNextPoll();
+                    new Thread(() -> {
+                        pollNow();
+                        scheduleNextPoll();
+                    }).start();
                 }
             }
         };
