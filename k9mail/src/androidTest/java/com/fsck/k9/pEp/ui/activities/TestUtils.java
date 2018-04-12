@@ -17,6 +17,8 @@ import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingPolicies;
+import android.support.test.espresso.IdlingRegistry;
+import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.NoMatchingViewException;
 import android.support.test.espresso.ViewAssertion;
 import android.support.test.espresso.core.internal.deps.guava.collect.Iterables;
@@ -42,7 +44,6 @@ import org.pEp.jniadapter.Rating;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import timber.log.Timber;
@@ -52,7 +53,6 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.swipeDown;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
@@ -84,6 +84,7 @@ class TestUtils {
     private static final int MINUTE_IN_SECONDS = 60;
     private static final int SECOND_IN_MILIS = 1000;
 
+    private IdlingResource idlingResource;
     private UiDevice device;
     private Context context;
     private Resources resources;
@@ -146,8 +147,8 @@ class TestUtils {
         boolean buttonClicked = false;
         while (!buttonClicked) {
             try {
-                doWaitForResource(viewId);
                 onView(withId(viewId)).perform(click());
+                device.waitForIdle();
                 buttonClicked = true;
             } catch (Exception ex) {
                 Timber.i("View not found: " + ex);
@@ -155,7 +156,7 @@ class TestUtils {
         }
     }
 
-    private Activity getCurrentActivity() {
+     Activity getCurrentActivity() {
         final Activity[] activity = new Activity[1];
         onView(isRoot()).check(new ViewAssertion() {
             @Override
@@ -274,15 +275,9 @@ class TestUtils {
                 device.waitForIdle();
                 onView(withId(R.id.to)).perform(typeText(inputMessage.getTo()), closeSoftKeyboard());
                 device.waitForIdle();
-                device.findObject(By.res(APP_ID, "subject")).click();
-                device.findObject(By.res(APP_ID, "subject")).setText(inputMessage.getSubject());
+                onView(withId(R.id.subject)).perform(typeText(inputMessage.getSubject()), closeSoftKeyboard());
                 device.waitForIdle();
-                device.findObject(By.res(APP_ID, "message_content")).click();
-                device.findObject(By.res(APP_ID, "message_content")).setText(inputMessage.getMessage());
-                device.waitForIdle();
-                longClick("subject");
-                device.waitForIdle();
-                longClick("message_content");
+                onView(withId(R.id.message_content)).perform(typeText(inputMessage.getMessage()), closeSoftKeyboard());
                 device.waitForIdle();
                 messageFilled = true;
             } catch (Exception ex){
@@ -351,8 +346,7 @@ class TestUtils {
     }
 
     void sendMessage() {
-        doWaitForResource(R.id.send);
-        onView(withId(R.id.send)).perform(click());
+        clickView(R.id.send);
     }
 
     void pressBack() {
@@ -377,7 +371,7 @@ class TestUtils {
             } catch (Exception ex) {
                 device.waitForIdle();
                 pressBack();
-                Timber.i("View not found, pressBack to previous activity");
+                Timber.i("View not found, pressBack to previous activity: " + ex);
             }
         }
     }
@@ -444,7 +438,6 @@ class TestUtils {
 
     void checkStatus(Rating rating) {
         clickView(R.id.pEp_indicator);
-        device.waitForIdle();
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, rating.value))));
     }
 
@@ -483,10 +476,11 @@ class TestUtils {
         boolean textViewFound = false;
         while (!textViewFound) {
             BySelector selector = By.clazz("android.widget.TextView");
-            device.waitForIdle();
             for (UiObject2 object : device.findObjects(selector)) {
                 if (object.getText().equals(resources.getString(resource))) {
+                    device.waitForIdle();
                     object.click();
+                    device.waitForIdle();
                     textViewFound = true;
                     break;
                 }
@@ -511,7 +505,17 @@ class TestUtils {
                 Timber.i("Resource does not exist, trying again: " + ex);
             }
         }
-        //device.wait(Until.hasObject(By.desc(resources.getString(resource))), 10);
+    }
+
+    void doWaitForIdlingListViewResource(int resource){
+            try {
+                device.waitForIdle();
+                idlingResource = new ListViewIdlingResource(instrumentation,
+                        getCurrentActivity().findViewById(resource));
+                IdlingRegistry.getInstance().register(idlingResource);
+            } catch (Exception ex){
+                Timber.i("Idling Resource does not exist: " + ex);
+            }
     }
 
     void doWaitForAlertDialog(IntentsTestRule<SplashActivity> intent, int displayText) {
@@ -593,9 +597,12 @@ class TestUtils {
     }
 
     void removeMessagesFromList(){
-        device.waitForIdle();
-        try {
+            device.waitForIdle();
+            doWaitForResource(R.id.message_list);
+            device.waitForIdle();
+            doWaitForIdlingListViewResource(R.id.message_list);
             onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
+            IdlingRegistry.getInstance().unregister(idlingResource);
             boolean emptyList = false;
             while (!emptyList){
                 try{
@@ -611,9 +618,6 @@ class TestUtils {
                     emptyList = true;
                 }
             }
-        } catch (Exception ex){
-            Timber.i("Message list is empty");
-        }
     }
 
     void checkToolBarColor(int color) {
