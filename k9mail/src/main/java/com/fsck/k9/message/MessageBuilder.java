@@ -31,6 +31,7 @@ import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
 import com.fsck.k9.mailstore.TempFileBody;
 import com.fsck.k9.message.quote.InsertableHtmlContent;
+import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.threading.JobExecutor;
@@ -546,8 +547,10 @@ public abstract class MessageBuilder {
         PostExecutionThread postExecutionThread = new UIThread();
         ThreadExecutor threadExecutor = new JobExecutor();
         threadExecutor.execute(() -> {
+            EspressoTestingIdlingResource.increment();
             buildMessageInternal();
             postExecutionThread.post(completedCallback::onComplete);
+            EspressoTestingIdlingResource.decrement();
         });
     }
 

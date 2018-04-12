@@ -26,8 +26,10 @@ public class Poller {
             public void run() {
                 if (isPolling) {
                     new Thread(() -> {
+                        EspressoTestingIdlingResource.increment();
                         pollNow();
                         scheduleNextPoll();
+                        EspressoTestingIdlingResource.decrement();
                     }).start();
                 }
             }
