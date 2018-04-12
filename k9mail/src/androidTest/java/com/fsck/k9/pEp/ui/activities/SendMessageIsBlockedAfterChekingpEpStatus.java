@@ -89,5 +89,15 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
         testUtils.openOptionsMenu();
         testUtils.selectFromScreen(R.string.pep_force_unprotected);
         instrumentation.waitForIdleSync();
+        boolean toolbarClosed = false;
+        while (!toolbarClosed){
+            try{
+                onView(withId(R.id.message_content)).perform(typeText(""));
+                toolbarClosed = true;
+            } catch (Exception ex){
+                Timber.i("Toolbar is not closed yet");
+            }
+        }
+        onView(withId(R.id.subject)).perform(click());
     }
 }
