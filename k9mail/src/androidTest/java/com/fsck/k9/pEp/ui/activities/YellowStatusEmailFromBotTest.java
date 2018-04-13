@@ -64,6 +64,11 @@ public class YellowStatusEmailFromBotTest {
     }
 
     @Test (timeout = TIMEOUT_TEST)
+    public void yellowStatusEmailFromBot (){
+        sendMessageAndAssertYellowStatusMessage();
+        twoStatusMessageYellowAndGray();
+
+    }
     public void sendMessageAndAssertYellowStatusMessage() {
         testUtils.createAccount(false);
         testUtils.composeMessageButton();
@@ -74,6 +79,7 @@ public class YellowStatusEmailFromBotTest {
         testUtils.waitForNewMessage();
         testUtils.clickLastMessageReceived();
         testUtils.clickView(R.id.reply_message);
+        onView(withId(R.id.subject)).perform(typeText(" "));
         clickMailStatus();
         testUtils.checkToolBarColor(R.color.pep_yellow);
         goBackToMessageList();
@@ -81,25 +87,22 @@ public class YellowStatusEmailFromBotTest {
         yellowStatusMessageTest();
     }
 
-    @Test
     public void twoStatusMessageYellowAndGray() {
         testUtils.composeMessageButton();
         fillComposeFields();
+        onView(withId(R.id.subject)).perform(typeText(" "));
         clickMailStatus();
         testUtils.doWaitForResource(R.id.my_recycler_view);
         device.waitForIdle();
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(0)).check(matches(withBackgroundColor(R.color.pep_yellow)));
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(1)).check(matches(withBackgroundColor(R.color.pep_no_color)));
-        goBackToMessageList();
         testUtils.goBackAndRemoveAccount();
     }
 
     private void fillComposeFields() {
         device.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
-        onView(withId(R.id.to)).perform(typeText(messageTo), closeSoftKeyboard());
-        device.waitForIdle();
-        onView(withId(R.id.subject)).perform(longClick(), closeSoftKeyboard());
+        onView(withId(R.id.to)).perform(typeText("unknown@user.is"), closeSoftKeyboard());
         device.waitForIdle();
     }
 
@@ -137,22 +140,9 @@ public class YellowStatusEmailFromBotTest {
     }
 
     public void assertCurrentActivityIsInstanceOf(Class<? extends Activity> activityClass) {
-        Activity currentActivity = getCurrentActivity();
+        Activity currentActivity = testUtils.getCurrentActivity();
         checkNotNull(currentActivity);
         checkNotNull(activityClass);
         assertTrue(currentActivity.getClass().isAssignableFrom(activityClass));
-    }
-
-    private Activity getCurrentActivity() {
-        final Activity[] activity = new Activity[1];
-        try {
-            splashActivityTestRule.runOnUiThread(() -> {
-                java.util.Collection<Activity> activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
-                activity[0] = Iterables.getOnlyElement(activities);
-            });
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
-        return activity[0];
     }
 }
