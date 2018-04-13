@@ -3,12 +3,15 @@ package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Instrumentation;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.IdlingRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,6 +20,7 @@ import org.pEp.jniadapter.Rating;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
@@ -40,8 +44,15 @@ public class MessageUnsecureWhenDisableProtectionTest {
         instrumentation = InstrumentationRegistry.getInstrumentation();
         testUtils = new TestUtils(uiDevice, InstrumentationRegistry.getInstrumentation());
         testUtils.increaseTimeoutWait();
+        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         testUtils.startActivity();
     }
+
+    @After
+    public void unregisterIdlingResource() {
+        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
+    }
+
 
     @Test (timeout = TIMEOUT_TEST)
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
@@ -49,16 +60,17 @@ public class MessageUnsecureWhenDisableProtectionTest {
         composeMessage();
         testUtils.checkStatus(Rating.pEpRatingTrusted);
         testUtils.pressBack();
-        disableProtection();
+        testUtils.disableProtection();
+        onView(withId(R.id.subject)).perform(typeText(" "));
         testUtils.checkStatus(Rating.pEpRatingUnencrypted);
         testUtils.pressBack();
         uiDevice.waitForIdle();
         testUtils.sendMessage();
+        uiDevice.waitForIdle();
         testUtils.waitForNewMessage();
         testUtils.clickLastMessageReceived();
         uiDevice.waitForIdle();
         checkStatus();
-        removeMessageListAndAccount();
     }
 
     private void composeMessage(){
