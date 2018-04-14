@@ -521,5 +521,11 @@
             android:title="@string/master_key_management" />
         
 
+        <Preference
+            android:key="autocrypt_transfer"
+            android:singleLine="true"
+            android:title="@string/ac_transfer_setting_title"
+            android:summary="@string/ac_transfer_setting_summary" />
+
     </PreferenceScreen>
 </PreferenceScreen>
