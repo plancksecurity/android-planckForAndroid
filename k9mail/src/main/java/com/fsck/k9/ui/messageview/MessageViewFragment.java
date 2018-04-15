@@ -640,7 +640,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         DialogFragment fragment = (DialogFragment) fm.findFragmentByTag(getDialogTag(dialogId));
 
         if (fragment != null) {
-            fragment.dismiss();
+            fragment.dismissAllowingStateLoss();
         }
     }
 
