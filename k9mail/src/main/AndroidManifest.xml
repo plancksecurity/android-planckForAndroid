@@ -193,6 +193,12 @@
             android:label="@string/folder_settings_title"
             android:theme="@android:style/Theme.Dialog" />
         <activity
+            android:name=".ui.endtoend.AutocryptKeyTransferActivity"
+            android:configChanges="locale"
+            android:label="@string/ac_transfer_title"
+            />
+
+        <activity
             android:name=".activity.FolderList"
             android:configChanges="locale"
             android:uiOptions="splitActionBarWhenNarrow">

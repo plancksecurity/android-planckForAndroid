@@ -1,6 +1,10 @@
 package com.fsck.k9
 
 import android.app.Application
+import com.fsck.k9.controller.MessagingController
+import com.fsck.k9.crypto.openPgpModule
+import com.fsck.k9.mail.TransportProvider
+import com.fsck.k9.ui.endtoend.endToEndUiModule
 import com.fsck.k9.ui.settings.settingsUiModule
 import org.koin.Koin
 import org.koin.KoinContext
@@ -14,11 +18,16 @@ import org.koin.standalone.StandAloneContext
 object DI {
     private val mainModule = applicationContext {
         bean { Preferences.getPreferences(get()) }
+        bean { MessagingController.getInstance(get()) }
+        bean { TransportProvider() }
     }
 
     val appModules = listOf(
-        mainModule,
-        settingsUiModule
+            mainModule,
+            settingsUiModule,
+            //unreadWidgetModule,
+            endToEndUiModule,
+            openPgpModule
     )
 
     @JvmStatic fun start(application: Application) {

@@ -38,7 +38,6 @@ import org.openintents.openpgp.util.ParcelFileDescriptorUtil.DataSinkTransferThr
 import org.openintents.openpgp.util.ParcelFileDescriptorUtil.DataSourceTransferThread;
 
 
-@SuppressWarnings("unused")
 public class OpenPgpApi {
 
     public static final String TAG = "OpenPgp API";
@@ -48,7 +47,7 @@ public class OpenPgpApi {
     /**
      * see CHANGELOG.md
      */
-    public static final int API_VERSION = 10;
+    public static final int API_VERSION = 12;
 
     /**
      * General extras
@@ -243,6 +242,12 @@ public class OpenPgpApi {
     // GET_KEY
     public static final String EXTRA_KEY_ID = "key_id";
     public static final String RESULT_KEY_IDS = "key_ids";
+
+    // AUTOCRYPT_KEY_TRANSFER
+    public static final String ACTION_AUTOCRYPT_KEY_TRANSFER = "autocrypt_key_transfer";
+
+    // BACKUP
+    public static final String EXTRA_BACKUP_SECRET = "backup_secret";
 
     /* Service Intent returns */
     public static final String RESULT_CODE = "result_code";
