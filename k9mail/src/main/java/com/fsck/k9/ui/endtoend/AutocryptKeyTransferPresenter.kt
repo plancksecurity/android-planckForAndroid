@@ -18,6 +18,7 @@ import org.jetbrains.anko.coroutines.experimental.bg
 import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpApiManagerCallback
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderError
+import timber.log.Timber
 
 
 class AutocryptKeyTransferPresenter internal constructor(
@@ -103,7 +104,9 @@ class AutocryptKeyTransferPresenter internal constructor(
                 view.setLoadingStateFinished()
                 view.sceneFinished()
             } catch (e: MessagingException) {
+                Timber.e(e, "Error sending setup message")
                 view.setLoadingStateSendingFailed()
+                view.sceneSendError()
             }
         }
     }
