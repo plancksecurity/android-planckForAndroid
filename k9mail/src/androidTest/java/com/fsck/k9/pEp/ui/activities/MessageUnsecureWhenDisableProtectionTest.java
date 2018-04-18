@@ -34,6 +34,7 @@ public class MessageUnsecureWhenDisableProtectionTest {
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
     private Instrumentation instrumentation;
+    private EspressoTestingIdlingResource espressoTestingIdlingResource;
 
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
@@ -44,13 +45,15 @@ public class MessageUnsecureWhenDisableProtectionTest {
         instrumentation = InstrumentationRegistry.getInstrumentation();
         testUtils = new TestUtils(uiDevice, InstrumentationRegistry.getInstrumentation());
         testUtils.increaseTimeoutWait();
-        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
+        espressoTestingIdlingResource = new EspressoTestingIdlingResource();
+        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
+        //IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         testUtils.startActivity();
     }
 
     @After
     public void unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
     }
 
 
@@ -64,9 +67,7 @@ public class MessageUnsecureWhenDisableProtectionTest {
         onView(withId(R.id.subject)).perform(typeText(" "));
         testUtils.checkStatus(Rating.pEpRatingUnencrypted);
         testUtils.pressBack();
-        uiDevice.waitForIdle();
         testUtils.sendMessage();
-        uiDevice.waitForIdle();
         testUtils.waitForNewMessage();
         testUtils.clickLastMessageReceived();
         uiDevice.waitForIdle();
