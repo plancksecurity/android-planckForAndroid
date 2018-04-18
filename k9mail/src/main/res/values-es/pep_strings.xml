@@ -103,7 +103,7 @@
     </string-array>
 
     <string name="pep_forward_warning_description">Mostrar un aviso si un mensaje pierde seguridad al responder o reenviar.</string>
-<string name="navigation_drawer_open">Abrir el panel lateral</string>
+    <string name="navigation_drawer_open">Abrir el panel lateral</string>
     <string name="navigation_drawer_close">Cerrar el panes de navegación</string>
     <string name="pep_extra_addresses">Ids de Extra key:</string>
     <string name="pep_add_key_to_blacklist">Añadir clave a la lista negra</string>
@@ -119,24 +119,28 @@
     <string name="global_settings_title">Configuración global</string>
     <string name="pep_add_device_ask_move_trustwords">Estás a punto de mover un dispositivo a otro grupo de dispositivos de p≡p. Confirma verificando las siguientes Trustwords.</string>
     <string name="pep_keysync_timeout">Timeout de sincronización p≡p</string>
-    <string name="read_permission_first_explanation">Necesitamos acceder a tus contactos para autocompletar los emails.\nLa información de tus contactos no saldrá nunca de tu teléfono!</string>
+    <string name="read_permission_first_explanation">Necesitamos tu permiso para leer los contactos almacenados en tu dispositivo</string>
     <string name="button_settings">Configuración</string>
     <string name="read_snackbar_permission_rationale">Necesitamos tu permiso para leer los contactos almacenados en tu móvil</string>
     <string name="read_snackbar_permission_permanently_denied">No permitir la lectura de contactos puede provocar que la app se comporte de manera inesperada</string>
     <string name="read_permission_rationale_title">"Leer  contactos"</string>
 
     <string name="download_permission_first_explanation">Necesitamos tu permiso para descargar archivos</string>
-    <string name="download_snackbar_permission_rationale">Necesitamos tu permiso para guardar los adjuntos de tus correos.</string>
+    <string name="download_snackbar_permission_rationale">Necesitamos tu permiso para descargar archivos</string>
     <string name="download_snackbar_permission_permanently_denied">No permitir la descarga de archivos puede provocar comportamientos inesperados</string>
     <string name="download_permission_rationale_title">Descargar archivos</string>
-    <string name="add_fpr">Añadir FPR</string>
+    <string name="add_fpr">Añadir huella PGP</string>
     <string name="error_parsing_fingerprint">Error analizando la huella!</string>
     <string name="is_always_secure">Almacenar protegido en el servidor</string>
-    <string name="is_not_always_secure">ALMACENAR</string>
+    <string name="is_not_always_secure">Guardar sin protección en el servidor</string>
     <string name="master_key_management">Administración de la Clave Maestra</string>
     <string name="message_saving_error">Error guardando el mensaje</string>
     <string name="intro_first_text">Automáticamente encripta y anonimiza tu e-mail</string>
     <string name="intro_second_text">Previene la suplantación de identidad. Acaba con el spam y el phising.</string>
     <string name="intro_third_text">Muestra la seguridad en tu comunicación usando los colores del semáforo.</string>
 
-    </resources>
+    <string name="action_continue">Continuar</string>
+    <string name="battery_optimization_rationale_title">Desactivar la optimización de batería</string>
+    <string name="battery_optimiazation_explanation">Para poder sincronizar sus correos en segundo plano, es necesario deshabilitar la optimización de batería</string>
+
+</resources>
