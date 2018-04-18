@@ -67,7 +67,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.saveSizeInInt;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitId;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -163,7 +162,6 @@ class TestUtils {
         while (!buttonClicked) {
             try {
                 onView(withId(viewId)).perform(click());
-                //device.waitForIdle();
                 buttonClicked = true;
             } catch (Exception ex) {
                 Timber.i("View not found: " + ex);
@@ -370,11 +368,8 @@ class TestUtils {
     }
 
     void removeLastAccount() {
-        //device.waitForIdle();
         longClick("accounts_list");
-        //device.waitForIdle();
         selectRemoveAccount();
-        //device.waitForIdle();
         clickAcceptButton();
     }
 
@@ -386,7 +381,6 @@ class TestUtils {
                 removeLastAccount();
                 accountRemoved = true;
             } catch (Exception ex) {
-                //device.waitForIdle();
                 pressBack();
                 Timber.i("View not found, pressBack to previous activity: " + ex);
             }
@@ -417,7 +411,6 @@ class TestUtils {
         BySelector selector = By.clazz("android.widget.TextView");
         int size = device.findObjects(selector).size();
         while (size == 0) {
-            //device.waitForIdle();
             size = device.findObjects(selector).size();
         }
         for (UiObject2 textView : device.findObjects(selector)) {
@@ -662,9 +655,7 @@ class TestUtils {
     }
 
     void checkToolBarColor(int color) {
-        //device.waitForIdle();
         doWaitForResource(R.id.toolbar);
-        //device.waitForIdle();
         onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(color)));
     }
 
