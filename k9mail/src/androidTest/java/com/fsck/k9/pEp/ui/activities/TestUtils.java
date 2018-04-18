@@ -67,6 +67,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.saveSizeInInt;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitId;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -159,6 +160,7 @@ class TestUtils {
 
     void clickView(int viewId) {
         boolean buttonClicked = false;
+        doWaitForResource(viewId);
         while (!buttonClicked) {
             try {
                 onView(withId(viewId)).perform(click());
@@ -288,7 +290,7 @@ class TestUtils {
                 device.waitForIdle();
                 onView(withId(R.id.to)).perform(typeText(inputMessage.getTo()), closeSoftKeyboard());
                 device.waitForIdle();
-                onView(withId(R.id.subject)).perform(click());
+                doWaitForResource(R.id.subject);
                 onView(withId(R.id.subject)).perform(typeText(inputMessage.getSubject()), closeSoftKeyboard());
                 device.waitForIdle();
                 onView(withId(R.id.message_content)).perform(typeText(inputMessage.getMessage()), closeSoftKeyboard());
@@ -385,7 +387,6 @@ class TestUtils {
                 Timber.i("View not found, pressBack to previous activity: " + ex);
             }
         }
-        IdlingRegistry.getInstance().unregister(idlingResource);
     }
 
     void clickAcceptButton() {
@@ -526,6 +527,7 @@ class TestUtils {
 
     void doWaitForResource(int resource) {
         try {
+            IdlingRegistry.getInstance().unregister(idlingResource);
             idlingResource = new ViewVisibilityIdlingResource(getCurrentActivity(), resource, View.VISIBLE);
             IdlingRegistry.getInstance().register(idlingResource);
         } catch (Exception ex){
@@ -578,6 +580,7 @@ class TestUtils {
 
     void clickLastMessageReceived() {
         boolean messageClicked = false;
+        doWaitForResource(R.id.message_list);
         while (!messageClicked){
             try {
                 device.waitForIdle();
@@ -636,7 +639,6 @@ class TestUtils {
             device.waitForIdle();
             doWaitForIdlingListViewResource(R.id.message_list);
             onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
-            IdlingRegistry.getInstance().unregister(idlingResource);
             boolean emptyList = false;
             while (!emptyList){
                 try{
@@ -656,6 +658,7 @@ class TestUtils {
 
     void checkToolBarColor(int color) {
         doWaitForResource(R.id.toolbar);
+        device.waitForIdle();
         onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(color)));
     }
 
