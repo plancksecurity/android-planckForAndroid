@@ -43,11 +43,8 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
         instrumentation = InstrumentationRegistry.getInstrumentation();
         testUtils = new TestUtils(uiDevice, instrumentation);
         testUtils.increaseTimeoutWait();
-        //CountingIdlingResource countingIdlingResource = new CountingIdlingResource("idlingTest");
-        //EspressoTestingIdlingResource espressoTestingIdlingResource = new EspressoTestingIdlingResource();
         espressoTestingIdlingResource = new EspressoTestingIdlingResource();
         IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
-        //IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         testUtils.startActivity();
     }
 
