@@ -63,14 +63,15 @@ class TrustedMessageController {
     private Message encryptUntrustedMessage(Context context, PEpProvider pEpProvider, Account account, LocalMessage localMessage) throws MessagingException {
         Message encryptedMessage;
         try {
+            Preferences preferences = Preferences.getPreferences(context);
+            String[] keys = preferences.getMasterKeysArray(account.getUuid());
+
             if (PEpUtils.ispEpDisabled(account, null)) {
                 encryptedMessage = localMessage;
             } else if (account.getDraftsFolderName().equals(localMessage.getFolder().getName()) ||
                     account.getTrashFolderName().equals(localMessage.getFolder().getName()) ) {
-                encryptedMessage = pEpProvider.encryptMessageToSelf(localMessage);
+                encryptedMessage = pEpProvider.encryptMessageToSelf(localMessage, keys);
             } else {
-                Preferences preferences = Preferences.getPreferences(context);
-                String[] keys = preferences.getMasterKeysArray(account.getUuid());
                 encryptedMessage = pEpProvider.encryptMessage(localMessage, keys).get(0);
             }
 

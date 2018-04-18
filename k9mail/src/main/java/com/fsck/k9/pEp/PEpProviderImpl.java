@@ -248,6 +248,7 @@ public class PEpProviderImpl implements PEpProvider {
                 else notifyLoaded(new DecryptResult(decMsg, decReturn.rating, null, decReturn.flags), callback);
 //        } catch (pEpMessageConsume | pEpMessageIgnore pe) {
 //            // TODO: 15/11/16 deal with it as flag not exception
+
 //            //  throw pe;
 //            return null;
             }catch (Throwable t) {
@@ -348,7 +349,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized MimeMessage encryptMessageToSelf(MimeMessage source) throws MessagingException{
+    public synchronized MimeMessage encryptMessageToSelf(MimeMessage source, String[] keys) throws MessagingException{
         if (source == null) {
             return source;
         }
@@ -361,7 +362,7 @@ public class PEpProviderImpl implements PEpProvider {
             Identity from = message.getFrom();
             from.user_id = PEP_OWN_USER_ID;
             message.setFrom(from);
-            Message currentEnc = engine.encrypt_message_for_self(message.getFrom(), message);
+            Message currentEnc = engine.encrypt_message_for_self(message.getFrom(), message, convertExtraKeys(keys));
             if (currentEnc == null) currentEnc = message;
             Log.d(TAG, "encryptMessage() after encrypt to self");
             return getMimeMessage(source, currentEnc);

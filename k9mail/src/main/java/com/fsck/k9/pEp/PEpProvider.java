@@ -84,7 +84,7 @@ public interface PEpProvider {
     List<MimeMessage> encryptMessage(MimeMessage source, String[] extraKeys);
 
     //TODO> When alias available check if it works correctly
-    MimeMessage encryptMessageToSelf(MimeMessage source) throws MessagingException;
+    MimeMessage encryptMessageToSelf(MimeMessage source, String[] keys) throws MessagingException;
 
     /**
      * Checks the trust status (Color) for a given identity
