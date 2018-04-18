@@ -145,6 +145,19 @@ class TestUtils {
         clickView(R.id.fab_button_compose_message);
     }
 
+    void goBackToMessageCompose() {
+        boolean backToMessageCompose = false;
+        while (!backToMessageCompose){
+            try {
+                pressBack();
+                onView(withId(R.id.send)).check(matches(isDisplayed()));
+                backToMessageCompose = true;
+            } catch (Exception ex){
+                Timber.i("View not found");
+            }
+        }
+    }
+
     void clickView(int viewId) {
         boolean buttonClicked = false;
         while (!buttonClicked) {
