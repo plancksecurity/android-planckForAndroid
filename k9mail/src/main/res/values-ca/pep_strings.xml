@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="pep_reset_trust">Desconfiar</string>
-    <string name="pep_pgp_fingerprint">Emprempta PGP</string>
+    <string name="pep_reset_trust">Desconfia</string>
+    <string name="pep_pgp_fingerprint">Empremta PGP</string>
 
-    <string name="pep_dialog_weaker_forward_warning_message">Està a punt de re-enviar un missatge segur com a no segur. Si decideix continuar, informació confidencial podria ser filtrada  posant-lo a vostè i les persones involucrades en aquesta comunicació en peril. Segur que desitja continuar?</string>
+    <string name="pep_dialog_weaker_forward_warning_message">Està a punt de re-enviar un missatge segur com a no segur. Si decideix continuar, informació confidencial podria ser filtrada posant-lo a vostè i les persones involucrades en aquesta comunicació en peril. Segur que desitja continuar?</string>
 
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Continuar</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancel·lar</string>
     <string name="pep_dialog_confirm_forward_title">Confirmar reenviament</string>
 
-    <string name="pep_title_activity_privacy_status">Grau de privacitat</string>
+    <string name="pep_title_activity_privacy_status">Estat de privacitat</string>
     <string name="pep_extra_addresses">Extra key ids:</string>
     <string name="pep_use_keyserver">Consultar les claus al servidor de claus</string>
     <string name="pep_passive_mode">Mode passiu</string>
-    <string name="pep_subject_unprotected">Deshabilitar protecció del assumpte</string>
+    <string name="pep_subject_unprotected">Deshabilitar protecció de l\'assumpte</string>
     <string name="pep_add_key_to_blacklist">Add a key to blacklist</string>
     <string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>
 
-    <string name="pep_confirm_trustwords">Confirmar</string>
-    <string name="pep_wrong_trustwords">Incorrectes</string>
+    <string name="pep_confirm_trustwords">Acceptar</string>
+    <string name="pep_wrong_trustwords">Rebutjar</string>
     <string name="pep_wrong_fingerprint">Empremta incorrecte</string>
     <string name="pep_ask_trustwords">PPregunta al teu interlocutor quines són les seves Trustwords. La resposta correcta es mostra a continuació.</string>
     <string name="pep_complete_partner_format">Company\n%1$s &lt;%2$s&gt;</string>
@@ -102,4 +102,32 @@
     </string-array>
 
     <string name="pep_forward_warning_description">Mostrar un avís quan es reenvii o respongui un missatge segur de forma insegura.</string>
+    <string name="navigation_drawer_open">Obrir el panell de navegació</string>
+    <string name="navigation_drawer_close">Tancar el panell de navegació</string>
+    <string name="pep_force_protected">Protegir</string>
+    <string name="pep_forward_warning">Avís de reenviament insegur</string>
+    <string name="message_list_item_removed">Eliminat</string>
+    <string name="message_list_item_undo">Desfés</string>
+    <string name="available_accounts_title">Comptes disponibles</string>
+    <string name="configure_account_action">Administrar comptes</string>
+    <string name="button_settings">Configuració</string>
+    <string name="download_permission_rationale_title">Descarrèga fitxers</string>
+    <string name="global_settings_title">Configuració global</string>
+    <string name="read_permission_first_explanation">Necessitem el seu permis per llegir els seus contactes</string>
+    <string name="read_snackbar_permission_rationale">We need your permission to read the contacts stored on your mobile phone</string>
+    <string name="read_snackbar_permission_permanently_denied">Denegant la lectura dels seus contactes podria produïr comportaments inesperats</string>
+    <string name="read_permission_rationale_title">Llegint contactes</string>
+
+    <string name="download_permission_first_explanation">Necesitem el seu permís per descarragar fitxers al seu dispositiu</string>
+    <string name="add_fpr">Afegir emprempta</string>
+    <string name="error_parsing_fingerprint">Empremta no valida!</string>
+    <string name="is_always_secure">Desar protegit al servidor</string>
+    <string name="is_not_always_secure">Desar sense protegir al servidor</string>
+    <string name="master_key_management">Gestió de claus mestres</string>
+    <string name="message_saving_error">S\'ha produït un error desant el missatge</string>
+    <string name="intro_first_text">Xifra i anonimitza els teus correus de forma automàtica</string>
+    <string name="action_continue">Continuar</string>
+    <string name="battery_optimization_rationale_title">Desactivar l\'optimitzaciò de bateria</string>
+    <string name="battery_optimiazation_explanation">Per a sincronitzar els seus missatges en segon pla necessitem desactivar l\'optimització de bateria</string>
+
 </resources>
