@@ -1,58 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="pep_reset_trust">Vertrauen aufheben</string>
-    <string name="pep_pgp_fingerprint">PGP-Fingerprint</string>
+    <string name="pep_pgp_fingerprint">PGP-Fingerabdruck</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
-    <string name="pep_account_setup_generating_keys">Einrichten ihrer Privacy by Default </string>
+    <string name="pep_account_setup_generating_keys">"Datenschutz wird eingerichtet "</string>
 
-    <string name="pep_dialog_weaker_forward_warning_message">Sie sind im Begriff, eine sichere Nachricht ungesichert weiterzuleiten. Falls Sie damit fortfahren, setzen Sie sich und Ihre Kommunikationspartner dem Risiko aus, dass Dritte Zugriff auf vertrauliche Informationen erhalten. Möchten Sie wirklich fortfahren?</string>
+    <string name="pep_dialog_weaker_forward_warning_message">"Sie versuchen, eine sichere Nachricht ungesichert weiterzuleiten. Wenn Sie damit fortfahren, setzen Sie sich und Ihre Kommunikationspartner dem Risiko aus, dass Dritte Zugriff auf vertrauliche Informationen erhalten. Möchten Sie wirklich fortfahren? "</string>
 
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Fortfahren</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Abbrechen</string>
     <string name="pep_dialog_confirm_forward_title">Weiterleitung bestätigen</string>
 
-    <string name="pep_title_activity_privacy_status">Privacy Status</string>
-    <string name="pep_extra_addresses">ID\'s zusätzlicher Schlüssel</string>
+    <string name="pep_title_activity_privacy_status">Datenschutzstatus</string>
+    <string name="pep_extra_addresses">Zusätzliche Schlüsselkennungen:</string>
     <string name="pep_use_keyserver">Schlüssel auf Schlüsselserver suchen</string>
-    <string name="pep_passive_mode">Passiv-Modus</string>
+    <string name="pep_passive_mode">Passivmodus</string>
     <string name="pep_subject_unprotected">Betreff in Nachrichten nicht schützen</string>
-    <string name="pep_add_key_to_blacklist">Einen Schlüssel auf die schwarze Liste setzen</string>
-    <string name="pep_remove_key_from_blacklist">Einen Schlüssel von der schwarzen Liste löschen</string>
+    <string name="pep_add_key_to_blacklist">Schlüssel nicht mehr verwenden</string>
+    <string name="pep_remove_key_from_blacklist">Schlüssel wieder verwenden</string>
 
     <string name="pep_confirm_trustwords">Bestätigen</string>
-    <string name="pep_wrong_trustwords">Falsche</string>
-    <string name="pep_wrong_fingerprint">Falscher Fingerprint</string>
+    <string name="pep_wrong_trustwords">Ablehnen</string>
+    <string name="pep_wrong_fingerprint">Falscher Fingerabdruck</string>
     <string name="pep_ask_trustwords">Bitten Sie Ihren Kommunikationspartner, seine Trustwords persönlich oder telefonisch vorzulesen. Diese sollten mit den untenstehenden übereinstimmen.</string>
     <string name="pep_complete_partner_format">Partner\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_partner_format">Partner\n%1$s</string>
     <string name="pep_complete_myself_format">Ich\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_myself_format">Ich\n%1$s</string>
     <string name="pep_force_unprotected">Schutz abschalten</string>
-    <string name="pep_receivedSecretKey">Diesen privaten Schlüssel empfangen:</string>
+    <string name="pep_receivedSecretKey">Es wurde der folgende private Schlüssel erhalten:</string>
     <string name="pep_username">Benutzername</string>
     <string name="pep_userAddress">Benutzeradresse</string>
-    <string name="pep_secret_key_detected">Privater Schlüssel entdeckt</string>
+    <string name="pep_secret_key_detected">Privater Schlüssel gefunden</string>
     <string name="pep_received_this_secret_key">Folgender privater Schlüssel wurde empfangen</string>
-    <string name="pep_from_format">von Sender %1$s</string>
-    <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Dem Server vertrauen und Emails ungeschützt speichern</string>
-    <string name="pep_mistrust_server_and_store_mails_encrypted">Emails auf dem Server sind geschützt</string>
-    <string name="pep_enable_privacy_protection">Datenschutz</string>
+    <string name="pep_from_format">von %1$s</string>
+    <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Dem Server vertrauen und Nachrichten ungeschützt speichern</string>
+    <string name="pep_mistrust_server_and_store_mails_encrypted">Nachrichten geschützt speichern</string>
+    <string name="pep_enable_privacy_protection">p≡p-Datenschutz</string>
     <string name="pep_explanation">Erklärung</string>
     <string name="pep_suggestion">Vorschlag</string>
-    <string name="pep_app_license">Lizenziert unter GNU General Public License v3</string>
-    <string name="pep_trust_server_description">Emails auf dem Server geschützt speichern.</string>
-    <string name="pep_account_privacy_protection_explanation">Datenschutz für dieses Konto aktivieren </string>
-    <string name="key_list_title">Available keys</string>
-    <string name="pep_add_device_ask_trustwords">You are about to add a device to your pEp device group. Confirm by successfully verifying the following Trustwords.</string>
-    <string name="pep_device_group">p≡p-GerЉtegruppe</string>
-    <string name="handshake_reset_dialog_message">Warnung: Dieser Kommunikationspartner wurde bereits als nicht vertrauenswџrdig eingestuft. Sind Sie sicher, dass trotzdem erneut ein Handshake durchgefџhrt werden soll?</string>
-    <string name="pep_gpg_compatibility">OpenPGP-KompatibilitЉt</string>
-    <string name="crash_toast_text">Oops, something went wrong</string>
-    <string name="advanced_options">Advanced options</string>
-    <string name="basic_options">Basic options</string>
+    <string name="pep_app_license">Lizenziert unter der GNU General Public License v3</string>
+    <string name="pep_trust_server_description">Nachrichten auf dem Server geschützt speichern.</string>
+    <string name="pep_account_privacy_protection_explanation">"p≡p-Datenschutz für dieses Konto aktivieren "</string>
+    <string name="key_list_title">Verfügbare Schlüssel</string>
+    <string name="pep_add_device_ask_trustwords">Sie möchten ein neues Gerät zu Ihrer p≡p-Gerätegruppe hinzufügen. Bitte bestätigen Sie dies, wenn die folgenden Trustwords auf den Geräten übereinstimmen.</string>
+    <string name="pep_device_group">p≡p-Gerätegruppe</string>
+    <string name="handshake_reset_dialog_message">Warnung: Dieser Kommunikationspartner wurde bereits als nicht vertrauenswürdig eingestuft. Sind Sie sicher, dass trotzdem erneut ein Handshake durchgeführt werden soll?</string>
+    <string name="pep_gpg_compatibility">OpenPGP-Kompatibilität</string>
+    <string name="crash_toast_text">Entschuldigung, es ist etwas schiefgelaufen</string>
+    <string name="advanced_options">Erweiterte Optionen</string>
+    <string name="basic_options">Einfache Optionen</string>
     <string name="pep_enable_auto_download">Decrypt messages</string>
-    <string name="pep_enable_sync_account">Synchronize this account</string>
-    <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
+    <string name="pep_enable_sync_account">Dieses Konto synchronisieren</string>
+    <string name="synchronize_these_accounts_between_my_devices">Diese Konten zwischen meinen Geräten synchronisieren</string>
 
     <string-array name="pep_title">
         <item>Unbekannt<!--pEpRatingUndefined--></item>
@@ -103,5 +103,41 @@
     </string-array>
 
     <string name="pep_forward_warning_description">Warnhinweis anzeigen, wenn die Datensicherheit einer Nachricht durch Antwort oder Weiterleitung verloren geht.</string>
+
+    <string name="navigation_drawer_open">Seitenmenü öffnen</string>
+    <string name="navigation_drawer_close">Seitenmenü schließen</string>
+    <string name="pep_force_protected">Schutz einschalten</string>
+    <string name="pep_forward_warning">Warnhinweis bei unsicherer Weiterleitung</string>
+    <string name="message_list_item_removed">Entfernt</string>
+    <string name="message_list_item_undo">Rückgängig</string>
+    <string name="available_accounts_title">Verfügbare Konten</string>
+    <string name="pep_app_description">p≡p is a powerful free email client for Android with pretty Easy privacy.</string>
+    <string name="app_k9_pep_name">"p≡p"</string>
+    <string name="global_settings_title">Globale Einstellungen</string>
+    <string name="configure_account_action">Konten verwalten</string>
+    <string name="pep_add_device_ask_move_trustwords">Sie möchten neues Gerät in eine andere p≡p-Gerätegruppe verschieben. Bitte bestätigen Sie dies, wenn die folgenden Trustwords auf den Geräten übereinstimmen.</string>
+    <string name="pep_keysync_timeout">Zeitüberschreitung bei p≡p Sync</string>
+    <string name="read_permission_first_explanation">Wir benötigen Ihre Erlaubnis, um auf die auf Ihrem Gerät gespeicherten Kontakte zuzugreifen</string>
+    <string name="button_settings">Einstellungen</string>
+    <string name="read_snackbar_permission_rationale">p≡p benötigt Ihre Erlaubnis, um die auf Ihrem Gerät gespeicherten Kontakte zu lesen</string>
+    <string name="read_snackbar_permission_permanently_denied">Es kann zu unerwartetem Verhalten in der Anwendung führen, wenn Sie das Lesen der Kontakte nicht erlauben</string>
+    <string name="read_permission_rationale_title">Lesezugriff auf Kontakte</string>
+
+    <string name="download_permission_first_explanation">p≡p benötigt Ihre Erlaubnis, um Dateien auf Ihr Gerät herunterzuladen</string>
+    <string name="download_snackbar_permission_rationale">p≡p benötigt Ihre Erlaubnis, um Dateien auf Ihr Gerät herunterzuladen</string>
+    <string name="download_snackbar_permission_permanently_denied">Es kann zu unerwartetem Verhalten in der Anwendung führen, wenn Sie das Herunterladen von Dateien nicht erlauben</string>
+    <string name="download_permission_rationale_title">Dateien herunterladen</string>
+    <string name="add_fpr">Fingerabdruck hinzufügen</string>
+    <string name="error_parsing_fingerprint">Fehler beim Analysieren des Fingerabdrucks!</string>
+    <string name="is_always_secure">Nachrichten auf Server geschützt speichern</string>
+    <string name="is_not_always_secure">Nachrichten auf Server ungeschützt speichern</string>
+    <string name="master_key_management">Hauptschlüsselverwaltung</string>
+    <string name="message_saving_error">Fehler beim Speichern der Nachricht</string>
+    <string name="intro_first_text">Verschlüsselt und anonymisiert Ihre Nachrichten automatisch</string>
+    <string name="intro_second_text">Verhindert Identitätsdiebstahl. Stoppt Spam und Phishing.</string>
+    <string name="intro_third_text">Zeigt Ihnen die Sicherheit Ihrer Kommunikation mit Ampelfarben an.</string>
+    <string name="action_continue">Weiter</string>
+    <string name="battery_optimization_rationale_title">Energiesparmodus deaktivieren</string>
+    <string name="battery_optimiazation_explanation">Um Ihre Nachrichten im Hintergrund synchronisieren zu können, muss der Energiesparmodus deaktiviert werden</string>
 
 </resources>
