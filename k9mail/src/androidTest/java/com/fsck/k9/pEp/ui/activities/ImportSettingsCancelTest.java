@@ -1,11 +1,14 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,6 +27,7 @@ public class ImportSettingsCancelTest {
 
     private TestUtils testUtils;
     private UiDevice device;
+    private EspressoTestingIdlingResource espressoTestingIdlingResource;
 
     @Rule
     public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
@@ -32,8 +36,15 @@ public class ImportSettingsCancelTest {
     public void startpEpApp() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
+        espressoTestingIdlingResource = new EspressoTestingIdlingResource();
+        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
         testUtils.increaseTimeoutWait();
         testUtils.startActivity();
+    }
+
+    @After
+    public void unregisterIdlingResource() {
+        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
     }
 
     @Test (timeout = TIMEOUT_TEST)

@@ -1,12 +1,15 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,6 +27,7 @@ public class GreyStatusMessageTestUIAutomator {
     private static final String EMAIL = "newemail@mail.es";
 
     private TestUtils testUtils;
+    private EspressoTestingIdlingResource espressoTestingIdlingResource;
 
     @Rule
     public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
@@ -31,7 +35,14 @@ public class GreyStatusMessageTestUIAutomator {
     @Before
     public void startpEpApp() {
         testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()), InstrumentationRegistry.getInstrumentation());
+        espressoTestingIdlingResource = new EspressoTestingIdlingResource();
+        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
         testUtils.startActivity();
+    }
+
+    @After
+    public void unregisterIdlingResource() {
+        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
     }
 
     @Test (timeout = TIMEOUT_TEST)

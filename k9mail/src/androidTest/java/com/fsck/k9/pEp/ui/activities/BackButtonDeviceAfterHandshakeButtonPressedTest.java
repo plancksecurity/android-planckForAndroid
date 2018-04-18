@@ -3,12 +3,15 @@ package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Instrumentation;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.IdlingRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
@@ -33,6 +36,7 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
     private TestUtils testUtils;
     private String messageTo;
     private Instrumentation instrumentation;
+    private EspressoTestingIdlingResource espressoTestingIdlingResource;
 
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
@@ -43,8 +47,15 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
         instrumentation = InstrumentationRegistry.getInstrumentation();
         testUtils = new TestUtils(device, instrumentation);
         testUtils.increaseTimeoutWait();
+        espressoTestingIdlingResource = new EspressoTestingIdlingResource();
+        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
         messageTo = Long.toString(System.currentTimeMillis()) + "@" + HOST;
         testUtils.startActivity();
+    }
+
+    @After
+    public void unregisterIdlingResource() {
+        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
     }
 
     @Test (timeout = TIMEOUT_TEST)

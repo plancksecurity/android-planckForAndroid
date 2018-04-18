@@ -2,12 +2,15 @@ package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Instrumentation;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,6 +29,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
     private Instrumentation instrumentation;
+    private EspressoTestingIdlingResource espressoTestingIdlingResource;
 
     @Rule
     public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
@@ -34,9 +38,16 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
     public void startActivity() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         instrumentation = InstrumentationRegistry.getInstrumentation();
+        espressoTestingIdlingResource = new EspressoTestingIdlingResource();
+        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
         testUtils = new TestUtils(device, instrumentation);
         testUtils.increaseTimeoutWait();
         testUtils.startActivity();
+    }
+
+    @After
+    public void unregisterIdlingResource() {
+        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
     }
 
     @Test
