@@ -17,8 +17,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
 
-import timber.log.Timber;
-
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -34,6 +32,7 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
     private Instrumentation instrumentation;
+    private EspressoTestingIdlingResource espressoTestingIdlingResource;
 
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
@@ -44,13 +43,17 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
         instrumentation = InstrumentationRegistry.getInstrumentation();
         testUtils = new TestUtils(uiDevice, instrumentation);
         testUtils.increaseTimeoutWait();
-        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
+        //CountingIdlingResource countingIdlingResource = new CountingIdlingResource("idlingTest");
+        //EspressoTestingIdlingResource espressoTestingIdlingResource = new EspressoTestingIdlingResource();
+        espressoTestingIdlingResource = new EspressoTestingIdlingResource();
+        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
+        //IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         testUtils.startActivity();
     }
 
     @After
     public void unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
     }
 
     @Test (timeout = TIMEOUT_TEST)
