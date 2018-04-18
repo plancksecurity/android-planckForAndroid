@@ -93,16 +93,19 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
 
     private void selectFirstMessage() {
         boolean firstMessageClicked = false;
-        while (!firstMessageClicked){
-            try {
-                device.waitForIdle();
-                testUtils.swipeDownMessageList();
-                device.waitForIdle();
-                onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
-                firstMessageClicked = true;
-                device.waitForIdle();
-            } catch (Exception ex){
-                Timber.i("Message list view not found");
+        Activity currentActivity = testUtils.getCurrentActivity();
+        while (currentActivity == testUtils.getCurrentActivity()) {
+            while (!firstMessageClicked) {
+                try {
+                    device.waitForIdle();
+                    testUtils.swipeDownMessageList();
+                    device.waitForIdle();
+                    onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
+                    firstMessageClicked = true;
+                    device.waitForIdle();
+                } catch (Exception ex) {
+                    Timber.i("Message list view not found");
+                }
             }
         }
     }
