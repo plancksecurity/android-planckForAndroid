@@ -4,10 +4,14 @@ import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.idling.CountingIdlingResource;
 
 public class EspressoTestingIdlingResource {
-    private static final String RESOURCE = "GLOBAL";
+    private static final String RESOURCE = "EspressoTestingIdlingResource";
 
-    private static CountingIdlingResource mCountingIdlingResource =
-            new CountingIdlingResource(RESOURCE);
+    private static CountingIdlingResource mCountingIdlingResource;
+
+    public EspressoTestingIdlingResource(){
+        mCountingIdlingResource =
+                new CountingIdlingResource(RESOURCE);
+    }
 
     public static void increment() {
         mCountingIdlingResource.increment();
