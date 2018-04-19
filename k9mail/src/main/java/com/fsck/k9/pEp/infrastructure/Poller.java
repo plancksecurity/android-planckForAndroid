@@ -24,9 +24,9 @@ public class Poller {
         recursiveRunnable = new Runnable() {
             @Override
             public void run() {
+                EspressoTestingIdlingResource.increment();
                 if (isPolling) {
                     new Thread(() -> {
-                        EspressoTestingIdlingResource.increment();
                         pollNow();
                         scheduleNextPoll();
                         EspressoTestingIdlingResource.decrement();

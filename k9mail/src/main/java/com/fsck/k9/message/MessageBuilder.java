@@ -527,6 +527,7 @@ public abstract class MessageBuilder {
      * on the callback on the UI thread after it finishes. The callback may thread-safely
      * be detached and reattached intermittently. */
     final public void buildAsync(Callback callback) {
+        EspressoTestingIdlingResource.increment();
         synchronized (callbackLock) {
             asyncCallback = callback;
             queuedMimeMessage = null;
@@ -547,7 +548,6 @@ public abstract class MessageBuilder {
         PostExecutionThread postExecutionThread = new UIThread();
         ThreadExecutor threadExecutor = new JobExecutor();
         threadExecutor.execute(() -> {
-            EspressoTestingIdlingResource.increment();
             buildMessageInternal();
             postExecutionThread.post(completedCallback::onComplete);
             EspressoTestingIdlingResource.decrement();
