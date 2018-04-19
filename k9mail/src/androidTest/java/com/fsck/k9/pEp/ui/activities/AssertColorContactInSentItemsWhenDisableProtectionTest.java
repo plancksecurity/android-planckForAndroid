@@ -111,9 +111,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
     }
 
     private void selectFromMenu(int textToSelect) {
-        device.waitForIdle();
-        testUtils.openOptionsMenu();
-        testUtils.selectFromScreen(textToSelect);
+        testUtils.selectoFromMenu(textToSelect);
     }
 
     private void checkPEpStatus(Rating rating) {
