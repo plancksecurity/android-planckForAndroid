@@ -59,7 +59,7 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
         composeSelfMessage();
         testUtils.checkStatus(Rating.pEpRatingTrusted);
         testUtils.pressBack();
-        testUtils.disableProtection();
+        testUtils.selectoFromMenu(R.string.pep_force_unprotected);
         onView(withId(R.id.subject)).perform(typeText(" "));
         testUtils.checkStatus(Rating.pEpRatingUnencrypted);
         testUtils.goBackToMessageCompose();

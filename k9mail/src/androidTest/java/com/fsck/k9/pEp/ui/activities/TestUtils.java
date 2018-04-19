@@ -453,10 +453,10 @@ class TestUtils {
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, rating.value))));
     }
 
-    void disableProtection(){
+    void selectoFromMenu(int viewId){
         device.waitForIdle();
         openOptionsMenu();
-        selectFromScreen(R.string.pep_force_unprotected);
+        selectFromScreen(viewId);
         instrumentation.waitForIdleSync();
         boolean toolbarClosed = false;
         while (!toolbarClosed){
