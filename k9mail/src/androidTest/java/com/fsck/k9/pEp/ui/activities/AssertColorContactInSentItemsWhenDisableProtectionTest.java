@@ -78,8 +78,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
         checkPEpStatus(Rating.pEpRatingTrusted);
         selectFromMenu(R.string.pep_force_unprotected);
         device.waitForIdle();
-        testUtils.doWaitForResource(R.id.subject);
-        onView(withId(R.id.message_content)).perform(typeText(" "));
+        onView(withId(R.id.subject)).perform(typeText(" "));
         checkPEpStatus(Rating.pEpRatingUnencrypted);
         device.waitForIdle();
         testUtils.sendMessage();
