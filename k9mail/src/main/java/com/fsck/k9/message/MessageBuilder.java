@@ -548,7 +548,6 @@ public abstract class MessageBuilder {
         PostExecutionThread postExecutionThread = new UIThread();
         ThreadExecutor threadExecutor = new JobExecutor();
         threadExecutor.execute(() -> {
-            EspressoTestingIdlingResource.increment();
             buildMessageInternal();
             postExecutionThread.post(completedCallback::onComplete);
             EspressoTestingIdlingResource.decrement();

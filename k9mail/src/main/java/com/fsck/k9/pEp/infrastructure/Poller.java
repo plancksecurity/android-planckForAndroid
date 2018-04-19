@@ -27,7 +27,6 @@ public class Poller {
                 EspressoTestingIdlingResource.increment();
                 if (isPolling) {
                     new Thread(() -> {
-                        EspressoTestingIdlingResource.increment();
                         pollNow();
                         scheduleNextPoll();
                         EspressoTestingIdlingResource.decrement();
