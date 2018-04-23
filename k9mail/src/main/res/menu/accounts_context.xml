@@ -18,4 +18,10 @@
         android:title="@string/clear_pending_action" />
     <item android:id="@+id/export"
         android:title="@string/settings_export_account" />
+    <item android:title="PGP Compatbility">
+        <menu>
+            <item android:id="@+id/import_PGP_key"
+                android:title="Start PGP Key import wizard"/>
+        </menu>
+    </item>
 </menu>
