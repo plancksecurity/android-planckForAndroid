@@ -14,11 +14,15 @@ public class EspressoTestingIdlingResource {
     }
 
     public static void increment() {
-        mCountingIdlingResource.increment();
+        if (mCountingIdlingResource != null) {
+            mCountingIdlingResource.increment();
+        }
     }
 
     public static void decrement() {
-        mCountingIdlingResource.decrement();
+        if (mCountingIdlingResource != null) {
+            mCountingIdlingResource.decrement();
+        }
     }
 
     public static IdlingResource getIdlingResource() {
