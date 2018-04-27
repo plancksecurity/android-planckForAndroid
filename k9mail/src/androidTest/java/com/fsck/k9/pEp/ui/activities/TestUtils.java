@@ -624,7 +624,6 @@ class TestUtils {
 
     void clickLastMessageReceived() {
         boolean messageClicked = false;
-        doWaitForResource(R.id.message_list);
         while (!messageClicked){
             try {
                 device.waitForIdle();
