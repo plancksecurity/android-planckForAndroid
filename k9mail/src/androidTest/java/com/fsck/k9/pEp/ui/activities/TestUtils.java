@@ -689,11 +689,22 @@ class TestUtils {
     }
 
     void removeMessagesFromList(){
-            device.waitForIdle();
-            doWaitForResource(R.id.message_list);
-            device.waitForIdle();
-            doWaitForIdlingListViewResource(R.id.message_list);
-            onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
+        boolean firstMessageClicked = false;
+        while (!firstMessageClicked){
+            try{
+                if(viewIsDisplayed(R.id.message_list)) {
+                    doWaitForResource(R.id.message_list);
+                    doWaitForIdlingListViewResource(R.id.message_list);
+                    device.waitForIdle();
+                    swipeDownMessageList();
+                    device.waitForIdle();
+                    onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
+                    firstMessageClicked = true;
+                }
+            } catch (Exception ex){
+                Timber.i("Cannot find list: " + ex);
+            }
+        }
             boolean emptyList = false;
             while (!emptyList){
                 try{
