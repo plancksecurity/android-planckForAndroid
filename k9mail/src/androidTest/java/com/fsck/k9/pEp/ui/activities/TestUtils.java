@@ -576,11 +576,13 @@ class TestUtils {
     }
 
     void doWaitForIdlingListViewResource(int resource){
+        IdlingResource idlingResourceListView;
+        device.waitForIdle();
+        idlingResourceListView = new ListViewIdlingResource(instrumentation,
+                getCurrentActivity().findViewById(resource));
             try {
-                device.waitForIdle();
-                idlingResource = new ListViewIdlingResource(instrumentation,
-                        getCurrentActivity().findViewById(resource));
-                IdlingRegistry.getInstance().register(idlingResource);
+                IdlingRegistry.getInstance().register(idlingResourceListView);
+                onView(withId(resource)).check(matches(isDisplayed()));
             } catch (Exception ex){
                 Timber.i("Idling Resource does not exist: " + ex);
             }
