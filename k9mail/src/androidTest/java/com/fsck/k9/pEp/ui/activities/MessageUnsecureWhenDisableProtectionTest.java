@@ -47,7 +47,6 @@ public class MessageUnsecureWhenDisableProtectionTest {
         testUtils.increaseTimeoutWait();
         espressoTestingIdlingResource = new EspressoTestingIdlingResource();
         IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
-        //IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         testUtils.startActivity();
     }
 
@@ -72,6 +71,7 @@ public class MessageUnsecureWhenDisableProtectionTest {
         testUtils.clickLastMessageReceived();
         uiDevice.waitForIdle();
         checkStatus();
+        testUtils.goBackAndRemoveAccount();
     }
 
     private void composeMessage(){
@@ -82,23 +82,9 @@ public class MessageUnsecureWhenDisableProtectionTest {
         uiDevice.waitForIdle();
     }
 
-    private void disableProtection(){
-        testUtils.openOptionsMenu();
-        testUtils.selectFromScreen(R.string.pep_force_unprotected);
-        uiDevice.waitForIdle();
-    }
-
     private void checkStatus(){
         onView(withId(R.id.tvPep)).perform(click());
         onView(withId(R.id.pEpTitle)).check(matches(withText(testUtils.getResourceString(R.array.pep_title, Rating.pEpRatingUnencrypted.value))));
         uiDevice.waitForIdle();
-    }
-
-    private void removeMessageListAndAccount(){
-        testUtils.pressBack();
-        uiDevice.waitForIdle();
-        testUtils.pressBack();
-        testUtils.removeMessagesFromList();
-        testUtils.goBackAndRemoveAccount();
     }
 }
