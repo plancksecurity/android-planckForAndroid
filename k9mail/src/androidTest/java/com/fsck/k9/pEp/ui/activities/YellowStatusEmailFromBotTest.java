@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.IdlingRegistry;
+import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.UiDevice;
@@ -33,6 +34,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static junit.framework.Assert.assertTrue;
 
@@ -124,16 +126,23 @@ public class YellowStatusEmailFromBotTest {
 
     private void goBackToMessageListAndPressComposeMessageButton() {
         boolean backToMessageList = false;
+        boolean messageDiscarded = false;
         while (!backToMessageList){
             try {
                 device.pressBack();
                 try {
-                    onView(withText(R.string.discard_action)).perform(click());
+                    if (!messageDiscarded) {
+                        device.waitForIdle();
+                        onView(withText(R.string.discard_action)).perform(click());
+                        messageDiscarded = true;
+                    }
                 } catch (Exception e){
                     Timber.i("No dialog alert message");
                 }
-                onView(withId(R.id.fab_button_compose_message)).perform(click());
-                backToMessageList = true;
+                if (exists(onView(withId(R.id.fab_button_compose_message)))){
+                    onView(withId(R.id.fab_button_compose_message)).perform(click());
+                    backToMessageList = true;
+                }
             } catch (Exception ex){
                 Timber.i("View not found");
             }
