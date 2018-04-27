@@ -679,7 +679,6 @@ class TestUtils {
         boolean actionPerformed = false;
         while (!actionPerformed) {
             try {
-                device.waitForIdle();
                 onView(withId(R.id.message_list)).perform(swipeDown());
                 Timber.i("Message list found");
                 actionPerformed = true;
