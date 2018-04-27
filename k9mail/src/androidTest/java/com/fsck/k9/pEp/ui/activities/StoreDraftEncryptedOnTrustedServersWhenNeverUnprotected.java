@@ -60,7 +60,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
         testUtils.checkStatus(Rating.pEpRatingUnencrypted);
         testUtils.pressBack();
         testUtils.openOptionsMenu();
-        testUtils.selectFromScreen(R.id.is_always_secure);
+        testUtils.selectFromScreen(R.string.is_always_secure);
         device.waitForIdle();
         device.pressBack();
         testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.save_or_discard_draft_message_dlg_title);
