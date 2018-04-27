@@ -291,6 +291,7 @@ class TestUtils {
         boolean messageFilled = false;
         while (!messageFilled){
             try {
+                device.waitForIdle();
                 doWaitForResource(R.id.to);
                 device.waitForIdle();
                 device.findObject(By.res(APP_ID, "to")).longClick();
@@ -298,8 +299,8 @@ class TestUtils {
                 device.pressKeyCode(KeyEvent.KEYCODE_DEL);
                 device.waitForIdle();
                 onView(withId(R.id.to)).perform(typeText(inputMessage.getTo()), closeSoftKeyboard());
-                device.waitForIdle();
                 doWaitForResource(R.id.subject);
+                device.waitForIdle();
                 onView(withId(R.id.subject)).perform(typeText(inputMessage.getSubject()), closeSoftKeyboard());
                 device.waitForIdle();
                 onView(withId(R.id.message_content)).perform(typeText(inputMessage.getMessage()), closeSoftKeyboard());
