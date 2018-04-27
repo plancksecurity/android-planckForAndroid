@@ -585,6 +585,8 @@ class TestUtils {
                 onView(withId(resource)).check(matches(isDisplayed()));
             } catch (Exception ex){
                 Timber.i("Idling Resource does not exist: " + ex);
+            } finally {
+                IdlingRegistry.getInstance().unregister(idlingResourceListView);
             }
     }
 
