@@ -2,13 +2,15 @@ package com.fsck.k9.pEp.ui.activities;
 
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
-import android.support.test.espresso.PerformException;
+import android.support.test.espresso.AmbiguousViewMatcherException;
+import android.support.test.espresso.FailureHandler;
+import android.support.test.espresso.NoMatchingRootException;
+import android.support.test.espresso.NoMatchingViewException;
 import android.support.test.espresso.UiController;
 import android.support.test.espresso.ViewAction;
+import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.intent.Checks;
 import android.support.test.espresso.matcher.BoundedMatcher;
-import android.support.test.espresso.util.HumanReadables;
-import android.support.test.espresso.util.TreeIterables;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -23,10 +25,9 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-import java.util.concurrent.TimeoutException;
-
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
@@ -76,8 +77,7 @@ public class UtilsPackage {
                                 view.getRootView().findViewById(recyclerViewId);
                         if (recyclerView != null && recyclerView.getId() == recyclerViewId) {
                             childView = recyclerView.findViewHolderForAdapterPosition(position).itemView;
-                        }
-                        else {
+                        } else {
                             return false;
                         }
                     }
@@ -93,13 +93,15 @@ public class UtilsPackage {
             };
         }
     }
+
     private static Matcher<View> getElementFromMatchAtPosition(final Matcher<View> matcher, final int position) {
         return new BaseMatcher<View>() {
             int counter = 0;
+
             @Override
             public boolean matches(final Object item) {
                 if (matcher.matches(item)) {
-                    if(counter == position) {
+                    if (counter == position) {
                         counter++;
                         return true;
                     }
@@ -110,22 +112,24 @@ public class UtilsPackage {
 
             @Override
             public void describeTo(final Description description) {
-                description.appendText("Element at hierarchy position "+position);
+                description.appendText("Element at hierarchy position " + position);
             }
         };
     }
 
-        public static Matcher<View> withListSize(final int size) {
-            return new TypeSafeMatcher<View> () {
-                @Override public boolean matchesSafely (final View view) {
-                    return ((ListView) view).getCount () == size;
-                }
+    public static Matcher<View> withListSize(final int size) {
+        return new TypeSafeMatcher<View>() {
+            @Override
+            public boolean matchesSafely(final View view) {
+                return ((ListView) view).getCount() == size;
+            }
 
-                @Override public void describeTo (final Description description) {
-                    description.appendText ("ListView should have " + size + " items");
-                }
-            };
-        }
+            @Override
+            public void describeTo(final Description description) {
+                description.appendText("ListView should have " + size + " items");
+            }
+        };
+    }
 
     public static Matcher<View> withBackgroundColor(final int colorId) {
         Checks.checkNotNull(colorId);
@@ -151,8 +155,9 @@ public class UtilsPackage {
                 ViewParent parent = view.getParent();
                 return parent instanceof ViewGroup
                         && parentMatcher.matches(parent)
-                        && view.equals(((ViewGroup)parent).getChildAt(position));
+                        && view.equals(((ViewGroup) parent).getChildAt(position));
             }
+
             @Override
             public void describeTo(Description description) {
 
@@ -164,9 +169,10 @@ public class UtilsPackage {
         return new TypeSafeMatcher<View>() {
             @Override
             public boolean matchesSafely(View view) {
-                size[0] = ((ListView) view).getCount ();
-                return size[0]!=0;
+                size[0] = ((ListView) view).getCount();
+                return size[0] != 0;
             }
+
             @Override
             public void describeTo(Description description) {
 
@@ -203,7 +209,7 @@ public class UtilsPackage {
         };
     }
 
-    static ViewAction getTextInElement(String textToReturn[], int position){
+    static ViewAction getTextInElement(String textToReturn[], int position) {
         return new ViewAction() {
 
             @Override
@@ -214,7 +220,7 @@ public class UtilsPackage {
             @Override
             public void perform(UiController uiController, View view) {
                 textToReturn[position] = "empty";
-                TextView tv = (TextView)view;
+                TextView tv = (TextView) view;
                 textToReturn[position] = tv.getText().toString();
             }
 
@@ -226,7 +232,7 @@ public class UtilsPackage {
     }
 
     String getText(final Matcher<View> matcher) {
-        final String[] stringHolder = { null };
+        final String[] stringHolder = {null};
         onView(matcher).perform(new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
@@ -240,14 +246,14 @@ public class UtilsPackage {
 
             @Override
             public void perform(UiController uiController, View view) {
-                TextView tv = (TextView)view; //Save, because of check in getConstraints()
+                TextView tv = (TextView) view; //Save, because of check in getConstraints()
                 stringHolder[0] = tv.getText().toString();
             }
         });
         return stringHolder[0];
     }
 
-    static ViewAction saveSizeInInt(int size[], int position){
+    static ViewAction saveSizeInInt(int size[], int position) {
         return new ViewAction() {
 
             @Override
@@ -257,7 +263,7 @@ public class UtilsPackage {
 
             @Override
             public void perform(UiController uiController, View view) {
-                size[position] = ((ListView) view).getCount ();
+                size[position] = ((ListView) view).getCount();
             }
 
             @Override
@@ -267,7 +273,7 @@ public class UtilsPackage {
         };
     }
 
-    public static ViewAction waitId(final int viewId, final long millis) {
+    public static ViewAction waitUntilIdle() {
         return new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
@@ -276,35 +282,59 @@ public class UtilsPackage {
 
             @Override
             public String getDescription() {
-                return "wait for a specific view with id <" + viewId + "> during " + millis + " millis.";
+                return "wait for idle";
             }
 
             @Override
-            public void perform(final UiController uiController, final View view) {
+            public void perform(UiController uiController, View view) {
                 uiController.loopMainThreadUntilIdle();
-                final long startTime = System.currentTimeMillis();
-                final long endTime = startTime + millis;
-                final Matcher<View> viewMatcher = withId(viewId);
-
-                do {
-                    for (View child : TreeIterables.breadthFirstViewTraversal(view)) {
-                        // found view with required ID
-                        if (viewMatcher.matches(child)) {
-                            return;
-                        }
-                    }
-
-                    uiController.loopMainThreadForAtLeast(50);
-                }
-                while (System.currentTimeMillis() < endTime);
-
-                // timeout happens
-                throw new PerformException.Builder()
-                        .withActionDescription(this.getDescription())
-                        .withViewDescription(HumanReadables.describe(view))
-                        .withCause(new TimeoutException())
-                        .build();
             }
         };
+    }
+
+    public static boolean exists(ViewInteraction interaction) {
+        try {
+            if (interaction != null) {
+                interaction.perform(new ViewAction() {
+                    @Override
+                    public Matcher<View> getConstraints() {
+                        return isAssignableFrom(View.class);
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return "check for existence";
+                    }
+
+                    @Override
+                    public void perform(UiController uiController, View view) {
+                        // no op, if this is run, then the execution will continue after .perform(...)
+                    }
+                });
+            }
+            return true;
+
+        } catch (AmbiguousViewMatcherException ex) {
+            // if there's any interaction later with the same matcher, that'll fail anyway
+            return true; // we found more than one
+        } catch (NoMatchingViewException ex) {
+            return false;
+        } catch (NoMatchingRootException ex) {
+            // optional depending on what you think "exists" means
+            return false;
+        }
+    }
+
+    public static boolean viewIsDisplayed(int viewId)
+    {
+        final boolean[] isDisplayed = {true};
+        onView(withId(viewId)).withFailureHandler(new FailureHandler() {
+            @Override
+            public void handle(Throwable error, Matcher<View> viewMatcher)
+            {
+                isDisplayed[0] = false;
+            }
+        }).check(matches(isDisplayed()));
+        return isDisplayed[0];
     }
 }
