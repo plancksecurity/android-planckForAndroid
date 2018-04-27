@@ -385,7 +385,11 @@ class TestUtils {
         clickAcceptButton();
     }
 
-    public void goBackAndRemoveAccount(){
+    public void goBackAndRemoveAccount() {
+        goBackAndRemoveAccount(false);
+    }
+
+    public void goBackAndRemoveAccount(boolean discardMessage) {
         boolean accountRemoved = false;
         while (!accountRemoved) {
             try {
