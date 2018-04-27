@@ -44,6 +44,7 @@ import org.pEp.jniadapter.Rating;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 import timber.log.Timber;
@@ -66,8 +67,9 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static android.support.test.runner.lifecycle.Stage.RESUMED;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.saveSizeInInt;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitId;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -162,11 +164,9 @@ class TestUtils {
         boolean buttonClicked = false;
         doWaitForResource(viewId);
         while (!buttonClicked) {
-            try {
+            if (viewIsDisplayed(viewId)){
                 onView(withId(viewId)).perform(click());
                 buttonClicked = true;
-            } catch (Exception ex) {
-                Timber.i("View not found: " + ex);
             }
         }
     }
