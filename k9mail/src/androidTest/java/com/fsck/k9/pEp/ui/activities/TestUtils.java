@@ -484,7 +484,6 @@ class TestUtils {
         device.waitForIdle();
         openOptionsMenu();
         selectFromScreen(viewId);
-        instrumentation.waitForIdleSync();
         boolean toolbarClosed = false;
         while (!toolbarClosed){
             try{
