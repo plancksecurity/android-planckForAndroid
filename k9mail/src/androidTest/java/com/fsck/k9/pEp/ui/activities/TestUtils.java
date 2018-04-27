@@ -391,15 +391,28 @@ class TestUtils {
 
     public void goBackAndRemoveAccount(boolean discardMessage) {
         boolean accountRemoved = false;
+        Activity currentActivity = getCurrentActivity();
         while (!accountRemoved) {
             try {
                 device.waitForIdle();
                 removeLastAccount();
                 accountRemoved = true;
             } catch (Exception ex) {
-                pressBack();
-                Timber.i("View not found, pressBack to previous activity: " + ex);
+                while (currentActivity == getCurrentActivity()) {
+                    pressBack();
+                    try {
+                        if (discardMessage) {
+                            onView(withText(R.string.discard_action)).check(matches(isDisplayed()));
+                            onView(withText(R.string.discard_action)).perform(click());
+                            discardMessage = false;
+                        }
+                    } catch (Exception e) {
+                        Timber.i("No dialog alert message");
+                    }
+                    Timber.i("View not found, pressBack to previous activity: " + ex);
+                }
             }
+            currentActivity = getCurrentActivity();
         }
     }
 
