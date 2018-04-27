@@ -552,13 +552,27 @@ class TestUtils {
     }
 
     void doWaitForResource(int resource) {
-        try {
-            IdlingRegistry.getInstance().unregister(idlingResource);
-            idlingResource = new ViewVisibilityIdlingResource(getCurrentActivity(), resource, View.VISIBLE);
-            IdlingRegistry.getInstance().register(idlingResource);
-        } catch (Exception ex){
-            Timber.i("Idling Resource does not exist: " + ex);
+        IdlingResource idlingResourceVisibility = null;
+        Activity currentActivity = null;
+        while (currentActivity == null) {
+            try {
+                device.waitForIdle();
+                if (viewIsDisplayed(resource)) {
+                    currentActivity = getCurrentActivity();
+                }
+            } catch (Exception ex){
+                Timber.i("App shouldn't be here");
+            }
         }
+            try {
+                idlingResourceVisibility = new ViewVisibilityIdlingResource(currentActivity, resource, View.VISIBLE);
+                IdlingRegistry.getInstance().register(idlingResourceVisibility);
+                onView(withId(resource)).check(matches(isDisplayed()));
+            } catch (Exception ex) {
+                Timber.i("Idling Resource does not exist: " + ex);
+            } finally {
+                IdlingRegistry.getInstance().unregister(idlingResourceVisibility);
+            }
     }
 
     void doWaitForIdlingListViewResource(int resource){
