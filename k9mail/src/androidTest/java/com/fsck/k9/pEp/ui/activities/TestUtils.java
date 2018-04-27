@@ -273,11 +273,10 @@ class TestUtils {
                 Timber.i("Ignored", "Exists account");
             }
             try {
-                doWaitForResource(R.id.account_description);
                 device.waitForIdle();
                 accountDescription(DESCRIPTION, USER_NAME);
             } catch (Exception ex) {
-                Timber.i("Ignored", "Ignored exception");
+                Timber.i("Ignored", "Ignored exception " + ex);
             }
         } catch (Exception ignoredException) {
             Timber.i("Ignored", "Ignored exception");
