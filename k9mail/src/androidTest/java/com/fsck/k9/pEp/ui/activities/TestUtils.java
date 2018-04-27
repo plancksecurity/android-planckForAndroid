@@ -625,16 +625,27 @@ class TestUtils {
     void clickLastMessageReceived() {
         boolean messageClicked = false;
         while (!messageClicked){
-            try {
-                device.waitForIdle();
-                onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
-            } catch (Exception ex){
-                Timber.i("Message has been clicked");
-                messageClicked = true;
+            device.waitForIdle();
+            if (viewIsDisplayed(R.id.message_list)) {
+                try {
+                    swipeDownMessageList();
+                    onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
+                    messageClicked = true;
+                    device.waitForIdle();
+                    if (viewIsDisplayed(R.id.fab_button_compose_message)) {
+                        try {
+                            messageClicked = false;
+                            pressBack();
+                        } catch (Exception ex) {
+                            Timber.i("Last message has been clicked");
+                        }
+                    }
+                } catch (Exception ex) {
+                    Timber.i("No message found");
+                }
             }
         }
         try{
-            device.waitForIdle();
             onView(withText(R.string.cancel_action)).perform(click());
         }catch (NoMatchingViewException ignoredException){
             Timber.i("Ignored exception. Email is not encrypted");
