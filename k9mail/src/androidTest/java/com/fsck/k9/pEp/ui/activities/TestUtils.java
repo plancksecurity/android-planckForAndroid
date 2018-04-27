@@ -172,15 +172,25 @@ class TestUtils {
     }
 
      Activity getCurrentActivity() {
-        final Activity[] activity = new Activity[1];
-        onView(isRoot()).check(new ViewAssertion() {
-            @Override
-            public void check(View view, NoMatchingViewException noViewFoundException) {
-                java.util.Collection<Activity> activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
-                activity[0] = Iterables.getOnlyElement(activities);
-            }
+
+         final Activity[] resumedActivity = {null};
+         getInstrumentation().runOnMainSync(new Runnable() {
+             public void run() {
+                 Collection resumedActivities = ActivityLifecycleMonitorRegistry.getInstance()
+                         .getActivitiesInStage(RESUMED);
+                 if (resumedActivities.iterator().hasNext()) {
+                     resumedActivity[0] = (Activity) resumedActivities.iterator().next();
+                 }
+             }
+         });
+         return resumedActivity[0];
+
+        /*final Activity[] activity = new Activity[1];
+        onView(isRoot()).check((view, noViewFoundException) -> {
+            java.util.Collection<Activity> activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
+            activity[0] = Iterables.getOnlyElement(activities);
         });
-        return activity[0];
+        return activity[0];*/
     }
 
     void createAccount(boolean isGmail) {
