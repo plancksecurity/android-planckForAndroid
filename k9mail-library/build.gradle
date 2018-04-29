@@ -10,18 +10,20 @@ if (rootProject.testCoverage) {
 }
 
 repositories {
-    jcenter()
     google()
+    jcenter()
 }
 
 dependencies {
-    api 'org.apache.james:apache-mime4j-core:0.7.2'
-    api 'org.apache.james:apache-mime4j-dom:0.7.2'
+    api 'org.apache.james:apache-mime4j-core:0.8.1'
+    api 'org.apache.james:apache-mime4j-dom:0.8.1'
+    implementation "com.squareup.okio:okio:${okioVersion}"
     implementation 'commons-io:commons-io:2.4'
     implementation 'com.jcraft:jzlib:1.0.7'
     implementation 'com.beetstra.jutf7:jutf7:1.0.0'
     implementation "com.android.support:support-annotations:${androidSupportLibraryVersion}"
     implementation "com.jakewharton.timber:timber:${timberVersion}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlin_version}"
 
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.madgag.spongycastle:pg:1.51.0.0'
@@ -30,6 +32,7 @@ dependencies {
     testImplementation "org.robolectric:robolectric:${robolectricVersion}"
     testImplementation "junit:junit:${junitVersion}"
     testImplementation "org.mockito:mockito-core:${mockitoVersion}"
+    testImplementation "com.google.truth:truth:${truthVersion}"
 }
 
 android {
