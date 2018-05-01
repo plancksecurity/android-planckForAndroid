@@ -36,11 +36,11 @@ class AutocryptKeyTransferActivity : K9Activity(), AutocryptKeyTransferView {
 
         val account = intent.getStringExtra(EXTRA_ACCOUNT)
 
-        presenter = AutocryptKeyTransferPresenter(applicationContext, this, this, viewModel, openPgpApiManager, transportProvider)
-        presenter.initFromIntent(account)
-
         transfer_send_button.setOnClickListener { presenter.onClickTransferSend() }
         transfer_show_code_button.setOnClickListener { presenter.onClickShowTransferCode() }
+
+        presenter = AutocryptKeyTransferPresenter(applicationContext, this, this, viewModel, openPgpApiManager, transportProvider)
+        presenter.initFromIntent(account)
     }
 
     override fun setAddress(address: String) {
@@ -82,8 +82,10 @@ class AutocryptKeyTransferActivity : K9Activity(), AutocryptKeyTransferView {
         transfer_show_code_button.visibility = View.GONE
     }
 
-    override fun sceneFinished() {
-        setupSceneTransition()
+    override fun sceneFinished(transition: Boolean) {
+        if (transition) {
+            setupSceneTransition()
+        }
 
         transfer_send_button.visibility = View.GONE
         transfer_msg_info.visibility = View.GONE
@@ -153,7 +155,7 @@ interface AutocryptKeyTransferView {
     fun sceneBegin()
     fun sceneGeneratingAndSending()
     fun sceneSendError()
-    fun sceneFinished()
+    fun sceneFinished(transition: Boolean = true)
     fun setLoadingStateGenerating()
     fun setLoadingStateSending()
     fun setLoadingStateSendingFailed()
