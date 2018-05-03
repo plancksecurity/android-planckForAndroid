@@ -131,7 +131,8 @@ public class YellowStatusEmailFromBotTest {
             try {
                 device.pressBack();
                 try {
-                    if (!messageDiscarded) {
+                    device.waitForIdle();
+                    while (!messageDiscarded || exists(onView(withText(R.string.discard_action)))) {
                         device.waitForIdle();
                         onView(withText(R.string.discard_action)).perform(click());
                         messageDiscarded = true;
