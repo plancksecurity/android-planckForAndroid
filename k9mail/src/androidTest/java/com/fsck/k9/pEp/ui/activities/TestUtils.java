@@ -68,6 +68,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static android.support.test.runner.lifecycle.Stage.RESUMED;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.saveSizeInInt;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
@@ -136,6 +137,7 @@ class TestUtils {
     }
 
     private void accountDescription(String description, String userName) {
+        doWaitForResource(R.id.account_description);
         device.waitForIdle();
         onView(withId(R.id.account_description)).perform(typeText(description));
         onView(withId(R.id.account_name)).perform(typeText(userName), closeSoftKeyboard());
@@ -150,12 +152,10 @@ class TestUtils {
     void goBackToMessageCompose() {
         boolean backToMessageCompose = false;
         while (!backToMessageCompose){
-            try {
-                pressBack();
-                onView(withId(R.id.send)).check(matches(isDisplayed()));
+            pressBack();
+            device.waitForIdle();
+            if (exists(onView(withId(R.id.send)))){
                 backToMessageCompose = true;
-            } catch (Exception ex){
-                Timber.i("View not found");
             }
         }
     }
@@ -164,8 +164,10 @@ class TestUtils {
         boolean buttonClicked = false;
         doWaitForResource(viewId);
         while (!buttonClicked) {
-            if (viewIsDisplayed(viewId)){
+            if (exists(onView(withId(viewId))) && viewIsDisplayed(viewId)){
+                device.waitForIdle();
                 onView(withId(viewId)).perform(click());
+                device.waitForIdle();
                 buttonClicked = true;
             }
         }
@@ -487,13 +489,18 @@ class TestUtils {
         boolean toolbarClosed = false;
         while (!toolbarClosed){
             try{
-                onView(withId(R.id.message_content)).perform(typeText(""));
+                onView(withId(R.id.message_content)).perform(typeText(" "));
+                device.waitForIdle();
                 toolbarClosed = true;
             } catch (Exception ex){
                 Timber.i("Toolbar is not closed yet");
             }
         }
-        onView(withId(R.id.subject)).perform(click());
+        try {
+            onView(withId(R.id.subject)).perform(click());
+        } catch (Exception ex) {
+            Timber.i("Ignored Exception: " + ex);
+        }
     }
 
     String getTextFromTextViewThatContainsText(String text) {
@@ -533,12 +540,16 @@ class TestUtils {
         while (!textViewFound) {
             BySelector selector = By.clazz("android.widget.TextView");
             for (UiObject2 object : device.findObjects(selector)) {
-                if (object.getText().equals(resources.getString(resource))) {
-                    device.waitForIdle();
-                    object.click();
-                    device.waitForIdle();
-                    textViewFound = true;
-                    break;
+                try {
+                    if (object.getText().equals(resources.getString(resource))) {
+                        device.waitForIdle();
+                        object.click();
+                        device.waitForIdle();
+                        textViewFound = true;
+                        break;
+                    }
+                } catch (Exception ex){
+                    Timber.i("Cannot find text on screen: " + ex);
                 }
             }
         }
@@ -689,22 +700,7 @@ class TestUtils {
     }
 
     void removeMessagesFromList(){
-        boolean firstMessageClicked = false;
-        while (!firstMessageClicked){
-            try{
-                if(viewIsDisplayed(R.id.message_list)) {
-                    doWaitForResource(R.id.message_list);
-                    doWaitForIdlingListViewResource(R.id.message_list);
-                    device.waitForIdle();
-                    swipeDownMessageList();
-                    device.waitForIdle();
-                    onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
-                    firstMessageClicked = true;
-                }
-            } catch (Exception ex){
-                Timber.i("Cannot find list: " + ex);
-            }
-        }
+        clickFirstMessage();
             boolean emptyList = false;
             while (!emptyList){
                 try{
@@ -719,10 +715,43 @@ class TestUtils {
                 } catch (NoMatchingViewException ignoredException) {
                     emptyList = true;
                 }
+                device.waitForIdle();
+                if (exists(onView(withId(android.R.id.message)))){
+                    emptyList = false;
+                }
             }
     }
 
+    void clickFirstMessage(){
+        boolean firstMessageClicked = false;
+        while (!firstMessageClicked){
+            try{
+                if(viewIsDisplayed(R.id.message_list)) {
+                    doWaitForResource(R.id.message_list);
+                    doWaitForIdlingListViewResource(R.id.message_list);
+                    device.waitForIdle();
+                    swipeDownMessageList();
+                    getMessageListSize();
+                    if (viewIsDisplayed(R.id.reply_message) || messageListSize[0] == 1) {
+                        firstMessageClicked = true;
+                    }
+                    else {
+                        device.waitForIdle();
+                        onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
+                        device.waitForIdle();
+                    }
+                    if (!viewIsDisplayed(R.id.message_list)) {
+                        firstMessageClicked = true;
+                    }
+                }
+            } catch (Exception ex){
+                Timber.i("Cannot find list: " + ex);
+            }
+        }
+    }
+
     void checkToolBarColor(int color) {
+        device.waitForIdle();
         doWaitForResource(R.id.toolbar);
         device.waitForIdle();
         onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(color)));
