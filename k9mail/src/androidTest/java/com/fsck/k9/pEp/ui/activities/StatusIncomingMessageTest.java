@@ -23,6 +23,8 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 
 
@@ -78,9 +80,18 @@ public class StatusIncomingMessageTest {
         testUtils.clickView(R.id.tvPep);
         testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
         device.waitForIdle();
-        testUtils.pressBack();
-        device.waitForIdle();
-        testUtils.pressBack();
+        goBackToMessageList();
+    }
+
+    void goBackToMessageList(){
+        boolean backToMessageCompose = false;
+        while (!backToMessageCompose){
+            device.pressBack();
+            device.waitForIdle();
+            if (viewIsDisplayed(R.id.fab_button_compose_message)){
+                backToMessageCompose = true;
+            }
+        }
     }
 
     private void assertIncomingTrustedPartnerMessageIsGreen() {
