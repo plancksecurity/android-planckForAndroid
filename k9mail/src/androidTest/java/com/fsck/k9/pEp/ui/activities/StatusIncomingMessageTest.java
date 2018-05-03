@@ -104,14 +104,7 @@ public class StatusIncomingMessageTest {
         device.waitForIdle();
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(0)).check(matches(withBackgroundColor(R.color.pep_green)));
         device.waitForIdle();
-        testUtils.pressBack();
-        device.waitForIdle();
-        testUtils.pressBack();
-        device.waitForIdle();
-        testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.save_or_discard_draft_message_dlg_title);
-        testUtils.doWaitForObject("android.widget.Button");
-        onView(withText(R.string.discard_action)).perform(click());
-        testUtils.goBackAndRemoveAccount();
+        testUtils.goBackAndRemoveAccount(true);
     }
 
     private void fillMessage() {
