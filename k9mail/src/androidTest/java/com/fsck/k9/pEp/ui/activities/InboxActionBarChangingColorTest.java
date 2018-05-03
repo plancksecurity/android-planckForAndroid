@@ -18,9 +18,11 @@ import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 
 @RunWith(AndroidJUnit4.class)
@@ -72,6 +74,7 @@ public class InboxActionBarChangingColorTest {
         testUtils.composeMessageButton();
         selfMessage = testUtils.getTextFromTextViewThatContainsText("@");
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, selfMessage), false);
+        onView(withId(R.id.subject)).perform(typeText(" "));
         testUtils.sendMessage();
         device.waitForIdle();
         testUtils.waitForNewMessage();
@@ -80,25 +83,35 @@ public class InboxActionBarChangingColorTest {
         testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
         device.waitForIdle();
         testUtils.pressBack();
-        onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(R.color.pep_green)));
+        checkToolbarColor(R.color.pep_green);
         device.waitForIdle();
         testUtils.pressBack();
         device.waitForIdle();
-        onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(R.color.pep_green)));
+        checkToolbarColor(R.color.pep_green);
+    }
+
+    private void checkToolbarColor(int color) {
+        boolean toolbarExists = false;
+        while (!toolbarExists) {
+            if (exists(onView(withId(R.id.toolbar)))) {
+                onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(color)));
+                toolbarExists = true;
+            }
+        }
     }
 
     private void assertBotMessageColor(){
-        device.waitForIdle();
         testUtils.composeMessageButton();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
+        onView(withId(R.id.subject)).perform(typeText(" "));
         testUtils.sendMessage();
         device.waitForIdle();
         testUtils.waitForNewMessage();
         testUtils.clickLastMessageReceived();
-        onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(R.color.pep_yellow)));
+        checkToolbarColor(R.color.pep_yellow);
         device.waitForIdle();
         testUtils.pressBack();
         device.waitForIdle();
-        onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(R.color.pep_green)));
+        checkToolbarColor(R.color.pep_green);
     }
 }
