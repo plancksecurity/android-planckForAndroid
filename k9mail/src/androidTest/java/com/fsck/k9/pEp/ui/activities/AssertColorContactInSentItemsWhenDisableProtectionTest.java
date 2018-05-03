@@ -1,6 +1,5 @@
 package com.fsck.k9.pEp.ui.activities;
 
-import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.res.Resources;
@@ -25,16 +24,10 @@ import org.pEp.jniadapter.Rating;
 
 import timber.log.Timber;
 
-import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
-import static org.hamcrest.CoreMatchers.anything;
-import static org.hamcrest.CoreMatchers.not;
 
 @RunWith(AndroidJUnit4.class)
 public class AssertColorContactInSentItemsWhenDisableProtectionTest {
@@ -84,29 +77,10 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
         testUtils.sendMessage();
         testUtils.waitForNewMessage();
         goToSentFolder();
-        selectFirstMessage();
+        testUtils.clickFirstMessage();
         testUtils.clickView(R.id.tvPep);
         testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
         testUtils.goBackAndRemoveAccount();
-    }
-
-    private void selectFirstMessage() {
-        boolean firstMessageClicked = false;
-        Activity currentActivity = testUtils.getCurrentActivity();
-        while (currentActivity == testUtils.getCurrentActivity()) {
-            while (!firstMessageClicked) {
-                try {
-                    device.waitForIdle();
-                    testUtils.swipeDownMessageList();
-                    device.waitForIdle();
-                    onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
-                    firstMessageClicked = true;
-                    device.waitForIdle();
-                } catch (Exception ex) {
-                    Timber.i("Message list view not found");
-                }
-            }
-        }
     }
 
     private void selectFromMenu(int textToSelect) {
