@@ -747,8 +747,10 @@ class TestUtils {
 
     void checkToolBarColor(int color) {
         device.waitForIdle();
-        doWaitForResource(R.id.toolbar);
-        device.waitForIdle();
+        while (!exists(onView(withId(R.id.toolbar)))) {
+            doWaitForResource(R.id.toolbar);
+            device.waitForIdle();
+        }
         onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(color)));
     }
 
