@@ -16,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.Checkable;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -33,6 +34,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.isA;
 
 
 public class UtilsPackage {
@@ -208,6 +210,24 @@ public class UtilsPackage {
             }
         };
     }
+    public static Matcher<View> valuesAreEqual(final String firstValue, final String secondValue) {
+
+        return new TypeSafeMatcher<View>() {
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Comparing values: " + firstValue + "  and  " + secondValue);
+            }
+
+            @Override
+            public boolean matchesSafely(View view) {
+                if (firstValue.equals(secondValue)) {
+                    return true;
+                }
+                return false;
+            }
+        };
+    }
 
     static ViewAction getTextInElement(String textToReturn[], int position) {
         return new ViewAction() {
@@ -336,5 +356,35 @@ public class UtilsPackage {
             }
         }).check(matches(isDisplayed()));
         return isDisplayed[0];
+    }
+    public static ViewAction setChecked(final boolean checked) {
+        return new ViewAction() {
+            @Override
+            public BaseMatcher<View> getConstraints() {
+                return new BaseMatcher<View>() {
+                    @Override
+                    public boolean matches(Object item) {
+                        return isA(Checkable.class).matches(item);
+                    }
+
+                    @Override
+                    public void describeMismatch(Object item, Description mismatchDescription) {}
+
+                    @Override
+                    public void describeTo(Description description) {}
+                };
+            }
+
+            @Override
+            public String getDescription() {
+                return null;
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                Checkable checkableView = (Checkable) view;
+                checkableView.setChecked(checked);
+            }
+        };
     }
 }
