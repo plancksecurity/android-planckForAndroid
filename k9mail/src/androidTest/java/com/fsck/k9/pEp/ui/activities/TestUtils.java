@@ -13,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
@@ -33,6 +34,7 @@ import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -44,11 +46,13 @@ import org.pEp.jniadapter.Rating;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 import timber.log.Timber;
 
+import static android.content.ContentValues.TAG;
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
@@ -531,17 +535,17 @@ class TestUtils {
     }
 
     void openOptionsMenu() {
-        device.waitForIdle();
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        device.waitForIdle();
     }
 
     void selectFromScreen(int resource) {
         boolean textViewFound = false;
+        BySelector selector = By.clazz("android.widget.TextView");
         while (!textViewFound) {
-            BySelector selector = By.clazz("android.widget.TextView");
             for (UiObject2 object : device.findObjects(selector)) {
                 try {
-                    if (object.getText().equals(resources.getString(resource))) {
+                    if (object.getText().contains(resources.getString(resource))) {
                         device.waitForIdle();
                         object.click();
                         device.waitForIdle();
@@ -731,6 +735,7 @@ class TestUtils {
                     doWaitForIdlingListViewResource(R.id.message_list);
                     device.waitForIdle();
                     swipeDownMessageList();
+                    device.waitForIdle();
                     getMessageListSize();
                     if (viewIsDisplayed(R.id.reply_message) || messageListSize[0] == 1) {
                         firstMessageClicked = true;
