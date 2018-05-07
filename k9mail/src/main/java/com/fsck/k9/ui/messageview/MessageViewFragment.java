@@ -37,6 +37,7 @@ import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.activity.setup.AccountSettings;
 import com.fsck.k9.controller.MessagingController;
+import com.fsck.k9.fragment.AttachmentDownloadDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmentListener;
 import com.fsck.k9.fragment.ProgressDialogFragment;
@@ -613,7 +614,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             }
             case R.id.dialog_attachment_progress: {
                 String message = getString(R.string.dialog_attachment_progress_title);
-                fragment = ProgressDialogFragment.newInstance(null, message);
+                long size =  currentAttachmentViewInfo.size;
+                fragment = AttachmentDownloadDialogFragment.newInstance(size, message);
                 break;
             }
             default: {
