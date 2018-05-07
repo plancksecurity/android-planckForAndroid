@@ -21,11 +21,8 @@ import android.support.test.espresso.IdlingPolicies;
 import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.NoMatchingViewException;
-import android.support.test.espresso.ViewAssertion;
-import android.support.test.espresso.core.internal.deps.guava.collect.Iterables;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
-import android.support.test.runner.lifecycle.Stage;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
@@ -68,7 +65,6 @@ import static android.support.test.espresso.intent.matcher.IntentMatchers.isInte
 import static android.support.test.espresso.matcher.RootMatchers.isDialog;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static android.support.test.runner.lifecycle.Stage.RESUMED;
@@ -95,7 +91,6 @@ class TestUtils {
     private static final int MINUTE_IN_SECONDS = 60;
     private static final int SECOND_IN_MILIS = 1000;
 
-    private IdlingResource idlingResource;
     private UiDevice device;
     private Context context;
     private Resources resources;
@@ -192,13 +187,6 @@ class TestUtils {
              }
          });
          return resumedActivity[0];
-
-        /*final Activity[] activity = new Activity[1];
-        onView(isRoot()).check((view, noViewFoundException) -> {
-            java.util.Collection<Activity> activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
-            activity[0] = Iterables.getOnlyElement(activities);
-        });
-        return activity[0];*/
     }
 
     void createAccount(boolean isGmail) {
