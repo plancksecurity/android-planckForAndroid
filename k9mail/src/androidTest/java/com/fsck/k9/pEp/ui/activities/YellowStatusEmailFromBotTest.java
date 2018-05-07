@@ -96,12 +96,12 @@ public class YellowStatusEmailFromBotTest {
         clickMailStatus();
         testUtils.checkToolBarColor(R.color.pep_yellow);
         device.pressBack();
-        goBackToMessageListAndPressComposeMessageButton();
+        testUtils.goBackToMessageListAndPressComposeMessageButton();
         yellowStatusMessageTest();
     }
 
     public void twoStatusMessageYellowAndGray() {
-        goBackToMessageListAndPressComposeMessageButton();
+        testUtils.goBackToMessageListAndPressComposeMessageButton();
         fillComposeFields();
         onView(withId(R.id.subject)).perform(typeText(" "));
         clickMailStatus();
@@ -123,33 +123,6 @@ public class YellowStatusEmailFromBotTest {
 
         return new UtilsPackage.RecyclerViewMatcher(recyclerViewId);
     }
-
-    private void goBackToMessageListAndPressComposeMessageButton() {
-        boolean backToMessageList = false;
-        boolean messageDiscarded = false;
-        while (!backToMessageList){
-            try {
-                device.pressBack();
-                try {
-                    device.waitForIdle();
-                    while (!messageDiscarded || exists(onView(withText(R.string.discard_action)))) {
-                        device.waitForIdle();
-                        onView(withText(R.string.discard_action)).perform(click());
-                        messageDiscarded = true;
-                    }
-                } catch (Exception e){
-                    Timber.i("No dialog alert message");
-                }
-                if (exists(onView(withId(R.id.fab_button_compose_message)))){
-                    onView(withId(R.id.fab_button_compose_message)).perform(click());
-                    backToMessageList = true;
-                }
-            } catch (Exception ex){
-                Timber.i("View not found");
-            }
-        }
-    }
-
 
     public void goBackDiscardMessageAndRemoveAccount(){
         boolean accountRemoved = false;
