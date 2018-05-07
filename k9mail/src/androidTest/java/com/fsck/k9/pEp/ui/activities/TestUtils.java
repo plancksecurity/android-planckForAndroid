@@ -762,6 +762,30 @@ class TestUtils {
         onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(color)));
     }
 
+    void goBackToMessageListAndPressComposeMessageButton() {
+        boolean backToMessageList = false;
+        while (!backToMessageList){
+            try {
+                device.pressBack();
+                try {
+                    device.waitForIdle();
+                    while (exists(onView(withText(R.string.discard_action)))) {
+                            device.waitForIdle();
+                            onView(withText(R.string.discard_action)).perform(click());
+                    }
+                } catch (Exception e){
+                    Timber.i("No dialog alert message");
+                }
+                if (exists(onView(withId(R.id.fab_button_compose_message)))){
+                    onView(withId(R.id.fab_button_compose_message)).perform(click());
+                    backToMessageList = true;
+                }
+            } catch (Exception ex){
+                Timber.i("View not found");
+            }
+        }
+    }
+
     void startActivity() {
         device.pressHome();
         final String launcherPackage = getLauncherPackageName();
