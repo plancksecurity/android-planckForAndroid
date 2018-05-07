@@ -77,7 +77,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
         goBackAndSaveAsDraft();
         clickFirstMessageFromDraft();
         openOptionsMenu();
-        assertsExistsOnScreen(R.string.is_always_secure, R.string.is_always_secure);
+        assertsExistsOnScreen(R.string.is_not_always_secure, R.string.is_not_always_secure);
         testUtils.goBackAndRemoveAccount(true);
     }
 
