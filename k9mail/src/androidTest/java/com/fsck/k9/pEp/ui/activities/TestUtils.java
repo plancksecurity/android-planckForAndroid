@@ -459,12 +459,16 @@ class TestUtils {
     void testStatusMail(BasicMessage inputMessage, BasicIdentity expectedIdentity) {
         fillMessage(inputMessage, false);
         device.waitForIdle();
+        onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
+        device.waitForIdle();
         checkStatus(expectedIdentity.getRating());
         Espresso.pressBack();
     }
 
     void testStatusMailAndListMail(BasicMessage inputMessage, BasicIdentity expectedIdentity) {
         fillMessage(inputMessage, false);
+        device.waitForIdle();
+        onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
         device.waitForIdle();
         checkStatus(expectedIdentity.getRating());
         onView(withText(expectedIdentity.getAddress())).check(doesNotExist());
@@ -473,6 +477,11 @@ class TestUtils {
 
     void checkStatus(Rating rating) {
         clickView(R.id.pEp_indicator);
+        while (!exists(onView(withId(R.id.pEpTitle)))){
+            doWaitForResource(R.id.pEpTitle);
+            device.waitForIdle();
+        }
+        onView(withId(R.id.pEpTitle)).check(matches(isDisplayed()));
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, rating.value))));
     }
 
