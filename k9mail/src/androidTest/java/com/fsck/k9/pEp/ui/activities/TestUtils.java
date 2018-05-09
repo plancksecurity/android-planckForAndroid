@@ -760,6 +760,7 @@ class TestUtils {
             doWaitForResource(R.id.toolbar);
             device.waitForIdle();
         }
+        onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
         onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(color)));
     }
 
