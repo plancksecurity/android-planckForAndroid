@@ -32,7 +32,7 @@ class AutocryptKeyTransferPresenter internal constructor(
     private lateinit var showTransferCodePi: PendingIntent
 
     init {
-        viewModel.autocryptSetupMessageLiveEvent.observe(lifecycleOwner, Observer { msg -> onEventAutocryptSetupMessage(msg) })
+        viewModel.autocryptSetupMessageLiveEvent.observe(lifecycleOwner, Observer { msg -> msg?.let { onEventAutocryptSetupMessage(it) } })
         viewModel.autocryptSetupTransferLiveEvent.observe(lifecycleOwner, Observer { pi -> onLoadedAutocryptSetupTransfer(pi) })
     }
 
@@ -77,11 +77,7 @@ class AutocryptKeyTransferPresenter internal constructor(
         view.launchUserInteractionPendingIntent(showTransferCodePi)
     }
 
-    private fun onEventAutocryptSetupMessage(setupMsg: AutocryptSetupMessage?) {
-        if (setupMsg == null) {
-            return
-        }
-
+    private fun onEventAutocryptSetupMessage(setupMsg: AutocryptSetupMessage) {
         view.setLoadingStateSending()
         view.sceneGeneratingAndSending()
 
