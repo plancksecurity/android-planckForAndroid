@@ -21,10 +21,11 @@ import timber.log.Timber
 class AutocryptKeyTransferPresenter internal constructor(
         lifecycleOwner: LifecycleOwner,
         private val context: Context,
-        private val view: AutocryptKeyTransferActivity,
-        private val viewModel: AutocryptKeyTransferViewModel,
         private val openPgpApiManager: OpenPgpApiManager,
-        private val transportProvider: TransportProvider
+        private val transportProvider: TransportProvider,
+        private val preferences: Preferences,
+        private val viewModel: AutocryptKeyTransferViewModel,
+        private val view: AutocryptKeyTransferActivity
 ) {
 
     private lateinit var account: Account
@@ -41,7 +42,7 @@ class AutocryptKeyTransferPresenter internal constructor(
             return
         }
 
-        account = Preferences.getPreferences(context).getAccount(accountUuid)
+        account = preferences.getAccount(accountUuid)
 
         openPgpApiManager.setOpenPgpProvider(account.openPgpProvider, object : OpenPgpApiManagerCallback {
             override fun onOpenPgpProviderStatusChanged() {

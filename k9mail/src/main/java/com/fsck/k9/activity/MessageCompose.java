@@ -315,7 +315,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
         recipientMvpView = new RecipientMvpView(this);
         ComposePgpInlineDecider composePgpInlineDecider = new ComposePgpInlineDecider();
-        OpenPgpApiManager openPgpApiManager = new OpenPgpApiManager(getApplicationContext(), getLifecycle());
+        OpenPgpApiManager openPgpApiManager = new OpenPgpApiManager(getApplicationContext(), this);
         recipientPresenter = new RecipientPresenter(getApplicationContext(), getSupportLoaderManager(),
                 openPgpApiManager, recipientMvpView, account, composePgpInlineDecider, new ReplyToParser(), this
         );
