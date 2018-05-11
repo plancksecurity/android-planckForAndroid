@@ -95,7 +95,6 @@ dependencies {
 
 android {
     compileSdkVersion androidCompileSdkVersion.toInteger()
-    buildToolsVersion androidBuildToolsVersion
 
     defaultConfig {
         applicationId "${appId}"
@@ -198,7 +197,6 @@ android {
             universalApk false
         }
     }
-    buildToolsVersion '27.0.3'
 
 }
 
