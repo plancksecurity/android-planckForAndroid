@@ -64,6 +64,7 @@ import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.isInternal;
 import static android.support.test.espresso.matcher.RootMatchers.isDialog;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static android.support.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
@@ -167,8 +168,14 @@ class TestUtils {
         while (!buttonClicked) {
             if (exists(onView(withId(viewId))) && viewIsDisplayed(viewId)){
                 device.waitForIdle();
-                onView(withId(viewId)).perform(click());
-                device.waitForIdle();
+                try {
+                    onView(withId(viewId)).perform(click());
+                    device.waitForIdle();
+                    buttonClicked = true;
+                } catch (Exception ex) {
+                    Timber.i("View not found, cannot click it: " + ex);
+                }
+            }else {
                 buttonClicked = true;
             }
         }
@@ -396,9 +403,10 @@ class TestUtils {
             } catch (Exception ex) {
                 while (currentActivity == getCurrentActivity()) {
                     pressBack();
+                    device.waitForIdle();
                     try {
                         if (discardMessage) {
-                            onView(withText(R.string.discard_action)).check(matches(isDisplayed()));
+                            onView(withText(R.string.discard_action)).check(matches(isCompletelyDisplayed()));
                             onView(withText(R.string.discard_action)).perform(click());
                             discardMessage = false;
                         }
@@ -760,22 +768,24 @@ class TestUtils {
             doWaitForResource(R.id.toolbar);
             device.waitForIdle();
         }
-        onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
+        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
+        device.waitForIdle();
         onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(color)));
     }
 
     void goBackToMessageListAndPressComposeMessageButton() {
         boolean backToMessageList = false;
+        Activity currentActivity = getCurrentActivity();
         while (!backToMessageList){
             try {
                 device.pressBack();
+                device.waitForIdle();
                 try {
-                    device.waitForIdle();
-                    while (exists(onView(withText(R.string.discard_action)))) {
-                            device.waitForIdle();
-                            onView(withText(R.string.discard_action)).perform(click());
+                    if (currentActivity == getCurrentActivity() && exists(onView(withText(R.string.discard_action)))) {
+                        onView(withText(R.string.discard_action)).check(matches(isDisplayed()));
+                        onView(withText(R.string.discard_action)).perform(click());
                     }
-                } catch (Exception e){
+                } catch (Exception e) {
                     Timber.i("No dialog alert message");
                 }
                 if (exists(onView(withId(R.id.fab_button_compose_message)))){
