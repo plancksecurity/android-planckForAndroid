@@ -22,6 +22,10 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -1131,7 +1135,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
      * Get references to existing fragments if the activity was restarted.
      */
     private void findFragments() {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         mMessageListFragment = (MessageListFragment) fragmentManager.findFragmentById(
                 R.id.message_list_container);
         mMessageViewFragment = (MessageViewFragment) fragmentManager.findFragmentById(
@@ -1144,7 +1148,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
      * @see #findFragments()
      */
     private void initializeFragments() {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.addOnBackStackChangedListener(this);
 
         boolean hasMessageListFragment = (mMessageListFragment != null);
@@ -2103,7 +2107,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             }
 
             MessageViewFragment fragment = MessageViewFragment.newInstance(messageReference);
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             if (direction == null || direction.equals(MessageSwipeDirection.FORWARD)) {
                 ft.setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out);
             } else  {
@@ -2210,7 +2214,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void addMessageListFragment(MessageListFragment fragment, boolean addToBackStack) {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
         ft.replace(R.id.message_list_container, fragment);
         if (addToBackStack)
@@ -2269,7 +2273,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
      */
     private void removeMessageViewFragment() {
         if (mMessageViewFragment != null) {
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.remove(mMessageViewFragment);
             mMessageViewFragment = null;
             ft.commit();
@@ -2279,7 +2283,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void removeMessageListFragment() {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.remove(mMessageListFragment);
         mMessageListFragment = null;
         ft.commit();

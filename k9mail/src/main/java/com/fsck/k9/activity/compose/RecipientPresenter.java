@@ -2,7 +2,6 @@ package com.fsck.k9.activity.compose;
 
 
 import android.app.Activity;
-import android.app.LoaderManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.app.LoaderManager;
 import android.view.Menu;
 import android.view.MenuItem;
 

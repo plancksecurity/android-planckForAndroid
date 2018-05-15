@@ -2,10 +2,7 @@ package com.fsck.k9.view;
 
 
 import android.annotation.SuppressLint;
-import android.app.LoaderManager;
-import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
-import android.content.Loader;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +10,9 @@ import android.os.Handler;
 import android.provider.ContactsContract.Contacts;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.Loader;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.util.AttributeSet;

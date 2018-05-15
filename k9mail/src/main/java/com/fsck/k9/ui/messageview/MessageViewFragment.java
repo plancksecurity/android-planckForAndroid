@@ -5,9 +5,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.DownloadManager;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -150,16 +147,15 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private AttachmentViewInfo currentAttachmentViewInfo;
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
-        mContext = activity;
+        mContext = context.getApplicationContext();
 
         try {
-            mFragmentListener = (MessageViewFragmentListener) activity;
+            mFragmentListener = (MessageViewFragmentListener) getActivity();
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.getClass() +
-                    " must implement MessageViewFragmentListener");
+            throw new ClassCastException("This fragment must be attached to a MessageViewFragmentListener");
         }
     }
 
