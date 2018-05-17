@@ -11,6 +11,7 @@ import com.fsck.k9.notification.NotificationController
 import com.fsck.k9.pEp.filepicker.Utils
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
+import com.fsck.k9.ui.settings.removeEntry
 import com.fsck.k9.ui.withArguments
 import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompat
 import org.koin.android.ext.android.inject
@@ -73,9 +74,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         val notificationActionsSupported = NotificationController.platformSupportsExtendedNotifications()
         if (!notificationActionsSupported) {
             (findPreference(PREFERENCE_CONFIRM_ACTIONS) as? MultiSelectListPreference)?.apply {
-                val deleteIndex = entryValues.indexOf(CONFIRM_ACTION_DELETE_FROM_NOTIFICATION)
-                entries = entries.filterIndexed { index, _ -> index != deleteIndex }.toTypedArray()
-                entryValues = entryValues.filterIndexed { index, _ -> index != deleteIndex }.toTypedArray()
+                removeEntry(CONFIRM_ACTION_DELETE_FROM_NOTIFICATION)
             }
         }
     }

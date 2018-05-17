@@ -7,7 +7,7 @@ android {
     defaultConfig {
         versionCode 8
         versionName '9.0' // API-Version . minor
-        minSdkVersion 9
+        minSdkVersion 14
         targetSdkVersion 22
     }
 
@@ -20,6 +20,7 @@ android {
 dependencies {
     implementation "android.arch.lifecycle:extensions:1.1.0"
     implementation "com.jakewharton.timber:timber:${timberVersion}"
+    implementation 'com.takisoft.fix:preference-v7:27.1.1.1'
 }
 
 /*
