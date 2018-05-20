@@ -16,7 +16,7 @@ import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.finishWithErrorToast
 import com.fsck.k9.view.StatusIndicator
 import kotlinx.android.synthetic.main.crypto_key_transfer.*
-import kotlinx.coroutines.experimental.delay
+//import kotlinx.coroutines.experimental.delay
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 
@@ -154,7 +154,7 @@ class AutocryptKeyTransferActivity : K9Activity() {
 
     suspend fun uxDelay() {
         // called before logic resumes upon screen transitions, to give some breathing room
-        delay(UX_DELAY_MS)
+        //delay(UX_DELAY_MS)
     }
 
     companion object {

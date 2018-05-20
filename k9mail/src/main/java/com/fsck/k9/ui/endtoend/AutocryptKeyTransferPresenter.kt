@@ -9,9 +9,9 @@ import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.mail.TransportProvider
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
+//import kotlinx.coroutines.experimental.android.UI
+//import kotlinx.coroutines.experimental.delay
+//import kotlinx.coroutines.experimental.launch
 import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpApiManagerCallback
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderError
@@ -68,12 +68,12 @@ class AutocryptKeyTransferPresenter internal constructor(
     fun onClickTransferSend() {
         view.sceneGeneratingAndSending()
 
-        launch(UI) {
+        /*launch(UI) {
             view.uxDelay()
             view.setLoadingStateGenerating()
 
             viewModel.autocryptSetupMessageLiveEvent.loadAutocryptSetupMessageAsync(openPgpApiManager.openPgpApi, account)
-        }
+        }*/
     }
 
     fun onClickShowTransferCode() {
