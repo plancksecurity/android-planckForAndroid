@@ -233,7 +233,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        /*val openPgpKeyPreference = findPreference(PREFERENCE_OPENPGP_KEY) as? OpenPgpKeyPreferenceCompat
+        /*val openPgpKeyPreference = findPreference(PREFERENCE_OPENPGP_KEY) as? OpenPgpKeyPreference
         if (openPgpKeyPreference?.handleOnActivityResult(requestCode, resultCode, data) == true) {
             return
         }*/
