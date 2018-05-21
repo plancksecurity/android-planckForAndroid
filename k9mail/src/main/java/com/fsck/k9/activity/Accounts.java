@@ -49,7 +49,6 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.MessageActions;
 import com.fsck.k9.activity.misc.ExtendedAsyncTask;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
-import com.fsck.k9.activity.setup.AccountSettings;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.setup.Prefs;
 import com.fsck.k9.activity.setup.WelcomeMessage;
@@ -70,6 +69,7 @@ import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.ui.settings.SettingsActivity;
+import com.fsck.k9.ui.settings.account.AccountSettingsActivity;
 import com.fsck.k9.ui.settings.general.GeneralSettingsActivity;
 import com.karumi.dexter.listener.single.CompositePermissionListener;
 
@@ -786,7 +786,7 @@ public class Accounts extends PEpImporterActivity {
     }
 
     private void onEditAccount(Account account) {
-        AccountSettings.actionSettings(this, account);
+        AccountSettingsActivity.start(this, account.getUuid());
     }
 
     @Override

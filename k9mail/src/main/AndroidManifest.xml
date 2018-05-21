@@ -104,12 +104,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activity.setup.Prefs"
-            android:configChanges="locale"
-            android:excludeFromRecents="true"
-            android:label="@string/prefs_title"
-            android:taskAffinity="${applicationId}.activity.setup.Prefs" />
+
+
         <activity
             android:name=".activity.setup.WelcomeMessage"
             android:configChanges="locale"
@@ -182,11 +178,9 @@
         <activity
             android:name=".activity.setup.AccountSetupCheckSettings"
             android:configChanges="keyboardHidden|orientation|locale"
-            android:label="@string/account_setup_check_settings_title" />
-        <activity
-            android:name=".activity.setup.AccountSettings"
-            android:configChanges="locale"
-            android:label="@string/account_settings_title_fmt" />
+            android:label="@string/account_setup_check_settings_title"/>
+
+
         <activity
             android:name=".activity.setup.FolderSettings"
             android:configChanges="locale"

@@ -8,7 +8,6 @@ import android.view.MenuItem
 import com.fsck.k9.Account
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
-import com.fsck.k9.activity.setup.AccountSettings
 import com.fsck.k9.ui.observeNotNull
 import com.fsck.k9.ui.settings.account.AccountSettingsActivity
 import com.xwray.groupie.GroupAdapter
