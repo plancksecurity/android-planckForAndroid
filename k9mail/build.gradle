@@ -38,97 +38,101 @@ repositories {
 //noinspection GroovyAssignabilityCheck
 configurations.all {
     resolutionStrategy {
-        force "com.android.support:support-annotations:${androidSupportLibraryVersion}"
+        force "com.android.support:support-annotations:${versions.supportLibrary}"
     }
 }
 
 dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation project(":pEpJNIAdapter")
-    implementation project(":k9mail-library")
-    implementation project(":plugins:HoloColorPicker")
-    implementation project(":plugins:openpgp-api-lib:openpgp-api")
+    implementation project(':k9mail-library')
+    implementation project(':plugins:HoloColorPicker')
+    implementation project(':plugins:openpgp-api-lib:openpgp-api')
 
-    implementation "com.android.support:support-v4:${androidSupportLibraryVersion}"
-    implementation "com.android.support:cardview-v7:${androidSupportLibraryVersion}"
-    implementation "com.android.support:design:${androidSupportLibraryVersion}"
-    implementation "com.android.support:appcompat-v7:${androidSupportLibraryVersion}"
-    implementation "com.android.support:recyclerview-v7:${androidSupportLibraryVersion}"
-    implementation "com.android.support:support-vector-drawable:${androidSupportLibraryVersion}"
+    implementation "com.squareup.okio:okio:${versions.okio}"
+    implementation "commons-io:commons-io:${versions.commonsIo}"
+    implementation "com.android.support:support-v4:${versions.supportLibrary}"
+    implementation "com.android.support:appcompat-v7:${versions.supportLibrary}"
+    implementation "com.android.support:cardview-v7:${versions.supportLibrary}"
+    implementation "com.android.support:design:${versions.supportLibrary}"
+    implementation "com.android.support:appcompat-v7:${versions.supportLibrary}"
+    implementation "com.android.support:recyclerview-v7:${versions.supportLibrary}"
+    implementation "com.android.support:support-vector-drawable:${versions.supportLibrary}"
+    implementation 'net.jcip:jcip-annotations:1.0'
 
-    implementation "com.squareup.okio:okio:${okioVersion}"
-    implementation "com.squareup.moshi:moshi:${moshiVersion}"
-    implementation "commons-io:commons-io:${apacheCommonsVersion}"
-    implementation "com.splitwise:tokenautocomplete:${tokenAutoCompleteVersion}"
-    implementation "com.github.amlcurran.showcaseview:library:${showCaseViewVersion}"
-    implementation "com.jakewharton.timber:timber:${timberVersion}"
-    implementation "com.jakewharton:butterknife:${butterKnifeVersion}"
-    implementation "com.github.pedrovgs:renderers:${renderersVersion}"
-    implementation "com.github.bumptech.glide:glide:${glideVersion}"
-    implementation "com.github.paolorotolo:appintro:${appIntroVersion}"
-    implementation "com.daimajia.swipelayout:library:${swipeLayoutVersion}@aar"
-    implementation "com.karumi:dexter:${dexterVersion}"
-    implementation "com.hudomju:swipe-to-dismiss-undo:${swipeToDismissVersion}"
-    implementation "ch.acra:acra:${acraVersion}"
-    implementation "de.cketti.safecontentresolver:safe-content-resolver-v14:${safeContentResolverVersion}"
-    implementation "de.hdodenhof:circleimageview:${circleImageViewVersion}"
-    implementation "org.jsoup:jsoup:${jsoupVersion}"
-    implementation "uk.co.chrisjenx:calligraphy:${callygraphyVersion}"
+    implementation "com.squareup.moshi:moshi:${versions.moshi}"
+    implementation "com.splitwise:tokenautocomplete:${versions.tokenAutoComplete}"
+    implementation "com.github.amlcurran.showcaseview:library:${versions.showCaseView}"
+    implementation "com.jakewharton.timber:timber:${versions.timber}"
+    implementation "com.jakewharton:butterknife:${versions.butterKnife}"
+    implementation "com.github.pedrovgs:renderers:${versions.renderers}"
+    implementation "com.github.bumptech.glide:glide:${versions.glide}"
+    implementation "com.github.paolorotolo:appintro:${versions.appIntro}"
+    implementation "com.daimajia.swipelayout:library:${versions.swipeLayout}@aar"
+    implementation "com.karumi:dexter:${versions.dexter}"
+    implementation "com.hudomju:swipe-to-dismiss-undo:${versions.swipeToDismiss}"
+    implementation "ch.acra:acra:${versions.acra}"
+    implementation "de.cketti.safecontentresolver:safe-content-resolver-v14:${versions.safeContentResolver}"
+    implementation "de.hdodenhof:circleimageview:${versions.circleImageView}"
+    implementation "org.jsoup:jsoup:${versions.jsoup}"
+    implementation "uk.co.chrisjenx:calligraphy:${versions.callygraphy}"
     //implementation "com.klinkerapps:floating-tutorial:1.0.4"
+    implementation "com.takisoft.fix:preference-v7:${versions.preferencesFix}"
+    implementation "com.takisoft.fix:preference-v7-datetimepicker:${versions.preferencesFix}"
+    implementation "com.takisoft.fix:preference-v7-colorpicker:${versions.preferencesFix}"
+    implementation "com.takisoft.fix:preference-v7-ringtone:${versions.preferencesFix}"
     implementation 'com.evernote:android-job:1.3.0-rc1'
-    implementation "android.arch.work:work-runtime:$work_version"
+    implementation "android.arch.work:work-runtime:${versions.workManager}"
 
 
-    implementation "com.takisoft.fix:preference-v7:28.0.0.0"
-    implementation 'com.takisoft.fix:preference-v7-datetimepicker:28.0.0.0'
-    implementation 'com.takisoft.fix:preference-v7-colorpicker:28.0.0.0'
-    implementation 'com.takisoft.fix:preference-v7-ringtone:28.0.0.0'
-    androidTestImplementation "com.android.support.test.espresso:espresso-intents:${espressoVersion}"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:${espressoVersion}"
+    androidTestImplementation "com.android.support.test.espresso:espresso-intents:${versions.espresso}"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:${versions.espresso}"
 
-    testImplementation "org.robolectric:robolectric:${robolectricVersion}"
-    testImplementation "junit:junit:${junitVersion}"
-    testImplementation "org.mockito:mockito-core:${mockitoVersion}"
+    testImplementation "org.robolectric:robolectric:${versions.robolectric}"
+    testImplementation "junit:junit:${versions.junit}"
+    testImplementation "org.mockito:mockito-core:${versions.mockito}"
     testImplementation "org.jdom:jdom2:2.0.6"
 
     // Arch dependencies
     kapt "com.google.dagger:dagger-compiler:2.4"
     implementation "com.google.dagger:dagger:2.4"
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    implementation "android.arch.lifecycle:extensions:1.1.0"
+    implementation "android.arch.lifecycle:extensions:${versions.lifecycleExtensions}"
     implementation 'com.xwray:groupie:2.0.3'
     implementation 'com.xwray:groupie-kotlin-android-extensions:2.0.3'
     implementation "org.jetbrains.anko:anko-coroutines:0.10.4"
-    implementation "org.koin:koin-android-architecture:${koinVersion}"
+    implementation "org.koin:koin-android-architecture:${versions.koin}"
     implementation 'androidx.core:core-ktx:0.3'
 
-    androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
+    androidTestImplementation "com.android.support.test.uiautomator:uiautomator-v18:2.1.1"
 
     implementation 'com.android.support.test.espresso:espresso-idling-resource:3.0.1'
     androidTestImplementation "com.android.support.test.espresso.idling:idling-concurrent:3.0.1"
-    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlinVersion}"
-    testImplementation "org.robolectric:robolectric:${robolectricVersion}"
-    testImplementation "junit:junit:${junitVersion}"
-    testImplementation "com.google.truth:truth:${truthVersion}"
-    testImplementation "org.mockito:mockito-core:${mockitoVersion}"
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
+    testImplementation "org.robolectric:robolectric:${versions.robolectric}"
+    testImplementation "junit:junit:${versions.junit}"
+    testImplementation "com.google.truth:truth:${versions.truth}"
+    testImplementation "org.mockito:mockito-core:${versions.mockito}"
+    testImplementation "com.nhaarman:mockito-kotlin:${versions.mockitoKotlin}"
     testImplementation "org.jdom:jdom2:2.0.6"
-    testImplementation "org.koin:koin-test:${koinVersion}"
+    testImplementation "org.koin:koin-test:${versions.koin}"
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1'
     implementation 'com.android.support:multidex:1.0.3'
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion buildConfig.compileSdk
 
     defaultConfig {
         applicationId "${appId}"
         versionCode 33
-        minSdkVersion 19
+        minSdkVersion buildConfig.minSdk
         targetSdkVersion 27
-        compileSdkVersion 28
         setProperty("archivesBaseName", "$version-$versionCode")
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]
 
@@ -186,7 +190,7 @@ android {
 
         debug {
             // applicationIdSuffix ".debug"
-            testCoverageEnabled rootProject.testCoverage
+            testCoverageEnabled testCoverage
 
             buildConfigField "boolean", "DEVELOPER_MODE", "true"
         }

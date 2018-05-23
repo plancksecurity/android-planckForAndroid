@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion androidCompileSdkVersion.toInteger()
+    compileSdkVersion buildConfig.compileSdk
 
     sourceSets {
         main {
@@ -14,9 +14,5 @@ android {
     // Do not abort build if lint finds errors
     lintOptions {
         abortOnError false
-    }
-    defaultConfig {
-        minSdkVersion 8
-        targetSdkVersion 16
     }
 }
