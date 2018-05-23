@@ -22,7 +22,6 @@ allprojects {
 
 project.ext {
     testCoverage = project.hasProperty('testCoverage')
-    optimizeForDevelopment = project.hasProperty('optimizeForDevelopment') && optimizeForDevelopment == 'true'
 }
 
 subprojects {
