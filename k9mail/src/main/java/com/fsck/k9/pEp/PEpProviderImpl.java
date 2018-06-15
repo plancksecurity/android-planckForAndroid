@@ -188,7 +188,7 @@ public class PEpProviderImpl implements PEpProvider {
                     Log.d(TAG, "decryptMessage() after decrypt " + stringStringPair.first + ": " + stringStringPair.second);
                 }
             }
-            decReturn = engine.decrypt_message(srcMsg);
+            decReturn = engine.decrypt_message(srcMsg, 0);
             Log.d(TAG, "decryptMessage() after decrypt");
             Message message = decReturn.dst;
             MimeMessage decMsg = getMimeMessage(source, message);
@@ -196,7 +196,7 @@ public class PEpProviderImpl implements PEpProvider {
                     && decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE)[0].equals(PEP_ALWAYS_SECURE_TRUE);
             decMsg.setFlag(Flag.X_PEP_NEVER_UNSECURE, neverUnprotected);
             if (isUsablePrivateKey(decReturn)) {
-                return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg), null);
+                return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg), -1);
             }
            else return new DecryptResult(decMsg, decReturn.rating, null, decReturn.flags);
 //        } catch (pEpMessageConsume | pEpMessageIgnore pe) {
@@ -236,14 +236,14 @@ public class PEpProviderImpl implements PEpProvider {
                         Log.d(TAG, "decryptMessage() after decrypt " + stringStringPair.first + ": " + stringStringPair.second);
                     }
                 }
-                decReturn = engine.decrypt_message(srcMsg);
+                decReturn = engine.decrypt_message(srcMsg, 0);
                 Log.d(TAG, "decryptMessage() after decrypt");
 
                 Message message = decReturn.dst;
                 MimeMessage decMsg = getMimeMessage(source, message);
 
                 if (isUsablePrivateKey(decReturn)) {
-                    notifyLoaded(new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg), null), callback);
+                    notifyLoaded(new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg), -1), callback);
                 }
                 else notifyLoaded(new DecryptResult(decMsg, decReturn.rating, null, decReturn.flags), callback);
 //        } catch (pEpMessageConsume | pEpMessageIgnore pe) {
@@ -326,8 +326,8 @@ public class PEpProviderImpl implements PEpProvider {
     private boolean isUsablePrivateKey(Engine.decrypt_message_Return result) {
         // TODO: 13/06/16 Check if is necesary check own id
         return result.rating.value >= Rating.pEpRatingTrusted.value
-                && result.flags != null
-                && result.flags == DecryptFlags.pEpDecryptFlagOwnPrivateKey;
+                && result.flags != -1
+                && result.flags == 0x01;
     }
 
     @Override

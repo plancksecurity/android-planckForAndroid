@@ -233,9 +233,9 @@ public interface PEpProvider {
 
     class DecryptResult {
         public final KeyDetail keyDetails;
-        public final DecryptFlags flags;
+        public int flags = -1;
 
-        public DecryptResult(MimeMessage msg, Rating rating, KeyDetail keyDetails, DecryptFlags flags) {
+        public DecryptResult(MimeMessage msg, Rating rating, KeyDetail keyDetails, int flags) {
             this.msg = msg;
             this.rating = rating;
             this.keyDetails = keyDetails;

@@ -1681,10 +1681,11 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                                 tempResult = new PEpProvider.DecryptResult((MimeMessage) tempResult.msg, rating, null, tempResult.flags);
                             }
                         }
-                        if(tempResult.flags == null) Timber.e("PEPJNI", "messageFinished: null");
-                        if (tempResult.flags != null) {
+                        if(tempResult.flags == -1) Timber.e("PEPJNI", "messageFinished: null");
+                        if (tempResult.flags != -1) {
                             Timber.e("PEPJNI", "messageFinished: " + tempResult.flags);
-                            switch (tempResult.flags) {
+                           /* For keysync not needed intil pEp sync is in place again.
+                           switch (tempResult.flags) {
                                 case PEPDecryptFlagConsumed:
                                     Timber.v("pEpJNI", "messageFinished: Deleting");
                                     tempResult = null;
@@ -1696,12 +1697,12 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                                     store = false;
                                     break;
                             }
-                        }
+                        */}
                         result = tempResult;
                         Timber.d("pEp", "messageDecrypted: " + (System.currentTimeMillis()-time));
                     }
                     else {
-                        result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null, null);
+                        result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null, -1);
                     }
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
                     if (result == null) {
@@ -1780,7 +1781,7 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
         try {
             tempResult = pEpProvider.decryptMessage(message);
         } catch (AppCannotDecryptException error) {
-            tempResult = new PEpProvider.DecryptResult(message, Rating.pEpRatingUndefined, null, null);
+            tempResult = new PEpProvider.DecryptResult(message, Rating.pEpRatingUndefined, null, -1);
         }
         return tempResult;
     }
