@@ -94,9 +94,48 @@ dependencies {
 
     implementation 'com.android.support.test.espresso:espresso-idling-resource:3.0.1'
     androidTestImplementation "com.android.support.test.espresso.idling:idling-concurrent:3.0.1"
+
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2') {
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'recyclerview-v7'
+    }
+    androidTestImplementation('com.android.support.test.espresso:espresso-contrib:2.2.2') {
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'recyclerview-v7'
+        exclude group: 'com.android.support', module: 'appcompat-v7'
+        exclude group: 'com.android.support', module: 'design'
+    }
+    // Cucumber
+    androidTestImplementation('info.cukes:cucumber-android:1.2.4') {
+        exclude module: 'cucumber-jvm-deps'
+    }
+    androidTestImplementation('info.cukes:cucumber-picocontainer:1.2.4') {
+        exclude module: 'cucumber-jvm-deps'
+    }
+    androidTestImplementation 'info.cukes:cucumber-jvm-deps:1.0.5'
+    // Screenshots
+    androidTestImplementation 'com.squareup.spoon:spoon-client:1.7.1'
+
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+
+    //appcenter
+   /* def appCenterSdkVersion = '1.5.1'
+    implementation "com.microsoft.appcenter:appcenter-analytics:${appCenterSdkVersion}"
+    implementation "com.microsoft.appcenter:appcenter-crashes:${appCenterSdkVersion}"
+    androidTestImplementation('com.microsoft.appcenter:espresso-test-extension:1.2')
+    */
 }
 
 android {
+
+    sourceSets {
+        androidTest {
+            assets.srcDirs = ['src/androidTest/assets']
+        }
+    }
     compileSdkVersion androidCompileSdkVersion.toInteger()
     buildToolsVersion androidBuildToolsVersion
 
@@ -108,7 +147,9 @@ android {
         setProperty("archivesBaseName", "$version")
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testApplicationId "com.fsck.k9.pEp.ui.activities.test"
+        testInstrumentationRunner "com.fsck.k9.pEp.ui.activities.runner.CucumberTestRunner"
 
 
         vectorDrawables.useSupportLibrary = true
