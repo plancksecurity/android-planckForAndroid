@@ -76,6 +76,10 @@ import java.util.concurrent.ConcurrentMap;
 
 import timber.log.Timber;
 
+import com.microsoft.appcenter.AppCenter;
+import com.microsoft.appcenter.analytics.Analytics;
+import com.microsoft.appcenter.crashes.Crashes;
+
 
 public class Accounts extends PEpImporterActivity {
 
@@ -371,6 +375,8 @@ public class Accounts extends PEpImporterActivity {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+        AppCenter.start(getApplication(), "bf99a7f5-9447-4ab9-a9b4-b45eba202a0d",
+                Analytics.class, Crashes.class);
         bindViews(R.layout.accounts);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.message_swipe);
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.pep_green),

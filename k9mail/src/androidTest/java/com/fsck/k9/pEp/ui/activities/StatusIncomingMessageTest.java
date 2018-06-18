@@ -80,18 +80,7 @@ public class StatusIncomingMessageTest {
         testUtils.clickView(R.id.tvPep);
         testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
         device.waitForIdle();
-        goBackToMessageList();
-    }
-
-    void goBackToMessageList(){
-        boolean backToMessageCompose = false;
-        while (!backToMessageCompose){
-            device.pressBack();
-            device.waitForIdle();
-            if (viewIsDisplayed(R.id.fab_button_compose_message)){
-                backToMessageCompose = true;
-            }
-        }
+        testUtils.goBackToMessageList();
     }
 
     private void assertIncomingTrustedPartnerMessageIsGreen() {

@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -37,6 +38,7 @@ import android.view.View;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 
 import org.pEp.jniadapter.Rating;
 
@@ -45,6 +47,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import timber.log.Timber;
@@ -60,6 +64,7 @@ import static android.support.test.espresso.action.ViewActions.swipeDown;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.core.internal.deps.guava.base.Preconditions.checkNotNull;
 import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.isInternal;
 import static android.support.test.espresso.matcher.RootMatchers.isDialog;
@@ -71,8 +76,11 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static android.support.test.runner.lifecycle.Stage.RESUMED;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.saveSizeInInt;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.valuesAreEqual;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
+import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.allOf;
@@ -80,7 +88,7 @@ import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertThat;
 
 
-class TestUtils {
+public class TestUtils {
 
     private static final String ANIMATION_PERMISSION = "android.permission.SET_ANIMATION_SCALE";
     private static final float ANIMATION_DISABLED = 0.0f;
@@ -100,14 +108,14 @@ class TestUtils {
 
     public static final int TIMEOUT_TEST = FIVE_MINUTES * MINUTE_IN_SECONDS * SECOND_IN_MILIS;
 
-    TestUtils(UiDevice device, Instrumentation instrumentation) {
+    public TestUtils(UiDevice device, Instrumentation instrumentation) {
         this.device = device;
         this.instrumentation = instrumentation;
         context = InstrumentationRegistry.getTargetContext();
         resources = context.getResources();
     }
 
-    void increaseTimeoutWait() {
+    public void increaseTimeoutWait() {
         long waitingTime = DateUtils.SECOND_IN_MILLIS * 200;
         IdlingPolicies.setMasterPolicyTimeout(waitingTime, TimeUnit.MILLISECONDS);
         IdlingPolicies.setIdlingResourceTimeout(waitingTime, TimeUnit.MILLISECONDS);
@@ -147,7 +155,7 @@ class TestUtils {
         onView(withId(R.id.done)).perform(click());
     }
 
-    void composeMessageButton() {
+    public void composeMessageButton() {
         clickView(R.id.fab_button_compose_message);
     }
 
@@ -162,7 +170,7 @@ class TestUtils {
         }
     }
 
-    void clickView(int viewId) {
+    public void clickView(int viewId) {
         boolean buttonClicked = false;
         doWaitForResource(viewId);
         while (!buttonClicked) {
@@ -172,6 +180,7 @@ class TestUtils {
                     onView(withId(viewId)).perform(click());
                     device.waitForIdle();
                     buttonClicked = true;
+                    Timber.i("View found, can click it");
                 } catch (Exception ex) {
                     Timber.i("View not found, cannot click it: " + ex);
                 }
@@ -179,6 +188,22 @@ class TestUtils {
                 buttonClicked = true;
             }
         }
+    }
+
+    public void yellowStatusMessageTest(String messageSubject, String messageBody, String messageTo) {
+        device.waitForIdle();
+        fillMessage(new TestUtils.BasicMessage("", messageSubject, messageSubject, messageTo), false);
+        onView(withId(R.id.pEp_indicator)).perform(click());
+        onView(withId(R.id.my_recycler_view)).check(doesNotExist());
+        assertCurrentActivityIsInstanceOf(PEpTrustwords.class);
+
+    }
+
+    public void assertCurrentActivityIsInstanceOf(Class<? extends Activity> activityClass) {
+        Activity currentActivity = getCurrentActivity();
+        checkNotNull(currentActivity);
+        checkNotNull(activityClass);
+        assertTrue(currentActivity.getClass().isAssignableFrom(activityClass));
     }
 
      Activity getCurrentActivity() {
@@ -196,7 +221,7 @@ class TestUtils {
          return resumedActivity[0];
     }
 
-    void createAccount(boolean isGmail) {
+    public void createAccount(boolean isGmail) {
         createNewAccountWithPermissions(isGmail);
         removeMessagesFromList();
         getMessageListSize();
@@ -290,16 +315,14 @@ class TestUtils {
         return DESCRIPTION;
     }
 
-    void fillMessage(BasicMessage inputMessage, boolean attachFilesToMessage) {
+    public void fillMessage(BasicMessage inputMessage, boolean attachFilesToMessage) {
         boolean messageFilled = false;
         while (!messageFilled){
             try {
                 device.waitForIdle();
                 doWaitForResource(R.id.to);
                 device.waitForIdle();
-                device.findObject(By.res(APP_ID, "to")).longClick();
-                device.waitForIdle();
-                device.pressKeyCode(KeyEvent.KEYCODE_DEL);
+                device.findObject(By.res(APP_ID, "to")).click();
                 device.waitForIdle();
                 onView(withId(R.id.to)).perform(typeText(inputMessage.getTo()), closeSoftKeyboard());
                 doWaitForResource(R.id.subject);
@@ -323,7 +346,12 @@ class TestUtils {
 
     private void attachFiles(String fileName, String extension) {
         for (int fileNumber = 0; fileNumber < 3; fileNumber++) {
-            intending(not(isInternal())).respondWith(createFileForActivityResultStub(fileName + fileNumber + ".png"));
+            Instrumentation.ActivityResult fileForActivityResultStub = createFileForActivityResultStub(fileName + fileNumber + ".png");
+            try {
+                intending(not(isInternal())).respondWith(fileForActivityResultStub);
+            } catch (Exception ex) {
+                Timber.e("Intending: " +ex);
+            }
             device.waitForIdle();
             onView(withId(R.id.add_attachment)).perform(click());
             device.waitForIdle();
@@ -331,7 +359,7 @@ class TestUtils {
         }
     }
 
-    void externalAppRespondWithFile(int id) {
+    public void externalAppRespondWithFile(int id) {
         intending(not(isInternal()))
                 .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, insertFileIntoIntentAsData(id)));
     }
@@ -374,11 +402,11 @@ class TestUtils {
         return resultData;
     }
 
-    void sendMessage() {
+    public void sendMessage() {
         clickView(R.id.send);
     }
 
-    void pressBack() {
+    public void pressBack() {
         device.pressBack();
     }
 
@@ -420,7 +448,7 @@ class TestUtils {
         }
     }
 
-    void clickAcceptButton() {
+    public void clickAcceptButton() {
         doWaitForObject("android.widget.Button");
         onView(withText(R.string.okay_action)).perform(click());
     }
@@ -430,7 +458,7 @@ class TestUtils {
         onView(withText(R.string.cancel_action)).perform(click());
     }
 
-    void doWaitForObject(String object) {
+    public void doWaitForObject(String object) {
         boolean finish = false;
         while (!finish){
             if (device.findObject(By.clazz(object)) != null) {
@@ -459,7 +487,7 @@ class TestUtils {
         device.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 450);
     }
 
-    void testStatusEmpty() {
+    public void testStatusEmpty() {
         checkStatus(Rating.pEpRatingUndefined);
         Espresso.pressBack();
     }
@@ -483,7 +511,7 @@ class TestUtils {
         Espresso.pressBack();
     }
 
-    void checkStatus(Rating rating) {
+    public void checkStatus(Rating rating) {
         clickView(R.id.pEp_indicator);
         while (!exists(onView(withId(R.id.pEpTitle)))){
             doWaitForResource(R.id.pEpTitle);
@@ -493,7 +521,65 @@ class TestUtils {
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, rating.value))));
     }
 
-    void selectoFromMenu(int viewId){
+    public void goBackAndSaveAsDraft (IntentsTestRule activity){
+        Activity currentActivity = getCurrentActivity();
+        while (currentActivity == getCurrentActivity()){
+            try {
+                device.waitForIdle();
+                device.pressBack();
+                //doWaitForAlertDialog(activity, R.string.save_or_discard_draft_message_dlg_title);
+                //doWaitForObject("android.widget.Button");
+                device.waitForIdle();
+                onView(withText(R.string.save_draft_action)).perform(click());
+            } catch (Exception ex){
+                Timber.i("Ignored exception: " + ex);
+            }
+        }
+        device.waitForIdle();
+    }
+
+    public void assertsTextsOnScreenAreEqual(int resourceOnScreen, int comparedWith) {
+        BySelector selector = By.clazz("android.widget.TextView");
+        String textOnScreen = "Text not found on the Screen";
+        for (UiObject2 object : device.findObjects(selector)) {
+            try {
+                if (object.getText().contains(resources.getString(resourceOnScreen))) {
+                    device.waitForIdle();
+                    textOnScreen = object.getText();
+                    device.waitForIdle();
+                    break;
+                }
+            } catch (Exception ex){
+                Timber.i("Cannot find text on screen: " + ex);
+            }
+        }
+        device.pressBack();
+        onView(withId(R.id.toolbar)).check(matches(valuesAreEqual(textOnScreen, resources.getString(comparedWith))));
+    }
+
+    public int stringToID(String text){
+        return resources.getIdentifier(text, "string", BuildConfig.APPLICATION_ID);
+    }
+
+    public int intToID(String text){
+        return resources.getIdentifier(text, "id", BuildConfig.APPLICATION_ID);
+    }
+
+    public int colorToID(String color){
+        return resources.getIdentifier(color, "color", BuildConfig.APPLICATION_ID);
+    }
+
+    public void checkToolbarColor(int color) {
+        boolean toolbarExists = false;
+        while (!toolbarExists) {
+            if (exists(onView(withId(R.id.toolbar)))) {
+                onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(color)));
+                toolbarExists = true;
+            }
+        }
+    }
+
+    public void selectoFromMenu(int viewId){
         device.waitForIdle();
         openOptionsMenu();
         selectFromScreen(viewId);
@@ -514,7 +600,7 @@ class TestUtils {
         }
     }
 
-    String getTextFromTextViewThatContainsText(String text) {
+    public String getTextFromTextViewThatContainsText(String text) {
         BySelector selector = By.clazz("android.widget.TextView");
         for (UiObject2 textView : device.findObjects(selector)) {
             if (textView.getText() != null && textView.getText().contains(text)) {
@@ -524,7 +610,7 @@ class TestUtils {
         return "not found";
     }
 
-    void getActivityInstance() {
+    public void getActivityInstance() {
         waitForExternalApp();
         goBackToOriginalApp();
     }
@@ -541,12 +627,12 @@ class TestUtils {
         }
     }
 
-    void openOptionsMenu() {
+    public void openOptionsMenu() {
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         device.waitForIdle();
     }
 
-    void selectFromScreen(int resource) {
+    public void selectFromScreen(int resource) {
         boolean textViewFound = false;
         BySelector selector = By.clazz("android.widget.TextView");
         while (!textViewFound) {
@@ -573,19 +659,9 @@ class TestUtils {
         assertThat(waitForView, notNullValue());
     }
 
-    void doWaitForResource(int resource) {
+    public void doWaitForResource(int resource) {
         IdlingResource idlingResourceVisibility = null;
-        Activity currentActivity = null;
-        while (currentActivity == null) {
-            try {
-                device.waitForIdle();
-                if (viewIsDisplayed(resource)) {
-                    currentActivity = getCurrentActivity();
-                }
-            } catch (Exception ex){
-                Timber.i("App shouldn't be here");
-            }
-        }
+        Activity currentActivity = getCurrentActivity();
             try {
                 idlingResourceVisibility = new ViewVisibilityIdlingResource(currentActivity, resource, View.VISIBLE);
                 IdlingRegistry.getInstance().register(idlingResourceVisibility);
@@ -612,7 +688,7 @@ class TestUtils {
             }
     }
 
-    void doWaitForAlertDialog(IntentsTestRule<SplashActivity> intent, int displayText) {
+    public void doWaitForAlertDialog(IntentsTestRule<SplashActivity> intent, int displayText) {
         onView(withId(intent.getActivity().getResources()
                 .getIdentifier("alertTitle", "id", "android")))
                 .inRoot(isDialog())
@@ -624,7 +700,7 @@ class TestUtils {
         return resources.getStringArray(id)[position];
     }
 
-    void assertMessageStatus(int status) {
+    public void assertMessageStatus(int status) {
         boolean viewDisplayed = false;
         while (!viewDisplayed){
             try{
@@ -636,15 +712,67 @@ class TestUtils {
                 Timber.i("View not found: " + ex);
             }
         }
+        waitUntilIdle();
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
         device.waitForIdle();
     }
 
-    void clickMessageStatus() {
+    public void clickMessageStatus() {
         clickView(R.id.tvPep);
     }
 
-    void clickLastMessageReceived() {
+    public void goBackToMessageList(){
+        boolean backToMessageCompose = false;
+        while (!backToMessageCompose){
+            device.pressBack();
+            device.waitForIdle();
+            if (viewIsDisplayed(R.id.fab_button_compose_message)){
+                backToMessageCompose = true;
+            }
+        }
+    }
+
+    public void goToSentFolder() {
+        BySelector textViewSelector;
+        textViewSelector = By.clazz("android.widget.TextView");
+        device.waitForIdle();
+        openOptionsMenu();
+        device.waitForIdle();
+        selectFromScreen(R.string.account_settings_folders);
+        device.waitForIdle();
+        String folder = resources.getString(R.string.special_mailbox_name_sent);
+        boolean folderClicked = false;
+        while (!folderClicked) {
+            for (UiObject2 textView : device.findObjects(textViewSelector)) {
+                try {
+                    if (textView.findObject(textViewSelector).getText() != null && textView.findObject(textViewSelector).getText().contains(folder)) {
+                        textView.findObject(textViewSelector).click();
+                        folderClicked = true;
+                        return;
+                    }
+                    device.waitForIdle();
+                } catch (Exception e) {
+                    Timber.i("View is not sent folder");
+                }
+            }
+        }
+        device.waitForIdle();
+        waitForTextOnScreen(resources.getString(R.string.special_mailbox_name_sent));
+    }
+
+    private void waitForTextOnScreen(String text) {
+        boolean textIsOk = false;
+        do {
+            device.waitForIdle();
+            try {
+                textIsOk = getTextFromTextViewThatContainsText(text).contains(resources.getString(R.string.special_mailbox_name_sent));
+            } catch (Exception e) {
+
+            }
+        } while (!textIsOk);
+    }
+
+    public void clickLastMessageReceived() {
         boolean messageClicked = false;
         while (!messageClicked){
             device.waitForIdle();
@@ -674,7 +802,7 @@ class TestUtils {
         }
     }
 
-    void waitForNewMessage() {
+    public void waitForNewMessage() {
         boolean newEmail = false;
         doWaitForResource(R.id.message_list);
         doWaitForIdlingListViewResource(R.id.message_list);
@@ -733,7 +861,7 @@ class TestUtils {
             }
     }
 
-    void clickFirstMessage(){
+    public void clickFirstMessage(){
         boolean firstMessageClicked = false;
         while (!firstMessageClicked){
             try{
@@ -798,7 +926,7 @@ class TestUtils {
         }
     }
 
-    void startActivity() {
+    public void startActivity() {
         device.pressHome();
         final String launcherPackage = getLauncherPackageName();
         assertThat(launcherPackage, notNullValue());
@@ -826,6 +954,33 @@ class TestUtils {
         return context.checkCallingOrSelfPermission(ANIMATION_PERMISSION);
     }
 
+    public void checkBoxOnScreenChecked(int resource, boolean checked) {
+        boolean textViewFound = false;
+        BySelector selector = By.clazz("android.widget.TextView");
+        while (!textViewFound) {
+            for (UiObject2 object : device.findObjects(selector)) {
+                try {
+                    if (object.getText().contains(resources.getString(resource))) {
+                        device.waitForIdle();
+                        UiObject2 checkbox = object.getParent().getParent().getChildren().get(1).getChildren().get(0);
+                        if (checkbox.isChecked() != checked){
+                            device.waitForIdle();
+                            checkbox.longClick();
+                            device.waitForIdle();
+                        }
+                        if (checkbox.isChecked() == checked) {
+                            device.waitForIdle();
+                            textViewFound = true;
+                            break;
+                        }
+                    }
+                } catch (Exception ex){
+                    Timber.i("Cannot find text on screen: " + ex);
+                }
+            }
+        }
+    }
+
     private void setSystemAnimationsScale(float animationScale) {
         try {
             Class<?> windowManagerStubClazz = Class.forName("android.view.IWindowManager$Stub");
@@ -850,12 +1005,14 @@ class TestUtils {
 
     @NonNull
     private String getEmail() {
-        return BuildConfig.PEP_TEST_EMAIL_ADDRESS;
+        return "test006@peptest.ch";
+        //return BuildConfig.PEP_TEST_EMAIL_ADDRESS;
     }
 
     @NonNull
     private String getPassword() {
-        return BuildConfig.PEP_TEST_EMAIL_PASSWORD;
+        return "pEpdichauf5MailPassword";
+        //return BuildConfig.PEP_TEST_EMAIL_PASSWORD;
     }
 
     public static class BasicMessage {
@@ -864,7 +1021,7 @@ class TestUtils {
         String subject;
         String to;
 
-        BasicMessage(String from, String subject, String message, String to) {
+        public BasicMessage(String from, String subject, String message, String to) {
             this.from = from;
             this.message = message;
             this.subject = subject;

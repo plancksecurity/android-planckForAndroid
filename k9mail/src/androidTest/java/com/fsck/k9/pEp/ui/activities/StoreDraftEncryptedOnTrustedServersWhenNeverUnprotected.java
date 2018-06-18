@@ -7,10 +7,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.support.test.uiautomator.By;
-import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
-import android.support.test.uiautomator.UiObject2;
 
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
@@ -22,15 +19,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
 
-import timber.log.Timber;
-
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.valuesAreEqual;
 
 @RunWith(AndroidJUnit4.class)
 public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
@@ -74,10 +67,10 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
         testUtils.checkStatus(Rating.pEpRatingUnencrypted);
         testUtils.pressBack();
         testUtils.selectoFromMenu(R.string.is_always_secure);
-        goBackAndSaveAsDraft();
+        testUtils.goBackAndSaveAsDraft(splashActivityTestRule);
         clickFirstMessageFromDraft();
         openOptionsMenu();
-        assertsExistsOnScreen(R.string.is_not_always_secure, R.string.is_not_always_secure);
+        testUtils.assertsTextsOnScreenAreEqual(R.string.is_not_always_secure, R.string.is_not_always_secure);
         testUtils.goBackAndRemoveAccount(true);
     }
 
@@ -93,7 +86,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
         testUtils.selectFromScreen(R.string.preferences_action);
         testUtils.selectFromScreen(R.string.account_settings_action);
         testUtils.selectFromScreen(R.string.app_name);
-        selectFromScreen(R.string.pep_mistrust_server_and_store_mails_encrypted);
+        testUtils.checkBoxOnScreenChecked(R.string.pep_mistrust_server_and_store_mails_encrypted, false);
     }
 
     private void openOptionsMenu() {
@@ -109,68 +102,6 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
             testUtils.clickFirstMessage();
             device.waitForIdle();
         }
-    }
-
-    void selectFromScreen(int resource) {
-        boolean textViewFound = false;
-        BySelector selector = By.clazz("android.widget.TextView");
-        while (!textViewFound) {
-            for (UiObject2 object : device.findObjects(selector)) {
-                try {
-                    if (object.getText().contains(resources.getString(resource))) {
-                        device.waitForIdle();
-                        UiObject2 checkbox = object.getParent().getParent().getChildren().get(1).getChildren().get(0);
-                        if (checkbox.isChecked()){
-                            device.waitForIdle();
-                            checkbox.longClick();
-                            device.waitForIdle();
-                        }
-                        if (!checkbox.isChecked()) {
-                            device.waitForIdle();
-                            textViewFound = true;
-                            break;
-                        }
-                    }
-                } catch (Exception ex){
-                    Timber.i("Cannot find text on screen: " + ex);
-                }
-            }
-        }
-    }
-
-    void assertsExistsOnScreen(int resourceOnScreen, int comparedWith) {
-        BySelector selector = By.clazz("android.widget.TextView");
-        String textOnScreen = "Text not found on the Screen";
-            for (UiObject2 object : device.findObjects(selector)) {
-                try {
-                    if (object.getText().contains(resources.getString(resourceOnScreen))) {
-                        device.waitForIdle();
-                        textOnScreen = object.getText();
-                        device.waitForIdle();
-                        break;
-                    }
-                } catch (Exception ex){
-                    Timber.i("Cannot find text on screen: " + ex);
-                }
-            }
-            device.pressBack();
-        onView(withId(R.id.toolbar)).check(matches(valuesAreEqual(textOnScreen, resources.getString(comparedWith))));
-    }
-
-    void goBackAndSaveAsDraft (){
-        Activity currentActivity = testUtils.getCurrentActivity();
-        while (currentActivity == testUtils.getCurrentActivity()){
-            try {
-                device.waitForIdle();
-                device.pressBack();
-                testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.save_or_discard_draft_message_dlg_title);
-                testUtils.doWaitForObject("android.widget.Button");
-                onView(withText(R.string.save_draft_action)).perform(click());
-            } catch (Exception ex){
-                Timber.i("Ignored exception: " + ex);
-            }
-        }
-        device.waitForIdle();
     }
 
     void selectoFromMenu(int viewId){

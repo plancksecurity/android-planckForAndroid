@@ -36,7 +36,6 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
     private String messageTo = "";
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
-    private BySelector textViewSelector;
     private Resources resources;
     private Context context;
     private Instrumentation instrumentation;
@@ -53,7 +52,6 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
         testUtils.increaseTimeoutWait();
         espressoTestingIdlingResource = new EspressoTestingIdlingResource();
         IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
-        textViewSelector = By.clazz("android.widget.TextView");
         context = InstrumentationRegistry.getTargetContext();
         resources = context.getResources();
         testUtils.startActivity();
@@ -76,7 +74,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
         device.waitForIdle();
         testUtils.sendMessage();
         testUtils.waitForNewMessage();
-        goToSentFolder();
+        testUtils.goToSentFolder();
         testUtils.clickFirstMessage();
         testUtils.clickView(R.id.tvPep);
         testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
@@ -101,42 +99,5 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
     }
 
-    private void goToSentFolder() {
-        device.waitForIdle();
-        testUtils.openOptionsMenu();
-        device.waitForIdle();
-        testUtils.selectFromScreen(R.string.account_settings_folders);
-        device.waitForIdle();
-        String folder = resources.getString(R.string.special_mailbox_name_sent);
-        boolean folderClicked = false;
-        while (!folderClicked) {
-            for (UiObject2 textView : device.findObjects(textViewSelector)) {
-                try {
-                    if (textView.findObject(textViewSelector).getText() != null && textView.findObject(textViewSelector).getText().contains(folder)) {
-                        textView.findObject(textViewSelector).click();
-                        folderClicked = true;
-                        return;
-                    }
-                    device.waitForIdle();
-                } catch (Exception e) {
-                    Timber.i("View is not sent folder");
-                }
-            }
-        }
-        device.waitForIdle();
-        waitForTextOnScreen(resources.getString(R.string.special_mailbox_name_sent));
-    }
-
-    private void waitForTextOnScreen(String text) {
-        boolean textIsOk = false;
-        do {
-            device.waitForIdle();
-            try {
-                textIsOk = testUtils.getTextFromTextViewThatContainsText(text).contains(resources.getString(R.string.special_mailbox_name_sent));
-            } catch (Exception e) {
-
-            }
-        } while (!textIsOk);
-    }
 }
 

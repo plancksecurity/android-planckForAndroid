@@ -97,7 +97,7 @@ public class YellowStatusEmailFromBotTest {
         testUtils.checkToolBarColor(R.color.pep_yellow);
         device.pressBack();
         testUtils.goBackToMessageListAndPressComposeMessageButton();
-        yellowStatusMessageTest();
+        testUtils.yellowStatusMessageTest(MESSAGE_SUBJECT, MESSAGE_BODY, messageTo);
     }
 
     public void twoStatusMessageYellowAndGray() {
@@ -150,21 +150,5 @@ public class YellowStatusEmailFromBotTest {
     private void clickMailStatus() {
         testUtils.doWaitForResource(R.id.pEp_indicator);
         testUtils.clickView(R.id.pEp_indicator);
-    }
-
-    private void yellowStatusMessageTest() {
-        device.waitForIdle();
-        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
-        onView(withId(R.id.pEp_indicator)).perform(click());
-        onView(withId(R.id.my_recycler_view)).check(doesNotExist());
-        assertCurrentActivityIsInstanceOf(PEpTrustwords.class);
-
-    }
-
-    public void assertCurrentActivityIsInstanceOf(Class<? extends Activity> activityClass) {
-        Activity currentActivity = testUtils.getCurrentActivity();
-        checkNotNull(currentActivity);
-        checkNotNull(activityClass);
-        assertTrue(currentActivity.getClass().isAssignableFrom(activityClass));
     }
 }

@@ -83,21 +83,11 @@ public class InboxActionBarChangingColorTest {
         testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
         device.waitForIdle();
         testUtils.pressBack();
-        checkToolbarColor(R.color.pep_green);
+        testUtils.checkToolbarColor(R.color.pep_green);
         device.waitForIdle();
         testUtils.pressBack();
         device.waitForIdle();
-        checkToolbarColor(R.color.pep_green);
-    }
-
-    private void checkToolbarColor(int color) {
-        boolean toolbarExists = false;
-        while (!toolbarExists) {
-            if (exists(onView(withId(R.id.toolbar)))) {
-                onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(color)));
-                toolbarExists = true;
-            }
-        }
+        testUtils.checkToolbarColor(R.color.pep_green);
     }
 
     private void assertBotMessageColor(){
@@ -108,10 +98,10 @@ public class InboxActionBarChangingColorTest {
         device.waitForIdle();
         testUtils.waitForNewMessage();
         testUtils.clickLastMessageReceived();
-        checkToolbarColor(R.color.pep_yellow);
+        testUtils.checkToolbarColor(R.color.pep_yellow);
         device.waitForIdle();
         testUtils.pressBack();
         device.waitForIdle();
-        checkToolbarColor(R.color.pep_green);
+        testUtils.checkToolbarColor(R.color.pep_green);
     }
 }

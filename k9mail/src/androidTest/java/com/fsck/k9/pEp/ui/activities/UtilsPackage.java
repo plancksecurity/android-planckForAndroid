@@ -46,7 +46,7 @@ public class UtilsPackage {
             this.recyclerViewId = recyclerViewId;
         }
 
-        Matcher<View> atPosition(final int position) {
+        public Matcher<View> atPosition(final int position) {
             return atPositionOnView(position, -1);
         }
 
@@ -94,6 +94,11 @@ public class UtilsPackage {
                 }
             };
         }
+    }
+
+    public static RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
+
+        return new RecyclerViewMatcher(recyclerViewId);
     }
 
     private static Matcher<View> getElementFromMatchAtPosition(final Matcher<View> matcher, final int position) {
