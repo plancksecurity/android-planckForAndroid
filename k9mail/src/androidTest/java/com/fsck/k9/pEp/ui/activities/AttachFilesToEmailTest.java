@@ -14,9 +14,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import android.support.test.runner.AndroidJUnit4;
-import com.microsoft.appcenter.espresso.Factory;
-import com.microsoft.appcenter.espresso.ReportHelper;
 
 import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
 
@@ -31,7 +28,6 @@ public class AttachFilesToEmailTest {
     private EspressoTestingIdlingResource espressoTestingIdlingResource;
 
     @Rule
-    public ReportHelper reportHelper = Factory.getReportHelper();
     public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
 
     @Before
@@ -46,7 +42,6 @@ public class AttachFilesToEmailTest {
 
     @After
     public void unregisterIdlingResource() {
-        reportHelper.label("Stopping App");
         IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
     }
 

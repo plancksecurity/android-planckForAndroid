@@ -55,9 +55,6 @@ import static android.support.test.internal.runner.junit4.statement.UiThreadStat
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 import static org.hamcrest.CoreMatchers.not;
-import android.support.test.runner.AndroidJUnit4;
-import com.microsoft.appcenter.espresso.Factory;
-import com.microsoft.appcenter.espresso.ReportHelper;
 
 @RunWith(AndroidJUnit4.class)
 public class CucumberTestSteps {
