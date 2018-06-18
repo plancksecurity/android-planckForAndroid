@@ -6,6 +6,8 @@ import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
@@ -500,7 +502,12 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
             PEpUtils.colorToolbar(pEpUiCache, activity.getToolbar(), pEpRating);
 
             if(pEpIndicator!=null) {
-                pEpIndicator.setIcon(pEpUiCache.getIcon());
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    pEpIndicator.setIcon(pEpUiCache.getIcon());
+                }
+            });
                 String msg = pEpUiCache.getTitle(pEpRating);
             }
         } else {

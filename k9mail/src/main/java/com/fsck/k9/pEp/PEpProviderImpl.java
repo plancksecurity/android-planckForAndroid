@@ -943,6 +943,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     private void getRating(@Nullable Identity identity, Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback) {
         threadExecutor.execute(() -> {
+            EspressoTestingIdlingResource.increment();
             if (bccAddresses.size()  > 0) {
                 notifyLoaded(Rating.pEpRatingUnencrypted, callback);
                 return;
@@ -982,6 +983,7 @@ public class PEpProviderImpl implements PEpProvider {
                 if (engine != null) {
                     engine.close();
                 }
+                EspressoTestingIdlingResource.decrement();
             }
         });
     }

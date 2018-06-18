@@ -1,11 +1,14 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,17 +27,24 @@ public class ImportSettingsCancelTest {
 
     private TestUtils testUtils;
     private UiDevice device;
+    private EspressoTestingIdlingResource espressoTestingIdlingResource;
 
     @Rule
     public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
 
     @Before
     public void startpEpApp() {
-        testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()));
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(device);
+        testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
+        espressoTestingIdlingResource = new EspressoTestingIdlingResource();
+        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
         testUtils.increaseTimeoutWait();
         testUtils.startActivity();
+    }
+
+    @After
+    public void unregisterIdlingResource() {
+        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
     }
 
     @Test (timeout = TIMEOUT_TEST)
@@ -54,7 +64,6 @@ public class ImportSettingsCancelTest {
         device.waitForIdle();
         testUtils.selectFromScreen(R.string.import_export_action);
         device.waitForIdle();
-        testUtils.doWaitForResource(R.string.settings_import);
         testUtils.selectFromScreen(R.string.settings_import);
         device.waitForIdle();
         testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.settings_import_selection);

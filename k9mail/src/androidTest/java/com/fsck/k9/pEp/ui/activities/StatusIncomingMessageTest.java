@@ -1,11 +1,15 @@
 package com.fsck.k9.pEp.ui.activities;
 
+import android.app.Instrumentation;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,6 +23,8 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 
 
@@ -31,6 +37,8 @@ public class StatusIncomingMessageTest {
     private UiDevice device;
     private TestUtils testUtils;
     private String messageTo;
+    private Instrumentation instrumentation;
+    private EspressoTestingIdlingResource espressoTestingIdlingResource;
 
     @Rule
     public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
@@ -38,10 +46,18 @@ public class StatusIncomingMessageTest {
     @Before
     public void startpEpApp() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(device);
+        instrumentation = InstrumentationRegistry.getInstrumentation();
+        espressoTestingIdlingResource = new EspressoTestingIdlingResource();
+        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
+        testUtils = new TestUtils(device, instrumentation);
         testUtils.increaseTimeoutWait();
         messageTo = Long.toString(System.currentTimeMillis()) + "@" + HOST;
         testUtils.startActivity();
+    }
+
+    @After
+    public void unregisterIdlingResource() {
+        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
     }
 
     @Test (timeout = TIMEOUT_TEST)
@@ -64,9 +80,18 @@ public class StatusIncomingMessageTest {
         testUtils.clickView(R.id.tvPep);
         testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
         device.waitForIdle();
-        testUtils.pressBack();
-        device.waitForIdle();
-        testUtils.pressBack();
+        goBackToMessageList();
+    }
+
+    void goBackToMessageList(){
+        boolean backToMessageCompose = false;
+        while (!backToMessageCompose){
+            device.pressBack();
+            device.waitForIdle();
+            if (viewIsDisplayed(R.id.fab_button_compose_message)){
+                backToMessageCompose = true;
+            }
+        }
     }
 
     private void assertIncomingTrustedPartnerMessageIsGreen() {
@@ -79,14 +104,7 @@ public class StatusIncomingMessageTest {
         device.waitForIdle();
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(0)).check(matches(withBackgroundColor(R.color.pep_green)));
         device.waitForIdle();
-        testUtils.pressBack();
-        device.waitForIdle();
-        testUtils.pressBack();
-        device.waitForIdle();
-        testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.save_or_discard_draft_message_dlg_title);
-        testUtils.doWaitForObject("android.widget.Button");
-        onView(withText(R.string.discard_action)).perform(click());
-        testUtils.goBackAndRemoveAccount();
+        testUtils.goBackAndRemoveAccount(true);
     }
 
     private void fillMessage() {

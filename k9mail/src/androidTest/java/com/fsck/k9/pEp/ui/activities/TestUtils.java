@@ -13,16 +13,16 @@ import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingPolicies;
+import android.support.test.espresso.IdlingRegistry;
+import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.NoMatchingViewException;
-import android.support.test.espresso.ViewAssertion;
-import android.support.test.espresso.core.internal.deps.guava.collect.Iterables;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
-import android.support.test.runner.lifecycle.Stage;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
@@ -31,6 +31,7 @@ import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -42,17 +43,19 @@ import org.pEp.jniadapter.Rating;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
+import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 import timber.log.Timber;
 
+import static android.content.ContentValues.TAG;
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.swipeDown;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
@@ -61,11 +64,14 @@ import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.isInternal;
 import static android.support.test.espresso.matcher.RootMatchers.isDialog;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static android.support.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static android.support.test.runner.lifecycle.Stage.RESUMED;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.saveSizeInInt;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -76,6 +82,8 @@ import static org.junit.Assert.assertThat;
 
 class TestUtils {
 
+    private static final String ANIMATION_PERMISSION = "android.permission.SET_ANIMATION_SCALE";
+    private static final float ANIMATION_DISABLED = 0.0f;
     private static final String APP_ID = BuildConfig.APPLICATION_ID;
     private static final int LAUNCH_TIMEOUT = 5000;
     private static final String DESCRIPTION = "tester one";
@@ -87,12 +95,14 @@ class TestUtils {
     private UiDevice device;
     private Context context;
     private Resources resources;
+    private Instrumentation instrumentation;
     int messageListSize[] = new int[2];
 
     public static final int TIMEOUT_TEST = FIVE_MINUTES * MINUTE_IN_SECONDS * SECOND_IN_MILIS;
 
-    TestUtils(UiDevice device) {
+    TestUtils(UiDevice device, Instrumentation instrumentation) {
         this.device = device;
+        this.instrumentation = instrumentation;
         context = InstrumentationRegistry.getTargetContext();
         resources = context.getResources();
     }
@@ -129,6 +139,7 @@ class TestUtils {
     }
 
     private void accountDescription(String description, String userName) {
+        doWaitForResource(R.id.account_description);
         device.waitForIdle();
         onView(withId(R.id.account_description)).perform(typeText(description));
         onView(withId(R.id.account_name)).perform(typeText(userName), closeSoftKeyboard());
@@ -140,29 +151,49 @@ class TestUtils {
         clickView(R.id.fab_button_compose_message);
     }
 
-    void clickView(int viewId) {
-        boolean buttonClicked = false;
-        while (!buttonClicked) {
-            try {
-                doWaitForResource(viewId);
-                onView(withId(viewId)).perform(click());
-                buttonClicked = true;
-            } catch (Exception ex) {
-                Timber.i("View not found: " + ex);
+    void goBackToMessageCompose() {
+        boolean backToMessageCompose = false;
+        while (!backToMessageCompose){
+            pressBack();
+            device.waitForIdle();
+            if (exists(onView(withId(R.id.send)))){
+                backToMessageCompose = true;
             }
         }
     }
 
-    private Activity getCurrentActivity() {
-        final Activity[] activity = new Activity[1];
-        onView(isRoot()).check(new ViewAssertion() {
-            @Override
-            public void check(View view, NoMatchingViewException noViewFoundException) {
-                java.util.Collection<Activity> activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
-                activity[0] = Iterables.getOnlyElement(activities);
+    void clickView(int viewId) {
+        boolean buttonClicked = false;
+        doWaitForResource(viewId);
+        while (!buttonClicked) {
+            if (exists(onView(withId(viewId))) && viewIsDisplayed(viewId)){
+                device.waitForIdle();
+                try {
+                    onView(withId(viewId)).perform(click());
+                    device.waitForIdle();
+                    buttonClicked = true;
+                } catch (Exception ex) {
+                    Timber.i("View not found, cannot click it: " + ex);
+                }
+            }else {
+                buttonClicked = true;
             }
-        });
-        return activity[0];
+        }
+    }
+
+     Activity getCurrentActivity() {
+
+         final Activity[] resumedActivity = {null};
+         getInstrumentation().runOnMainSync(new Runnable() {
+             public void run() {
+                 Collection resumedActivities = ActivityLifecycleMonitorRegistry.getInstance()
+                         .getActivitiesInStage(RESUMED);
+                 if (resumedActivities.iterator().hasNext()) {
+                     resumedActivity[0] = (Activity) resumedActivities.iterator().next();
+                 }
+             }
+         });
+         return resumedActivity[0];
     }
 
     void createAccount(boolean isGmail) {
@@ -245,11 +276,10 @@ class TestUtils {
                 Timber.i("Ignored", "Exists account");
             }
             try {
-                doWaitForResource(R.id.account_description);
                 device.waitForIdle();
                 accountDescription(DESCRIPTION, USER_NAME);
             } catch (Exception ex) {
-                Timber.i("Ignored", "Ignored exception");
+                Timber.i("Ignored", "Ignored exception " + ex);
             }
         } catch (Exception ignoredException) {
             Timber.i("Ignored", "Ignored exception");
@@ -264,6 +294,7 @@ class TestUtils {
         boolean messageFilled = false;
         while (!messageFilled){
             try {
+                device.waitForIdle();
                 doWaitForResource(R.id.to);
                 device.waitForIdle();
                 device.findObject(By.res(APP_ID, "to")).longClick();
@@ -271,18 +302,11 @@ class TestUtils {
                 device.pressKeyCode(KeyEvent.KEYCODE_DEL);
                 device.waitForIdle();
                 onView(withId(R.id.to)).perform(typeText(inputMessage.getTo()), closeSoftKeyboard());
+                doWaitForResource(R.id.subject);
                 device.waitForIdle();
-                device.findObject(By.res(APP_ID, "subject")).click();
-                device.findObject(By.res(APP_ID, "subject")).setText(inputMessage.getSubject());
+                onView(withId(R.id.subject)).perform(typeText(inputMessage.getSubject()), closeSoftKeyboard());
                 device.waitForIdle();
-                device.findObject(By.res(APP_ID, "message_content")).click();
-                device.findObject(By.res(APP_ID, "message_content")).setText(inputMessage.getMessage());
-                device.waitForIdle();
-                onView(withId(R.id.subject)).perform(click());
-                device.waitForIdle();
-                onView(withId(R.id.message_content)).perform(click());
-                device.waitForIdle();
-                onView(withId(R.id.to)).perform(click());
+                onView(withId(R.id.message_content)).perform(typeText(inputMessage.getMessage()), closeSoftKeyboard());
                 device.waitForIdle();
                 messageFilled = true;
             } catch (Exception ex){
@@ -351,33 +375,48 @@ class TestUtils {
     }
 
     void sendMessage() {
-        onView(withId(R.id.send)).perform(click());
+        clickView(R.id.send);
     }
 
     void pressBack() {
         device.pressBack();
     }
 
-    private void removeLastAccount() {
-        device.waitForIdle();
+    void removeLastAccount() {
         longClick("accounts_list");
-        device.waitForIdle();
         selectRemoveAccount();
-        device.waitForIdle();
         clickAcceptButton();
     }
 
-    public void goBackAndRemoveAccount(){
+    public void goBackAndRemoveAccount() {
+        goBackAndRemoveAccount(false);
+    }
+
+    public void goBackAndRemoveAccount(boolean discardMessage) {
         boolean accountRemoved = false;
+        Activity currentActivity = getCurrentActivity();
         while (!accountRemoved) {
             try {
+                device.waitForIdle();
                 removeLastAccount();
                 accountRemoved = true;
             } catch (Exception ex) {
-                device.waitForIdle();
-                pressBack();
-                Timber.i("View not found, pressBack to previous activity");
+                while (currentActivity == getCurrentActivity()) {
+                    pressBack();
+                    device.waitForIdle();
+                    try {
+                        if (discardMessage) {
+                            onView(withText(R.string.discard_action)).check(matches(isCompletelyDisplayed()));
+                            onView(withText(R.string.discard_action)).perform(click());
+                            discardMessage = false;
+                        }
+                    } catch (Exception e) {
+                        Timber.i("No dialog alert message");
+                    }
+                    Timber.i("View not found, pressBack to previous activity: " + ex);
+                }
             }
+            currentActivity = getCurrentActivity();
         }
     }
 
@@ -404,7 +443,6 @@ class TestUtils {
         BySelector selector = By.clazz("android.widget.TextView");
         int size = device.findObjects(selector).size();
         while (size == 0) {
-            device.waitForIdle();
             size = device.findObjects(selector).size();
         }
         for (UiObject2 textView : device.findObjects(selector)) {
@@ -415,10 +453,10 @@ class TestUtils {
         }
     }
 
-    private void longClick(String viewId) {
+    void longClick(String viewId) {
         UiObject2 list = device.findObject(By.res(APP_ID, viewId));
         Rect bounds = list.getVisibleBounds();
-        device.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 180);
+        device.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 450);
     }
 
     void testStatusEmpty() {
@@ -429,12 +467,16 @@ class TestUtils {
     void testStatusMail(BasicMessage inputMessage, BasicIdentity expectedIdentity) {
         fillMessage(inputMessage, false);
         device.waitForIdle();
+        onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
+        device.waitForIdle();
         checkStatus(expectedIdentity.getRating());
         Espresso.pressBack();
     }
 
     void testStatusMailAndListMail(BasicMessage inputMessage, BasicIdentity expectedIdentity) {
         fillMessage(inputMessage, false);
+        device.waitForIdle();
+        onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
         device.waitForIdle();
         checkStatus(expectedIdentity.getRating());
         onView(withText(expectedIdentity.getAddress())).check(doesNotExist());
@@ -443,8 +485,33 @@ class TestUtils {
 
     void checkStatus(Rating rating) {
         clickView(R.id.pEp_indicator);
-        device.waitForIdle();
+        while (!exists(onView(withId(R.id.pEpTitle)))){
+            doWaitForResource(R.id.pEpTitle);
+            device.waitForIdle();
+        }
+        onView(withId(R.id.pEpTitle)).check(matches(isDisplayed()));
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, rating.value))));
+    }
+
+    void selectoFromMenu(int viewId){
+        device.waitForIdle();
+        openOptionsMenu();
+        selectFromScreen(viewId);
+        boolean toolbarClosed = false;
+        while (!toolbarClosed){
+            try{
+                onView(withId(R.id.message_content)).perform(typeText(" "));
+                device.waitForIdle();
+                toolbarClosed = true;
+            } catch (Exception ex){
+                Timber.i("Toolbar is not closed yet");
+            }
+        }
+        try {
+            onView(withId(R.id.subject)).perform(click());
+        } catch (Exception ex) {
+            Timber.i("Ignored Exception: " + ex);
+        }
     }
 
     String getTextFromTextViewThatContainsText(String text) {
@@ -475,19 +542,25 @@ class TestUtils {
     }
 
     void openOptionsMenu() {
-        openActionBarOverflowOrOptionsMenu(context);
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        device.waitForIdle();
     }
 
     void selectFromScreen(int resource) {
         boolean textViewFound = false;
+        BySelector selector = By.clazz("android.widget.TextView");
         while (!textViewFound) {
-            BySelector selector = By.clazz("android.widget.TextView");
-            device.waitForIdle();
             for (UiObject2 object : device.findObjects(selector)) {
-                if (object.getText().equals(resources.getString(resource))) {
-                    object.click();
-                    textViewFound = true;
-                    break;
+                try {
+                    if (object.getText().contains(resources.getString(resource))) {
+                        device.waitForIdle();
+                        object.click();
+                        device.waitForIdle();
+                        textViewFound = true;
+                        break;
+                    }
+                } catch (Exception ex){
+                    Timber.i("Cannot find text on screen: " + ex);
                 }
             }
         }
@@ -501,16 +574,42 @@ class TestUtils {
     }
 
     void doWaitForResource(int resource) {
-        boolean resourceExists = false;
-        while (!resourceExists){
+        IdlingResource idlingResourceVisibility = null;
+        Activity currentActivity = null;
+        while (currentActivity == null) {
             try {
-                new ViewVisibilityIdlingResource(getCurrentActivity(), resource, View.VISIBLE);
-                resourceExists = true;
+                device.waitForIdle();
+                if (viewIsDisplayed(resource)) {
+                    currentActivity = getCurrentActivity();
+                }
             } catch (Exception ex){
-                Timber.i("Resource does not exist, trying again: " + ex);
+                Timber.i("App shouldn't be here");
             }
         }
-        //device.wait(Until.hasObject(By.desc(resources.getString(resource))), 10);
+            try {
+                idlingResourceVisibility = new ViewVisibilityIdlingResource(currentActivity, resource, View.VISIBLE);
+                IdlingRegistry.getInstance().register(idlingResourceVisibility);
+                onView(withId(resource)).check(matches(isDisplayed()));
+            } catch (Exception ex) {
+                Timber.i("Idling Resource does not exist: " + ex);
+            } finally {
+                IdlingRegistry.getInstance().unregister(idlingResourceVisibility);
+            }
+    }
+
+    void doWaitForIdlingListViewResource(int resource){
+        IdlingResource idlingResourceListView;
+        device.waitForIdle();
+        idlingResourceListView = new ListViewIdlingResource(instrumentation,
+                getCurrentActivity().findViewById(resource));
+            try {
+                IdlingRegistry.getInstance().register(idlingResourceListView);
+                onView(withId(resource)).check(matches(isDisplayed()));
+            } catch (Exception ex){
+                Timber.i("Idling Resource does not exist: " + ex);
+            } finally {
+                IdlingRegistry.getInstance().unregister(idlingResourceListView);
+            }
     }
 
     void doWaitForAlertDialog(IntentsTestRule<SplashActivity> intent, int displayText) {
@@ -546,10 +645,29 @@ class TestUtils {
     }
 
     void clickLastMessageReceived() {
-        device.waitForIdle();
-        onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
-        try{
+        boolean messageClicked = false;
+        while (!messageClicked){
             device.waitForIdle();
+            if (viewIsDisplayed(R.id.message_list)) {
+                try {
+                    swipeDownMessageList();
+                    onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
+                    messageClicked = true;
+                    device.waitForIdle();
+                    if (viewIsDisplayed(R.id.fab_button_compose_message)) {
+                        try {
+                            messageClicked = false;
+                            pressBack();
+                        } catch (Exception ex) {
+                            Timber.i("Last message has been clicked");
+                        }
+                    }
+                } catch (Exception ex) {
+                    Timber.i("No message found");
+                }
+            }
+        }
+        try{
             onView(withText(R.string.cancel_action)).perform(click());
         }catch (NoMatchingViewException ignoredException){
             Timber.i("Ignored exception. Email is not encrypted");
@@ -558,6 +676,8 @@ class TestUtils {
 
     void waitForNewMessage() {
         boolean newEmail = false;
+        doWaitForResource(R.id.message_list);
+        doWaitForIdlingListViewResource(R.id.message_list);
         while (!newEmail) {
             try {
                 device.waitForIdle();
@@ -581,7 +701,6 @@ class TestUtils {
         boolean actionPerformed = false;
         while (!actionPerformed) {
             try {
-                device.waitForIdle();
                 onView(withId(R.id.message_list)).perform(swipeDown());
                 Timber.i("Message list found");
                 actionPerformed = true;
@@ -592,9 +711,7 @@ class TestUtils {
     }
 
     void removeMessagesFromList(){
-        device.waitForIdle();
-        try {
-            onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
+        clickFirstMessage();
             boolean emptyList = false;
             while (!emptyList){
                 try{
@@ -609,16 +726,76 @@ class TestUtils {
                 } catch (NoMatchingViewException ignoredException) {
                     emptyList = true;
                 }
+                device.waitForIdle();
+                if (exists(onView(withId(android.R.id.message)))){
+                    emptyList = false;
+                }
             }
-        } catch (Exception ex){
-            Timber.i("Message list is empty");
+    }
+
+    void clickFirstMessage(){
+        boolean firstMessageClicked = false;
+        while (!firstMessageClicked){
+            try{
+                if(viewIsDisplayed(R.id.message_list)) {
+                    doWaitForResource(R.id.message_list);
+                    doWaitForIdlingListViewResource(R.id.message_list);
+                    device.waitForIdle();
+                    swipeDownMessageList();
+                    device.waitForIdle();
+                    getMessageListSize();
+                    if (viewIsDisplayed(R.id.reply_message) || messageListSize[0] == 1) {
+                        firstMessageClicked = true;
+                    }
+                    else {
+                        device.waitForIdle();
+                        onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
+                        device.waitForIdle();
+                    }
+                    if (!viewIsDisplayed(R.id.message_list)) {
+                        firstMessageClicked = true;
+                    }
+                }
+            } catch (Exception ex){
+                Timber.i("Cannot find list: " + ex);
+            }
         }
     }
 
     void checkToolBarColor(int color) {
-        doWaitForResource(R.id.toolbar_container);
+        device.waitForIdle();
+        while (!exists(onView(withId(R.id.toolbar)))) {
+            doWaitForResource(R.id.toolbar);
+            device.waitForIdle();
+        }
+        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
         device.waitForIdle();
         onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(color)));
+    }
+
+    void goBackToMessageListAndPressComposeMessageButton() {
+        boolean backToMessageList = false;
+        Activity currentActivity = getCurrentActivity();
+        while (!backToMessageList){
+            try {
+                device.pressBack();
+                device.waitForIdle();
+                try {
+                    if (currentActivity == getCurrentActivity() && exists(onView(withText(R.string.discard_action)))) {
+                        onView(withText(R.string.discard_action)).check(matches(isDisplayed()));
+                        onView(withText(R.string.discard_action)).perform(click());
+                    }
+                } catch (Exception e) {
+                    Timber.i("No dialog alert message");
+                }
+                if (exists(onView(withId(R.id.fab_button_compose_message)))){
+                    onView(withId(R.id.fab_button_compose_message)).perform(click());
+                    backToMessageList = true;
+                }
+            } catch (Exception ex){
+                Timber.i("View not found");
+            }
+        }
     }
 
     void startActivity() {
@@ -631,8 +808,44 @@ class TestUtils {
         if (intent != null) {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         }
+        disableAllAnimations();
         context.startActivity(intent);
         device.wait(Until.hasObject(By.pkg(APP_ID).depth(0)), LAUNCH_TIMEOUT);
+    }
+
+    private void disableAllAnimations() {
+        if (getAnimationPermissionStatus() == PackageManager.PERMISSION_GRANTED) {
+            setSystemAnimationsScale(ANIMATION_DISABLED);
+        } else {
+            Log.e(TAG, "Not granted permission to change animation scale.");
+        }
+    }
+
+    private int getAnimationPermissionStatus() {
+        Context context = InstrumentationRegistry.getTargetContext();
+        return context.checkCallingOrSelfPermission(ANIMATION_PERMISSION);
+    }
+
+    private void setSystemAnimationsScale(float animationScale) {
+        try {
+            Class<?> windowManagerStubClazz = Class.forName("android.view.IWindowManager$Stub");
+            Method asInterface = windowManagerStubClazz.getDeclaredMethod("asInterface", IBinder.class);
+            Class<?> serviceManagerClazz = Class.forName("android.os.ServiceManager");
+            Method getService = serviceManagerClazz.getDeclaredMethod("getService", String.class);
+            Class<?> windowManagerClazz = Class.forName("android.view.IWindowManager");
+            Method setAnimationScales = windowManagerClazz.getDeclaredMethod("setAnimationScales", float[].class);
+            Method getAnimationScales = windowManagerClazz.getDeclaredMethod("getAnimationScales");
+
+            IBinder windowManagerBinder = (IBinder) getService.invoke(null, "window");
+            Object windowManagerObj = asInterface.invoke(null, windowManagerBinder);
+            float[] currentScales = (float[]) getAnimationScales.invoke(windowManagerObj);
+            for (int i = 0; i < currentScales.length; i++) {
+                currentScales[i] = animationScale;
+            }
+            setAnimationScales.invoke(windowManagerObj, new Object[]{currentScales});
+        } catch (Exception ex) {
+            Log.e(TAG, "Could not use reflection to change animation scale to: " + animationScale, ex);
+        }
     }
 
     @NonNull

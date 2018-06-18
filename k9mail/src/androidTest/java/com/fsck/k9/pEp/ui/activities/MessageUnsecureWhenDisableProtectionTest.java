@@ -1,13 +1,17 @@
 package com.fsck.k9.pEp.ui.activities;
 
 
+import android.app.Instrumentation;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.IdlingRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,6 +20,7 @@ import org.pEp.jniadapter.Rating;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
@@ -28,6 +33,8 @@ public class MessageUnsecureWhenDisableProtectionTest {
     private String messageTo = "";
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
+    private Instrumentation instrumentation;
+    private EspressoTestingIdlingResource espressoTestingIdlingResource;
 
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
@@ -35,10 +42,19 @@ public class MessageUnsecureWhenDisableProtectionTest {
     @Before
     public void startActivity() {
         uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(uiDevice);
+        instrumentation = InstrumentationRegistry.getInstrumentation();
+        testUtils = new TestUtils(uiDevice, InstrumentationRegistry.getInstrumentation());
         testUtils.increaseTimeoutWait();
+        espressoTestingIdlingResource = new EspressoTestingIdlingResource();
+        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
         testUtils.startActivity();
     }
+
+    @After
+    public void unregisterIdlingResource() {
+        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
+    }
+
 
     @Test (timeout = TIMEOUT_TEST)
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
@@ -46,16 +62,16 @@ public class MessageUnsecureWhenDisableProtectionTest {
         composeMessage();
         testUtils.checkStatus(Rating.pEpRatingTrusted);
         testUtils.pressBack();
-        disableProtection();
+        testUtils.selectoFromMenu(R.string.pep_force_unprotected);
+        onView(withId(R.id.subject)).perform(typeText(" "));
         testUtils.checkStatus(Rating.pEpRatingUnencrypted);
         testUtils.pressBack();
-        uiDevice.waitForIdle();
         testUtils.sendMessage();
         testUtils.waitForNewMessage();
         testUtils.clickLastMessageReceived();
         uiDevice.waitForIdle();
         checkStatus();
-        removeMessageListAndAccount();
+        testUtils.goBackAndRemoveAccount();
     }
 
     private void composeMessage(){
@@ -66,23 +82,9 @@ public class MessageUnsecureWhenDisableProtectionTest {
         uiDevice.waitForIdle();
     }
 
-    private void disableProtection(){
-        testUtils.openOptionsMenu();
-        testUtils.selectFromScreen(R.string.pep_force_unprotected);
-        uiDevice.waitForIdle();
-    }
-
     private void checkStatus(){
         onView(withId(R.id.tvPep)).perform(click());
         onView(withId(R.id.pEpTitle)).check(matches(withText(testUtils.getResourceString(R.array.pep_title, Rating.pEpRatingUnencrypted.value))));
         uiDevice.waitForIdle();
-    }
-
-    private void removeMessageListAndAccount(){
-        testUtils.pressBack();
-        uiDevice.waitForIdle();
-        testUtils.pressBack();
-        testUtils.removeMessagesFromList();
-        testUtils.goBackAndRemoveAccount();
     }
 }

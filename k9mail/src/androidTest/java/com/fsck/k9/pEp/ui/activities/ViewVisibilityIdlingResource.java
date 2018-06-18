@@ -58,18 +58,6 @@ public class ViewVisibilityIdlingResource implements IdlingResource {
             if (mResourceCallback != null) {
                 mResourceCallback.onTransitionToIdle();
             }
-        } else {
-            /* Force a re-check of the idle state in a little while.
-             * If isIdleNow() returns false, Espresso only polls it every few seconds which can slow down our tests.
-             * Ideally we would watch for the visibility state changing, but AFAIK we can't detect when a View's
-             * visibility changes to GONE.
-             */
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    isIdleNow();
-                }
-            }, IDLE_POLL_DELAY_MILLIS);
         }
 
         return isIdle;
