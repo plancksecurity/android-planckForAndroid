@@ -92,10 +92,10 @@
             android:name="android.app.default_searchable"
             android:value="com.fsck.k9.activity.Search" />
 
+        <!-- TODO: Remove once minSdkVersion has been changed to 24+ -->
         <meta-data
             android:name="com.lge.support.SPLIT_WINDOW"
             android:value="true"/>
-
         <uses-library
             android:name="com.sec.android.app.multiwindow"
             android:required="false"/>
@@ -116,6 +116,8 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.DEFAULT"/>
+
+                <!-- TODO: Remove once minSdkVersion has been changed to 24+ -->
                 <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER"/>
                 <category android:name="android.intent.category.PENWINDOW_LAUNCHER"/>
             </intent-filter>
