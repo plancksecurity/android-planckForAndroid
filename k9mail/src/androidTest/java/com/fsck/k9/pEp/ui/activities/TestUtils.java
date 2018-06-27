@@ -273,7 +273,12 @@ public class TestUtils {
         }
     }
 
-    void allowPermissions() {
+    void allowPermissions(){
+        allowPermissions(2);
+        allowPermissions(1);
+    }
+
+    void allowPermissions(int index) {
         boolean existPermission = false;
         while (!existPermission){
             try {
@@ -281,7 +286,7 @@ public class TestUtils {
                 UiObject allowPermissions = device.findObject(new UiSelector()
                         .clickable(true)
                         .checkable(false)
-                        .index(1));
+                        .index(index));
                 if (allowPermissions.exists()) {
                     allowPermissions.click();
                     device.waitForIdle();
