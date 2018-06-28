@@ -13,14 +13,13 @@ import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Body;
-import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeUtility;
+import com.fsck.k9.message.SimpleMessageFormat;
 
 import org.apache.commons.io.IOUtils;
 import org.pEp.jniadapter.CommType;
@@ -35,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -59,7 +59,7 @@ public class PEpUtils {
     public static Vector<Identity> createIdentities(List<Address> addressList, Context context) {
         Vector<Identity> rv = new Vector<>(addressList.size());
         for (Address adr : addressList)
-            if(adr.getAddress() != null) {
+            if (adr.getAddress() != null) {
                 rv.add(createIdentity(adr, context));
             }
         return rv;
@@ -74,7 +74,7 @@ public class PEpUtils {
         if (adr.getPersonal() != null) {
             id.username = adr.getPersonal();
         }
-       if (isMyself(context, adr)) {
+        if (isMyself(context, adr)) {
             id.user_id = PEpProvider.PEP_OWN_USER_ID;
             return id;
         }
@@ -136,7 +136,8 @@ public class PEpUtils {
     }
 
     static List<Address> createAddressesList(Vector<Identity> ids) {
-        if (ids == null) return Collections.emptyList();                // this should be consistent with pep api
+        if (ids == null)
+            return Collections.emptyList();                // this should be consistent with pep api
         List<Address> rv = new ArrayList<>(ids.size());
         int idx = 0;
         for (Identity i : ids)
@@ -375,7 +376,8 @@ public class PEpUtils {
 
     public static boolean ispEpDisabled(Account account, Rating messageRating) {
         return messageRating == Rating.pEpRatingUndefined
-                || !account.ispEpPrivacyProtected();    }
+                || !account.ispEpPrivacyProtected();
+    }
 
     @WorkerThread
     public static void pEpGenerateAccountKeys(Context context, Account account) {
@@ -466,11 +468,11 @@ public class PEpUtils {
         if (rating.value != Rating.pEpRatingMistrust.value
                 && rating.value < Rating.pEpRatingReliable.value) {
             return context.getResources().getDrawable(R.drawable.pep_status_gray);
-        }else if (rating.value == Rating.pEpRatingMistrust.value) {
+        } else if (rating.value == Rating.pEpRatingMistrust.value) {
             return context.getResources().getDrawable(R.drawable.pep_status_red);
-        } else if (rating.value >= Rating.pEpRatingTrusted.value){
+        } else if (rating.value >= Rating.pEpRatingTrusted.value) {
             return context.getResources().getDrawable(R.drawable.pep_status_green);
-        } else if (rating.value == Rating.pEpRatingReliable.value){
+        } else if (rating.value == Rating.pEpRatingReliable.value) {
             return context.getResources().getDrawable(R.drawable.pep_status_yellow);
         }
         return context.getResources().getDrawable(R.drawable.pep_status_gray);
@@ -480,11 +482,11 @@ public class PEpUtils {
         if (rating.value != Rating.pEpRatingMistrust.value
                 && rating.value < Rating.pEpRatingReliable.value) {
             return context.getResources().getDrawable(R.drawable.pep_status_gray_white);
-        }else if (rating.value == Rating.pEpRatingMistrust.value) {
+        } else if (rating.value == Rating.pEpRatingMistrust.value) {
             return context.getResources().getDrawable(R.drawable.pep_status_red_white);
-        } else if (rating.value >= Rating.pEpRatingTrusted.value){
+        } else if (rating.value >= Rating.pEpRatingTrusted.value) {
             return context.getResources().getDrawable(R.drawable.pep_status_green_white);
-        } else if (rating.value == Rating.pEpRatingReliable.value){
+        } else if (rating.value == Rating.pEpRatingReliable.value) {
             return context.getResources().getDrawable(R.drawable.pep_status_yellow_white);
         }
         return context.getResources().getDrawable(R.drawable.pep_status_gray_white);
@@ -493,7 +495,7 @@ public class PEpUtils {
     public static String addressesToString(Address[] addresses) {
         String addressesText = "";
         for (int i = 0; i < addresses.length; i++) {
-            if(i < addresses.length - 1) {
+            if (i < addresses.length - 1) {
                 addressesText += addresses[i].getAddress() + ", ";
             } else {
                 addressesText += addresses[i].getAddress();
@@ -528,5 +530,45 @@ public class PEpUtils {
                 || message.getFolder().getName().equals(account.getDraftsFolderName())
                 || message.getFolder().getName().equals(account.getOutboxFolderName());
     }
+
+    public static Message generateKeyImportRequest(Context context, PEpProvider pEp, Account account,
+                                                   boolean ispEp, boolean encrypted) throws MessagingException {
+        org.pEp.jniadapter.Message result;
+        result = new org.pEp.jniadapter.Message();
+        Address address = new Address(account.getEmail());
+        Identity identity = createIdentity(address, context);
+        identity = pEp.myself(identity);
+        result.setFrom(identity);
+        result.setTo(new Vector<>(Collections.singletonList(identity)));
+        ArrayList<org.pEp.jniadapter.Pair<String, String>> fields = new ArrayList<>();
+        fields.add(new org.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_KEY_IMPORT, identity.fpr));
+        fields.add(new org.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_AUTOCONSUME, "yes"));
+        result.setOptFields(fields);
+
+        result.setSent(new Date(System.currentTimeMillis()));
+        result.setEncFormat(org.pEp.jniadapter.Message.EncFormat.None);
+
+        MimeMessageBuilder builder = new MimeMessageBuilder(result).newInstance();
+
+        builder = (MimeMessageBuilder) builder.setSubject("Please ignore, this message is part of import key protocol")
+                .setSentDate(new Date())
+                .setHideTimeZone(K9.hideTimeZone())
+                .setIdentity(account.getIdentity(0))
+                .setTo(Collections.singletonList(address))
+//                .setIdentity(identity)
+                .setMessageFormat(SimpleMessageFormat.TEXT)
+                .setForcedUnencrypted(!encrypted)
+
+                .setAttachments(Collections.emptyList());
+
+        if (ispEp) {
+            result.setLongmsg("");
+        } else {
+            result.setLongmsg(context.getString(R.string.pgp_key_import_instructions));
+        }
+
+        return builder.parseMessage(result);
+    }
+
 }
 

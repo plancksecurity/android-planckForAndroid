@@ -790,7 +790,7 @@ public class K9 extends Application {
         language = Locale.getDefault().getLanguage();
         String trust = pEpSyncProvider.trustwords(myself, partner, language, true);
         Context context = K9.this.getApplicationContext();
-        Intent syncTrustowordsActivity = PEpAddDevice.getActionRequestHandshake(context, trust, myself, partner, explanation);
+        Intent syncTrustowordsActivity = PEpAddDevice.getActionRequestHandshake(context, trust, myself, partner, explanation, false);
         syncTrustowordsActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 22, syncTrustowordsActivity, 0);
         try {

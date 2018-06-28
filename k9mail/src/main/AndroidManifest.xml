@@ -518,7 +518,10 @@
             android:excludeFromRecents="true"
             android:launchMode="singleInstance"
             android:theme="@style/Base.Theme.AppCompat.Light.Dialog" />
-        <activity android:name=".pEp.manualsync.ImportWizardFromPGP"></activity>
+        <activity android:name=".pEp.manualsync.ImportWizardFrompEp"
+            android:theme="@style/Base.Theme.AppCompat.Light.Dialog"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"/>
     </application>
 
 </manifest>

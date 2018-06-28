@@ -6,7 +6,7 @@ import com.fsck.k9.pEp.filepicker.SelectPathFragment;
 import com.fsck.k9.pEp.infrastructure.PerActivity;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
-import com.fsck.k9.pEp.manualsync.ImportWizardFromPGP;
+import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
 import com.fsck.k9.pEp.ui.About;
 import com.fsck.k9.pEp.ui.activities.PermissionsActivity;
 import com.fsck.k9.pEp.ui.blacklist.PepBlacklist;
@@ -60,5 +60,5 @@ import dagger.Component;
 
     void inject(KeyImportActivity activity);
 
-    void inject(ImportWizardFromPGP activity);
+    void inject(ImportWizardFrompEp activity);
 }

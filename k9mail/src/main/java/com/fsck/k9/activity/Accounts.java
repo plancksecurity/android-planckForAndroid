@@ -10,7 +10,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -53,7 +52,8 @@ import com.fsck.k9.helper.SizeFormatter;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.PEpImporterActivity;
-import com.fsck.k9.pEp.manualsync.ImportWizardFromPGP;
+import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
+import com.fsck.k9.pEp.manualsync.KeySourceType;
 import com.fsck.k9.pEp.ui.About;
 import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
@@ -986,17 +986,23 @@ public class Accounts extends PEpImporterActivity {
                 case R.id.move_down:
                     onMove(realAccount, false);
                     break;
-                case R.id.import_PGP_key:
-                    onImportPgpKey(realAccount);
+                case R.id.import_pEp_key:
+                    onImportpEpKey(realAccount);
                     break;
             }
         }
         return true;
     }
 
-    private void onImportPgpKey(Account realAccount) {
+    private void onImportPGPKey(Account realAccount) {
         Toast.makeText(getApplicationContext(), "Not implemented yet", Toast.LENGTH_LONG).show();
-        ImportWizardFromPGP.actionStartImportPgpKey(getApplicationContext());
+        ImportWizardFrompEp.actionStartImportpEpKey(getApplicationContext(), realAccount.getUuid(), true, KeySourceType.PGP, null);
+
+    }
+
+    private void onImportpEpKey(Account realAccount) {
+        Toast.makeText(getApplicationContext(), "Not implemented yet", Toast.LENGTH_LONG).show();
+        ImportWizardFrompEp.actionStartImportpEpKey(getApplicationContext(), realAccount.getUuid(), true, KeySourceType.PEP, null);
     }
 
 

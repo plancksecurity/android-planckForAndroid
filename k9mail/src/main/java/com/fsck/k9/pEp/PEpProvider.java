@@ -205,6 +205,10 @@ public interface PEpProvider {
 
     Map<String, PEpLanguage> obtainLanguages();
 
+    com.fsck.k9.mail.Message generatePrivateKeyMessage(MimeMessage message, String fpr);
+
+    Message encryptMessage(Message result);
+
     class KeyDetail {
         private final Address address;
         private final String fpr;

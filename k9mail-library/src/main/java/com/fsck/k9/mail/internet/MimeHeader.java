@@ -22,6 +22,7 @@ public class MimeHeader implements Cloneable {
     public static final String HEADER_PEP_VERSION = "X-pEp-Version";
     public static final String HEADER_PEP_KEY_LIST = "X-KeyList";
     public static final String HEADER_PEP_AUTOCONSUME = "pEp-auto-consume";
+    public static final String HEADER_PEP_KEY_IMPORT = "pEp-key-import";
 
     public static final String URI_SCHEME_SEPARATOR = "://";
     public static final String CID_SCHEME = "cid" + URI_SCHEME_SEPARATOR;

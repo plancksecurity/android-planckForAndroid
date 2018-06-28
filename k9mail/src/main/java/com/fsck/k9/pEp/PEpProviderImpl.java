@@ -196,9 +196,9 @@ public class PEpProviderImpl implements PEpProvider {
                     && decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE)[0].equals(PEP_ALWAYS_SECURE_TRUE);
             decMsg.setFlag(Flag.X_PEP_NEVER_UNSECURE, neverUnprotected);
             if (isUsablePrivateKey(decReturn)) {
-                return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg), -1);
+                return new DecryptResult(decMsg, decReturn.rating, new KeyDetail("", null), decReturn.flags);
             }
-           else return new DecryptResult(decMsg, decReturn.rating, null, decReturn.flags);
+           else return new DecryptResult(decMsg, decReturn.rating, null, -1);
 //        } catch (pEpMessageConsume | pEpMessageIgnore pe) {
 //            // TODO: 15/11/16 deal with it as flag not exception
 //            //  throw pe;
@@ -1002,6 +1002,32 @@ public class PEpProviderImpl implements PEpProvider {
             Timber.e(e);
             return null;
         }
+    }
+
+    @Override
+    public com.fsck.k9.mail.Message generatePrivateKeyMessage(MimeMessage message, String fpr) {
+        createEngineInstanceIfNeeded();
+        try {
+            Message containerMsg = new PEpMessageBuilder(message).createMessage(context);
+            containerMsg.setDir(Message.Direction.Outgoing);
+            return getMimeMessage(engine.encrypt_message_and_add_priv_key(containerMsg, fpr));
+        } catch (pEpException e) {
+            e.printStackTrace();
+            Log.e(TAG, "generatePrivateKeyMessage: ", e);
+        }
+
+        return null;
+    }
+
+    @Override
+    public Message encryptMessage(Message result) {
+
+        try {
+            return engine.encrypt_message(result, null, result.getEncFormat());
+        } catch (pEpException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private String getElementAtPosition(String chain) {
