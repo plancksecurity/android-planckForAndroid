@@ -73,7 +73,7 @@ import java.util.concurrent.SynchronousQueue;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
-@ReportsCrashes(mailTo = "crashreport@prettyeasyprivacy.com",
+@ReportsCrashes(mailTo = "crashreport@pep.security",
         mode = ReportingInteractionMode.TOAST,
         resToastText = R.string.crash_toast_text)
 public class K9 extends Application {
