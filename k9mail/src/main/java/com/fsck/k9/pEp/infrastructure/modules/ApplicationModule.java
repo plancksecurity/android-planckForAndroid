@@ -1,6 +1,7 @@
 package com.fsck.k9.pEp.infrastructure.modules;
 
 
+import android.app.Application;
 import android.content.Context;
 
 import com.fsck.k9.K9;
@@ -26,7 +27,7 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    Context provideContext() {
+    Application provideContext() {
         return application;
     }
 

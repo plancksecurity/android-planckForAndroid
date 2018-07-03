@@ -79,7 +79,7 @@ import timber.log.Timber.DebugTree;
 public class K9 extends Application {
     public static final int POLLING_INTERVAL = 1000;
     private Poller poller;
-    private boolean needsFastPoll;
+    private boolean needsFastPoll = false;
     private boolean isPollingMessages;
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PEpProvider pEpProvider, pEpSyncProvider;
@@ -94,6 +94,14 @@ public class K9 extends Application {
 
     public void batteryOptimizationAsked() {
         batteryOptimizationAsked = true;
+    }
+
+    public void enableFastPolling() {
+        needsFastPoll = true;
+    }
+
+    public void disableFastPolling() {
+        needsFastPoll = false;
     }
 
     /**
@@ -721,9 +729,9 @@ public class K9 extends Application {
 
     private void pEpInitEnvironment() {
         AndroidHelper.setup(this);
+        setupFastPoller();
         if (pEpSyncEnabled) {
             initSync();
-            setupFastPoller();
         }
     }
 

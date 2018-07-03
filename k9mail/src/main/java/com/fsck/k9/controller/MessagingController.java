@@ -203,7 +203,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         this.notificationController = notificationController;
         this.contacts = contacts;
         this.transportProvider = transportProvider;
-        importKeyController = new ImportKeyController();
+        importKeyController = new ImportKeyController(((K9) context.getApplicationContext()));
         controllerThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -1752,6 +1752,7 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                             sender.user_id = PEpProvider.PEP_OWN_USER_ID;
 
                             if (containsPrivateOwnKey(result)) {
+                                ((K9) context.getApplicationContext()).disableFastPolling();
                                 if (importKeyController.isStarter()) {
                                     pEpProvider.setOwnIdentity(sender, sender.fpr);
                                     ImportWizardFrompEp.notifyPrivateKeyImported(context);
@@ -4302,7 +4303,6 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
 
     public void checkpEpSyncMail(final Context context,
                           final PEpProvider.CompletedCallback completedCallback) {
-        final boolean ignoreLastCheckedTime = true;
         final boolean useManualWakeLock = true;
 
         TracingWakeLock twakeLock = null;
@@ -4329,7 +4329,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
                     Collection<Account> accounts = prefs.getAvailableAccounts();
 
                     for (final Account account : accounts) {
-                        checkpEpSyncMailForAccount(context, account, ignoreLastCheckedTime, null);
+                        checkpEpSyncMailForAccount(account, null);
                     }
 
                 } catch (Exception e) {
@@ -4439,22 +4439,11 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
 
 
     }
-    private void checkpEpSyncMailForAccount(final Context context, final Account account,
-                                     final boolean ignoreLastCheckedTime,
+    private void checkpEpSyncMailForAccount(final Account account,
                                      final MessagingListener listener) {
-//        if (!account.isAvailable(context)) {
-//            if (K9.isDebug()) {
-//                Timber.i(K9.LOG_TAG, "Skipping synchronizing unavailable account " + account.getDescription());
-//            }
-//            return;
-//        }
+
         final long accountInterval = account.getAutomaticCheckIntervalMinutes() * 60 * 1000;
-//Useless ignoreLastChecked always true
-//        if (!ignoreLastCheckedTime && accountInterval <= 0) {
-//            if (K9.isDebug())
-//                Timber.i(K9.LOG_TAG, "Skipping synchronizing account " + account.getDescription());
-//            return;
-//        }
+
 
         if (K9.isDebug())
             Timber.i(K9.LOG_TAG, "Synchronizing account " + account.getDescription());
@@ -4497,7 +4486,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
                 }
                 if (!folder.getName().equals(account.getDraftsFolderName())
                         && !folder.getName().equals(account.getOutboxFolderName())){
-                    synchronizepEpSyncFolder(account, folder, ignoreLastCheckedTime, accountInterval, listener);
+                    synchronizepEpSyncFolder(account, folder, true, accountInterval, listener);
                 }
             }
         } catch (MessagingException e) {
