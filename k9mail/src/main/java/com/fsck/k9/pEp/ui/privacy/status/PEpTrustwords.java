@@ -14,6 +14,7 @@ import android.widget.ViewSwitcher;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 import com.fsck.k9.pEp.PEpLanguage;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
@@ -187,16 +188,19 @@ public class PEpTrustwords extends PepColoredActivity {
     }
 
     private void loadPartnerRating() {
+        EspressoTestingIdlingResource.increment();
         getpEp().getRating(partner, new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
                 setpEpRating(rating);
                 colorActionBar();
+                EspressoTestingIdlingResource.decrement();
             }
 
             @Override
             public void onError(Throwable throwable) {
                 setpEpRating(Rating.pEpRatingUndefined);
+                EspressoTestingIdlingResource.decrement();
             }
         });
     }
