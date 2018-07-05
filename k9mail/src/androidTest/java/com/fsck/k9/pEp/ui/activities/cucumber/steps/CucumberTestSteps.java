@@ -90,7 +90,7 @@ public class CucumberTestSteps {
         activityTestRule.finishActivity();
     }
 
-    @When(value = "^I create an account$", timeout = 0L)
+    @When(value = "^I create an account$")
     public void I_create_account() {
         testUtils.createAccount(false);
     }
@@ -111,12 +111,6 @@ public class CucumberTestSteps {
         }
         fillMessage(cucumberMessageTo);
     }
-/*
-    @Then("^I fill messageTo field with 2 emails (\\S+) (\\S+)$")
-    public void iFillMessageToFieldWithEmailsBot(String firstMail, String secondMail){
-        String messageTo = firstMail + " " + secondMail;
-        fillMessage(messageTo);
-    }*/
 
     String ifEmptyString(String name){
         if (name.equals("empty")){
@@ -351,12 +345,6 @@ public class CucumberTestSteps {
 
     @Then("^I check toolBar color is (\\S+)$")
     public void I_check_toolBar_color_is(String color){
-        //InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        try {
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         testUtils.checkToolbarColor(testUtils.colorToID(color));
     }
 
