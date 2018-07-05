@@ -409,6 +409,7 @@ public class CucumberTestSteps {
         try{
             Assert.assertEquals(K9.Theme.LIGHT, K9.getK9Theme());
         }catch (AssertionFailedError exception){
+            Timber.e("Theme is not light");
         }
     }
 
