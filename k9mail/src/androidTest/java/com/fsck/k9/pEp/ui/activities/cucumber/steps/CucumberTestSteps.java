@@ -112,7 +112,7 @@ public class CucumberTestSteps {
         fillMessage(cucumberMessageTo);
     }
 
-    String ifEmptyString(String name){
+    private String ifEmptyString(String name){
         if (name.equals("empty")){
             name = " ";
         }
@@ -266,7 +266,7 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
-    void fillMessage(String to){
+    private void fillMessage(String to){
         testUtils.fillMessage(new TestUtils.BasicMessage("", "", "", to), false);
 
     }
@@ -412,7 +412,7 @@ public class CucumberTestSteps {
         }
     }
 
-    void startTimer(){
+    private void startTimer(){
         final int[] time = {0};
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
