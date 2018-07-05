@@ -313,6 +313,12 @@ public class TestUtils {
                 device.waitForIdle();
                 device.findObject(By.res(APP_ID, "to")).click();
                 device.waitForIdle();
+                device.findObject(By.res(APP_ID, "subject")).click();
+                device.waitForIdle();
+                device.findObject(By.res(APP_ID, "message_content")).click();
+                device.waitForIdle();
+                device.findObject(By.res(APP_ID, "to")).click();
+                device.waitForIdle();
                 onView(withId(R.id.to)).perform(typeText(inputMessage.getTo()), closeSoftKeyboard());
                 doWaitForResource(R.id.subject);
                 device.waitForIdle();
@@ -561,7 +567,10 @@ public class TestUtils {
     public void checkToolbarColor(int color) {
         boolean toolbarExists = false;
         while (!toolbarExists) {
-            if (exists(onView(withId(R.id.toolbar)))) {
+            waitUntilIdle();
+            device.waitForIdle();
+            if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar)) {
+                device.waitForIdle();
                 onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(color)));
                 toolbarExists = true;
             }
