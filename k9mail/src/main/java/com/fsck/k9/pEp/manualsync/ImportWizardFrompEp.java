@@ -44,7 +44,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         } else if (intent.hasExtra(IMPORTED)) {
             if (intent.getBooleanExtra(IMPORTED, false)) {
                 presenter.onPrivateKeyReceived();
-            };
+            }
         }
         Toast.makeText(getApplicationContext(), "Key import event produced", Toast.LENGTH_LONG).show();
     }
@@ -181,12 +181,6 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     }
 
     @Override
-    public void finish() {
-        super.finish();
-        Toast.makeText(getApplicationContext(), "Key import canceled", Toast.LENGTH_LONG).show();
-    }
-
-    @Override
     public void renderWaitingForHandshake() {
         currentAction.setText("Waiting handshake");
     }
@@ -232,6 +226,17 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     }
 
     @Override
+    public void close() {
+        finish();
+    }
+
+    @Override
+    public void cancel() {
+        close();
+        Toast.makeText(getApplicationContext(), "Key import canceled", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_CANCELED) {
@@ -246,7 +251,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         loading.setVisibility(View.INVISIBLE);
         currentAction.setVisibility(View.INVISIBLE);
         action.setText("close");
-        action.setOnClickListener(view -> presenter.cancel());
+        action.setOnClickListener(view -> presenter.close());
     }
 
     public static void notifyPrivateKeyImported(Context context) {

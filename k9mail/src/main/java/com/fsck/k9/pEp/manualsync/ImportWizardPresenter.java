@@ -81,7 +81,7 @@ public class ImportWizardPresenter implements Presenter {
 
     public void cancel() {
         importKeyController.cancel();
-        view.finish();
+        view.cancel();
     }
 
     public void start() {
@@ -134,6 +134,11 @@ public class ImportWizardPresenter implements Presenter {
     public void onPrivateKeyReceived() {
         Timber.e(importKeyController.getState().name());
         view.finishImportSuccefully();
+    }
+
+    public void close() {
+        importKeyController.finish();
+        view.close();
     }
 
 
