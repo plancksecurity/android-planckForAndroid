@@ -995,13 +995,11 @@ public class Accounts extends PEpImporterActivity {
     }
 
     private void onImportPGPKey(Account realAccount) {
-        Toast.makeText(getApplicationContext(), "Not implemented yet", Toast.LENGTH_LONG).show();
         ImportWizardFrompEp.actionStartImportpEpKey(getApplicationContext(), realAccount.getUuid(), true, KeySourceType.PGP, null);
 
     }
 
     private void onImportpEpKey(Account realAccount) {
-        Toast.makeText(getApplicationContext(), "Not implemented yet", Toast.LENGTH_LONG).show();
         ImportWizardFrompEp.actionStartImportpEpKey(getApplicationContext(), realAccount.getUuid(), true, KeySourceType.PEP, null);
     }
 
