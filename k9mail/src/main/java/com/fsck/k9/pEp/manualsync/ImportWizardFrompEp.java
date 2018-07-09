@@ -46,7 +46,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
                 presenter.onPrivateKeyReceived();
             };
         }
-        Toast.makeText(getApplicationContext(), "Key import even produced", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Key import event produced", Toast.LENGTH_LONG).show();
     }
 
     @Bind(R.id.tvCurrentAction)
