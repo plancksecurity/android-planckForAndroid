@@ -100,7 +100,7 @@ public class TestUtils {
     private Context context;
     private Resources resources;
     private Instrumentation instrumentation;
-    int messageListSize[] = new int[2];
+    private int messageListSize[] = new int[2];
 
     public static final int TIMEOUT_TEST = FIVE_MINUTES * MINUTE_IN_SECONDS * SECOND_IN_MILIS;
 
@@ -195,7 +195,7 @@ public class TestUtils {
 
     }
 
-    public void assertCurrentActivityIsInstanceOf(Class<? extends Activity> activityClass) {
+    private void assertCurrentActivityIsInstanceOf(Class<? extends Activity> activityClass) {
         Activity currentActivity = getCurrentActivity();
         checkNotNull(currentActivity);
         checkNotNull(activityClass);
@@ -205,13 +205,11 @@ public class TestUtils {
      Activity getCurrentActivity() {
 
          final Activity[] resumedActivity = {null};
-         getInstrumentation().runOnMainSync(new Runnable() {
-             public void run() {
-                 Collection resumedActivities = ActivityLifecycleMonitorRegistry.getInstance()
-                         .getActivitiesInStage(RESUMED);
-                 if (resumedActivities.iterator().hasNext()) {
-                     resumedActivity[0] = (Activity) resumedActivities.iterator().next();
-                 }
+         getInstrumentation().runOnMainSync(() -> {
+             Collection resumedActivities = ActivityLifecycleMonitorRegistry.getInstance()
+                     .getActivitiesInStage(RESUMED);
+             if (resumedActivities.iterator().hasNext()) {
+                 resumedActivity[0] = (Activity) resumedActivities.iterator().next();
              }
          });
          return resumedActivity[0];
@@ -269,12 +267,12 @@ public class TestUtils {
         }
     }
 
-    void allowPermissions(){
+    private void allowPermissions(){
         allowPermissions(2);
         allowPermissions(1);
     }
 
-    void allowPermissions(int index) {
+    private void allowPermissions(int index) {
         boolean existPermission = false;
         while (!existPermission){
             try {
@@ -470,7 +468,7 @@ public class TestUtils {
         }
     }
 
-    void longClick(String viewId) {
+    private void longClick(String viewId) {
         UiObject2 list = device.findObject(By.res(APP_ID, viewId));
         Rect bounds = list.getVisibleBounds();
         device.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 450);
@@ -676,7 +674,7 @@ public class TestUtils {
             }
     }
 
-    void doWaitForIdlingListViewResource(int resource){
+    private void doWaitForIdlingListViewResource(int resource){
         IdlingResource idlingResourceListView;
         device.waitForIdle();
         idlingResourceListView = new ListViewIdlingResource(instrumentation,
@@ -753,7 +751,7 @@ public class TestUtils {
             try {
                 textIsOk = getTextFromTextViewThatContainsText(text).contains(resources.getString(R.string.special_mailbox_name_sent));
             } catch (Exception e) {
-
+                Timber.i("Text is not on the screen");
             }
         } while (!textIsOk);
     }
@@ -808,10 +806,10 @@ public class TestUtils {
         getMessageListSize();
     }
 
-    void getMessageListSize(){
+    private void getMessageListSize(){
         onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));}
 
-    void swipeDownMessageList (){
+    private void swipeDownMessageList(){
         boolean actionPerformed = false;
         while (!actionPerformed) {
             try {
@@ -824,7 +822,7 @@ public class TestUtils {
         }
     }
 
-    void removeMessagesFromList(){
+    private void removeMessagesFromList(){
         clickFirstMessage();
             boolean emptyList = false;
             while (!emptyList){
