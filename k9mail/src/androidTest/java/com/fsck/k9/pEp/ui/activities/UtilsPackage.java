@@ -215,7 +215,7 @@ public class UtilsPackage {
         }
           return value[0];
     }
-    public static Matcher<View> valuesAreEqual(final String firstValue, final String secondValue) {
+    static Matcher<View> valuesAreEqual(final String firstValue, final String secondValue) {
 
         return new TypeSafeMatcher<View>() {
 
@@ -226,10 +226,7 @@ public class UtilsPackage {
 
             @Override
             public boolean matchesSafely(View view) {
-                if (firstValue.equals(secondValue)) {
-                    return true;
-                }
-                return false;
+                return firstValue.equals(secondValue);
             }
         };
     }
@@ -342,24 +339,15 @@ public class UtilsPackage {
         } catch (AmbiguousViewMatcherException ex) {
             // if there's any interaction later with the same matcher, that'll fail anyway
             return true; // we found more than one
-        } catch (NoMatchingViewException ex) {
-            return false;
-        } catch (NoMatchingRootException ex) {
-            // optional depending on what you think "exists" means
+        } catch (NoMatchingViewException | NoMatchingRootException ex) {
             return false;
         }
     }
 
-    public static boolean viewIsDisplayed(int viewId)
+    static boolean viewIsDisplayed(int viewId)
     {
         final boolean[] isDisplayed = {true};
-        onView(withId(viewId)).withFailureHandler(new FailureHandler() {
-            @Override
-            public void handle(Throwable error, Matcher<View> viewMatcher)
-            {
-                isDisplayed[0] = false;
-            }
-        }).check(matches(isDisplayed()));
+        onView(withId(viewId)).withFailureHandler((error, viewMatcher) -> isDisplayed[0] = false).check(matches(isDisplayed()));
         return isDisplayed[0];
     }
     public static ViewAction setChecked(final boolean checked) {
