@@ -611,6 +611,23 @@ public class TestUtils {
         return "not found";
     }
 
+    public boolean textExistsOnScreen (String text) {
+        boolean viewExists = false;
+        device.waitForIdle();
+        BySelector selector = By.clazz("android.view.View");
+        while (!viewExists) {
+            for (UiObject2 view : device.findObjects(selector)) {
+                if (view.getText() != null) {
+                    viewExists = true;
+                    if (view.getText().contains(text)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public void getActivityInstance() {
         waitForExternalApp();
         goBackToOriginalApp();
