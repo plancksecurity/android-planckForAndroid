@@ -20,7 +20,7 @@ Feature: Test
     And I press back
     And I check toolBar color is pep_green
     Then I click message compose
-    And I send 1 message to bot
+    And I send 1 message to bot with subject subject and body body
     Then I click last message received
     Then I check toolBar color is pep_yellow
     And I press back

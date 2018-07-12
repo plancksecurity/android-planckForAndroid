@@ -7,7 +7,7 @@ Feature: Test
   @login-scenarios
   Scenario: Test16 YellowStatusEmailFromBot
     When I click message compose
-    Then I send 1 message to bot
+    Then I send 1 message to bot with subject subject and body body
     And I click last message received
     Then I click view reply_message
     And I click view pEp_indicator

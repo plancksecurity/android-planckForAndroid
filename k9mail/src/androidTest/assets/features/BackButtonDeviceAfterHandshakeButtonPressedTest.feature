@@ -6,7 +6,7 @@ Feature: Test
 
   @login-scenarios
   Scenario: Test3 backButtonDeviceAfterHandshakeButtonPressed
-    When I send 3 messages to bot
+    When I send 3 messages to bot with subject subject and body body
     And I click last message received
     Then I click message status
     And I confirm trust words

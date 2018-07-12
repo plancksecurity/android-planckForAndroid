@@ -7,7 +7,7 @@ Feature: Test
   @login-scenarios
   Scenario: Test14 pEpStatusIncomingTrustedMessageShouldBeGreen
     Then I click message compose
-    And I send 1 message to bot
+    And I send 1 message to bot with subject subject and body body
     And I click last message received
     Then I click view tvPep
     And I click view confirmTrustWords
