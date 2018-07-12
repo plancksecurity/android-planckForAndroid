@@ -3,7 +3,6 @@ package com.fsck.k9.pEp.ui.activities;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.support.test.espresso.AmbiguousViewMatcherException;
-import android.support.test.espresso.FailureHandler;
 import android.support.test.espresso.NoMatchingRootException;
 import android.support.test.espresso.NoMatchingViewException;
 import android.support.test.espresso.UiController;
@@ -17,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.Checkable;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
