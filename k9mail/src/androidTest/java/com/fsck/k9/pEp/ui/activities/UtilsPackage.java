@@ -26,6 +26,8 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
+import timber.log.Timber;
+
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -187,33 +189,31 @@ public class UtilsPackage {
         };
     }
 
-    public static Matcher<View> hasValueEqualTo(final String content) {
-
-        return new TypeSafeMatcher<View>() {
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Has EditText/TextView the value:  " + content);
-            }
-
-            @Override
-            public boolean matchesSafely(View view) {
-                if (!(view instanceof TextView) && !(view instanceof EditText)) {
-                    return false;
-                }
-                if (view != null) {
-                    String text;
-                    if (view instanceof TextView) {
-                        text = ((TextView) view).getText().toString();
-                    } else {
-                        text = ((EditText) view).getText().toString();
+    public static boolean hasValueEqualTo(ViewInteraction interaction, final String content) {
+        final boolean[] value = {false};
+        try {
+            if (interaction != null) {
+                interaction.perform(new ViewAction() {
+                    @Override
+                    public Matcher<View> getConstraints() {
+                        return isAssignableFrom(TextView.class);
                     }
 
-                    return (text.equalsIgnoreCase(content));
-                }
-                return false;
+                    @Override
+                    public String getDescription() {
+                        return "check for existence";
+                    }
+
+                    @Override
+                    public void perform(UiController uiController, View view) {
+                        value[0] = ((TextView) view).getText().toString().equals(content);
+                    }
+                });
             }
-        };
+        } catch (Exception ex){
+            Timber.e("Can not compare TextView with " + content);
+        }
+          return value[0];
     }
     public static Matcher<View> valuesAreEqual(final String firstValue, final String secondValue) {
 
