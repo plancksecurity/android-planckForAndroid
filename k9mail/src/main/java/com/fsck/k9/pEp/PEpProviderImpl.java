@@ -196,7 +196,11 @@ public class PEpProviderImpl implements PEpProvider {
                     && decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE)[0].equals(PEP_ALWAYS_SECURE_TRUE);
             decMsg.setFlag(Flag.X_PEP_NEVER_UNSECURE, neverUnprotected);
             if (isUsablePrivateKey(decReturn)) {
-                return new DecryptResult(decMsg, decReturn.rating, new KeyDetail("", null), decReturn.flags);
+                if (decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)) {
+                    return new DecryptResult(decMsg, decReturn.rating, new KeyDetail("", null), decReturn.flags);
+                } else {
+                    return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg), decReturn.flags);
+                }
             } else if (decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)) {
                 Date lastValidDate = new Date(System.currentTimeMillis() - (TIMEOUT));
                 int flags = -1;

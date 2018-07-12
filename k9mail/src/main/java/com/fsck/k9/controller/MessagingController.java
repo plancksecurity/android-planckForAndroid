@@ -1745,7 +1745,7 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                         if (result.rating.value < Rating.pEpRatingTrusted.value) {
                             if (message.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT).length > 0) {
                                 importKeyController.setSenderKey(message.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT)[0]);
-                            } else {
+                            } else if (result.msg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)){
                                 importKeyController.setSenderKey(result.msg.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT)[0]);
                             }
                         }
@@ -1764,7 +1764,7 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
 
                         String senderKey = importKeyController.getSenderKey();
                         boolean isOwnMessage = senderKey.equals(myself.fpr);
-                        if (!isOwnMessage) {
+                        if (!isOwnMessage || isPGPKeyImportMessage(message, result, account, importKeyWizardState)) {
                             Log.i("ManualImport", "Other device message");
                             org.pEp.jniadapter.Identity sender = createSenderIdentity(account, senderKey);
 
@@ -1927,10 +1927,22 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
         return sender;
     }
 
-    private <T extends Message> boolean isKeyImportMessage(T message, PEpProvider.DecryptResult result, Account account, ImportKeyWizardState state) {
+    private <T extends Message> boolean ispEpKeyImportMessage(T message, PEpProvider.DecryptResult result, Account account, ImportKeyWizardState state) {
         return !PEpUtils.isMessageOnOutgoingFolder(message, account) /*&& result.keyDetails != null */&&
                 (message.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT).length > 0
                 || result.msg.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT).length > 0);
+    }
+
+
+    private <T extends Message> boolean isPGPKeyImportMessage(T message, PEpProvider.DecryptResult result, Account account, ImportKeyWizardState state) {
+        return ((K9) context).isShowingKeyimportDialog() && !PEpUtils.isMessageOnOutgoingFolder(message, account)
+                && result.rating.equals(Rating.pEpRatingReliable)
+                && result.msg.getFrom()[0].getAddress().equals(account.getEmail());
+    }
+
+    private <T extends Message> boolean isKeyImportMessage(T message, PEpProvider.DecryptResult result, Account account, ImportKeyWizardState state) {
+        return ispEpKeyImportMessage(message, result, account, state)
+                || isPGPKeyImportMessage(message, result, account, state);
     }
 
     private boolean containsPrivateOwnKey(PEpProvider.DecryptResult result) {

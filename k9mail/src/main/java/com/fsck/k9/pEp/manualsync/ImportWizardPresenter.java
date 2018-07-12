@@ -95,6 +95,7 @@ public class ImportWizardPresenter implements Presenter {
                 break;
             case BEACON_SENT:
                 Timber.e("Beacon sent");
+                view.setDialogEnabled();
                 if (ispEp) {
                     view.renderWaitingForHandshake();
                 } else {

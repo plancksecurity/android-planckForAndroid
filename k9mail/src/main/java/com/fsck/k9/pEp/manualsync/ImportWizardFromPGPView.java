@@ -24,4 +24,6 @@ interface ImportWizardFromPGPView {
     void close();
 
     void cancel();
+
+    void setDialogEnabled();
 }
