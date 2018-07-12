@@ -37,7 +37,7 @@ public class ImportWizardPresenter implements Presenter {
 
     @Override
     public void destroy() {
-
+        importKeyController.cancel();
     }
 
     public void onStartClicked(Account account, Callback callback) {
@@ -82,10 +82,6 @@ public class ImportWizardPresenter implements Presenter {
     public void cancel() {
         importKeyController.cancel();
         view.cancel();
-    }
-
-    public void start() {
-        importKeyController.start();
     }
 
     public void next() {

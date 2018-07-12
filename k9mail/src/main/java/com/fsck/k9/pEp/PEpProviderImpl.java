@@ -197,6 +197,16 @@ public class PEpProviderImpl implements PEpProvider {
             decMsg.setFlag(Flag.X_PEP_NEVER_UNSECURE, neverUnprotected);
             if (isUsablePrivateKey(decReturn)) {
                 return new DecryptResult(decMsg, decReturn.rating, new KeyDetail("", null), decReturn.flags);
+            } else if (decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)) {
+                Date lastValidDate = new Date(System.currentTimeMillis() - (TIMEOUT));
+                int flags = -1;
+                if (lastValidDate.after(decMsg.getSentDate())) {
+                    flags = DecryptFlags.PEPDecryptFlagConsumed.value;
+                } else {
+                    flags = -1;
+                }
+
+                return new DecryptResult(decMsg, decReturn.rating, null, flags);
             }
            else return new DecryptResult(decMsg, decReturn.rating, null, -1);
 //        } catch (pEpMessageConsume | pEpMessageIgnore pe) {
