@@ -295,8 +295,8 @@ public class UtilsPackage {
         };
     }
 
-    public static ViewAction waitUntilIdle() {
-        return new ViewAction() {
+    static void waitUntilIdle() {
+        new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
                 return isRoot();
