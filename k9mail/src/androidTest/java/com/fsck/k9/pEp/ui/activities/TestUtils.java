@@ -503,20 +503,22 @@ public class TestUtils {
     }
 
     public void assertMessageStatus(int status){
-
         device.waitForIdle();
-        onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
-
-        device.waitForIdle();
-        doWaitForResource(R.id.pEp_indicator);
-        waitUntilIdle();
-        device.waitForIdle();
-        clickView(R.id.pEp_indicator);
-        while (!exists(onView(withId(R.id.pEpTitle)))){
-            doWaitForResource(R.id.pEpTitle);
+        if (!exists(onView(withId(R.id.tvPep)))) {
+            onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
             device.waitForIdle();
+            doWaitForResource(R.id.pEp_indicator);
+            waitUntilIdle();
+            device.waitForIdle();
+            clickView(R.id.pEp_indicator);
+            while (!exists(onView(withId(R.id.pEpTitle)))) {
+                doWaitForResource(R.id.pEpTitle);
+                device.waitForIdle();
+            }
+            onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
+        } else {
+            clickView(R.id.tvPep);
         }
-        onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
     }
 
     public void goBackAndSaveAsDraft (IntentsTestRule activity){
