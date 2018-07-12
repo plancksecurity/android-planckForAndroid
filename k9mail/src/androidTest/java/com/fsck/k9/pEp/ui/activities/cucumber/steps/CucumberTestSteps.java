@@ -7,7 +7,6 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
-import android.os.CountDownTimer;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.action.ViewActions;
@@ -20,9 +19,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.setup.WelcomeMessage;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
-import com.fsck.k9.pEp.ui.activities.SplashActivity;
 import com.fsck.k9.pEp.ui.activities.TestUtils;
-import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 
 import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
@@ -33,7 +30,6 @@ import org.junit.runner.RunWith;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
@@ -51,7 +47,8 @@ import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.isInternal;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static android.support.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.hasValueEqualTo;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 import static org.hamcrest.CoreMatchers.not;
@@ -87,6 +84,7 @@ public class CucumberTestSteps {
 
     @After
     public void tearDown() {
+        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
         activityTestRule.finishActivity();
     }
 
@@ -101,13 +99,22 @@ public class CucumberTestSteps {
         switch (cucumberMessageTo){
             case "empty":
                 cucumberMessageTo = " ";
+                device.waitForIdle();
+                while (!hasValueEqualTo(onView(withId(R.id.to)), " ")) {
+                    try {
+                        device.waitForIdle();
+                        onView(withId(R.id.to)).perform(typeText(cucumberMessageTo), closeSoftKeyboard());
+                        device.waitForIdle();
+                    } catch (Exception ex){
+                        Timber.i("Can not remove field 'to'");
+                    }
+                }
                 break;
             case "self":
                 cucumberMessageTo = testUtils.getTextFromTextViewThatContainsText("@");
                 break;
             case "bot":
                 cucumberMessageTo = messageToBot;
-
         }
         fillMessage(cucumberMessageTo);
     }
@@ -122,13 +129,17 @@ public class CucumberTestSteps {
     @When("^I fill messageSubject field with (\\S+)")
     public void I_fill_subject_field(String cucumberSubject) {
         cucumberSubject = ifEmptyString(cucumberSubject);
-        onView(withId(R.id.subject)).perform(typeText(cucumberSubject));
+        device.waitForIdle();
+        onView(withId(R.id.subject)).perform(click());
+        onView(withId(R.id.subject)).perform(typeText(cucumberSubject), closeSoftKeyboard());
     }
 
     @When("^I fill messageBody field with (\\S+)")
     public void I_fill_body_field(String cucumberBody) {
         cucumberBody = ifEmptyString(cucumberBody);
-        onView(withId(R.id.message_content)).perform(typeText(cucumberBody));
+        device.waitForIdle();
+        onView(withId(R.id.message_content)).perform(click());
+        onView(withId(R.id.message_content)).perform(typeText(cucumberBody), closeSoftKeyboard());
     }
 
 
@@ -145,6 +156,7 @@ public class CucumberTestSteps {
     @When("^I check status is (\\S+)$")
     public void I_check_pEp_status(String status) {
         int statusRating = 0;
+        device.waitForIdle();
         switch (status){
             case "pEpRatingUndefined":
                 statusRating = 0;
@@ -185,7 +197,6 @@ public class CucumberTestSteps {
             case "pEpRatingUnderAttack":
                 statusRating = -3;
                 break;
-
         }
         testUtils.assertMessageStatus(statusRating);
         device.waitForIdle();
