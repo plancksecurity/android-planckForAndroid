@@ -12,7 +12,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.net.Uri;
-import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -33,7 +32,6 @@ import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
 import android.text.format.DateUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 
 import com.fsck.k9.BuildConfig;
@@ -47,8 +45,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import timber.log.Timber;
@@ -317,8 +313,6 @@ public class TestUtils {
                 device.waitForIdle();
                 device.findObject(By.res(APP_ID, "message_content")).click();
                 device.waitForIdle();
-                device.findObject(By.res(APP_ID, "to")).click();
-                device.waitForIdle();
                 onView(withId(R.id.to)).perform(typeText(inputMessage.getTo()), closeSoftKeyboard());
                 doWaitForResource(R.id.subject);
                 device.waitForIdle();
@@ -507,13 +501,24 @@ public class TestUtils {
     }
 
     public void checkStatus(Rating rating) {
+        assertMessageStatus(rating.value);
+    }
+
+    public void assertMessageStatus(int status){
+
+        device.waitForIdle();
+        onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
+
+        device.waitForIdle();
+        doWaitForResource(R.id.pEp_indicator);
+        waitUntilIdle();
+        device.waitForIdle();
         clickView(R.id.pEp_indicator);
         while (!exists(onView(withId(R.id.pEpTitle)))){
             doWaitForResource(R.id.pEpTitle);
             device.waitForIdle();
         }
-        onView(withId(R.id.pEpTitle)).check(matches(isDisplayed()));
-        onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, rating.value))));
+        onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
     }
 
     public void goBackAndSaveAsDraft (IntentsTestRule activity){
@@ -696,23 +701,6 @@ public class TestUtils {
 
     String getResourceString(int id, int position) {
         return resources.getStringArray(id)[position];
-    }
-
-    public void assertMessageStatus(int status) {
-        boolean viewDisplayed = false;
-        while (!viewDisplayed){
-            try{
-                device.waitForIdle();
-                doWaitForResource(R.id.pEpTitle);
-                viewDisplayed = true;
-                device.waitForIdle();
-            } catch (Exception ex){
-                Timber.i("View not found: " + ex);
-            }
-        }
-        waitUntilIdle();
-        onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
-        device.waitForIdle();
     }
 
     public void clickMessageStatus() {
