@@ -142,6 +142,25 @@ public class CucumberTestSteps {
         onView(withId(R.id.message_content)).perform(typeText(cucumberBody), closeSoftKeyboard());
     }
 
+    @When("^I compare messageBody with (\\S+)")
+    public void I_compare_body(String cucumberBody) {
+        boolean viewExists = false;
+        testUtils.doWaitForResource(R.id.message_container);
+        while (!viewExists) {
+            device.waitForIdle();
+            if (exists(onView(withId(R.id.message_container)))) {
+                try {
+                    if (!testUtils.textExistsOnScreen(cucumberBody)) {
+                        Timber.e("Body doesn't have " + cucumberBody + " text");
+                    }
+                    viewExists = true;
+                } catch (Exception ex) {
+                    Timber.i("Body doesn't exist");
+                }
+            }
+        }
+    }
+
 
     @When("^I click last message received$")
     public void I_click_last_message_received() {
