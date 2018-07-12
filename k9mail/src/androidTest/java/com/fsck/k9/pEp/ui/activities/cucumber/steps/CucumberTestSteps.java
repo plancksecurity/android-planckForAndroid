@@ -263,13 +263,13 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
-    @Then("^I send (\\d+) (?:message|messages) to bot$")
-    public void I_send_messages_to_bot(int totalMessages) {
+    @Then("^I send (\\d+) (?:message|messages) to bot with subject (\\S+) and body (\\S+)$")
+    public void I_send_messages_to_bot(int totalMessages, String subject, String body) {
         device.waitForIdle();
         for (int message = 0; message < totalMessages; message++) {
             testUtils.composeMessageButton();
             device.waitForIdle();
-            testUtils.fillMessage(new TestUtils.BasicMessage("", "subject", "messageBody", messageToBot), false);
+            testUtils.fillMessage(new TestUtils.BasicMessage("", subject, body, messageToBot), false);
             testUtils.sendMessage();
             device.waitForIdle();
             testUtils.waitForNewMessage();
