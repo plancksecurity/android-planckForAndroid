@@ -1638,6 +1638,12 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
     @Override
     public void onMessageBuildSuccess(MimeMessage message, boolean isDraft) {
+        try {
+            message.setFlag(Flag.SEEN, true);
+        } catch (MessagingException e) {
+            //shall never happen at this point as the message is just build
+            Timber.e(e);
+        }
         if (isDraft) {
             changesMadeSinceLastSave = false;
             currentMessageBuilder = null;
