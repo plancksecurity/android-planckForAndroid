@@ -2025,6 +2025,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             menu.findItem(R.id.expunge).setVisible(false);
             menu.findItem(R.id.mark_all_as_read).setVisible(false);
             menu.findItem(R.id.show_folder_list).setVisible(false);
+            setDrawerEnabled(false);
         } else {
             menu.findItem(R.id.set_sort).setVisible(true);
             menu.findItem(R.id.select_all).setVisible(true);
@@ -2036,11 +2037,13 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 menu.findItem(R.id.expunge).setVisible(false);
                 menu.findItem(R.id.send_messages).setVisible(false);
                 menu.findItem(R.id.show_folder_list).setVisible(false);
+                setDrawerEnabled(false);
             } else {
                 menu.findItem(R.id.send_messages).setVisible(mMessageListFragment.isOutbox());
                 menu.findItem(R.id.expunge).setVisible(mMessageListFragment.isRemoteFolder() &&
                         mMessageListFragment.isAccountExpungeCapable());
                 menu.findItem(R.id.show_folder_list).setVisible(true);
+                setDrawerEnabled(true);
             }
 
             menu.findItem(R.id.check_mail).setVisible(mMessageListFragment.isCheckMailSupported());
