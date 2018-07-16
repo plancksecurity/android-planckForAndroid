@@ -155,16 +155,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
 
     private static MessagingController inst = null;
-
-
-    private PEpProvider pEpProvider;
-
+    private static AtomicBoolean loopCatch = new AtomicBoolean();
+    private static AtomicInteger sequencing = new AtomicInteger(0);
     private final Context context;
     private final Contacts contacts;
     private final NotificationController notificationController;
-
     private final Thread controllerThread;
-
     private final BlockingQueue<Command> queuedCommands = new PriorityBlockingQueue<>();
     private final Set<MessagingListener> listeners = new CopyOnWriteArraySet<>();
     private final ConcurrentHashMap<String, AtomicInteger> sendCount = new ConcurrentHashMap<>();
@@ -172,33 +168,15 @@ public class MessagingController implements Sync.MessageToSendCallback {
     private final ExecutorService threadPool = Executors.newCachedThreadPool();
     private final MemorizingMessagingListener memorizingMessagingListener = new MemorizingMessagingListener();
     private final TransportProvider transportProvider;
-
+    private PEpProvider pEpProvider;
     private MessagingListener checkMailListener = null;
     private volatile boolean stopped = false;
     private ImportKeyController importKeyController;
 
 
-    public static synchronized MessagingController getInstance(Context context) {
-        if (inst == null) {
-            Context appContext = context.getApplicationContext();
-            NotificationController notificationController = NotificationController.newInstance(appContext);
-            Contacts contacts = Contacts.getInstance(context);
-            TransportProvider transportProvider = TransportProvider.getInstance();
-            inst = new MessagingController(appContext, notificationController, contacts, transportProvider);
-        }
-        return inst;
-    }
-    public static synchronized MessagingController getInstance() {
-        if (inst == null) {
-            throw new IllegalStateException("Messaging controller not Initialized");
-        }
-        return inst;
-    }
-
-
     @VisibleForTesting
     MessagingController(Context context, NotificationController notificationController,
-            Contacts contacts, TransportProvider transportProvider) {
+                        Contacts contacts, TransportProvider transportProvider) {
         this.context = context;
         this.notificationController = notificationController;
         this.contacts = contacts;
@@ -213,6 +191,57 @@ public class MessagingController implements Sync.MessageToSendCallback {
         controllerThread.setName("MessagingController");
         controllerThread.start();
         addListener(memorizingMessagingListener);
+    }
+
+    public static synchronized MessagingController getInstance(Context context) {
+        if (inst == null) {
+            Context appContext = context.getApplicationContext();
+            NotificationController notificationController = NotificationController.newInstance(appContext);
+            Contacts contacts = Contacts.getInstance(context);
+            TransportProvider transportProvider = TransportProvider.getInstance();
+            inst = new MessagingController(appContext, notificationController, contacts, transportProvider);
+        }
+        return inst;
+    }
+
+    public static synchronized MessagingController getInstance() {
+        if (inst == null) {
+            throw new IllegalStateException("Messaging controller not Initialized");
+        }
+        return inst;
+    }
+
+    private static void closeFolder(Folder f) {
+        if (f != null) {
+            f.close();
+        }
+    }
+
+    private static List<Message> collectMessagesInThreads(Account account, List<? extends Message> messages)
+            throws MessagingException {
+
+        LocalStore localStore = account.getLocalStore();
+
+        List<Message> messagesInThreads = new ArrayList<>();
+        for (Message message : messages) {
+            LocalMessage localMessage = (LocalMessage) message;
+            long rootId = localMessage.getRootId();
+            long threadId = (rootId == -1) ? localMessage.getThreadId() : rootId;
+
+            List<? extends Message> messagesInThread = localStore.getMessagesInThread(threadId);
+
+            messagesInThreads.addAll(messagesInThread);
+        }
+
+        return messagesInThreads;
+    }
+
+    private static List<String> getUidsFromMessages(List<? extends Message> messages) {
+        List<String> uids = new ArrayList<>(messages.size());
+        for (int i = 0; i < messages.size(); i++) {
+            uids.add(messages.get(i).getUid());
+        }
+        return uids;
     }
 
     @VisibleForTesting
@@ -274,7 +303,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void putCommand(BlockingQueue<Command> queue, String description, MessagingListener listener,
-            Runnable runnable, boolean isForeground) {
+                            Runnable runnable, boolean isForeground) {
         int retries = 10;
         Exception e = null;
         while (retries-- > 0) {
@@ -313,7 +342,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
         return listeners;
     }
 
-
     public Set<MessagingListener> getListeners(MessagingListener listener) {
         if (listener == null) {
             return listeners;
@@ -324,7 +352,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
         return listeners;
 
     }
-
 
     private void suppressMessages(Account account, List<LocalMessage> messages) {
         EmailProviderCache cache = EmailProviderCache.getCache(account.getUuid(), context);
@@ -345,7 +372,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void setFlagInCache(final Account account, final List<Long> messageIds,
-            final Flag flag, final boolean newState) {
+                                final Flag flag, final boolean newState) {
 
         EmailProviderCache cache = EmailProviderCache.getCache(account.getUuid(), context);
         String columnName = LocalStore.getColumnNameForFlag(flag);
@@ -354,7 +381,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void removeFlagFromCache(final Account account, final List<Long> messageIds,
-            final Flag flag) {
+                                     final Flag flag) {
 
         EmailProviderCache cache = EmailProviderCache.getCache(account.getUuid(), context);
         String columnName = LocalStore.getColumnNameForFlag(flag);
@@ -362,7 +389,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void setFlagForThreadsInCache(final Account account, final List<Long> threadRootIds,
-            final Flag flag, final boolean newState) {
+                                          final Flag flag, final boolean newState) {
 
         EmailProviderCache cache = EmailProviderCache.getCache(account.getUuid(), context);
         String columnName = LocalStore.getColumnNameForFlag(flag);
@@ -371,13 +398,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void removeFlagForThreadsFromCache(final Account account, final List<Long> messageIds,
-            final Flag flag) {
+                                               final Flag flag) {
 
         EmailProviderCache cache = EmailProviderCache.getCache(account.getUuid(), context);
         String columnName = LocalStore.getColumnNameForFlag(flag);
         cache.removeValueForThreads(messageIds, columnName);
     }
-
 
     /**
      * Lists folders that are available locally and remotely. This method calls
@@ -405,7 +431,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
      * TODO this needs to cache the remote folder list
      */
     public void listFoldersSynchronous(final Account account, final boolean refreshRemote,
-            final MessagingListener listener) {
+                                       final MessagingListener listener) {
         for (MessagingListener l : getListeners(listener)) {
             l.listFoldersStarted(account);
         }
@@ -591,7 +617,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public Future<?> searchRemoteMessages(final String acctUuid, final String folderName, final String query,
-            final Set<Flag> requiredFlags, final Set<Flag> forbiddenFlags, final MessagingListener listener) {
+                                          final Set<Flag> requiredFlags, final Set<Flag> forbiddenFlags, final MessagingListener listener) {
         Timber.i("searchRemoteMessages (acct = %s, folderName = %s, query = %s)", acctUuid, folderName, query);
 
         return threadPool.submit(new Runnable() {
@@ -604,7 +630,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     @VisibleForTesting
     void searchRemoteMessagesSynchronous(final String acctUuid, final String folderName, final String query,
-            final Set<Flag> requiredFlags, final Set<Flag> forbiddenFlags, final MessagingListener listener) {
+                                         final Set<Flag> requiredFlags, final Set<Flag> forbiddenFlags, final MessagingListener listener) {
         final Account acct = Preferences.getPreferences(context).getAccount(acctUuid);
 
         if (listener != null) {
@@ -669,7 +695,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void loadSearchResults(final Account account, final String folderName, final List<Message> messages,
-            final MessagingListener listener) {
+                                  final MessagingListener listener) {
         threadPool.execute(new Runnable() {
             @Override
             public void run() {
@@ -704,7 +730,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void loadSearchResultsSynchronous(List<Message> messages, LocalFolder localFolder, Folder remoteFolder,
-            MessagingListener listener) throws MessagingException {
+                                              MessagingListener listener) throws MessagingException {
         final FetchProfile header = new FetchProfile();
         header.add(FetchProfile.Item.FLAGS);
         header.add(FetchProfile.Item.ENVELOPE);
@@ -726,7 +752,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
         }
     }
 
-
     public void loadMoreMessages(Account account, String folder, MessagingListener listener) {
         try {
             LocalStore localStore = account.getLocalStore();
@@ -746,7 +771,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
      * Start background synchronization of the specified folder.
      */
     public void synchronizeMailbox(final Account account, final String folder, final MessagingListener listener,
-            final Folder providedRemoteFolder) {
+                                   final Folder providedRemoteFolder) {
         putBackground("synchronizeMailbox", listener, new Runnable() {
             @Override
             public void run() {
@@ -763,7 +788,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
      */
     @VisibleForTesting
     void synchronizeMailboxSynchronous(final Account account, final String folder, final MessagingListener listener,
-            Folder providedRemoteFolder) {
+                                       Folder providedRemoteFolder) {
         Folder remoteFolder = null;
         LocalFolder tLocalFolder = null;
 
@@ -1031,7 +1056,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     void synchronizepEpSyncMailboxSynchronous(final Account account, final String folder, final MessagingListener listener,
-                                       Folder providedRemoteFolder) {
+                                              Folder providedRemoteFolder) {
         Folder remoteFolder = null;
         LocalFolder tLocalFolder = null;
 
@@ -1095,7 +1120,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     Timber.v(K9.LOG_TAG, "SYNC: About to get remote folder " + folder);
                 remoteFolder = remoteStore.getFolder(folder);
 
-                if (! verifyOrCreateRemoteSpecialFolder(account, folder, remoteFolder, listener)) {
+                if (!verifyOrCreateRemoteSpecialFolder(account, folder, remoteFolder, listener)) {
                     return;
                 }
 
@@ -1194,7 +1219,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     l.synchronizeMailboxHeadersFinished(account, folder, headerProgress.get(), remoteUidMap.size());
                 }
 
-            } else if(remoteMessageCount < 0) {
+            } else if (remoteMessageCount < 0) {
                 throw new Exception("Message count " + remoteMessageCount + " for folder " + folder);
             }
 
@@ -1321,12 +1346,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
         }
     }
 
-    private static void closeFolder(Folder f) {
-        if (f != null) {
-            f.close();
-        }
-    }
-
     /*
      * If the folder is a "special" folder we need to see if it exists
      * on the remote server. It if does not exist we'll try to create it. If we
@@ -1335,7 +1354,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
      * to treat Pop3 and Imap the same in this code.
      */
     private boolean verifyOrCreateRemoteSpecialFolder(Account account, String folder, Folder remoteFolder,
-            MessagingListener listener) throws MessagingException {
+                                                      MessagingListener listener) throws MessagingException {
         if (folder.equals(account.getTrashFolderName()) ||
                 folder.equals(account.getSentFolderName()) ||
                 folder.equals(account.getDraftsFolderName())) {
@@ -1357,26 +1376,18 @@ public class MessagingController implements Sync.MessageToSendCallback {
      * Fetches the messages described by inputMessages from the remote store and writes them to
      * local storage.
      *
-     * @param account
-     *         The account the remote store belongs to.
-     * @param remoteFolder
-     *         The remote folder to download messages from.
-     * @param localFolder
-     *         The {@link LocalFolder} instance corresponding to the remote folder.
-     * @param inputMessages
-     *         A list of messages objects that store the UIDs of which messages to download.
-     * @param flagSyncOnly
-     *         Only flags will be fetched from the remote store if this is {@code true}.
-     * @param purgeToVisibleLimit
-     *         If true, local messages will be purged down to the limit of visible messages.
-     *
+     * @param account             The account the remote store belongs to.
+     * @param remoteFolder        The remote folder to download messages from.
+     * @param localFolder         The {@link LocalFolder} instance corresponding to the remote folder.
+     * @param inputMessages       A list of messages objects that store the UIDs of which messages to download.
+     * @param flagSyncOnly        Only flags will be fetched from the remote store if this is {@code true}.
+     * @param purgeToVisibleLimit If true, local messages will be purged down to the limit of visible messages.
      * @return The number of downloaded messages that are not flagged as {@link Flag#SEEN}.
-     *
      * @throws MessagingException
      */
     private int downloadMessages(final Account account, final Folder remoteFolder,
-            final LocalFolder localFolder, List<Message> inputMessages,
-            boolean flagSyncOnly, boolean purgeToVisibleLimit) throws MessagingException {
+                                 final LocalFolder localFolder, List<Message> inputMessages,
+                                 boolean flagSyncOnly, boolean purgeToVisibleLimit) throws MessagingException {
 
         final Date earliestDate = account.getEarliestPollDate();
         Date downloadStarted = new Date(); // now
@@ -1522,12 +1533,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void evaluateMessageForDownload(final Message message, final String folder,
-            final LocalFolder localFolder,
-            final Folder remoteFolder,
-            final Account account,
-            final List<Message> unsyncedMessages,
-            final List<Message> syncFlagMessages,
-            boolean flagSyncOnly) throws MessagingException {
+                                            final LocalFolder localFolder,
+                                            final Folder remoteFolder,
+                                            final Account account,
+                                            final List<Message> unsyncedMessages,
+                                            final List<Message> syncFlagMessages,
+                                            boolean flagSyncOnly) throws MessagingException {
         if (message.isSet(Flag.DELETED)) {
             Timber.v("Message with uid %s is marked as deleted", message.getUid());
 
@@ -1581,12 +1592,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private <T extends Message> void fetchUnsyncedMessages(final Account account, final Folder<T> remoteFolder,
-            List<T> unsyncedMessages,
-            final List<Message> smallMessages,
-            final List<Message> largeMessages,
-            final AtomicInteger progress,
-            final int todo,
-            FetchProfile fp) throws MessagingException {
+                                                           List<T> unsyncedMessages,
+                                                           final List<Message> smallMessages,
+                                                           final List<Message> largeMessages,
+                                                           final AtomicInteger progress,
+                                                           final int todo,
+                                                           FetchProfile fp) throws MessagingException {
         final String folder = remoteFolder.getName();
 
         final Date earliestDate = account.getEarliestPollDate();
@@ -1638,7 +1649,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private boolean shouldImportMessage(final Account account, final Message message,
-            final Date earliestDate) {
+                                        final Date earliestDate) {
 
         if (account.isSearchByDateCapable() && message.olderThan(earliestDate)) {
             Timber.d("Message %s is older than %s, hence not saving", message.getUid(), earliestDate);
@@ -1648,13 +1659,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private <T extends Message> void downloadSmallMessages(final Account account, final Folder<T> remoteFolder,
-            final LocalFolder localFolder,
-            List<T> smallMessages,
-            final AtomicInteger progress,
-            final int unreadBeforeStart,
-            final AtomicInteger newMessages,
-            final int todo,
-            FetchProfile fp) throws MessagingException {
+                                                           final LocalFolder localFolder,
+                                                           List<T> smallMessages,
+                                                           final AtomicInteger progress,
+                                                           final int unreadBeforeStart,
+                                                           final AtomicInteger newMessages,
+                                                           final int todo,
+                                                           FetchProfile fp) throws MessagingException {
         TrustedMessageController controller = new TrustedMessageController();
 
         final String folder = remoteFolder.getName();
@@ -1670,38 +1681,40 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         try {
                             long time = System.currentTimeMillis();
 
-                    boolean store = true;if (!shouldImportMessage(account, message, earliestDate)) {
-                        progress.incrementAndGet();
+                            boolean store = true;
+                            if (!shouldImportMessage(account, message, earliestDate)) {
+                                progress.incrementAndGet();
 
                                 return;
                             }
                             if (message.getBody() == null) {
                                 // we can't do anything atm....
-                                Timber.e("pep", "message not complete in downloadSmall (msgid=" + message.getId()+")");
+                                Timber.e("pep", "message not complete in downloadSmall (msgid=" + message.getId() + ")");
                                 return;
                             }
 
-Timber.d("pep", "in download loop (nr="+number+") pre pep");
+                            Timber.d("pep", "in download loop (nr=" + number + ") pre pep");
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", (MimeMessage) message);
-                    final PEpProvider.DecryptResult result;
-                    //// TODO: 22/12/16  message.getFrom()[0].getAddress() != null) should ne removed when ENGINE-160 is fixed
-                    boolean alreadyDecrypted = false;
-                    if (message.getFrom() != null
-                            && message.getFrom().length > 0
-                            && message.getFrom()[0].getAddress() != null) {
-                        PEpProvider.DecryptResult tempResult;
-                        tempResult = decryptMessage((MimeMessage) message);
-                        if (controller.shouldAppendMessageInTrustedServer(message, account)) { //trusted server
-                            Rating rating = PEpUtils.extractRating(message);
-                            if (!rating.equals(Rating.pEpRatingUndefined)) {
-                                // if we are on a trusted server and already had an EncStatus, then is already encrypted by someone else.
-                                alreadyDecrypted = controller.getAlreadyDecrypted(message, account, rating);
-                                tempResult = new PEpProvider.DecryptResult((MimeMessage) tempResult.msg, rating, null, tempResult.flags);
-                            }
-                        }
-                        if(tempResult.flags == -1) Timber.e("PEPJNI", "messageFinished: null");
-                        if (tempResult.flags != -1) {
-                            Timber.e("PEPJNI", "messageFinished: " + tempResult.flags);
+                            final PEpProvider.DecryptResult result;
+                            //// TODO: 22/12/16  message.getFrom()[0].getAddress() != null) should ne removed when ENGINE-160 is fixed
+                            boolean alreadyDecrypted = false;
+                            if (message.getFrom() != null
+                                    && message.getFrom().length > 0
+                                    && message.getFrom()[0].getAddress() != null) {
+                                PEpProvider.DecryptResult tempResult;
+                                tempResult = decryptMessage((MimeMessage) message);
+                                if (controller.shouldAppendMessageInTrustedServer(message, account)) { //trusted server
+                                    Rating rating = PEpUtils.extractRating(message);
+                                    if (!rating.equals(Rating.pEpRatingUndefined)) {
+                                        // if we are on a trusted server and already had an EncStatus, then is already encrypted by someone else.
+                                        alreadyDecrypted = controller.getAlreadyDecrypted(message, account, rating);
+                                        tempResult = new PEpProvider.DecryptResult((MimeMessage) tempResult.msg, rating, null, tempResult.flags);
+                                    }
+                                }
+                                if (tempResult.flags == -1)
+                                    Timber.e("PEPJNI", "messageFinished: null");
+                                if (tempResult.flags != -1) {
+                                    Timber.e("PEPJNI", "messageFinished: " + tempResult.flags);
                            /* For keysync not needed intil pEp sync is in place again.
                            switch (tempResult.flags) {
                                 case PEPDecryptFlagConsumed:
@@ -1716,196 +1729,192 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                                     break;
                             }
                         */
-                            if ((tempResult.flags & DecryptFlags.PEPDecryptFlagConsumed.value) == DecryptFlags.PEPDecryptFlagConsumed.value) {
-                                Timber.v("pEpJNI", "messageFinished: Deleting");
-                                tempResult = null;
-                                store = false;
-                            } else if ((tempResult.flags & DecryptFlags.PEPDecryptFlagIgnored.value) == DecryptFlags.PEPDecryptFlagIgnored.value) {
-                                tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null, -1);
-                                store = false;
-                            }
-                        }
-                        result = tempResult;
-                        Timber.d("pEp", "messageDecrypted: " + (System.currentTimeMillis()-time));
-                    }
-                    else {
-                        result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null, -1);
-                    }
-//                    PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
-                    if (result == null) {
-                        deleteMessage(message, account, folder, localFolder);
-                    }
-                   else if (isKeyImportMessage(message, result, account, importKeyController.getState())
-                            || !importKeyController.getState().equals(ImportKeyWizardState.INIT) && message.getFrom()[0].getAddress().equals(account.getEmail())) {
-                        final ImportKeyWizardState importKeyWizardState = importKeyController.getState();
-                        Timber.i("Detected pEpKeyImport header");
-                        Timber.i(result.msg.getSubject());
-                        Timber.i("State: " + importKeyController.getState().name());
-                        //Aqui solo entra init si es el segundo mensaje
-                        if (result.rating.value < Rating.pEpRatingTrusted.value) {
-                            if (message.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT).length > 0) {
-                                importKeyController.setSenderKey(message.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT)[0]);
-                            } else if (result.msg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)){
-                                importKeyController.setSenderKey(result.msg.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT)[0]);
-                            }
-                        }
-
-                        if (isInitialBeacon(result.rating, importKeyWizardState)) {
-                            //NO STARTER
-                            importKeyController.start();
-                        } else if (importKeyWizardState.equals(ImportKeyWizardState.BEACON_SENT)) {
-                            //NO OP, We are just waiting - When notified UI will act
-                        }
-
-
-                        Log.i("ManualImport", "sfpr: " + importKeyController.getSenderKey());
-                        org.pEp.jniadapter.Identity myself = pEpProvider.myself(PEpUtils.createIdentity(message.getFrom()[0], context));
-                        Log.i("ManualImport", "sfpr: " + myself.fpr);
-
-                        String senderKey = importKeyController.getSenderKey();
-                        boolean isOwnMessage = senderKey.equals(myself.fpr);
-                        if (!isOwnMessage || isPGPKeyImportMessage(message, result, account, importKeyWizardState)) {
-                            Log.i("ManualImport", "Other device message");
-                            org.pEp.jniadapter.Identity sender = createSenderIdentity(account, senderKey);
-
-                            if (containsPrivateOwnKey(result)) {
-                                //Received private key -
-                                deleteMessage(message, account, folder, localFolder);
-                                ((K9) context.getApplicationContext()).disableFastPolling();
-                                if (importKeyController.isStarter()) { // is key to import.
-                                    pEpProvider.setOwnIdentity(sender, sender.fpr);
-                                    ImportWizardFrompEp.notifyPrivateKeyImported(context);
+                                    if ((tempResult.flags & DecryptFlags.PEPDecryptFlagConsumed.value) == DecryptFlags.PEPDecryptFlagConsumed.value) {
+                                        Timber.v("pEpJNI", "messageFinished: Deleting");
+                                        tempResult = null;
+                                        store = false;
+                                    } else if ((tempResult.flags & DecryptFlags.PEPDecryptFlagIgnored.value) == DecryptFlags.PEPDecryptFlagIgnored.value) {
+                                        tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null, -1);
+                                        store = false;
+                                    }
                                 }
-                                //Else the key only has to be imported, already done by the engine.
-                                Timber.i("ManualImport", "Key received and imported:: " + importKeyController.isStarter());
-                                Timber.i("ManualImport", "Key received and imported:: " + importKeyController.getState().toString());
-                                importKeyController.finish();
-
+                                result = tempResult;
+                                Timber.d("pEp", "messageDecrypted: " + (System.currentTimeMillis() - time));
+                            } else {
+                                result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null, -1);
                             }
-                            else if (isHandshakeRequest(message, result, importKeyWizardState)) {
-                                //Handshake needed
-                                Log.i("ManualImport", "Detected yellow message aka handshake request");
-
+//                    PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
+                            if (result == null) {
                                 deleteMessage(message, account, folder, localFolder);
+                            } else if (isKeyImportMessage(message, result, account, importKeyController.getState())
+                                    || !importKeyController.getState().equals(ImportKeyWizardState.INIT) && message.getFrom()[0].getAddress().equals(account.getEmail())) {
+                                final ImportKeyWizardState importKeyWizardState = importKeyController.getState();
+                                Timber.i("Detected pEpKeyImport header");
+                                Timber.i(result.msg.getSubject());
+                                Timber.i("State: " + importKeyController.getState().name());
+                                //Aqui solo entra init si es el segundo mensaje
+                                if (result.rating.value < Rating.pEpRatingTrusted.value) {
+                                    if (message.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT).length > 0) {
+                                        importKeyController.setSenderKey(message.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT)[0]);
+                                    } else if (result.msg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)) {
+                                        importKeyController.setSenderKey(result.msg.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT)[0]);
+                                    }
+                                }
 
-                                Intent handshakeIntent = PEpAddDevice.getActionRequestHandshake(context,
-                                        pEpProvider.trustwords(myself, sender, "en", true),
-                                        myself, sender, context.getString(R.string.key_import_wizard_handshake_explanation), true);
+                                if (isInitialBeacon(result.rating, importKeyWizardState)) {
+                                    //NO STARTER
+                                    importKeyController.start();
+                                } else if (importKeyWizardState.equals(ImportKeyWizardState.BEACON_SENT)) {
+                                    //NO OP, We are just waiting - When notified UI will act
+                                }
 
-                                ImportWizardFrompEp.actionStartImportpEpKey(context, account.getUuid(), true, KeySourceType.PEP, handshakeIntent);
 
-                                //importKeyWizardState = ImportKeyWizardState.PRIVATE_KEY_WAITING;
+                                Log.i("ManualImport", "sfpr: " + importKeyController.getSenderKey());
+                                org.pEp.jniadapter.Identity myself = pEpProvider.myself(PEpUtils.createIdentity(message.getFrom()[0], context));
+                                Log.i("ManualImport", "sfpr: " + myself.fpr);
 
-                            } else if (importKeyWizardState != ImportKeyWizardState.INIT
-                                    && ( PEpUtils.extractRating(message).value > Rating.pEpRatingReliable.value
-                                    || result.rating.value > Rating.pEpRatingReliable.value)) {
-                                Log.i("ManualImport", "Send OwnKey ");
-                                sendOwnKey(account, senderKey);
-                                importKeyController.finish();
-                            }
+                                String senderKey = importKeyController.getSenderKey();
+                                boolean isOwnMessage = senderKey.equals(myself.fpr);
+                                if (!isOwnMessage || isPGPKeyImportMessage(message, result, account, importKeyWizardState)) {
+                                    Log.i("ManualImport", "Other device message");
+                                    org.pEp.jniadapter.Identity sender = createSenderIdentity(account, senderKey);
 
-                            else if (result.rating.value < Rating.pEpRatingTrusted.value
-                                    && !importKeyWizardState.equals(ImportKeyWizardState.PRIVATE_KEY_WAITING)
-                                    && !importKeyWizardState.equals(ImportKeyWizardState.INIT)){
+                                    if (containsPrivateOwnKey(result)) {
+                                        //Received private key -
+                                        deleteMessage(message, account, folder, localFolder);
+                                        ((K9) context.getApplicationContext()).disableFastPolling();
+                                        if (importKeyController.isStarter()) { // is key to import.
+                                            pEpProvider.setOwnIdentity(sender, sender.fpr);
+                                            ImportWizardFrompEp.notifyPrivateKeyImported(context);
+                                        }
+                                        //Else the key only has to be imported, already done by the engine.
+                                        Timber.i("ManualImport", "Key received and imported:: " + importKeyController.isStarter());
+                                        Timber.i("ManualImport", "Key received and imported:: " + importKeyController.getState().toString());
+                                        importKeyController.finish();
+
+                                    } else if (isHandshakeRequest(message, result, importKeyWizardState)) {
+                                        //Handshake needed
+                                        Log.i("ManualImport", "Detected yellow message aka handshake request");
+
+                                        deleteMessage(message, account, folder, localFolder);
+
+                                        Intent handshakeIntent = PEpAddDevice.getActionRequestHandshake(context,
+                                                pEpProvider.trustwords(myself, sender, "en", true),
+                                                myself, sender, context.getString(R.string.key_import_wizard_handshake_explanation), true);
+
+                                        ImportWizardFrompEp.actionStartImportpEpKey(context, account.getUuid(), true, KeySourceType.PEP, handshakeIntent);
+
+                                        //importKeyWizardState = ImportKeyWizardState.PRIVATE_KEY_WAITING;
+
+                                    } else if (importKeyWizardState != ImportKeyWizardState.INIT
+                                            && (PEpUtils.extractRating(message).value > Rating.pEpRatingReliable.value
+                                            || result.rating.value > Rating.pEpRatingReliable.value)) {
+                                        Log.i("ManualImport", "Send OwnKey ");
+                                        sendOwnKey(account, senderKey);
+                                        importKeyController.finish();
+                                    } else if (result.rating.value < Rating.pEpRatingTrusted.value
+                                            && !importKeyWizardState.equals(ImportKeyWizardState.PRIVATE_KEY_WAITING)
+                                            && !importKeyWizardState.equals(ImportKeyWizardState.INIT)) {
 //                            Message handshakeMessage = ((MimeMessage) PEpUtils.generateKeyImportRequest(context, pEpProvider, account, true))   ;
-                                Log.i("ManualImport", "Detected Key import request");
+                                        Log.i("ManualImport", "Detected Key import request");
 
-                                MimeMessage handshakeUnencryptedMessage = createMimeMessage(account);
-                                MimeMessage handshakeMessage = pEpProvider.encryptMessage(handshakeUnencryptedMessage, new String[]{senderKey}).get(PEpProvider.ENCRYPTED_MESSAGE_POSITION);
-                                importKeyController.waitForKey();
+                                        MimeMessage handshakeUnencryptedMessage = createMimeMessage(account);
+                                        MimeMessage handshakeMessage = pEpProvider.encryptMessage(handshakeUnencryptedMessage, new String[]{senderKey}).get(PEpProvider.ENCRYPTED_MESSAGE_POSITION);
+                                        importKeyController.waitForKey();
 //                            sendMessage(account,handshakeUnencryptedMessage ,null);
-                                Log.i("ManualImport", "Handshake request generated");
+                                        Log.i("ManualImport", "Handshake request generated");
 
-                                Transport transport = transportProvider.getTransport(K9.app, account, K9.oAuth2TokenStore);
-                                handshakeMessage.addHeader(MimeHeader.HEADER_PEP_AUTOCONSUME, "yes");
-                                sendMessage(transport, handshakeMessage);
-                                Log.i("ManualImport", "Handshake request sent");
+                                        Transport transport = transportProvider.getTransport(K9.app, account, K9.oAuth2TokenStore);
+                                        handshakeMessage.addHeader(MimeHeader.HEADER_PEP_AUTOCONSUME, "yes");
+                                        sendMessage(transport, handshakeMessage);
+                                        Log.i("ManualImport", "Handshake request sent");
 
-                                deleteMessage(message, account, folder, localFolder);
+                                        deleteMessage(message, account, folder, localFolder);
 
 //                           if (result.rating.equals(Rating.pEpRatingReliable)) {
-                                Intent handshakeIntent = PEpAddDevice.getActionRequestHandshake(context,
-                                        pEpProvider.trustwords(myself, sender, "en", true),
-                                        myself, sender, context.getString(R.string.key_import_wizard_handshake_explanation),
-                                        true);
-                                //context.startActivity(handshakeIntent);
-                                ImportWizardFrompEp.actionStartImportpEpKey(context, account.getUuid(), false, KeySourceType.PEP, handshakeIntent);
+                                        Intent handshakeIntent = PEpAddDevice.getActionRequestHandshake(context,
+                                                pEpProvider.trustwords(myself, sender, "en", true),
+                                                myself, sender, context.getString(R.string.key_import_wizard_handshake_explanation),
+                                                true);
+                                        //context.startActivity(handshakeIntent);
+                                        ImportWizardFrompEp.actionStartImportpEpKey(context, account.getUuid(), false, KeySourceType.PEP, handshakeIntent);
 
 
 //                               pEpProvider.generatePrivateKeyMessage(handshakeUnencryptedMessage, senderKey);
 //                           }
 
-                                //Check if is handshake message and if it is show handshake
-                            }
-                            else {
-                                Timber.e( "NO CASE - INVALID STATE - Deleting message: " + importKeyController.getState().toString() );
+                                        //Check if is handshake message and if it is show handshake
+                                    } else {
+                                        Timber.e("NO CASE - INVALID STATE - Deleting message: " + importKeyController.getState().toString());
+                                        deleteMessage(message, account, folder, localFolder);
+                                    }
+                                }
+                            } else if (result.keyDetails != null) {
+                                showImportKeyDialogIfNeeded(message, result, account);
                                 deleteMessage(message, account, folder, localFolder);
-                            }
-                        }
-                    } else if (result.keyDetails != null) {
-                        showImportKeyDialogIfNeeded(message, result, account);
-                        deleteMessage(message, account, folder, localFolder);
-                    }
-                    else if (store
-                            && (!account.ispEpPrivacyProtected()
-                            || account.ispEpPrivacyProtected() && (result.rating != Rating.pEpRatingUndefined
-                            || message.getFrom().length > 0 && message.getFrom()[0].getAddress() == null))
-                            ) {
-                        MimeMessage decryptedMessage =  result.msg;
-                        if (message.getFolder().getName().equals(account.getSentFolderName())
-                                || message.getFolder().getName().equals(account.getDraftsFolderName())) {
-                            decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getRating(message)));
-                        } else {
-                            decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(result.rating));
-                        }
+                            } else if (store
+                                    && (!account.ispEpPrivacyProtected()
+                                    || account.ispEpPrivacyProtected() && (result.rating != Rating.pEpRatingUndefined
+                                    || message.getFrom().length > 0 && message.getFrom()[0].getAddress() == null))
+                                    ) {
+                                MimeMessage decryptedMessage = result.msg;
+                                if (message.getFolder().getName().equals(account.getSentFolderName())
+                                        || message.getFolder().getName().equals(account.getDraftsFolderName())) {
+                                    decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getRating(message)));
+                                } else {
+                                    decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(result.rating));
+                                }
 
                                 decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
 
-                        if (!alreadyDecrypted) {                    // Store the updated message locally
-                    final LocalMessage localMessage = localFolder.storeSmallMessage(decryptedMessage, new Runnable() {
-                        @Override
-                        public void run() {
-                            progress.incrementAndGet();
-                        }
-                    });
-                    if (controller.shouldDownloadMessageInTrustedServer(result, decryptedMessage, account)) {
-                                appendMessageCommand(account, localMessage, localFolder);
-                            }
-                            Timber.d("pep", "in download loop (nr=" + number + ") post pep");// Increment the number of "new messages" if the newly downloaded message is
-                    // not marked as read.
-                    if (!localMessage.isSet(Flag.SEEN)) {
-                        newMessages.incrementAndGet();
-                    }
+                                if (!alreadyDecrypted) {                    // Store the updated message locally
+                                    final LocalMessage localMessage = localFolder.storeSmallMessage(decryptedMessage, new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            progress.incrementAndGet();
+                                        }
+                                    });
+                                    if (controller.shouldDownloadMessageInTrustedServer(result, decryptedMessage, account)) {
+                                        appendMessageCommand(account, localMessage, localFolder);
+                                    }
+                                    Timber.d("pep", "in download loop (nr=" + number + ") post pep");// Increment the number of "new messages" if the newly downloaded message is
+                                    // not marked as read.
+                                    if (!localMessage.isSet(Flag.SEEN)) {
+                                        newMessages.incrementAndGet();
+                                    }
 
-                            Timber.v("About to notify listeners that we got a new small message %s:%s:%s",
-                                    account, folder, message.getUid());
+                                    Timber.v("About to notify listeners that we got a new small message %s:%s:%s",
+                                            account, folder, message.getUid());
 
-                            // Update the listener with what we've found
-                            for (MessagingListener l : getListeners()) {
-                                l.synchronizeMailboxProgress(account, folder, progress.get(), todo);
-                                if (!localMessage.isSet(Flag.SEEN)) {
-                                    l.synchronizeMailboxNewMessage(account, folder, localMessage);
+                                    // Update the listener with what we've found
+                                    for (MessagingListener l : getListeners()) {
+                                        l.synchronizeMailboxProgress(account, folder, progress.get(), todo);
+                                        if (!localMessage.isSet(Flag.SEEN)) {
+                                            l.synchronizeMailboxNewMessage(account, folder, localMessage);
+                                        }
+                                    }
+                                    // Send a notification of this message
+
+                                    if (shouldNotifyForMessage(account, localFolder, message)) {
+                                        // Notify with the localMessage so that we don't have to recalculate the content preview.
+                                        notificationController.addNewMailNotification(account, localMessage, unreadBeforeStart);
+                                    }
                                 }
                             }
-                            // Send a notification of this message
-
-                            if (shouldNotifyForMessage(account, localFolder, message)) {
-                                // Notify with the localMessage so that we don't have to recalculate the content preview.
-                                notificationController.addNewMailNotification(account, localMessage, unreadBeforeStart);
-                            }
-}
-                        }} catch (MessagingException | RuntimeException me) {
+                        } catch (MessagingException | RuntimeException me) {
                             addErrorMessage(account, null, me);
-                            Timber.e(me,"SYNC: fetch small messages");
+                            Timber.e(me, "SYNC: fetch small messages");
                         }
                     }
 
-            @Override
-            public void messageStarted(String uid, int number, int ofTotal) { }
+                    @Override
+                    public void messageStarted(String uid, int number, int ofTotal) {
+                    }
 
-            @Override
-            public void messagesFinished(int total) {
-        }});
+                    @Override
+                    public void messagesFinished(int total) {
+                    }
+                });
 
         Timber.d("SYNC: Done fetching small messages for folder %s", folder);
     }
@@ -1928,11 +1937,10 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
     }
 
     private <T extends Message> boolean ispEpKeyImportMessage(T message, PEpProvider.DecryptResult result, Account account, ImportKeyWizardState state) {
-        return !PEpUtils.isMessageOnOutgoingFolder(message, account) /*&& result.keyDetails != null */&&
+        return !PEpUtils.isMessageOnOutgoingFolder(message, account) /*&& result.keyDetails != null */ &&
                 (message.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT).length > 0
-                || result.msg.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT).length > 0);
+                        || result.msg.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT).length > 0);
     }
-
 
     private <T extends Message> boolean isPGPKeyImportMessage(T message, PEpProvider.DecryptResult result, Account account, ImportKeyWizardState state) {
         return ((K9) context).isShowingKeyimportDialog() && !PEpUtils.isMessageOnOutgoingFolder(message, account)
@@ -1958,7 +1966,7 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
         handshakeMessage.addHeader(MimeHeader.HEADER_PEP_AUTOCONSUME, "yes");
         if (importKeyController.getState() != ImportKeyWizardState.INIT) {
             sendMessage(transport, handshakeMessage);
-           // importKeyWizardState = ImportKeyWizardState.INIT;
+            // importKeyWizardState = ImportKeyWizardState.INIT;
         }
 
     }
@@ -2007,7 +2015,7 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
     private <T extends Message> void deleteMessage(T message, Account account, String folder, LocalFolder localFolder) throws MessagingException {
         List<String> uuids = new ArrayList<>();
         uuids.add(message.getUid());
-        queueSetFlag(account, folder,true, Flag.DELETED, uuids);
+        queueSetFlag(account, folder, true, Flag.DELETED, uuids);
         localFolder.setFlags(Collections.singletonList(message), Collections.singleton(Flag.DELETED), true);
     }
 
@@ -2021,7 +2029,7 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                 @Override
                 public void run() {
                     Intent broadcastIntent = new Intent(context, K9ActivityCommon.PrivateKeyReceiver.class);
-                    broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_FROM,message.getFrom()[0].getAddress());
+                    broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_FROM, message.getFrom()[0].getAddress());
                     broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_FPR, result.keyDetails.getFpr());
                     broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_ADDRESS, result.keyDetails.getAddress().getAddress());
                     broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_USERNAME, result.keyDetails.getAddress().getPersonal());
@@ -2032,13 +2040,13 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
     }
 
     private <T extends Message> void downloadLargeMessages(final Account account, final Folder<T> remoteFolder,
-            final LocalFolder localFolder,
-            List<T> largeMessages,
-            final AtomicInteger progress,
-            final int unreadBeforeStart,
-            final AtomicInteger newMessages,
-            final int todo,
-            FetchProfile fp) throws MessagingException {
+                                                           final LocalFolder localFolder,
+                                                           List<T> largeMessages,
+                                                           final AtomicInteger progress,
+                                                           final int unreadBeforeStart,
+                                                           final AtomicInteger newMessages,
+                                                           final int todo,
+                                                           FetchProfile fp) throws MessagingException {
         final String folder = remoteFolder.getName();
         final Date earliestDate = account.getEarliestPollDate();
 
@@ -2123,11 +2131,11 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
          */
         FetchProfile fp = new FetchProfile();
         fp.add(FetchProfile.Item.BODY_SANE);
-                /*
-                 *  TODO a good optimization here would be to make sure that all Stores set
-                 *  the proper size after this fetch and compare the before and after size. If
-                 *  they equal we can mark this SYNCHRONIZED instead of PARTIALLY_SYNCHRONIZED
-                 */
+        /*
+         *  TODO a good optimization here would be to make sure that all Stores set
+         *  the proper size after this fetch and compare the before and after size. If
+         *  they equal we can mark this SYNCHRONIZED instead of PARTIALLY_SYNCHRONIZED
+         */
 
         remoteFolder.fetch(Collections.singletonList(message), fp, null);
 
@@ -2139,15 +2147,15 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
 
         // Certain (POP3) servers give you the whole message even when you ask for only the first x Kb
         if (!message.isSet(Flag.X_DOWNLOADED_FULL)) {
-                    /*
-                     * Mark the message as fully downloaded if the message size is smaller than
-                     * the account's autodownload size limit, otherwise mark as only a partial
-                     * download.  This will prevent the system from downloading the same message
-                     * twice.
-                     *
-                     * If there is no limit on autodownload size, that's the same as the message
-                     * being smaller than the max size
-                     */
+            /*
+             * Mark the message as fully downloaded if the message size is smaller than
+             * the account's autodownload size limit, otherwise mark as only a partial
+             * download.  This will prevent the system from downloading the same message
+             * twice.
+             *
+             * If there is no limit on autodownload size, that's the same as the message
+             * being smaller than the max size
+             */
             if (account.getMaximumAutoDownloadMessageSize() == 0
                     || message.getSize() < account.getMaximumAutoDownloadMessageSize()) {
                 localMessage.setFlag(Flag.X_DOWNLOADED_FULL, true);
@@ -2161,10 +2169,10 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
     }
 
     private void refreshLocalMessageFlags(final Account account, final Folder remoteFolder,
-            final LocalFolder localFolder,
-            List<Message> syncFlagMessages,
-            final AtomicInteger progress,
-            final int todo
+                                          final LocalFolder localFolder,
+                                          List<Message> syncFlagMessages,
+                                          final AtomicInteger progress,
+                                          final int todo
     ) throws MessagingException {
 
         final String folder = remoteFolder.getName();
@@ -2403,7 +2411,7 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                     String rUid = remoteFolder.getUidFromMessageId(localMessage);
                     if (rUid != null) {
                         Timber.w("Local message has flag %s already set, and there is a remote message with uid %s, " +
-                                "assuming message was already copied and aborting this copy",
+                                        "assuming message was already copied and aborting this copy",
                                 X_REMOTE_COPY_STARTED, rUid);
 
                         String oldUid = localMessage.getUid();
@@ -2493,14 +2501,15 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
             closeFolder(localFolder);
         }
     }
-private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage localMessage) throws MessagingException {
-    TrustedMessageController controller = new TrustedMessageController();
-    return controller.getOwnMessageCopy(context, pEpProvider, account,
-            localMessage);
+
+    private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage localMessage) throws MessagingException {
+        TrustedMessageController controller = new TrustedMessageController();
+        return controller.getOwnMessageCopy(context, pEpProvider, account,
+                localMessage);
     }
 
     private void queueMoveOrCopy(Account account, String srcFolder, String destFolder, boolean isCopy,
-            List<String> uids) {
+                                 List<String> uids) {
         if (account.getErrorFolderName().equals(srcFolder)) {
             return;
         }
@@ -2509,7 +2518,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     private void queueMoveOrCopy(Account account, String srcFolder, String destFolder,
-            boolean isCopy, List<String> uids, Map<String, String> uidMap) {
+                                 boolean isCopy, List<String> uids, Map<String, String> uidMap) {
         if (uidMap == null || uidMap.isEmpty()) {
             queueMoveOrCopy(account, srcFolder, destFolder, isCopy, uids);
         } else {
@@ -2614,7 +2623,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     private void queueSetFlag(final Account account, final String folderName,
-            final boolean newState, final Flag flag, final List<String> uids) {
+                              final boolean newState, final Flag flag, final List<String> uids) {
         putBackground("queueSetFlag " + account.getDescription() + ":" + folderName, null, new Runnable() {
             @Override
             public void run() {
@@ -2779,8 +2788,6 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
         }
     }
 
-    private static AtomicBoolean loopCatch = new AtomicBoolean();
-
     private void addErrorMessage(Account account, String subject, String body) {
         if (!K9.isDebug()) {
             return;
@@ -2818,7 +2825,6 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
         }
     }
 
-
     public void markAllMessagesRead(final Account account, final String folder) {
         Timber.i("Marking all messages in %s:%s as read", account.getDescription(), folder);
 
@@ -2828,7 +2834,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     public void setFlag(final Account account, final List<Long> messageIds, final Flag flag,
-            final boolean newState) {
+                        final boolean newState) {
 
         setFlagInCache(account, messageIds, flag, newState);
 
@@ -2841,7 +2847,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     public void setFlagForThreads(final Account account, final List<Long> threadRootIds,
-            final Flag flag, final boolean newState) {
+                                  final Flag flag, final boolean newState) {
 
         setFlagForThreadsInCache(account, threadRootIds, flag, newState);
 
@@ -2854,7 +2860,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     private void setFlagSynchronous(final Account account, final List<Long> ids,
-            final Flag flag, final boolean newState, final boolean threadedList) {
+                                    final Flag flag, final boolean newState, final boolean threadedList) {
 
         LocalStore localStore;
         try {
@@ -2921,19 +2927,14 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
      * The {@link Message} objects passed in are updated to reflect the new flag state.
      * </p>
      *
-     * @param account
-     *         The account the folder containing the messages belongs to.
-     * @param folderName
-     *         The name of the folder.
-     * @param messages
-     *         The messages to change the flag for.
-     * @param flag
-     *         The flag to change.
-     * @param newState
-     *         {@code true}, if the flag should be set. {@code false} if it should be removed.
+     * @param account    The account the folder containing the messages belongs to.
+     * @param folderName The name of the folder.
+     * @param messages   The messages to change the flag for.
+     * @param flag       The flag to change.
+     * @param newState   {@code true}, if the flag should be set. {@code false} if it should be removed.
      */
     public void setFlag(Account account, String folderName, List<? extends Message> messages, Flag flag,
-            boolean newState) {
+                        boolean newState) {
         // TODO: Put this into the background, but right now some callers depend on the message
         //       objects being modified right after this method returns.
         Folder localFolder = null;
@@ -2986,19 +2987,14 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     /**
      * Set or remove a flag for a message referenced by message UID.
      *
-     * @param account
-     *         The account the folder containing the message belongs to.
-     * @param folderName
-     *         The name of the folder.
-     * @param uid
-     *         The UID of the message to change the flag for.
-     * @param flag
-     *         The flag to change.
-     * @param newState
-     *         {@code true}, if the flag should be set. {@code false} if it should be removed.
+     * @param account    The account the folder containing the message belongs to.
+     * @param folderName The name of the folder.
+     * @param uid        The UID of the message to change the flag for.
+     * @param flag       The flag to change.
+     * @param newState   {@code true}, if the flag should be set. {@code false} if it should be removed.
      */
     public void setFlag(Account account, String folderName, String uid, Flag flag,
-            boolean newState) {
+                        boolean newState) {
         Folder localFolder = null;
         try {
             LocalStore localStore = account.getLocalStore();
@@ -3029,7 +3025,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     public void loadMessageRemotePartial(final Account account, final String folder,
-            final String uid, final MessagingListener listener) {
+                                         final String uid, final MessagingListener listener) {
         put("loadMessageRemotePartial", listener, new Runnable() {
             @Override
             public void run() {
@@ -3040,7 +3036,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
 
     //TODO: Fix the callback mess. See GH-782
     public void loadMessageRemote(final Account account, final String folder,
-            final String uid, final MessagingListener listener) {
+                                  final String uid, final MessagingListener listener) {
         put("loadMessageRemote", listener, new Runnable() {
             @Override
             public void run() {
@@ -3050,7 +3046,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     private boolean loadMessageRemoteSynchronous(final Account account, final String folder,
-            final String uid, final MessagingListener listener, final boolean loadPartialFromSearch) {
+                                                 final String uid, final MessagingListener listener, final boolean loadPartialFromSearch) {
         Folder remoteFolder = null;
         LocalFolder localFolder = null;
         try {
@@ -3170,7 +3166,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     public void loadAttachment(final Account account, final LocalMessage message, final Part part,
-            final MessagingListener listener) {
+                               final MessagingListener listener) {
 
         put("loadAttachment", listener, new Runnable() {
             @Override
@@ -3217,8 +3213,8 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
      * attempt to send the message.
      */
     public void sendMessage(final Account account,
-            final Message message,
-            MessagingListener listener) {
+                            final Message message,
+                            MessagingListener listener) {
         try {
             LocalStore localStore = account.getLocalStore();
             LocalFolder localFolder = localStore.getFolder(account.getOutboxFolderName());
@@ -3248,7 +3244,6 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
         }
     }
 
-
     public void sendPendingMessages(MessagingListener listener) {
         final Preferences prefs = Preferences.getPreferences(context);
         for (Account account : prefs.getAvailableAccounts()) {
@@ -3256,12 +3251,11 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
         }
     }
 
-
     /**
      * Attempt to send any messages that are sitting in the Outbox.
      */
     public void sendPendingMessages(final Account account,
-            MessagingListener listener) {
+                                    MessagingListener listener) {
         putBackground("sendPendingMessages", listener, new Runnable() {
             @Override
             public void run() {
@@ -3436,7 +3430,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
                 } catch (Exception e) {
                     lastFailure = e;
                     wasPermanentFailure = false;
-                    Timber.e(e,"Failed to fetch message for sending");
+                    Timber.e(e, "Failed to fetch message for sending");
                     addErrorMessage(account, "Failed to fetch message for sending", e);
                     notifySynchronizeMailboxFailed(account, localFolder, e);
                 }
@@ -3473,7 +3467,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     private void moveOrDeleteSentMessage(Account account, LocalStore localStore,
-            LocalFolder localFolder, LocalMessage message, Message encryptedMessage) throws MessagingException {
+                                         LocalFolder localFolder, LocalMessage message, Message encryptedMessage) throws MessagingException {
         if (!account.hasSentFolder() || message.isSet(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)) {
             Timber.i("Account does not have a sent mail folder; deleting sent message");
 
@@ -3481,7 +3475,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
         } else {
             LocalFolder localSentFolder = localStore.getFolder(account.getSentFolderName());
             Timber.i("Moving sent message to folder '%s' (%d)",
-                        account.getSentFolderName(), localSentFolder.getId());
+                    account.getSentFolderName(), localSentFolder.getId());
 
             //Decorate the local message
             String[] pEpVersionHeader = encryptedMessage.getHeader(MimeHeader.HEADER_PEP_VERSION);
@@ -3498,13 +3492,13 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
             processPendingCommands(account);
 
             Timber.i("Moved sent message to folder '%s' (%d)",
-                        account.getSentFolderName(), localSentFolder.getId());
+                    account.getSentFolderName(), localSentFolder.getId());
 
 
             Rating rating = PEpUtils.extractRating(message);
             TrustedMessageController controller = new TrustedMessageController();
-            if(controller.shouldAppendMessageOnUntrustedServer(account, rating)) {
-                // TODO: 16/07/18 Check if this is really needed: that means review trusted servers behavior 
+            if (controller.shouldAppendMessageOnUntrustedServer(account, rating)) {
+                // TODO: 16/07/18 Check if this is really needed: that means review trusted servers behavior
                 appendMessageCommand(account, message, localSentFolder);
             }
 
@@ -3539,8 +3533,8 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     private void sendMessage(Transport transport, Message message) throws MessagingException {
-        Timber.e("pEp", "sendMessage: init" );
-        Log.e("ManualImport", "sendMessage: init" );
+        Timber.e("pEp", "sendMessage: init");
+        Log.e("ManualImport", "sendMessage: init");
         message.setFlag(Flag.X_SEND_IN_PROGRESS, true);
         transport.sendMessage(message);
         message.setFlag(Flag.X_SEND_IN_PROGRESS, false);
@@ -3548,7 +3542,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     private void handleSendFailure(Account account, Store localStore, Folder localFolder, Message message,
-            Exception exception, boolean permanentFailure) throws MessagingException {
+                                   Exception exception, boolean permanentFailure) throws MessagingException {
 
         Timber.e(exception, "Failed to send message");
 
@@ -3577,7 +3571,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     public void getAccountStats(final Context context, final Account account,
-            final MessagingListener listener) {
+                                final MessagingListener listener) {
 
         threadPool.execute(new Runnable() {
             @Override
@@ -3594,7 +3588,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     public void getSearchAccountStats(final SearchAccount searchAccount,
-            final MessagingListener listener) {
+                                      final MessagingListener listener) {
 
         threadPool.execute(new Runnable() {
             @Override
@@ -3605,7 +3599,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     public AccountStats getSearchAccountStatsSynchronous(final SearchAccount searchAccount,
-            final MessagingListener listener) {
+                                                         final MessagingListener listener) {
 
         Preferences preferences = Preferences.getPreferences(context);
         LocalSearch search = searchAccount.getRelatedSearch();
@@ -3678,7 +3672,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     public void getFolderUnreadMessageCount(final Account account, final String folderName,
-            final MessagingListener l) {
+                                            final MessagingListener l) {
         Runnable unreadRunnable = new Runnable() {
             @Override
             public void run() {
@@ -3697,7 +3691,6 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
 
         put("getFolderUnread:" + account.getDescription() + ":" + folderName, l, unreadRunnable);
     }
-
 
     public boolean isMoveCapable(MessageReference messageReference) {
         return !messageReference.getUid().startsWith(K9.LOCAL_UID_PREFIX);
@@ -3731,7 +3724,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     public void moveMessages(final Account srcAccount, final String srcFolder,
-            List<MessageReference> messageReferences, final String destFolder) {
+                             List<MessageReference> messageReferences, final String destFolder) {
         actOnMessageGroup(srcAccount, srcFolder, messageReferences, new MessageActor() {
             @Override
             public void act(final Account account, LocalFolder messageFolder, final List<LocalMessage> messages) {
@@ -3748,7 +3741,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     public void moveMessagesInThread(Account srcAccount, final String srcFolder,
-            final List<MessageReference> messageReferences, final String destFolder) {
+                                     final List<MessageReference> messageReferences, final String destFolder) {
         actOnMessageGroup(srcAccount, srcFolder, messageReferences, new MessageActor() {
             @Override
             public void act(final Account account, LocalFolder messageFolder, final List<LocalMessage> messages) {
@@ -3770,12 +3763,12 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     public void moveMessage(final Account account, final String srcFolder, final MessageReference message,
-            final String destFolder) {
+                            final String destFolder) {
         moveMessages(account, srcFolder, Collections.singletonList(message), destFolder);
     }
 
     public void copyMessages(final Account srcAccount, final String srcFolder,
-            final List<MessageReference> messageReferences, final String destFolder) {
+                             final List<MessageReference> messageReferences, final String destFolder) {
         actOnMessageGroup(srcAccount, srcFolder, messageReferences, new MessageActor() {
             @Override
             public void act(final Account account, LocalFolder messageFolder, final List<LocalMessage> messages) {
@@ -3790,7 +3783,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     public void copyMessagesInThread(Account srcAccount, final String srcFolder,
-            final List<MessageReference> messageReferences, final String destFolder) {
+                                     final List<MessageReference> messageReferences, final String destFolder) {
         actOnMessageGroup(srcAccount, srcFolder, messageReferences, new MessageActor() {
             @Override
             public void act(final Account account, LocalFolder messageFolder, final List<LocalMessage> messages) {
@@ -3811,13 +3804,13 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     public void copyMessage(final Account account, final String srcFolder, final MessageReference message,
-            final String destFolder) {
+                            final String destFolder) {
 
         copyMessages(account, srcFolder, Collections.singletonList(message), destFolder);
     }
 
     private void moveOrCopyMessageSynchronous(final Account account, final String srcFolder,
-            final List<? extends Message> inMessages, final String destFolder, final boolean isCopy) {
+                                              final List<? extends Message> inMessages, final String destFolder, final boolean isCopy) {
 
         try {
             LocalStore localStore = account.getLocalStore();
@@ -3943,7 +3936,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
         actOnMessagesGroupedByAccountAndFolder(messages, new MessageActor() {
             @Override
             public void act(final Account account, final LocalFolder messageFolder,
-                    final List<LocalMessage> accountMessages) {
+                            final List<LocalMessage> accountMessages) {
                 suppressMessages(account, accountMessages);
 
                 putBackground("deleteThreads", null, new Runnable() {
@@ -3967,25 +3960,6 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
         }
     }
 
-    private static List<Message> collectMessagesInThreads(Account account, List<? extends Message> messages)
-            throws MessagingException {
-
-        LocalStore localStore = account.getLocalStore();
-
-        List<Message> messagesInThreads = new ArrayList<>();
-        for (Message message : messages) {
-            LocalMessage localMessage = (LocalMessage) message;
-            long rootId = localMessage.getRootId();
-            long threadId = (rootId == -1) ? localMessage.getThreadId() : rootId;
-
-            List<? extends Message> messagesInThread = localStore.getMessagesInThread(threadId);
-
-            messagesInThreads.addAll(messagesInThread);
-        }
-
-        return messagesInThreads;
-    }
-
     public void deleteMessage(MessageReference message, final MessagingListener listener) {
         deleteMessages(Collections.singletonList(message), listener);
     }
@@ -3995,7 +3969,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
 
             @Override
             public void act(final Account account, final LocalFolder messageFolder,
-                    final List<LocalMessage> accountMessages) {
+                            final List<LocalMessage> accountMessages) {
                 suppressMessages(account, accountMessages);
 
                 putBackground("deleteMessages", null, new Runnable() {
@@ -4019,7 +3993,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
 
             @Override
             public void act(final Account account, final LocalFolder messageFolder,
-                    final List<LocalMessage> accountMessages) {
+                            final List<LocalMessage> accountMessages) {
 
                 putBackground("debugClearLocalMessages", null, new Runnable() {
                     @Override
@@ -4039,8 +4013,8 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     private void deleteMessagesSynchronous(final Account account, final String folder,
-            final List<? extends Message> messages,
-            MessagingListener listener) {
+                                           final List<? extends Message> messages,
+                                           MessagingListener listener) {
         Folder localFolder = null;
         Folder localTrashFolder = null;
         List<String> uids = getUidsFromMessages(messages);
@@ -4119,14 +4093,6 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
             closeFolder(localFolder);
             closeFolder(localTrashFolder);
         }
-    }
-
-    private static List<String> getUidsFromMessages(List<? extends Message> messages) {
-        List<String> uids = new ArrayList<>(messages.size());
-        for (int i = 0; i < messages.size(); i++) {
-            uids.add(messages.get(i).getUid());
-        }
-        return uids;
     }
 
     void processPendingEmptyTrash(Account account) throws MessagingException {
@@ -4221,20 +4187,15 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
         listFoldersSynchronous(account, false, listener);
     }
 
-
     /**
      * Find out whether the account type only supports a local Trash folder.
      * <p>
      * <p>Note: Currently this is only the case for POP3 accounts.</p>
      *
-     * @param account
-     *         The account to check.
-     *
+     * @param account The account to check.
      * @return {@code true} if the account only has a local Trash folder that is not synchronized
      * with a folder on the server. {@code false} otherwise.
-     *
-     * @throws MessagingException
-     *         In case of an error.
+     * @throws MessagingException In case of an error.
      */
     private boolean isTrashLocalOnly(Account account) throws MessagingException {
         // TODO: Get rid of the tight coupling once we properly support local folders
@@ -4289,9 +4250,9 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
      * are checked.
      */
     public void checkMail(final Context context, final Account account,
-            final boolean ignoreLastCheckedTime,
-            final boolean useManualWakeLock,
-            final MessagingListener listener) {
+                          final boolean ignoreLastCheckedTime,
+                          final boolean useManualWakeLock,
+                          final MessagingListener listener) {
 
         TracingWakeLock twakeLock = null;
         if (useManualWakeLock) {
@@ -4353,7 +4314,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     public void checkpEpSyncMail(final Context context,
-                          final PEpProvider.CompletedCallback completedCallback) {
+                                 final PEpProvider.CompletedCallback completedCallback) {
         final boolean useManualWakeLock = true;
 
         TracingWakeLock twakeLock = null;
@@ -4409,10 +4370,9 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
         });
     }
 
-
     private void checkMailForAccount(final Context context, final Account account,
-            final boolean ignoreLastCheckedTime,
-            final MessagingListener listener) {
+                                     final boolean ignoreLastCheckedTime,
+                                     final MessagingListener listener) {
         if (!account.isAvailable(context)) {
             Timber.i("Skipping synchronizing unavailable account %s", account.getDescription());
             return;
@@ -4490,8 +4450,9 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
 
 
     }
+
     private void checkpEpSyncMailForAccount(final Account account,
-                                     final MessagingListener listener) {
+                                            final MessagingListener listener) {
 
         final long accountInterval = account.getAutomaticCheckIntervalMinutes() * 60 * 1000;
 
@@ -4536,7 +4497,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
                     continue;
                 }
                 if (!folder.getName().equals(account.getDraftsFolderName())
-                        && !folder.getName().equals(account.getOutboxFolderName())){
+                        && !folder.getName().equals(account.getOutboxFolderName())) {
                     synchronizepEpSyncFolder(account, folder, true, accountInterval, listener);
                 }
             }
@@ -4567,7 +4528,6 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
 
     }
 
-
     private void synchronizepEpSyncFolder(
             final Account account,
             final Folder folder,
@@ -4580,7 +4540,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
         if (!ignoreLastCheckedTime && folder.getLastChecked() >
                 (System.currentTimeMillis() - accountInterval)) {
             Timber.v("Not syncing folder %s, previously synced @ %tc which would be too recent for the account " +
-                        "period", folder.getName(), folder.getLastChecked());
+                    "period", folder.getName(), folder.getLastChecked());
 
 
             return;
@@ -4623,7 +4583,9 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
         );
 
 
-    }    private void synchronizeFolder(
+    }
+
+    private void synchronizeFolder(
             final Account account,
             final Folder folder,
             final boolean ignoreLastCheckedTime,
@@ -4659,7 +4621,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
                             if (!ignoreLastCheckedTime && tLocalFolder.getLastChecked() >
                                     (System.currentTimeMillis() - accountInterval)) {
                                 Timber.v("Not running Command for folder %s, previously synced @ %tc which would " +
-                                        "be too recent for the account period",
+                                                "be too recent for the account period",
                                         folder.getName(), folder.getLastChecked());
                                 return;
                             }
@@ -4694,7 +4656,6 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
             notificationController.clearFetchingMailNotification(account);
         }
     }
-
 
     public void compact(final Account account, final MessagingListener ml) {
         putBackground("compact:" + account.getDescription(), ml, new Runnable() {
@@ -4773,7 +4734,6 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
             }
         });
     }
-
 
     private boolean shouldNotifyForMessage(Account account, LocalFolder localFolder, Message message) {
         // If we don't even have an account name, don't show the notification.
@@ -4858,11 +4818,8 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     /**
      * Save a draft message.
      *
-     * @param account
-     *         Account we are saving for.
-     * @param message
-     *         Message to save.
-     *
+     * @param account Account we are saving for.
+     * @param message Message to save.
      * @return Message representing the entry in the local store.
      */
     public Message saveDraft(final Account account, final Message message, long existingDraftId, boolean saveRemotely) {
@@ -4923,8 +4880,6 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
         }
     }
 
-    private static AtomicInteger sequencing = new AtomicInteger(0);
-
     public void startKeyImport(Account account, ImportWizardPresenter.Callback callback, boolean ispEp) {
         try {
             callback.onStart();
@@ -4954,26 +4909,6 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
 
     public void setImportKeyController(ImportKeyController importKeyController) {
         this.importKeyController = importKeyController;
-    }
-
-    private static class Command implements Comparable<Command> {
-        public Runnable runnable;
-        public MessagingListener listener;
-        public String description;
-        boolean isForegroundPriority;
-
-        int sequence = sequencing.getAndIncrement();
-
-        @Override
-        public int compareTo(@NonNull Command other) {
-            if (other.isForegroundPriority && !isForegroundPriority) {
-                return 1;
-            } else if (!other.isForegroundPriority && isForegroundPriority) {
-                return -1;
-            } else {
-                return (sequence - other.sequence);
-            }
-        }
     }
 
     public MessagingListener getCheckMailListener() {
@@ -5107,7 +5042,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     }
 
     public void messagesArrived(final Account account, final Folder remoteFolder, final List<Message> messages,
-            final boolean flagSyncOnly) {
+                                final boolean flagSyncOnly) {
         Timber.i("Got new pushed email messages for account %s, folder %s",
                 account.getDescription(), remoteFolder.getName());
 
@@ -5256,10 +5191,6 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
 
     }
 
-    private interface MessageActor {
-        void act(Account account, LocalFolder messageFolder, List<LocalMessage> messages);
-    }
-
     public void setPassiveModeEnabled(boolean enable) {
         pEpProvider.setPassiveModeEnabled(enable);
     }
@@ -5298,7 +5229,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
     Account checkAccount(org.pEp.jniadapter.Message message, Account account) {
         for (Identity identity : account.getIdentities()) {
             if (identity.getEmail().equals(message.getFrom().address)) {
-                return  account;
+                return account;
             }
         }
         return Preferences.getPreferences(context).getDefaultAccount();
@@ -5314,5 +5245,29 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
             }
         }
         return currentAccount;
+    }
+
+    private interface MessageActor {
+        void act(Account account, LocalFolder messageFolder, List<LocalMessage> messages);
+    }
+
+    private static class Command implements Comparable<Command> {
+        public Runnable runnable;
+        public MessagingListener listener;
+        public String description;
+        boolean isForegroundPriority;
+
+        int sequence = sequencing.getAndIncrement();
+
+        @Override
+        public int compareTo(@NonNull Command other) {
+            if (other.isForegroundPriority && !isForegroundPriority) {
+                return 1;
+            } else if (!other.isForegroundPriority && isForegroundPriority) {
+                return -1;
+            } else {
+                return (sequence - other.sequence);
+            }
+        }
     }
 }
