@@ -3504,6 +3504,7 @@ private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage
             Rating rating = PEpUtils.extractRating(message);
             TrustedMessageController controller = new TrustedMessageController();
             if(controller.shouldAppendMessageOnUntrustedServer(account, rating)) {
+                // TODO: 16/07/18 Check if this is really needed: that means review trusted servers behavior 
                 appendMessageCommand(account, message, localSentFolder);
             }
 
