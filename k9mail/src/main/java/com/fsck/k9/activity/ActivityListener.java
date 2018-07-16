@@ -84,13 +84,15 @@ public class ActivityListener extends SimpleMessagingListener {
                 displayName = context.getString(R.string.special_mailbox_name_outbox);
             }
 
+            /* P4A-695 Test if is good enough or we need another approach.
             if (mLoadingHeaderFolderName != null) {
                 return context.getString(R.string.status_loading_account_folder_headers,
                         mLoadingAccountDescription, displayName, progress);
             } else {
                 return context.getString(R.string.status_loading_account_folder,
                         mLoadingAccountDescription, displayName, progress);
-            }
+            } */
+            return context.getString(R.string.status_syncing);
         }
 
         else if (mSendingAccountDescription != null) {
