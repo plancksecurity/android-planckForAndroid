@@ -1736,7 +1736,7 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                         deleteMessage(message, account, folder, localFolder);
                     }
                    else if (isKeyImportMessage(message, result, account, importKeyController.getState())
-                            || !importKeyController.getState().equals(ImportKeyWizardState.INIT)) {
+                            || !importKeyController.getState().equals(ImportKeyWizardState.INIT) && message.getFrom()[0].getAddress().equals(account.getEmail())) {
                         final ImportKeyWizardState importKeyWizardState = importKeyController.getState();
                         Timber.i("Detected pEpKeyImport header");
                         Timber.i(result.msg.getSubject());
