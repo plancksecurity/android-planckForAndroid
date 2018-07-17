@@ -251,9 +251,9 @@ public class UtilsPackage {
         };
     }
 
-    String getText(final Matcher<View> matcher) {
+    public static String getTextFromView(ViewInteraction interaction) {
         final String[] stringHolder = {null};
-        onView(matcher).perform(new ViewAction() {
+        interaction.perform(new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
                 return isAssignableFrom(TextView.class);
