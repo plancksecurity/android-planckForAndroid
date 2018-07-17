@@ -440,7 +440,11 @@ public class CucumberTestSteps {
         device.waitForIdle();
         onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
         device.waitForIdle();
-        onView(withId(R.id.to)).perform(typeText(name), closeSoftKeyboard());
+        if (!name.equals("secondBot")) {
+            onView(withId(R.id.to)).perform(typeText(name), closeSoftKeyboard());
+        } else {
+            onView(withId(R.id.to)).perform(typeText(secondBot), closeSoftKeyboard());
+        }
         device.waitForIdle();
         onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
         device.waitForIdle();
