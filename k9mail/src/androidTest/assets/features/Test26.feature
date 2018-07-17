@@ -1,8 +1,8 @@
-Feature: Test
-  Test
+Feature: Handshake_1.2.11_StopTrusting
+  Stop Trusting (Revoke Trust / Cancel Handshake)
 
-  Background:
-    Given I create an account
+    Background:
+        Given I create an account
 
   @login-scenarios
   Scenario: Test Handshake_1.2.11_StopTrusting
