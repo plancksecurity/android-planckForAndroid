@@ -48,6 +48,7 @@ import static android.support.test.espresso.intent.matcher.IntentMatchers.isInte
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.hasValueEqualTo;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
@@ -66,6 +67,7 @@ public class CucumberTestSteps {
     private Instrumentation instrumentation;
     private EspressoTestingIdlingResource espressoTestingIdlingResource;
     private Resources resources;
+    private String trustWords;
     @Rule
     public IntentsTestRule<WelcomeMessage> activityTestRule = new IntentsTestRule<>(WelcomeMessage.class, true, false);
 
@@ -461,6 +463,14 @@ public class CucumberTestSteps {
         }catch (AssertionFailedError exception){
             Timber.e("Theme is not light");
         }
+    }
+
+    @And("^I save trustwords$")
+    public void I_save_trustwords(){
+        device.waitForIdle();
+        onView(withId(R.id.tvPep)).perform(click());
+        device.waitForIdle();
+        trustWords = getTextFromView(onView(withId(R.id.trustwords)));
     }
 
     private void startTimer(){
