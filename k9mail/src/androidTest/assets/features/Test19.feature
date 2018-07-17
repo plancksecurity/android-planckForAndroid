@@ -1,11 +1,11 @@
-Feature: Test
-    This is the first cucumber test
+Feature: Sanity_1.2.3_MailFromNewContactEncrypted
+  Mail from new contact: Check if public key is imported and my answer is yellow
 
     Background:
         Given I create an account
 
   @login-scenarios
-  Scenario: Test19 1.2.3 GreyStatusMessageTest
+  Scenario: Test Sanity_1.2.3_MailFromNewContactEncrypted
     When I click message compose
     Then I send 1 message to bot with subject subject and body body
     And I click last message received

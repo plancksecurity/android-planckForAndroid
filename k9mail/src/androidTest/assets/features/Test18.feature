@@ -1,11 +1,11 @@
-Feature: Test
-    This is the first cucumber test
+Feature: Sanity_1.2.2_MailToSecondNewContact
+  Mail to second new contact
 
     Background:
         Given I create an account
 
   @login-scenarios
-  Scenario: Test18 1.2.2 GreyStatusMessageTest
+  Scenario: Test Sanity_1.2.2_MailToSecondNewContact
     When I click message compose
     And I check status is pEpRatingUndefined
     Then I press back

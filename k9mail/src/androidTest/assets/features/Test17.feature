@@ -1,11 +1,11 @@
-Feature: Test
-    This is the first cucumber test
+Feature: Sanity_1.2.1_MailToNewContact
+  Keys for these test users will be obtained from the test bot
 
     Background:
         Given I create an account
 
   @login-scenarios
-  Scenario: Test17 1.2.1 GreyStatusMessageTest
+  Scenario: Test Sanity_1.2.1_MailToNewContact
     When I click message compose
     And I check status is pEpRatingUndefined
     Then I press back
