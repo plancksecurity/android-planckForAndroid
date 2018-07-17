@@ -59,6 +59,7 @@ public class CucumberTestSteps {
     private static final String HOST = "test.pep-security.net";
 
     private String messageToBot = "";
+    private String secondBot = "";
 
     private UiDevice device;
     private TestUtils testUtils;
@@ -76,7 +77,9 @@ public class CucumberTestSteps {
         testUtils.increaseTimeoutWait();
         espressoTestingIdlingResource = new EspressoTestingIdlingResource();
         IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
-        messageToBot = Long.toString(System.currentTimeMillis()) + "@" + HOST;
+        long name = System.currentTimeMillis();
+        messageToBot = Long.toString(name++) + "@" + HOST;
+        secondBot = Long.toString(name) + "@" + HOST;
         resources = InstrumentationRegistry.getTargetContext().getResources();
         startTimer();
         activityTestRule.launchActivity(new Intent());
@@ -98,9 +101,9 @@ public class CucumberTestSteps {
     public void I_fill_messageTo_field(String cucumberMessageTo) {
         switch (cucumberMessageTo){
             case "empty":
-                cucumberMessageTo = " ";
+                cucumberMessageTo = ",";
                 device.waitForIdle();
-                while (!hasValueEqualTo(onView(withId(R.id.to)), " ")) {
+                while (!hasValueEqualTo(onView(withId(R.id.to)), "")) {
                     try {
                         device.waitForIdle();
                         onView(withId(R.id.to)).perform(typeText(cucumberMessageTo), closeSoftKeyboard());
@@ -115,6 +118,9 @@ public class CucumberTestSteps {
                 break;
             case "bot":
                 cucumberMessageTo = messageToBot;
+                break;
+            case "secondBot":
+                cucumberMessageTo = secondBot;
         }
         fillMessage(cucumberMessageTo);
     }
@@ -289,10 +295,24 @@ public class CucumberTestSteps {
             testUtils.composeMessageButton();
             device.waitForIdle();
             testUtils.fillMessage(new TestUtils.BasicMessage("", subject, body, messageToBot), false);
+            device.waitForIdle();
             testUtils.sendMessage();
             device.waitForIdle();
             testUtils.waitForNewMessage();
         }
+        device.waitForIdle();
+    }
+
+    @Then("^I send message to second bot with subject (\\S+) and body (\\S+)$")
+    public void I_send_messages_to_second_bot(String subject, String body) {
+        device.waitForIdle();
+            testUtils.composeMessageButton();
+            device.waitForIdle();
+            testUtils.fillMessage(new TestUtils.BasicMessage("", subject, body, secondBot), false);
+            device.waitForIdle();
+            testUtils.sendMessage();
+            device.waitForIdle();
+            testUtils.waitForNewMessage();
         device.waitForIdle();
     }
 
