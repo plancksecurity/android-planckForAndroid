@@ -207,7 +207,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.from: {
-                onAddSenderToContacts();
+                onShowAdditionalHeaders(true);
                 break;
             }
             case R.id.to:
@@ -289,17 +289,17 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     /**
      * Set up and then show the additional headers view. Called by
-     * {@link #onShowAdditionalHeaders()}
+     * {@link #onShowAdditionalHeaders(boolean)}
      * (when switching between messages).
      */
-    private void showAdditionalHeaders() {
+    private void showAdditionalHeaders(boolean basic) {
         Integer messageToShow = null;
         try {
             // Retrieve additional headers
             List<HeaderEntry> additionalHeaders = getAdditionalHeaders(mMessage);
             if (!additionalHeaders.isEmpty()) {
                 // Show the additional headers that we have got.
-                populateAdditionalHeadersView(additionalHeaders);
+                populateAdditionalHeadersView(additionalHeaders, basic);
                 mAdditionalHeadersView.setVisibility(View.VISIBLE);
             } else {
                 // All headers have been downloaded, but there are no additional headers.
@@ -410,7 +410,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
         if (mSavedState != null) {
             if (mSavedState.additionalHeadersVisible) {
-                showAdditionalHeaders();
+                showAdditionalHeaders(false);
             }
             mSavedState = null;
         } else {
@@ -485,14 +485,14 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         mCryptoStatusIcon.setCryptoDisplayStatus(displayStatus);
     }
 
-    public void onShowAdditionalHeaders() {
+    public void onShowAdditionalHeaders(boolean basic) {
         int currentVisibility = mAdditionalHeadersView.getVisibility();
         if (currentVisibility == View.VISIBLE) {
             hideAdditionalHeaders();
             expand(mToView, false);
             expand(mCcView, false);
         } else {
-            showAdditionalHeaders();
+            showAdditionalHeaders(basic);
             expand(mToView, true);
             expand(mCcView, true);
         }
@@ -543,22 +543,25 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
      *                          times.
      *                          <p/>
      *                          This method is always called from within the UI thread by
-     *                          {@link #showAdditionalHeaders()}.
+     *                          {@link #showAdditionalHeaders(boolean)}.
      */
-    private void populateAdditionalHeadersView(final List<HeaderEntry> additionalHeaders) {
+    private void populateAdditionalHeadersView(final List<HeaderEntry> additionalHeaders, boolean basic) {
         SpannableStringBuilder sb = new SpannableStringBuilder();
         boolean first = true;
+        List<String> basicHeaderLabels = Arrays.asList("From", "To", "CC", "BCC", "Date", "Subject");
         for (HeaderEntry additionalHeader : additionalHeaders) {
-            if (!first) {
-                sb.append("\n");
-            } else {
-                first = false;
+            if (!basic || basic && basicHeaderLabels.contains(additionalHeader.label)) {
+                if (!first) {
+                    sb.append("\n");
+                } else {
+                    first = false;
+                }
+                StyleSpan boldSpan = new StyleSpan(Typeface.BOLD);
+                SpannableString label = new SpannableString(additionalHeader.label + ": ");
+                label.setSpan(boldSpan, 0, label.length(), 0);
+                sb.append(label);
+                sb.append(MimeUtility.unfoldAndDecode(additionalHeader.value));
             }
-            StyleSpan boldSpan = new StyleSpan(Typeface.BOLD);
-            SpannableString label = new SpannableString(additionalHeader.label + ": ");
-            label.setSpan(boldSpan, 0, label.length(), 0);
-            sb.append(label);
-            sb.append(MimeUtility.unfoldAndDecode(additionalHeader.value));
         }
         mAdditionalHeadersView.setText(sb);
     }

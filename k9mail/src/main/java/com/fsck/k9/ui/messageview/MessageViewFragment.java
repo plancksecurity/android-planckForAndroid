@@ -361,7 +361,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     public void onToggleAllHeadersView() {
-        mMessageView.getMessageHeaderView().onShowAdditionalHeaders();
+        mMessageView.getMessageHeaderView().onShowAdditionalHeaders(false);
     }
 
     public boolean allHeadersVisible() {
