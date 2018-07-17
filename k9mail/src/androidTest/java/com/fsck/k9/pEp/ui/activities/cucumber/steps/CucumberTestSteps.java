@@ -464,6 +464,14 @@ public class CucumberTestSteps {
             Timber.e("Theme is not light");
         }
     }
+    @Then("^I wait (\\d+) seconds$")
+    public void I_wait_seconds(int seconds) {
+        try {
+            Thread.sleep(seconds * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     @And("^I save trustwords$")
     public void I_save_trustwords(){
