@@ -330,6 +330,7 @@ public class CucumberTestSteps {
 
     @And("^I go to sent folder$")
     public void I_go_to_sent_folder(){
+        device.waitForIdle();
         testUtils.goToSentFolder();
     }
 
