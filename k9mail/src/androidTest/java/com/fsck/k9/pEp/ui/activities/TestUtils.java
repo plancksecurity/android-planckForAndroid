@@ -504,8 +504,7 @@ public class TestUtils {
 
     public void assertMessageStatus(int status){
         device.waitForIdle();
-        if (!exists(onView(withId(R.id.tvPep)))) {
-            onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
+        if (!exists(onView(withId(R.id.reply_message)))) {
             device.waitForIdle();
             doWaitForResource(R.id.pEp_indicator);
             waitUntilIdle();
