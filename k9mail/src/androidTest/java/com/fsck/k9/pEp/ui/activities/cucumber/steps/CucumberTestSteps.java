@@ -180,6 +180,11 @@ public class CucumberTestSteps {
         onView(withId(R.id.confirmTrustWords)).perform(click());
     }
 
+    @When("^I untrust trust words$")
+    public void I_untrust_trust_words() {
+        onView(withId(R.id.handshake_button_text)).perform(click());
+    }
+
     @When("^I check status is (\\S+)$")
     public void I_check_pEp_status(String status) {
         int statusRating = 0;
@@ -478,7 +483,7 @@ public class CucumberTestSteps {
         }
     }
 
-    @And("^I save trustwords$")
+    @And("^I save trustWords$")
     public void I_save_trustwords(){
         device.waitForIdle();
         onView(withId(R.id.tvPep)).perform(click());
