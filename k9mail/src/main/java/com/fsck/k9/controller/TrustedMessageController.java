@@ -21,7 +21,7 @@ class TrustedMessageController {
     boolean shouldDownloadMessageInTrustedServer(PEpProvider.DecryptResult result, MimeMessage decryptedMessage, Account account) {
         return account.ispEpPrivacyProtected()
                 && !account.isUntrustedSever()
-                && result.flags == null
+                && result.flags == -1
                 && !decryptedMessage.isSet(Flag.X_PEP_NEVER_UNSECURE);
     }
 

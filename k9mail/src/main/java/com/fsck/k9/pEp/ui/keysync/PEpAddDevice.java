@@ -5,8 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,7 +19,7 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.PepActivity;
+import com.fsck.k9.pEp.manualsync.WizardActivity;
 import com.fsck.k9.pEp.ui.HandshakeData;
 import com.fsck.k9.pEp.ui.adapters.IdentitiesAdapter;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -38,7 +36,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 
-public class PEpAddDevice extends PepActivity implements AddDeviceView {
+public class PEpAddDevice extends WizardActivity implements AddDeviceView {
 
     public static final String ACTION_SHOW_PEP_TRUSTWORDS = "com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS";
     private static final String TRUSTWORDS = "trustwordsKey";
@@ -46,6 +44,9 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
     private static final String PARTNER = "partnerUserUd";
     private static final String MY_ADRESS = "myAddress";
     private static final String EXPLANATION = "explanation";
+    private static final String MANUAL = "manual";
+    public static final String RESULT = "result";
+    public static final int REQUEST_ADD_DEVICE_HANDSHAKE = 1;
 
     @Inject AddDevicePresenter presenter;
 
@@ -69,13 +70,16 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
     private DismissKeysyncDialogReceiver receiver;
     private IntentFilter filter;
 
-    public static Intent getActionRequestHandshake(Context context, String trustwords, Identity myself, Identity partner, String explanation) {
+    public static Intent getActionRequestHandshake(Context context, String trustwords,
+                                                   Identity myself, Identity partner,
+                                                   String explanation, boolean isManualSync) {
         Intent intent = new Intent(context, PEpAddDevice.class);
         intent.setAction(ACTION_SHOW_PEP_TRUSTWORDS);
         intent.putExtra(TRUSTWORDS, trustwords);
         intent.putExtra(PARTNER, partner);
         intent.putExtra(MYSELF, myself);
         intent.putExtra(EXPLANATION, explanation);
+        intent.putExtra(MANUAL, isManualSync);
         return intent;
 
     }
@@ -102,15 +106,16 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
             if (intent.hasExtra(TRUSTWORDS)) {
                 tvTrustwords.setText(getIntent().getStringExtra(TRUSTWORDS));
             }
-            if (intent.hasExtra(MYSELF) && intent.hasExtra(PARTNER)) {
+            if (intent.hasExtra(MYSELF) && intent.hasExtra(PARTNER) && intent.hasExtra(MANUAL)) {
                 partnerIdentity = (Identity) intent.getSerializableExtra(PARTNER);
                 myIdentity = (Identity) intent.getSerializableExtra(MYSELF);
+                boolean isManualSync = intent.getBooleanExtra(MANUAL, false);
                 List<Account> accounts = Preferences.getPreferences(PEpAddDevice.this).getAccounts();
-                presenter.initialize(this, getpEp(), partnerIdentity, accounts);
+                presenter.initialize(this, getpEp(), partnerIdentity, accounts, isManualSync);
             }
         }
 
-        setupFloatingWindow();
+        setUpFloatingWindow();
     }
 
     @Override
@@ -268,8 +273,11 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
     }
 
     @Override
-    public void close() {
-        super.onBackPressed();
+    public void close(boolean accepted) {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(RESULT, accepted?Result.ACCEPTED:Result.REJECTED);
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
     }
 
     @Override
@@ -280,7 +288,8 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
 
     @Override
     public void goBack() {
-        super.onBackPressed();
+        setResult(RESULT_CANCELED);
+        finish();
     }
 
     @Override
@@ -379,7 +388,8 @@ public class PEpAddDevice extends PepActivity implements AddDeviceView {
         }
     }
 
-    protected void setupFloatingWindow() {
-        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+    public enum Result {
+        ACCEPTED, REJECTED;
     }
+
 }

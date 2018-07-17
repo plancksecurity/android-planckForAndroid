@@ -1,153 +1,147 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/add_device_background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipChildren="false"
-    android:clipToPadding="false"
-    android:orientation="horizontal"
+    android:background="@color/white"
+    android:orientation="vertical"
     tools:context=".activity.MessageList">
 
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="16dp"
-        android:clickable="true"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="8dp"
-        app:cardPreventCornerOverlap="false">
+    <include
+        android:id="@+id/include3"
+        layout="@layout/handshake_toolbar_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="wrap_content"
+        android:layout_height="284dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/white"
+        android:paddingBottom="@dimen/pep_sync_add_device_padding_vertical"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/pep_sync_add_device_padding_vertical"
+        app:layout_constraintBottom_toTopOf="@+id/wrongTrustwords"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/include3">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingBottom="@dimen/pep_sync_add_device_padding_vertical"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/pep_sync_add_device_padding_vertical">
+            android:orientation="vertical">
 
-            <LinearLayout
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvPartner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_toLeftOf="@+id/call"
+                    android:gravity="center_vertical"
+                    android:padding="8dp"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    tools:text="Partner:" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/explanation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="@string/pep_add_device_ask_trustwords"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:id="@+id/trustwords"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:breakStrategy="simple"
+                android:ellipsize="none"
+                android:padding="8dp"
+                android:textSize="24sp"
+                tools:text="IMPORTUNER METAPHOR ARNO DIABETES SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET" />
+
+            <ImageView
+                android:id="@+id/show_long_trustwords"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selectable_message_background"
+                android:src="@drawable/ic_show_long_trustwords" />
+
+            <TextView
+                android:id="@+id/advenced_keys_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:paddingBottom="8dp"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:text="@string/synchronize_these_accounts_between_my_devices"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
 
-                <include layout="@layout/handshake_toolbar_layout"/>
-
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:minHeight="48dp"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:id="@+id/tvPartner"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_toLeftOf="@+id/call"
-                        android:gravity="center_vertical"
-                        android:padding="8dp"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:visibility="gone"
-                        tools:text="Partner:" />
-
-                </RelativeLayout>
-
-                <TextView
-                    android:id="@+id/explanation"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp"
-                    android:text="@string/pep_add_device_ask_trustwords"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/advanced_options_key_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
 
 
-                <TextView
-                    android:id="@+id/trustwords"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="none"
-                    android:padding="8dp"
-                    android:textSize="24sp"
-                    android:breakStrategy="simple"
-                    tools:text="IMPORTUNER METAPHOR ARNO DIABETES SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET" />
+    <TextView
+        android:id="@+id/wrongTrustwords"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="@string/pep_wrong_trustwords"
+        android:textAllCaps="true"
+        android:textColor="@color/pep_red"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/confirmTrustWords"
+        app:layout_constraintEnd_toStartOf="@+id/confirmTrustWords"
+        app:layout_constraintTop_toTopOf="@+id/confirmTrustWords"
+        tools:layout_conversion_absoluteHeight="35dp"
+        tools:layout_conversion_absoluteWidth="72dp" />
 
-                <ImageView android:id="@+id/show_long_trustwords"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/selectable_message_background"
-                    android:src="@drawable/ic_show_long_trustwords"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="end">
+    <TextView
+        android:id="@+id/confirmTrustWords"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="@string/pep_confirm_trustwords"
+        android:textAllCaps="true"
+        android:textColor="@color/pep_green"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_conversion_absoluteHeight="35dp"
+        tools:layout_conversion_absoluteWidth="70dp" />
 
-                    <FrameLayout
-                        android:id="@+id/wrongTrustwords"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_margin="8dp"
-                        android:textColor="@android:color/white">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:padding="8dp"
-                            android:text="@string/pep_wrong_trustwords"
-                            android:textColor="@color/pep_red"
-                            android:textAllCaps="true"
-                            android:textStyle="bold"/>
-                    </FrameLayout>
-
-                    <FrameLayout
-                        android:id="@+id/confirmTrustWords"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_margin="8dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:padding="8dp"
-                            android:text="@string/pep_confirm_trustwords"
-                            android:textColor="@color/pep_green"
-                            android:textAllCaps="true"
-                            android:textStyle="bold"/>
-                    </FrameLayout>
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/advenced_keys_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="8dp"
-                    android:paddingLeft="@dimen/activity_horizontal_margin"
-                    android:paddingRight="@dimen/activity_horizontal_margin"
-                    android:paddingTop="@dimen/activity_vertical_margin"
-                    android:text="@string/synchronize_these_accounts_between_my_devices"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/advanced_options_key_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scrollbars="vertical"
-                    android:visibility="invisible" />
-            </LinearLayout>
-        </ScrollView>
-    </android.support.v7.widget.CardView>
-
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

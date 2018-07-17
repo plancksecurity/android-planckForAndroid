@@ -9,6 +9,7 @@ import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
 import com.fsck.k9.pEp.infrastructure.threading.UIThread;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;

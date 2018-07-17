@@ -144,6 +144,7 @@ public abstract class MessageBuilder {
             message.setReferences(references);
         }
 
+//        messageIdGenerator = MessageIdGenerator.getInstance();
         String messageId = messageIdGenerator.generateMessageId();
         message.setMessageId(messageId);
 

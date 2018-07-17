@@ -34,7 +34,6 @@ dependencies {
 
 android {
     compileSdkVersion androidCompileSdkVersion.toInteger()
-    buildToolsVersion androidBuildToolsVersion
 
     defaultConfig {
         minSdkVersion 15
@@ -69,5 +68,4 @@ android {
         exclude 'META-INF/NOTICE.txt'
         exclude 'LICENSE.txt'
     }
-    buildToolsVersion '27.0.3'
 }

@@ -205,6 +205,10 @@ public interface PEpProvider {
 
     Map<String, PEpLanguage> obtainLanguages();
 
+    com.fsck.k9.mail.Message generatePrivateKeyMessage(MimeMessage message, String fpr);
+
+    Message encryptMessage(Message result);
+
     class KeyDetail {
         private final Address address;
         private final String fpr;
@@ -233,9 +237,9 @@ public interface PEpProvider {
 
     class DecryptResult {
         public final KeyDetail keyDetails;
-        public final DecryptFlags flags;
+        public int flags = -1;
 
-        public DecryptResult(MimeMessage msg, Rating rating, KeyDetail keyDetails, DecryptFlags flags) {
+        public DecryptResult(MimeMessage msg, Rating rating, KeyDetail keyDetails, int flags) {
             this.msg = msg;
             this.rating = rating;
             this.keyDetails = keyDetails;

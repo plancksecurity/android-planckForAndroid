@@ -1,6 +1,7 @@
 package com.fsck.k9.pEp.infrastructure.modules;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.fsck.k9.pEp.infrastructure.PerActivity;
 
@@ -26,7 +27,7 @@ public class ActivityModule {
     @Provides
     @PerActivity
     @Named("ActivityContext")
-    Activity provideActivityContext() {
+    Context provideActivityContext() {
         return this.activity;
     }
 }
