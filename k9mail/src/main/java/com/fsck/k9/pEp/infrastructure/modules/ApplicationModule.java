@@ -1,6 +1,7 @@
 package com.fsck.k9.pEp.infrastructure.modules;
 
 
+import android.app.Application;
 import android.content.Context;
 
 import com.fsck.k9.K9;
@@ -9,6 +10,7 @@ import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
 import com.fsck.k9.pEp.infrastructure.threading.UIThread;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -25,7 +27,7 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    Context provideContext() {
+    Application provideContext() {
         return application;
     }
 

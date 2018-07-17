@@ -10,7 +10,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,6 +31,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.AccountStats;
@@ -52,6 +52,8 @@ import com.fsck.k9.helper.SizeFormatter;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.PEpImporterActivity;
+import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
+import com.fsck.k9.pEp.manualsync.KeySourceType;
 import com.fsck.k9.pEp.ui.About;
 import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
@@ -984,11 +986,26 @@ public class Accounts extends PEpImporterActivity {
                 case R.id.move_down:
                     onMove(realAccount, false);
                     break;
+                case R.id.import_pEp_key:
+                    onImportpEpKey(realAccount);
+                    break;
+               /* case R.id.import_PGP_key:
+                    onImportPGPKey(realAccount);
+                    break;
+                    */
             }
         }
         return true;
     }
 
+    private void onImportPGPKey(Account realAccount) {
+        ImportWizardFrompEp.actionStartImportpEpKey(getApplicationContext(), realAccount.getUuid(), true, KeySourceType.PGP, null);
+
+    }
+
+    private void onImportpEpKey(Account realAccount) {
+        ImportWizardFrompEp.actionStartImportpEpKey(getApplicationContext(), realAccount.getUuid(), true, KeySourceType.PEP, null);
+    }
 
 
     private void onClear(Account account) {

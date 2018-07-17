@@ -26,6 +26,9 @@ public interface PEpProvider {
     int ENCRYPTED_MESSAGE_POSITION = 0;
     String PEP_OWN_USER_ID = "pEp_own_userId";
     int HALF_FINGERPRINT_LENGTH = 24;
+    //long TIMEOUT = 4 * 60 * 60 * 1000;
+    long TIMEOUT = 10 * 60 * 1000;
+
 
     String PEP_PRIVATE_KEY_FPR = "pEpDetailsFpr";
     String PEP_PRIVATE_KEY_ADDRESS = "pEpDetailsAddress";
@@ -205,6 +208,10 @@ public interface PEpProvider {
 
     Map<String, PEpLanguage> obtainLanguages();
 
+    com.fsck.k9.mail.Message generatePrivateKeyMessage(MimeMessage message, String fpr);
+
+    Message encryptMessage(Message result);
+
     class KeyDetail {
         private final Address address;
         private final String fpr;
@@ -233,9 +240,9 @@ public interface PEpProvider {
 
     class DecryptResult {
         public final KeyDetail keyDetails;
-        public final DecryptFlags flags;
+        public int flags = -1;
 
-        public DecryptResult(MimeMessage msg, Rating rating, KeyDetail keyDetails, DecryptFlags flags) {
+        public DecryptResult(MimeMessage msg, Rating rating, KeyDetail keyDetails, int flags) {
             this.msg = msg;
             this.rating = rating;
             this.keyDetails = keyDetails;

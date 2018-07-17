@@ -73,14 +73,15 @@ import java.util.concurrent.SynchronousQueue;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
-@ReportsCrashes(mailTo = "crashreport@prettyeasyprivacy.com",
+@ReportsCrashes(mailTo = "crashreport@pep.security",
         mode = ReportingInteractionMode.TOAST,
         resToastText = R.string.crash_toast_text)
 public class K9 extends Application {
     public static final int POLLING_INTERVAL = 1000;
     private Poller poller;
-    private boolean needsFastPoll;
+    private boolean needsFastPoll = false;
     private boolean isPollingMessages;
+    private boolean showingKeyimportDialog = false;
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PEpProvider pEpProvider, pEpSyncProvider;
     private Account currentAccount;
@@ -94,6 +95,14 @@ public class K9 extends Application {
 
     public void batteryOptimizationAsked() {
         batteryOptimizationAsked = true;
+    }
+
+    public void enableFastPolling() {
+        needsFastPoll = true;
+    }
+
+    public void disableFastPolling() {
+        needsFastPoll = false;
     }
 
     /**
@@ -721,9 +730,9 @@ public class K9 extends Application {
 
     private void pEpInitEnvironment() {
         AndroidHelper.setup(this);
+        setupFastPoller();
         if (pEpSyncEnabled) {
             initSync();
-            setupFastPoller();
         }
     }
 
@@ -790,7 +799,7 @@ public class K9 extends Application {
         language = Locale.getDefault().getLanguage();
         String trust = pEpSyncProvider.trustwords(myself, partner, language, true);
         Context context = K9.this.getApplicationContext();
-        Intent syncTrustowordsActivity = PEpAddDevice.getActionRequestHandshake(context, trust, myself, partner, explanation);
+        Intent syncTrustowordsActivity = PEpAddDevice.getActionRequestHandshake(context, trust, myself, partner, explanation, false);
         syncTrustowordsActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 22, syncTrustowordsActivity, 0);
         try {
@@ -1748,5 +1757,13 @@ public class K9 extends Application {
 
     public boolean needsFastPoll() {
         return needsFastPoll;
+    }
+
+    public boolean isShowingKeyimportDialog() {
+        return showingKeyimportDialog;
+    }
+
+    public void setShowingKeyimportDialog(boolean showingKeyimportDialog) {
+        this.showingKeyimportDialog = showingKeyimportDialog;
     }
 }

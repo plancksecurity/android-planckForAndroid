@@ -1,6 +1,6 @@
-def pEpEngineRevision = 2657
-def pEpJNIAdapterRevision = 414
-def version = "1.0.101rc1"
+def pEpEngineRevision = 2779
+def pEpJNIAdapterRevision = 417
+def version = "1.0.200rc4"
 
 def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
 def pEpTestEmailPassword = "\"$System.env.PEP_TEST_EMAIL_PASSWORD\""
@@ -76,6 +76,7 @@ dependencies {
     implementation "de.hdodenhof:circleimageview:${circleImageViewVersion}"
     implementation "org.jsoup:jsoup:${jsoupVersion}"
     implementation "uk.co.chrisjenx:calligraphy:${callygraphyVersion}"
+    //implementation "com.klinkerapps:floating-tutorial:1.0.4"
 
     androidTestImplementation "com.android.support.test.espresso:espresso-intents:${espressoVersion}"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:${espressoVersion}"
@@ -132,12 +133,11 @@ android {
         }
     }
     compileSdkVersion androidCompileSdkVersion.toInteger()
-    buildToolsVersion androidBuildToolsVersion
 
     defaultConfig {
         applicationId "${appId}"
-        versionCode 2
-        minSdkVersion 21
+        versionCode 7
+        minSdkVersion 18
         targetSdkVersion 25
         setProperty("archivesBaseName", "$version")
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]
@@ -182,7 +182,7 @@ android {
             dimension "none"
         }
     }
-        signingConfigs {
+    signingConfigs {
         release
     }
     buildTypes {
@@ -237,7 +237,6 @@ android {
             universalApk false
         }
     }
-    buildToolsVersion '27.0.3'
 
 }
 

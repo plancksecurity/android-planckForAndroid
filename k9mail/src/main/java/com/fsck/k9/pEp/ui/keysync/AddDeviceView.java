@@ -10,7 +10,7 @@ public interface AddDeviceView {
 
     void showCompletePartnerFormat(Identity partner);
 
-    void close();
+    void close(boolean accepted);
 
     void goBack();
 

@@ -2,7 +2,6 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion androidCompileSdkVersion.toInteger()
-    buildToolsVersion androidBuildToolsVersion
 
     sourceSets {
         main {
@@ -16,5 +15,4 @@ android {
     lintOptions {
         abortOnError false
     }
-    buildToolsVersion '27.0.3'
 }

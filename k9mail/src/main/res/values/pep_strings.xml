@@ -201,4 +201,14 @@
 
 
     <string name="enable_pep_sync">Enable p≡p sync globally</string>
+    <string name="open_pgp">OpenPGP</string>
+    <string name="pgp">PGP</string>
+    <string name="key_import_wizard_handshake_explanation">Please compare the following Trustwords with the ones on your other device and confirm if they match.</string>
+    <string name="key_import_wizard_from_pep_initial_text">You are about to start the key import process, this will import and use your p≡p key from another device, and export you private key</string>
+    <string name="key_import_wizard_from_pgp_initial_text">You are about to start the key import process from a PGP client</string>
+    <string name="pgp_key_import_instructions">To proceed with the Key Import, please import the attached public p≡p key and reply with a message that: \n
+                    \t\t 1. has your public PGP key attached and\n
+                    \t\t 2. is encrypted with the p≡p key you just imported\n</string>
+    <string name="key_import_wizard_pep_not_initial_explanation">If you initiated a key import for the following account: %s, please click Start.</string>
+
 </resources>

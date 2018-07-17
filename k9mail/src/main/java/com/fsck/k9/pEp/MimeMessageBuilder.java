@@ -40,7 +40,7 @@ import java.util.Vector;
  */
 
 
-class MimeMessageBuilder extends MessageBuilder {
+public class MimeMessageBuilder extends MessageBuilder {
     private SimpleMessageFormat messageFormat = SimpleMessageFormat.TEXT;
 
     private Message pEpMessage;
@@ -73,7 +73,7 @@ class MimeMessageBuilder extends MessageBuilder {
     }
 
     //--------------------------
-    MimeMessageBuilder(Message m) {
+    public MimeMessageBuilder(Message m) {
         super(null, null, null);
         this.pEpMessage = m;
     }
@@ -88,7 +88,7 @@ class MimeMessageBuilder extends MessageBuilder {
     }
 
     @NonNull
-    MimeMessage parseMessage(Message m) throws MessagingException {
+    public MimeMessage parseMessage(Message m) throws MessagingException {
         this.pEpMessage = m;
         MimeMessage message = new MimeMessage();
 

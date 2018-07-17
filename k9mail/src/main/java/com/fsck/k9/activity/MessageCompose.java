@@ -1508,7 +1508,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         quotedMessagePresenter.processDraftMessage(messageViewInfo, k9identity);
     }
 
-    static class SendMessageTask extends AsyncTask<Void, Void, Void> {
+    public static class SendMessageTask extends AsyncTask<Void, Void, Void> {
         final Context context;
         final Account account;
         final Contacts contacts;
@@ -1523,7 +1523,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             completedCallback.onComplete();
         }
 
-        SendMessageTask(Context context, Account account, Contacts contacts, Message message,
+        public SendMessageTask(Context context, Account account, Contacts contacts, Message message,
                         Long draftId, MessageReference messageReference, PEpProvider.CompletedCallback completedCallback) {
             this.context = context;
             this.account = account;
@@ -1638,6 +1638,12 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
     @Override
     public void onMessageBuildSuccess(MimeMessage message, boolean isDraft) {
+        try {
+            message.setFlag(Flag.SEEN, true);
+        } catch (MessagingException e) {
+            //shall never happen at this point as the message is just build
+            Timber.e(e);
+        }
         if (isDraft) {
             changesMadeSinceLastSave = false;
             currentMessageBuilder = null;
