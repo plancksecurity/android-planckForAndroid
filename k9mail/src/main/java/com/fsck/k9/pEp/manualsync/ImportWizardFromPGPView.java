@@ -9,8 +9,6 @@ interface ImportWizardFromPGPView {
 
     void renderPGPInitialScreen();
 
-    void finish();
-
     void renderWaitingForHandshake();
 
     void renderWaitingForPGPHandshake();
@@ -22,4 +20,10 @@ interface ImportWizardFromPGPView {
     void notifyKeySent();
 
     void finishImportSuccefully();
+
+    void close();
+
+    void cancel();
+
+    void setDialogEnabled();
 }

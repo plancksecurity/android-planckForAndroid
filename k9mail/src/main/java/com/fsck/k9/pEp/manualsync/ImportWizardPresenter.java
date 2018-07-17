@@ -37,7 +37,7 @@ public class ImportWizardPresenter implements Presenter {
 
     @Override
     public void destroy() {
-
+        importKeyController.cancel();
     }
 
     public void onStartClicked(Account account, Callback callback) {
@@ -81,11 +81,7 @@ public class ImportWizardPresenter implements Presenter {
 
     public void cancel() {
         importKeyController.cancel();
-        view.finish();
-    }
-
-    public void start() {
-        importKeyController.start();
+        view.cancel();
     }
 
     public void next() {
@@ -99,6 +95,7 @@ public class ImportWizardPresenter implements Presenter {
                 break;
             case BEACON_SENT:
                 Timber.e("Beacon sent");
+                view.setDialogEnabled();
                 if (ispEp) {
                     view.renderWaitingForHandshake();
                 } else {
@@ -134,6 +131,11 @@ public class ImportWizardPresenter implements Presenter {
     public void onPrivateKeyReceived() {
         Timber.e(importKeyController.getState().name());
         view.finishImportSuccefully();
+    }
+
+    public void close() {
+        importKeyController.finish();
+        view.close();
     }
 
 

@@ -989,19 +989,21 @@ public class Accounts extends PEpImporterActivity {
                 case R.id.import_pEp_key:
                     onImportpEpKey(realAccount);
                     break;
+               /* case R.id.import_PGP_key:
+                    onImportPGPKey(realAccount);
+                    break;
+                    */
             }
         }
         return true;
     }
 
     private void onImportPGPKey(Account realAccount) {
-        Toast.makeText(getApplicationContext(), "Not implemented yet", Toast.LENGTH_LONG).show();
         ImportWizardFrompEp.actionStartImportpEpKey(getApplicationContext(), realAccount.getUuid(), true, KeySourceType.PGP, null);
 
     }
 
     private void onImportpEpKey(Account realAccount) {
-        Toast.makeText(getApplicationContext(), "Not implemented yet", Toast.LENGTH_LONG).show();
         ImportWizardFrompEp.actionStartImportpEpKey(getApplicationContext(), realAccount.getUuid(), true, KeySourceType.PEP, null);
     }
 

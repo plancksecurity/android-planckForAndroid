@@ -1715,7 +1715,16 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                                     store = false;
                                     break;
                             }
-                        */}
+                        */
+                            if ((tempResult.flags & DecryptFlags.PEPDecryptFlagConsumed.value) == DecryptFlags.PEPDecryptFlagConsumed.value) {
+                                Timber.v("pEpJNI", "messageFinished: Deleting");
+                                tempResult = null;
+                                store = false;
+                            } else if ((tempResult.flags & DecryptFlags.PEPDecryptFlagIgnored.value) == DecryptFlags.PEPDecryptFlagIgnored.value) {
+                                tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null, -1);
+                                store = false;
+                            }
+                        }
                         result = tempResult;
                         Timber.d("pEp", "messageDecrypted: " + (System.currentTimeMillis()-time));
                     }
@@ -1726,45 +1735,54 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                     if (result == null) {
                         deleteMessage(message, account, folder, localFolder);
                     }
-                   else if (isKeyImportMessage(message, result, account, importKeyController.getState())) {
-                       final ImportKeyWizardState importKeyWizardState = importKeyController.getState();
-
+                   else if (isKeyImportMessage(message, result, account, importKeyController.getState())
+                            || !importKeyController.getState().equals(ImportKeyWizardState.INIT)) {
+                        final ImportKeyWizardState importKeyWizardState = importKeyController.getState();
                         Timber.i("Detected pEpKeyImport header");
                         Timber.i(result.msg.getSubject());
                         Timber.i("State: " + importKeyController.getState().name());
-
+                        //Aqui solo entra init si es el segundo mensaje
                         if (result.rating.value < Rating.pEpRatingTrusted.value) {
                             if (message.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT).length > 0) {
                                 importKeyController.setSenderKey(message.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT)[0]);
-                            } else {
+                            } else if (result.msg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)){
                                 importKeyController.setSenderKey(result.msg.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT)[0]);
                             }
                         }
+
+                        if (isInitialBeacon(result.rating, importKeyWizardState)) {
+                            //NO STARTER
+                            importKeyController.start();
+                        } else if (importKeyWizardState.equals(ImportKeyWizardState.BEACON_SENT)) {
+                            //NO OP, We are just waiting - When notified UI will act
+                        }
+
+
                         Log.i("ManualImport", "sfpr: " + importKeyController.getSenderKey());
                         org.pEp.jniadapter.Identity myself = pEpProvider.myself(PEpUtils.createIdentity(message.getFrom()[0], context));
                         Log.i("ManualImport", "sfpr: " + myself.fpr);
 
                         String senderKey = importKeyController.getSenderKey();
-                        if (!senderKey.equals(myself.fpr) ) {
+                        boolean isOwnMessage = senderKey.equals(myself.fpr);
+                        if (!isOwnMessage || isPGPKeyImportMessage(message, result, account, importKeyWizardState)) {
                             Log.i("ManualImport", "Other device message");
-                            org.pEp.jniadapter.Identity sender = PEpUtils.createIdentity(new Address(account.getEmail()), context);
-                            sender.fpr = senderKey;
-                            sender.user_id = PEpProvider.PEP_OWN_USER_ID;
+                            org.pEp.jniadapter.Identity sender = createSenderIdentity(account, senderKey);
 
                             if (containsPrivateOwnKey(result)) {
+                                //Received private key -
+                                deleteMessage(message, account, folder, localFolder);
                                 ((K9) context.getApplicationContext()).disableFastPolling();
-                                if (importKeyController.isStarter()) {
+                                if (importKeyController.isStarter()) { // is key to import.
                                     pEpProvider.setOwnIdentity(sender, sender.fpr);
                                     ImportWizardFrompEp.notifyPrivateKeyImported(context);
                                 }
-                                deleteMessage(message, account, folder, localFolder);
-                                Log.i("ManualImport", "Key received and imported:: " + importKeyController.isStarter());
-                                Log.i("ManualImport", "Key received and imported:: " + importKeyController.getState().toString());
+                                //Else the key only has to be imported, already done by the engine.
+                                Timber.i("ManualImport", "Key received and imported:: " + importKeyController.isStarter());
+                                Timber.i("ManualImport", "Key received and imported:: " + importKeyController.getState().toString());
                                 importKeyController.finish();
 
                             }
-                            else if (importKeyWizardState != ImportKeyWizardState.INIT && (PEpUtils.extractRating(message).value == Rating.pEpRatingReliable.value
-                                    || result.rating.value == Rating.pEpRatingReliable.value)   ) {
+                            else if (isHandshakeRequest(message, result, importKeyWizardState)) {
                                 //Handshake needed
                                 Log.i("ManualImport", "Detected yellow message aka handshake request");
 
@@ -1787,7 +1805,8 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                             }
 
                             else if (result.rating.value < Rating.pEpRatingTrusted.value
-                                    && importKeyWizardState != ImportKeyWizardState.PRIVATE_KEY_WAITING){
+                                    && !importKeyWizardState.equals(ImportKeyWizardState.PRIVATE_KEY_WAITING)
+                                    && !importKeyWizardState.equals(ImportKeyWizardState.INIT)){
 //                            Message handshakeMessage = ((MimeMessage) PEpUtils.generateKeyImportRequest(context, pEpProvider, account, true))   ;
                                 Log.i("ManualImport", "Detected Key import request");
 
@@ -1812,14 +1831,15 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
                                 //context.startActivity(handshakeIntent);
                                 ImportWizardFrompEp.actionStartImportpEpKey(context, account.getUuid(), false, KeySourceType.PEP, handshakeIntent);
 
-//                           } else if (result.rating.value > Rating.pEpRatingTrusted.value) {
+
 //                               pEpProvider.generatePrivateKeyMessage(handshakeUnencryptedMessage, senderKey);
 //                           }
 
                                 //Check if is handshake message and if it is show handshake
                             }
                             else {
-                                Log.e("ManualImport", "NO CASE - SHIT: " + importKeyController.getState().toString() );
+                                Timber.e( "NO CASE - INVALID STATE - Deleting message: " + importKeyController.getState().toString() );
+                                deleteMessage(message, account, folder, localFolder);
                             }
                         }
                     } else if (result.keyDetails != null) {
@@ -1890,14 +1910,44 @@ Timber.d("pep", "in download loop (nr="+number+") pre pep");
         Timber.d("SYNC: Done fetching small messages for folder %s", folder);
     }
 
-    private <T extends Message> boolean isKeyImportMessage(T message, PEpProvider.DecryptResult result, Account account, ImportKeyWizardState state) {
+    private boolean isInitialBeacon(Rating rating, ImportKeyWizardState state) {
+        return state.equals(ImportKeyWizardState.INIT) && rating.equals(Rating.pEpRatingUnencrypted);
+    }
+
+    private <T extends Message> boolean isHandshakeRequest(T message, PEpProvider.DecryptResult result, ImportKeyWizardState importKeyWizardState) {
+        return importKeyWizardState != ImportKeyWizardState.INIT && (PEpUtils.extractRating(message).value == Rating.pEpRatingReliable.value
+                || result.rating.value == Rating.pEpRatingReliable.value);
+    }
+
+    @NonNull
+    private org.pEp.jniadapter.Identity createSenderIdentity(Account account, String senderKey) {
+        org.pEp.jniadapter.Identity sender = PEpUtils.createIdentity(new Address(account.getEmail()), context);
+        sender.fpr = senderKey;
+        sender.user_id = PEpProvider.PEP_OWN_USER_ID;
+        return sender;
+    }
+
+    private <T extends Message> boolean ispEpKeyImportMessage(T message, PEpProvider.DecryptResult result, Account account, ImportKeyWizardState state) {
         return !PEpUtils.isMessageOnOutgoingFolder(message, account) /*&& result.keyDetails != null */&&
                 (message.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT).length > 0
-                || result.msg.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT).length > 0 || state != ImportKeyWizardState.INIT);
+                || result.msg.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT).length > 0);
+    }
+
+
+    private <T extends Message> boolean isPGPKeyImportMessage(T message, PEpProvider.DecryptResult result, Account account, ImportKeyWizardState state) {
+        return ((K9) context).isShowingKeyimportDialog() && !PEpUtils.isMessageOnOutgoingFolder(message, account)
+                && result.rating.equals(Rating.pEpRatingReliable)
+                && result.msg.getFrom()[0].getAddress().equals(account.getEmail());
+    }
+
+    private <T extends Message> boolean isKeyImportMessage(T message, PEpProvider.DecryptResult result, Account account, ImportKeyWizardState state) {
+        return ispEpKeyImportMessage(message, result, account, state)
+                || isPGPKeyImportMessage(message, result, account, state);
     }
 
     private boolean containsPrivateOwnKey(PEpProvider.DecryptResult result) {
-        return result.flags != -1 && (result.flags & 1) == 1;
+        return result.flags != -1
+                && (result.flags & DecryptFlags.pEpDecryptFlagOwnPrivateKey.value) == 1;
     }
 
     public void sendOwnKey(Account account, String senderKey) throws MessagingException {

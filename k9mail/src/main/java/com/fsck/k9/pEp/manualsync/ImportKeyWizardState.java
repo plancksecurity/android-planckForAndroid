@@ -43,4 +43,8 @@ public enum ImportKeyWizardState {
     public String toString() {
         return name();
     }
+
+    public boolean isReadyToRequestHandshake() {
+        return this.equals(BEACON_RECEIVED) || this.equals(BEACON_SENT);
+    }
 }

@@ -26,6 +26,9 @@ public interface PEpProvider {
     int ENCRYPTED_MESSAGE_POSITION = 0;
     String PEP_OWN_USER_ID = "pEp_own_userId";
     int HALF_FINGERPRINT_LENGTH = 24;
+    //long TIMEOUT = 4 * 60 * 60 * 1000;
+    long TIMEOUT = 10 * 60 * 1000;
+
 
     String PEP_PRIVATE_KEY_FPR = "pEpDetailsFpr";
     String PEP_PRIVATE_KEY_ADDRESS = "pEpDetailsAddress";

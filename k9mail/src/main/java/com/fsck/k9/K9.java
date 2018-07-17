@@ -81,6 +81,7 @@ public class K9 extends Application {
     private Poller poller;
     private boolean needsFastPoll = false;
     private boolean isPollingMessages;
+    private boolean showingKeyimportDialog = false;
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
     public PEpProvider pEpProvider, pEpSyncProvider;
     private Account currentAccount;
@@ -1756,5 +1757,13 @@ public class K9 extends Application {
 
     public boolean needsFastPoll() {
         return needsFastPoll;
+    }
+
+    public boolean isShowingKeyimportDialog() {
+        return showingKeyimportDialog;
+    }
+
+    public void setShowingKeyimportDialog(boolean showingKeyimportDialog) {
+        this.showingKeyimportDialog = showingKeyimportDialog;
     }
 }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
+import android.test.mock.MockApplication;
 import android.text.Html;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.ui.keysync.PEpAddDevice;
@@ -28,7 +30,8 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     public static final String IS_STARTER_KEY = "isStarter";
     public static final String KEY_TYPE_KEY = "keyType";
     public static final String HANDSHAKE_INTENT_KEY = "handshakeInfo";
-    public static final String IMPORTED = "imported";
+    public static final String IMPORTED_KEY = "imported";
+    public static final String IS_PEP = "ispEp";
 
     @Inject
     ImportWizardPresenter presenter;
@@ -40,11 +43,16 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (intent.hasExtra(HANDSHAKE_INTENT_KEY)) {
-            startActivityForResult((intent.getParcelableExtra(HANDSHAKE_INTENT_KEY)), PEpAddDevice.REQUEST_ADD_DEVICE_HANDSHAKE);
-        } else if (intent.hasExtra(IMPORTED)) {
-            if (intent.getBooleanExtra(IMPORTED, false)) {
+            startActivityForResult((intent.getParcelableExtra(HANDSHAKE_INTENT_KEY)),
+                    PEpAddDevice.REQUEST_ADD_DEVICE_HANDSHAKE);
+        } else if (intent.hasExtra(IMPORTED_KEY)
+                && intent.hasExtra(IS_PEP) && intent.getBooleanExtra(IS_PEP, true)) {
+            if (intent.getBooleanExtra(IMPORTED_KEY, false)) {
                 presenter.onPrivateKeyReceived();
-            };
+            }
+        } else if (intent.hasExtra(IMPORTED_KEY)
+                && intent.hasExtra(IS_PEP) && !intent.getBooleanExtra(IS_PEP, true)) {
+
         }
         Toast.makeText(getApplicationContext(), "Key import event produced", Toast.LENGTH_LONG).show();
     }
@@ -181,12 +189,6 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     }
 
     @Override
-    public void finish() {
-        super.finish();
-        Toast.makeText(getApplicationContext(), "Key import canceled", Toast.LENGTH_LONG).show();
-    }
-
-    @Override
     public void renderWaitingForHandshake() {
         currentAction.setText("Waiting handshake");
     }
@@ -232,6 +234,23 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     }
 
     @Override
+    public void close() {
+        ((K9) getApplication()).setShowingKeyimportDialog(false);
+        finish();
+    }
+
+    @Override
+    public void cancel() {
+        close();
+        Toast.makeText(getApplicationContext(), "Key import canceled", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void setDialogEnabled() {
+        ((K9) getApplication()).setShowingKeyimportDialog(true);
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_CANCELED) {
@@ -246,12 +265,19 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         loading.setVisibility(View.INVISIBLE);
         currentAction.setVisibility(View.INVISIBLE);
         action.setText("close");
-        action.setOnClickListener(view -> presenter.cancel());
+        action.setOnClickListener(view -> presenter.close());
     }
 
     public static void notifyPrivateKeyImported(Context context) {
         Intent intent = new Intent(context, ImportWizardFrompEp.class);
-        intent.putExtra(IMPORTED, true);
+        intent.putExtra(IMPORTED_KEY, true);
+        intent.putExtra(IS_PEP, true);
+        context.startActivity(intent);
+    }
+
+    public static void notifyPGPHandshakeRequest(Context context) {
+        Intent intent = new Intent(context, ImportWizardFrompEp.class);
+        intent.putExtra(IS_PEP, false);
         context.startActivity(intent);
     }
 }
