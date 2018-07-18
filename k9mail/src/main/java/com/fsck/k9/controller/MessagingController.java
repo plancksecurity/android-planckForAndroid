@@ -1780,16 +1780,25 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     org.pEp.jniadapter.Identity sender = createSenderIdentity(account, senderKey);
 
                                     if (containsPrivateOwnKey(result)) {
-                                        //Received private key -
-                                        deleteMessage(message, account, folder, localFolder);
-                                        ((K9) context.getApplicationContext()).disableFastPolling();
-                                        if (importKeyController.isStarter()) { // is key to import.
-                                            pEpProvider.setOwnIdentity(sender, sender.fpr);
-                                            ImportWizardFrompEp.notifyPrivateKeyImported(context);
+                                        if (ispEpKeyImportMessage(message, result, account, importKeyWizardState)) {
+                                            //Received private key -
+                                            deleteMessage(message, account, folder, localFolder);
+                                            ((K9) context.getApplicationContext()).disableFastPolling();
+                                            if (importKeyController.isStarter()) { // is key to import.
+                                                pEpProvider.setOwnIdentity(sender, sender.fpr);
+                                                ImportWizardFrompEp.notifyPrivateKeyImported(context);
+                                            }
+                                            //Else the key only has to be imported, already done by the engine.
+                                            Timber.i("ManualImport", "Key received and imported:: " + importKeyController.isStarter());
+                                            Timber.i("ManualImport", "Key received and imported:: " + importKeyController.getState().toString());
+                                            importKeyController.finish();
                                         }
-                                        //Else the key only has to be imported, already done by the engine.
-                                        Timber.i("ManualImport", "Key received and imported:: " + importKeyController.isStarter());
-                                        Timber.i("ManualImport", "Key received and imported:: " + importKeyController.getState().toString());
+                                        else {
+                                            showImportKeyDialogIfNeeded(message, result, account);
+                                            ImportWizardFrompEp.notifyPrivatePGPKeyProcessed(context);
+
+                                            deleteMessage(message, account, folder, localFolder);
+                                        }
                                         importKeyController.finish();
 
                                     } else if (isHandshakeRequest(message, result, importKeyWizardState)) {
@@ -1797,11 +1806,17 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                         Log.i("ManualImport", "Detected yellow message aka handshake request");
 
                                         deleteMessage(message, account, folder, localFolder);
+                                        Intent handshakeIntent;
+                                        if (isPGPKeyImportMessage(message, result, account, importKeyWizardState)) {
+                                            handshakeIntent = PEpAddDevice.getActionRequestHandshake(context, myself, sender,
+                                                    PEpUtils.getKeyListWithoutDuplicates(result.msg.getHeader(MimeHeader.HEADER_PEP_KEY_LIST)),
+                                                    context.getString(R.string.key_import_wizard_handshake_explanation_pgp));
+                                        } else {
+                                            handshakeIntent = PEpAddDevice.getActionRequestHandshake(context,
+                                                    pEpProvider.trustwords(myself, sender, "en", true),
+                                                    myself, sender, context.getString(R.string.key_import_wizard_handshake_explanation), true);
 
-                                        Intent handshakeIntent = PEpAddDevice.getActionRequestHandshake(context,
-                                                pEpProvider.trustwords(myself, sender, "en", true),
-                                                myself, sender, context.getString(R.string.key_import_wizard_handshake_explanation), true);
-
+                                        }
                                         ImportWizardFrompEp.actionStartImportpEpKey(context, account.getUuid(), true, KeySourceType.PEP, handshakeIntent);
 
                                         //importKeyWizardState = ImportKeyWizardState.PRIVATE_KEY_WAITING;
@@ -1944,8 +1959,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     private <T extends Message> boolean isPGPKeyImportMessage(T message, PEpProvider.DecryptResult result, Account account, ImportKeyWizardState state) {
         return ((K9) context).isShowingKeyimportDialog() && !PEpUtils.isMessageOnOutgoingFolder(message, account)
-                && result.rating.equals(Rating.pEpRatingReliable)
-                && result.msg.getFrom()[0].getAddress().equals(account.getEmail());
+                && (result.rating.equals(Rating.pEpRatingReliable) || result.rating.equals(Rating.pEpRatingTrustedAndAnonymized))
+                && result.msg.getFrom()[0].getAddress().equals(account.getEmail())&& !state.equals(ImportKeyWizardState.INIT);
     }
 
     private <T extends Message> boolean isKeyImportMessage(T message, PEpProvider.DecryptResult result, Account account, ImportKeyWizardState state) {
@@ -2029,14 +2044,18 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 @Override
                 public void run() {
                     Intent broadcastIntent = new Intent(context, K9ActivityCommon.PrivateKeyReceiver.class);
-                    broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_FROM, message.getFrom()[0].getAddress());
-                    broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_FPR, result.keyDetails.getFpr());
-                    broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_ADDRESS, result.keyDetails.getAddress().getAddress());
-                    broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_USERNAME, result.keyDetails.getAddress().getPersonal());
+                    fillPrivateKeyDetails(broadcastIntent, message, result);
                     context.getApplicationContext().sendOrderedBroadcast(broadcastIntent, null);
                 }
             });
         }
+    }
+
+    private <T extends Message> void fillPrivateKeyDetails(Intent broadcastIntent, T message, PEpProvider.DecryptResult result) {
+        broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_FROM, message.getFrom()[0].getAddress());
+        broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_FPR, result.keyDetails.getFpr());
+        broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_ADDRESS, result.keyDetails.getAddress().getAddress());
+        broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_USERNAME, result.keyDetails.getAddress().getPersonal());
     }
 
     private <T extends Message> void downloadLargeMessages(final Account account, final Folder<T> remoteFolder,

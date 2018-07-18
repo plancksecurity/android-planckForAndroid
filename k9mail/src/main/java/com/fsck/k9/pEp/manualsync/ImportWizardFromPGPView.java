@@ -26,4 +26,6 @@ interface ImportWizardFromPGPView {
     void cancel();
 
     void setDialogEnabled();
+
+    void notifyAcceptedHandshakeAndWaitingForPGPPrivateKey();
 }

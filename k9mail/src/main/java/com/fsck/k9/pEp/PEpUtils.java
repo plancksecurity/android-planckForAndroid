@@ -31,10 +31,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -568,6 +570,15 @@ public class PEpUtils {
         }
 
         return builder.parseMessage(result);
+    }
+
+    public static List<String> getKeyListWithoutDuplicates(String[] keyListHeaders) {
+        if (keyListHeaders.length == 0) return Collections.emptyList();
+        else {
+            Set<String> keys = new HashSet<>();
+            keys.addAll(Arrays.asList(keyListHeaders[0].split(PEpProvider.PEP_KEY_LIST_SEPARATOR)));
+            return new ArrayList<>(keys);
+        }
     }
 
 }

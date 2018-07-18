@@ -120,7 +120,13 @@ public class ImportWizardPresenter implements Presenter {
 
         if (result.equals(PEpAddDevice.Result.ACCEPTED)) {
             if (importKeyController.isStarter()) {
-                view.notifyAcceptedHandshakeAndWaitingForPrivateKey();
+                if (ispEp) {
+                    view.notifyAcceptedHandshakeAndWaitingForPrivateKey();
+                }
+                else {
+                    view.notifyAcceptedHandshakeAndWaitingForPGPPrivateKey();
+                }
+
                 importKeyController.next();
             } else {
                 view.notifyKeySent();
@@ -138,7 +144,6 @@ public class ImportWizardPresenter implements Presenter {
         importKeyController.finish();
         view.close();
     }
-
 
     public interface Callback {
         void onStart();

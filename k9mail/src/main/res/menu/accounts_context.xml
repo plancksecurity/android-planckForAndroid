@@ -22,9 +22,9 @@
         <menu>
             <item android:id="@+id/import_pEp_key"
                 android:title="p≡p Key import"/>
-            <!--item
+            <item
                 android:id="@+id/import_PGP_key"
-                android:title="PGP Key import" /-->
+                android:title="PGP Key import"/>
         </menu>
     </item>
 </menu>

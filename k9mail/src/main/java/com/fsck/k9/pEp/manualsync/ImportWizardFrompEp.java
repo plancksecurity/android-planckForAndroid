@@ -53,6 +53,9 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         } else if (intent.hasExtra(IMPORTED_KEY)
                 && intent.hasExtra(IS_PEP) && !intent.getBooleanExtra(IS_PEP, true)) {
 
+        } else if (intent.hasExtra(IS_PEP) && !intent.getBooleanExtra(IS_PEP, true)) {
+            description.setText("Your PGP key was processed");
+            showCloseButton();
         }
         Toast.makeText(getApplicationContext(), "Key import event produced", Toast.LENGTH_LONG).show();
     }
@@ -251,6 +254,12 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     }
 
     @Override
+    public void notifyAcceptedHandshakeAndWaitingForPGPPrivateKey() {
+        description.setText("Hanshake accepted please send your private key encrypted from your PGP client.");
+        currentAction.setText("Waiting for PGP key");
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_CANCELED) {
@@ -275,7 +284,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         context.startActivity(intent);
     }
 
-    public static void notifyPGPHandshakeRequest(Context context) {
+    public static void notifyPrivatePGPKeyProcessed(Context context) {
         Intent intent = new Intent(context, ImportWizardFrompEp.class);
         intent.putExtra(IS_PEP, false);
         context.startActivity(intent);

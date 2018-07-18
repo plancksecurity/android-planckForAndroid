@@ -989,10 +989,10 @@ public class Accounts extends PEpImporterActivity {
                 case R.id.import_pEp_key:
                     onImportpEpKey(realAccount);
                     break;
-               /* case R.id.import_PGP_key:
+                case R.id.import_PGP_key:
                     onImportPGPKey(realAccount);
                     break;
-                    */
+
             }
         }
         return true;

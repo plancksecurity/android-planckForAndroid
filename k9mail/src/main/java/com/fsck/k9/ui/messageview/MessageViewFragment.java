@@ -801,7 +801,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 && mMessage.getRecipients(Message.RecipientType.TO)[0].getAddress().equals(mMessage.getFrom()[0].getAddress()) //Same address to be sure is the same account
                 && mMessage.getpEpRating().value == Rating.pEpRatingReliable.value) {
 
-            List <String> keysList = getKeyListWithoutDuplicates(mMessage.getHeader(MimeHeader.HEADER_PEP_KEY_LIST));
+            List <String> keysList = PEpUtils.getKeyListWithoutDuplicates(mMessage.getHeader(MimeHeader.HEADER_PEP_KEY_LIST));
             if (keysList.size() == 2) {
                 //String keyListHeader = mMessage.getHeader(MimeHeader.HEADER_PEP_KEY_LIST)[0];
                 PEpTrustwords.actionRequestMultipleOwnAccountIdsHandshake(context, myAdress, keysList, PEpTrustwords.DEFAULT_POSITION, pEpRating);
@@ -810,15 +810,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             }
         } else {
             PEpStatus.actionShowStatus(context, pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAdress);
-        }
-    }
-
-    private List<String> getKeyListWithoutDuplicates(String[] keyListHeaders) {
-        if (keyListHeaders.length == 0) return Collections.emptyList();
-        else {
-            Set<String> keys = new HashSet<>();
-            keys.addAll(Arrays.asList(keyListHeaders[0].split(PEpProvider.PEP_KEY_LIST_SEPARATOR)));
-            return new ArrayList<>(keys);
         }
     }
 
