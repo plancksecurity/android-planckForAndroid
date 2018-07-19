@@ -34,7 +34,8 @@ Feature: Sanity_1.2.5_MailToMultipleContactsEncrypted
     And I fill messageBody field with empty
     And I check toolBar color is pep_yellow
     Then I click send message button
-    And I go to sent folder
+    And I wait for new message
+    Then I go to sent folder
     And I click last message received
     Then I check toolBar color is pep_yellow
     And I compare messageBody with TestCase1.2.5
