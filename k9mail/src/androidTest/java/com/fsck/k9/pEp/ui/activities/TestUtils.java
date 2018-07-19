@@ -468,6 +468,24 @@ public class TestUtils {
         }
     }
 
+    public void clickFirstAttachedFile (){
+        BySelector selector = By.clazz("android.widget.FrameLayout");
+        int size = device.findObjects(selector).size();
+        while (size == 0) {
+            size = device.findObjects(selector).size();
+        }
+        UiObject2 uiObject = device.findObject(By.res("security.pEp:id/attachment"));
+        while (true) {
+            for (UiObject2 frameLayout : device.findObjects(selector)) {
+                if (frameLayout.getResourceName().equals(uiObject.getResourceName())) {
+                    frameLayout.longClick();
+                    device.waitForIdle();
+                    return;
+                }
+            }
+        }
+    }
+
     private void longClick(String viewId) {
         UiObject2 list = device.findObject(By.res(APP_ID, viewId));
         Rect bounds = list.getVisibleBounds();
