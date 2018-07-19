@@ -62,6 +62,7 @@ public class CucumberTestSteps {
 
     private String messageToBot = "";
     private String secondBot = "";
+    private String thirdBot = "";
 
     private UiDevice device;
     private TestUtils testUtils;
@@ -83,6 +84,7 @@ public class CucumberTestSteps {
         long name = System.currentTimeMillis();
         messageToBot = Long.toString(name++) + "@" + HOST;
         secondBot = Long.toString(name) + "@" + HOST;
+        thirdBot = Long.toString(name) + "@" + HOST;
         resources = InstrumentationRegistry.getTargetContext().getResources();
         startTimer();
         activityTestRule.launchActivity(new Intent());
@@ -125,6 +127,10 @@ public class CucumberTestSteps {
                 break;
             case "secondBot":
                 cucumberMessageTo = secondBot;
+                break;
+            case "thirdBot":
+                cucumberMessageTo = thirdBot;
+                break;
         }
         fillMessage(cucumberMessageTo);
     }
@@ -327,6 +333,19 @@ public class CucumberTestSteps {
             testUtils.sendMessage();
             device.waitForIdle();
             testUtils.waitForNewMessage();
+        device.waitForIdle();
+    }
+
+    @Then("^I send message to third bot with subject (\\S+) and body (\\S+)$")
+    public void I_send_messages_to_third_bot(String subject, String body) {
+        device.waitForIdle();
+        testUtils.composeMessageButton();
+        device.waitForIdle();
+        testUtils.fillMessage(new TestUtils.BasicMessage("", subject, body, thirdBot), false);
+        device.waitForIdle();
+        testUtils.sendMessage();
+        device.waitForIdle();
+        testUtils.waitForNewMessage();
         device.waitForIdle();
     }
 
