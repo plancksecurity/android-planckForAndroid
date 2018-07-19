@@ -293,7 +293,7 @@ public class UtilsPackage {
         };
     }
 
-    static void waitUntilIdle() {
+    public static void waitUntilIdle() {
         new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
