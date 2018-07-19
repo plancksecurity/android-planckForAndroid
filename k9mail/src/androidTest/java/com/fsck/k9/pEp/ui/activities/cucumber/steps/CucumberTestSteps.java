@@ -83,7 +83,7 @@ public class CucumberTestSteps {
         IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
         long name = System.currentTimeMillis();
         messageToBot = Long.toString(name++) + "@" + HOST;
-        secondBot = Long.toString(name) + "@" + HOST;
+        secondBot = Long.toString(name++) + "@" + HOST;
         thirdBot = Long.toString(name) + "@" + HOST;
         resources = InstrumentationRegistry.getTargetContext().getResources();
         startTimer();
