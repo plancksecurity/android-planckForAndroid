@@ -50,6 +50,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.hasValueEqualTo;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 import static org.hamcrest.CoreMatchers.not;
@@ -105,10 +106,11 @@ public class CucumberTestSteps {
             case "empty":
                 cucumberMessageTo = ",";
                 device.waitForIdle();
-                while (!hasValueEqualTo(onView(withId(R.id.to)), "")) {
+                while (!hasValueEqualTo(onView(withId(R.id.to)), " ")) {
                     try {
                         device.waitForIdle();
-                        onView(withId(R.id.to)).perform(typeText(cucumberMessageTo), closeSoftKeyboard());
+                        waitUntilIdle();
+                        onView(withId(R.id.to)).perform(typeText(" "), closeSoftKeyboard());
                         device.waitForIdle();
                     } catch (Exception ex){
                         Timber.i("Can not remove field 'to'");
