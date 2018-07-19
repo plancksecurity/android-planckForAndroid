@@ -182,6 +182,11 @@ public class CucumberTestSteps {
         onView(withId(R.id.confirmTrustWords)).perform(click());
     }
 
+    @When("^I reject trust words$")
+    public void I_reject_trust_words() {
+        onView(withId(R.id.wrongTrustwords)).perform(click());
+    }
+
     @When("^I untrust trust words$")
     public void I_untrust_trust_words() {
         onView(withId(R.id.handshake_button_text)).perform(click());
