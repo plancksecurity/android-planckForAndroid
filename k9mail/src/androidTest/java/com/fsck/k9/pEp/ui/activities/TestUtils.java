@@ -222,7 +222,6 @@ public class TestUtils {
     }
 
     private void createNewAccountWithPermissions(boolean isGmail){
-        try {
             onView(withId(R.id.next)).perform(click());
             device.waitForIdle();
             try {
@@ -253,18 +252,19 @@ public class TestUtils {
                 } else {
                     newEmailAccount();
                 }
+                boolean descriptionFilled = false;
+                while (!descriptionFilled) {
+                    try {
+                        device.waitForIdle();
+                        accountDescription(DESCRIPTION, USER_NAME);
+                        descriptionFilled = true;
+                    } catch (Exception e){
+                        Timber.i("Can not fill account description");
+                    }
+                }
             } catch (Exception ex) {
                 Timber.i("Ignored", "Exists account");
             }
-            try {
-                device.waitForIdle();
-                accountDescription(DESCRIPTION, USER_NAME);
-            } catch (Exception ex) {
-                Timber.i("Ignored", "Ignored exception " + ex);
-            }
-        } catch (Exception ignoredException) {
-            Timber.i("Ignored", "Ignored exception");
-        }
     }
 
     private void allowPermissions(){
