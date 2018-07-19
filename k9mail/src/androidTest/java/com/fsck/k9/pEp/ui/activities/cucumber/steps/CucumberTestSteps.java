@@ -422,6 +422,12 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
+    @And("^I open attached file$")
+    public void I_open_attached_file() {
+        device.waitForIdle();
+        testUtils.clickFirstAttachedFile();
+    }
+
     @Then("^I set checkbox (\\S+) to (true|false)$")
     public void I_set_checkbox_to(String resource, boolean checked){
         testUtils.checkBoxOnScreenChecked(testUtils.stringToID(resource), checked);
