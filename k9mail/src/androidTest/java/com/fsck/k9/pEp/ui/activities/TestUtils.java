@@ -813,6 +813,8 @@ public class TestUtils {
                 } catch (Exception ex) {
                     Timber.i("No message found");
                 }
+            } else if (viewIsDisplayed(R.id.reply_message)){
+                messageClicked = true;
             }
         }
         try{
