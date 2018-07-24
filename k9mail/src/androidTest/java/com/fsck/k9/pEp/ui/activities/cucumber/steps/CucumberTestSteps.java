@@ -63,6 +63,7 @@ public class CucumberTestSteps {
     private String messageToBot = "";
     private String secondBot = "";
     private String thirdBot = "";
+    String fileName = "";
 
     private UiDevice device;
     private TestUtils testUtils;
@@ -104,7 +105,7 @@ public class CucumberTestSteps {
 
     @When("^I fill messageTo field with (\\S+)")
     public void I_fill_messageTo_field(String cucumberMessageTo) {
-        switch (cucumberMessageTo){
+        switch (cucumberMessageTo) {
             case "empty":
                 cucumberMessageTo = ",";
                 device.waitForIdle();
@@ -114,7 +115,7 @@ public class CucumberTestSteps {
                         waitUntilIdle();
                         onView(withId(R.id.to)).perform(typeText(" "), closeSoftKeyboard());
                         device.waitForIdle();
-                    } catch (Exception ex){
+                    } catch (Exception ex) {
                         Timber.i("Can not remove field 'to'");
                     }
                 }
@@ -132,7 +133,23 @@ public class CucumberTestSteps {
                 cucumberMessageTo = thirdBot;
                 break;
         }
-        fillMessage(cucumberMessageTo);
+        if (!getTextFromView(onView(withId(R.id.to))).equals("") || !getTextFromView(onView(withId(R.id.to))).equals(" ")) {
+            fillMessage(cucumberMessageTo);
+        } else {
+            device.waitForIdle();
+            onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
+            device.waitForIdle();
+            onView(withId(R.id.to)).perform(typeText(cucumberMessageTo), closeSoftKeyboard());
+            device.waitForIdle();
+            onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
+            device.waitForIdle();
+            onView(withId(R.id.message_content)).perform(typeText(" "), closeSoftKeyboard());
+
+        }
+    }
+
+    @And("^I fill again messageTo field with (\\S+)$")
+    public void I_fill_again_message_to_field(String name){
     }
 
     private String ifEmptyString(String name){
@@ -278,10 +295,43 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
-    @Then("^I attach files to new message (true|false) and send it$")
-    public void I_attach_files_to_new_message(boolean attachFiles) {
-        testUtils.fillMessage(new TestUtils.BasicMessage("", "Subject", "Message", testUtils.getTextFromTextViewThatContainsText("@")), attachFiles);
+    @Then("^I attach files to message$")
+    public void I_attach_files_to_message() {
+        testUtils.fillMessage(new TestUtils.BasicMessage("", "", "", ""), true);
         testUtils.sendMessage();
+    }
+
+    @Then("^I attach (\\S+)$") // with name (\S+) and extension (\S+) to message
+    public void I_attach_file_to_message(String file) {//, String name, String extension
+        device.waitForIdle();
+        Set_external_mock(file);
+        testUtils.attachFile(fileName);//testUtils.attachFile(name, extension);
+        device.waitForIdle();
+    }
+
+    @Given("^Set external mock (\\S+)$")
+    public void Set_external_mock(String mock){
+        switch (mock){
+            case "settings":
+                testUtils.externalAppRespondWithFile(R.raw.settings);
+                fileName = "settings";
+                break;
+            case "settingsthemedark":
+                testUtils.externalAppRespondWithFile(R.raw.settingsthemedark);
+                fileName = "settingsthemedark";
+                break;
+            case "MSoffice":
+                testUtils.externalAppRespondWithFile(R.raw.testmsoffice);
+                fileName = "testmsoffice";
+                break;
+            case "PDF":
+                testUtils.externalAppRespondWithFile(R.raw.testpdf);
+                fileName = "testpdf";
+                break;
+            case "picture":
+                testUtils.externalAppRespondWithFile(R.raw.testpicture);
+                fileName = "testpicture";
+        }
     }
 
     @When("^I click message status$")
@@ -308,13 +358,26 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
-    @Then("^I send (\\d+) (?:message|messages) to bot with subject (\\S+) and body (\\S+)$")
-    public void I_send_messages_to_bot(int totalMessages, String subject, String body) {
+    @Then("^I send (\\d+) (?:message|messages) to (\\S+) with subject (\\S+) and body (\\S+)$")
+    public void I_send_messages_to_bot(int totalMessages,String botName, String subject, String body) {
+        String messageTo = "nothing";
+        switch (botName){
+            case "bot":
+                messageTo = messageToBot;
+                break;
+            case "secondBot":
+                messageTo = secondBot;
+                break;
+            case "thirdBot":
+                messageTo = thirdBot;
+                break;
+
+        }
         device.waitForIdle();
         for (int message = 0; message < totalMessages; message++) {
             testUtils.composeMessageButton();
             device.waitForIdle();
-            testUtils.fillMessage(new TestUtils.BasicMessage("", subject, body, messageToBot), false);
+            testUtils.fillMessage(new TestUtils.BasicMessage("", subject, body, messageTo), false);
             device.waitForIdle();
             testUtils.sendMessage();
             device.waitForIdle();
@@ -399,18 +462,6 @@ public class CucumberTestSteps {
         testUtils.getActivityInstance();
     }
 
-    @Given("^Set external mock (\\S+)$")
-    public void Set_external_mock(String mock){
-        switch (mock){
-            case "settings":
-                testUtils.externalAppRespondWithFile(R.raw.settings);
-                break;
-            case "settingsthemedark":
-                testUtils.externalAppRespondWithFile(R.raw.settingsthemedark);
-                break;
-        }
-    }
-
     public void externalAppRespondWithFile(int id) {
         Instrumentation.ActivityResult activityResult = new Instrumentation.ActivityResult(Activity.RESULT_OK, insertFileIntoIntentAsData(id));
         intending(not(isInternal()))
@@ -446,10 +497,10 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
-    @And("^I open attached file$")
-    public void I_open_attached_file() {
+    @And("^I open attached file at position (\\d+)$")
+    public void I_open_attached_file_at_position(int position) {
         device.waitForIdle();
-        testUtils.clickFirstAttachedFile();
+        testUtils.clickAttachedFileAtPosition(position);
     }
 
     @Then("^I set checkbox (\\S+) to (true|false)$")
@@ -471,22 +522,6 @@ public class CucumberTestSteps {
     public void I_check_color_at(String color, int position) {
         device.waitForIdle();
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(position)).check(matches(withBackgroundColor(testUtils.colorToID(color))));
-    }
-
-    @And("^I fill again messageTo field with (\\S+)$")
-    public void I_fill_again_message_to_field(String name){
-        device.waitForIdle();
-        onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
-        device.waitForIdle();
-        if (!name.equals("secondBot")) {
-            onView(withId(R.id.to)).perform(typeText(name), closeSoftKeyboard());
-        } else {
-            onView(withId(R.id.to)).perform(typeText(secondBot), closeSoftKeyboard());
-        }
-        device.waitForIdle();
-        onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
-        device.waitForIdle();
-        onView(withId(R.id.message_content)).perform(typeText(" "), closeSoftKeyboard());
     }
 
     @Then("^I click acceptButton$")
