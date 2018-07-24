@@ -21,7 +21,7 @@ Feature: Sanity_1.2.5_MailToMultipleContactsEncrypted
     Then I press back
     And I click message compose
     Then I fill messageTo field with bot
-    And I fill again messageTo field with secondBot
+    And I fill messageTo field with secondBot
     Then I wait 5 seconds
     And I check toolBar color is pep_yellow
     And I fill messageSubject field with TestCase1.2.5
