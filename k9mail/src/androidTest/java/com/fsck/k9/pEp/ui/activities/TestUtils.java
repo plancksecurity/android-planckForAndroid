@@ -806,7 +806,7 @@ public class TestUtils {
         boolean messageClicked = false;
         while (!messageClicked){
             device.waitForIdle();
-            if (viewIsDisplayed(R.id.message_list)) {
+            if (!viewIsDisplayed(R.id.reply_message)) {
                 try {
                     swipeDownMessageList();
                     onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
@@ -823,7 +823,7 @@ public class TestUtils {
                 } catch (Exception ex) {
                     Timber.i("No message found");
                 }
-            } else if (viewIsDisplayed(R.id.reply_message)){
+            } else {
                 messageClicked = true;
             }
         }
@@ -850,6 +850,10 @@ public class TestUtils {
             } catch (Exception ex) {
                 Timber.i("Waiting for new message : " + ex);
             }
+        }
+        if (viewIsDisplayed(R.id.delete)) {
+            pressBack();
+            device.waitForIdle();
         }
         getMessageListSize();
     }
