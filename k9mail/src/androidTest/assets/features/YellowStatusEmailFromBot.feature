@@ -19,7 +19,7 @@ Feature: Test
     Then I fill messageTo field with bot
     And I fill messageSubject field with subject
     And I fill messageBody field with body
-    And I fill again messageTo field with unknown@user.is
+    And I fill messageTo field with unknown@user.is
     Then I click view pEp_indicator
     And I check status color is pep_yellow at position 0
     And I check status color is pep_no_color at position 1
