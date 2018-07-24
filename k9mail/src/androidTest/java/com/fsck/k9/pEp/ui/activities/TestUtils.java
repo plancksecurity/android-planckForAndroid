@@ -327,13 +327,13 @@ public class TestUtils {
         if (attachFilesToMessage) {
             String fileName = "ic_test";
             String extension = ".png";
-            attachFiles(fileName, extension);
+            attachFiles(fileName, extension, 3);
         }
     }
 
-    private void attachFiles(String fileName, String extension) {
-        for (int fileNumber = 0; fileNumber < 3; fileNumber++) {
-            Instrumentation.ActivityResult fileForActivityResultStub = createFileForActivityResultStub(fileName + fileNumber + ".png");
+    public void attachFiles(String fileName, String extension, int total) {
+        for (int fileNumber = 0; fileNumber < total; fileNumber++) {
+            Instrumentation.ActivityResult fileForActivityResultStub = createFileForActivityResultStub(fileName + fileNumber + extension);
             try {
                 intending(not(isInternal())).respondWith(fileForActivityResultStub);
             } catch (Exception ex) {
@@ -344,6 +344,13 @@ public class TestUtils {
             device.waitForIdle();
             onView(withId(R.id.attachments)).check(matches(hasDescendant(withText(fileName + fileNumber + extension))));
         }
+    }
+
+    public void attachFile(String fileName) {//, String extension
+        device.waitForIdle();
+        onView(withId(R.id.add_attachment)).perform(click());
+        device.waitForIdle();
+        onView(withId(R.id.attachments)).check(matches(hasDescendant(withText(fileName))));
     }
 
     public void externalAppRespondWithFile(int id) {
@@ -468,7 +475,7 @@ public class TestUtils {
         }
     }
 
-    public void clickFirstAttachedFile (){
+    public void clickAttachedFileAtPosition(int position){
         BySelector selector = By.clazz("android.widget.FrameLayout");
         int size = device.findObjects(selector).size();
         while (size == 0) {
@@ -478,9 +485,12 @@ public class TestUtils {
         while (true) {
             for (UiObject2 frameLayout : device.findObjects(selector)) {
                 if (frameLayout.getResourceName().equals(uiObject.getResourceName())) {
-                    frameLayout.longClick();
-                    device.waitForIdle();
-                    return;
+                    position--;
+                    if (position == 0) {
+                        frameLayout.longClick();
+                        device.waitForIdle();
+                        return;
+                    }
                 }
             }
         }
