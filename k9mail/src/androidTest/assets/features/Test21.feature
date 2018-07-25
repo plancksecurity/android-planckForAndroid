@@ -15,7 +15,7 @@ Feature: Sanity_1.2.5_MailToMultipleContactsEncrypted
     And I check toolBar color is pep_yellow
     Then I press back
     And I click message compose
-    And I send message to second bot with subject TestCase1.2.5 and body TestCase1.2.5
+    And I send message to secondBot with subject TestCase1.2.5 and body TestCase1.2.5
     And I click last message received
     And I check toolBar color is pep_yellow
     Then I press back

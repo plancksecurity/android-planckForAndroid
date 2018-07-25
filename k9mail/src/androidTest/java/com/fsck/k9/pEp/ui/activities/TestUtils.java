@@ -36,6 +36,7 @@ import android.view.View;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
+import com.fsck.k9.mailstore.util.FileFactory;
 import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 
 import org.pEp.jniadapter.Rating;
@@ -43,6 +44,8 @@ import org.pEp.jniadapter.Rating;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
@@ -97,7 +100,7 @@ public class TestUtils {
     private static final int SECOND_IN_MILIS = 1000;
 
     private UiDevice device;
-    private Context context;
+    private static Context context;
     private Resources resources;
     private Instrumentation instrumentation;
     private int messageListSize[] = new int[2];
@@ -378,6 +381,39 @@ public class TestUtils {
         }
     }
 
+    public static void createFile(final String fileName, final int inputRawResources)
+            throws IOException {
+        String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+        File file = new File(extStorageDirectory, fileName);
+
+        final OutputStream outputStream = new FileOutputStream(file);
+
+        final Resources resources = context.getResources();
+        final byte[] largeBuffer = new byte[1024 * 4];
+        int totalBytes = 0;
+        int bytesRead = 0;
+
+        final InputStream inputStream = resources.openRawResource(inputRawResources);
+        while ((bytesRead = inputStream.read(largeBuffer)) > 0) {
+            if (largeBuffer.length == bytesRead) {
+                outputStream.write(largeBuffer);
+            } else {
+                final byte[] shortBuffer = new byte[bytesRead];
+                System.arraycopy(largeBuffer, 0, shortBuffer, 0, bytesRead);
+                outputStream.write(shortBuffer);
+            }
+            totalBytes += bytesRead;
+        }
+        inputStream.close();
+
+
+        outputStream.flush();
+        outputStream.close();
+        intending(not(isInternal()))
+                .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, insertFileIntoIntentAsData(fileName)));
+    }
+
+
     private Intent insertFileIntoIntentAsData(int id) {
         Uri fileUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
                 resources.getResourcePackageName(id) + "/" +
@@ -388,7 +424,7 @@ public class TestUtils {
         return resultData;
     }
 
-    private Intent insertFileIntoIntentAsData(String fileName) {
+    private static Intent insertFileIntoIntentAsData(String fileName) {
         Intent resultData = new Intent();
         File fileLocation = new File(Environment.getExternalStorageDirectory()
                 .getAbsolutePath(), fileName);
@@ -478,6 +514,8 @@ public class TestUtils {
     public void clickAttachedFileAtPosition(int position){
         BySelector selector = By.clazz("android.widget.FrameLayout");
         int size = device.findObjects(selector).size();
+        intending(not(isInternal()))
+                .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null));
         while (size == 0) {
             size = device.findObjects(selector).size();
         }
@@ -809,6 +847,7 @@ public class TestUtils {
             if (!viewIsDisplayed(R.id.reply_message)) {
                 try {
                     swipeDownMessageList();
+                    device.waitForIdle();
                     onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
                     messageClicked = true;
                     device.waitForIdle();
@@ -823,6 +862,7 @@ public class TestUtils {
                 } catch (Exception ex) {
                     Timber.i("No message found");
                 }
+                device.waitForIdle();
             } else {
                 messageClicked = true;
             }

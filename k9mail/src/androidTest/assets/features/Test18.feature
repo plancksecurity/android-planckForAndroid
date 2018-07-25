@@ -15,6 +15,5 @@ Feature: Sanity_1.2.2_MailToSecondNewContact
     And I check status is pEpRatingUnencrypted
     Then I press back
     And I click send message button
-    And I wait for new message
     And I remove account
 
