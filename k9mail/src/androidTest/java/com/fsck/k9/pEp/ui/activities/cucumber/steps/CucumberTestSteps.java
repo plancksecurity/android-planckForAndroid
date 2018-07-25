@@ -27,6 +27,7 @@ import junit.framework.AssertionFailedError;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -120,16 +121,16 @@ public class CucumberTestSteps {
                     }
                 }
                 break;
-            case "self":
+            case "self": //myself
                 cucumberMessageTo = testUtils.getTextFromTextViewThatContainsText("@");
                 break;
-            case "bot":
+            case "bot": //poner en el log el nombre del bot //bot1
                 cucumberMessageTo = messageToBot;
                 break;
-            case "secondBot":
+            case "secondBot": //bot2
                 cucumberMessageTo = secondBot;
                 break;
-            case "thirdBot":
+            case "thirdBot": //bot3
                 cucumberMessageTo = thirdBot;
                 break;
         }
@@ -195,12 +196,13 @@ public class CucumberTestSteps {
     }
 
 
-    @When("^I click last message received$")
+    @When("^I click last message received$")//I click the last message
     public void I_click_last_message_received() {
         testUtils.clickLastMessageReceived();
     }
 
-    @When("^I confirm trust words$")
+    @When("^I confirm trust words$") //abre dialogo, compara palabras clave
+    // todos los idiomas version corta y larga y confirma
     public void I_confirm_trust_words() {
         onView(withId(R.id.confirmTrustWords)).perform(click());
     }
@@ -210,12 +212,14 @@ public class CucumberTestSteps {
         onView(withId(R.id.wrongTrustwords)).perform(click());
     }
 
-    @When("^I untrust trust words$")
+    @When("^I untrust trust words$") //I stop trusting
     public void I_untrust_trust_words() {
+        //click status
         onView(withId(R.id.handshake_button_text)).perform(click());
     }
 
-    @When("^I check status is (\\S+)$")
+    @When("^I check status is (\\S+)$")//I check in the handshake dialog if the privacy status is
+    //go back
     public void I_check_pEp_status(String status) {
         int statusRating = 0;
         device.waitForIdle();
@@ -311,30 +315,36 @@ public class CucumberTestSteps {
 
     @Given("^Set external mock (\\S+)$")
     public void Set_external_mock(String mock){
+        int raw = 0;
         switch (mock){
             case "settings":
-                testUtils.externalAppRespondWithFile(R.raw.settings);
-                fileName = "settings";
+                raw = R.raw.settings;
+                fileName = "settings.k9s";
                 break;
             case "settingsthemedark":
-                testUtils.externalAppRespondWithFile(R.raw.settingsthemedark);
-                fileName = "settingsthemedark";
+                raw = R.raw.settingsthemedark;
+                fileName = "settingsthemedark.k9s";
                 break;
             case "MSoffice":
-                testUtils.externalAppRespondWithFile(R.raw.testmsoffice);
-                fileName = "testmsoffice";
+                raw = R.raw.testmsoffice;
+                fileName = "testmsoffice.docx";
                 break;
             case "PDF":
-                testUtils.externalAppRespondWithFile(R.raw.testpdf);
-                fileName = "testpdf";
+                raw = R.raw.testpdf;
+                fileName = "testpdf.pdf";
                 break;
             case "picture":
-                testUtils.externalAppRespondWithFile(R.raw.testpicture);
-                fileName = "testpicture";
+                raw = R.raw.testpicture;
+                fileName = "testpicture.png";
+        }
+        try {
+            TestUtils.createFile(fileName, raw);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    @When("^I click message status$")
+    @When("^I click message status$") //I open privacy status
     public void I_click_message_status() {
         testUtils.clickMessageStatus();
         device.waitForIdle();
@@ -478,7 +488,7 @@ public class CucumberTestSteps {
         return resultData;
     }
 
-    @Then("^I check toolBar color is (\\S+)$")
+    @Then("^I check toolBar color is (\\S+)$") //I check if the privacy status is
     public void I_check_toolBar_color_is(String color){
         testUtils.checkToolbarColor(testUtils.colorToID(color));
     }
@@ -564,7 +574,7 @@ public class CucumberTestSteps {
             @Override
             public void run() {
                 time[0]++;
-                if (time[0] > 300){
+                if (time[0] > 500){
                     try {
                         Timber.i("Timeout: closing the app...");
                         System.exit(0);
