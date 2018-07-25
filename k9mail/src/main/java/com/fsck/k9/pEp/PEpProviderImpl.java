@@ -957,6 +957,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     private void getRating(@Nullable Identity identity, Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback) {
         threadExecutor.execute(() -> {
+            Timber.i("Contador de PEpProviderImpl+1");
             EspressoTestingIdlingResource.increment();
             if (bccAddresses.size()  > 0) {
                 notifyLoaded(Rating.pEpRatingUnencrypted, callback);
@@ -993,11 +994,12 @@ public class PEpProviderImpl implements PEpProvider {
                 Log.e(TAG, "during color test:", e);
                 notifyError(e, callback);
             } finally {
+                Timber.i("Contador de PEpProviderImpl  -1");
+                EspressoTestingIdlingResource.decrement();
                 if (testee != null) testee.close();
                 if (engine != null) {
                     engine.close();
                 }
-                EspressoTestingIdlingResource.decrement();
             }
         });
     }

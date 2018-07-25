@@ -35,6 +35,7 @@ import java.util.concurrent.Executors;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import timber.log.Timber;
 
 public class PEpTrustwords extends PepColoredActivity {
 
@@ -188,18 +189,21 @@ public class PEpTrustwords extends PepColoredActivity {
     }
 
     private void loadPartnerRating() {
+        Timber.i("Contador de PEpTrustwords+1");
         EspressoTestingIdlingResource.increment();
         getpEp().getRating(partner, new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
                 setpEpRating(rating);
                 colorActionBar();
+                Timber.i("Contador de PEpTrustwords onLoaded -1");
                 EspressoTestingIdlingResource.decrement();
             }
 
             @Override
             public void onError(Throwable throwable) {
                 setpEpRating(Rating.pEpRatingUndefined);
+                Timber.i("Contador de PEpTrustwords onError -1");
                 EspressoTestingIdlingResource.decrement();
             }
         });
