@@ -88,7 +88,7 @@ public class CucumberTestSteps {
         bot2 = Long.toString(name++) + "@" + HOST;
         bot3 = Long.toString(name) + "@" + HOST;
         resources = InstrumentationRegistry.getTargetContext().getResources();
-        startTimer();
+        startTimer(350);
         activityTestRule.launchActivity(new Intent());
     }
 
@@ -542,13 +542,18 @@ public class CucumberTestSteps {
         trustWords = getTextFromView(onView(withId(R.id.trustwords)));
     }
 
-    private void startTimer(){
+    @And("^I set timeout to  (\\d+) seconds$")
+    public void I_set_timeout(int time){
+        startTimer(time);
+    }
+
+    private void startTimer(int finalTime){
         final int[] time = {0};
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 time[0]++;
-                if (time[0] > 500){
+                if (time[0] > finalTime){
                     try {
                         Timber.i("Timeout: closing the app...");
                         System.exit(0);
