@@ -7,7 +7,7 @@ Feature: Handshake_1.2.12_WrongTrustwords
   @login-scenarios
   Scenario: Test Handshake_1.2.12_WrongTrustwords
     When I click message compose
-    Then I send 1 message to bot with subject TestCase1.2.12 and body TestCase1.2.12
+    Then I send 1 message to bot1 with subject TestCase1.2.12 and body TestCase1.2.12
     And I click last message received
     Then I click message status
     And I reject trust words
@@ -15,7 +15,7 @@ Feature: Handshake_1.2.12_WrongTrustwords
     Then I press back
     And I press back
     Then I click message compose
-    And I fill messageTo field with bot
+    And I fill messageTo field with bot1
     And I fill messageSubject field with subjectUnsecure
     And I fill messageBody field with bodyUntrusted
     Then I click send message button

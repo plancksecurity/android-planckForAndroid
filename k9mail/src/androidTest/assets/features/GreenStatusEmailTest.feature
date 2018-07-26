@@ -11,7 +11,7 @@ Feature: Test
     Then I click view pEp_indicator
     And I check status is pEpRatingUndefined
     Then I press back
-    Then I fill messageTo field with self
+    Then I fill messageTo field with myself
     And I fill messageSubject field with subject
     And I fill messageBody field with body
     Then I click view pEp_indicator
@@ -23,7 +23,7 @@ Feature: Test
     Then I click view pEp_indicator
     And I check status is pEpRatingUndefined
     Then I press back
-    Then I fill messageTo field with self
+    Then I fill messageTo field with myself
     And I fill messageSubject field with subject
     And I fill messageBody field with body
     Then I click view pEp_indicator

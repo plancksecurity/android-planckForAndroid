@@ -6,7 +6,6 @@ Feature: Test
 
   @login-scenarios
   Scenario: Test8 ImportSettingsCancelTest
-    #no puedo mockear el archivo
     Given Set external mock settings
     Then I press back
     And I press back

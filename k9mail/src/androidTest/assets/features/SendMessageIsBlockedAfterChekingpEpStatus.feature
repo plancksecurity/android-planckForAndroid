@@ -7,7 +7,7 @@ Feature: Test
   @login-scenarios
   Scenario: Test13 SendMessageIsBlockedAfterChekingpEpStatus
     When I click message compose
-    Then I fill messageTo field with self
+    Then I fill messageTo field with myself
     And I fill messageSubject field with subject
     And I fill messageBody field with thisIsTheBody
     Then I click view pEp_indicator
@@ -20,7 +20,7 @@ Feature: Test
     And I click send message button
     Then I wait for new message
     Then I click message compose
-    And I fill messageTo field with self
+    And I fill messageTo field with myself
     And I fill messageSubject field with subject
     And I fill messageBody field with thisIsTheBody
     Then I click send message button

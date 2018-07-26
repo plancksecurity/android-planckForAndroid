@@ -61,9 +61,9 @@ public class CucumberTestSteps {
 
     private static final String HOST = "test.pep-security.net";
 
-    private String messageToBot = "";
-    private String secondBot = "";
-    private String thirdBot = "";
+    private String bot1 = "";
+    private String bot2 = "";
+    private String bot3 = "";
     String fileName = "";
 
     private UiDevice device;
@@ -84,9 +84,9 @@ public class CucumberTestSteps {
         espressoTestingIdlingResource = new EspressoTestingIdlingResource();
         IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
         long name = System.currentTimeMillis();
-        messageToBot = Long.toString(name++) + "@" + HOST;
-        secondBot = Long.toString(name++) + "@" + HOST;
-        thirdBot = Long.toString(name) + "@" + HOST;
+        bot1 = Long.toString(name++) + "@" + HOST;
+        bot2 = Long.toString(name++) + "@" + HOST;
+        bot3 = Long.toString(name) + "@" + HOST;
         resources = InstrumentationRegistry.getTargetContext().getResources();
         startTimer();
         activityTestRule.launchActivity(new Intent());
@@ -121,17 +121,20 @@ public class CucumberTestSteps {
                     }
                 }
                 break;
-            case "self": //myself
+            case "myself":
                 cucumberMessageTo = testUtils.getTextFromTextViewThatContainsText("@");
                 break;
-            case "bot": //poner en el log el nombre del bot //bot1
-                cucumberMessageTo = messageToBot;
+            case "bot1":
+                Timber.i("Filling message to bot1");
+                cucumberMessageTo = bot1;
                 break;
-            case "secondBot": //bot2
-                cucumberMessageTo = secondBot;
+            case "bot2":
+                Timber.i("Filling message to bot2");
+                cucumberMessageTo = bot2;
                 break;
-            case "thirdBot": //bot3
-                cucumberMessageTo = thirdBot;
+            case "bot3":
+                Timber.i("Filling message to bot3");
+                cucumberMessageTo = bot3;
                 break;
         }
         if (!getTextFromView(onView(withId(R.id.to))).equals("") || !getTextFromView(onView(withId(R.id.to))).equals(" ")) {
@@ -372,14 +375,14 @@ public class CucumberTestSteps {
     public void I_send_messages_to_bot(int totalMessages,String botName, String subject, String body) {
         String messageTo = "nothing";
         switch (botName){
-            case "bot":
-                messageTo = messageToBot;
+            case "bot1":
+                messageTo = bot1;
                 break;
-            case "secondBot":
-                messageTo = secondBot;
+            case "bot2":
+                messageTo = bot2;
                 break;
-            case "thirdBot":
-                messageTo = thirdBot;
+            case "bot3":
+                messageTo = bot3;
                 break;
 
         }
@@ -393,32 +396,6 @@ public class CucumberTestSteps {
             device.waitForIdle();
             testUtils.waitForNewMessage();
         }
-        device.waitForIdle();
-    }
-
-    @Then("^I send message to second bot with subject (\\S+) and body (\\S+)$")
-    public void I_send_messages_to_second_bot(String subject, String body) {
-        device.waitForIdle();
-            testUtils.composeMessageButton();
-            device.waitForIdle();
-            testUtils.fillMessage(new TestUtils.BasicMessage("", subject, body, secondBot), false);
-            device.waitForIdle();
-            testUtils.sendMessage();
-            device.waitForIdle();
-            testUtils.waitForNewMessage();
-        device.waitForIdle();
-    }
-
-    @Then("^I send message to third bot with subject (\\S+) and body (\\S+)$")
-    public void I_send_messages_to_third_bot(String subject, String body) {
-        device.waitForIdle();
-        testUtils.composeMessageButton();
-        device.waitForIdle();
-        testUtils.fillMessage(new TestUtils.BasicMessage("", subject, body, thirdBot), false);
-        device.waitForIdle();
-        testUtils.sendMessage();
-        device.waitForIdle();
-        testUtils.waitForNewMessage();
         device.waitForIdle();
     }
 

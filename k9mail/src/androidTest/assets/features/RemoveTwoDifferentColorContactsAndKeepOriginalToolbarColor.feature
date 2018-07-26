@@ -7,7 +7,7 @@ Feature: Test
   @login-scenarios
   Scenario: Test12 assertRemoveTwoDifferentColorContactsAndKeepOriginalToolbarColor
     Then I click message compose
-    And I fill messageTo field with self
+    And I fill messageTo field with myself
     And I fill messageTo field with unknown@user.is
     And I fill messageSubject field with Subject
     And I fill messageBody field with TheBody

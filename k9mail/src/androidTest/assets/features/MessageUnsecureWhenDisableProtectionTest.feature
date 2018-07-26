@@ -7,7 +7,7 @@ Feature: Test
   @login-scenarios
   Scenario: Test11 MessageUnsecureWhenDisableProtectionTest
     Then I click message compose
-    And I fill messageTo field with self
+    And I fill messageTo field with myself
     And I fill messageSubject field with subject
     And I fill messageBody field with body
     Then I click view pEp_indicator

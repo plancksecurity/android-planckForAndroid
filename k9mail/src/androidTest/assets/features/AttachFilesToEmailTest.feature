@@ -7,7 +7,7 @@ Feature: Test
     @login-scenarios
     Scenario: Test2 attachFilesToMessage
         Given I click message compose
-        Then I fill messageTo field with self
+        Then I fill messageTo field with myself
         And I fill messageSubject field with subject
         And I fill messageBody field with bodyMessage
         Then Set external mock settings

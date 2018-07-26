@@ -7,7 +7,7 @@ Feature: Sanity_1.2.3_MailFromNewContactEncrypted
   @login-scenarios
   Scenario: Test Sanity_1.2.3_MailFromNewContactEncrypted
     When I click message compose
-    Then I send 1 message to bot with subject subject and body body
+    Then I send 1 message to bot1 with subject subject and body body
     And I click last message received
     Then I compare messageBody with body
     And I check toolBar color is pep_yellow
