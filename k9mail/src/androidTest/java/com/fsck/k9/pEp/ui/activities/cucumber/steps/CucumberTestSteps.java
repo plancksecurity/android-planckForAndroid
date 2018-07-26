@@ -305,11 +305,11 @@ public class CucumberTestSteps {
         testUtils.sendMessage();
     }
 
-    @Then("^I attach (\\S+)$") // with name (\S+) and extension (\S+) to message
-    public void I_attach_file_to_message(String file) {//, String name, String extension
+    @Then("^I attach (\\S+)$")
+    public void I_attach_file_to_message(String file) {
         device.waitForIdle();
         Set_external_mock(file);
-        testUtils.attachFile(fileName);//testUtils.attachFile(name, extension);
+        testUtils.attachFile(fileName);
         device.waitForIdle();
     }
 
