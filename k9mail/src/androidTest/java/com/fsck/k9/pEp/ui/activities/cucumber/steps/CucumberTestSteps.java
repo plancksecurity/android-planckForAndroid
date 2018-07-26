@@ -465,7 +465,7 @@ public class CucumberTestSteps {
         return resultData;
     }
 
-    @Then("^I check toolBar color is (\\S+)$") //I check if the privacy status is
+    @Then("^I check if the privacy status is (\\S+)$")
     public void I_check_toolBar_color_is(String color){
         testUtils.checkToolbarColor(testUtils.colorToID(color));
     }

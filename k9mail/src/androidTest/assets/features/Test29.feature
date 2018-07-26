@@ -18,7 +18,7 @@ Feature: Attachment_1.2.14_Send4FilesTo3Contacts
     Then I fill messageTo field with bot3
     And I fill messageSubject field with subject
     And I fill messageBody field with body
-    Then I check toolBar color is pep_yellow
+    Then I check if the privacy status is pep_yellow
     And I attach PDF
     And I attach MSoffice
     And I attach picture

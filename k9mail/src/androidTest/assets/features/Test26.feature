@@ -13,7 +13,7 @@ Feature: Handshake_1.2.11_StopTrusting
     Then I click message status
     And I untrust trust words
     And I press back
-    Then I check toolBar color is pep_yellow
+    Then I check if the privacy status is pep_yellow
     Then I click view reply_message
     And I fill messageSubject field with subject
     And I fill messageBody field with body
@@ -21,5 +21,5 @@ Feature: Handshake_1.2.11_StopTrusting
     Then I press back
     And I wait for new message
     And I click last message received
-    And I check toolBar color is pep_yellow
+    And I check if the privacy status is pep_yellow
     Then I remove account

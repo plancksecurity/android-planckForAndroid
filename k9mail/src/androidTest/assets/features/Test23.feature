@@ -13,10 +13,10 @@ Feature: Sanity_1.2.7_DisableProtection
     And I select from message menu pep_force_unprotected
     And I fill messageSubject field with TestCase1.2.7
     And I fill messageBody field with TestCase1.2.7
-    Then I check toolBar color is pep_no_color
+    Then I check if the privacy status is pep_no_color
     And I click send message button
     And I wait for new message
     And I go to sent folder
     And I click last message received
-    Then I check toolBar color is pep_no_color
+    Then I check if the privacy status is pep_no_color
     Then I remove account
