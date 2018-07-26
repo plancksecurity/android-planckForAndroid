@@ -1790,7 +1790,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                             Timber.i("ManualImport", "Key received and imported:: " + importKeyController.isStarter());
                                             Timber.i("ManualImport", "Key received and imported:: " + importKeyController.getState().toString());
                                             importKeyController.finish();
-                                            //deleteMessage(message, account, folder, localFolder);
+                                            deleteMessage(message, account, folder, localFolder);
                                         }
                                         else {
                                             showImportKeyDialogIfNeeded(message, result, account);
