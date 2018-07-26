@@ -137,6 +137,7 @@ public class CucumberTestSteps {
                 cucumberMessageTo = bot3;
                 break;
         }
+        cucumberMessageTo = cucumberMessageTo + ",";
         if (!getTextFromView(onView(withId(R.id.to))).equals("") || !getTextFromView(onView(withId(R.id.to))).equals(" ")) {
             fillMessage(cucumberMessageTo);
         } else {
@@ -148,12 +149,7 @@ public class CucumberTestSteps {
             onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
             device.waitForIdle();
             onView(withId(R.id.message_content)).perform(typeText(" "), closeSoftKeyboard());
-
         }
-    }
-
-    @And("^I fill again messageTo field with (\\S+)$")
-    public void I_fill_again_message_to_field(String name){
     }
 
     private String ifEmptyString(String name){
@@ -400,7 +396,7 @@ public class CucumberTestSteps {
     }
 
     private void fillMessage(String to){
-        testUtils.fillMessage(new TestUtils.BasicMessage("", "", "", to), false);
+        testUtils.fillMessage(new TestUtils.BasicMessage("", " ", " ", to), false);
 
     }
 
