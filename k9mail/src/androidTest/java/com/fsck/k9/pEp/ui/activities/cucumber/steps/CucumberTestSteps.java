@@ -195,7 +195,7 @@ public class CucumberTestSteps {
     }
 
 
-    @When("^I click last message received$")//I click the last message
+    @When("^I click last message$")
     public void I_click_last_message_received() {
         testUtils.clickLastMessageReceived();
     }

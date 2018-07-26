@@ -14,7 +14,7 @@ Feature: Handshake_1.2.10_HandshakeInExistingMessage
     And I press back
     And I click send message button
     Then I wait for new message
-    And I click last message received
+    And I click last message
     And I save trustWords
 
     Then I send 1 message to bot1 with subject TestCase1.2.7 and body TestCase1.2.7
@@ -27,6 +27,6 @@ Feature: Handshake_1.2.10_HandshakeInExistingMessage
     And I click send message button
     And I wait for new message
     And I go to sent folder
-    And I click last message received
+    And I click last message
     Then I check if the privacy status is pep_no_color
     Then I remove account

@@ -26,5 +26,5 @@ Feature: Attachment_1_2_15_SendEmbeddedPictureToMultipleContacts
     And I click send message button
     And I wait for new message
     Then I go to sent folder
-    And I click last message received
+    And I click last message
     And I remove account

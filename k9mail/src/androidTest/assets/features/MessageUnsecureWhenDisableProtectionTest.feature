@@ -19,7 +19,7 @@ Feature: Test
     Then I press back
     And I click send message button
     And I wait for new message
-    And I click last message received
+    And I click last message
     Then I click view tvPep
     And I check status is pEpRatingUnencrypted
     Then I press back

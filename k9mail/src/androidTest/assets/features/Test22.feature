@@ -27,7 +27,7 @@ Feature: Sanity_1.2.6_MailToMultipleContactsMixed
     Then I click send message button
     And I wait for new message
     And I go to sent folder
-    And I click last message received
+    And I click last message
     Then I check if the privacy status is pep_no_color
     And I compare messageBody with TestCase1.2.6
     Then I remove account

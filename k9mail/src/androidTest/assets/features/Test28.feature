@@ -17,6 +17,6 @@ Feature: Attachment_1.2.13_Send1FileTo1Contact
     Then I attach files to message
     And I click send message button
     Then I go to sent folder
-    And I click last message received
+    And I click last message
     And I open attached file
     And I remove account

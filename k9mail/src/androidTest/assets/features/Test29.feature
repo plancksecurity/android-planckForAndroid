@@ -26,7 +26,7 @@ Feature: Attachment_1.2.14_Send4FilesTo3Contacts
     And I click send message button
     And I wait for new message
     Then I go to sent folder
-    And I click last message received
+    And I click last message
     And I open attached file at position 1
     And I open attached file at position 2
     And I open attached file at position 3

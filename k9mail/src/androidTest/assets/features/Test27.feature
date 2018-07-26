@@ -8,7 +8,7 @@ Feature: Handshake_1.2.12_WrongTrustwords
   Scenario: Test Handshake_1.2.12_WrongTrustwords
     When I click message compose
     Then I send 1 message to bot1 with subject TestCase1.2.12 and body TestCase1.2.12
-    And I click last message received
+    And I click last message
     Then I click message status
     And I reject trust words
     Then I check status is pEpRatingMistrust
@@ -20,7 +20,7 @@ Feature: Handshake_1.2.12_WrongTrustwords
     And I fill messageBody field with bodyUntrusted
     Then I click send message button
     And I wait for new message
-    And I click last message received
+    And I click last message
     Then I click view reply_message
     And I check if the privacy status is pep_red
     And I remove account

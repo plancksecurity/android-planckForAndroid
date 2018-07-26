@@ -22,7 +22,7 @@ Feature: Sanity_1.2.4_MailToExistingContactEncrypted
     And I press back
     Then I send 1 message to bot1 with subject TestCase1.2.4 and body TestCase1.2.4
     Then I go to sent folder
-    And I click last message received
+    And I click last message
     And I check if the privacy status is pep_yellow
     And I compare messageBody with TestCase1.2.4
     Then I remove account

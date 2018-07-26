@@ -20,6 +20,6 @@ Feature: Handshake_1.2.9_HandshakeInNewMessage
     And I click send message button
     And I wait for new message
     And I go to sent folder
-    And I click last message received
+    And I click last message
     Then I check if the privacy status is pep_no_color
     Then I remove account
