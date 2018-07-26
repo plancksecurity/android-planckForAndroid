@@ -999,12 +999,12 @@ public class Accounts extends PEpImporterActivity {
     }
 
     private void onImportPGPKey(Account realAccount) {
-        ImportWizardFrompEp.actionStartImportpEpKey(getApplicationContext(), realAccount.getUuid(), true, KeySourceType.PGP, null);
+        ImportWizardFrompEp.actionStartImportpEpKey(Accounts.this, realAccount.getUuid(), true, KeySourceType.PGP, null);
 
     }
 
     private void onImportpEpKey(Account realAccount) {
-        ImportWizardFrompEp.actionStartImportpEpKey(getApplicationContext(), realAccount.getUuid(), true, KeySourceType.PEP, null);
+        ImportWizardFrompEp.actionStartImportpEpKey(Accounts.this, realAccount.getUuid(), true, KeySourceType.PEP, null);
     }
 
 

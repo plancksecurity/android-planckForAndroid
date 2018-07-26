@@ -1748,9 +1748,15 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                 deleteMessage(message, account, folder, localFolder);
                             } else if (isKeyImportMessage(message, result, account, importKeyController.getState())
                                     || !importKeyController.getState().equals(ImportKeyWizardState.INIT) && message.getFrom()[0].getAddress().equals(account.getEmail())) {
-                                final ImportKeyWizardState importKeyWizardState = importKeyController.getState();
                                 Timber.i("Detected pEpKeyImport header");
                                 Timber.i(result.msg.getSubject());
+                                if (isInitialBeacon(result.rating, importKeyController.getState())) {
+                                    //NO STARTER
+                                    importKeyController.start();
+                                }
+
+                                final ImportKeyWizardState importKeyWizardState = importKeyController.getState();
+
                                 Timber.i("State: " + importKeyController.getState().name());
                                 //Aqui solo entra init si es el segundo mensaje
                                 if (result.rating.value < Rating.pEpRatingTrusted.value) {
@@ -1759,13 +1765,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     } else if (result.msg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)) {
                                         importKeyController.setSenderKey(result.msg.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT)[0]);
                                     }
-                                }
-
-                                if (isInitialBeacon(result.rating, importKeyWizardState)) {
-                                    //NO STARTER
-                                    importKeyController.start();
-                                } else if (importKeyWizardState.equals(ImportKeyWizardState.BEACON_SENT)) {
-                                    //NO OP, We are just waiting - When notified UI will act
                                 }
 
 
@@ -1782,7 +1781,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     if (containsPrivateOwnKey(result)) {
                                         if (ispEpKeyImportMessage(message, result, account, importKeyWizardState)) {
                                             //Received private key -
-                                            deleteMessage(message, account, folder, localFolder);
                                             ((K9) context.getApplicationContext()).disableFastPolling();
                                             if (importKeyController.isStarter()) { // is key to import.
                                                 pEpProvider.setOwnIdentity(sender, sender.fpr);
@@ -1792,6 +1790,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                             Timber.i("ManualImport", "Key received and imported:: " + importKeyController.isStarter());
                                             Timber.i("ManualImport", "Key received and imported:: " + importKeyController.getState().toString());
                                             importKeyController.finish();
+                                            //deleteMessage(message, account, folder, localFolder);
                                         }
                                         else {
                                             showImportKeyDialogIfNeeded(message, result, account);
@@ -1835,7 +1834,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                                         MimeMessage handshakeUnencryptedMessage = createMimeMessage(account);
                                         MimeMessage handshakeMessage = pEpProvider.encryptMessage(handshakeUnencryptedMessage, new String[]{senderKey}).get(PEpProvider.ENCRYPTED_MESSAGE_POSITION);
-                                        importKeyController.waitForKey();
+                                        //importKeyController.waitForKey();
 //                            sendMessage(account,handshakeUnencryptedMessage ,null);
                                         Log.i("ManualImport", "Handshake request generated");
 
@@ -1862,6 +1861,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     } else {
                                         Timber.e("NO CASE - INVALID STATE - Deleting message: " + importKeyController.getState().toString());
                                         deleteMessage(message, account, folder, localFolder);
+                                        importKeyController.finish();
                                     }
                                 }
                             } else if (result.keyDetails != null) {
@@ -1960,7 +1960,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
     private <T extends Message> boolean isPGPKeyImportMessage(T message, PEpProvider.DecryptResult result, Account account, ImportKeyWizardState state) {
         return ((K9) context).isShowingKeyimportDialog() && !PEpUtils.isMessageOnOutgoingFolder(message, account)
                 && (result.rating.equals(Rating.pEpRatingReliable) || result.rating.equals(Rating.pEpRatingTrustedAndAnonymized))
-                && result.msg.getFrom()[0].getAddress().equals(account.getEmail())&& !state.equals(ImportKeyWizardState.INIT);
+                && result.msg.getFrom()[0].getAddress().equals(account.getEmail())&& !state.equals(ImportKeyWizardState.INIT)
+                && message.getHeader(MimeHeader.HEADER_PEP_AUTOCONSUME).length == 0;
     }
 
     private <T extends Message> boolean isKeyImportMessage(T message, PEpProvider.DecryptResult result, Account account, ImportKeyWizardState state) {

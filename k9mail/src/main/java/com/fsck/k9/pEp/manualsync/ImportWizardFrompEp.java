@@ -83,6 +83,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         if (handshakeIntent != null) {
             intent.putExtra(HANDSHAKE_INTENT_KEY, handshakeIntent);
         }
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 
@@ -281,12 +282,14 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         Intent intent = new Intent(context, ImportWizardFrompEp.class);
         intent.putExtra(IMPORTED_KEY, true);
         intent.putExtra(IS_PEP, true);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 
     public static void notifyPrivatePGPKeyProcessed(Context context) {
         Intent intent = new Intent(context, ImportWizardFrompEp.class);
         intent.putExtra(IS_PEP, false);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 }

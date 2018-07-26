@@ -32,13 +32,13 @@ public class ImportWizardPresenter implements Presenter {
 
     @Override
     public void pause() {
-        importKeyController.finish();
+
 
     }
 
     @Override
     public void destroy() {
-
+        importKeyController.finish();
     }
 
     public void onStartClicked(Account account, Callback callback) {
