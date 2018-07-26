@@ -132,6 +132,7 @@ public class PEpProviderImpl implements PEpProvider {
 
             Identity idFrom = PEpUtils.createIdentity(from, context);
             idFrom.user_id = PEP_OWN_USER_ID;
+            idFrom.me = true;
             testee.setFrom(idFrom);
             testee.setTo(PEpUtils.createIdentities(toAddresses, context));
             testee.setCc(PEpUtils.createIdentities(ccAddresses, context));
@@ -375,6 +376,7 @@ public class PEpProviderImpl implements PEpProvider {
             Log.d(TAG, "encryptMessage() before encrypt to self");
             Identity from = message.getFrom();
             from.user_id = PEP_OWN_USER_ID;
+            from.me = true;
             message.setFrom(from);
             Message currentEnc = engine.encrypt_message_for_self(message.getFrom(), message, convertExtraKeys(keys));
             if (currentEnc == null) currentEnc = message;
@@ -471,6 +473,7 @@ public class PEpProviderImpl implements PEpProvider {
         Log.d(TAG, "encryptMessage() before encrypt");
         Identity from = message.getFrom();
         from.user_id = PEP_OWN_USER_ID;
+        from.me = true;
         message.setFrom(from);
         Message currentEnc = engine.encrypt_message(message, convertExtraKeys(extraKeys), message.getEncFormat());
         if (currentEnc == null) currentEnc = message;
@@ -582,6 +585,7 @@ public class PEpProviderImpl implements PEpProvider {
                 Identity another;
                 if (!areKeysyncTrustwords) {
                     self.user_id = PEP_OWN_USER_ID;
+                    self.me = true;
                     myself = engine.myself(self);
                     another = engine.updateIdentity(other);
                 } else {
@@ -674,6 +678,7 @@ public class PEpProviderImpl implements PEpProvider {
     public synchronized Identity myself(Identity myId) {
         createEngineInstanceIfNeeded();
         myId.user_id = PEP_OWN_USER_ID;
+        myId.me = true;
         return engine.myself(myId);
     }
 
@@ -976,6 +981,7 @@ public class PEpProviderImpl implements PEpProvider {
 
                 Identity idFrom = PEpUtils.createIdentity(from, context);
                 idFrom.user_id = PEP_OWN_USER_ID;
+                idFrom.me = true;
                 testee.setFrom(idFrom);
                 testee.setTo(PEpUtils.createIdentities(toAddresses, context));
                 testee.setCc(PEpUtils.createIdentities(ccAddresses, context));
