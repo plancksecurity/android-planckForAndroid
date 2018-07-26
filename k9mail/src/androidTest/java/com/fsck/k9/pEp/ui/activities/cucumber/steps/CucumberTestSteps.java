@@ -211,9 +211,10 @@ public class CucumberTestSteps {
         onView(withId(R.id.wrongTrustwords)).perform(click());
     }
 
-    @When("^I untrust trust words$") //I stop trusting
+    @When("^I stop trusting$")
     public void I_untrust_trust_words() {
-        //click status
+        testUtils.clickMessageStatus();
+        device.waitForIdle();
         onView(withId(R.id.handshake_button_text)).perform(click());
     }
 
