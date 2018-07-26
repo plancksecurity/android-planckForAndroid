@@ -10,8 +10,7 @@ Feature: Handshake_1.2.10_HandshakeInExistingMessage
     Then I fill messageTo field with bot1
     And I fill messageSubject field with TestCase1.2.10
     And I fill messageBody field with TestCase1.2.10
-    Then I check status is pEpRatingUnencrypted
-    And I press back
+    Then I check in the handshake dialog if the privacy status is pEpRatingUnencrypted
     And I click send message button
     Then I wait for new message
     And I click last message

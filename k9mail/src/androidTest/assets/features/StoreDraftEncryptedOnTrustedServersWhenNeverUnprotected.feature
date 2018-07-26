@@ -17,8 +17,7 @@ Feature: Test
     And I fill messageSubject field with subject
     And I fill messageBody field with body
     Then I click view pEp_indicator
-    And I check status is pEpRatingUnencrypted
-    Then I press back
+    And I check in the handshake dialog if the privacy status is pEpRatingUnencrypted
     Then I select from message menu is_always_secure
     Then I go back and save as draft
     And I open menu

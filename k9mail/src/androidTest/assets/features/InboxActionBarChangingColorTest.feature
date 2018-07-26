@@ -14,8 +14,7 @@ Feature: Test
     And I wait for new message
     And I click last message
     Then I click view tvPep
-    And I check status is pEpRatingTrusted
-    Then I press back
+    And I check in the handshake dialog if the privacy status is pEpRatingTrusted
     Then I check if the privacy status is pep_green
     And I press back
     And I check if the privacy status is pep_green

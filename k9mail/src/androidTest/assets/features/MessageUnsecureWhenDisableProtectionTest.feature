@@ -11,18 +11,15 @@ Feature: Test
     And I fill messageSubject field with subject
     And I fill messageBody field with body
     Then I click view pEp_indicator
-    And I check status is pEpRatingTrusted
-    Then I press back
+    And I check in the handshake dialog if the privacy status is pEpRatingTrusted
     Then I select from message menu pep_force_unprotected
     Then I click view pEp_indicator
-    And I check status is pEpRatingUnencrypted
-    Then I press back
+    And I check in the handshake dialog if the privacy status is pEpRatingUnencrypted
     And I click send message button
     And I wait for new message
     And I click last message
     Then I click view tvPep
-    And I check status is pEpRatingUnencrypted
-    Then I press back
+    And I check in the handshake dialog if the privacy status is pEpRatingUnencrypted
     Then I remove account
 
 

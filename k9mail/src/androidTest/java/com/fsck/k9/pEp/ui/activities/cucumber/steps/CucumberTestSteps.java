@@ -218,8 +218,7 @@ public class CucumberTestSteps {
         onView(withId(R.id.handshake_button_text)).perform(click());
     }
 
-    @When("^I check status is (\\S+)$")//I check in the handshake dialog if the privacy status is
-    //go back
+    @When("^I check in the handshake dialog if the privacy status is (\\S+)$")
     public void I_check_pEp_status(String status) {
         int statusRating = 0;
         device.waitForIdle();
@@ -266,6 +265,7 @@ public class CucumberTestSteps {
         }
         testUtils.assertMessageStatus(statusRating);
         device.waitForIdle();
+        I_press_back();
     }
 
     @And("^I select from message menu (\\S+)$")

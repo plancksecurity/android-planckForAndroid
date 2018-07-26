@@ -12,8 +12,7 @@ Feature: Test
     Then I click view tvPep
     And I click view confirmTrustWords
     Then I click view tvPep
-    And I check status is pEpRatingTrusted
-    Then I press back
+    And I check in the handshake dialog if the privacy status is pEpRatingTrusted
     And I go back to message compose
     Then I click message compose
     And I fill messageTo field with bot1

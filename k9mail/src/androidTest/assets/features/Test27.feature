@@ -11,8 +11,7 @@ Feature: Handshake_1.2.12_WrongTrustwords
     And I click last message
     Then I click message status
     And I reject trust words
-    Then I check status is pEpRatingMistrust
-    Then I press back
+    Then I check in the handshake dialog if the privacy status is pEpRatingMistrust
     And I press back
     Then I click message compose
     And I fill messageTo field with bot1
