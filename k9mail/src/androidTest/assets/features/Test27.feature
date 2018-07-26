@@ -9,7 +9,7 @@ Feature: Handshake_1.2.12_WrongTrustwords
     When I click message compose
     Then I send 1 message to bot1 with subject TestCase1.2.12 and body TestCase1.2.12
     And I click last message
-    Then I click message status
+    Then I open privacy status
     And I reject trust words
     Then I check in the handshake dialog if the privacy status is pEpRatingMistrust
     And I press back

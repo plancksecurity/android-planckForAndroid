@@ -344,7 +344,7 @@ public class CucumberTestSteps {
         }
     }
 
-    @When("^I click message status$") //I open privacy status
+    @When("^I open privacy status$")
     public void I_click_message_status() {
         testUtils.clickMessageStatus();
         device.waitForIdle();
