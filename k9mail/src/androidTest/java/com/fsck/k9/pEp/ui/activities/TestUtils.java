@@ -650,21 +650,16 @@ public class TestUtils {
     public void selectFromMenu(int viewId){
         device.waitForIdle();
         openOptionsMenu();
-        selectFromScreen(viewId);
-        boolean toolbarClosed = false;
-        while (!toolbarClosed){
-            try{
-                onView(withId(R.id.message_content)).perform(typeText(" "));
+        while (true) {
+            try {
+                selectFromScreen(viewId);
                 device.waitForIdle();
-                toolbarClosed = true;
-            } catch (Exception ex){
+                if (!viewIsDisplayed(R.id.text1)) {
+                    return;
+                }
+            } catch (Exception ex) {
                 Timber.i("Toolbar is not closed yet");
             }
-        }
-        try {
-            onView(withId(R.id.subject)).perform(click());
-        } catch (Exception ex) {
-            Timber.i("Ignored Exception: " + ex);
         }
     }
 
@@ -718,17 +713,15 @@ public class TestUtils {
     }
 
     public void selectFromScreen(int resource) {
-        boolean textViewFound = false;
         BySelector selector = By.clazz("android.widget.TextView");
-        while (!textViewFound) {
+        while (true) {
             for (UiObject2 object : device.findObjects(selector)) {
                 try {
                     if (object.getText().contains(resources.getString(resource))) {
                         device.waitForIdle();
                         object.click();
                         device.waitForIdle();
-                        textViewFound = true;
-                        break;
+                        return;
                     }
                 } catch (Exception ex){
                     Timber.i("Cannot find text on screen: " + ex);
