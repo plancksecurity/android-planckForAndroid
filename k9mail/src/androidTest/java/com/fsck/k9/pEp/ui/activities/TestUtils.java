@@ -647,7 +647,7 @@ public class TestUtils {
         }
     }
 
-    public void selectoFromMenu(int viewId){
+    public void selectFromMenu(int viewId){
         device.waitForIdle();
         openOptionsMenu();
         selectFromScreen(viewId);

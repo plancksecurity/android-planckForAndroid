@@ -270,7 +270,7 @@ public class CucumberTestSteps {
 
     @And("^I select from message menu (\\S+)$")
     public void I_select_from_message_menu(String textToSelect){
-        testUtils.selectoFromMenu(testUtils.stringToID(textToSelect));
+        testUtils.selectFromMenu(testUtils.stringToID(textToSelect));
         device.waitForIdle();
     }
 

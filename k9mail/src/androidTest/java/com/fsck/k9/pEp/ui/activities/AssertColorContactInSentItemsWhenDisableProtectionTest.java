@@ -7,10 +7,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.IdlingRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.support.test.uiautomator.By;
-import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
-import android.support.test.uiautomator.UiObject2;
 
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
@@ -21,8 +18,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
-
-import timber.log.Timber;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.typeText;
@@ -82,7 +77,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
     }
 
     private void selectFromMenu(int textToSelect) {
-        testUtils.selectoFromMenu(textToSelect);
+        testUtils.selectFromMenu(textToSelect);
     }
 
     private void checkPEpStatus(Rating rating) {
