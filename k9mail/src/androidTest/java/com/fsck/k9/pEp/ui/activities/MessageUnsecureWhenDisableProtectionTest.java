@@ -46,13 +46,13 @@ public class MessageUnsecureWhenDisableProtectionTest {
         testUtils = new TestUtils(uiDevice, InstrumentationRegistry.getInstrumentation());
         testUtils.increaseTimeoutWait();
         espressoTestingIdlingResource = new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         testUtils.startActivity();
     }
 
     @After
     public void unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
 

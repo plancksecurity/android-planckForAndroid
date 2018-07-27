@@ -46,7 +46,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
         testUtils = new TestUtils(device, instrumentation);
         testUtils.increaseTimeoutWait();
         espressoTestingIdlingResource = new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         context = InstrumentationRegistry.getTargetContext();
         resources = context.getResources();
         testUtils.startActivity();
@@ -54,7 +54,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
 
     @After
     public void unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
     @Test (timeout = TIMEOUT_TEST)

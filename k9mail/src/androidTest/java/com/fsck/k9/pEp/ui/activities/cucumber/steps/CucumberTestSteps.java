@@ -64,7 +64,7 @@ public class CucumberTestSteps {
     private String bot1 = "";
     private String bot2 = "";
     private String bot3 = "";
-    String fileName = "";
+    private String fileName = "";
 
     private UiDevice device;
     private TestUtils testUtils;
@@ -82,7 +82,7 @@ public class CucumberTestSteps {
         testUtils = new TestUtils(device, instrumentation);
         testUtils.increaseTimeoutWait();
         espressoTestingIdlingResource = new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         long name = System.currentTimeMillis();
         bot1 = Long.toString(name++) + "@" + HOST;
         bot2 = Long.toString(name++) + "@" + HOST;
@@ -94,7 +94,7 @@ public class CucumberTestSteps {
 
     @After
     public void tearDown() {
-        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
         activityTestRule.finishActivity();
     }
 
@@ -542,7 +542,7 @@ public class CucumberTestSteps {
         trustWords = getTextFromView(onView(withId(R.id.trustwords)));
     }
 
-    @And("^I set timeout to  (\\d+) seconds$")
+    @And("^I set timeout to (\\d+) seconds$")
     public void I_set_timeout(int time){
         startTimer(time);
     }

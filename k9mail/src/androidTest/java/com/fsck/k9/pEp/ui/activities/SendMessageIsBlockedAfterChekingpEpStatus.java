@@ -44,13 +44,13 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
         testUtils = new TestUtils(uiDevice, instrumentation);
         testUtils.increaseTimeoutWait();
         espressoTestingIdlingResource = new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         testUtils.startActivity();
     }
 
     @After
     public void unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
     @Test (timeout = TIMEOUT_TEST)

@@ -334,7 +334,7 @@ public class TestUtils {
         }
     }
 
-    public void attachFiles(String fileName, String extension, int total) {
+    private void attachFiles(String fileName, String extension, int total) {
         for (int fileNumber = 0; fileNumber < total; fileNumber++) {
             Instrumentation.ActivityResult fileForActivityResultStub = createFileForActivityResultStub(fileName + fileNumber + extension);
             try {
@@ -391,7 +391,7 @@ public class TestUtils {
         final Resources resources = context.getResources();
         final byte[] largeBuffer = new byte[1024 * 4];
         int totalBytes = 0;
-        int bytesRead = 0;
+        int bytesRead;
 
         final InputStream inputStream = resources.openRawResource(inputRawResources);
         while ((bytesRead = inputStream.read(largeBuffer)) > 0) {
@@ -809,13 +809,11 @@ public class TestUtils {
         selectFromScreen(R.string.account_settings_folders);
         device.waitForIdle();
         String folder = resources.getString(R.string.special_mailbox_name_sent);
-        boolean folderClicked = false;
-        while (!folderClicked) {
+        while (true) {
             for (UiObject2 textView : device.findObjects(textViewSelector)) {
                 try {
                     if (textView.findObject(textViewSelector).getText() != null && textView.findObject(textViewSelector).getText().contains(folder)) {
                         textView.findObject(textViewSelector).click();
-                        folderClicked = true;
                         return;
                     }
                     device.waitForIdle();
@@ -824,8 +822,6 @@ public class TestUtils {
                 }
             }
         }
-        device.waitForIdle();
-        waitForTextOnScreen(resources.getString(R.string.special_mailbox_name_sent));
     }
 
     private void waitForTextOnScreen(String text) {

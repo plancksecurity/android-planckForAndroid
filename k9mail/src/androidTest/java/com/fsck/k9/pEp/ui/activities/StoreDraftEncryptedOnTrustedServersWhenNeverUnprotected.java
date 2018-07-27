@@ -44,7 +44,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
         instrumentation = InstrumentationRegistry.getInstrumentation();
         device = UiDevice.getInstance(instrumentation);
         espressoTestingIdlingResource = new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         resources = InstrumentationRegistry.getTargetContext().getResources();
         testUtils = new TestUtils(device, instrumentation);
         testUtils.increaseTimeoutWait();
@@ -53,7 +53,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
 
     @After
     public void unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
     @Test
@@ -75,7 +75,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
     }
 
     private void clickFirstMessageFromDraft() {
-        selectoFromMenu(R.string.account_settings_folders);
+        testUtils.selectFromMenu(R.string.account_settings_folders);
         device.waitForIdle();
         testUtils.selectFromScreen(R.string.special_mailbox_name_drafts);
         clickFirstMessage();
@@ -102,11 +102,5 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
             testUtils.clickFirstMessage();
             device.waitForIdle();
         }
-    }
-
-    void selectoFromMenu(int viewId){
-        device.waitForIdle();
-        testUtils.openOptionsMenu();
-        testUtils.selectFromScreen(viewId);
     }
 }
