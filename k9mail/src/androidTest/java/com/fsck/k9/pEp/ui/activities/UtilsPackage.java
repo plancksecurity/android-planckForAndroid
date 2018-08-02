@@ -15,6 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.webkit.WebView;
 import android.widget.Checkable;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -225,6 +226,22 @@ public class UtilsPackage {
             @Override
             public boolean matchesSafely(View view) {
                 return firstValue.equals(secondValue);
+            }
+        };
+    }
+
+    public static Matcher<View> containsText(final String firstValue, final String secondValue) {
+
+        return new TypeSafeMatcher<View>() {
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Assert text contains string: " + firstValue + "  and  " + secondValue);
+            }
+
+            @Override
+            public boolean matchesSafely(View view) {
+                return firstValue.contains(secondValue);
             }
         };
     }
