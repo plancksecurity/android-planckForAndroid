@@ -708,8 +708,15 @@ public class TestUtils {
     }
 
     public void openOptionsMenu() {
-        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-        device.waitForIdle();
+        while (true) {
+            try {
+                openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+                device.waitForIdle();
+                return;
+            } catch (Exception ex) {
+                Timber.i("Cannot open menu");
+            }
+        }
     }
 
     public void selectFromScreen(int resource) {
