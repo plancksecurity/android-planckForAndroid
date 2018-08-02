@@ -12,7 +12,11 @@ import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.action.ViewActions;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.test.uiautomator.By;
+import android.support.test.uiautomator.BySelector;
+import android.support.test.uiautomator.Direction;
 import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject2;
 import android.view.KeyEvent;
 
 import com.fsck.k9.K9;
@@ -42,18 +46,23 @@ import timber.log.Timber;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.scrollTo;
+import static android.support.test.espresso.action.ViewActions.swipeDown;
+import static android.support.test.espresso.action.ViewActions.swipeUp;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.isInternal;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containsText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.hasValueEqualTo;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 
 @RunWith(AndroidJUnit4.class)
@@ -200,10 +209,102 @@ public class CucumberTestSteps {
         testUtils.clickLastMessageReceived();
     }
 
-    @When("^I confirm trust words$") //abre dialogo, compara palabras clave
-    // todos los idiomas version corta y larga y confirma
+    @When("^I confirm trust words$")
     public void I_confirm_trust_words() {
-        onView(withId(R.id.confirmTrustWords)).perform(click());
+        confirmAllTrustWords(false);
+        confirmAllTrustWords(true);
+    }
+
+    private void confirmAllTrustWords (boolean longTrustWords) {
+        BySelector selector = By.clazz("android.widget.CheckedTextView");
+        int size = 1;
+        for (int positionToClick = 0; positionToClick < size; positionToClick++) {
+            device.waitForIdle();
+            onView(withId(R.id.tvPep)).perform(click());
+            if (longTrustWords) {
+                device.waitForIdle();
+                testUtils.selectFromMenu(R.string.pep_menu_long_trustwords);
+            }
+            device.waitForIdle();
+            testUtils.selectFromMenu(R.string.settings_language_label);
+            Timber.i("SizePosition es " + positionToClick);
+            Timber.i("Size1 es " + size);
+            size = calculateNewSize(size, selector);
+            Timber.i("Size2 es " + size);
+            device.waitForIdle();
+            selectLanguage(positionToClick, size, selector);
+            getTrustWords();
+            testUtils.pressBack();
+            compareTrustWords();
+        }
+    }
+
+    private  int calculateNewSize(int size, BySelector selector) {
+        while (size <= 1) {
+            device.waitForIdle();
+            size = device.findObjects(selector).size();
+        }
+        return size;
+    }
+
+    private void selectLanguage(int positionToClick, int size, BySelector selector) {
+        do {
+            device.waitForIdle();
+            for (int position = 0; position < size; position++) {
+                if (position == positionToClick) {
+                    while (device.findObjects(selector).size() <= 1){
+                        device.waitForIdle();
+                    }
+                    while (!device.findObjects(selector).get(position).isChecked()) {
+                        device.findObjects(selector).get(position).click();
+                        device.waitForIdle();
+                    }
+                    onView(withId(android.R.id.button1)).perform(click());
+                }
+            }
+        } while (exists(onView(withId(android.R.id.button1))));
+    }
+
+    private void getTrustWords() {
+        while (trustWords == null) {
+            try {
+                device.waitForIdle();
+                trustWords = getTextFromView(onView(withId(R.id.trustwords)));
+            } catch (Exception ex) {
+                Timber.i("Cannot find trustWords: " + ex.getMessage());
+            }
+        }
+    }
+
+    private void compareTrustWords() {
+        UiObject2 wb;
+        boolean webViewLoaded = false;
+        while (!webViewLoaded) {
+            try {
+                device.waitForIdle();
+                wb = device.findObject(By.clazz("android.webkit.WebView"));
+                UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+                scroll.swipe(Direction.UP, 1.0f);
+                String [] trustWordsSplited = trustWords.split("\\s+");
+                String webViewText = "empty";
+                device.waitForIdle();
+                for (String aTrustWordsSplited : trustWordsSplited) {
+                    if (wb.getChildren().get(0).getText().contains(aTrustWordsSplited)) {
+                        webViewText = wb.getChildren().get(0).getText();
+                        webViewLoaded = true;
+                        device.waitForIdle();
+                    } else if (wb.getChildren().get(0).getChildren().get(0).getText().contains(aTrustWordsSplited)) {
+                        webViewText = wb.getChildren().get(0).getChildren().get(0).getText();
+                        webViewLoaded = true;
+                        device.waitForIdle();
+                    }
+                    onView(withId(R.id.message_container)).check(matches(containsText(webViewText, aTrustWordsSplited)));
+                }
+            } catch (Exception ex) {
+                Timber.i("Cannot find webView: " + ex.getMessage());
+            }
+        }
+        device.waitForIdle();
     }
 
     @When("^I reject trust words$")
