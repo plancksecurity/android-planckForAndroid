@@ -642,6 +642,8 @@ public class CucumberTestSteps {
         onView(withId(R.id.tvPep)).perform(click());
         device.waitForIdle();
         trustWords = getTextFromView(onView(withId(R.id.trustwords)));
+        device.pressBack();
+        device.waitForIdle();
     }
 
     @And("^I set timeout to (\\d+) seconds$")
