@@ -221,18 +221,15 @@ public class CucumberTestSteps {
         for (int positionToClick = 0; positionToClick < size; positionToClick++) {
             device.waitForIdle();
             onView(withId(R.id.tvPep)).perform(click());
+            device.waitForIdle();
+            testUtils.selectFromMenu(R.string.settings_language_label);
+            size = calculateNewSize(size, selector);
+            device.waitForIdle();
+            selectLanguage(positionToClick, size, selector);
             if (longTrustWords) {
                 device.waitForIdle();
                 testUtils.selectFromMenu(R.string.pep_menu_long_trustwords);
             }
-            device.waitForIdle();
-            testUtils.selectFromMenu(R.string.settings_language_label);
-            Timber.i("SizePosition es " + positionToClick);
-            Timber.i("Size1 es " + size);
-            size = calculateNewSize(size, selector);
-            Timber.i("Size2 es " + size);
-            device.waitForIdle();
-            selectLanguage(positionToClick, size, selector);
             getTrustWords();
             testUtils.pressBack();
             compareTrustWords();
@@ -288,15 +285,19 @@ public class CucumberTestSteps {
                 String [] trustWordsSplited = trustWords.split("\\s+");
                 String webViewText = "empty";
                 device.waitForIdle();
+                UiObject2 webViewTemporal;
+                boolean childFound = false;
+                webViewTemporal = wb.getChildren().get(0);
                 for (String aTrustWordsSplited : trustWordsSplited) {
-                    if (wb.getChildren().get(0).getText().contains(aTrustWordsSplited)) {
-                        webViewText = wb.getChildren().get(0).getText();
-                        webViewLoaded = true;
-                        device.waitForIdle();
-                    } else if (wb.getChildren().get(0).getChildren().get(0).getText().contains(aTrustWordsSplited)) {
-                        webViewText = wb.getChildren().get(0).getChildren().get(0).getText();
-                        webViewLoaded = true;
-                        device.waitForIdle();
+                    while (!childFound) {
+                        if (webViewTemporal.getText().contains(aTrustWordsSplited)) {
+                            webViewText = webViewTemporal.getText();
+                            webViewLoaded = true;
+                            childFound = true;
+                            device.waitForIdle();
+                        } else {
+                            webViewTemporal = webViewTemporal.getChildren().get(0);
+                        }
                     }
                     onView(withId(R.id.message_container)).check(matches(containsText(webViewText, aTrustWordsSplited)));
                 }
