@@ -583,10 +583,10 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
-    @And("^I open attached file at position (\\d+)$")
-    public void I_open_attached_file_at_position(int position) {
+    @And("^I open attached files$")
+    public void I_open_attached_file_at_position() {
         device.waitForIdle();
-        testUtils.clickAttachedFileAtPosition(position);
+        testUtils.clickAttachedFileAtPosition();
     }
 
     @Then("^I set checkbox (\\S+) to (true|false)$")
