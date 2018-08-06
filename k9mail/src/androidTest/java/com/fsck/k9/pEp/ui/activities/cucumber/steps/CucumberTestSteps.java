@@ -439,10 +439,14 @@ public class CucumberTestSteps {
                 raw = R.raw.testpicture;
                 fileName = "testpicture.png";
         }
-        try {
-            TestUtils.createFile(fileName, raw);
-        } catch (IOException e) {
-            e.printStackTrace();
+        while (true) {
+            try {
+                TestUtils.createFile(fileName, raw);
+                device.waitForIdle();
+                return;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
