@@ -21,6 +21,7 @@ import android.view.KeyEvent;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
+import com.fsck.k9.activity.Accounts;
 import com.fsck.k9.activity.setup.WelcomeMessage;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 import com.fsck.k9.pEp.ui.activities.TestUtils;
@@ -82,7 +83,7 @@ public class CucumberTestSteps {
     private Resources resources;
     private String trustWords;
     @Rule
-    public IntentsTestRule<WelcomeMessage> activityTestRule = new IntentsTestRule<>(WelcomeMessage.class, true, false);
+    public IntentsTestRule<Accounts> activityTestRule = new IntentsTestRule<>(Accounts.class, true, false);
 
     @Before
     public void setup() {
