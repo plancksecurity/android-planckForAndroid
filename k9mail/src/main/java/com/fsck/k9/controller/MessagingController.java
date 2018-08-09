@@ -17,6 +17,7 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.DeletePolicy;
@@ -1779,16 +1780,20 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     org.pEp.jniadapter.Identity sender = createSenderIdentity(account, senderKey);
 
                                     if (containsPrivateOwnKey(result)) {
+                                        Timber.i("ManualImport %s", "Key received");
+                                        Toast.makeText(context, "DETECTED PRIV KEY: " + result.flags, Toast.LENGTH_SHORT).show();
                                         if (ispEpKeyImportMessage(message, result, account, importKeyWizardState)) {
                                             //Received private key -
                                             ((K9) context.getApplicationContext()).disableFastPolling();
                                             if (importKeyController.isStarter()) { // is key to import.
+                                                Toast.makeText(context, "Trying to call setOWN: ::" + sender.fpr + "::", Toast.LENGTH_SHORT).show();
+
                                                 pEpProvider.setOwnIdentity(sender, sender.fpr);
                                                 ImportWizardFrompEp.notifyPrivateKeyImported(context);
                                             }
                                             //Else the key only has to be imported, already done by the engine.
-                                            Timber.i("ManualImport", "Key received and imported:: " + importKeyController.isStarter());
-                                            Timber.i("ManualImport", "Key received and imported:: " + importKeyController.getState().toString());
+                                            Timber.i("ManualImport %s", "Key received and imported:: " + importKeyController.isStarter());
+                                            Timber.i("ManualImport %s", "Key received and imported:: " + importKeyController.getState().toString());
                                             importKeyController.finish();
                                             deleteMessage(message, account, folder, localFolder);
                                         }
@@ -1802,7 +1807,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                                     } else if (isHandshakeRequest(message, result, importKeyWizardState)) {
                                         //Handshake needed
-                                        Log.i("ManualImport", "Detected yellow message aka handshake request");
+                                        Log.i("ManualImport %s", "Detected yellow message aka handshake request");
 
                                         deleteMessage(message, account, folder, localFolder);
                                         Intent handshakeIntent;
