@@ -1781,12 +1781,22 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                                     if (containsPrivateOwnKey(result)) {
                                         Timber.i("ManualImport %s", "Key received");
-                                        Toast.makeText(context, "DETECTED PRIV KEY: " + result.flags, Toast.LENGTH_SHORT).show();
+                                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Toast.makeText(context, "DETECTED PRIV KEY: " + result.flags, Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
                                         if (ispEpKeyImportMessage(message, result, account, importKeyWizardState)) {
                                             //Received private key -
                                             ((K9) context.getApplicationContext()).disableFastPolling();
                                             if (importKeyController.isStarter()) { // is key to import.
-                                                Toast.makeText(context, "Trying to call setOWN: ::" + sender.fpr + "::", Toast.LENGTH_SHORT).show();
+                                                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        Toast.makeText(context, "Trying to call setOWN: ::" + sender.fpr + "::", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
 
                                                 pEpProvider.setOwnIdentity(sender, sender.fpr);
                                                 ImportWizardFrompEp.notifyPrivateKeyImported(context);
