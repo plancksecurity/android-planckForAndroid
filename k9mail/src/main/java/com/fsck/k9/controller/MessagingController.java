@@ -17,7 +17,6 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.DeletePolicy;
@@ -1779,8 +1778,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     Log.i("ManualImport", "Other device message");
                                     org.pEp.jniadapter.Identity sender = createSenderIdentity(account, senderKey);
 
-                                    if (containsPrivateOwnKey(result) && !importKeyWizardState.equals(ImportKeyWizardState.INIT)) {
-                                        Toast.makeText(context, "DETECTED A PRIV KEY", Toast.LENGTH_LONG).show();
+                                    if (containsPrivateOwnKey(result)) {
                                         if (ispEpKeyImportMessage(message, result, account, importKeyWizardState)) {
                                             //Received private key -
                                             ((K9) context.getApplicationContext()).disableFastPolling();
