@@ -77,6 +77,7 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.saveSizeInInt;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.valuesAreEqual;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewWithTextIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static junit.framework.Assert.assertTrue;
@@ -133,6 +134,9 @@ public class TestUtils {
         onView(withId(R.id.account_password)).perform(typeText(getPassword()), closeSoftKeyboard());
         device.waitForIdle();
         onView(withId(R.id.next)).perform(click());
+        if (viewWithTextIsDisplayed(resources.getString(R.string.account_already_exists))) {
+            device.pressBack();
+        }
     }
 
     private void gmailAccount() {
@@ -205,7 +209,7 @@ public class TestUtils {
         assertTrue(currentActivity.getClass().isAssignableFrom(activityClass));
     }
 
-     Activity getCurrentActivity() {
+     public Activity getCurrentActivity() {
 
          final Activity[] resumedActivity = {null};
          getInstrumentation().runOnMainSync(() -> {
@@ -225,6 +229,7 @@ public class TestUtils {
     }
 
     private void createNewAccountWithPermissions(boolean isGmail){
+        try {
             onView(withId(R.id.next)).perform(click());
             device.waitForIdle();
             try {
@@ -268,6 +273,9 @@ public class TestUtils {
             } catch (Exception ex) {
                 Timber.i("Ignored", "Exists account");
             }
+        } catch (Exception ex) {
+            Timber.i("Ignored", "Exists account, failed creating new one");
+        }
     }
 
     private void allowPermissions(){
@@ -511,25 +519,21 @@ public class TestUtils {
         }
     }
 
-    public void clickAttachedFileAtPosition(int position){
+    public void clickAttachedFileAtPosition() {
         BySelector selector = By.clazz("android.widget.FrameLayout");
         int size = device.findObjects(selector).size();
-        intending(not(isInternal()))
-                .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null));
+        /*intending((isInternal()))
+                .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null));*/
         while (size == 0) {
             size = device.findObjects(selector).size();
         }
         UiObject2 uiObject = device.findObject(By.res("security.pEp:id/attachment"));
-        while (true) {
-            for (UiObject2 frameLayout : device.findObjects(selector)) {
-                if (frameLayout.getResourceName().equals(uiObject.getResourceName())) {
-                    position--;
-                    if (position == 0) {
-                        frameLayout.longClick();
-                        device.waitForIdle();
-                        return;
-                    }
-                }
+        for (UiObject2 frameLayout : device.findObjects(selector)) {
+            if (frameLayout.getResourceName().equals(uiObject.getResourceName())) {
+                frameLayout.longClick();
+                device.waitForIdle();
+                device.pressBack();
+                device.waitForIdle();
             }
         }
     }

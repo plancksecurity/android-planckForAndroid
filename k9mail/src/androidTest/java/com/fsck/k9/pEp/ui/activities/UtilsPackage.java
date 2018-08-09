@@ -15,7 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.webkit.WebView;
 import android.widget.Checkable;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -34,6 +33,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFro
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.isA;
 
@@ -365,6 +365,14 @@ public class UtilsPackage {
         onView(withId(viewId)).withFailureHandler((error, viewMatcher) -> isDisplayed[0] = false).check(matches(isDisplayed()));
         return isDisplayed[0];
     }
+
+    static boolean viewWithTextIsDisplayed(String viewText)
+    {
+        final boolean[] isDisplayed = {true};
+        onView(withText(viewText)).withFailureHandler((error, viewMatcher) -> isDisplayed[0] = false).check(matches(isDisplayed()));
+        return isDisplayed[0];
+    }
+
     public static ViewAction setChecked(final boolean checked) {
         return new ViewAction() {
             @Override

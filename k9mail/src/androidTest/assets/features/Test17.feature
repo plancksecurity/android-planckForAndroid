@@ -7,7 +7,7 @@ Feature: Sanity_1.2.1_MailToNewContact
   @login-scenarios
   Scenario: Test Sanity_1.2.1_MailToNewContact
     When I click message compose
-    And I check status is pEpRatingUndefined
+    And I check if the privacy status is pEpRatingUndefined
     Then I press back
     Then I fill messageTo field with unknownuser@mail.es
     And I fill messageSubject field with subjectText
