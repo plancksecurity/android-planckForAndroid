@@ -4,15 +4,9 @@ package com.fsck.k9.pEp.ui.activities.cucumber.steps;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
-import android.os.Environment;
-import android.os.storage.StorageManager;
-import android.os.storage.StorageVolume;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.action.ViewActions;
@@ -34,23 +28,10 @@ import com.fsck.k9.pEp.ui.activities.TestUtils;
 import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -101,8 +82,6 @@ public class CucumberTestSteps {
 
     @Before
     public void setup() {
-        writeToFile("holahola", InstrumentationRegistry.getContext());
-        String file = readFromFile(InstrumentationRegistry.getContext());
         if (testUtils == null) {
             instrumentation = InstrumentationRegistry.getInstrumentation();
             device = UiDevice.getInstance(instrumentation);
@@ -120,85 +99,6 @@ public class CucumberTestSteps {
                 activityTestRule.launchActivity(new Intent());
             }
         }
-    }
-    private void writeToFile(String data,Context context) {
-        File directory = new File(File.separator+"juanfolder/");
-
-        if(!directory.exists())
-            directory.mkdir();
-        File newFile = new File(directory, "test.txt");
-        if(!newFile.exists()){
-            try {
-                newFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        try  {
-            FileOutputStream fOut = new FileOutputStream(newFile);
-            OutputStreamWriter outputWriter=new OutputStreamWriter(fOut);
-            outputWriter.write("Test Document");
-            outputWriter.close();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-    private String readFromFile(Context context) {
-
-        String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
-
-        ClassLoader classLoader = context.getClass().getClassLoader();
-        URL resource = classLoader.getResource("test.txt");
-        File file = new File(resource.getPath());
-
-
-        try {
-            InputStream in = context.getClass().getClassLoader().getResourceAsStream("test.txt");
-            String text = IOUtils.toString(in);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-
-        PackageManager m = context.getPackageManager();
-        String s = context.getPackageName();
-        try {
-            PackageInfo p = m.getPackageInfo(s, 0);
-            s = p.applicationInfo.dataDir;
-            s = context.getFilesDir().getAbsolutePath();
-        } catch (PackageManager.NameNotFoundException e) {
-            Timber.w("yourtag", "Error Package name not found ", e);
-        }
-        String ret = "";
-
-        try {
-            FileInputStream inputStream = new FileInputStream(new File("/home/juan/Documents/python" + "/botlist.java"));
-            //InputStream inputStream = context.openFileInput("/home/juan/Documents/python" + "/botlist.java"); //es 's' en vez de /home...
-
-            if ( inputStream != null ) {
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString = "";
-                StringBuilder stringBuilder = new StringBuilder();
-
-                while ( (receiveString = bufferedReader.readLine()) != null ) {
-                    stringBuilder.append(receiveString);
-                }
-
-                inputStream.close();
-                ret = stringBuilder.toString();
-            }
-        }
-        catch (FileNotFoundException e) {
-            Timber.e("login activity", "File not found: " + e.toString());
-        } catch (IOException e) {
-            Timber.e("login activity", "Can not read file: " + e.toString());
-        } catch (Exception ex) {
-            Timber.e("Error al abrir el archivo: " + ex);
-        }
-
-        return ret;
     }
 
     @After
