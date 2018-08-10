@@ -36,15 +36,17 @@ import android.view.View;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
-import com.fsck.k9.mailstore.util.FileFactory;
 import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 
 import org.pEp.jniadapter.Rating;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -107,6 +109,7 @@ public class TestUtils {
     private int messageListSize[] = new int[2];
 
     public static final int TIMEOUT_TEST = FIVE_MINUTES * MINUTE_IN_SECONDS * SECOND_IN_MILIS;
+    public TestConfig testConfig;
 
     public TestUtils(UiDevice device, Instrumentation instrumentation) {
         this.device = device;
@@ -130,8 +133,8 @@ public class TestUtils {
     }
 
     private void newEmailAccount() {
-        onView(withId(R.id.account_email)).perform(typeText(getEmail()));
-        onView(withId(R.id.account_password)).perform(typeText(getPassword()), closeSoftKeyboard());
+        onView(withId(R.id.account_email)).perform(typeText(getEmail())); // testConfig.getMail()
+        onView(withId(R.id.account_password)).perform(typeText(getPassword()), closeSoftKeyboard()); // testConfig.getPassword()
         device.waitForIdle();
         onView(withId(R.id.next)).perform(click());
         if (viewWithTextIsDisplayed(resources.getString(R.string.account_already_exists))) {
@@ -228,6 +231,52 @@ public class TestUtils {
         getMessageListSize();
     }
 
+    private void readConfigFile() {
+        File directory = new File(Environment.getExternalStorageDirectory().toString());
+
+        File newFile = new File(directory, "test/test_config.txt");
+        testConfig = new TestConfig();
+        try  {
+            FileInputStream fin = new FileInputStream(newFile);
+            InputStreamReader inputStreamReader = new InputStreamReader(fin);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String receiveString;
+            while ( (receiveString = bufferedReader.readLine()) != null ) {
+                String line[] = receiveString.split(" = ");
+                if (line.length > 1) {
+                    switch (line[0]) {
+                        case "mail":
+                            testConfig.setMail(line[1]);
+                            break;
+                        case "password":
+                            testConfig.setPassword(line[1]);
+                            break;
+                        case "username":
+                            testConfig.setUsername(line[1]);
+                            break;
+                        case "imap_server":
+                            testConfig.setImap_server(line[1]);
+                            break;
+                        case "smtp_server":
+                            testConfig.setSmtp_server(line[1]);
+                            break;
+                        case "imap_port":
+                            testConfig.setImap_port(line[1]);
+                            break;
+                        case "smtp_port":
+                            testConfig.setSmtp_port(line[1]);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            fin.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     private void createNewAccountWithPermissions(boolean isGmail){
         try {
             onView(withId(R.id.next)).perform(click());
@@ -258,6 +307,7 @@ public class TestUtils {
                 if (isGmail) {
                     gmailAccount();
                 } else {
+                    readConfigFile();
                     newEmailAccount();
                 }
                 boolean descriptionFilled = false;
@@ -1137,5 +1187,41 @@ public class TestUtils {
         public String getAddress() {
             return address;
         }
+    }
+
+    public static class TestConfig {
+        String mail;
+        String password;
+        String username;
+        String imap_server;
+        String smtp_server;
+        String imap_port;
+        String smtp_port;
+
+        TestConfig(){
+            this.mail = "";
+            this.password = "";
+            this.username = "";
+            this.imap_server = "";
+            this.smtp_server = "";
+            this.imap_port = "";
+            this.smtp_port = "";
+        }
+
+        public void setMail(String mail) { this.mail = mail;}
+        void setPassword(String password) { this.password = password;}
+        void setUsername(String username) { this.username = username;}
+        void setImap_server(String imap_server) { this.imap_server = imap_server;}
+        void setSmtp_server(String smtp_server) { this.smtp_server = smtp_server;}
+        void setImap_port(String imap_port) { this.imap_port = imap_port;}
+        void setSmtp_port(String smtp_port) { this.smtp_port = smtp_port;}
+
+        String getMail() { return mail;}
+        String getPassword() { return password;}
+        String getUsername() { return username;}
+        String getImap_server() { return imap_server;}
+        String getSmtp_server() { return smtp_server;}
+        String getImap_port() { return imap_port;}
+        String getSmtp_port() { return smtp_port;}
     }
 }
