@@ -110,6 +110,7 @@ public class TestUtils {
 
     public static final int TIMEOUT_TEST = FIVE_MINUTES * MINUTE_IN_SECONDS * SECOND_IN_MILIS;
     public TestConfig testConfig;
+    public String botList[];
 
     public TestUtils(UiDevice device, Instrumentation instrumentation) {
         this.device = device;
@@ -277,6 +278,28 @@ public class TestUtils {
         }
     }
 
+    private void readBotList(){
+        File directory = new File(Environment.getExternalStorageDirectory().toString());
+
+        File newFile = new File(directory, "test/botlist.txt");
+        testConfig = new TestConfig();
+        try  {
+            FileInputStream fin = new FileInputStream(newFile);
+            InputStreamReader inputStreamReader = new InputStreamReader(fin);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String receiveString;
+            botList = new String[4];
+            int position = 0;
+            while ( (receiveString = bufferedReader.readLine()) != null ) {
+                botList[position++] = receiveString;
+            }
+            fin.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
     private void createNewAccountWithPermissions(boolean isGmail){
         try {
             onView(withId(R.id.next)).perform(click());
@@ -296,6 +319,8 @@ public class TestUtils {
                 Timber.i("Ignored", "Ignored exception");
             }
             allowPermissions();
+            readBotList();
+            readConfigFile();
             try {
                 device.waitForIdle();
                 onView(withId(R.id.action_continue)).perform(click());
@@ -307,7 +332,6 @@ public class TestUtils {
                 if (isGmail) {
                     gmailAccount();
                 } else {
-                    readConfigFile();
                     newEmailAccount();
                 }
                 boolean descriptionFilled = false;
@@ -324,6 +348,8 @@ public class TestUtils {
                 Timber.i("Ignored", "Exists account");
             }
         } catch (Exception ex) {
+            readBotList();
+            readConfigFile();
             Timber.i("Ignored", "Exists account, failed creating new one");
         }
     }
