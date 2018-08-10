@@ -64,11 +64,10 @@ import static org.hamcrest.CoreMatchers.not;
 @RunWith(AndroidJUnit4.class)
 public class CucumberTestSteps {
 
-    private static final String HOST = "test.pep-security.net";
+    private static final String HOST = "@test.pep-security.net";
 
-    private String bot1 = "";
-    private String bot2 = "";
-    private String bot3 = "";
+    private String bot[];
+
     private String fileName = "";
 
     private UiDevice device;
@@ -90,10 +89,7 @@ public class CucumberTestSteps {
                 testUtils.increaseTimeoutWait();
                 espressoTestingIdlingResource = new EspressoTestingIdlingResource();
                 IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
-                long name = System.currentTimeMillis();
-                bot1 = Long.toString(name++) + "@" + HOST;
-                bot2 = Long.toString(name++) + "@" + HOST;
-                bot3 = Long.toString(name) + "@" + HOST;
+                bot = new String[4];
                 resources = InstrumentationRegistry.getTargetContext().getResources();
                 startTimer(350);
                 activityTestRule.launchActivity(new Intent());
@@ -110,6 +106,7 @@ public class CucumberTestSteps {
     @When(value = "^I create an account$")
     public void I_create_account() {
         testUtils.createAccount(false);
+        bot = testUtils.botList;
     }
 
 
@@ -135,15 +132,19 @@ public class CucumberTestSteps {
                 break;
             case "bot1":
                 Timber.i("Filling message to bot1");
-                cucumberMessageTo = bot1;
+                cucumberMessageTo = bot[0] + HOST;
                 break;
             case "bot2":
                 Timber.i("Filling message to bot2");
-                cucumberMessageTo = bot2;
+                cucumberMessageTo = bot[1] + HOST;
                 break;
             case "bot3":
                 Timber.i("Filling message to bot3");
-                cucumberMessageTo = bot3;
+                cucumberMessageTo = bot[2] + HOST;
+                break;
+            case "bot4":
+                Timber.i("Filling message to bot4");
+                cucumberMessageTo = bot[3] + HOST;
                 break;
         }
         cucumberMessageTo = cucumberMessageTo + ",";
@@ -479,15 +480,17 @@ public class CucumberTestSteps {
         String messageTo = "nothing";
         switch (botName){
             case "bot1":
-                messageTo = bot1;
+                messageTo = bot[0] + HOST;
                 break;
             case "bot2":
-                messageTo = bot2;
+                messageTo = bot[1] + HOST;
                 break;
             case "bot3":
-                messageTo = bot3;
+                messageTo = bot[2] + HOST;
                 break;
-
+            case "bot4":
+                messageTo = bot[3] + HOST;
+                break;
         }
         device.waitForIdle();
         for (int message = 0; message < totalMessages; message++) {
