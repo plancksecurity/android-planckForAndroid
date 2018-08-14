@@ -50,6 +50,7 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.isInternal;
+import static android.support.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containsText;
@@ -323,7 +324,13 @@ public class CucumberTestSteps {
 
     @When("^I check in the handshake dialog if the privacy status is (\\S+)$")
     public void I_check_pEp_status(String status) {
-        int statusRating = 0;
+        checkPrivacyStatus(status);
+        device.waitForIdle();
+        I_press_back();
+    }
+
+    void checkPrivacyStatus(String status){
+        int statusRating = -10;
         device.waitForIdle();
         switch (status){
             case "pEpRatingUndefined":
@@ -366,9 +373,11 @@ public class CucumberTestSteps {
                 statusRating = -3;
                 break;
         }
-        testUtils.assertMessageStatus(statusRating);
-        device.waitForIdle();
-        I_press_back();
+        if (statusRating != -10) {
+            testUtils.assertMessageStatus(statusRating);
+        } else {
+            testUtils.checkToolbarColor(testUtils.colorToID(status));
+        }
     }
 
     @And("^I select from message menu (\\S+)$")
@@ -573,7 +582,7 @@ public class CucumberTestSteps {
 
     @Then("^I check if the privacy status is (\\S+)$")
     public void I_check_toolBar_color_is(String color){
-        testUtils.checkToolbarColor(testUtils.colorToID(color));
+        checkPrivacyStatus(color);
     }
 
     @And("^I go back to message compose$")
