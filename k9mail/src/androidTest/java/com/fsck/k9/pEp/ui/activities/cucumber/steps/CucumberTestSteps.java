@@ -120,11 +120,19 @@ public class CucumberTestSteps {
             case "empty":
                 cucumberMessageTo = ",";
                 device.waitForIdle();
-                while (!hasValueEqualTo(onView(withId(R.id.to)), " ")) {
+                while (!(hasValueEqualTo(onView(withId(R.id.to)), " ")
+                        || hasValueEqualTo(onView(withId(R.id.to)), ""))) {
                     try {
                         device.waitForIdle();
                         waitUntilIdle();
-                        onView(withId(R.id.to)).perform(typeText(" "), closeSoftKeyboard());
+                        onView(withId(R.id.to)).perform(click());
+                        onView(withId(R.id.to)).perform(setTextInTextView(" "));
+                        device.waitForIdle();
+                        waitUntilIdle();
+                        device.waitForIdle();
+                        onView(withId(R.id.to)).perform(typeText(","));
+                        device.pressKeyCode(KeyEvent.KEYCODE_DEL);
+                        device.waitForIdle();
                         device.waitForIdle();
                     } catch (Exception ex) {
                         Timber.i("Can not remove field 'to'");
@@ -177,16 +185,34 @@ public class CucumberTestSteps {
     public void I_fill_subject_field(String cucumberSubject) {
         cucumberSubject = ifEmptyString(cucumberSubject);
         device.waitForIdle();
-        onView(withId(R.id.subject)).perform(click());
-        onView(withId(R.id.subject)).perform(typeText(cucumberSubject), closeSoftKeyboard());
+        boolean filled = false;
+        while (!filled) {
+            try {
+                onView(withId(R.id.subject)).perform(click());
+                onView(withId(R.id.subject)).perform(closeSoftKeyboard());
+                onView(withId(R.id.subject)).perform(typeText(cucumberSubject), closeSoftKeyboard());
+                filled = true;
+            } catch (Exception ex) {
+                Timber.i("Cannot find messageSubject field");
+            }
+        }
     }
 
     @When("^I fill messageBody field with (\\S+)")
     public void I_fill_body_field(String cucumberBody) {
         cucumberBody = ifEmptyString(cucumberBody);
         device.waitForIdle();
-        onView(withId(R.id.message_content)).perform(click());
-        onView(withId(R.id.message_content)).perform(typeText(cucumberBody), closeSoftKeyboard());
+        boolean filled = false;
+        while (!filled) {
+            try {
+                onView(withId(R.id.message_content)).perform(click());
+                onView(withId(R.id.message_content)).perform(closeSoftKeyboard());
+                onView(withId(R.id.message_content)).perform(typeText(cucumberBody), closeSoftKeyboard());
+                filled = true;
+            } catch (Exception ex) {
+                Timber.i("Cannot find messageBody field");
+            }
+        }
     }
 
     @When("^I compare messageBody with (\\S+)")
