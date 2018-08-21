@@ -134,8 +134,8 @@ public class TestUtils {
     }
 
     private void newEmailAccount() {
-        onView(withId(R.id.account_email)).perform(typeText(getEmail())); // testConfig.getMail()
-        onView(withId(R.id.account_password)).perform(typeText(getPassword()), closeSoftKeyboard()); // testConfig.getPassword()
+        onView(withId(R.id.account_email)).perform(typeText(testConfig.getMail())); // getEmail()
+        onView(withId(R.id.account_password)).perform(typeText(testConfig.getPassword()), closeSoftKeyboard()); // getPassword()
         device.waitForIdle();
         onView(withId(R.id.next)).perform(click());
         if (viewWithTextIsDisplayed(resources.getString(R.string.account_already_exists))) {
@@ -278,7 +278,7 @@ public class TestUtils {
         }
     }
 
-    private void readBotList(){
+    public void readBotList(){
         File directory = new File(Environment.getExternalStorageDirectory().toString());
 
         File newFile = new File(directory, "test/botlist.txt");
@@ -319,7 +319,6 @@ public class TestUtils {
                 Timber.i("Ignored", "Ignored exception");
             }
             allowPermissions();
-            readBotList();
             readConfigFile();
             try {
                 device.waitForIdle();
@@ -348,7 +347,6 @@ public class TestUtils {
                 Timber.i("Ignored", "Exists account");
             }
         } catch (Exception ex) {
-            readBotList();
             readConfigFile();
             Timber.i("Ignored", "Exists account, failed creating new one");
         }
@@ -614,7 +612,7 @@ public class TestUtils {
         }
     }
 
-    private void longClick(String viewId) {
+    public void longClick(String viewId) {
         UiObject2 list = device.findObject(By.res(APP_ID, viewId));
         Rect bounds = list.getVisibleBounds();
         device.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 450);
@@ -918,6 +916,7 @@ public class TestUtils {
 
     public void clickLastMessageReceived() {
         boolean messageClicked = false;
+        waitForNewMessage();
         while (!messageClicked){
             device.waitForIdle();
             if (!viewIsDisplayed(R.id.reply_message)) {
