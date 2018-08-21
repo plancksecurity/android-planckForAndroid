@@ -46,17 +46,20 @@ import timber.log.Timber;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.isInternal;
 import static android.support.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containsText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.hasValueEqualTo;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.setTextInTextView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
@@ -473,8 +476,26 @@ public class CucumberTestSteps {
 
     @When("^I click message compose")
     public void I_click_message_compose() {
-        testUtils.composeMessageButton();
-        device.waitForIdle();
+        boolean messageComposeClicked = false;
+        Activity currentActivity = testUtils.getCurrentActivity();
+        while (!messageComposeClicked) {
+            try {
+                device.waitForIdle();
+                onView(withId(R.id.accounts_list)).check(matches(isDisplayed()));
+                device.waitForIdle();
+                onView(withId(R.id.accounts_list)).perform(click());
+                testUtils.composeMessageButton();
+                device.waitForIdle();
+                messageComposeClicked = true;
+            } catch (Exception ex) {
+                while (currentActivity == testUtils.getCurrentActivity()) {
+                    testUtils.pressBack();
+                    device.waitForIdle();
+                    Timber.i("View not found, pressBack to previous activity: " + ex);
+                }
+            }
+            currentActivity = testUtils.getCurrentActivity();
+        }
     }
 
     @And("^I click view (\\S+)$")
@@ -486,6 +507,8 @@ public class CucumberTestSteps {
 
     @Then("^I send (\\d+) (?:message|messages) to (\\S+) with subject (\\S+) and body (\\S+)$")
     public void I_send_messages_to_bot(int totalMessages,String botName, String subject, String body) {
+        testUtils.readBotList();
+        bot = testUtils.botList;
         String messageTo = "nothing";
         switch (botName){
             case "bot1":
