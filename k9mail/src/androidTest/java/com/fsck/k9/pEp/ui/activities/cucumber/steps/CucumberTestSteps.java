@@ -497,7 +497,9 @@ public class CucumberTestSteps {
 
     @Then("^I click send message button$")
     public void I_click_send_message_button() {
-        testUtils.clickView(R.id.send);
+        while (exists(onView(withId(R.id.send)))) {
+            testUtils.clickView(R.id.send);
+        }
     }
 
     @When("^I click message compose")
