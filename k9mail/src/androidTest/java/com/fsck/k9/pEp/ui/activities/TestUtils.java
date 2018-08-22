@@ -658,10 +658,10 @@ public class TestUtils {
                 doWaitForResource(R.id.pEpTitle);
                 device.waitForIdle();
             }
-            onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
         } else {
             clickView(R.id.tvPep);
         }
+        onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
     }
 
     public void goBackAndSaveAsDraft (IntentsTestRule activity){
