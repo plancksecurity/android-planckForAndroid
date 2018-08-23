@@ -32,6 +32,7 @@ import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 
 import com.fsck.k9.BuildConfig;
@@ -76,6 +77,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static android.support.test.runner.lifecycle.Stage.RESUMED;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.hasValueEqualTo;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.saveSizeInInt;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.valuesAreEqual;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
@@ -616,6 +618,27 @@ public class TestUtils {
         UiObject2 list = device.findObject(By.res(APP_ID, viewId));
         Rect bounds = list.getVisibleBounds();
         device.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 450);
+    }
+
+    public void removeTextFromTextView(String viewId) {
+        device.waitForIdle();
+        int view = intToID(viewId);
+        onView(withId(view)).perform(closeSoftKeyboard());
+        onView(withId(view)).perform(click());
+        UiObject2 list = device.findObject(By.res(APP_ID, viewId));
+        Rect bounds = list.getVisibleBounds();
+        device.click(bounds.left - 1, bounds.centerY());
+        while (!(hasValueEqualTo(onView(withId(view)), " ")
+                || hasValueEqualTo(onView(withId(view)), ""))) {
+            try {
+                device.waitForIdle();
+                device.waitForIdle();device.pressKeyCode(KeyEvent.KEYCODE_DEL);
+                device.waitForIdle();device.pressKeyCode(KeyEvent.KEYCODE_DEL);
+                device.waitForIdle();
+            } catch (Exception ex) {
+                Timber.i("Cannot remove text from field " + viewId + ": " + ex.getMessage());
+            }
+        }
     }
 
     public void testStatusEmpty() {
