@@ -333,6 +333,20 @@ public class CucumberTestSteps {
     void checkPrivacyStatus(String status){
         int statusRating = -10;
         device.waitForIdle();
+        waitUntilIdle();
+        BySelector selector = By.clazz("android.widget.ScrollView");
+            for (UiObject2 object : device.findObjects(selector)) {
+                boolean actionPerformed = false;
+                while (!actionPerformed) {
+                    try {
+                        object.swipe(Direction.DOWN, 1);
+                        actionPerformed = true;
+                    } catch (Exception ex) {
+                        Timber.i("Couldn't swipe down view: " + ex.getMessage());
+                    }
+                }
+            }
+        onView(withId(R.id.to)).perform(typeText(","),closeSoftKeyboard());
         switch (status){
             case "pEpRatingUndefined":
                 statusRating = 0;
