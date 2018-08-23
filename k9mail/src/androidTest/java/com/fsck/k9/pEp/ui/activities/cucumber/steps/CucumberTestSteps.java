@@ -46,12 +46,11 @@ import timber.log.Timber;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.replaceText;
+import static android.support.test.espresso.action.ViewActions.swipeDown;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.isInternal;
-import static android.support.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
@@ -59,7 +58,6 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containsText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.hasValueEqualTo;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.setTextInTextView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
@@ -118,26 +116,8 @@ public class CucumberTestSteps {
     public void I_fill_messageTo_field(String cucumberMessageTo) {
         switch (cucumberMessageTo) {
             case "empty":
-                cucumberMessageTo = ",";
-                device.waitForIdle();
-                while (!(hasValueEqualTo(onView(withId(R.id.to)), " ")
-                        || hasValueEqualTo(onView(withId(R.id.to)), ""))) {
-                    try {
-                        device.waitForIdle();
-                        waitUntilIdle();
-                        onView(withId(R.id.to)).perform(click());
-                        onView(withId(R.id.to)).perform(setTextInTextView(" "));
-                        device.waitForIdle();
-                        waitUntilIdle();
-                        device.waitForIdle();
-                        onView(withId(R.id.to)).perform(typeText(","));
-                        device.pressKeyCode(KeyEvent.KEYCODE_DEL);
-                        device.waitForIdle();
-                        device.waitForIdle();
-                    } catch (Exception ex) {
-                        Timber.i("Can not remove field 'to'");
-                    }
-                }
+                cucumberMessageTo = " ";
+                testUtils.removeTextFromTextView("to");
                 break;
             case "myself":
                 cucumberMessageTo = testUtils.getTextFromTextViewThatContainsText("@");
@@ -160,61 +140,53 @@ public class CucumberTestSteps {
                 break;
         }
         cucumberMessageTo = cucumberMessageTo + ",";
-        if (!getTextFromView(onView(withId(R.id.to))).equals("") || !getTextFromView(onView(withId(R.id.to))).equals(" ")) {
-            fillMessage(cucumberMessageTo);
+        if (!(getTextFromView(onView(withId(R.id.to))).equals("") || getTextFromView(onView(withId(R.id.to))).equals(" "))) {
+            try {
+                fillMessage(cucumberMessageTo);
+            } catch (Exception ex) {
+                Timber.i("Couldn't fill message: " + ex.getMessage());
+            }
         } else {
-            device.waitForIdle();
-            onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
-            device.waitForIdle();
-            onView(withId(R.id.to)).perform(typeText(cucumberMessageTo), closeSoftKeyboard());
-            device.waitForIdle();
-            onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
-            device.waitForIdle();
-            onView(withId(R.id.message_content)).perform(typeText(" "), closeSoftKeyboard());
+            try {
+                device.waitForIdle();
+                onView(withId(R.id.to)).perform(typeText(cucumberMessageTo), closeSoftKeyboard());
+                device.waitForIdle();
+            } catch (Exception ex) {
+                Timber.i("Couldn't find view: " + ex.getMessage());
+            }
         }
-    }
-
-    private String ifEmptyString(String name){
-        if (name.equals("empty")){
-            name = " ";
-        }
-        return name;
     }
 
     @When("^I fill messageSubject field with (\\S+)")
     public void I_fill_subject_field(String cucumberSubject) {
-        cucumberSubject = ifEmptyString(cucumberSubject);
-        device.waitForIdle();
-        boolean filled = false;
-        while (!filled) {
-            try {
-                onView(withId(R.id.subject)).perform(click());
-                onView(withId(R.id.subject)).perform(closeSoftKeyboard());
-                onView(withId(R.id.subject)).perform(typeText(cucumberSubject), closeSoftKeyboard());
-                filled = true;
-            } catch (Exception ex) {
-                Timber.i("Cannot find messageSubject field");
-            }
-        }
+        textViewEditor(cucumberSubject,"subject");
     }
 
     @When("^I fill messageBody field with (\\S+)")
     public void I_fill_body_field(String cucumberBody) {
-        cucumberBody = ifEmptyString(cucumberBody);
-        device.waitForIdle();
-        boolean filled = false;
-        while (!filled) {
-            try {
-                onView(withId(R.id.message_content)).perform(click());
-                onView(withId(R.id.message_content)).perform(closeSoftKeyboard());
-                onView(withId(R.id.message_content)).perform(typeText(cucumberBody), closeSoftKeyboard());
-                filled = true;
-            } catch (Exception ex) {
-                Timber.i("Cannot find messageBody field");
-            }
-        }
+        textViewEditor(cucumberBody, "message_content");
     }
 
+    private void textViewEditor (String text, String viewName) {
+        int viewId = testUtils.intToID(viewName);
+        device.waitForIdle();
+        boolean filled = false;
+        if (!text.equals("empty")) {
+            while (!filled) {
+                try {
+                    onView(withId(viewId)).perform(click());
+                    onView(withId(viewId)).perform(closeSoftKeyboard());
+                    onView(withId(viewId)).perform(typeText(text), closeSoftKeyboard());
+                    filled = true;
+                    onView(withId(viewId)).perform(closeSoftKeyboard());
+                } catch (Exception ex) {
+                    Timber.i("Cannot find messageSubject field");
+                }
+            }
+        } else {
+            testUtils.removeTextFromTextView(viewName);
+        }
+    }
     @When("^I compare messageBody with (\\S+)")
     public void I_compare_body(String cucumberBody) {
         boolean viewExists = false;
