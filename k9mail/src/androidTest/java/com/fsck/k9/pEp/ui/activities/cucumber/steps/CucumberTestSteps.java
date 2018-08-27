@@ -274,7 +274,7 @@ public class CucumberTestSteps {
         }
     }
 
-    private void compareTextWithWebViewText(String [] trustWordsSplited) {
+    private void compareTextWithWebViewText(String [] arrayToCompare) {
         UiObject2 wb;
         boolean webViewLoaded = false;
         while (!webViewLoaded) {
@@ -288,9 +288,9 @@ public class CucumberTestSteps {
                 UiObject2 webViewTemporal;
                 boolean childFound = false;
                 webViewTemporal = wb.getChildren().get(0);
-                for (String aTrustWordsSplited : trustWordsSplited) {
+                for (String textToCompare : arrayToCompare) {
                     while (!childFound) {
-                        if (webViewTemporal.getText().contains(aTrustWordsSplited)) {
+                        if (webViewTemporal.getText().contains(textToCompare)) {
                             webViewText = webViewTemporal.getText();
                             webViewLoaded = true;
                             childFound = true;
@@ -299,7 +299,7 @@ public class CucumberTestSteps {
                             webViewTemporal = webViewTemporal.getChildren().get(0);
                         }
                     }
-                    onView(withId(R.id.message_container)).check(matches(containsText(webViewText, aTrustWordsSplited)));
+                    onView(withId(R.id.message_container)).check(matches(containsText(webViewText, textToCompare)));
                 }
             } catch (Exception ex) {
                 Timber.i("Cannot find webView: " + ex.getMessage());
