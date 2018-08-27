@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Callable;
 
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -313,6 +314,11 @@ public class CucumberTestSteps {
         onView(withId(R.id.wrongTrustwords)).perform(click());
     }
 
+    @When("^I click confirm trust words$")
+    public void I_click_confirm_trust_words() {
+        onView(withId(R.id.confirmTrustWords)).perform(click());
+    }
+
     @When("^I stop trusting$")
     public void I_untrust_trust_words() {
         testUtils.clickMessageStatus();
@@ -487,17 +493,29 @@ public class CucumberTestSteps {
 
     @When("^I click message compose")
     public void I_click_message_compose() {
-        boolean messageComposeClicked = false;
+        startTest(() -> {
+            composeMessageButtonTestStarter();
+                    return null;
+                }
+        );
+    }
+
+    private void composeMessageButtonTestStarter (){
+        testUtils.composeMessageButton();
+    }
+
+    private void startTest(Callable<Void> methodParam) {
+        boolean methodFinished = false;
         Activity currentActivity = testUtils.getCurrentActivity();
-        while (!messageComposeClicked) {
+        while (!methodFinished) {
             try {
                 device.waitForIdle();
                 onView(withId(R.id.accounts_list)).check(matches(isDisplayed()));
                 device.waitForIdle();
                 onView(withId(R.id.accounts_list)).perform(click());
-                testUtils.composeMessageButton();
                 device.waitForIdle();
-                messageComposeClicked = true;
+                methodParam.call();
+                methodFinished = true;
             } catch (Exception ex) {
                 while (currentActivity == testUtils.getCurrentActivity()) {
                     testUtils.pressBack();
