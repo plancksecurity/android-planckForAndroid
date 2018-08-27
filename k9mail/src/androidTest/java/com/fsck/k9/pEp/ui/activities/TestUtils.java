@@ -1037,10 +1037,11 @@ public class TestUtils {
 
     public void clickFirstMessage(){
         boolean firstMessageClicked = false;
+        device.waitForIdle();
+        doWaitForResource(R.id.message_list);
         while (!firstMessageClicked){
             try{
                 if(viewIsDisplayed(R.id.message_list)) {
-                    doWaitForResource(R.id.message_list);
                     doWaitForIdlingListViewResource(R.id.message_list);
                     device.waitForIdle();
                     swipeDownMessageList();
@@ -1055,6 +1056,10 @@ public class TestUtils {
                         device.waitForIdle();
                     }
                     if (!viewIsDisplayed(R.id.message_list)) {
+                        firstMessageClicked = true;
+                    }
+                } else {
+                    if (!exists(onView(withId(R.id.message_list)))) {
                         firstMessageClicked = true;
                     }
                 }
