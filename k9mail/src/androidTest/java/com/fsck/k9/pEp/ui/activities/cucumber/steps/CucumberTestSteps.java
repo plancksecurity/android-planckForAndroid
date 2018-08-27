@@ -187,6 +187,7 @@ public class CucumberTestSteps {
             testUtils.removeTextFromTextView(viewName);
         }
     }
+
     @When("^I compare messageBody with (\\S+)")
     public void I_compare_body(String cucumberBody) {
         boolean viewExists = false;
@@ -194,14 +195,10 @@ public class CucumberTestSteps {
         while (!viewExists) {
             device.waitForIdle();
             if (exists(onView(withId(R.id.message_container)))) {
-                try {
-                    if (!testUtils.textExistsOnScreen(cucumberBody)) {
-                        Timber.e("Body doesn't have " + cucumberBody + " text");
-                    }
-                    viewExists = true;
-                } catch (Exception ex) {
-                    Timber.i("Body doesn't exist");
-                }
+                String [] body = new String[1];
+                body[0] = cucumberBody;
+                compareTextWithWebViewText(body);
+                viewExists = true;
             }
         }
     }
@@ -235,7 +232,8 @@ public class CucumberTestSteps {
             }
             getTrustWords();
             testUtils.pressBack();
-            compareTrustWords();
+            String []trustWordsSplited = trustWords.split("\\s+");
+            compareTextWithWebViewText(trustWordsSplited);
         }
     }
 
@@ -276,7 +274,7 @@ public class CucumberTestSteps {
         }
     }
 
-    private void compareTrustWords() {
+    private void compareTextWithWebViewText(String [] trustWordsSplited) {
         UiObject2 wb;
         boolean webViewLoaded = false;
         while (!webViewLoaded) {
@@ -285,7 +283,6 @@ public class CucumberTestSteps {
                 wb = device.findObject(By.clazz("android.webkit.WebView"));
                 UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
                 scroll.swipe(Direction.UP, 1.0f);
-                String [] trustWordsSplited = trustWords.split("\\s+");
                 String webViewText = "empty";
                 device.waitForIdle();
                 UiObject2 webViewTemporal;
