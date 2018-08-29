@@ -1004,10 +1004,10 @@ public class TestUtils {
         getMessageListSize();
     }
 
-    private void getMessageListSize(){
+    public void getMessageListSize(){
         onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));}
 
-    private void swipeDownMessageList(){
+    public void swipeDownMessageList(){
         boolean actionPerformed = false;
         while (!actionPerformed) {
             try {
