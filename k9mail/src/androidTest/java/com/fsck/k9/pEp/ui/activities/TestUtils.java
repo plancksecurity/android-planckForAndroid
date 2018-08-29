@@ -942,8 +942,12 @@ public class TestUtils {
     }
 
     public void clickLastMessageReceived() {
+        Timber.i("MessageList antes: " + messageListSize[0] + " " + messageListSize[1]);
         boolean messageClicked = false;
-        waitForNewMessage();
+        if (messageListSize[0] > messageListSize [1]) {
+            waitForNewMessage();
+        }
+        Timber.i("MessageList despues: " + messageListSize[0] + " " + messageListSize[1]);
         while (!messageClicked){
             device.waitForIdle();
             if (!viewIsDisplayed(R.id.reply_message)) {
