@@ -1,11 +1,12 @@
 Feature: Sanity Test
 
   Background:
-    Given I set timeout to 50000 seconds
+    Given I set timeout to 500000 seconds
+    Given I create an account
+    Given I start test
 
   @login-scenarios
   Scenario: Test Sanity_1.2.1_MailToNewContact
-    Given I create an account
     When I click message compose
     And I check if the privacy status is pEpRatingUndefined
     Then I press back
@@ -24,7 +25,7 @@ Feature: Sanity Test
     And I click send message button
     And I go to sent folder
     And I click first message
-    Then I compare messageBody with bodyText
+    Then I compare messageBody with empty
 
   @login-scenarios
   Scenario: Test Sanity_1.2.2_MailToSecondNewContact
@@ -35,6 +36,7 @@ Feature: Sanity Test
     And I fill messageBody field with bodyText
     And I check in the handshake dialog if the privacy status is pEpRatingUnencrypted
     And I click send message button
+    And I wait for new message
 
   @login-scenarios
   Scenario: Test Sanity_1.2.3_MailFromNewContactEncrypted
