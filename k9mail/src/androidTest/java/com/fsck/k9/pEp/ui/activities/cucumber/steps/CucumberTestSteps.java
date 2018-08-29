@@ -354,7 +354,11 @@ public class CucumberTestSteps {
                     }
                 }
             }
-        onView(withId(R.id.to)).perform(typeText(","),closeSoftKeyboard());
+            try {
+                onView(withId(R.id.to)).perform(typeText(","), closeSoftKeyboard());
+            } catch (Exception ex) {
+                Timber.i("Cannot find field to");
+            }
         switch (status){
             case "pEpRatingUndefined":
                 statusRating = 0;
