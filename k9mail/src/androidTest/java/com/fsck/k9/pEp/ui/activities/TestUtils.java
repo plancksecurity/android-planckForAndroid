@@ -577,6 +577,10 @@ public class TestUtils {
         while (!finish){
             if (device.findObject(By.clazz(object)) != null) {
                 finish = true;
+            } else {
+                device.waitForIdle();
+                device.pressBack();
+                device.waitForIdle();
             }
         }
     }
