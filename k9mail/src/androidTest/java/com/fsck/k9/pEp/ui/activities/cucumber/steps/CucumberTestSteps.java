@@ -640,6 +640,12 @@ public class CucumberTestSteps {
 
     @Then("^I check if the privacy status is (\\S+)$")
     public void I_check_toolBar_color_is(String color){
+        try {
+            onView(withId(R.id.to)).perform(click());
+            onView(withId(R.id.subject)).perform(click());
+        } catch (Exception ex) {
+            Timber.i("Couldn't find view");
+        }
         checkPrivacyStatus(color);
     }
 
