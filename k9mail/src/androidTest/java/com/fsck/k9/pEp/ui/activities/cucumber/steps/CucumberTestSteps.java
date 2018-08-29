@@ -194,6 +194,9 @@ public class CucumberTestSteps {
     @When("^I compare messageBody with (\\S+)")
     public void I_compare_body(String cucumberBody) {
         boolean viewExists = false;
+        if (cucumberBody.equals("empty")) {
+            cucumberBody = "";
+        }
         testUtils.doWaitForResource(R.id.message_container);
         while (!viewExists) {
             device.waitForIdle();
