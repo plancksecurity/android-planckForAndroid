@@ -183,7 +183,7 @@ public class CucumberTestSteps {
                     filled = true;
                     onView(withId(viewId)).perform(closeSoftKeyboard());
                 } catch (Exception ex) {
-                    Timber.i("Cannot find messageSubject field");
+                    onView(withId(viewId)).perform(closeSoftKeyboard());
                 }
             }
         } else {
