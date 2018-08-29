@@ -108,7 +108,9 @@ public class CucumberTestSteps {
 
     @When(value = "^I create an account$")
     public void I_create_account() {
-        testUtils.createAccount(false);
+        if (!exists(onView(withId(R.id.message_list)))) {
+            testUtils.createAccount(false);
+        }
         bot = testUtils.botList;
     }
 
