@@ -502,18 +502,11 @@ public class CucumberTestSteps {
 
     @When("^I click message compose")
     public void I_click_message_compose() {
-        startTest(() -> {
-            composeMessageButtonTestStarter();
-                    return null;
-                }
-        );
-    }
-
-    private void composeMessageButtonTestStarter (){
         testUtils.composeMessageButton();
     }
 
-    private void startTest(Callable<Void> methodParam) {
+    @When("^I start test")
+    public void startTest() {
         boolean methodFinished = false;
         Activity currentActivity = testUtils.getCurrentActivity();
         while (!methodFinished) {
@@ -523,8 +516,12 @@ public class CucumberTestSteps {
                 device.waitForIdle();
                 onView(withId(R.id.accounts_list)).perform(click());
                 device.waitForIdle();
-                methodParam.call();
-                methodFinished = true;
+                if (exists(onView(withId(R.id.message_list)))) {
+                    testUtils.swipeDownMessageList();
+                    device.waitForIdle();
+                    testUtils.getMessageListSize();
+                    methodFinished = true;
+                }
             } catch (Exception ex) {
                 while (currentActivity == testUtils.getCurrentActivity()) {
                     testUtils.pressBack();
