@@ -37,7 +37,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
     private Account mAccount;
 
     private Button mDoneButton;
-    private CheckBox pepSyncAccount;
+    //private CheckBox pepSyncAccount;
     private PePUIArtefactCache pePUIArtefactCache;
 
     public static void actionSetNames(Context context, Account account) {
@@ -57,7 +57,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
 
         mDescription = (EditText)findViewById(R.id.account_description);
         mName = (EditText)findViewById(R.id.account_name);
-        pepSyncAccount = (CheckBox)findViewById(R.id.pep_enable_sync_account);
+        //pepSyncAccount = (CheckBox)findViewById(R.id.pep_enable_sync_account);
         mDoneButton = (Button)findViewById(R.id.done);
         mDoneButton.setOnClickListener(this);
 
@@ -92,9 +92,9 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
             mDoneButton.setEnabled(false);
         }
 
-        if (!BuildConfig.WITH_KEY_SYNC) {
+       /* if (!BuildConfig.WITH_KEY_SYNC) {
             pepSyncAccount.setVisibility(View.GONE);
-        }
+        }*/
 
         pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
         pePUIArtefactCache.removeCredentialsInPreferences();
@@ -129,7 +129,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
             mAccount.setDescription(mDescription.getText().toString());
         }
         mAccount.setName(mName.getText().toString());
-        mAccount.setPEpSyncAccount(pepSyncAccount.isChecked());
+      //  mAccount.setPEpSyncAccount(pepSyncAccount.isChecked());
         mAccount.save(Preferences.getPreferences(this));
         new pEpGenerateAccountKeysTask().execute();
     }

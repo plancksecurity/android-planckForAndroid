@@ -190,7 +190,7 @@ public class AccountSettings extends K9PreferenceActivity {
 
     private CheckBoxPreference pEpSaveEncrypted;
     private CheckBoxPreference pEpDisablePrivacyProtection;
-    private CheckBoxPreference mPEpSyncAccount;
+    //private CheckBoxPreference mPEpSyncAccount;
     private Preference mPepExtraKeys;
 
     private PreferenceScreen searchScreen;
@@ -755,15 +755,15 @@ public class AccountSettings extends K9PreferenceActivity {
         pEpDisablePrivacyProtection = (CheckBoxPreference) findPreference(PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION);
         pEpDisablePrivacyProtection.setChecked(account.ispEpPrivacyProtected());
 
-        mPEpSyncAccount = (CheckBoxPreference) findPreference(PEP_ENABLE_SYNC_ACCOUNT);
+        //mPEpSyncAccount = (CheckBoxPreference) findPreference(PEP_ENABLE_SYNC_ACCOUNT);
         mPepExtraKeys = findPreference(PEP_EXTRA_KEYS);
 
-        if (BuildConfig.WITH_KEY_SYNC) {
+        /*if (BuildConfig.WITH_KEY_SYNC) {
             mPEpSyncAccount.setChecked(account.isPepSyncEnabled());
         } else {
             mPEpSyncAccount.setChecked(false);
             mPEpSyncAccount.setEnabled(false);
-        }
+        }*/
 
         boolean ispEpSyncEnabled = ((K9) getApplication()).ispEpSyncEnabled();
 
@@ -773,16 +773,16 @@ public class AccountSettings extends K9PreferenceActivity {
                 final boolean value = (Boolean) newValue;
                 if (!value) {
                     pEpSaveEncrypted.setChecked(false);
-                    mPEpSyncAccount.setEnabled(false);
+                    //mPEpSyncAccount.setEnabled(false);
                     if (!ispEpSyncEnabled) {
-                        mPEpSyncAccount.setChecked(false);
+                      //  mPEpSyncAccount.setChecked(false);
                     }
                 } else {
                     pEpSaveEncrypted.setChecked(true);
-                    if (BuildConfig.WITH_KEY_SYNC) {
-                        mPEpSyncAccount.setChecked(true);
-                        mPEpSyncAccount.setEnabled(true);
-                    }
+                    //if (BuildConfig.WITH_KEY_SYNC) {
+                       // mPEpSyncAccount.setChecked(true);
+                       // mPEpSyncAccount.setEnabled(true);
+                    //}
                 }
                 //mPEpSyncAccount.setEnabled(ispEpSyncEnabled && BuildConfig.WITH_KEY_SYNC);
                 return true;
@@ -791,10 +791,10 @@ public class AccountSettings extends K9PreferenceActivity {
 
         if (!pEpDisablePrivacyProtection.isChecked()) {
             pEpSaveEncrypted.setEnabled(false);
-            mPEpSyncAccount.setEnabled(false);
+          //  mPEpSyncAccount.setEnabled(false);
         }
 
-        mPEpSyncAccount.setEnabled(ispEpSyncEnabled && BuildConfig.WITH_KEY_SYNC);
+        //mPEpSyncAccount.setEnabled(ispEpSyncEnabled && BuildConfig.WITH_KEY_SYNC);
 
         mPepExtraKeys.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -932,7 +932,7 @@ public class AccountSettings extends K9PreferenceActivity {
         // pEp:
         account.setPEpStoreEncryptedOnServer(pEpSaveEncrypted.isChecked());
         account.setpEpPrivacyProtection(pEpDisablePrivacyProtection.isChecked());
-        account.setPEpSyncAccount(mPEpSyncAccount.isChecked());
+       // account.setPEpSyncAccount(mPEpSyncAccount.isChecked());
 
         // TODO: refresh folder list here
         account.save(Preferences.getPreferences(this));

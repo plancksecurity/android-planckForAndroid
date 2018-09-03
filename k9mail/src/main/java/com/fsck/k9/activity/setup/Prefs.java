@@ -177,8 +177,8 @@ public class Prefs extends K9PreferenceActivity {
     private CheckBoxPreference mPEpSubjectUnprotected;
     private Preference mPEpBlacklist;
     private CheckBoxPreference mPepForwardWarning;
-    private CheckBoxPreference mPEpSyncAccount;
-    private Preference mPEpManageKeysync;
+    //private CheckBoxPreference mPEpSyncAccount;
+    //private Preference mPEpManageKeysync;
 
     public static void actionPrefs(Context context) {
         Intent i = new Intent(context, Prefs.class);
@@ -451,8 +451,8 @@ public class Prefs extends K9PreferenceActivity {
         mPepForwardWarning.setChecked(K9.ispEpForwardWarningEnabled());
 
         mPEpBlacklist = (Preference) findPreference("pep_gpg_blacklist");
-        mPEpSyncAccount = (CheckBoxPreference) findPreference(PEP_ENABLE_SYNC);
-        mPEpManageKeysync = (Preference) findPreference(PEP_MANAGE_KEYSYNC);
+        //mPEpSyncAccount = (CheckBoxPreference) findPreference(PEP_ENABLE_SYNC);
+        //mPEpManageKeysync = (Preference) findPreference(PEP_MANAGE_KEYSYNC);
 
         mPEpBlacklist.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
@@ -469,7 +469,7 @@ public class Prefs extends K9PreferenceActivity {
                 mSplitViewMode.getEntries(), mSplitViewMode.getEntryValues());
 
         boolean isSyncChecked = ((K9) getApplication()).ispEpSyncEnabled();
-        mPEpSyncAccount.setChecked(isSyncChecked);
+        /*mPEpSyncAccount.setChecked(isSyncChecked);
 
         //noinspection ConstantConditions
         mPEpSyncAccount.setEnabled(BuildConfig.WITH_KEY_SYNC);
@@ -494,6 +494,7 @@ public class Prefs extends K9PreferenceActivity {
             startActivity(keysyncManagerIntent);
             return true;
         });
+        */
     }
 
     private void applyLanguage(Object newValue) {
@@ -614,7 +615,7 @@ public class Prefs extends K9PreferenceActivity {
         app.setpEpSubjectUnprotected(mPEpSubjectUnprotected.isChecked());
         app.setpEpForwardWarningEnabled(mPepForwardWarning.isChecked());
 
-        app.setpEpSyncEnabled(mPEpSyncAccount.isChecked());
+     //   app.setpEpSyncEnabled(mPEpSyncAccount.isChecked());
 
         StorageEditor editor = storage.edit();
         K9.save(editor);
