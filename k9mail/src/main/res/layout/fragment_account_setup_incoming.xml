@@ -62,8 +62,7 @@
                 android:inputType="number"
                 android:fontFamily="sans-serif"
                 android:layout_height="wrap_content"
-                android:layout_width="fill_parent"
-                android:contentDescription="@string/account_setup_incoming_port_label" />
+                android:layout_width="fill_parent" />
             <TextView
                 android:text="@string/account_setup_incoming_username_label"
                 android:layout_height="wrap_content"
@@ -78,8 +77,7 @@
                 android:inputType="textEmailAddress"
                 android:layout_height="wrap_content"
                 android:layout_width="fill_parent"
-                android:fontFamily="sans-serif"
-                android:contentDescription="@string/account_setup_incoming_username_label" />
+                android:fontFamily="sans-serif" />
             <TextView
                 android:id="@+id/account_auth_type_label"
                 android:text="@string/account_setup_incoming_auth_type_label"
@@ -148,8 +146,7 @@
                     android:singleLine="true"
                     android:fontFamily="sans-serif"
                     android:layout_height="wrap_content"
-                    android:layout_width="fill_parent"
-                    android:contentDescription="@string/account_setup_incoming_imap_path_prefix_label" />
+                    android:layout_width="fill_parent"/>
             </LinearLayout>
             <LinearLayout android:layout_width="fill_parent"
                 android:layout_height="wrap_content" android:id="@+id/imap_folder_setup_section"
@@ -193,8 +190,7 @@
                     android:singleLine="true"
                     android:fontFamily="sans-serif"
                     android:layout_height="wrap_content"
-                    android:layout_width="fill_parent"
-                    android:contentDescription="@string/account_setup_incoming_webdav_mailbox_path_label" />
+                    android:layout_width="fill_parent" />
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/webdav_owa_path_section"
@@ -215,8 +211,7 @@
                     android:singleLine="true"
                     android:fontFamily="sans-serif"
                     android:layout_height="wrap_content"
-                    android:layout_width="fill_parent"
-                    android:contentDescription="@string/account_setup_incoming_webdav_path_prefix_label" />
+                    android:layout_width="fill_parent"/>
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/webdav_auth_path_section"
@@ -237,8 +232,7 @@
                     android:singleLine="true"
                     android:fontFamily="sans-serif"
                     android:layout_height="wrap_content"
-                    android:layout_width="fill_parent"
-                    android:contentDescription="@string/account_setup_incoming_webdav_auth_path_label" />
+                    android:layout_width="fill_parent" />
             </LinearLayout>
             <TextView
                 android:id="@+id/compression_label"
