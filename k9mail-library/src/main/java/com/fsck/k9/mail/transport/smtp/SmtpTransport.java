@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import android.net.TrafficStats;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 
@@ -251,6 +252,7 @@ public class SmtpTransport extends Transport {
                         secureConnection = true;
                     } else {
                         mSocket = new Socket();
+                        TrafficStats.setThreadStatsTag(((int) Thread.currentThread().getId()));
                         mSocket.connect(socketAddress, SOCKET_CONNECT_TIMEOUT);
                     }
                 } catch (SocketException e) {
