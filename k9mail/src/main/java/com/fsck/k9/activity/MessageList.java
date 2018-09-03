@@ -796,7 +796,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void populateDrawerGroup() {
-        if (menuFolders != null) {
+        if (menuFolders != null && menuFolders.size() > 0 && mAccount != null
+                && menuFolders.get(0).getAccountUuid().equals(mAccount.getUuid())) {
             populateFolders(menuFolders);
         } else if (mAccount != null) {
             MessagingController instance = MessagingController.getInstance(this);
