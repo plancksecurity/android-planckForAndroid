@@ -1,6 +1,6 @@
-def pEpEngineRevision = 2779
-def pEpJNIAdapterRevision = 417
-def version = "1.0.200rc5"
+def pEpEngineRevision = 2898
+def pEpJNIAdapterRevision = 422
+def version = "1.0.209"
 
 def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
 def pEpTestEmailPassword = "\"$System.env.PEP_TEST_EMAIL_PASSWORD\""
@@ -99,10 +99,10 @@ android {
 
     defaultConfig {
         applicationId "${appId}"
-        versionCode 8
+        versionCode 19
         minSdkVersion 18
-        targetSdkVersion 25
-        setProperty("archivesBaseName", "$version")
+        targetSdkVersion 26
+        setProperty("archivesBaseName", "$version-$versionCode")
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
