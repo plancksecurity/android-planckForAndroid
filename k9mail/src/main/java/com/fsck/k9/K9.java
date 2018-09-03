@@ -20,6 +20,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.StrictMode;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.fsck.k9.Account.SortType;
@@ -77,7 +78,7 @@ import timber.log.Timber.DebugTree;
         mode = ReportingInteractionMode.TOAST,
         resToastText = R.string.crash_toast_text)
 public class K9 extends Application {
-    public static final int POLLING_INTERVAL = 1000;
+    public static final int POLLING_INTERVAL = 2000;
     private Poller poller;
     private boolean needsFastPoll = false;
     private boolean isPollingMessages;
@@ -1731,6 +1732,7 @@ public class K9 extends Application {
 
     private void polling() {
         if (needsFastPoll && !isPollingMessages) {
+            Log.d("pEpDecrypt", "Entering looper");
             isPollingMessages = true;
             MessagingController messagingController = MessagingController.getInstance(this);
             messagingController.checkpEpSyncMail(K9.this, new PEpProvider.CompletedCallback() {

@@ -15,10 +15,14 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Body;
+import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeHeader;
+import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.internet.MimeUtility;
+import com.fsck.k9.mail.internet.TextBody;
+import com.fsck.k9.mail.internet.Viewable;
 import com.fsck.k9.message.SimpleMessageFormat;
 
 import org.apache.commons.io.IOUtils;
@@ -227,6 +231,9 @@ public class PEpUtils {
             byte[] rv = IOUtils.toByteArray(is);
             is.close();
             return rv;
+        }
+        else if (body instanceof TextBody) {
+            return ((TextBody) body).getRawText().getBytes();
         }
         return new ByteArrayOutputStream().toByteArray();
     }
@@ -543,17 +550,14 @@ public class PEpUtils {
         result.setFrom(identity);
         result.setTo(new Vector<>(Collections.singletonList(identity)));
         ArrayList<org.pEp.jniadapter.Pair<String, String>> fields = new ArrayList<>();
-        fields.add(new org.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_KEY_IMPORT, identity.fpr));
         fields.add(new org.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_AUTOCONSUME, "yes"));
-        result.setOptFields(fields);
 
         result.setSent(new Date(System.currentTimeMillis()));
         result.setEncFormat(org.pEp.jniadapter.Message.EncFormat.None);
 
         MimeMessageBuilder builder = new MimeMessageBuilder(result).newInstance();
 
-        builder = (MimeMessageBuilder) builder.setSubject("Please ignore, this message is part of import key protocol")
-                .setSentDate(new Date())
+        builder = (MimeMessageBuilder) builder.setSentDate(new Date())
                 .setHideTimeZone(K9.hideTimeZone())
                 .setIdentity(account.getIdentity(0))
                 .setTo(Collections.singletonList(address))
@@ -564,12 +568,21 @@ public class PEpUtils {
                 .setAttachments(Collections.emptyList());
 
         if (ispEp) {
+            fields.add(new org.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_KEY_IMPORT, identity.fpr));
+            builder.setSubject("Please ignore, this message is part of import key protocol");
+            result.setShortmsg("Please ignore, this message is part of import key protocol");
             result.setLongmsg("");
         } else {
+            builder.setText(context.getString(R.string.pgp_key_import_instructions));
             result.setLongmsg(context.getString(R.string.pgp_key_import_instructions));
+            builder.setSubject("p≡p Key Import");
+            result.setShortmsg("p≡p Key Import");
         }
+        result.setOptFields(fields);
 
-        return builder.parseMessage(result);
+        MimeMessage mimeMessage = builder.parseMessage(result);
+        mimeMessage.setFlag(Flag.X_PEP_DISABLED, true);
+        return pEp.encryptMessage(mimeMessage, null).get(PEpProvider.ENCRYPTED_MESSAGE_POSITION);
     }
 
     public static List<String> getKeyListWithoutDuplicates(String[] keyListHeaders) {

@@ -189,15 +189,6 @@ public class AddDevicePresenter implements Presenter {
         @Override
         void acceptHandshake(Identity partner) {
             pEpProvider.trustPersonaKey(partner);
-            new Thread(() -> {
-                try {
-                    // TODO: 10/05/18 get the current account
-                    MessagingController.getInstance().sendOwnKey(accounts.get(0), partner.fpr);
-                } catch (MessagingException e) {
-                    e.printStackTrace();
-                }
-            }).start();
-
         }
 
         @Override

@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -287,6 +288,8 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
 
     @Override
     public void close(boolean accepted) {
+        Log.i("pEpKeyImport", "CLOSE");
+
         Intent returnIntent = new Intent();
         returnIntent.putExtra(RESULT, accepted ? Result.ACCEPTED : Result.REJECTED);
         if (presenter.isPGP()) returnIntent.putExtra(IS_PGP, true);
@@ -394,7 +397,7 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
 
     @OnClick(R.id.add_device_background)
     public void onClickOutside() {
-        presenter.cancelHandshake();
+        //presenter.cancelHandshake();
     }
 
     @OnClick(R.id.show_long_trustwords)
