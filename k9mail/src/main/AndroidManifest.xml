@@ -517,11 +517,13 @@
             android:name=".pEp.ui.keys.keyimport.KeyImportActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleInstance"
-            android:theme="@style/Base.Theme.AppCompat.Light.Dialog" />
+            android:theme="@style/Base.Theme.AppCompat.Light.Dialog"
+            android:screenOrientation="portrait"/>
         <activity android:name=".pEp.manualsync.ImportWizardFrompEp"
             android:theme="@style/Base.Theme.AppCompat.Light.Dialog"
             android:launchMode="singleInstance"
-            android:excludeFromRecents="true"/>
+            android:excludeFromRecents="true"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

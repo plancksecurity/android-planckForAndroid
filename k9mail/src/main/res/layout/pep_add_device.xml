@@ -67,7 +67,6 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
-
             <TextView
                 android:id="@+id/trustwords"
                 android:layout_width="wrap_content"
@@ -84,6 +83,11 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/selectable_message_background"
                 android:src="@drawable/ic_show_long_trustwords" />
+
+            <include
+                android:id="@+id/fingerprintView"
+                layout="@layout/pep_fingerprints_view"
+                android:visibility="gone"/>
 
             <TextView
                 android:id="@+id/advenced_keys_title"

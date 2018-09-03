@@ -221,7 +221,7 @@ public class MessageTopView extends LinearLayout {
     }
 
     public void showAllHeaders() {
-        mHeaderContainer.onShowAdditionalHeaders();
+        mHeaderContainer.onShowAdditionalHeaders(false);
     }
 
     public boolean additionalHeadersVisible() {

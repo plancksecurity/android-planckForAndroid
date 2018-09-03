@@ -1,6 +1,8 @@
 package com.fsck.k9.pEp.manualsync;
 
-import android.util.Log;
+
+import android.os.Handler;
+import android.os.Looper;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.controller.MessagingController;
@@ -8,7 +10,6 @@ import com.fsck.k9.pEp.infrastructure.Presenter;
 import com.fsck.k9.pEp.ui.keysync.PEpAddDevice;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import timber.log.Timber;
 
@@ -20,8 +21,8 @@ public class ImportWizardPresenter implements Presenter {
     private ImportWizardFromPGPView view;
 
     @Inject
-    public ImportWizardPresenter(ImportKeyController importKeyController) {
-        this.messagingController = MessagingController.getInstance();
+    public ImportWizardPresenter(ImportKeyController importKeyController, MessagingController messagingController) {
+        this.messagingController = messagingController;
         this.importKeyController = importKeyController;
     }
 
@@ -32,19 +33,30 @@ public class ImportWizardPresenter implements Presenter {
 
     @Override
     public void pause() {
-        importKeyController.finish();
+
 
     }
 
     @Override
     public void destroy() {
-
+        importKeyController.finish();
     }
 
-    public void onStartClicked(Account account, Callback callback) {
+    public void onStartClicked(Account account) {
         //new Thread(() ->
-                messagingController.startKeyImport(account, callback, ispEp);
-                //).start();
+        messagingController.startKeyImport(account, new Callback() {
+            @Override
+            public void onStart() {
+                view.starSendKeyImportRequest();
+            }
+
+            @Override
+            public void onFinish(boolean success) {
+                if (success) view.finishSendingKeyImport();
+                else view.showSendError();
+            }
+        }, ispEp);
+        //).start();
     }
 
     public void init(ImportWizardFromPGPView view, Account account, boolean isStarter,
@@ -59,7 +71,7 @@ public class ImportWizardPresenter implements Presenter {
 
     private void showInitialScreen(KeySourceType serializableExtra) {
 
-        if (importKeyController.isStarter()) {
+        if (importKeyController.isImporter()) {
             switch (serializableExtra) {
                 case PEP:
                     view.renderpEpInitialScreen();
@@ -86,7 +98,7 @@ public class ImportWizardPresenter implements Presenter {
     }
 
     public void next() {
-        ImportKeyWizardState currentState = importKeyController.next();
+        ImportKeyWizardState currentState = importKeyController.getState();
         Timber.e(currentState.name()+ " :: " + importKeyController.getState().name());
 
         switch (currentState) {
@@ -119,12 +131,31 @@ public class ImportWizardPresenter implements Presenter {
         Timber.e(importKeyController.getState().name());
 
         if (result.equals(PEpAddDevice.Result.ACCEPTED)) {
-            if (importKeyController.isStarter()) {
-                view.notifyAcceptedHandshakeAndWaitingForPrivateKey();
+            if (importKeyController.isImporter()) {
+                if (ispEp) {
+                    view.notifyAcceptedHandshakeAndWaitingForPrivateKey();
+                }
+                else {
+                    view.notifyAcceptedHandshakeAndWaitingForPGPPrivateKey();
+                }
+
                 importKeyController.next();
             } else {
-                view.notifyKeySent();
-                importKeyController.next();
+
+                importKeyController.sendOwnKey(new Callback() {
+                    @Override
+                    public void onStart() {
+                         view.notifySendingOwnKey();
+                    }
+
+                    @Override
+                    public void onFinish(boolean successful) {
+                        view.notifyKeySent();
+                        importKeyController.next();
+                    }
+                });
+
+                //importKeyController.finish();
             }
         }
     }
@@ -139,6 +170,17 @@ public class ImportWizardPresenter implements Presenter {
         view.close();
     }
 
+    public void reset() {
+        importKeyController.finish();
+    }
+
+    public ImportKeyWizardState getState() {
+        return importKeyController.getState();
+    }
+
+    public void setState(ImportKeyWizardState state) {
+        importKeyController.setState(state);
+    }
 
     public interface Callback {
         void onStart();

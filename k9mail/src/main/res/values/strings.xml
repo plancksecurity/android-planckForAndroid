@@ -110,6 +110,7 @@
     <string name="status_poll_and_push_disabled">Polling and pushing disabled</string>
     <string name="status_syncing_blocked">Syncing blocked</string>
     <string name="status_syncing_off">Syncing disabled</string>
+    <string name="status_syncing">Syncing messages</string>
 
     <string name="actionbar_selected"><xliff:g id="selection_count">%d</xliff:g> selected</string>
     <string name="next_action">Next</string>

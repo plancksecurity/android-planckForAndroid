@@ -19,4 +19,6 @@ public interface AddDeviceView {
     void showError();
 
     void hideIdentities();
+
+    void showFPR();
 }

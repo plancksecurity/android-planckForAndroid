@@ -132,6 +132,7 @@ public class PEpProviderImpl implements PEpProvider {
 
             Identity idFrom = PEpUtils.createIdentity(from, context);
             idFrom.user_id = PEP_OWN_USER_ID;
+            idFrom.me = true;
             testee.setFrom(idFrom);
             testee.setTo(PEpUtils.createIdentities(toAddresses, context));
             testee.setCc(PEpUtils.createIdentities(ccAddresses, context));
@@ -182,41 +183,34 @@ public class PEpProviderImpl implements PEpProvider {
             srcMsg = new PEpMessageBuilder(source).createMessage(context);
             srcMsg.setDir(Message.Direction.Incoming);
 
-            Log.d(TAG, "decryptMessage() before decrypt");
-            if ( srcMsg.getOptFields() != null) {
-                for (Pair<String, String> stringStringPair : srcMsg.getOptFields()) {
-                    Log.d(TAG, "decryptMessage() after decrypt " + stringStringPair.first + ": " + stringStringPair.second);
-                }
-            }
+            Log.d(TAG, "pEpdecryptMessage() before decrypt");
             decReturn = engine.decrypt_message(srcMsg, 0);
-            Log.d(TAG, "decryptMessage() after decrypt");
+            Log.d(TAG, "pEpdecryptMessage() after decrypt Subject" +  decReturn.dst.getShortmsg());
             Message message = decReturn.dst;
             MimeMessage decMsg = getMimeMessage(source, message);
             boolean neverUnprotected = decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE).length > 0
                     && decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE)[0].equals(PEP_ALWAYS_SECURE_TRUE);
             decMsg.setFlag(Flag.X_PEP_NEVER_UNSECURE, neverUnprotected);
-            if (isUsablePrivateKey(decReturn)) {
-                if (decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)) {
-                    return new DecryptResult(decMsg, decReturn.rating, new KeyDetail("", null), decReturn.flags);
-                } else {
-                    return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg), decReturn.flags);
-                }
-            } else if (decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)) {
+
+            if (decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)) {
                 Date lastValidDate = new Date(System.currentTimeMillis() - (TIMEOUT));
                 int flags = -1;
                 if (lastValidDate.after(decMsg.getSentDate())) {
                     flags = DecryptFlags.PEPDecryptFlagConsumed.value;
-                } else {
-                    flags = -1;
+                    return new DecryptResult(decMsg, decReturn.rating, null, flags);
                 }
+            }
 
-                return new DecryptResult(decMsg, decReturn.rating, null, flags);
+            if (isUsablePrivateKey(decReturn)) {
+                if (decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)) {
+                    Log.d(TAG, "pEpdecryptMessage() after decrypt has usable pEp key (import)");
+                    return new DecryptResult(decMsg, decReturn.rating, new KeyDetail("", null), decReturn.flags);
+                } else {
+                    Log.d(TAG, "pEpdecryptMessage() after decrypt has usable PGP key (import)");
+                    return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg), decReturn.flags);
+                }
             }
            else return new DecryptResult(decMsg, decReturn.rating, null, -1);
-//        } catch (pEpMessageConsume | pEpMessageIgnore pe) {
-//            // TODO: 15/11/16 deal with it as flag not exception
-//            //  throw pe;
-//            return null;
         }catch (Throwable t) {
             Log.e(TAG, "while decrypting message: "  + source.getSubject()
                     + "\n" + source.getFrom()[0]
@@ -245,11 +239,6 @@ public class PEpProviderImpl implements PEpProvider {
                 srcMsg.setDir(Message.Direction.Incoming);
 
                 Log.d(TAG, "decryptMessage() before decrypt");
-                if ( srcMsg.getOptFields() != null) {
-                    for (Pair<String, String> stringStringPair : srcMsg.getOptFields()) {
-                        Log.d(TAG, "decryptMessage() after decrypt " + stringStringPair.first + ": " + stringStringPair.second);
-                    }
-                }
                 decReturn = engine.decrypt_message(srcMsg, 0);
                 Log.d(TAG, "decryptMessage() after decrypt");
 
@@ -375,6 +364,7 @@ public class PEpProviderImpl implements PEpProvider {
             Log.d(TAG, "encryptMessage() before encrypt to self");
             Identity from = message.getFrom();
             from.user_id = PEP_OWN_USER_ID;
+            from.me = true;
             message.setFrom(from);
             Message currentEnc = engine.encrypt_message_for_self(message.getFrom(), message, convertExtraKeys(keys));
             if (currentEnc == null) currentEnc = message;
@@ -471,6 +461,7 @@ public class PEpProviderImpl implements PEpProvider {
         Log.d(TAG, "encryptMessage() before encrypt");
         Identity from = message.getFrom();
         from.user_id = PEP_OWN_USER_ID;
+        from.me = true;
         message.setFrom(from);
         Message currentEnc = engine.encrypt_message(message, convertExtraKeys(extraKeys), message.getEncFormat());
         if (currentEnc == null) currentEnc = message;
@@ -582,6 +573,7 @@ public class PEpProviderImpl implements PEpProvider {
                 Identity another;
                 if (!areKeysyncTrustwords) {
                     self.user_id = PEP_OWN_USER_ID;
+                    self.me = true;
                     myself = engine.myself(self);
                     another = engine.updateIdentity(other);
                 } else {
@@ -615,6 +607,7 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public synchronized void trustPersonaKey(Identity id) {
         createEngineInstanceIfNeeded();
+        Log.i("pEpDecrypt", "Calling trust personal key");
         engine.trustPersonalKey(id);
     }
 
@@ -674,6 +667,7 @@ public class PEpProviderImpl implements PEpProvider {
     public synchronized Identity myself(Identity myId) {
         createEngineInstanceIfNeeded();
         myId.user_id = PEP_OWN_USER_ID;
+        myId.me = true;
         return engine.myself(myId);
     }
 
@@ -977,6 +971,7 @@ public class PEpProviderImpl implements PEpProvider {
 
                 Identity idFrom = PEpUtils.createIdentity(from, context);
                 idFrom.user_id = PEP_OWN_USER_ID;
+                idFrom.me = true;
                 testee.setFrom(idFrom);
                 testee.setTo(PEpUtils.createIdentities(toAddresses, context));
                 testee.setCc(PEpUtils.createIdentities(ccAddresses, context));
