@@ -104,7 +104,7 @@ public class TestUtils {
     private static final int MINUTE_IN_SECONDS = 60;
     private static final int SECOND_IN_MILIS = 1000;
 
-    private UiDevice device;
+    private static UiDevice device;
     private static Context context;
     private Resources resources;
     private Instrumentation instrumentation;
@@ -465,36 +465,42 @@ public class TestUtils {
         }
     }
 
-    public static void createFile(final String fileName, final int inputRawResources)
-            throws IOException {
-        String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
-        File file = new File(extStorageDirectory, fileName);
+    public static void createFile(final String fileName, final int inputRawResources) {
+        while (true) {
+            try {
+                String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+                File file = new File(extStorageDirectory, fileName);
 
-        final OutputStream outputStream = new FileOutputStream(file);
+                final OutputStream outputStream = new FileOutputStream(file);
 
-        final Resources resources = context.getResources();
-        final byte[] largeBuffer = new byte[1024 * 4];
-        int totalBytes = 0;
-        int bytesRead;
+                final Resources resources = context.getResources();
+                final byte[] largeBuffer = new byte[1024 * 4];
+                int bytesRead;
 
-        final InputStream inputStream = resources.openRawResource(inputRawResources);
-        while ((bytesRead = inputStream.read(largeBuffer)) > 0) {
-            if (largeBuffer.length == bytesRead) {
-                outputStream.write(largeBuffer);
-            } else {
-                final byte[] shortBuffer = new byte[bytesRead];
-                System.arraycopy(largeBuffer, 0, shortBuffer, 0, bytesRead);
-                outputStream.write(shortBuffer);
+                final InputStream inputStream = resources.openRawResource(inputRawResources);
+                while ((bytesRead = inputStream.read(largeBuffer)) > 0) {
+                    if (largeBuffer.length == bytesRead) {
+                        outputStream.write(largeBuffer);
+                    } else {
+                        final byte[] shortBuffer = new byte[bytesRead];
+                        System.arraycopy(largeBuffer, 0, shortBuffer, 0, bytesRead);
+                        outputStream.write(shortBuffer);
+                    }
+                }
+                inputStream.close();
+
+
+                outputStream.flush();
+                outputStream.close();
+                device.waitForIdle();
+                waitUntilIdle();
+                intending(not(isInternal()))
+                        .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, insertFileIntoIntentAsData(fileName)));
+                return;
+            } catch (Exception ex) {
+                Timber.i("Cannot insert file as data");
             }
-            totalBytes += bytesRead;
         }
-        inputStream.close();
-
-
-        outputStream.flush();
-        outputStream.close();
-        intending(not(isInternal()))
-                .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, insertFileIntoIntentAsData(fileName)));
     }
 
 
@@ -526,8 +532,11 @@ public class TestUtils {
 
     void removeLastAccount() {
         longClick("accounts_list");
-        selectRemoveAccount();
-        clickAcceptButton();
+        try {
+            selectRemoveAccount();
+            clickAcceptButton();
+        } catch (Exception ex) {
+        }
     }
 
     public void goBackAndRemoveAccount() {
@@ -535,13 +544,12 @@ public class TestUtils {
     }
 
     public void goBackAndRemoveAccount(boolean discardMessage) {
-        boolean accountRemoved = false;
         Activity currentActivity = getCurrentActivity();
-        while (!accountRemoved) {
+        while (true) {
             try {
                 device.waitForIdle();
                 removeLastAccount();
-                accountRemoved = true;
+                return;
             } catch (Exception ex) {
                 while (currentActivity == getCurrentActivity()) {
                     pressBack();
@@ -557,14 +565,16 @@ public class TestUtils {
                     }
                     Timber.i("View not found, pressBack to previous activity: " + ex);
                 }
+                currentActivity = getCurrentActivity();
             }
-            currentActivity = getCurrentActivity();
         }
     }
 
     public void clickAcceptButton() {
+        device.waitForIdle();
         doWaitForObject("android.widget.Button");
         onView(withText(R.string.okay_action)).perform(click());
+        device.waitForIdle();
     }
 
     void clickCancelButton() {
@@ -599,21 +609,41 @@ public class TestUtils {
         }
     }
 
-    public void clickAttachedFileAtPosition() {
+    public void clickAttachedFiles(int total) {
         BySelector selector = By.clazz("android.widget.FrameLayout");
-        int size = device.findObjects(selector).size();
+        Activity sentFolderActivity = getCurrentActivity();
         /*intending((isInternal()))
                 .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null));*/
-        while (size == 0) {
-            size = device.findObjects(selector).size();
-        }
-        UiObject2 uiObject = device.findObject(By.res("security.pEp:id/attachment"));
-        for (UiObject2 frameLayout : device.findObjects(selector)) {
-            if (frameLayout.getResourceName().equals(uiObject.getResourceName())) {
-                frameLayout.longClick();
+        int position;
+        for (int start = 0; start < total; start++) {
+            int size = device.findObjects(selector).size();
+            while (size == 0) {
+                size = device.findObjects(selector).size();
+            }
+            UiObject2 uiObject = device.findObject(By.res("security.pEp:id/attachment"));
+            position = -1;
+            for (UiObject2 frameLayout : device.findObjects(selector)) {
                 device.waitForIdle();
-                device.pressBack();
-                device.waitForIdle();
+                try {
+                    if (frameLayout.getResourceName().equals(uiObject.getResourceName())) {
+                        position++;
+                    }
+                    if (start == position) {
+                        frameLayout.longClick();
+                        try {
+                            Thread.sleep(3000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        while (getCurrentActivity() != sentFolderActivity) {
+                            device.waitForIdle();
+                            device.pressBack();
+                        }
+                    }
+                } catch (Exception ex) {
+                    Timber.i("Cannot read attached files");
+                    break;
+                }
             }
         }
     }
@@ -754,9 +784,9 @@ public class TestUtils {
 
     public void selectFromMenu(int viewId){
         device.waitForIdle();
-        openOptionsMenu();
         while (true) {
             try {
+                openOptionsMenu();
                 selectFromScreen(viewId);
                 device.waitForIdle();
                 if (!viewIsDisplayed(R.id.text1)) {
@@ -826,19 +856,19 @@ public class TestUtils {
 
     public void selectFromScreen(int resource) {
         BySelector selector = By.clazz("android.widget.TextView");
-        while (true) {
-            for (UiObject2 object : device.findObjects(selector)) {
-                try {
+        try {
+            while (true) {
+                for (UiObject2 object : device.findObjects(selector)) {
                     if (object.getText().contains(resources.getString(resource))) {
                         device.waitForIdle();
                         object.click();
                         device.waitForIdle();
                         return;
                     }
-                } catch (Exception ex){
-                    Timber.i("Cannot find text on screen: " + ex);
                 }
             }
+        } catch (Exception ex) {
+            Timber.i("Cannot find text on screen: " + ex);
         }
     }
 
@@ -908,10 +938,7 @@ public class TestUtils {
     public void goToSentFolder() {
         BySelector textViewSelector;
         textViewSelector = By.clazz("android.widget.TextView");
-        device.waitForIdle();
-        openOptionsMenu();
-        device.waitForIdle();
-        selectFromScreen(R.string.account_settings_folders);
+        selectFromMenu(R.string.account_settings_folders);
         device.waitForIdle();
         String folder = resources.getString(R.string.special_mailbox_name_sent);
         while (true) {
@@ -1004,8 +1031,16 @@ public class TestUtils {
         getMessageListSize();
     }
 
-    public void getMessageListSize(){
-        onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));}
+    public void getMessageListSize() {
+        while (true) {
+            try {
+                onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
+                return;
+            } catch (Exception ex) {
+                Timber.i("Cannot find view message_list: " + ex.getMessage());
+            }
+        }
+    }
 
     public void swipeDownMessageList(){
         boolean actionPerformed = false;
@@ -1021,13 +1056,15 @@ public class TestUtils {
     }
 
     private void removeMessagesFromList(){
-        clickFirstMessage();
+        getMessageListSize();
+        if (messageListSize[0] != 1) {
+            clickFirstMessage();
             boolean emptyList = false;
-            while (!emptyList){
-                try{
+            while (!emptyList) {
+                try {
                     device.waitForIdle();
                     onView(withText(R.string.cancel_action)).perform(click());
-                }catch (NoMatchingViewException ignoredException){
+                } catch (NoMatchingViewException ignoredException) {
                     Timber.i("Ignored exception");
                 }
                 try {
@@ -1037,16 +1074,17 @@ public class TestUtils {
                     emptyList = true;
                 }
                 device.waitForIdle();
-                if (exists(onView(withId(android.R.id.message)))){
+                if (exists(onView(withId(android.R.id.message)))) {
                     emptyList = false;
                 }
             }
+        }
     }
 
     public void clickFirstMessage(){
         boolean firstMessageClicked = false;
         device.waitForIdle();
-        doWaitForResource(R.id.message_list);
+        //doWaitForResource(R.id.message_list);
         while (!firstMessageClicked){
             try{
                 if(viewIsDisplayed(R.id.message_list)) {
@@ -1055,7 +1093,7 @@ public class TestUtils {
                     swipeDownMessageList();
                     device.waitForIdle();
                     getMessageListSize();
-                    if (viewIsDisplayed(R.id.reply_message) || messageListSize[0] == 1) {
+                    if (viewIsDisplayed(R.id.reply_message)) {
                         firstMessageClicked = true;
                     }
                     else {

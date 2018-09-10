@@ -31,10 +31,8 @@ import junit.framework.AssertionFailedError;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.Callable;
 
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -47,7 +45,6 @@ import timber.log.Timber;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.swipeDown;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intending;
@@ -56,9 +53,9 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containsText;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containstText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromView;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.hasValueEqualTo;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
@@ -88,14 +85,18 @@ public class CucumberTestSteps {
             instrumentation = InstrumentationRegistry.getInstrumentation();
             device = UiDevice.getInstance(instrumentation);
             testUtils = new TestUtils(device, instrumentation);
+            testUtils.increaseTimeoutWait();
+            espressoTestingIdlingResource = new EspressoTestingIdlingResource();
+            IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
+            bot = new String[4];
+            resources = InstrumentationRegistry.getTargetContext().getResources();
             if (testUtils.getCurrentActivity() == null) {
-                testUtils.increaseTimeoutWait();
-                espressoTestingIdlingResource = new EspressoTestingIdlingResource();
-                IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
-                bot = new String[4];
-                resources = InstrumentationRegistry.getTargetContext().getResources();
-                startTimer(350);
-                activityTestRule.launchActivity(new Intent());
+                //startTimer(350);
+                try {
+                    activityTestRule.launchActivity(new Intent());
+                } catch (Exception ex) {
+                    Timber.i("Cannot launch activity");
+                }
             }
         }
     }
@@ -174,14 +175,12 @@ public class CucumberTestSteps {
     private void textViewEditor (String text, String viewName) {
         int viewId = testUtils.intToID(viewName);
         device.waitForIdle();
-        boolean filled = false;
         if (!text.equals("empty")) {
-            while (!filled) {
+            while (!(containstText(onView(withId(viewId)), text))) {
                 try {
                     onView(withId(viewId)).perform(click());
                     onView(withId(viewId)).perform(closeSoftKeyboard());
                     onView(withId(viewId)).perform(typeText(text), closeSoftKeyboard());
-                    filled = true;
                     onView(withId(viewId)).perform(closeSoftKeyboard());
                 } catch (Exception ex) {
                     onView(withId(viewId)).perform(closeSoftKeyboard());
@@ -482,7 +481,7 @@ public class CucumberTestSteps {
                 TestUtils.createFile(fileName, raw);
                 device.waitForIdle();
                 return;
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -503,34 +502,35 @@ public class CucumberTestSteps {
 
     @When("^I click message compose")
     public void I_click_message_compose() {
+        Timber.i("Problema en compose message button");
         testUtils.composeMessageButton();
     }
 
     @When("^I start test")
     public void startTest() {
-        boolean methodFinished = false;
-        Activity currentActivity = testUtils.getCurrentActivity();
-        while (!methodFinished) {
+        testUtils.readBotList();
+        while (true) {
             try {
                 device.waitForIdle();
+                if (exists(onView(withId(R.id.accounts_list)))) {
+                    onView(withId(R.id.accounts_list)).perform(click());
+                    device.waitForIdle();
+                    testUtils.swipeDownMessageList();
+                    device.waitForIdle();
+                    testUtils.getMessageListSize();
+                    return;
+                }
                 onView(withId(R.id.accounts_list)).check(matches(isDisplayed()));
                 device.waitForIdle();
                 onView(withId(R.id.accounts_list)).perform(click());
                 device.waitForIdle();
-                if (exists(onView(withId(R.id.message_list)))) {
-                    testUtils.swipeDownMessageList();
-                    device.waitForIdle();
-                    testUtils.getMessageListSize();
-                    methodFinished = true;
-                }
             } catch (Exception ex) {
-                while (currentActivity == testUtils.getCurrentActivity()) {
+                while (!exists(onView(withId(R.id.accounts_list)))) {
                     testUtils.pressBack();
                     device.waitForIdle();
-                    Timber.i("View not found, pressBack to previous activity: " + ex);
                 }
+                Timber.i("View not found. Start test: " + ex);
             }
-            currentActivity = testUtils.getCurrentActivity();
         }
     }
 
@@ -543,7 +543,6 @@ public class CucumberTestSteps {
 
     @Then("^I send (\\d+) (?:message|messages) to (\\S+) with subject (\\S+) and body (\\S+)$")
     public void I_send_messages_to_bot(int totalMessages,String botName, String subject, String body) {
-        testUtils.readBotList();
         bot = testUtils.botList;
         String messageTo = "nothing";
         switch (botName){
@@ -667,7 +666,7 @@ public class CucumberTestSteps {
     @And("^I open attached files$")
     public void I_open_attached_file_at_position() {
         device.waitForIdle();
-        testUtils.clickAttachedFileAtPosition();
+        testUtils.clickAttachedFiles(4);
     }
 
     @Then("^I set checkbox (\\S+) to (true|false)$")
