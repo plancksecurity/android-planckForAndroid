@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.test.mock.MockApplication;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -40,6 +42,29 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     ProgressBar loading;
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+         outState.putString("currentAction", currentAction.getText().toString());
+         outState.putString("description", description.getText().toString());
+         outState.putString("toolbarpEpTitle", toolbarpEpTitle.getText().toString());
+         outState.putString("action", action.getText().toString());
+         outState.putInt("loadingVisibility" , loading.getVisibility());
+         outState.putSerializable("state", presenter.getState());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        currentAction.setText(savedInstanceState.getString("currentAction"));
+        description.setText(savedInstanceState.getString("description"));
+        toolbarpEpTitle.setText(savedInstanceState.getString("toolbarpEpTitle"));
+        action.setText(savedInstanceState.getString("action"));
+        loading.setVisibility(savedInstanceState.getInt("loadingVisibility"));
+        presenter.setState(((ImportKeyWizardState) savedInstanceState.getSerializable("state")));
+
+    }
+
+    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (intent.hasExtra(HANDSHAKE_INTENT_KEY)) {
@@ -53,6 +78,9 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         } else if (intent.hasExtra(IMPORTED_KEY)
                 && intent.hasExtra(IS_PEP) && !intent.getBooleanExtra(IS_PEP, true)) {
 
+        } else if (intent.hasExtra(IS_PEP) && !intent.getBooleanExtra(IS_PEP, true)) {
+            description.setText("Your PGP key was processed");
+            showCloseButton();
         }
         Toast.makeText(getApplicationContext(), "Key import event produced", Toast.LENGTH_LONG).show();
     }
@@ -80,6 +108,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         if (handshakeIntent != null) {
             intent.putExtra(HANDSHAKE_INTENT_KEY, handshakeIntent);
         }
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 
@@ -134,30 +163,6 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         presenter.pause();
     }
 
-    public void onStartClick(Button button) {
-        presenter.onStartClicked(account, new ImportWizardPresenter.Callback() {
-            @Override
-            public void onStart() {
-                new Handler(getMainLooper()).post(() -> {
-                    loading.setVisibility(View.VISIBLE);
-                    currentAction.setVisibility(View.VISIBLE);
-                    button.setText(R.string.cancel_action);
-                    currentAction.setText("Sending key import request");
-                    button.setOnClickListener(view -> presenter.cancel());
-                });
-            }
-
-            @Override
-            public void onFinish(boolean successful) {
-                //presenter.next();
-                new Handler(getMainLooper()).post(() ->  {
-                    presenter.next();
-                    //currentAction.setText("Key requested: Waiting for handshake")
-                });
-            }
-        });
-    }
-
 
     @Override
     public void showDescription(String description) {
@@ -174,7 +179,8 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     public void renderpEpInitialScreen() {
         this.toolbarpEpTitle.setText(R.string.pep);
         description.setText((R.string.key_import_wizard_from_pep_initial_text));
-        action.setOnClickListener(view -> onStartClick(((Button) view)));
+        //action.setOnClickListener(view -> onStartClick(((Button) view)));
+        action.setOnClickListener(view -> presenter.onStartClicked(account));
         protocol.setText(R.string.pep);
         protocol.setTextColor(resources.getColor(R.color.pep_green));
     }
@@ -183,21 +189,25 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     public void renderPGPInitialScreen() {
         this.toolbarpEpTitle.setText(R.string.pgp);
         description.setText((R.string.key_import_wizard_from_pgp_initial_text));
-        action.setOnClickListener(view -> onStartClick(((Button) view)));
+        action.setOnClickListener(view -> presenter.onStartClicked(account));
         protocol.setText(R.string.open_pgp);
         protocol.setTextColor(resources.getColor(R.color.light_black));
     }
 
     @Override
     public void renderWaitingForHandshake() {
-        currentAction.setText("Waiting handshake");
+        new Handler(getMainLooper()).post(() -> {
+            currentAction.setText("Waiting for handshake");
+        });
     }
 
     @Override
     public void renderWaitingForPGPHandshake() {
-        description.setText(R.string.pgp_key_import_instructions);
-        description.setText( "\n\n" + description.getText());
-        currentAction.setText("Waiting PGP");
+        new Handler(getMainLooper()).post(() -> {
+            description.setText(R.string.pgp_key_import_instructions);
+            description.setText("\n\n" + description.getText());
+            currentAction.setText("Waiting for PGP encrypted message");
+        });
     }
 
     @Override
@@ -223,8 +233,10 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
 
     @Override
     public void notifyKeySent() {
-        description.setText("Key successfully exported!");
-        showCloseButton();
+        new Handler(Looper.getMainLooper()).post(() -> {
+            description.setText("Key successfully exported!");
+            showCloseButton();
+        });
     }
 
     @Override
@@ -251,10 +263,53 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     }
 
     @Override
+    public void notifyAcceptedHandshakeAndWaitingForPGPPrivateKey() {
+        description.setText("Hanshake accepted please send your private key encrypted from your PGP client.");
+        currentAction.setText("Waiting for PGP key");
+    }
+
+    @Override
+    public void starSendKeyImportRequest() {
+        new Handler(getMainLooper()).post(() -> {
+            loading.setVisibility(View.VISIBLE);
+            currentAction.setVisibility(View.VISIBLE);
+            action.setText(R.string.cancel_action);
+            currentAction.setText("Sending key import request");
+            action.setOnClickListener(view -> presenter.cancel());
+        });
+    }
+
+    @Override
+    public void finishSendingKeyImport() {
+        presenter.next();
+    }
+
+    @Override
+    public void showSendError() {
+        new Handler(getMainLooper()).post(() -> {
+            description.setText("An error happened, we were not able to send key request. Please try again later");
+            showCloseButton();
+        });
+    }
+
+    @Override
+    public void notifySendingOwnKey() {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            loading.setVisibility(View.VISIBLE);
+            currentAction.setVisibility(View.VISIBLE);
+            action.setText(R.string.cancel_action);
+            currentAction.setText("Sending own key");
+            action.setOnClickListener(view -> presenter.cancel());
+        });
+    }
+
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_CANCELED) {
             description.setText("Handshake was cancelled, if you want to import key, please start the process again");
+            presenter.reset();
             showCloseButton();
         } else if (resultCode == RESULT_OK) {
             presenter.processHandshakeResult(((PEpAddDevice.Result) data.getSerializableExtra(PEpAddDevice.RESULT)));
@@ -272,12 +327,14 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         Intent intent = new Intent(context, ImportWizardFrompEp.class);
         intent.putExtra(IMPORTED_KEY, true);
         intent.putExtra(IS_PEP, true);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 
-    public static void notifyPGPHandshakeRequest(Context context) {
+    public static void notifyPrivatePGPKeyProcessed(Context context) {
         Intent intent = new Intent(context, ImportWizardFrompEp.class);
         intent.putExtra(IS_PEP, false);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 }

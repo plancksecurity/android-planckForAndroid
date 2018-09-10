@@ -508,11 +508,11 @@
             android:key="pep_save_encrypted"
             android:title="@string/pep_mistrust_server_and_store_mails_encrypted"
             android:defaultValue="true" />
-        <CheckBoxPreference
+        <!--CheckBoxPreference
             android:persistent="false"
             android:key="pep_enable_sync_account"
             android:title="@string/pep_enable_sync_account"
-            android:defaultValue="false" />
+            android:defaultValue="false" /-->
 
         <Preference
             android:persistent="false"

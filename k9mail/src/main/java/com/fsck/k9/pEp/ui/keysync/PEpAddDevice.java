@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
+import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.manualsync.WizardActivity;
@@ -45,7 +47,9 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
     private static final String MY_ADRESS = "myAddress";
     private static final String EXPLANATION = "explanation";
     private static final String MANUAL = "manual";
+    private static final String PEP_KEY_LIST = "keylist";
     public static final String RESULT = "result";
+    public static final String IS_PGP = "PGP";
     public static final int REQUEST_ADD_DEVICE_HANDSHAKE = 1;
 
     @Inject AddDevicePresenter presenter;
@@ -60,6 +64,13 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
     RecyclerView identitiesList;
     @Bind(R.id.show_long_trustwords)
     ImageView showLongTrustwords;
+
+    @Bind(R.id.fingerprintView) View fingerPrints;
+    @Bind(R.id.partnerLabel) TextView partnerLabel;
+    @Bind(R.id.partnerFpr) TextView partnerFpr;
+    @Bind(R.id.myselfLabel) TextView myselfLabel;
+    @Bind(R.id.myselfFpr) TextView myselfFpr;
+
     private MenuItem advancedOptionsMenuItem;
     private String trustwordsLanguage;
     private Boolean areTrustwordsShort = true;
@@ -111,7 +122,8 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
                 myIdentity = (Identity) intent.getSerializableExtra(MYSELF);
                 boolean isManualSync = intent.getBooleanExtra(MANUAL, false);
                 List<Account> accounts = Preferences.getPreferences(PEpAddDevice.this).getAccounts();
-                presenter.initialize(this, getpEp(), partnerIdentity, accounts, isManualSync);
+
+                presenter.initialize(this, getpEp(), myIdentity, partnerIdentity, accounts, isManualSync, intent.getStringExtra(PEP_KEY_LIST));
             }
         }
 
@@ -130,8 +142,10 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_add_device, menu);
-        advancedOptionsMenuItem = menu.findItem(R.id.action_advanced_options);
+        if (presenter.ispEp()) {
+            getMenuInflater().inflate(R.menu.menu_add_device, menu);
+            advancedOptionsMenuItem = menu.findItem(R.id.action_advanced_options);
+        }
         return true;
     }
 
@@ -274,8 +288,12 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
 
     @Override
     public void close(boolean accepted) {
+        Log.i("pEpKeyImport", "CLOSE");
+
         Intent returnIntent = new Intent();
-        returnIntent.putExtra(RESULT, accepted?Result.ACCEPTED:Result.REJECTED);
+        returnIntent.putExtra(RESULT, accepted ? Result.ACCEPTED : Result.REJECTED);
+        if (presenter.isPGP()) returnIntent.putExtra(IS_PGP, true);
+
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
@@ -310,6 +328,23 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
     public void hideIdentities() {
         advancedKeysTextView.setVisibility(View.GONE);
         identitiesList.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showFPR() {
+        tvTrustwords.setVisibility(View.GONE);
+        showLongTrustwords.setVisibility(View.GONE);
+        fingerPrints.setVisibility(View.VISIBLE);
+
+        if (presenter.myselfHasUserId()) {
+            myselfLabel.setText(String.format(getString(R.string.pep_complete_myself_format), presenter.getMyselfUsername(), presenter.getMyselfAddress()));
+        } else {
+            myselfLabel.setText(String.format(getString(R.string.pep_myself_format),presenter.getMyselfAddress()));
+        }
+        myselfFpr.setText(PEpUtils.formatFpr(presenter.getMyFpr()));
+        partnerFpr.setText(PEpUtils.formatFpr(presenter.getPartnerFpr()));
+
+
     }
 
     @Override
@@ -362,7 +397,7 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
 
     @OnClick(R.id.add_device_background)
     public void onClickOutside() {
-        presenter.cancelHandshake();
+        //presenter.cancelHandshake();
     }
 
     @OnClick(R.id.show_long_trustwords)
@@ -370,6 +405,23 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
         showLongTrustwords.setVisibility(View.GONE);
         areTrustwordsShort = !areTrustwordsShort;
         changeTrustwordsLength(areTrustwordsShort);
+    }
+
+    public static Intent getActionRequestHandshake(Context context, Identity myself, Identity partner,
+                                                   List<String> keys, String explanation) {
+        Intent intent = new Intent(context, PEpAddDevice.class);
+        intent.setAction(ACTION_SHOW_PEP_TRUSTWORDS);
+        StringBuilder keyList = new StringBuilder();
+        intent.putExtra(MYSELF, myself);
+        intent.putExtra(PARTNER, partner);
+
+        for (String key : keys) {
+            keyList.append(key).append(PEpProvider.PEP_KEY_LIST_SEPARATOR);
+        }
+        intent.putExtra(PEP_KEY_LIST, keyList.toString());
+        intent.putExtra(EXPLANATION, explanation);
+        intent.putExtra(MANUAL, true);
+        return intent;
     }
 
     public static class DismissKeysyncDialogReceiver extends BroadcastReceiver {

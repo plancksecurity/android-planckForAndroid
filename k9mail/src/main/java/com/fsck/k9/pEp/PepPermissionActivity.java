@@ -114,6 +114,7 @@ public abstract class PepPermissionActivity extends K9Activity {
     public void createBasicPermissionsActivity(PEpProvider.CompletedCallback completedCallback) {
         Dexter.withActivity(this)
                 .withPermissions(
+                        Manifest.permission.READ_CONTACTS,
                         Manifest.permission.WRITE_CONTACTS,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ).withListener(new MultiplePermissionsListener() {

@@ -24,6 +24,11 @@ public enum ImportKeyWizardState {
     }, PRIVATE_KEY_WAITING {
         @Override
         public ImportKeyWizardState next() {
+            return RECEIVED_PRIV_KEY;
+        }
+    }, RECEIVED_PRIV_KEY {
+        @Override
+        public ImportKeyWizardState next() {
             return INIT;
         }
     };
@@ -33,7 +38,7 @@ public enum ImportKeyWizardState {
     }
 
     public ImportKeyWizardState start() {
-        return BEACON_RECEIVED;
+        return HANDSHAKE_REQUESTED;
     }
 
     public abstract ImportKeyWizardState next();

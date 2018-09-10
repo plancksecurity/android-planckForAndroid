@@ -989,22 +989,22 @@ public class Accounts extends PEpImporterActivity {
                 case R.id.import_pEp_key:
                     onImportpEpKey(realAccount);
                     break;
-               /* case R.id.import_PGP_key:
+                case R.id.import_PGP_key:
                     onImportPGPKey(realAccount);
                     break;
-                    */
+
             }
         }
         return true;
     }
 
     private void onImportPGPKey(Account realAccount) {
-        ImportWizardFrompEp.actionStartImportpEpKey(getApplicationContext(), realAccount.getUuid(), true, KeySourceType.PGP, null);
+        ImportWizardFrompEp.actionStartImportpEpKey(Accounts.this, realAccount.getUuid(), true, KeySourceType.PGP, null);
 
     }
 
     private void onImportpEpKey(Account realAccount) {
-        ImportWizardFrompEp.actionStartImportpEpKey(getApplicationContext(), realAccount.getUuid(), true, KeySourceType.PEP, null);
+        ImportWizardFrompEp.actionStartImportpEpKey(Accounts.this, realAccount.getUuid(), true, KeySourceType.PEP, null);
     }
 
 

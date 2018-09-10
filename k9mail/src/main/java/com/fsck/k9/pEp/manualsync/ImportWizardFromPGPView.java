@@ -26,4 +26,14 @@ interface ImportWizardFromPGPView {
     void cancel();
 
     void setDialogEnabled();
+
+    void notifyAcceptedHandshakeAndWaitingForPGPPrivateKey();
+
+    void starSendKeyImportRequest();
+
+    void finishSendingKeyImport();
+
+    void showSendError();
+
+    void notifySendingOwnKey();
 }

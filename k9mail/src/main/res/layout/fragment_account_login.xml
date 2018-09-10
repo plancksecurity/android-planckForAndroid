@@ -35,7 +35,8 @@
                     android:inputType="textEmailAddress"
                     android:fontFamily="sans-serif"
                     android:layout_height="wrap_content"
-                    android:layout_width="fill_parent" />
+                    android:layout_width="fill_parent"
+                    android:contentDescription="@string/account_settings_email_label"/>
             </android.support.design.widget.TextInputLayout>
 
 
@@ -60,7 +61,8 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif"
                     android:layout_width="fill_parent"
-                    android:nextFocusDown="@+id/next" />
+                    android:nextFocusDown="@+id/next"
+                    android:contentDescription="@string/account_setup_outgoing_password_label"/>
             </android.support.design.widget.TextInputLayout>
 
             <CheckBox

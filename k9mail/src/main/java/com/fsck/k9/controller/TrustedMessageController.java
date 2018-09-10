@@ -38,7 +38,7 @@ class TrustedMessageController {
     }
 
     boolean shouldAppendMessageOnUntrustedServer(Account account, Rating rating) {
-        return !(!account.isUntrustedSever() && rating.equals(Rating.pEpRatingUndefined));
+        return !account.isUntrustedSever() && rating.equals(Rating.pEpRatingUndefined);
     }
 
     Message getOwnMessageCopy(Context context, PEpProvider pEpProvider, Account account, LocalMessage localMessage) throws MessagingException {
