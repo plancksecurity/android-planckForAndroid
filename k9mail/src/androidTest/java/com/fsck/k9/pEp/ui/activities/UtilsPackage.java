@@ -212,8 +212,35 @@ public class UtilsPackage {
         } catch (Exception ex){
             Timber.e("Can not compare TextView with " + content);
         }
-          return value[0];
+        return value[0];
     }
+    public static boolean containstText(ViewInteraction interaction, final String content) {
+        final boolean[] value = {false};
+        try {
+            if (interaction != null) {
+                interaction.perform(new ViewAction() {
+                    @Override
+                    public Matcher<View> getConstraints() {
+                        return isAssignableFrom(TextView.class);
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return "check for existence";
+                    }
+
+                    @Override
+                    public void perform(UiController uiController, View view) {
+                        value[0] = ((TextView) view).getText().toString().contains(content);
+                    }
+                });
+            }
+        } catch (Exception ex){
+            Timber.e("Can not compare TextView with " + content);
+        }
+        return value[0];
+    }
+
     static Matcher<View> valuesAreEqual(final String firstValue, final String secondValue) {
 
         return new TypeSafeMatcher<View>() {
