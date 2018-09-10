@@ -113,7 +113,6 @@ public class CucumberTestSteps {
         if (!exists(onView(withId(R.id.message_list)))) {
             testUtils.createAccount(false);
         }
-        bot = testUtils.botList;
     }
 
 
@@ -509,6 +508,7 @@ public class CucumberTestSteps {
     @When("^I start test")
     public void startTest() {
         testUtils.readBotList();
+        bot = testUtils.botList;
         while (true) {
             try {
                 device.waitForIdle();
@@ -543,7 +543,6 @@ public class CucumberTestSteps {
 
     @Then("^I send (\\d+) (?:message|messages) to (\\S+) with subject (\\S+) and body (\\S+)$")
     public void I_send_messages_to_bot(int totalMessages,String botName, String subject, String body) {
-        bot = testUtils.botList;
         String messageTo = "nothing";
         switch (botName){
             case "bot1":
@@ -640,6 +639,7 @@ public class CucumberTestSteps {
 
     @Then("^I check if the privacy status is (\\S+)$")
     public void I_check_toolBar_color_is(String color){
+        testUtils.doWaitForResource(R.id.toolbar);
         try {
             onView(withId(R.id.to)).perform(click());
             onView(withId(R.id.subject)).perform(click());

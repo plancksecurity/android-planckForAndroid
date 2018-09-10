@@ -281,6 +281,7 @@ public class TestUtils {
     }
 
     public void readBotList(){
+        Timber.i("Lee la lista");
         File directory = new File(Environment.getExternalStorageDirectory().toString());
 
         File newFile = new File(directory, "test/botlist.txt");
