@@ -95,7 +95,7 @@ Feature: Sanity Test
     And I check in the handshake dialog if the privacy status is pEpRatingUndefined
     Then I fill messageTo field with bot2
     And I fill messageSubject field with empty
-    And I fill messageBody field with empty
+    And I fill messageBody field with TestCase1.2.5
     And I check if the privacy status is pep_yellow
     Then I click send message button
     And I wait for new message
@@ -134,8 +134,6 @@ Feature: Sanity Test
   @login-scenarios
   Scenario: Test Sanity_1.2.7_DisableProtection
     When I click message compose
-    Then I send 1 message to bot1 with subject TestCase1.2.7 and body TestCase1.2.7
-    And I click message compose
     Then I fill messageTo field with bot1
     And I select from message menu pep_force_unprotected
     And I fill messageSubject field with TestCase1.2.7
