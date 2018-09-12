@@ -192,18 +192,17 @@ public class CucumberTestSteps {
 
     @When("^I compare messageBody with (\\S+)")
     public void I_compare_body(String cucumberBody) {
-        boolean viewExists = false;
         if (cucumberBody.equals("empty")) {
-            cucumberBody = "";
+            cucumberBody = resources.getString(R.string.default_signature);
         }
         testUtils.doWaitForResource(R.id.message_container);
-        while (!viewExists) {
+        while (true) {
             device.waitForIdle();
             if (exists(onView(withId(R.id.message_container)))) {
                 String [] body = new String[1];
                 body[0] = cucumberBody;
                 compareTextWithWebViewText(body);
-                viewExists = true;
+                return;
             }
         }
     }
