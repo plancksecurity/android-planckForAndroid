@@ -152,6 +152,7 @@ public class CucumberTestSteps {
             }
         } else {
             try {
+                onView(withId(R.id.to)).perform(closeSoftKeyboard());
                 device.waitForIdle();
                 onView(withId(R.id.to)).perform(typeText(cucumberMessageTo), closeSoftKeyboard());
                 device.waitForIdle();
@@ -177,6 +178,7 @@ public class CucumberTestSteps {
         if (!text.equals("empty")) {
             while (!(containstText(onView(withId(viewId)), text))) {
                 try {
+                    onView(withId(viewId)).perform(closeSoftKeyboard());
                     onView(withId(viewId)).perform(click());
                     onView(withId(viewId)).perform(closeSoftKeyboard());
                     onView(withId(viewId)).perform(typeText(text), closeSoftKeyboard());
@@ -643,11 +645,22 @@ public class CucumberTestSteps {
     @Then("^I check if the privacy status is (\\S+)$")
     public void I_check_toolBar_color_is(String color){
         testUtils.doWaitForResource(R.id.toolbar);
-        try {
-            onView(withId(R.id.to)).perform(click());
-            onView(withId(R.id.subject)).perform(click());
-        } catch (Exception ex) {
-            Timber.i("Couldn't find view");
+        boolean wait = false;
+        while (!wait) {
+            try {
+                device.waitForIdle();
+                onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
+                try {
+                    UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+                    scroll.swipe(Direction.DOWN, 1.0f);
+                } catch (Exception ex) {
+                    Timber.i("Cannot do scroll down");
+                }
+                waitUntilIdle();
+                wait = true;
+            } catch (Exception ex) {
+                Timber.i("Cannot find toolbar");
+            }
         }
         checkPrivacyStatus(color);
     }
