@@ -514,15 +514,19 @@ public class CucumberTestSteps {
                 if (exists(onView(withId(R.id.accounts_list)))) {
                     onView(withId(R.id.accounts_list)).perform(click());
                     device.waitForIdle();
-                    testUtils.swipeDownMessageList();
-                    device.waitForIdle();
-                    testUtils.getMessageListSize();
-                    return;
+                    if (!exists(onView(withId(R.id.accounts_list)))) {
+                        onView(withId(R.id.message_list)).check(matches(isDisplayed()));
+                        testUtils.swipeDownMessageList();
+                        device.waitForIdle();
+                        testUtils.getMessageListSize();
+                        return;
+                    }
+                } else {
+                    while (!exists(onView(withId(R.id.accounts_list)))) {
+                        testUtils.pressBack();
+                        device.waitForIdle();
+                    }
                 }
-                onView(withId(R.id.accounts_list)).check(matches(isDisplayed()));
-                device.waitForIdle();
-                onView(withId(R.id.accounts_list)).perform(click());
-                device.waitForIdle();
             } catch (Exception ex) {
                 while (!exists(onView(withId(R.id.accounts_list)))) {
                     testUtils.pressBack();
