@@ -183,7 +183,7 @@ public class TestUtils {
         boolean buttonClicked = false;
         doWaitForResource(viewId);
         while (!buttonClicked) {
-            if (exists(onView(withId(viewId))) && viewIsDisplayed(viewId)){
+            if (exists(onView(withId(viewId))) || viewIsDisplayed(viewId)){
                 device.waitForIdle();
                 try {
                     onView(withId(viewId)).perform(click());
