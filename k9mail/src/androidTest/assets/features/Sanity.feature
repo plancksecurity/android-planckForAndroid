@@ -3,7 +3,7 @@ Feature: Sanity
   Keys for these test users will be obtained from the test bot
 
   Background:
-    Given I set timeout to 50000 seconds
+    Given I set timeout to 500000 seconds
     Given I create an account
     Given I start test
 
@@ -97,14 +97,14 @@ Feature: Sanity
     And I check in the handshake dialog if the privacy status is pEpRatingUndefined
     Then I fill messageTo field with bot2
     And I fill messageSubject field with empty
-    And I fill messageBody field with TestCase1.2.5
+    And I fill messageBody field with empty
     And I check if the privacy status is pep_yellow
     Then I click send message button
     And I wait for new message
     Then I go to sent folder
     And I click last message
     Then I check if the privacy status is pep_yellow
-    And I compare messageBody with TestCase1.2.5
+    And I compare messageBody with empty
 
   @login-scenarios
   Scenario: Test Sanity_1.2.6_MailToMultipleContactsMixed
