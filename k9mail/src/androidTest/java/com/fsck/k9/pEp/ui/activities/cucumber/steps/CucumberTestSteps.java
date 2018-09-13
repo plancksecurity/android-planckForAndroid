@@ -502,7 +502,6 @@ public class CucumberTestSteps {
 
     @When("^I click message compose")
     public void I_click_message_compose() {
-        Timber.i("Problema en compose message button");
         testUtils.composeMessageButton();
     }
 
