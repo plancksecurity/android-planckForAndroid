@@ -1043,16 +1043,11 @@ public class TestUtils {
         }
     }
 
-    public void swipeDownMessageList(){
+    public void swipeDownMessageList() {
         boolean actionPerformed = false;
         while (!actionPerformed) {
-            try {
-                onView(withId(R.id.message_list)).perform(swipeDown());
-                Timber.i("Message list found");
-                actionPerformed = true;
-            } catch (Exception ex) {
-                Timber.i("Message list not found, waiting for view...");
-            }
+            onView(withId(R.id.message_list)).perform(swipeDown());
+            actionPerformed = true;
         }
     }
 
