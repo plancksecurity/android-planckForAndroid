@@ -881,6 +881,7 @@ public class TestUtils {
     }
 
     public void doWaitForResource(int resource) {
+        device.waitForIdle();
         IdlingResource idlingResourceVisibility = null;
         Activity currentActivity = getCurrentActivity();
             try {
