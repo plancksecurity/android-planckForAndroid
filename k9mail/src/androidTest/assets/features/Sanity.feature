@@ -3,7 +3,7 @@ Feature: Sanity
   Keys for these test users will be obtained from the test bot
 
   Background:
-    Given I set timeout to 500000 seconds
+    Given I set timeout to 1000 seconds
     Given I create an account
     Given I start test
 
