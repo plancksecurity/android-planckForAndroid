@@ -226,7 +226,11 @@ public class CucumberTestSteps {
         int size = 1;
         for (int positionToClick = 0; positionToClick < size; positionToClick++) {
             device.waitForIdle();
-            onView(withId(R.id.tvPep)).perform(click());
+            try {
+                onView(withId(R.id.tvPep)).perform(click());
+            } catch (Exception ex) {
+                onView(withId(R.id.pEp_indicator)).perform(click());
+            }
             device.waitForIdle();
             testUtils.selectFromMenu(R.string.settings_language_label);
             size = calculateNewSize(size, selector);
