@@ -120,7 +120,7 @@ public class CucumberTestSteps {
     public void I_fill_messageTo_field(String cucumberMessageTo) {
         switch (cucumberMessageTo) {
             case "empty":
-                cucumberMessageTo = " ";
+                cucumberMessageTo = "";
                 testUtils.removeTextFromTextView("to");
                 break;
             case "myself":
@@ -143,8 +143,8 @@ public class CucumberTestSteps {
                 cucumberMessageTo = bot[3] + HOST;
                 break;
         }
-        cucumberMessageTo = cucumberMessageTo + ",";
         if (!(getTextFromView(onView(withId(R.id.to))).equals("") || getTextFromView(onView(withId(R.id.to))).equals(" "))) {
+            cucumberMessageTo = cucumberMessageTo + ",";
             try {
                 fillMessage(cucumberMessageTo);
             } catch (Exception ex) {
@@ -160,6 +160,7 @@ public class CucumberTestSteps {
                 Timber.i("Couldn't find view: " + ex.getMessage());
             }
         }
+        onView(withId(R.id.to)).perform(typeText(","), closeSoftKeyboard());
     }
 
     @When("^I fill messageSubject field with (\\S+)")
@@ -347,6 +348,7 @@ public class CucumberTestSteps {
         device.waitForIdle();
         waitUntilIdle();
         BySelector selector = By.clazz("android.widget.ScrollView");
+        onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
             for (UiObject2 object : device.findObjects(selector)) {
                 boolean actionPerformed = false;
                 while (!actionPerformed) {
@@ -359,7 +361,7 @@ public class CucumberTestSteps {
                 }
             }
             try {
-                onView(withId(R.id.to)).perform(typeText(","), closeSoftKeyboard());
+                onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
             } catch (Exception ex) {
                 Timber.i("Cannot find field to");
             }
