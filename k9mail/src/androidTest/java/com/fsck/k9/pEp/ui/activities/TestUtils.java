@@ -173,10 +173,22 @@ public class TestUtils {
 
     private void accountDescription(String description, String userName) {
         doWaitForResource(R.id.account_description);
-        device.waitForIdle();
-        onView(withId(R.id.account_description)).perform(typeText(description));
-        onView(withId(R.id.account_name)).perform(typeText(userName), closeSoftKeyboard());
-        device.waitForIdle();
+        while (getTextFromView(onView(withId(R.id.account_description))).equals("")) {
+            try {
+                device.waitForIdle();
+                onView(withId(R.id.account_description)).perform(typeText(description), closeSoftKeyboard());
+            } catch (Exception ex) {
+                Timber.i("Cannot find account description field");
+            }
+        }
+        while (getTextFromView(onView(withId(R.id.account_name))).equals("")) {
+            try {
+                onView(withId(R.id.account_name)).perform(typeText(userName), closeSoftKeyboard());
+                device.waitForIdle();
+            } catch (Exception ex) {
+                Timber.i("Cannot find account name field");
+            }
+        }
         onView(withId(R.id.done)).perform(click());
     }
 
