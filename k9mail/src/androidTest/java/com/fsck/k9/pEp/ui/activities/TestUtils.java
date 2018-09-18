@@ -237,47 +237,48 @@ public class TestUtils {
 
     private void readConfigFile() {
         File directory = new File(Environment.getExternalStorageDirectory().toString());
-
         File newFile = new File(directory, "test/test_config.txt");
         testConfig = new TestConfig();
-        try  {
-            FileInputStream fin = new FileInputStream(newFile);
-            InputStreamReader inputStreamReader = new InputStreamReader(fin);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            String receiveString;
-            while ( (receiveString = bufferedReader.readLine()) != null ) {
-                String line[] = receiveString.split(" = ");
-                if (line.length > 1) {
-                    switch (line[0]) {
-                        case "mail":
-                            testConfig.setMail(line[1]);
-                            break;
-                        case "password":
-                            testConfig.setPassword(line[1]);
-                            break;
-                        case "username":
-                            testConfig.setUsername(line[1]);
-                            break;
-                        case "imap_server":
-                            testConfig.setImap_server(line[1]);
-                            break;
-                        case "smtp_server":
-                            testConfig.setSmtp_server(line[1]);
-                            break;
-                        case "imap_port":
-                            testConfig.setImap_port(line[1]);
-                            break;
-                        case "smtp_port":
-                            testConfig.setSmtp_port(line[1]);
-                            break;
-                        default:
-                            break;
+        while (testConfig.getMail() == null || testConfig.getMail().equals("")) {
+            try {
+                FileInputStream fin = new FileInputStream(newFile);
+                InputStreamReader inputStreamReader = new InputStreamReader(fin);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String receiveString;
+                while ((receiveString = bufferedReader.readLine()) != null) {
+                    String line[] = receiveString.split(" = ");
+                    if (line.length > 1) {
+                        switch (line[0]) {
+                            case "mail":
+                                testConfig.setMail(line[1]);
+                                break;
+                            case "password":
+                                testConfig.setPassword(line[1]);
+                                break;
+                            case "username":
+                                testConfig.setUsername(line[1]);
+                                break;
+                            case "imap_server":
+                                testConfig.setImap_server(line[1]);
+                                break;
+                            case "smtp_server":
+                                testConfig.setSmtp_server(line[1]);
+                                break;
+                            case "imap_port":
+                                testConfig.setImap_port(line[1]);
+                                break;
+                            case "smtp_port":
+                                testConfig.setSmtp_port(line[1]);
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
+                fin.close();
+            } catch (Exception e) {
+                Timber.i("Error reading config file, trying again");
             }
-            fin.close();
-        }catch (Exception e){
-            e.printStackTrace();
         }
     }
 
