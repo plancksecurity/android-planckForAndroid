@@ -160,7 +160,14 @@ public class CucumberTestSteps {
                 Timber.i("Couldn't find view: " + ex.getMessage());
             }
         }
-        onView(withId(R.id.to)).perform(typeText(","), closeSoftKeyboard());
+        try {
+            onView(withId(R.id.to)).perform(closeSoftKeyboard());
+            device.waitForIdle();
+            onView(withId(R.id.to)).perform(typeText(","), closeSoftKeyboard());
+            device.waitForIdle();
+        } catch (Exception ex) {
+            Timber.i("Couldn't find view: " + ex.getMessage());
+        }
     }
 
     @When("^I fill messageSubject field with (\\S+)")
