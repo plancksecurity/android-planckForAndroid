@@ -137,12 +137,27 @@ public class TestUtils {
     }
 
     private void newEmailAccount() {
-        onView(withId(R.id.account_email)).perform(typeText(testConfig.getMail())); // getEmail()
-        onView(withId(R.id.account_password)).perform(typeText(testConfig.getPassword()), closeSoftKeyboard()); // getPassword()
-        device.waitForIdle();
-        onView(withId(R.id.next)).perform(click());
-        if (viewWithTextIsDisplayed(resources.getString(R.string.account_already_exists))) {
-            device.pressBack();
+        while (getTextFromView(onView(withId(R.id.account_email))).equals("")) {
+            try {
+                device.waitForIdle();
+                onView(withId(R.id.account_email)).perform(typeText(testConfig.getMail()), closeSoftKeyboard());
+            } catch (Exception ex) {
+                Timber.i("Cannot fill account email");
+            }
+        }
+        while (getTextFromView(onView(withId(R.id.account_password))).equals("")) {
+            try {
+                device.waitForIdle();
+                onView(withId(R.id.account_password)).perform(typeText(testConfig.getPassword()), closeSoftKeyboard()); // getPassword()
+                device.waitForIdle();
+                onView(withId(R.id.next)).perform(click());
+                if (viewWithTextIsDisplayed(resources.getString(R.string.account_already_exists))) {
+                    device.pressBack();
+                    return;
+                }
+            } catch (Exception ex) {
+                Timber.i("Cannot fill account password");
+            }
         }
     }
 
