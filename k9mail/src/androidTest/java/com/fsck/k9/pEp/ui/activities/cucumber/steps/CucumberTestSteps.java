@@ -76,6 +76,7 @@ public class CucumberTestSteps {
     private EspressoTestingIdlingResource espressoTestingIdlingResource;
     private Resources resources;
     private String trustWords;
+    final int[] time = {0};
     @Rule
     public IntentsTestRule<Accounts> activityTestRule = new IntentsTestRule<>(Accounts.class, true, false);
 
@@ -760,21 +761,22 @@ public class CucumberTestSteps {
         startTimer(time);
     }
 
-    private void startTimer(int finalTime){
-        final int[] time = {0};
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                time[0]++;
-                if (time[0] > finalTime){
-                    try {
-                        Timber.i("Timeout: closing the app...");
-                        System.exit(0);
-                    } catch (Exception ex) {
-                        Timber.i("Couldn't close the app");
+    private void startTimer(int finalTime) {
+        if (time[0] == 0) {
+            new Timer().scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    time[0]++;
+                    if (time[0] > finalTime) {
+                        try {
+                            Timber.i("Timeout: closing the app...");
+                            System.exit(0);
+                        } catch (Exception ex) {
+                            Timber.i("Couldn't close the app");
+                        }
                     }
                 }
-            }
-        }, 0, 1000);
+            }, 0, 1000);
+        }
     }
 }
