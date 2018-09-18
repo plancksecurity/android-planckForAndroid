@@ -77,6 +77,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static android.support.test.runner.lifecycle.Stage.RESUMED;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.hasValueEqualTo;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.saveSizeInInt;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.valuesAreEqual;
@@ -361,8 +362,7 @@ public class TestUtils {
     }
 
     private void allowPermissions(int index) {
-        boolean existPermission = false;
-        while (!existPermission){
+        while (true){
             try {
                 device.waitForIdle();
                 UiObject allowPermissions = device.findObject(new UiSelector()
@@ -374,7 +374,7 @@ public class TestUtils {
                     device.waitForIdle();
                 } else {
                     Timber.i("There is no permissions dialog to interact with ");
-                    existPermission = true;
+                    return;
                 }
             } catch (Exception ignoredException) {
                 Timber.i(ignoredException, "Failed trying to allow permission");
