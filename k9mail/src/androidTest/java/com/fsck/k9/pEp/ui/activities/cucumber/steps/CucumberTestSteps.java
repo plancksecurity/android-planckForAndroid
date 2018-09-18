@@ -519,10 +519,11 @@ public class CucumberTestSteps {
             try {
                 device.waitForIdle();
                 if (exists(onView(withId(R.id.accounts_list)))) {
-                    onView(withId(R.id.accounts_list)).perform(click());
-                    device.waitForIdle();
+                    while (exists(onView(withId(R.id.accounts_list)))) {
+                        onView(withId(R.id.accounts_list)).perform(click());
+                        device.waitForIdle();
+                    }
                     if (!exists(onView(withId(R.id.accounts_list)))) {
-                        onView(withId(R.id.message_list)).check(matches(isDisplayed()));
                         testUtils.swipeDownMessageList();
                         device.waitForIdle();
                         testUtils.getMessageListSize();
