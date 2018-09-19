@@ -756,8 +756,8 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
-    @And("^I set timeout to (\\d+) seconds$")
-    public void I_set_timeout(int time){
+    @And("^I set timeoutTest to (\\d+) seconds$")
+    public void I_set_timeoutTest(int time){
         startTimer(time);
     }
 
@@ -767,7 +767,10 @@ public class CucumberTestSteps {
                 @Override
                 public void run() {
                     time[0]++;
-                    if (time[0] > finalTime) {
+                    Timber.i("Timeout: " + time[0] + "/" + finalTime);
+                    if (activityTestRule == null) {
+                        System.exit(0);
+                    } else if (time[0] > finalTime) {
                         try {
                             Timber.i("Timeout: closing the app...");
                             System.exit(0);
