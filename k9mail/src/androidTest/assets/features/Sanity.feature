@@ -3,12 +3,12 @@ Feature: Sanity
   Keys for these test users will be obtained from the test bot
 
   Background:
-    Given I set timeout to 1000 seconds
     Given I create an account
     Given I start test
 
   @login-scenarios
   Scenario: Test Sanity_1.2.1_MailToNewContact
+    Given I set timeout to 600 seconds
     When I click message compose
     And I check if the privacy status is pEpRatingUndefined
     Then I press back
