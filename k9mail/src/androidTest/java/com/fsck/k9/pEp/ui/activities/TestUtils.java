@@ -25,6 +25,7 @@ import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
+import android.support.test.uiautomator.Direction;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
@@ -644,6 +645,8 @@ public class TestUtils {
         /*intending((isInternal()))
                 .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null));*/
         int position;
+        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+        scroll.swipe(Direction.UP, 1.0f);
         for (int start = 0; start < total; start++) {
             int size = device.findObjects(selector).size();
             while (size == 0) {
