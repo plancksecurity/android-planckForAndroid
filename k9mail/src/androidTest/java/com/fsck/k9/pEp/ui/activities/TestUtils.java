@@ -353,13 +353,14 @@ public class TestUtils {
             }
             allowPermissions();
             readConfigFile();
-            try {
-                device.waitForIdle();
-                onView(withId(R.id.action_continue)).perform(click());
-                device.waitForIdle();
-            } catch (Exception ignoredException) {
-                Timber.i("Ignored", "Ignored exception");
-            }
+                while (exists(onView(withId(R.id.action_continue)))) {
+                    try {
+                        onView(withId(R.id.action_continue)).perform(click());
+                        device.waitForIdle();
+                    } catch (Exception ignoredException) {
+                        Timber.i("Ignored", "Ignored exception");
+                    }
+                }
             try {
                 if (isGmail) {
                     gmailAccount();
