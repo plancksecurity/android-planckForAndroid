@@ -113,11 +113,11 @@ public class TestUtils {
     private int messageListSize[] = new int[2];
 
     public static final int TIMEOUT_TEST = FIVE_MINUTES * MINUTE_IN_SECONDS * SECOND_IN_MILIS;
-    public TestConfig testConfig;
+    private TestConfig testConfig;
     public String botList[];
 
     public TestUtils(UiDevice device, Instrumentation instrumentation) {
-        this.device = device;
+        TestUtils.device = device;
         this.instrumentation = instrumentation;
         context = InstrumentationRegistry.getTargetContext();
         resources = context.getResources();
@@ -228,7 +228,7 @@ public class TestUtils {
         }
     }
 
-    public void yellowStatusMessageTest(String messageSubject, String messageBody, String messageTo) {
+    void yellowStatusMessageTest(String messageSubject, String messageBody, String messageTo) {
         device.waitForIdle();
         fillMessage(new TestUtils.BasicMessage("", messageSubject, messageSubject, messageTo), false);
         onView(withId(R.id.pEp_indicator)).perform(click());
@@ -471,7 +471,7 @@ public class TestUtils {
         onView(withId(R.id.attachments)).check(matches(hasDescendant(withText(fileName))));
     }
 
-    public void externalAppRespondWithFile(int id) {
+    void externalAppRespondWithFile(int id) {
         intending(not(isInternal()))
                 .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, insertFileIntoIntentAsData(id)));
     }
@@ -567,6 +567,7 @@ public class TestUtils {
             selectRemoveAccount();
             clickAcceptButton();
         } catch (Exception ex) {
+            Timber.i("Cannot select/accept remove account");
         }
     }
 
@@ -681,7 +682,7 @@ public class TestUtils {
         }
     }
 
-    public void longClick(String viewId) {
+    private void longClick(String viewId) {
         UiObject2 list = device.findObject(By.res(APP_ID, viewId));
         Rect bounds = list.getVisibleBounds();
         device.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 450);
@@ -708,7 +709,7 @@ public class TestUtils {
         }
     }
 
-    public void testStatusEmpty() {
+    void testStatusEmpty() {
         checkStatus(Rating.pEpRatingUndefined);
         Espresso.pressBack();
     }
@@ -732,7 +733,7 @@ public class TestUtils {
         Espresso.pressBack();
     }
 
-    public void checkStatus(Rating rating) {
+    void checkStatus(Rating rating) {
         assertMessageStatus(rating.value);
     }
 
@@ -942,7 +943,7 @@ public class TestUtils {
             }
     }
 
-    public void doWaitForAlertDialog(IntentsTestRule<SplashActivity> intent, int displayText) {
+    void doWaitForAlertDialog(IntentsTestRule<SplashActivity> intent, int displayText) {
         onView(withId(intent.getActivity().getResources()
                 .getIdentifier("alertTitle", "id", "android")))
                 .inRoot(isDialog())
