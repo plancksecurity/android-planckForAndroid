@@ -17,7 +17,9 @@ import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.Direction;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
+import android.support.test.uiautomator.Until;
 import android.view.KeyEvent;
+import android.webkit.WebView;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
@@ -52,6 +54,8 @@ import static android.support.test.espresso.intent.matcher.IntentMatchers.isInte
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static android.support.test.espresso.web.sugar.Web.onWebView;
+import static android.support.test.espresso.web.webdriver.DriverAtoms.webClick;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containsText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containstText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
@@ -299,7 +303,9 @@ public class CucumberTestSteps {
         while (!webViewLoaded) {
             try {
                 device.waitForIdle();
+                waitUntilIdle();
                 wb = device.findObject(By.clazz("android.webkit.WebView"));
+                wb.click();
                 UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
                 scroll.swipe(Direction.UP, 1.0f);
                 String webViewText = "empty";
@@ -314,6 +320,7 @@ public class CucumberTestSteps {
                             webViewLoaded = true;
                             childFound = true;
                             device.waitForIdle();
+                            break;
                         } else {
                             webViewTemporal = webViewTemporal.getChildren().get(0);
                         }
@@ -321,6 +328,8 @@ public class CucumberTestSteps {
                     onView(withId(R.id.message_container)).check(matches(containsText(webViewText, textToCompare)));
                 }
             } catch (Exception ex) {
+                UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+                scroll.swipe(Direction.UP, 1.0f);
                 Timber.i("Cannot find webView: " + ex.getMessage());
             }
         }
