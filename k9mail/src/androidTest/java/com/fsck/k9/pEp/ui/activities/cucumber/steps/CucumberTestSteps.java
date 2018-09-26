@@ -156,20 +156,24 @@ public class CucumberTestSteps {
                 Timber.i("Couldn't fill message: " + ex.getMessage());
             }
         } else {
-            try {
-                onView(withId(R.id.to)).perform(closeSoftKeyboard());
-                device.waitForIdle();
-                onView(withId(R.id.to)).perform(typeText(cucumberMessageTo), closeSoftKeyboard());
-                device.waitForIdle();
-            } catch (Exception ex) {
-                Timber.i("Couldn't find view: " + ex.getMessage());
+            boolean filled = false;
+            while (!filled) {
+                try {
+                    device.waitForIdle();
+                    onView(withId(R.id.to)).check(matches(isDisplayed()));
+                    onView(withId(R.id.to)).perform(closeSoftKeyboard());
+                    device.waitForIdle();
+                    onView(withId(R.id.to)).perform(typeText(cucumberMessageTo), closeSoftKeyboard());
+                    filled = true;
+                } catch (Exception ex) {
+                    Timber.i("Couldn't find view: " + ex.getMessage());
+                }
             }
         }
         try {
-            onView(withId(R.id.to)).perform(closeSoftKeyboard());
-            device.waitForIdle();
-            onView(withId(R.id.to)).perform(typeText(","), closeSoftKeyboard());
-            device.waitForIdle();
+            onView(withId(R.id.subject)).perform(click(), closeSoftKeyboard());
+            onView(withId(R.id.message_content)).perform(click(), closeSoftKeyboard());
+            onView(withId(R.id.to)).check(matches(isDisplayed()));
         } catch (Exception ex) {
             Timber.i("Couldn't find view: " + ex.getMessage());
         }
