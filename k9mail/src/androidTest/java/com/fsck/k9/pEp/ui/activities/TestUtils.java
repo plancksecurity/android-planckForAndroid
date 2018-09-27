@@ -1071,7 +1071,7 @@ public class TestUtils {
     }
 
     public void getMessageListSize() {
-        while (true) {
+        while (exists(onView(withId(R.id.message_list)))) {
             try {
                 onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
                 return;
