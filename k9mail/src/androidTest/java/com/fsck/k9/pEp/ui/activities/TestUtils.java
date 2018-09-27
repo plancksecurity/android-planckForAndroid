@@ -753,24 +753,28 @@ public class TestUtils {
             clickView(R.id.tvPep);
         }
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
+        goBack(false);
     }
 
     public void goBackAndSaveAsDraft (IntentsTestRule activity){
+        goBack(true);
+    }
+
+    private void goBack (boolean saveAsDraft) {
         Activity currentActivity = getCurrentActivity();
         while (currentActivity == getCurrentActivity()){
             try {
                 device.waitForIdle();
                 device.pressBack();
-                //doWaitForAlertDialog(activity, R.string.save_or_discard_draft_message_dlg_title);
-                //doWaitForObject("android.widget.Button");
                 device.waitForIdle();
-                onView(withText(R.string.save_draft_action)).perform(click());
+                if (saveAsDraft) {
+                    onView(withText(R.string.save_draft_action)).perform(click());
+                }
             } catch (Exception ex){
                 Timber.i("Ignored exception: " + ex);
             }
         }
-        device.waitForIdle();
-    }
+        device.waitForIdle();}
 
     public void assertsTextsOnScreenAreEqual(int resourceOnScreen, int comparedWith) {
         BySelector selector = By.clazz("android.widget.TextView");
