@@ -332,8 +332,6 @@ public class CucumberTestSteps {
                     onView(withId(R.id.message_container)).check(matches(containsText(webViewText, textToCompare)));
                 }
             } catch (Exception ex) {
-                UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-                scroll.swipe(Direction.UP, 1.0f);
                 Timber.i("Cannot find webView: " + ex.getMessage());
             }
         }
