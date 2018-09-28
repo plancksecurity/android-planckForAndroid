@@ -326,7 +326,11 @@ public class CucumberTestSteps {
                             device.waitForIdle();
                             break;
                         } else {
-                            webViewTemporal = webViewTemporal.getChildren().get(0);
+                            try {
+                                webViewTemporal = webViewTemporal.getChildren().get(0);
+                            } catch (Exception ex) {
+                                webViewTemporal = wb.getChildren().get(1);
+                            }
                         }
                     }
                     onView(withId(R.id.message_container)).check(matches(containsText(webViewText, textToCompare)));
