@@ -347,6 +347,8 @@ public class CucumberTestSteps {
 
     @When("^I click confirm trust words$")
     public void I_click_confirm_trust_words() {
+        onView(withId(R.id.tvPep)).perform(click());
+        device.waitForIdle();
         onView(withId(R.id.confirmTrustWords)).perform(click());
     }
 
