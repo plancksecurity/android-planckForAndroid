@@ -80,6 +80,7 @@ public class CucumberTestSteps {
     private EspressoTestingIdlingResource espressoTestingIdlingResource;
     private Resources resources;
     private String trustWords;
+    final Timer timer = new Timer();
     final int[] time = {0};
     @Rule
     public IntentsTestRule<Accounts> activityTestRule = new IntentsTestRule<>(Accounts.class, true, false);
@@ -95,6 +96,7 @@ public class CucumberTestSteps {
             IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
             bot = new String[4];
             resources = InstrumentationRegistry.getTargetContext().getResources();
+            startTimer(100);
             if (testUtils.getCurrentActivity() == null) {
                 //startTimer(350);
                 try {
@@ -109,6 +111,7 @@ public class CucumberTestSteps {
     @After
     public void tearDown() {
         IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
+        timer.cancel();
         activityTestRule.finishActivity();
     }
 
@@ -774,19 +777,19 @@ public class CucumberTestSteps {
 
     private void startTimer(int finalTime) {
         if (time[0] == 0) {
-            new Timer().scheduleAtFixedRate(new TimerTask() {
+            timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
                     time[0]++;
                     Timber.i("Timeout: " + time[0] + "/" + finalTime);
                     if (activityTestRule == null) {
-                        System.exit(0);
+                        Assert.fail();
                     } else if (time[0] > finalTime) {
                         try {
-                            Timber.i("Timeout: closing the app...");
-                            System.exit(0);
+                            Timber.e("Timeout: closing the app...");
+                            Assert.fail();
                         } catch (Exception ex) {
-                            Timber.i("Couldn't close the app");
+                            Timber.e("Couldn't close the app");
                         }
                     }
                 }
