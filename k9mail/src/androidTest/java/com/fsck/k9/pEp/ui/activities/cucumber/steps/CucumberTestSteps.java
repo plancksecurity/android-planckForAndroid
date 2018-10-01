@@ -126,6 +126,9 @@ public class CucumberTestSteps {
 
     @When("^I fill messageTo field with (\\S+)")
     public void I_fill_messageTo_field(String cucumberMessageTo) {
+        while (!exists(onView(withId(R.id.to)))) {
+            device.waitForIdle();
+        }
         switch (cucumberMessageTo) {
             case "empty":
                 cucumberMessageTo = "";
