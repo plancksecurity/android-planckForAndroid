@@ -738,6 +738,12 @@ public class TestUtils {
     }
 
     public void assertMessageStatus(int status){
+        clickStatus();
+        onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
+        goBack(false);
+    }
+
+    public void clickStatus() {
         device.waitForIdle();
         if (!exists(onView(withId(R.id.reply_message)))) {
             device.waitForIdle();
@@ -752,8 +758,6 @@ public class TestUtils {
         } else {
             clickView(R.id.tvPep);
         }
-        onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
-        goBack(false);
     }
 
     public void goBackAndSaveAsDraft (IntentsTestRule activity){
