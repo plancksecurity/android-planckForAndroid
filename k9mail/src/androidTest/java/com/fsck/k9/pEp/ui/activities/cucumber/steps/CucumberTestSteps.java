@@ -371,7 +371,6 @@ public class CucumberTestSteps {
     public void I_check_pEp_status(String status) {
         checkPrivacyStatus(status);
         device.waitForIdle();
-        I_press_back();
     }
 
     void checkPrivacyStatus(String status){
