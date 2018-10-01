@@ -680,12 +680,16 @@ public class CucumberTestSteps {
 
     @Then("^I check if the privacy status is (\\S+)$")
     public void I_check_toolBar_color_is(String color){
-        testUtils.doWaitForResource(R.id.toolbar);
+        while(!exists(onView(withId(R.id.toolbar)))) {
+            device.waitForIdle();
+        }
         boolean wait = false;
         while (!wait) {
             try {
                 device.waitForIdle();
                 onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
+                onView(withId(R.id.to)).perform(click());
+                device.waitForIdle();
                 try {
                     UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
                     scroll.swipe(Direction.DOWN, 1.0f);
