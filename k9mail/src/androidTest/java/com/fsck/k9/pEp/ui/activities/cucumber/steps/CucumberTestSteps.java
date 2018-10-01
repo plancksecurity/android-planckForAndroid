@@ -96,7 +96,7 @@ public class CucumberTestSteps {
             IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
             bot = new String[4];
             resources = InstrumentationRegistry.getTargetContext().getResources();
-            startTimer(100);
+            startTimer(500);
             if (testUtils.getCurrentActivity() == null) {
                 //startTimer(350);
                 try {
@@ -356,7 +356,16 @@ public class CucumberTestSteps {
 
     @When("^I click confirm trust words$")
     public void I_click_confirm_trust_words() {
-        testUtils.clickStatus();
+        if (!exists(onView(withId(R.id.reply_message)))) {
+            device.waitForIdle();
+            testUtils.doWaitForResource(R.id.pEp_indicator);
+            waitUntilIdle();
+            device.waitForIdle();
+            testUtils.clickView(R.id.pEp_indicator);
+        }
+        while (!exists(onView(withId(R.id.confirmTrustWords)))) {
+            device.waitForIdle();
+        }
         onView(withId(R.id.confirmTrustWords)).perform(click());
     }
 
