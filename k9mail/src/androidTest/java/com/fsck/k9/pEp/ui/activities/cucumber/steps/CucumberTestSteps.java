@@ -349,8 +349,7 @@ public class CucumberTestSteps {
 
     @When("^I click confirm trust words$")
     public void I_click_confirm_trust_words() {
-        onView(withId(R.id.tvPep)).perform(click());
-        device.waitForIdle();
+        testUtils.clickStatus();
         onView(withId(R.id.confirmTrustWords)).perform(click());
     }
 
@@ -771,11 +770,6 @@ public class CucumberTestSteps {
         trustWords = getTextFromView(onView(withId(R.id.trustwords)));
         device.pressBack();
         device.waitForIdle();
-    }
-
-    @And("^I set timeoutTest to (\\d+) seconds$")
-    public void I_set_timeoutTest(int time){
-        startTimer(time);
     }
 
     private void startTimer(int finalTime) {
