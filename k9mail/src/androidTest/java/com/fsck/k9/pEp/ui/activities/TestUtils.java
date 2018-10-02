@@ -758,6 +758,7 @@ public class TestUtils {
         } else {
             clickView(R.id.tvPep);
         }
+        device.waitForIdle();
     }
 
     public void goBackAndSaveAsDraft (IntentsTestRule activity){
