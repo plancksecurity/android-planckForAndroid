@@ -251,6 +251,8 @@ public class CucumberTestSteps {
         int size = 1;
         for (int positionToClick = 0; positionToClick < size; positionToClick++) {
             device.waitForIdle();
+            testUtils.doWaitForResource(R.id.toolbar);
+            device.waitForIdle();
             try {
                 onView(withId(R.id.tvPep)).perform(click());
             } catch (Exception ex) {
