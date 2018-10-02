@@ -566,6 +566,7 @@ public class CucumberTestSteps {
                         testUtils.swipeDownMessageList();
                         device.waitForIdle();
                         testUtils.getMessageListSize();
+                        time[0] = 0;
                         return;
                     }
                 } else {
