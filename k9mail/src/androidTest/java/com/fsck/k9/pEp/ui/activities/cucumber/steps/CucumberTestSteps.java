@@ -51,6 +51,7 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.isInternal;
+import static android.support.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
@@ -698,14 +699,14 @@ public class CucumberTestSteps {
             try {
                 device.waitForIdle();
                 onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
-                onView(withId(R.id.to)).perform(click());
-                device.waitForIdle();
                 try {
                     UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
                     scroll.swipe(Direction.DOWN, 1.0f);
                 } catch (Exception ex) {
                     Timber.i("Cannot do scroll down");
                 }
+                onView(withId(R.id.to)).perform(click());
+                device.waitForIdle();
                 waitUntilIdle();
                 wait = true;
             } catch (Exception ex) {
