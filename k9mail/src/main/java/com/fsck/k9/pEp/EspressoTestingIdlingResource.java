@@ -25,6 +25,7 @@ public class EspressoTestingIdlingResource {
     }
 
     public static void decrement() {
+        Timber.i("Contador entra en decrement");
         if (mCountingIdlingResource != null) {
             contador--;
             Timber.i("Contador: " + contador);

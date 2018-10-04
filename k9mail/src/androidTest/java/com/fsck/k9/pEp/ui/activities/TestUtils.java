@@ -904,7 +904,7 @@ public class TestUtils {
                 for (UiObject2 object : device.findObjects(selector)) {
                     if (object.getText().contains(resources.getString(resource))) {
                         device.waitForIdle();
-                        object.click();
+                        object.longClick();
                         device.waitForIdle();
                         return;
                     }

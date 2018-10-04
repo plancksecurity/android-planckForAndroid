@@ -194,7 +194,9 @@ public class PEpTrustwords extends PepColoredActivity {
         getpEp().getRating(partner, new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
+                Timber.i("Contador de PEpTrustwords onLoaded");
                 setpEpRating(rating);
+                Timber.i("Contador de PEpTrustwords antes de colorActionBar");
                 colorActionBar();
                 Timber.i("Contador de PEpTrustwords onLoaded -1");
                 EspressoTestingIdlingResource.decrement();
@@ -202,6 +204,7 @@ public class PEpTrustwords extends PepColoredActivity {
 
             @Override
             public void onError(Throwable throwable) {
+                Timber.i("Contador de PEpTrustwords onError");
                 setpEpRating(Rating.pEpRatingUndefined);
                 Timber.i("Contador de PEpTrustwords onError -1");
                 EspressoTestingIdlingResource.decrement();
