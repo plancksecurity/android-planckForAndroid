@@ -97,7 +97,7 @@ public class CucumberTestSteps {
             IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
             bot = new String[4];
             resources = InstrumentationRegistry.getTargetContext().getResources();
-            startTimer(500);
+            startTimer(50000);
             if (testUtils.getCurrentActivity() == null) {
                 //startTimer(350);
                 try {
@@ -242,35 +242,48 @@ public class CucumberTestSteps {
 
     @When("^I confirm trust words match$")
     public void I_confirm_trust_words_match() {
-        confirmAllTrustWords(false);
-        confirmAllTrustWords(true);
+        try {
+            onView(withId(R.id.to)).perform(closeSoftKeyboard());
+        } catch (Exception ex) {
+            Timber.i("Cannot close keyboard");
+        }
+        String webViewText;
+        device.waitForIdle();
+        testUtils.doWaitForResource(R.id.toolbar);
+        device.waitForIdle();
+        webViewText = getWebviewText();
+        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+        scroll.swipe(Direction.DOWN, 1.0f);
+        try {
+            onView(withId(R.id.to)).perform(click(), closeSoftKeyboard());
+            testUtils.doWaitForResource(R.id.to);
+            device.waitForIdle();
+        } catch (Exception ex) {
+            Timber.i("Cannot click field: to");
+        }
+        try {
+            onView(withId(R.id.tvPep)).perform(click());
+        } catch (Exception ex) {
+            onView(withId(R.id.pEp_indicator)).perform(click());
+        }
+        confirmAllTrustWords(webViewText);
+        device.waitForIdle();
+        testUtils.selectFromMenu(R.string.pep_menu_long_trustwords);
+        confirmAllTrustWords(webViewText);
     }
 
-    private void confirmAllTrustWords (boolean longTrustWords) {
+    private void confirmAllTrustWords (String webViewText) {
         BySelector selector = By.clazz("android.widget.CheckedTextView");
         int size = 1;
         for (int positionToClick = 0; positionToClick < size; positionToClick++) {
-            device.waitForIdle();
-            testUtils.doWaitForResource(R.id.toolbar);
-            device.waitForIdle();
-            try {
-                onView(withId(R.id.tvPep)).perform(click());
-            } catch (Exception ex) {
-                onView(withId(R.id.pEp_indicator)).perform(click());
-            }
             device.waitForIdle();
             testUtils.selectFromMenu(R.string.settings_language_label);
             size = calculateNewSize(size, selector);
             device.waitForIdle();
             selectLanguage(positionToClick, size, selector);
-            if (longTrustWords) {
-                device.waitForIdle();
-                testUtils.selectFromMenu(R.string.pep_menu_long_trustwords);
-            }
             getTrustWords();
-            testUtils.pressBack();
             String []trustWordsSplited = trustWords.split("\\s+");
-            compareTextWithWebViewText(trustWordsSplited);
+            checkWordIsInText(trustWordsSplited, webViewText);
         }
     }
 
@@ -291,10 +304,19 @@ public class CucumberTestSteps {
                         device.waitForIdle();
                     }
                     while (!device.findObjects(selector).get(position).isChecked()) {
-                        device.findObjects(selector).get(position).click();
-                        device.waitForIdle();
+                        try {
+                            device.waitForIdle();
+                            device.findObjects(selector).get(position).longClick();
+                            device.waitForIdle();
+                        } catch (Exception ex) {
+                            Timber.i("Cannot click language selected");
+                        }
                     }
-                    onView(withId(android.R.id.button1)).perform(click());
+                    try {
+                        onView(withId(android.R.id.button1)).perform(click());
+                    } catch (Exception ex) {
+                        Timber.i("Cannot find button1");
+                    }
                 }
             }
         } while (exists(onView(withId(android.R.id.button1))));
@@ -352,6 +374,53 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
+    private void checkWordIsInText(String [] arrayToCompare, String webViewText) {
+        for (String textToCompare : arrayToCompare) {
+            if (!webViewText.contains(textToCompare)) {
+                Assert.fail("Text not found in Trustwords");
+            }
+        }
+    }
+
+    private String getWebviewText(){
+        String webViewText = "empty";
+        UiObject2 wb;
+        boolean webViewLoaded = false;
+        while (!webViewLoaded) {
+            try {
+                device.waitForIdle();
+                waitUntilIdle();
+                wb = device.findObject(By.clazz("android.webkit.WebView"));
+                wb.click();
+                UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+                scroll.swipe(Direction.UP, 1.0f);
+                device.waitForIdle();
+                UiObject2 webViewTemporal;
+                boolean childFound = false;
+                webViewTemporal = wb.getChildren().get(0);
+                while (!childFound) {
+                    if (webViewTemporal.getText().contains("long")) {
+                        webViewText = webViewTemporal.getText();
+                        webViewLoaded = true;
+                        childFound = true;
+                        device.waitForIdle();
+                        break;
+                    } else {
+                        try {
+                            webViewTemporal = webViewTemporal.getChildren().get(0);
+                        } catch (Exception ex) {
+                            webViewTemporal = wb.getChildren().get(1);
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                Timber.i("Cannot find webView: " + ex.getMessage());
+            }
+            device.waitForIdle();
+        }
+        return webViewText;
+    }
+
     @When("^I reject trust words$")
     public void I_reject_trust_words() {
         onView(withId(R.id.wrongTrustwords)).perform(click());
@@ -359,12 +428,25 @@ public class CucumberTestSteps {
 
     @When("^I click confirm trust words$")
     public void I_click_confirm_trust_words() {
+        testUtils.doWaitForResource(R.id.toolbar);
+        device.waitForIdle();
+        waitUntilIdle();
+        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
         if (!exists(onView(withId(R.id.reply_message)))) {
             device.waitForIdle();
             testUtils.doWaitForResource(R.id.pEp_indicator);
             waitUntilIdle();
-            device.waitForIdle();
-            testUtils.clickView(R.id.pEp_indicator);
+            while (exists(onView(withId(R.id.pEp_indicator)))) {
+                device.waitForIdle();
+                testUtils.clickView(R.id.pEp_indicator);
+                Timber.i("Hecho click en indicator");
+            }
+        } else {
+            while (exists(onView(withId(R.id.tvPep)))) {
+                device.waitForIdle();
+                testUtils.clickView(R.id.tvPep);
+                Timber.i("Hecho click en tvPep");
+            }
         }
         while (!exists(onView(withId(R.id.confirmTrustWords)))) {
             device.waitForIdle();
