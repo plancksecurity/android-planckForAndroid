@@ -8,7 +8,6 @@ Feature: Sanity
 
   @login-scenarios
   Scenario: Test Sanity_1.2.1_MailToNewContact
-    Given I set timeoutTest to 600 seconds
     When I click message compose
     And I check if the privacy status is pEpRatingUndefined
     Then I press back
