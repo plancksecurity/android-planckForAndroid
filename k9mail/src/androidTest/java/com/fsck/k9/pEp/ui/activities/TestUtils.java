@@ -740,7 +740,9 @@ public class TestUtils {
     public void assertMessageStatus(int status){
         clickStatus();
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
-        goBack(false);
+        if (!exists(onView(withId(R.id.send)))) {
+            goBack(false);
+        }
     }
 
     public void clickStatus() {
