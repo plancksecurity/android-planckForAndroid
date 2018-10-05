@@ -453,6 +453,31 @@ public class CucumberTestSteps {
         }
         onView(withId(R.id.confirmTrustWords)).perform(click());
     }
+    @When("^I click wrong trust words$")
+    public void I_click_wrong_trust_words() {
+        testUtils.doWaitForResource(R.id.toolbar);
+        device.waitForIdle();
+        waitUntilIdle();
+        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
+        if (!exists(onView(withId(R.id.reply_message)))) {
+            device.waitForIdle();
+            testUtils.doWaitForResource(R.id.pEp_indicator);
+            waitUntilIdle();
+            while (exists(onView(withId(R.id.pEp_indicator)))) {
+                device.waitForIdle();
+                testUtils.clickView(R.id.pEp_indicator);
+            }
+        } else {
+            while (exists(onView(withId(R.id.tvPep)))) {
+                device.waitForIdle();
+                testUtils.clickView(R.id.tvPep);
+            }
+        }
+        while (!exists(onView(withId(R.id.confirmTrustWords)))) {
+            device.waitForIdle();
+        }
+        onView(withId(R.id.wrongTrustwords)).perform(click());
+    }
 
     @When("^I stop trusting$")
     public void I_untrust_trust_words() {
