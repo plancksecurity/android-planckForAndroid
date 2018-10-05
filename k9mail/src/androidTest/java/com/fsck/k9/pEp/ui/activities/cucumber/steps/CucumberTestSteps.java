@@ -459,6 +459,9 @@ public class CucumberTestSteps {
         testUtils.clickMessageStatus();
         device.waitForIdle();
         onView(withId(R.id.handshake_button_text)).perform(click());
+        device.waitForIdle();
+        device.pressBack();
+        device.waitForIdle();
     }
 
     @When("^I check in the handshake dialog if the privacy status is (\\S+)$")
