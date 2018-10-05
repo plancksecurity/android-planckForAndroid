@@ -657,6 +657,13 @@ public class CucumberTestSteps {
                 } else {
                     while (!exists(onView(withId(R.id.accounts_list)))) {
                         testUtils.pressBack();
+                        try {
+                            device.waitForIdle();
+                            onView(withText(R.string.discard_action)).check(matches(isCompletelyDisplayed()));
+                            onView(withText(R.string.discard_action)).perform(click());
+                        } catch (Exception ex) {
+                            Timber.i("There is no message to discard");
+                        }
                         device.waitForIdle();
                     }
                 }
