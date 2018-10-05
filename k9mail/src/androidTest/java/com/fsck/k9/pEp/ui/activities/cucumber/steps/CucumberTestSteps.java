@@ -521,13 +521,13 @@ public class CucumberTestSteps {
                 statusRating = 9;
                 break;
             case "pEpRatingMistrust":
-                statusRating = -1;
+                statusRating = 10;
                 break;
             case "pEpRatingB0rken":
-                statusRating = -2;
+                statusRating = 11;
                 break;
             case "pEpRatingUnderAttack":
-                statusRating = -3;
+                statusRating = 12;
                 break;
         }
         if (statusRating != -10) {
