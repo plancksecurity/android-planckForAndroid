@@ -247,6 +247,11 @@ public class CucumberTestSteps {
         testUtils.clickLastMessageReceived();
     }
 
+    @When("^I click message$")
+    public void I_click_message() {
+        testUtils.clickLastMessage();
+    }
+
     @When("^I confirm trust words match$")
     public void I_confirm_trust_words_match() {
         try {
