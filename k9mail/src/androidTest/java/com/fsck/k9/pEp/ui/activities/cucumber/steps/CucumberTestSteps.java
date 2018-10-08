@@ -219,6 +219,7 @@ public class CucumberTestSteps {
 
     @When("^I compare messageBody with (\\S+)")
     public void I_compare_body(String cucumberBody) {
+        String [] body;
         if (cucumberBody.equals("empty")) {
             cucumberBody = resources.getString(R.string.default_signature);
         }
@@ -226,8 +227,14 @@ public class CucumberTestSteps {
         while (true) {
             device.waitForIdle();
             if (exists(onView(withId(R.id.message_container)))) {
-                String [] body = new String[1];
-                body[0] = cucumberBody;
+                if (cucumberBody.equals("Rating/DecodedRating")) {
+                    body = new String[2];
+                    body[0] = "Rating | 6";
+                    body[1] = "Decoded Rating | PEP_rating_reliable";
+                } else {
+                    body = new String[1];
+                    body[0] = cucumberBody;
+                }
                 compareTextWithWebViewText(body);
                 return;
             }
