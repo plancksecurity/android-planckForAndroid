@@ -1016,41 +1016,46 @@ public class TestUtils {
 
     public void clickLastMessageReceived() {
         Timber.i("MessageList antes: " + messageListSize[0] + " " + messageListSize[1]);
-        boolean messageClicked = false;
         if (messageListSize[0] > messageListSize [1]) {
             waitForNewMessage();
         }
         Timber.i("MessageList despues: " + messageListSize[0] + " " + messageListSize[1]);
+        clickLastMessage();
+    }
+
+    public void clickLastMessage(){
+        boolean messageClicked = false;
         while (!messageClicked){
-            device.waitForIdle();
-            if (!viewIsDisplayed(R.id.reply_message)) {
-                try {
-                    swipeDownMessageList();
-                    device.waitForIdle();
-                    onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
-                    messageClicked = true;
-                    device.waitForIdle();
-                    if (viewIsDisplayed(R.id.fab_button_compose_message)) {
-                        try {
-                            messageClicked = false;
-                            pressBack();
-                        } catch (Exception ex) {
-                            Timber.i("Last message has been clicked");
-                        }
-                    }
-                } catch (Exception ex) {
-                    Timber.i("No message found");
-                }
+        device.waitForIdle();
+        if (!viewIsDisplayed(R.id.reply_message)) {
+            try {
+                swipeDownMessageList();
                 device.waitForIdle();
-            } else {
+                onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
                 messageClicked = true;
+                device.waitForIdle();
+                if (viewIsDisplayed(R.id.fab_button_compose_message)) {
+                    try {
+                        messageClicked = false;
+                        pressBack();
+                    } catch (Exception ex) {
+                        Timber.i("Last message has been clicked");
+                    }
+                }
+            } catch (Exception ex) {
+                Timber.i("No message found");
             }
+            device.waitForIdle();
+        } else {
+            messageClicked = true;
         }
+    }
         try{
             onView(withText(R.string.cancel_action)).perform(click());
         }catch (NoMatchingViewException ignoredException){
             Timber.i("Ignored exception. Email is not encrypted");
         }
+
     }
 
     public void waitForNewMessage() {
