@@ -52,6 +52,17 @@ Feature: Sanity
     Then I discard message
 
   @login-scenarios
+  Scenario: SER-299 Ensure mails are encrypted when pEp says so
+    When I click message
+    Then I click view reply_message
+    And I check if the privacy status is pep_yellow
+    Then I click send message button
+    And I press back
+    And I wait for new message
+    And I click last message
+    Then I compare messageBody with Rating/DecodedRating
+
+  @login-scenarios
   Scenario: Test Sanity_1.2.4_MailToExistingContactEncrypted
     When I click message compose
     Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
