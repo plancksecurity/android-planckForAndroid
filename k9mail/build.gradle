@@ -34,7 +34,7 @@ repositories {
 }
 
 ext {
-    supportLibraryVersion = "26.1.0"
+    supportLibraryVersion = "27.1.1"
 }
 
 //noinspection GroovyAssignabilityCheck
@@ -104,7 +104,7 @@ android {
         applicationId "${appId}"
         versionCode 19
         minSdkVersion 18
-        targetSdkVersion 26
+        targetSdkVersion 25
         setProperty("archivesBaseName", "$version-$versionCode")
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]
 
