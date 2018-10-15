@@ -398,7 +398,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     }
 
     public void showErrorInlineSignOnly() {
-        FeedbackTools.showLongFeedback(activity.getRootView(), activity.getString(R.string.error_crypto_inline_sign_only));
+//        FeedbackTools.showLongFeedback(activity.getRootView(), activity.getString(R.string.error_crypto_inline_sign_only));
     }
 
     public void showErrorInlineAttach() {

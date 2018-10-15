@@ -14,6 +14,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -31,7 +33,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.AccountStats;
@@ -397,7 +398,7 @@ public class Accounts extends PEpImporterActivity {
 
         // see if we should show the welcome message
         if (ACTION_IMPORT_SETTINGS.equals(intent.getAction())) {
-            onImport();
+            onSettingsImport();
         } else if (accounts.size() < 1) {
             WelcomeMessage.showWelcomeMessage(this);
             finish();
@@ -523,6 +524,9 @@ public class Accounts extends PEpImporterActivity {
 
         outState.putBoolean(STATE_EXPORT_GLOBAL_SETTINGS, exportGlobalSettings);
         outState.putStringArrayList(STATE_EXPORT_ACCOUNTS, exportAccountUuids);
+        outState.putString(CURRENT_ACCOUNT, currentAccount);
+        outState.putString(FPR, fpr);
+        outState.putBoolean(SHOWING_IMPORT_DIALOG, showingImportDialog);
     }
 
     @Override
@@ -531,6 +535,11 @@ public class Accounts extends PEpImporterActivity {
 
         exportGlobalSettings = state.getBoolean(STATE_EXPORT_GLOBAL_SETTINGS, false);
         exportAccountUuids = state.getStringArrayList(STATE_EXPORT_ACCOUNTS);
+        currentAccount = state.getString(CURRENT_ACCOUNT);
+        fpr = state.getString(FPR);
+        if (state.getBoolean(SHOWING_IMPORT_DIALOG)) {
+            onKeyImport();
+        }
     }
 
     private StorageManager.StorageListener storageListener = new StorageManager.StorageListener() {
@@ -992,10 +1001,18 @@ public class Accounts extends PEpImporterActivity {
                 case R.id.import_PGP_key:
                     onImportPGPKey(realAccount);
                     break;
+                case R.id.import_PGP_key_from_SD:
+                    onImportPGPKeyFromFileSystem(realAccount);
+                    break;
 
             }
         }
         return true;
+    }
+
+    private void onImportPGPKeyFromFileSystem(Account realAccount) {
+        currentAccount = realAccount.getEmail();
+        onKeyImport();
     }
 
     private void onImportPGPKey(Account realAccount) {
@@ -1043,7 +1060,7 @@ public class Accounts extends PEpImporterActivity {
             onExport(true, null);
             break;
         case R.id.import_settings:
-            onImport();
+            onSettingsImport();
             break;
         default:
             return super.onOptionsItemSelected(item);
@@ -1228,12 +1245,21 @@ public class Accounts extends PEpImporterActivity {
             case ACTIVITY_REQUEST_SAVE_SETTINGS_FILE:
                 onExport(data);
                 break;
+            case ACTIVITY_REQUEST_PICK_KEY_FILE:
+                onKeyImport(data.getData(), currentAccount);
+                break;
         }
     }
 
+
+    public void onKeyImport(Uri uri, String currentAccount) {
+        ListImportContentsAsyncTask asyncTask = new ListImportContentsAsyncTask(this, uri, currentAccount, true, fpr);
+        setNonConfigurationInstance(asyncTask);
+        asyncTask.execute();
+    }
     @Override
     public void onImport(Uri uri) {
-        ListImportContentsAsyncTask asyncTask = new ListImportContentsAsyncTask(this, uri);
+        ListImportContentsAsyncTask asyncTask = new ListImportContentsAsyncTask(this, uri, currentAccount, false, null);
         setNonConfigurationInstance(asyncTask);
         asyncTask.execute();
     }
@@ -1431,9 +1457,10 @@ public class Accounts extends PEpImporterActivity {
             }
             if (account instanceof Account) {
                 Account realAccount = (Account)account;
-                holder.flaggedMessageCountIcon.setBackgroundDrawable(getDrawable(R.drawable.ic_unread_toggle_star));
+                holder.flaggedMessageCountIcon.setBackgroundDrawable(ContextCompat.getDrawable(Accounts.this, R.drawable.ic_unread_toggle_star));
             } else {
-                holder.flaggedMessageCountIcon.setBackgroundDrawable(getDrawable(R.drawable.ic_unread_toggle_star));
+                holder.flaggedMessageCountIcon.setBackgroundDrawable(ContextCompat.getDrawable(Accounts.this,
+                        R.drawable.ic_unread_toggle_star));
             }
 
 

@@ -672,9 +672,14 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized void setOwnIdentity(Identity id, String fpr) {
+    public synchronized Identity setOwnIdentity(Identity id, String fpr)  {
         createEngineInstanceIfNeeded();
-        engine.setOwnKey(id, fpr);
+        try {
+            return engine.setOwnKey(id, fpr);
+        } catch (Exception e) {
+            //TODO: Make pEpException a runtime one, and filter here
+            return null;
+        }
     }
 
     @Override
@@ -1031,14 +1036,44 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public Message encryptMessage(Message result) {
+    public Message encryptMessage(Message result) throws pEpException {
+        createEngineInstanceIfNeeded();
+        return engine.encrypt_message(result, null, result.getEncFormat());
+    }
+
+    @Override
+    public boolean canEncrypt(String address) {
+        createEngineInstanceIfNeeded();
+
+        Message msg = new Message();
+        Identity id = myself(PEpUtils.createIdentity(new Address(address), context));
+
+        msg.setFrom(id);
+
+        Vector<Identity> to = new Vector<>();
+        to.add(id);
+        msg.setTo(to);
+
+        msg.setShortmsg("hello, world");
+        msg.setLongmsg("this is a test");
+
+        msg.setDir(Message.Direction.Outgoing);
+
 
         try {
-            return engine.encrypt_message(result, null, result.getEncFormat());
+            engine.encrypt_message(msg, null, Message.EncFormat.PEP);
         } catch (pEpException e) {
-            e.printStackTrace();
+            Timber.e(e);
+            return false;
         }
-        return null;
+
+        return true;
+    }
+
+    @Override
+    public void importKey(String key) {
+        createEngineInstanceIfNeeded();
+        engine.importKey(key);
     }
 
     private String getElementAtPosition(String chain) {

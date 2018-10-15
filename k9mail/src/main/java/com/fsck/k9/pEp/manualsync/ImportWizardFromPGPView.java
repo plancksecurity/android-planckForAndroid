@@ -36,4 +36,8 @@ interface ImportWizardFromPGPView {
     void showSendError();
 
     void notifySendingOwnKey();
+
+    void renderPgpSendHandshakeFirstStep();
+
+    void renderPgpSendHandshakeSecondStep();
 }

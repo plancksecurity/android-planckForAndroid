@@ -139,7 +139,8 @@ public class AccountSetupBasics extends PEpImporterActivity {
 
     @Override
     public void onImport(Uri uri) {
-        ListImportContentsAsyncTask asyncTask = new ListImportContentsAsyncTask(this, uri);
+        ListImportContentsAsyncTask asyncTask = new ListImportContentsAsyncTask(this, uri,
+                null, false, null);
         setNonConfigurationInstance(asyncTask);
         asyncTask.execute();
     }
@@ -197,7 +198,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.import_settings:
-                onImport();
+                onSettingsImport();
                 break;
             case android.R.id.home:
                 onBackPressed();

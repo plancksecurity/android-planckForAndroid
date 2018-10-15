@@ -20,11 +20,19 @@
         android:title="@string/settings_export_account" />
     <item android:title="Key import">
         <menu>
-            <item android:id="@+id/import_pEp_key"
-                android:title="p≡p Key import"/>
             <item
-                android:id="@+id/import_PGP_key"
-                android:title="PGP Key import"/>
+                android:id="@+id/import_pEp_key"
+                android:title="p≡p Key import" />
+            <item android:title="PGP Key import">
+                <menu>
+                    <item
+                        android:id="@+id/import_PGP_key"
+                        android:title="PGP Key import wizard" />
+                    <item
+                        android:id="@+id/import_PGP_key_from_SD"
+                        android:title="PGP Key import from filesystem" />
+                </menu>
+            </item>
         </menu>
     </item>
 </menu>

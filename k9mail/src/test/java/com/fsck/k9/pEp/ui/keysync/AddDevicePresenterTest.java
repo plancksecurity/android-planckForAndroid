@@ -33,7 +33,7 @@ public class AddDevicePresenterTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         addDevicePresenter = new AddDevicePresenter();
-        addDevicePresenter.initialize(view, pEpProvider, identity(), accounts());
+        addDevicePresenter.initialize(view, pEpProvider, identity(), identity(), accounts(),false, "");
     }
 
     @Test
@@ -61,14 +61,14 @@ public class AddDevicePresenterTest {
     public void shouldCloseViewWhenAccepting() throws Exception {
         addDevicePresenter.acceptHandshake();
 
-        verify(view).close();
+        verify(view).close(true);
     }
 
     @Test
     public void shouldCloseViewWhenRejecting() throws Exception {
         addDevicePresenter.rejectHandshake();
 
-        verify(view).close();
+        verify(view).close(false);
     }
 
     @Test
