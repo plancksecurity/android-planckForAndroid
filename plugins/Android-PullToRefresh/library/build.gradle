@@ -15,6 +15,9 @@ android {
     lintOptions {
         abortOnError false
     }
+    defaultConfig {
+        minSdkVersion 4
+    }
 }
 
 archivesBaseName = 'PullToRefresh'
