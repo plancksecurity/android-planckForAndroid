@@ -1,13 +1,18 @@
 package com.fsck.k9.helper;
 
 
+import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.ContactsContract;
+import android.widget.Toast;
+
 import timber.log.Timber;
 
 import com.fsck.k9.K9;
@@ -86,23 +91,30 @@ public class Contacts {
      *              entity.
      */
     public void createContact(final Address email) {
-        final Uri contactUri = Uri.fromParts("mailto", email.getAddress(), null);
+        try {
+            final Uri contactUri = Uri.fromParts("mailto", email.getAddress(), null);
 
-        final Intent contactIntent = new Intent(ContactsContract.Intents.SHOW_OR_CREATE_CONTACT);
-        contactIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        contactIntent.setData(contactUri);
+            final Intent contactIntent = new Intent(ContactsContract.Intents.SHOW_OR_CREATE_CONTACT);
+            contactIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            contactIntent.setData(contactUri);
 
-        // Pass along full E-mail string for possible create dialog
-        contactIntent.putExtra(ContactsContract.Intents.EXTRA_CREATE_DESCRIPTION,
-                email.toString());
+            // Pass along full E-mail string for possible create dialog
+            contactIntent.putExtra(ContactsContract.Intents.EXTRA_CREATE_DESCRIPTION,
+                    email.toString());
 
-        // Only provide personal name hint if we have one
-        final String senderPersonal = email.getPersonal();
-        if (senderPersonal != null) {
-            contactIntent.putExtra(ContactsContract.Intents.Insert.NAME, senderPersonal);
+            // Only provide personal name hint if we have one
+            final String senderPersonal = email.getPersonal();
+            if (senderPersonal != null) {
+                contactIntent.putExtra(ContactsContract.Intents.Insert.NAME, senderPersonal);
+            }
+
+            mContext.startActivity(contactIntent);
+        } catch (ActivityNotFoundException exception) {
+            Timber.e(exception);
+            new Handler(Looper.getMainLooper()).post(()
+                    -> Toast.makeText(mContext, "We could not find any address book",
+                        Toast.LENGTH_LONG).show());
         }
-
-        mContext.startActivity(contactIntent);
     }
 
     /**
