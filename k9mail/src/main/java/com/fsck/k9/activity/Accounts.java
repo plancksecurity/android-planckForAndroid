@@ -536,7 +536,7 @@ public class Accounts extends PEpImporterActivity {
         exportGlobalSettings = state.getBoolean(STATE_EXPORT_GLOBAL_SETTINGS, false);
         exportAccountUuids = state.getStringArrayList(STATE_EXPORT_ACCOUNTS);
         currentAccount = state.getString(CURRENT_ACCOUNT);
-        fpr = state.getString(FPR);
+        fpr = state.getString(FPR).replace(" ", "");
         if (state.getBoolean(SHOWING_IMPORT_DIALOG)) {
             onKeyImport();
         }

@@ -118,7 +118,7 @@ public abstract class PEpImporterActivity extends PepPermissionActivity {
                     if (editFpr.getText().toString().isEmpty()) {
                         FeedbackTools.showLongFeedback(content, "Fingerprint is mandatory");
                     } else {
-                        fpr = editFpr.getText().toString();
+                        fpr = editFpr.getText().toString().replace(" ", "");
                         onOpenFileChooser();
                     }
                     showingImportDialog = false;
