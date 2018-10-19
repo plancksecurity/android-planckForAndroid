@@ -1,6 +1,6 @@
 def pEpEngineRevision = 3052
 def pEpJNIAdapterRevision = 422
-def version = "1.0.211"
+def version = "1.0.212-dev"
 
 def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
 def pEpTestEmailPassword = "\"$System.env.PEP_TEST_EMAIL_PASSWORD\""
@@ -123,6 +123,7 @@ android {
         buildConfigField "String", "PEP_DRAGON_EMAIL_ADDRESS", "${pEpDragonEmail}"
         buildConfigField "String", "PEP_DRAGON_PASSWORD", "${pEpDragonPassword}"
         buildConfigField "String", "PEP_DRAGON_SERVER", "${pEpDragonServer}"
+        
         buildConfigField "String", "PEP_DRAGON_USERNAME", "${pEpDragonUsername}"
 
         javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true

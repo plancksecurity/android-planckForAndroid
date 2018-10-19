@@ -31,6 +31,7 @@ import org.pEp.jniadapter.Rating;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 
 import javax.inject.Named;
@@ -58,12 +59,14 @@ public class ImportKeyController {
     private Account account;
     private Role role;
     private KeyImportMessagingActions messagingActions;
+    private List <Message> alreadyProcessedMsgs;
 
     ImportKeyController(Application context, @Named("Background") PEpProvider pEp) {
         this.state = ImportKeyWizardState.INIT;
         this.context = ((K9) context);
         this.pEp = pEp;
         this.role = Role.EXPORTER;
+        alreadyProcessedMsgs = new ArrayList<>();
     }
 
     public void cancel() {
@@ -209,6 +212,12 @@ public class ImportKeyController {
             return;
         }
 
+        if (isAlreadyProcessed(srcMsg)) {
+            //messagingActions.deleteMessage(account, srcMsg, folder, localFolder);
+            return;
+        }
+
+
         class PGPKeyImporter implements KeyImporter {
 
             @Override
@@ -245,6 +254,7 @@ public class ImportKeyController {
                             Log.e(LOG_TAG, "Set own id: " + sender.fpr + "equals" + senderKey.equals(sender.fpr));
                             pEp.setOwnIdentity(sender, sender.fpr);
                             ImportWizardFrompEp.notifyPrivateKeyImported(context);
+                            alreadyProcessedMsgs.clear();
                         }
                     });
 
@@ -263,6 +273,7 @@ public class ImportKeyController {
         }
 
         messagingActions.deleteMessage(account, srcMsg, folder, localFolder);
+        alreadyProcessedMsgs.add(srcMsg);
 
         KeyImporter keyImporter = null;
         switch (type) {
@@ -315,6 +326,15 @@ public class ImportKeyController {
             case NO_IMPORT:
                 break;
         }
+    }
+
+    private <MSG extends Message> boolean isAlreadyProcessed(MSG srcMsg) {
+        for (Message alreadyProcessedMsg : alreadyProcessedMsgs) {
+            if (alreadyProcessedMsg.getUid().equals(srcMsg.getUid())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void showInitialExportDialog(Identity myself, Identity sender) {
