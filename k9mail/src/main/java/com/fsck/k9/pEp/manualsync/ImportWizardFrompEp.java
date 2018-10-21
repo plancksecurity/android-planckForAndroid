@@ -6,9 +6,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.test.mock.MockApplication;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -25,6 +23,7 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class ImportWizardFrompEp extends WizardActivity implements ImportWizardFromPGPView {
 
@@ -95,6 +94,8 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     TextView protocol;
     @Bind(R.id.startKeyImportButton)
     Button action;
+    @Bind(R.id.cancelKeyImportButton)
+    Button cancel;
 
 
     Account account;
@@ -121,7 +122,6 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         ButterKnife.bind(this);
 
         setUpFloatingWindow();
-        setUpToolbar(false);
         Intent intent = getIntent();
         resources = getResources();
         if (intent.hasExtra(ACCOUNT_UUID_KEY) && intent.hasExtra(IS_STARTER_KEY)
@@ -136,6 +136,8 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         }
 
         //setTitle("p≡p key import wizard");
+        setUpToolbar(false);
+       // getToolbar().setNavigationIcon(android.R.drawable.ic_menu_close_clear_cancel);
 
     }
 
@@ -164,6 +166,9 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     }
 
 
+    @OnClick((R.id.cancelKeyImportButton)) void onCancel() {
+        presenter.cancel();
+    }
     @Override
     public void showDescription(String description) {
         this.description.setText(description);
@@ -219,7 +224,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         action.setOnClickListener(button -> {
             action.setText(R.string.cancel_action);
             action.setOnClickListener(view -> presenter.cancel());
-            description.setText("Waiting for a Handshake with both device, a Handshake dialog will appear");
+            description.setText("Waiting for a Handshake with both devices, a Handshake dialog will appear");
             startActivityForResult((getIntent().getParcelableExtra(HANDSHAKE_INTENT_KEY)), PEpAddDevice.REQUEST_ADD_DEVICE_HANDSHAKE);
         });
 
@@ -227,7 +232,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
 
     @Override
     public void notifyAcceptedHandshakeAndWaitingForPrivateKey() {
-        description.setText("Hanshake accepted we proceed to exchange keys.");
+        description.setText("Handshake accepted we proceed to exchange keys.");
         currentAction.setText("Waiting for key");
     }
 
@@ -264,7 +269,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
 
     @Override
     public void notifyAcceptedHandshakeAndWaitingForPGPPrivateKey() {
-        description.setText("Hanshake accepted please send your private key encrypted from your PGP client.");
+        description.setText("Handshake accepted please send your private key encrypted and signed from your PGP client.");
         currentAction.setText("Waiting for PGP key");
     }
 
@@ -298,8 +303,31 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
             loading.setVisibility(View.VISIBLE);
             currentAction.setVisibility(View.VISIBLE);
             action.setText(R.string.cancel_action);
+            description.setText("We are sending your private key");
             currentAction.setText("Sending own key");
             action.setOnClickListener(view -> presenter.cancel());
+        });
+    }
+
+    @Override
+    public void renderPgpSendHandshakeFirstStep() {
+        new Handler(getMainLooper()).post(() -> {
+            description.setText(R.string.key_import_wizard_from_pgp_send_handshake_request);
+            currentAction.setVisibility(View.INVISIBLE);
+            loading.setVisibility(View.INVISIBLE);
+            action.setText("Next");
+            action.setOnClickListener(v -> {presenter.createdPgpReply();});
+        });
+    }
+
+    @Override
+    public void renderPgpSendHandshakeSecondStep() {
+        new Handler(getMainLooper()).post(() -> {
+            description.setText(R.string.key_import_wizard_from_pgp_send_handshake_request);
+            currentAction.setVisibility(View.INVISIBLE);
+            loading.setVisibility(View.VISIBLE);
+            action.setText("Cancel");
+            action.setOnClickListener(v -> {presenter.createdPgpReply();});
         });
     }
 

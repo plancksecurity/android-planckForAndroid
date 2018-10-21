@@ -1,6 +1,6 @@
-def pEpEngineRevision = 2898
+def pEpEngineRevision = 3063
 def pEpJNIAdapterRevision = 422
-def version = "1.0.209"
+def version = "1.0.212"
 
 def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
 def pEpTestEmailPassword = "\"$System.env.PEP_TEST_EMAIL_PASSWORD\""
@@ -34,7 +34,7 @@ repositories {
 }
 
 ext {
-    supportLibraryVersion = "26.1.0"
+    supportLibraryVersion = "27.1.1"
 }
 
 //noinspection GroovyAssignabilityCheck
@@ -136,9 +136,9 @@ android {
 
     defaultConfig {
         applicationId "${appId}"
-        versionCode 19
+        versionCode 22
         minSdkVersion 18
-        targetSdkVersion 26
+        targetSdkVersion 25
         setProperty("archivesBaseName", "$version-$versionCode")
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]
 
@@ -159,6 +159,7 @@ android {
         buildConfigField "String", "PEP_DRAGON_EMAIL_ADDRESS", "${pEpDragonEmail}"
         buildConfigField "String", "PEP_DRAGON_PASSWORD", "${pEpDragonPassword}"
         buildConfigField "String", "PEP_DRAGON_SERVER", "${pEpDragonServer}"
+        
         buildConfigField "String", "PEP_DRAGON_USERNAME", "${pEpDragonUsername}"
 
         javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true

@@ -12,8 +12,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.CheckBox;
@@ -22,6 +28,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -31,14 +38,24 @@ import com.fsck.k9.activity.Accounts;
 import com.fsck.k9.activity.misc.ExtendedAsyncTask;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
 import com.fsck.k9.controller.MessagingController;
+import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.AuthType;
+import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.SettingsExporter;
 import com.fsck.k9.preferences.SettingsImportExportException;
 import com.fsck.k9.preferences.SettingsImporter;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.pEp.jniadapter.Identity;
+import org.pEp.jniadapter.Message;
+import org.pEp.jniadapter.pEpException;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,12 +68,21 @@ import timber.log.Timber;
 
 public abstract class PEpImporterActivity extends PepPermissionActivity {
 
-    private static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
+    protected static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
     private static final int DIALOG_NO_FILE_MANAGER = 4;
+    protected static final int ACTIVITY_REQUEST_PICK_KEY_FILE = 8;
+
+    protected static final String CURRENT_ACCOUNT = "currentAccount";
+    protected static final String FPR = "fpr";
+    protected static final String SHOWING_IMPORT_DIALOG = "showingDialog";
 
     protected abstract void refresh();
 
-    public void onImport() {
+    protected String currentAccount;
+    protected String fpr;
+    protected boolean showingImportDialog = false;
+
+    public void onSettingsImport() {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
         i.addCategory(Intent.CATEGORY_OPENABLE);
         i.setType("*/*");
@@ -67,6 +93,77 @@ public abstract class PEpImporterActivity extends PepPermissionActivity {
         if (infos.size() > 0) {
             startActivityForResult(Intent.createChooser(i, null),
                     ACTIVITY_REQUEST_PICK_SETTINGS_FILE);
+        } else {
+            showDialog(DIALOG_NO_FILE_MANAGER);
+        }
+    }
+
+    public void onKeyImport() {
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        View content = getLayoutInflater().inflate(R.layout.dialog_import_pgp_from_fs,
+                null);
+        // set dialog message
+        EditText editFpr = content.findViewById(R.id.fpr);
+
+        alertDialogBuilder
+                .setTitle("PGP Key import")
+                .setView(content)
+                .setCancelable(false)
+                .setNegativeButton("Cancel", (dialogInterface, i) -> {
+                    dialogInterface.dismiss();
+                    showingImportDialog = false;
+                })
+                .setPositiveButton("Select and import key", (dialogInterface, i) -> {
+                    //nop
+                    if (editFpr.getText().toString().isEmpty()) {
+                        FeedbackTools.showLongFeedback(content, "Fingerprint is mandatory");
+                    } else {
+                        fpr = editFpr.getText().toString().replace(" ", "");
+                        onOpenFileChooser();
+                    }
+                    showingImportDialog = false;
+                });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.setOnShowListener(dialogInterface -> {
+            final AlertDialog dialog = (AlertDialog)dialogInterface;
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+            editFpr.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before,
+                                          int count) {}
+
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    if (TextUtils.isEmpty(s)) {
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                    } else {
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                    }
+                }
+            });
+        });
+
+        alertDialog.show();
+        showingImportDialog = true;
+
+        //onOpenFileChooser();
+    }
+
+    public void onOpenFileChooser() {
+        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        i.setType("*/*");
+        PackageManager packageManager = getPackageManager();
+        List<ResolveInfo> infos = packageManager.queryIntentActivities(i, 0);
+
+        if (infos.size() > 0) {
+            startActivityForResult(Intent.createChooser(i, null),
+                    ACTIVITY_REQUEST_PICK_KEY_FILE);
         } else {
             showDialog(DIALOG_NO_FILE_MANAGER);
         }
@@ -109,14 +206,21 @@ public abstract class PEpImporterActivity extends PepPermissionActivity {
         dialog.show(this);
     }
 
-    public static class ListImportContentsAsyncTask extends ExtendedAsyncTask<Void, Void, Boolean> {
+    public static class ListImportContentsAsyncTask extends ExtendedAsyncTask<Boolean, Void, Boolean> {
+        private final String currentAccount;
+        private final boolean isKeyImport;
+        private final String fpr;
         private Uri mUri;
         private SettingsImporter.ImportContents mImportContents;
 
-        public ListImportContentsAsyncTask(PEpImporterActivity activity, Uri uri) {
+        public ListImportContentsAsyncTask(PEpImporterActivity activity, Uri uri,
+                                           String currentAccount, boolean isKeyImport, String fpr) {
             super(activity);
 
             mUri = uri;
+            this.currentAccount = currentAccount;
+            this.isKeyImport = isKeyImport;
+            this.fpr = fpr;
         }
 
         @Override
@@ -127,7 +231,16 @@ public abstract class PEpImporterActivity extends PepPermissionActivity {
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected Boolean doInBackground(Boolean... booleans) {
+            if (isKeyImport) {
+                return importKeyFromFS(currentAccount);
+            } else {
+                return importSettings();
+            }
+        }
+
+        @NonNull
+        private Boolean importSettings() {
             try {
                 ContentResolver resolver = mContext.getContentResolver();
                 InputStream is = resolver.openInputStream(mUri);
@@ -150,6 +263,51 @@ public abstract class PEpImporterActivity extends PepPermissionActivity {
             return true;
         }
 
+        @NonNull
+        private Boolean importKeyFromFS(String currentAccount) {
+            try {
+                ContentResolver resolver = mContext.getContentResolver();
+                InputStream is = resolver.openInputStream(mUri);
+                PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(mContext);
+                Identity accountIdentity = PEpUtils.createIdentity(new Address(currentAccount), mContext);
+                String currentFpr = pEp.myself(accountIdentity).fpr;
+                try {
+                    String key = IOUtils.toString(is);
+
+                    pEp.importKey(key);
+                    Identity id = pEp.setOwnIdentity(accountIdentity, fpr);
+
+
+                    if (id == null || !pEp.canEncrypt(currentAccount)) {
+                        Timber.w("Couldn't set ownkey: %s", key);
+                        pEp.setOwnIdentity(accountIdentity, currentFpr);
+                        new Handler(Looper.getMainLooper()).post(
+                                () -> Toast.makeText(mContext, "Could not use the imported key: Key not imported", Toast.LENGTH_LONG).show());
+                        return false;
+                    }
+                } catch (IOException e) {
+                    //We transform IOException to a semantic Exception, if we cannot read the
+                    //stream we assume we couldn't read the msg.
+                    pEp.setOwnIdentity(accountIdentity, currentFpr);
+                    throw new FileNotFoundException();
+                }
+
+                finally {
+                    try {
+                        is.close();
+                        pEp.close();
+                    } catch (IOException e) {
+                        /* Ignore */
+                    }
+                }
+
+            } catch (FileNotFoundException e) {
+                Timber.w("Couldn't read content from URI %s", mUri);
+                return false;
+            }
+            return true;
+        }
+
         @Override
         protected void onPostExecute(Boolean success) {
             PEpImporterActivity activity = (PEpImporterActivity) mActivity;
@@ -159,6 +317,15 @@ public abstract class PEpImporterActivity extends PepPermissionActivity {
 
             removeProgressDialog();
 
+            if (isKeyImport) {
+                onPostExecuteKeyImport(activity, success);
+            } else {
+                onPostExecuteImportSettings(activity, success);
+            }
+            activity.currentAccount = "";
+        }
+
+        private void onPostExecuteImportSettings(PEpImporterActivity activity, Boolean success) {
             if (success) {
                 activity.showImportSelectionDialog(mImportContents, mUri);
             } else {
@@ -166,6 +333,18 @@ public abstract class PEpImporterActivity extends PepPermissionActivity {
                 //TODO: better error messages
                 activity.showSimpleDialog(R.string.settings_import_failed_header,
                         R.string.settings_import_failure, filename);
+            }
+        }
+
+        private void onPostExecuteKeyImport(PEpImporterActivity activity, Boolean success) {
+            String filename = mUri.getPath();
+            if (success) {
+                activity.showSimpleDialog(R.string.settings_import_success_header,
+                        R.string.key_import_success , fpr, filename);
+            } else {
+                //TODO: better error messages
+                activity.showSimpleDialog(R.string.settings_import_failed_header,
+                        R.string.key_import_failure, filename, fpr);
             }
         }
     }

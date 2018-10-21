@@ -123,7 +123,7 @@
     <string name="error_parsing_fingerprint">Error parsing fingerprint!</string>
     <string name="is_always_secure">Store protected on server</string>
     <string name="is_not_always_secure">Store unprotected on server</string>
-    <string name="master_key_management">Master Key management</string>
+    <string name="master_key_management">Extra Key management</string>
     <string name="message_saving_error">Message saving error</string>
     <string name="intro_first_text">Automatically encrypts and anonymizes your e-mail</string>
     <string name="intro_second_text">Prevents Identity Theft. Kills Spam. Stops Phishing.</string>
@@ -204,14 +204,22 @@
     <string name="open_pgp">OpenPGP</string>
     <string name="pgp">PGP</string>
     <string name="key_import_wizard_handshake_explanation">Please compare the following Trustwords with the ones on your other device and confirm if they match.</string>
-    <string name="key_import_wizard_handshake_explanation_pgp">Please compare the following fibgerprints and confirm if they match.</string>
     <string name="key_import_wizard_from_pep_initial_text">We are about to start the key import process: This will import and use your p≡p key from another device, and export your private key.</string>
     <string name="key_import_wizard_from_pgp_initial_text">You are about to start the key import process from a PGP client</string>
+    <string name="key_import_wizard_from_pgp_key_sent">A message with your public p≡p key has been sent to yourself. Please open this message on your PGP device and import your public p≡p key into your keychain.</string>
+    <string name="key_import_wizard_from_pgp_create_handshake_request">In your PGP device, create an answer message to the one you received from p≡p and attach your public PGP key.</string>
+    <string name="key_import_wizard_from_pgp_send_handshake_request">Encrypt and sign the answer message with the public p≡p key you just imported and send it.</string>
+    <string name="key_import_wizard_handshake_explanation_pgp">Please compare the PGP fingerprints of the below keys with the ones on your PGP device and confirm if they match.</string>
+    <string name="key_import_wizard_from_pgp_create_private_key_msg">In your PGP device, create another answer message to the one you received from p≡p. This time, please attach your private PGP key.</string>
+    <string name="key_import_wizard_from_pgp_send_private_key_msg">Encrypt and sign the answer message again with the public p≡p key and send it.</string>
     <string name="pgp_key_import_instructions">To proceed with the Key Import, please import the attached public p≡p key and reply with a message that: \n\n\n
 
     1. has your public PGP key attached and \n
-    2. is encrypted with the p≡p key you just imported
+    2. is encrypted and signed with the p≡p key you just imported
 </string>
     <string name="key_import_wizard_pep_not_initial_explanation">If you initiated a key import for the following account: %s, please click Start.</string>
+    <string name="key_import_failure">Failed to import and use any key from %1$s with key id: %2$s</string>
+    <string name="key_import_success">%1$s Key imported successfully from %2$s</string>
+    <string name="key_import_from_fs_input_fpr">Please enter the fingerprint of the key you want to import.</string>
 
 </resources>

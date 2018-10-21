@@ -22,4 +22,14 @@ public class FeedbackTools {
             Timber.e(message);
         }
     }
+
+    public static void showLongFeedback(View rootView, String message, String actionText, View.OnClickListener actionListener) {
+        if (rootView != null) {
+            Snackbar snackbar = Snackbar.make(rootView, message, Snackbar.LENGTH_LONG);
+            snackbar.setAction(actionText, actionListener);
+            snackbar.show();
+        } else {
+            Timber.e(message);
+        }
+    }
 }

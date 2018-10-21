@@ -11,6 +11,7 @@ import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
 import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.Sync;
+import org.pEp.jniadapter.pEpException;
 
 import java.util.List;
 import java.util.Map;
@@ -151,7 +152,7 @@ public interface PEpProvider {
 
     Identity myself(Identity myId);
 
-    void setOwnIdentity(Identity id, String fpr);
+    Identity setOwnIdentity(Identity id, String fpr);
 
     void setPassiveModeEnabled(boolean enable);
 
@@ -210,7 +211,11 @@ public interface PEpProvider {
 
     com.fsck.k9.mail.Message generatePrivateKeyMessage(MimeMessage message, String fpr);
 
-    Message encryptMessage(Message result);
+    Message encryptMessage(Message result) throws pEpException;
+
+    boolean canEncrypt(String address);
+
+    void importKey(String key);
 
     class KeyDetail {
         private final Address address;

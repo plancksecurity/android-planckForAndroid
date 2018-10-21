@@ -310,8 +310,7 @@ public class MimeMessageBuilder extends MessageBuilder {
                     && (pEpMessage.getLongmsg() == null || pEpMessage.getLongmsg().isEmpty())) {
                 messageText = Jsoup.parse(pEpMessage.getLongmsgFormatted()).text();
             } else if (pEpMessage.getLongmsg() != null){
-                String text = Jsoup.parse(pEpMessage.getLongmsg().replaceAll("\n", "br2nl")).text();
-                messageText = text.replaceAll("br2nl ", "\n").replaceAll("br2nl", "\n").trim();
+                messageText = pEpMessage.getLongmsg();
             }
         }
 

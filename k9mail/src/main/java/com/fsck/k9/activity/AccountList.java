@@ -141,15 +141,6 @@ public abstract class AccountList extends K9ListActivity implements OnItemClickL
 
             holder.description.setText(description);
 
-            if (account instanceof Account) {
-                Account realAccount = (Account) account;
-                holder.chip.setBackgroundColor(realAccount.getChipColor());
-            } else {
-                holder.chip.setBackgroundColor(0xff999999);
-            }
-
-            holder.chip.getBackground().setAlpha(255);
-
             mFontSizes.setViewTextSize(holder.description, mFontSizes.getAccountName());
             mFontSizes.setViewTextSize(holder.email, mFontSizes.getAccountDescription());
 
@@ -160,7 +151,6 @@ public abstract class AccountList extends K9ListActivity implements OnItemClickL
         class AccountViewHolder {
             public TextView description;
             public TextView email;
-            public View chip;
         }
     }
 

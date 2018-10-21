@@ -1,9 +1,6 @@
 package com.fsck.k9.pEp.manualsync;
 
 
-import android.os.Handler;
-import android.os.Looper;
-
 import com.fsck.k9.Account;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.pEp.infrastructure.Presenter;
@@ -182,9 +179,25 @@ public class ImportWizardPresenter implements Presenter {
         importKeyController.setState(state);
     }
 
+    public void initialPgpMessageReceived() {
+        view.renderPgpSendHandshakeFirstStep();
+    }
+
+    public void createdPgpReply() {
+        view.renderPgpSendHandshakeSecondStep();
+    }
+
     public interface Callback {
         void onStart();
         void onFinish(boolean successful);
+    }
+
+    class WizartStateInfo {
+        String description;
+        String step;
+        boolean loading;
+        boolean next;
+        boolean close;
     }
 
 }
