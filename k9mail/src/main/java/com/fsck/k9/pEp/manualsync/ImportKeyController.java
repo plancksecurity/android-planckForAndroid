@@ -404,7 +404,7 @@ public class ImportKeyController {
                 Log.i("pEpKeyImport", "sendingOwnKEy: ");
                 messagingActions.sendMessage(account, handshakeMessage);
                 callback.onFinish(true);
-            } catch (MessagingException me) {
+            } catch (NullPointerException | MessagingException me) {
                 callback.onFinish(false);
                 new Handler(Looper.getMainLooper()).post(() -> {
                     Toast.makeText(context, me.getMessage(),
