@@ -184,7 +184,7 @@ public class PEpProviderImpl implements PEpProvider {
             srcMsg.setDir(Message.Direction.Incoming);
 
             Log.d(TAG, "pEpdecryptMessage() before decrypt");
-            decReturn = engine.decrypt_message(srcMsg, 0);
+            decReturn = engine.decrypt_message(srcMsg, new Vector<>(), 0);
             Log.d(TAG, "pEpdecryptMessage() after decrypt Subject" +  decReturn.dst.getShortmsg());
             Message message = decReturn.dst;
             MimeMessage decMsg = getMimeMessage(source, message);
@@ -239,7 +239,7 @@ public class PEpProviderImpl implements PEpProvider {
                 srcMsg.setDir(Message.Direction.Incoming);
 
                 Log.d(TAG, "decryptMessage() before decrypt");
-                decReturn = engine.decrypt_message(srcMsg, 0);
+                decReturn = engine.decrypt_message(srcMsg, new Vector<>(), 0);
                 Log.d(TAG, "decryptMessage() after decrypt");
 
                 Message message = decReturn.dst;
