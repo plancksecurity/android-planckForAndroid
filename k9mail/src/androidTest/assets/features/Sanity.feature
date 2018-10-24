@@ -15,19 +15,19 @@ Feature: Sanity
   Excpectation: Privacy Status of outgoing message is “Unsecure”
     When I click message compose
     And I check if the privacy status is pEpRatingUndefined
-    Then I fill messageTo field with unknownuser@mail.es
+    And I fill messageTo field with unknownuser@mail.es
     And I fill messageSubject field with subjectText
     And I fill messageBody field with bodyText
-    And I check in the handshake dialog if the privacy status is pEpRatingUnencrypted
-    Then I fill messageTo field with empty
+    Then I check in the handshake dialog if the privacy status is pEpRatingUnencrypted
+    When I fill messageTo field with empty
     And I fill messageSubject field with empty
     And I fill messageBody field with empty
-    And I check in the handshake dialog if the privacy status is pEpRatingUndefined
-    Then I fill messageTo field with unknownuser@mail.es
+    Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
+    When I fill messageTo field with unknownuser@mail.es
     And I fill messageSubject field with empty
     And I fill messageBody field with empty
-    And I check in the handshake dialog if the privacy status is pEpRatingUnencrypted
-    And I click send message button
+    Then I check in the handshake dialog if the privacy status is pEpRatingUnencrypted
+    When I click send message button
     And I go to sent folder
     And I click first message
     Then I compare messageBody with empty
@@ -40,11 +40,11 @@ Feature: Sanity
   Assumption: No emails with the communication partner user2 have been exchanged so far
   Excpectation: Privacy Status of outgoing message is “Unsecure”
     When I click message compose
-    And I check in the handshake dialog if the privacy status is pEpRatingUndefined
-    Then I fill messageTo field with user2@mail.es
+    Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
+    When I fill messageTo field with user2@mail.es
     And I fill messageSubject field with subject
     And I fill messageBody field with bodyText
-    And I check in the handshake dialog if the privacy status is pEpRatingUnencrypted
+    Then I check in the handshake dialog if the privacy status is pEpRatingUnencrypted
     And I click send message button
     And I wait for new message
 
@@ -57,22 +57,22 @@ Feature: Sanity
   Excpectation: The public key of the communication partner is imported
     The answer to my communication partners message is encrypted
     When I click message compose
-    Then I send 1 message to bot1 with subject subject and body body
+    And I send 1 message to bot1 with subject subject and body body
     And I click last message
     Then I compare messageBody with body
     And I check if the privacy status is pep_yellow
-    And I click view reply_message
-    Then I fill messageSubject field with extraText
+    When I click view reply_message
+    And I fill messageSubject field with extraText
     And I fill messageBody field with bodyText
-    And I check if the privacy status is pep_yellow
-    Then I discard message
+    Then I check if the privacy status is pep_yellow
+    And I discard message
 
   @login-scenarios
   Scenario: SER-299 Ensure mails are encrypted when pEp says so
     When I click message
-    Then I click view reply_message
-    And I check if the privacy status is pep_yellow
-    Then I click send message button
+    And I click view reply_message
+    Then I check if the privacy status is pep_yellow
+    When I click send message button
     And I press back
     And I wait for new message
     And I click last message
@@ -86,20 +86,20 @@ Feature: Sanity
   Excpectation: The new message should be sent encrypted
     When I click message compose
     Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
-    Then I send 1 message to bot1 with subject TestCase1.2.4 and body TestCase1.2.4
+    When I send 1 message to bot1 with subject TestCase1.2.4 and body TestCase1.2.4
     And I click message compose
-    Then I fill messageTo field with bot1
+    And I fill messageTo field with bot1
     And I fill messageSubject field with empty
     And I fill messageBody field with empty
-    And I check if the privacy status is pep_yellow
-    Then I fill messageTo field with empty
+    Then I check if the privacy status is pep_yellow
+    When I fill messageTo field with empty
     And I fill messageSubject field with empty
     And I fill messageBody field with empty
-    And I check in the handshake dialog if the privacy status is pEpRatingUndefined
-    Then I send 1 message to bot1 with subject TestCase1.2.4 and body TestCase1.2.4
-    Then I go to sent folder
+    Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
+    When I send 1 message to bot1 with subject TestCase1.2.4 and body TestCase1.2.4
+    And I go to sent folder
     And I click last message
-    And I check if the privacy status is pep_yellow
+    Then I check if the privacy status is pep_yellow
     And I compare messageBody with TestCase1.2.4
 
   @login-scenarios
@@ -110,31 +110,31 @@ Feature: Sanity
   Excpectation: The new message should be sent encrypted
     When I click message compose
     Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
-    Then I send 1 message to bot1 with subject TestCase1.2.5 and body TestCase1.2.5
+    When I send 1 message to bot1 with subject TestCase1.2.5 and body TestCase1.2.5
     And I click last message
-    And I check if the privacy status is pep_yellow
-    Then I press back
+    Then I check if the privacy status is pep_yellow
+    When I press back
     And I click message compose
     And I send 1 message to bot2 with subject TestCase1.2.5 and body TestCase1.2.5
     And I click last message
-    And I check if the privacy status is pep_yellow
-    Then I press back
+    Then I check if the privacy status is pep_yellow
+    When I press back
     And I click message compose
-    Then I fill messageTo field with bot1
+    And I fill messageTo field with bot1
     And I fill messageTo field with bot2
-    Then I wait 5 seconds
-    And I check if the privacy status is pep_yellow
-    And I fill messageSubject field with TestCase1.2.5
+    And I wait 5 seconds
+    Then I check if the privacy status is pep_yellow
+    When I fill messageSubject field with TestCase1.2.5
     And I fill messageBody field with TestCase1.2.5
     And I fill messageTo field with empty
-    And I check in the handshake dialog if the privacy status is pEpRatingUndefined
-    Then I fill messageTo field with bot2
+    Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
+    When I fill messageTo field with bot2
     And I fill messageSubject field with empty
     And I fill messageBody field with empty
-    And I check if the privacy status is pep_yellow
-    Then I click send message button
+    Then I check if the privacy status is pep_yellow
+    When I click send message button
     And I wait for new message
-    Then I go to sent folder
+    And I go to sent folder
     And I click last message
     Then I check if the privacy status is pep_yellow
     And I compare messageBody with empty
@@ -147,24 +147,24 @@ Feature: Sanity
     You don’t have the key of user3.
   Excpectation: The message should be sent unencrypted
     When I click message compose
-    Then I send 1 message to bot1 with subject TestCase1.2.6 and body TestCase1.2.6
+    And I send 1 message to bot1 with subject TestCase1.2.6 and body TestCase1.2.6
     And I click message compose
     And I send 1 message to bot2 with subject TestCase1.2.6 and body TestCase1.2.6
     And I click message compose
-    Then I fill messageTo field with bot1
+    And I fill messageTo field with bot1
     And I fill messageTo field with bot2
-    And I check if the privacy status is pep_yellow
-    Then I fill messageTo field with unknown@user.es
+    Then I check if the privacy status is pep_yellow
+    When I fill messageTo field with unknown@user.es
     Then I check if the privacy status is pep_no_color
-    And I fill messageSubject field with TestCase1.2.6
+    When I fill messageSubject field with TestCase1.2.6
     And I fill messageBody field with TestCase1.2.6
-    Then I fill messageTo field with empty
-    Then I fill messageTo field with bot1
+    And I fill messageTo field with empty
+    And I fill messageTo field with bot1
     And I fill messageTo field with bot2
-    And I check if the privacy status is pep_yellow
-    Then I fill messageTo field with unknown@user.es
+    Then I check if the privacy status is pep_yellow
+    When I fill messageTo field with unknown@user.es
     Then I check if the privacy status is pep_no_color
-    Then I click send message button
+    When I click send message button
     And I wait for new message
     And I go to sent folder
     And I click last message
@@ -177,12 +177,12 @@ Feature: Sanity
   Assumption: You have public keys of (at least) 1 communication partner
   Excpectation: The message is sent unencrypted with no public key attached
     When I click message compose
-    Then I fill messageTo field with bot1
+    And I fill messageTo field with bot1
     And I select from message menu pep_force_unprotected
     And I fill messageSubject field with TestCase1.2.7
     And I fill messageBody field with TestCase1.2.7
     Then I check if the privacy status is pep_no_color
-    And I click send message button
+    When I click send message button
     And I wait for new message
     And I go to sent folder
     And I click last message
