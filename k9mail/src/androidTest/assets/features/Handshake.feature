@@ -7,7 +7,10 @@ Feature: Handshake
     Given I start test
 
   @login-scenarios
-  Scenario: Test Handshake_1.2.9_HandshakeInNewMessage
+  Scenario: Test Handshake HandshakeInNewMessage
+  Description: Make a handshake with a communication partner
+  Assumption: You didn’t make a handshake with communication partner user1 yet
+  Expectation: Privacy Status is “Secure & Trusted” for new messages with the trusted partner
     When I click message compose
     Then I send 1 message to bot1 with subject subject and body body
     And I click last message
@@ -17,7 +20,11 @@ Feature: Handshake
     And I check if the privacy status is pEpRatingTrusted
 
   @login-scenarios
-  Scenario: Test Handshake_1.2.10_HandshakeInExistingMessage
+  Scenario: Test Handshake HandshakeInExistingMessage
+  Description: Make a handshake with a communication partner
+  Assumption: You didn’t exchange any message with user4 yet
+  Expectation: Privacy Status for the single existing message
+    changes from “Secure…” to “Secure & Trusted”
     Given I click message compose
     Then I fill messageTo field with bot2
     And I fill messageSubject field with TestCase1.2.10
@@ -31,7 +38,11 @@ Feature: Handshake
     Then I check if the privacy status is pEpRatingTrusted
 
   @login-scenarios
-  Scenario: Test Handshake_1.2.11_StopTrusting
+  Scenario: Test Handshake StopTrusting
+  Description: Stop Trusting an identity
+  Assumption: Handshake has been done with at least 1 person (user4)
+  Expectation: After the cancellation of the handshake,
+    the communication between Alice and me should be “Secure…”
     When I click message compose
     Then I send 1 message to bot1 with subject subject and body body
     And I click last message
@@ -44,7 +55,11 @@ Feature: Handshake
     Then I check if the privacy status is pep_yellow
 
   @login-scenarios
-  Scenario: Test Handshake_1.2.12_WrongTrustwords
+  Scenario: Test Handshake WrongTrustwords
+  Description: Assume the Trustwords between you and your communication partner don’t match
+    and mistrust the communication partner
+  Assumption: You don’t have the public key of the communication partner user5
+  Expectation: The current message and new messages will be red
     Then I send 1 message to bot3 with subject subject and body body
     And I click last message
     Then I click wrong trust words
