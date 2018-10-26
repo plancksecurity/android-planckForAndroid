@@ -335,7 +335,7 @@
 
     </PreferenceScreen>
 
-    <PreferenceScreen
+    <!--PreferenceScreen
         android:key="network_preferences"
         android:title="@string/network_preferences">
 
@@ -347,7 +347,7 @@
             android:persistent="false"
             android:title="@string/background_ops_label" />
 
-    </PreferenceScreen>
+    </PreferenceScreen-->
 
     <PreferenceScreen
         android:key="misc_preferences"
@@ -357,6 +357,15 @@
             android:key="attachment_default_path"
             android:persistent="false"
             android:title="@string/settings_attachment_default_path" />
+
+        <ListPreference
+            android:dialogTitle="@string/background_ops_label"
+            android:entries="@array/background_ops_entries"
+            android:entryValues="@array/background_ops_values"
+            android:key="background_ops"
+            android:persistent="false"
+            android:title="@string/background_ops_label" />
+
     </PreferenceScreen>
 
     <PreferenceScreen
