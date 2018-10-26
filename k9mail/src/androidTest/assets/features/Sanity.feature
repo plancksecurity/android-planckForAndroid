@@ -12,7 +12,7 @@ Feature: Sanity
     when entering the email address of a new contact user1.
     Also verify if pEp attaches my public key to outgoing messages
   Assumption: No emails with the communication partner user1 have been exchanged so far
-  Excpectation: Privacy Status of outgoing message is “Unsecure”
+  Expectation: Privacy Status of outgoing message is “Unsecure”
     When I click message compose
     And I check if the privacy status is pEpRatingUndefined
     And I fill messageTo field with unknownuser@mail.es
@@ -38,7 +38,7 @@ Feature: Sanity
     when entering the email address of the new contact user2.
     Also verify if pEp attaches my public key to outgoing messages
   Assumption: No emails with the communication partner user2 have been exchanged so far
-  Excpectation: Privacy Status of outgoing message is “Unsecure”
+  Expectation: Privacy Status of outgoing message is “Unsecure”
     When I click message compose
     Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
     When I fill messageTo field with user2@mail.es
@@ -54,7 +54,7 @@ Feature: Sanity
     This communication partner sends you a message from pEp.
     Verify if the public key of the communication partner is imported and you can answer encrypted.
   Assumption: You didn’t receive any message from the communication partner so far
-  Excpectation: The public key of the communication partner is imported
+  Expectation: The public key of the communication partner is imported
     The answer to my communication partners message is encrypted
     When I click message compose
     And I send 1 message to bot1 with subject subject and body body
@@ -83,7 +83,7 @@ Feature: Sanity
   Description: Test if pEp encrypts the message if you send an email to someone
     you already have the public key from, e.g. user1.
   Assumption: You already have a public key from your communication partner
-  Excpectation: The new message should be sent encrypted
+  Expectation: The new message should be sent encrypted
     When I click message compose
     Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
     When I send 1 message to bot1 with subject TestCase1.2.4 and body TestCase1.2.4
@@ -107,7 +107,7 @@ Feature: Sanity
   Description: Test if the Privacy Status of a message is correct,
     if it is sent to multiple people and the public key is available (user1 and user2)
   Assumption: You have public keys of (at least) 2 different communication partners.
-  Excpectation: The new message should be sent encrypted
+  Expectation: The new message should be sent encrypted
     When I click message compose
     Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
     When I send 1 message to bot1 with subject TestCase1.2.5 and body TestCase1.2.5
@@ -145,7 +145,7 @@ Feature: Sanity
     if it is sent to multiple people. For one of the recipients, there is no public key available.
   Assumption: You have public keys of (at least) 2 different communication partners (user1 and user2).
     You don’t have the key of user3.
-  Excpectation: The message should be sent unencrypted
+  Expectation: The message should be sent unencrypted
     When I click message compose
     And I send 1 message to bot1 with subject TestCase1.2.6 and body TestCase1.2.6
     And I click message compose
@@ -175,7 +175,7 @@ Feature: Sanity
   Scenario: Test Sanity DisableProtection
   Description: Send a message with disabled protection to a contact you have the public key (user1)
   Assumption: You have public keys of (at least) 1 communication partner
-  Excpectation: The message is sent unencrypted with no public key attached
+  Expectation: The message is sent unencrypted with no public key attached
     When I click message compose
     And I fill messageTo field with bot1
     And I select from message menu pep_force_unprotected
