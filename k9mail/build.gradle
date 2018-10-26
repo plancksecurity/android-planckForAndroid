@@ -79,7 +79,9 @@ dependencies {
     //implementation "com.klinkerapps:floating-tutorial:1.0.4"
 
     androidTestImplementation "com.android.support.test.espresso:espresso-intents:${espressoVersion}"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:${espressoVersion}"
+    androidTestCompile ('com.android.support.test.espresso:espresso-core:2.2.1') {
+        exclude module: 'support-annotations'
+    }
 
     testImplementation "org.robolectric:robolectric:${robolectricVersion}"
     testImplementation "junit:junit:${junitVersion}"
