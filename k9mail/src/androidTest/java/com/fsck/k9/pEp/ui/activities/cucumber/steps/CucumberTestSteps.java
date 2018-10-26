@@ -113,6 +113,18 @@ public class CucumberTestSteps {
     public void tearDown() {
         IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
         timer.cancel();
+
+        while (testUtils.getCurrentActivity() != null) {
+            device.waitForIdle();
+            device.pressBack();
+            try {
+                onView(withText(R.string.discard_action)).check(matches(isDisplayed()));
+                onView(withText(R.string.discard_action)).perform(click());
+            } catch (Exception ex) {
+                Timber.i("There is no message to discard");
+            }
+
+        }
         activityTestRule.finishActivity();
     }
 
