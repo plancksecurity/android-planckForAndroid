@@ -293,8 +293,10 @@ public class ImportKeyController {
                 break;
         }
 
-        next();
         messageType = getMessageType(srcMsg, result);
+        if (!messageType.equals(KeyImportMessageType.NO_IMPORT)) {
+            next();
+        }
 
         assert keyImporter != null;
 
@@ -308,6 +310,7 @@ public class ImportKeyController {
                 Timber.i("Handshake request generated");
                 messagingActions.sendMessage(account, handshakeMessage);
                 showInitialExportDialog(myself, sender);
+                pEp.resetTrust(sender);
                 break;
             case HANDSHAKE_REQUEST_MESSAGE:
                 //Only importer will get the handshake request as the exporter generated it
@@ -369,11 +372,11 @@ public class ImportKeyController {
 
     private <MSG extends Message> KeyImportMessageType getMessageType(MSG srcMsg, PEpProvider.DecryptResult result) {
         Rating rating = result.rating;
-        if (rating.value <= Rating.pEpRatingUnencrypted.value) {
+        if (rating.value <= Rating.pEpRatingUnencrypted.value && state.equals(ImportKeyWizardState.INIT)) {
             return KeyImportMessageType.BEACON_MESSAGE;
-        } else if (containsPrivateOwnKey(result) && state.equals(ImportKeyWizardState.RECEIVED_PRIV_KEY)) {
+        } else if (containsPrivateOwnKey(result) && state.equals(ImportKeyWizardState.PRIVATE_KEY_WAITING)) {
             return KeyImportMessageType.PRIVATE_KEY_MESSAGE;
-        } else if (isHandshakeRequest(srcMsg, rating)) {
+        } else if (isHandshakeRequest(srcMsg, rating) && state.isReadyToRequestHandshake()) {
             return KeyImportMessageType.HANDSHAKE_REQUEST_MESSAGE;
         } else {
             return KeyImportMessageType.NO_IMPORT;
