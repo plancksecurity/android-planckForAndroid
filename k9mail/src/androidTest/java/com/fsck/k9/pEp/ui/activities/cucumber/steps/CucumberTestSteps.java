@@ -220,6 +220,8 @@ public class CucumberTestSteps {
                     onView(withId(viewId)).perform(typeText(text), closeSoftKeyboard());
                     onView(withId(viewId)).perform(closeSoftKeyboard());
                 } catch (Exception ex) {
+                    UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+                    scroll.swipe(Direction.DOWN, 1.0f);
                     onView(withId(viewId)).perform(closeSoftKeyboard());
                 }
             }
