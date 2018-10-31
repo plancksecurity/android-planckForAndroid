@@ -115,6 +115,7 @@ public class TestUtils {
     public static final int TIMEOUT_TEST = FIVE_MINUTES * MINUTE_IN_SECONDS * SECOND_IN_MILIS;
     private TestConfig testConfig;
     public String botList[];
+    public boolean testReset = false;
 
     public TestUtils(UiDevice device, Instrumentation instrumentation) {
         TestUtils.device = device;
@@ -337,6 +338,7 @@ public class TestUtils {
         try {
             onView(withId(R.id.next)).perform(click());
             device.waitForIdle();
+            testReset = false;
             try {
                 device.waitForIdle();
                 onView(withId(R.id.skip)).perform(click());
