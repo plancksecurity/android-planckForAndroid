@@ -17,9 +17,7 @@ import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.Direction;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
-import android.support.test.uiautomator.Until;
 import android.view.KeyEvent;
-import android.webkit.WebView;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
@@ -56,7 +54,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static android.support.test.espresso.web.sugar.Web.onWebView;
-import static android.support.test.espresso.web.webdriver.DriverAtoms.webClick;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containsText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containstText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
@@ -100,6 +97,7 @@ public class CucumberTestSteps {
             startTimer(50000);
             if (testUtils.getCurrentActivity() == null) {
                 //startTimer(350);
+                testUtils.testReset = true;
                 try {
                     activityTestRule.launchActivity(new Intent());
                 } catch (Exception ex) {
@@ -113,18 +111,19 @@ public class CucumberTestSteps {
     public void tearDown() {
         IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
         timer.cancel();
-
-        while (testUtils.getCurrentActivity() != null) {
-            device.waitForIdle();
-            device.pressBack();
-            try {
-                onView(withText(R.string.discard_action)).check(matches(isDisplayed()));
-                onView(withText(R.string.discard_action)).perform(click());
-            } catch (Exception ex) {
-                Timber.i("There is no message to discard");
+        if (testUtils.testReset) {
+            while (testUtils.getCurrentActivity() != null) {
+                device.waitForIdle();
+                device.pressBack();
+                try {
+                    onView(withText(R.string.discard_action)).check(matches(isDisplayed()));
+                    onView(withText(R.string.discard_action)).perform(click());
+                } catch (Exception ex) {
+                    Timber.i("There is no message to discard");
+                }
             }
-
         }
+
         activityTestRule.finishActivity();
     }
 
@@ -624,6 +623,7 @@ public class CucumberTestSteps {
     public void I_attach_files_to_message() {
         testUtils.fillMessage(new TestUtils.BasicMessage("", "", "", ""), true);
         testUtils.sendMessage();
+        testUtils.testReset = true;
     }
 
     @Then("^I attach (\\S+)$")
@@ -632,6 +632,7 @@ public class CucumberTestSteps {
         Set_external_mock(file);
         testUtils.attachFile(fileName);
         device.waitForIdle();
+        testUtils.testReset = true;
     }
 
     @Given("^Set external mock (\\S+)$")
