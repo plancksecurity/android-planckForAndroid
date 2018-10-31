@@ -148,7 +148,7 @@ public class CucumberTestSteps {
                 testUtils.removeTextFromTextView("to");
                 break;
             case "myself":
-                cucumberMessageTo = testUtils.getTextFromTextViewThatContainsText("@");
+                cucumberMessageTo = getTextFromView(onView(withId(R.id.identity)));
                 break;
             case "bot1":
                 Timber.i("Filling message to bot1");
