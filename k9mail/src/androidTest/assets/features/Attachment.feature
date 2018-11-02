@@ -13,16 +13,16 @@ Feature: Attachment
   Assumption: I already have the public key of the other contact
     and can send the message encrypted(user1)
   Expectation: Then message is in SENT items and I can open the attachments
-    When I click message compose
+    When I click compose message
     Then I send 1 message to bot1 with subject subject and body body
-    Then I click message compose
-    And I fill messageTo field with bot1
-    And I fill messageSubject field with subject
-    And I fill messageBody field with ThisIsTheBody
+    Then I click compose message
+    And I enter bot1 in the messageTo field
+    And I enter subject in the messageSubject field
+    And I enter ThisIsTheBody in the messageBody field
     Then I check if the privacy status is pep_yellow
     Then I attach MSoffice
-    And I click send message button
-    Then I wait for new message
+    And I click the send message button
+    Then I wait for the new message
 
   @login-scenarios
   Scenario: Test Attachment Send1FileTo1Contact (2/2)
@@ -30,7 +30,7 @@ Feature: Attachment
   Assumption: I already have the public key of the other contact
   and can send the message encrypted(user1)
   Expectation: Then message is in SENT items and I can open the attachments
-    And I click message
+    And I click on the last message
     Then I open 1 attached files
 
   @login-scenarios
@@ -46,17 +46,17 @@ Feature: Attachment
   •	Send the message
   •	VERIFY if the message is in SENT items of your mailbox and you can open the attachment.
   •	Ask the recipient, if he could open all attachments
-    When I click message compose
-    Then I fill messageTo field with myself
-    And I fill messageSubject field with subject
-    And I fill messageBody field with body
+    When I click on the last message
+    Then I enter myself in the messageTo field
+    And I enter subject in the messageSubject field
+    And I enter body in the messageBody field
     Then I check if the privacy status is pep_green
     And I attach PDF
     And I attach MSoffice
     And I attach settings
     And I attach picture
-    And I click send message button
-    And I wait for new message
+    And I click the send message button
+    And I wait for the new message
 
 
   @login-scenarios
@@ -73,7 +73,7 @@ Feature: Attachment
   •	VERIFY if the message is in SENT items of your mailbox and you can open the attachment.
   •	Ask the recipient, if he could open all attachments
     Then I go to sent folder
-    And I click message
+    And I click on the last message
     And I open 4 attached files
 
   @login-scenarios
@@ -91,9 +91,9 @@ Feature: Attachment
   •	VERIFY if the message is in SENT items of your mailbox and you can read the preview.
   •	Open the message (double click)
   •	VERIFY if you can read the message including the embedded picture.
-    Given I click message compose
-    Then I fill messageTo field with bot1
-    And I fill messageTo field with bot2
+    Given I click compose message
+    Then I enter bot1 in the messageTo field
+    And I enter bot2 in the messageTo field
 
 
   @login-scenarios
