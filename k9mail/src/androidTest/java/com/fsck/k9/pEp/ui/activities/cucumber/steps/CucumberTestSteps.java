@@ -58,6 +58,7 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containsText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containstText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromView;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
@@ -211,6 +212,8 @@ public class CucumberTestSteps {
     private void textViewEditor (String text, String viewName) {
         int viewId = testUtils.intToID(viewName);
         device.waitForIdle();
+        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+        scroll.swipe(Direction.DOWN, 1.0f);
         if (!text.equals("empty")) {
             while (!(containstText(onView(withId(viewId)), text))) {
                 try {
@@ -220,9 +223,8 @@ public class CucumberTestSteps {
                     onView(withId(viewId)).perform(typeText(text), closeSoftKeyboard());
                     onView(withId(viewId)).perform(closeSoftKeyboard());
                 } catch (Exception ex) {
-                    UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-                    scroll.swipe(Direction.DOWN, 1.0f);
                     onView(withId(viewId)).perform(closeSoftKeyboard());
+                    device.pressBack();
                 }
             }
         } else {
