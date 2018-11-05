@@ -528,21 +528,25 @@ public class CucumberTestSteps {
         waitUntilIdle();
         BySelector selector = By.clazz("android.widget.ScrollView");
         onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
-            for (UiObject2 object : device.findObjects(selector)) {
-                boolean actionPerformed = false;
-                while (!actionPerformed) {
-                    try {
-                        object.swipe(Direction.DOWN, 1);
-                        actionPerformed = true;
-                    } catch (Exception ex) {
-                        Timber.i("Couldn't swipe down view: " + ex.getMessage());
-                    }
-                }
-            }
             try {
                 onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
             } catch (Exception ex) {
-                Timber.i("Cannot find field to");
+                for (UiObject2 object : device.findObjects(selector)) {
+                    boolean actionPerformed = false;
+                    while (!actionPerformed) {
+                        try {
+                            object.swipe(Direction.DOWN, 1);
+                            actionPerformed = true;
+                        } catch (Exception e) {
+                            Timber.i("Couldn't swipe down view: " + e.getMessage());
+                        }
+                    }
+                }
+                try {
+                    onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
+                } catch (Exception e) {
+
+                }
             }
         switch (status){
             case "pEpRatingUndefined":
