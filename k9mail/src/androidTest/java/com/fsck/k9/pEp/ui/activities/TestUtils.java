@@ -993,7 +993,7 @@ public class TestUtils {
             for (UiObject2 textView : device.findObjects(textViewSelector)) {
                 try {
                     if (textView.findObject(textViewSelector).getText() != null && textView.findObject(textViewSelector).getText().contains(folder)) {
-                        textView.findObject(textViewSelector).click();
+                        textView.findObject(textViewSelector).longClick();
                         return;
                     }
                     device.waitForIdle();
