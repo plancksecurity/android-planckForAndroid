@@ -128,7 +128,7 @@ public class CucumberTestSteps {
         activityTestRule.finishActivity();
     }
 
-    @When(value = "^I create an account$")
+    @When(value = "^I created an account$")
     public void I_create_account() {
         device.waitForIdle();
         if (!exists(onView(withId(R.id.message_list)))) {
@@ -137,7 +137,7 @@ public class CucumberTestSteps {
     }
 
 
-    @When("^I fill messageTo field with (\\S+)")
+    @When("^I enter (\\S+) in the messageTo field")
     public void I_fill_messageTo_field(String cucumberMessageTo) {
         device.waitForIdle();
         while (!exists(onView(withId(R.id.to)))) {
@@ -199,12 +199,12 @@ public class CucumberTestSteps {
         }
     }
 
-    @When("^I fill messageSubject field with (\\S+)")
+    @When("^I enter (\\S+) in the messageSubject field")
     public void I_fill_subject_field(String cucumberSubject) {
         textViewEditor(cucumberSubject,"subject");
     }
 
-    @When("^I fill messageBody field with (\\S+)")
+    @When("^I enter (\\S+) in the messageBody field")
     public void I_fill_body_field(String cucumberBody) {
         textViewEditor(cucumberBody, "message_content");
     }
@@ -257,9 +257,14 @@ public class CucumberTestSteps {
     }
 
 
-    @When("^I click last message$")
-    public void I_click_last_message_received() {
+    @When("^I click the last message$")
+    public void I_click_the_last_message() {
         testUtils.clickLastMessageReceived();
+    }
+
+    @When("^I click the last message received$")
+    public void I_click_the_last_message_received() {
+        testUtils.clickLastMessage();
     }
 
     @When("^I click message$")
@@ -684,19 +689,19 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
-    @Then("^I click send message button$")
-    public void I_click_send_message_button() {
+    @Then("^I click the send message button$")
+    public void I_click_then_send_message_button() {
         while (exists(onView(withId(R.id.send)))) {
             testUtils.clickView(R.id.send);
         }
     }
 
-    @When("^I click message compose")
-    public void I_click_message_compose() {
+    @When("^I click compose message")
+    public void I_click_message_compose_button() {
         testUtils.composeMessageButton();
     }
 
-    @When("^I start test")
+    @When("^I run the tests")
     public void startTest() {
         testUtils.readBotList();
         bot = testUtils.botList;
@@ -780,19 +785,19 @@ public class CucumberTestSteps {
 
     }
 
-    @Then("^I wait for new message$")
-    public void I_wait_for_new_message(){
+    @Then("^I wait for the new message$")
+    public void I_wait_for_the_new_message(){
         testUtils.waitForNewMessage();
     }
 
-    @And("^I go to sent folder$")
-    public void I_go_to_sent_folder(){
+    @And("^I go to the sent folder$")
+    public void I_go_to_the_sent_folder(){
         device.waitForIdle();
         testUtils.goToSentFolder();
     }
 
-    @And("^I click first message$")
-    public void I_click_first_message(){
+    @And("^I click the first message$")
+    public void I_click_the_first_message(){
         testUtils.clickFirstMessage();
     }
 
@@ -805,8 +810,8 @@ public class CucumberTestSteps {
         }
     }
 
-    @Then("^I discard message$")
-    public void I_discard_message(){
+    @Then("^I discard the message$")
+    public void I_discard_the_message(){
         device.waitForIdle();
         testUtils.pressBack();
         testUtils.doWaitForObject("android.widget.Button");
