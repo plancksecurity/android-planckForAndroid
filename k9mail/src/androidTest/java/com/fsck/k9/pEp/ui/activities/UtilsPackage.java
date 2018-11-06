@@ -232,7 +232,7 @@ public class UtilsPackage {
 
                     @Override
                     public void perform(UiController uiController, View view) {
-                        value[0] = ((TextView) view).getText().toString().contains(content);
+                        value[0] = ((TextView) view).getText().toString().toLowerCase().contains(content.toLowerCase());
                     }
                 });
             }
