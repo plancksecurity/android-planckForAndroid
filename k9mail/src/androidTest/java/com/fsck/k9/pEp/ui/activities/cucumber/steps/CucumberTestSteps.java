@@ -214,29 +214,40 @@ public class CucumberTestSteps {
         device.waitForIdle();
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         scroll.swipe(Direction.DOWN, 1.0f);
-        if (!text.equals("empty")) {
-            while (!(containstText(onView(withId(viewId)), text))) {
-                try {
-                    onView(withId(viewId)).perform(closeSoftKeyboard());
-                    onView(withId(viewId)).perform(click());
-                    onView(withId(viewId)).perform(closeSoftKeyboard());
-                    onView(withId(viewId)).perform(typeText(text), closeSoftKeyboard());
-                    onView(withId(viewId)).perform(closeSoftKeyboard());
-                } catch (Exception ex) {
-                    onView(withId(viewId)).perform(closeSoftKeyboard());
-                    device.pressBack();
+        switch (text) {
+            case "empty":
+                testUtils.removeTextFromTextView(viewName);
+                break;
+            case "longText":
+                text = testUtils.longText();
+            default:
+                while (!(containstText(onView(withId(viewId)), text))) {
+                    try {
+                        onView(withId(viewId)).perform(closeSoftKeyboard());
+                        onView(withId(viewId)).perform(click());
+                        onView(withId(viewId)).perform(closeSoftKeyboard());
+                        onView(withId(viewId)).perform(typeText(text), closeSoftKeyboard());
+                        onView(withId(viewId)).perform(closeSoftKeyboard());
+                    } catch (Exception ex) {
+                        if (viewIsDisplayed((viewId))) {
+                            onView(withId(viewId)).perform(closeSoftKeyboard());
+                            device.pressBack();
+                        }
+                    }
                 }
-            }
-        } else {
-            testUtils.removeTextFromTextView(viewName);
         }
     }
 
     @When("^I compare messageBody with (\\S+)")
     public void I_compare_body(String cucumberBody) {
         String [] body;
-        if (cucumberBody.equals("empty")) {
-            cucumberBody = resources.getString(R.string.default_signature);
+        switch (cucumberBody) {
+            case "empty":
+                cucumberBody = resources.getString(R.string.default_signature);
+                break;
+            case "longText":
+                cucumberBody = testUtils.longText();
+                break;
         }
         testUtils.doWaitForResource(R.id.message_container);
         while (true) {
