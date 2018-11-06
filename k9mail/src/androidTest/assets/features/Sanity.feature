@@ -9,8 +9,8 @@ Feature: Sanity
   @login-scenarios
   Scenario: Test Sanity MailToNewContact
   Description: Test if pEp changes to Privacy Status from “Unknown” to “Unsecure”
-    when entering the email address of a new contact user1.
-    Also verify if pEp attaches my public key to outgoing messages
+  when entering the email address of a new contact user1.
+  Also verify if pEp attaches my public key to outgoing messages
   Assumption: No emails with the communication partner have been exchanged so far
   Expectation: Privacy Status of outgoing message is “Unsecure”
     When I click compose message
@@ -20,24 +20,24 @@ Feature: Sanity
     And I enter bodyText in the messageBody field
     Then I check in the handshake dialog if the privacy status is pEpRatingUnencrypted
     When I enter empty in the messageTo field
-    And I enter empty in the messageSubject
+    And I enter empty in the messageSubject field
     And I enter empty in the messageBody field
     Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
     When I enter unknownuser@mail.es in the messageTo field
     And I enter empty in the messageSubject field
     And I enter empty in the messageBody field
     Then I check in the handshake dialog if the privacy status is pEpRatingUnencrypted
-    When I click the send message button
+    When I enter longText in the messageBody field
+    And I click the send message button
     And I go to the sent folder
     And I click the first message
-    #@Juan: Shouldn't we put some text in the body and compare it?
-    Then I compare messageBody with empty
+    Then I compare messageBody with longText
 
   @login-scenarios
   Scenario: Test Sanity MailToSecondNewContact
   Description: Test if pEp changes to Privacy Status from “Unknown” to “Unsecure”
-    when entering the email address of the new contact user2.
-    Also verify if pEp attaches my public key to outgoing messages
+  when entering the email address of the new contact user2.
+  Also verify if pEp attaches my public key to outgoing messages
   Assumption: No emails with the communication partner user2 have been exchanged so far
   Expectation: Privacy Status of outgoing message is “Unsecure”
     When I click compose message
@@ -52,11 +52,11 @@ Feature: Sanity
   @login-scenarios
   Scenario: Test Sanity MailFromNewContactEncrypted
   Description: You have a new communication partner using pEp.
-    This communication partner sends you a message from pEp.
-    Verify if the public key of the communication partner is imported and you can answer encrypted.
+  This communication partner sends you a message from pEp.
+  Verify if the public key of the communication partner is imported and you can answer encrypted.
   Assumption: You didn’t receive any message from the communication partner so far
   Expectation: The public key of the communication partner is imported
-    The answer to my communication partners message is encrypted
+  The answer to my communication partners message is encrypted
     When I click compose message
     And I send 1 message to bot1 with subject subject and body body
     And I click the last message
@@ -66,12 +66,14 @@ Feature: Sanity
     And I enter extraText in the messageSubject field
     And I enter bodyText in the messageBody field
     Then I check if the privacy status is pep_yellow
+    When I click the send message button
+    And I go back to message compose
+    And I wait for the new message
     #@Juan: We should send the message and check if the answer of the bot, if the message we sent was encrypted
-    And I discard the message
 
   @login-scenarios
   Scenario: SER-299 Ensure mails are encrypted when pEp says so
-    When I click on the last message
+    When I click the last message received
     And I click view reply_message
     Then I check if the privacy status is pep_yellow
     When I click the send message button
@@ -84,13 +86,13 @@ Feature: Sanity
   @login-scenarios
   Scenario: Test Sanity MailToExistingContactEncrypted
   Description: Test if pEp encrypts the message if you send an email to someone
-    you already have the public key from, e.g. user1.
+  you already have the public key from, e.g. user1.
   Assumption: You already have a public key from your communication partner
   Expectation: The new message should be sent encrypted
     When I click compose message
     Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
     When I send 1 message to bot1 with subject TestCase1.2.4 and body TestCase1.2.4
-    And I click on the last message compose
+    And I click compose message
     And I enter bot1 in the messageTo field
     And I enter empty in the messageSubject field
     And I enter empty in the messageBody field
@@ -108,7 +110,7 @@ Feature: Sanity
   @login-scenarios
   Scenario: Test Sanity MailToMultipleContactsEncrypted
   Description: Test if the Privacy Status of a message is correct,
-    if it is sent to multiple people and the public key is available (user1 and user2)
+  if it is sent to multiple people and the public key is available (user1 and user2)
   Assumption: You have public keys of (at least) 2 different communication partners.
   Expectation: The new message should be sent encrypted
     When I click compose message
@@ -145,9 +147,9 @@ Feature: Sanity
   @login-scenarios
   Scenario: Test Sanity MailToMultipleContactsMixed
   Description:Test if the Privacy Status of a message is correct,
-    if it is sent to multiple people. For one of the recipients, there is no public key available.
+  if it is sent to multiple people. For one of the recipients, there is no public key available.
   Assumption: You have public keys of (at least) 2 different communication partners (user1 and user2).
-    You don’t have the key of user3.
+  You don’t have the key of user3.
   Expectation: The message should be sent unencrypted
     When I click compose message
     And I send 1 message to bot1 with subject TestCase1.2.6 and body TestCase1.2.6
