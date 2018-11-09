@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
@@ -50,8 +51,8 @@ enum KeyImportMessageType {
 }
 
 public class ImportKeyController {
-    //FIXME: 28-08-2018 Remove before release.
-    final private static String LOG_TAG = "pEpKeyImport";
+    boolean enableDebugLogging = BuildConfig.DEBUG || K9.isDebug();
+
     private final K9 context;
     private String senderKey = "";
     private PEpProvider pEp;
@@ -85,7 +86,7 @@ public class ImportKeyController {
             context.enableFastPolling();
         }
 
-        Log.e("currentSTATE", state.name());
+        Timber.e("currentSTATE %s", state.name());
 
         return state;
     }
@@ -120,12 +121,13 @@ public class ImportKeyController {
         }
 
         if (ispEpKeyImportMsg(srcMsg, decryptedMsg)) {
-            Log.i(LOG_TAG, "MessageType: pEp key import message");
+            if (K9.isDebug())
+            Timber.i( "MessageType: pEp key import message");
             return KeySourceType.PEP;
         }
 
         if (isExpectedPGPKeyImportMsg(srcMsg, result)) {
-            Log.i(LOG_TAG, "MessageType: maybe PGP key import message");
+            Timber.i("MessageType: maybe PGP key import message");
             return KeySourceType.PGP;
         }
         return KeySourceType.NONE;
@@ -167,8 +169,10 @@ public class ImportKeyController {
                 callback.onFinish(true);
             } catch (NullPointerException | MessagingException e) {
                 callback.onFinish(false);
-                new android.os.Handler(Looper.getMainLooper()).post(()
-                        -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show());
+                if (enableDebugLogging) {
+                    new Handler(Looper.getMainLooper()).post(()
+                            -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show());
+                }
 
             }
         }).start();
@@ -241,17 +245,21 @@ public class ImportKeyController {
 //Received private key -
                 ((K9) context.getApplicationContext()).disableFastPolling();
                 if (role.equals(Role.IMPORTER)) { // is key to import.
-                    new Handler(Looper.getMainLooper()).post(()
-                            -> Toast.makeText(context, "Trying to call setOWN: ::" + sender.fpr + "::", Toast.LENGTH_SHORT).show());
+
+                    if (enableDebugLogging) {
+                        new Handler(Looper.getMainLooper()).post(()
+                                -> Toast.makeText(context, "Trying to call setOWN: ::" + sender.fpr + "::", Toast.LENGTH_SHORT).show());
+                    }
                     sendOwnKey(new ImportWizardPresenter.Callback() {
                         @Override
                         public void onStart() {
-                            Log.i(LOG_TAG, "Init send own key from importer POV");
+                            Timber.i("Init send own key from importer POV");
                         }
 
                         @Override
                         public void onFinish(boolean successful) {
-                            Log.e(LOG_TAG, "Set own id: " + sender.fpr + "equals" + senderKey.equals(sender.fpr));
+                            Timber.e("Set own id: %s equals %s",
+                                    sender.fpr, senderKey.equals(sender.fpr));
                             pEp.setOwnIdentity(sender, sender.fpr);
                             ImportWizardFrompEp.notifyPrivateKeyImported(context);
                             alreadyProcessedMsgs.clear();
@@ -285,8 +293,10 @@ public class ImportKeyController {
                 break;
         }
 
-        next();
         messageType = getMessageType(srcMsg, result);
+        if (!messageType.equals(KeyImportMessageType.NO_IMPORT)) {
+            next();
+        }
 
         assert keyImporter != null;
 
@@ -294,12 +304,13 @@ public class ImportKeyController {
             case BEACON_MESSAGE:
                 //This state will only be reached if you are the exporter, as the importer
                 //will ignore the beacon due to being the sender
-                Log.i(LOG_TAG, "Detected Key import request");
+                Timber.i("Detected Key import request");
 
                 MimeMessage handshakeMessage = buildHandshakeRequestMessage();
-                Log.i(LOG_TAG, "Handshake request generated");
+                Timber.i("Handshake request generated");
                 messagingActions.sendMessage(account, handshakeMessage);
                 showInitialExportDialog(myself, sender);
+                pEp.resetTrust(sender);
                 break;
             case HANDSHAKE_REQUEST_MESSAGE:
                 //Only importer will get the handshake request as the exporter generated it
@@ -313,13 +324,16 @@ public class ImportKeyController {
                     finish();
                 }
 
-                Log.i("ManualImport %s", "Detected yellow message aka handshake request");
+                Timber.i("ManualImport %s", "Detected yellow message aka handshake request");
 
                 break;
             case PRIVATE_KEY_MESSAGE:
                 Timber.i("ManualImport %s", "Key received");
-                new Handler(Looper.getMainLooper()).post(() ->
-                        Toast.makeText(context, "DETECTED PRIV KEY: " + result.flags, Toast.LENGTH_SHORT).show());
+                if (enableDebugLogging) {
+                    new Handler(Looper.getMainLooper()).post(() ->
+                            Toast.makeText(context, "DETECTED PRIV KEY: " + result.flags, Toast.LENGTH_SHORT).show());
+                }
+
                 keyImporter.processPrivateKeyMessage();
                 finish();
                 break;
@@ -358,11 +372,11 @@ public class ImportKeyController {
 
     private <MSG extends Message> KeyImportMessageType getMessageType(MSG srcMsg, PEpProvider.DecryptResult result) {
         Rating rating = result.rating;
-        if (rating.value <= Rating.pEpRatingUnencrypted.value) {
+        if (rating.value <= Rating.pEpRatingUnencrypted.value && state.equals(ImportKeyWizardState.INIT)) {
             return KeyImportMessageType.BEACON_MESSAGE;
-        } else if (containsPrivateOwnKey(result) && state.equals(ImportKeyWizardState.RECEIVED_PRIV_KEY)) {
+        } else if (containsPrivateOwnKey(result) && state.equals(ImportKeyWizardState.PRIVATE_KEY_WAITING)) {
             return KeyImportMessageType.PRIVATE_KEY_MESSAGE;
-        } else if (isHandshakeRequest(srcMsg, rating)) {
+        } else if (isHandshakeRequest(srcMsg, rating) && state.isReadyToRequestHandshake()) {
             return KeyImportMessageType.HANDSHAKE_REQUEST_MESSAGE;
         } else {
             return KeyImportMessageType.NO_IMPORT;
@@ -399,17 +413,20 @@ public class ImportKeyController {
 
         new Thread(() -> {
             try {
-                Log.i(LOG_TAG, "prepareOwnKey: " + state);
+                Timber.i("prepareOwnKey: %s", state);
                 Message handshakeMessage = createPrivateKeyMessage(fpr);
-                Log.i("pEpKeyImport", "sendingOwnKEy: ");
+                Timber.i( "sendingOwnKEy: ");
                 messagingActions.sendMessage(account, handshakeMessage);
                 callback.onFinish(true);
-            } catch (MessagingException me) {
+            } catch (NullPointerException | MessagingException me) {
                 callback.onFinish(false);
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    Toast.makeText(context, me.getMessage(),
-                            Toast.LENGTH_LONG).show();
-                });
+                if (enableDebugLogging) {
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        Toast.makeText(context, me.getMessage(),
+                                Toast.LENGTH_LONG).show();
+                    });
+                }
+
             }
         }).start();
     }
