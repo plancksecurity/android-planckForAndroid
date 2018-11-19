@@ -62,7 +62,7 @@ Feature: Sanity
     And I click the last message
     Then I compare messageBody with body
     And I check if the privacy status is pep_yellow
-    When I click view reply_message
+    When I click reply message
     And I enter extraText in the messageSubject field
     And I enter bodyText in the messageBody field
     Then I check if the privacy status is pep_yellow
@@ -74,7 +74,7 @@ Feature: Sanity
   @login-scenarios
   Scenario: SER-299 Ensure mails are encrypted when pEp says so
     When I click the last message received
-    And I click view reply_message
+    And I click reply message
     Then I check if the privacy status is pep_yellow
     When I click the send message button
     And I press back
