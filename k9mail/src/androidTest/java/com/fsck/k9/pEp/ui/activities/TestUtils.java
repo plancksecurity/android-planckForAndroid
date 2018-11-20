@@ -369,16 +369,12 @@ public class TestUtils {
                 } else {
                     newEmailAccount();
                 }
-                boolean descriptionFilled = false;
-                while (!descriptionFilled) {
                     try {
                         device.waitForIdle();
                         accountDescription(DESCRIPTION, USER_NAME);
-                        descriptionFilled = true;
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         Timber.i("Can not fill account description");
                     }
-                }
             } catch (Exception ex) {
                 Timber.i("Ignored", "Exists account");
             }
