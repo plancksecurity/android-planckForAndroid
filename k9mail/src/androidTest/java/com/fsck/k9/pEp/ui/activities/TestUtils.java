@@ -216,6 +216,7 @@ public class TestUtils {
             if (exists(onView(withId(viewId))) || viewIsDisplayed(viewId)){
                 device.waitForIdle();
                 try {
+                    onView(withId(viewId)).check(matches(isDisplayed()));
                     onView(withId(viewId)).perform(click());
                     device.waitForIdle();
                     buttonClicked = true;
