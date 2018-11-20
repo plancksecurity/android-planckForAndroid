@@ -702,6 +702,8 @@ public class TestUtils {
                 device.waitForIdle();device.pressKeyCode(KeyEvent.KEYCODE_DEL);
                 device.waitForIdle();device.pressKeyCode(KeyEvent.KEYCODE_DEL);
                 device.waitForIdle();
+                onView(withId(view)).perform(closeSoftKeyboard());
+                onView(withId(view)).perform(click());
             } catch (Exception ex) {
                 Timber.i("Cannot remove text from field " + viewId + ": " + ex.getMessage());
             }
