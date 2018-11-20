@@ -738,6 +738,9 @@ public class TestUtils {
 
     public void assertMessageStatus(int status){
         clickStatus();
+        while (!viewIsDisplayed(R.id.pEpTitle)) {
+            device.waitForIdle();
+        }
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
         if (!exists(onView(withId(R.id.send)))) {
             goBack(false);
