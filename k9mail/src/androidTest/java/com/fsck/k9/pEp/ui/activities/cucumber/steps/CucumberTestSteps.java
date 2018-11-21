@@ -70,6 +70,7 @@ public class CucumberTestSteps {
     private static final String HOST = "@test.pep-security.net";
 
     private String bot[];
+    public String b ="";
 
     private String fileName = "";
 
@@ -94,6 +95,10 @@ public class CucumberTestSteps {
             espressoTestingIdlingResource = new EspressoTestingIdlingResource();
             IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
             bot = new String[4];
+            /*bot[0] = b;
+            bot[1] = "bot001";
+            bot[2] = "bot002";
+            bot[3] = "bot003";*/
             resources = InstrumentationRegistry.getTargetContext().getResources();
             startTimer(50000);
             if (testUtils.getCurrentActivity() == null) {
@@ -859,7 +864,7 @@ public class CucumberTestSteps {
 
     @Then("^I check if the privacy status is (\\S+)$")
     public void I_check_toolBar_color_is(String color){
-        while(!exists(onView(withId(R.id.toolbar)))) {
+        while(!viewIsDisplayed(R.id.toolbar)) {
             device.waitForIdle();
         }
         boolean wait = false;
@@ -875,7 +880,6 @@ public class CucumberTestSteps {
                         Timber.i("Cannot do scroll down");
                     }
                 }
-                onView(withId(R.id.to)).perform(click());
                 device.waitForIdle();
                 waitUntilIdle();
                 wait = true;
