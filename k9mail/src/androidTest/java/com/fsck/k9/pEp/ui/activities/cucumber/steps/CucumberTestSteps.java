@@ -496,8 +496,10 @@ public class CucumberTestSteps {
                 Timber.i("Hecho click en tvPep");
             }
         }
-        while (!exists(onView(withId(R.id.confirmTrustWords)))) {
+        while (!viewIsDisplayed(R.id.confirmTrustWords)) {
             device.waitForIdle();
+            UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+            scroll.swipe(Direction.UP, 1.0f);
         }
         onView(withId(R.id.confirmTrustWords)).perform(click());
     }
