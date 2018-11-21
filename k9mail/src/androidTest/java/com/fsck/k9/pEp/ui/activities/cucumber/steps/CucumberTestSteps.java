@@ -768,6 +768,13 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
+    @And("^I click reply message$")
+    public void I_click_reply_message(){
+        device.waitForIdle();
+        testUtils.clickView(testUtils.intToID("reply_message"));
+        device.waitForIdle();
+    }
+
     @Then("^I send (\\d+) (?:message|messages) to (\\S+) with subject (\\S+) and body (\\S+)$")
     public void I_send_messages_to_bot(int totalMessages,String botName, String subject, String body) {
         String messageTo = "nothing";
