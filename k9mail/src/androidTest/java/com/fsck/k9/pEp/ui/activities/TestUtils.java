@@ -123,7 +123,7 @@ public class TestUtils {
     private TestConfig testConfig;
     public String botList[];
     public boolean testReset = false;
-    private JSONArray array;
+    public JSONArray array;
     public Json json;
     private Gson gson;
 

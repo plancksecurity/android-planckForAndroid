@@ -303,7 +303,7 @@ public class CucumberTestSteps {
         }
         device.waitForIdle();
         testUtils.doWaitForResource(R.id.toolbar);
-        confirmAllTrustWords(array);
+        confirmAllTrustWords(testUtils.array);
         /*webViewText = getWebviewText();
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         scroll.swipe(Direction.DOWN, 1.0f);
