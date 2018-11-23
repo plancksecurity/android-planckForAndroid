@@ -1073,7 +1073,11 @@ public class TestUtils {
         }catch (NoMatchingViewException ignoredException){
             Timber.i("Ignored exception. Email is not encrypted");
         }
-
+        try {
+            readJsonFile();
+        } catch (Exception noJSON) {
+            Timber.i("There are no JSON files attached");
+        }
     }
 
     public void waitForNewMessage() {
