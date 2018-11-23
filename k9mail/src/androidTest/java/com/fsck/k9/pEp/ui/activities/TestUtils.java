@@ -1271,6 +1271,46 @@ public class TestUtils {
         }
     }
 
+    public JSONArray getJSon() {
+        try {
+            String js = readJsonFile();
+            JSONObject json = new JSONObject(js);
+            json = json.getJSONObject("trustwords");
+            Iterator x = json.keys();
+            JSONArray array = new JSONArray();
+            while (x.hasNext()) {
+
+                array.put(json.get((String) x.next()));
+            }
+            return array;
+            //return  new JSONObject(js);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String readJsonFile() {
+        File directory = new File(Environment.getExternalStorageDirectory().toString());
+        File newFile = new File(directory, "Download/results.json");
+        String jsonText = "";
+            try {
+                FileInputStream fin = new FileInputStream(newFile);
+                InputStreamReader inputStreamReader = new InputStreamReader(fin);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String receiveString;
+                while ((receiveString = bufferedReader.readLine()) != null) {
+                    jsonText = jsonText + receiveString;
+                }
+                fin.close();
+            } catch (Exception e) {
+                Timber.i("Error reading config file, trying again");
+            } finally {
+                newFile.delete();
+            }
+        return jsonText;
+    }
+
     private void setSystemAnimationsScale(float animationScale) {
         try {
             Class<?> windowManagerStubClazz = Class.forName("android.view.IWindowManager$Stub");
