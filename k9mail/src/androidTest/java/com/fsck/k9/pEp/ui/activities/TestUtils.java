@@ -758,7 +758,7 @@ public class TestUtils {
         }
     }
 
-    public void clickStatus() {
+    private void clickStatus() {
         device.waitForIdle();
         if (!exists(onView(withId(R.id.reply_message)))) {
             device.waitForIdle();
@@ -856,7 +856,7 @@ public class TestUtils {
         }
     }
 
-    public String getTextFromTextViewThatContainsText(String text) {
+    String getTextFromTextViewThatContainsText(String text) {
         BySelector selector = By.clazz("android.widget.TextView");
         for (UiObject2 textView : device.findObjects(selector)) {
             if (textView.getText() != null && textView.getText().contains(text)) {
@@ -1290,7 +1290,7 @@ public class TestUtils {
         }
     }
 
-    public JSONArray getJSon() {
+    private JSONArray getJSon() {
         try {
             String js = readJsonFile();
             JSONObject json = new JSONObject(js);
@@ -1312,14 +1312,14 @@ public class TestUtils {
     private String readJsonFile() {
         File directory = new File(Environment.getExternalStorageDirectory().toString());
         File newFile = new File(directory, "Download/results.json");
-        String jsonText = "";
+        StringBuilder jsonText = new StringBuilder();
             try {
                 FileInputStream fin = new FileInputStream(newFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fin);
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
                 String receiveString;
                 while ((receiveString = bufferedReader.readLine()) != null) {
-                    jsonText = jsonText + receiveString;
+                    jsonText.append(receiveString);
                 }
                 fin.close();
             } catch (Exception e) {
@@ -1327,7 +1327,7 @@ public class TestUtils {
             } finally {
                 newFile.delete();
             }
-        return jsonText;
+        return jsonText.toString();
     }
 
     private void setSystemAnimationsScale(float animationScale) {
