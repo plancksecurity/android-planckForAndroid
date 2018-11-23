@@ -28,6 +28,8 @@ import com.fsck.k9.pEp.ui.activities.TestUtils;
 import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
@@ -63,6 +65,7 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 import static org.hamcrest.CoreMatchers.not;
+import org.json.JSONObject;
 
 @RunWith(AndroidJUnit4.class)
 public class CucumberTestSteps {
@@ -290,16 +293,26 @@ public class CucumberTestSteps {
 
     @When("^I confirm trust words match$")
     public void I_confirm_trust_words_match() {
+        JSONArray array;
         try {
             onView(withId(R.id.to)).perform(closeSoftKeyboard());
         } catch (Exception ex) {
             Timber.i("Cannot close keyboard");
         }
-        String webViewText;
+        donwloadJSon();
+        array = testUtils.getJSon();
         device.waitForIdle();
         testUtils.doWaitForResource(R.id.toolbar);
         device.waitForIdle();
-        webViewText = getWebviewText();
+        if (exists(onView(withId(R.id.tvPep)))) {
+            onView(withId(R.id.tvPep)).perform(click());
+        } else {
+            onView(withId(R.id.pEp_indicator)).perform(click());
+        }
+        device.waitForIdle();
+        testUtils.doWaitForResource(R.id.toolbar);
+        confirmAllTrustWords(array);
+        /*webViewText = getWebviewText();
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         scroll.swipe(Direction.DOWN, 1.0f);
         try {
@@ -318,6 +331,47 @@ public class CucumberTestSteps {
         device.waitForIdle();
         testUtils.selectFromMenu(R.string.pep_menu_long_trustwords);
         confirmAllTrustWords(webViewText);
+        */
+    }
+
+    private void donwloadJSon() {
+        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+        scroll.swipe(Direction.UP, 1.0f);
+        onView(withId(R.id.download)).perform(click());
+    }
+
+    private void confirmAllTrustWords (JSONArray array) {
+        checkTrustWords(array, "short");
+        device.waitForIdle();
+        testUtils.selectFromMenu(R.string.pep_menu_long_trustwords);
+        checkTrustWords(array, "long");
+    }
+
+    private void checkTrustWords(JSONArray array, String words) {
+        BySelector selector = By.clazz("android.widget.CheckedTextView");
+        int size = 1;
+        for (int positionToClick = 0; positionToClick < size; positionToClick++) {
+            device.waitForIdle();
+            testUtils.selectFromMenu(R.string.settings_language_label);
+            size = calculateNewSize(size, selector);
+            device.waitForIdle();
+            selectLanguage(positionToClick, size, selector);
+            getTrustWords();
+            assertTrustWords(array, words);
+        }
+    }
+
+    private void assertTrustWords(JSONArray array, String words) {
+        for (int position = 0; position < array.length(); position++) {
+            try {
+                if (trustWords.contains(((JSONObject) array.get(position)).get(words).toString())) {
+                    return;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        Assert.fail();
     }
 
     private void confirmAllTrustWords (String webViewText) {
