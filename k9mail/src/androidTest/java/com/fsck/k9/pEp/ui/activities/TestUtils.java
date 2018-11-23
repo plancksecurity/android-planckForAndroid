@@ -38,8 +38,14 @@ import android.view.View;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.ui.activities.pojo.*;
 import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.pEp.jniadapter.Rating;
 
 import java.io.BufferedReader;
@@ -52,6 +58,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import timber.log.Timber;
@@ -116,6 +123,8 @@ public class TestUtils {
     private TestConfig testConfig;
     public String botList[];
     public boolean testReset = false;
+    public Json json;
+    private Gson gson;
 
     public TestUtils(UiDevice device, Instrumentation instrumentation) {
         TestUtils.device = device;
@@ -1378,5 +1387,26 @@ public class TestUtils {
         String getSmtp_server() { return smtp_server;}
         String getImap_port() { return imap_port;}
         String getSmtp_port() { return smtp_port;}
+    }
+
+    public static class Json {
+        Attachments attachments;
+        Attributes attributes;
+        BotResponse botResponse;
+        Decrypted decrypted;
+        Decrypted_ decrypted_;
+        Encrypted encrypted;
+        Encrypted_ encrypted_;
+        Header header;
+        OptFields optFields;
+        OptFields_ optFields_;
+        Trustwords trustwords;
+        CA ca;
+        DE de;
+        EN en;
+        ES es;
+        FR fr;
+        NL nl;
+        TR tr;
     }
 }
