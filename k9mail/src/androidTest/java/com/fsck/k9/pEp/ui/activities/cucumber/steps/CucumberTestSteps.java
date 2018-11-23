@@ -83,8 +83,8 @@ public class CucumberTestSteps {
     private EspressoTestingIdlingResource espressoTestingIdlingResource;
     private Resources resources;
     private String trustWords;
-    final Timer timer = new Timer();
-    final int[] time = {0};
+    private final Timer timer = new Timer();
+    private final int[] time = {0};
     @Rule
     public IntentsTestRule<Accounts> activityTestRule = new IntentsTestRule<>(Accounts.class, true, false);
 
@@ -96,7 +96,7 @@ public class CucumberTestSteps {
             testUtils = new TestUtils(device, instrumentation);
             testUtils.increaseTimeoutWait();
             espressoTestingIdlingResource = new EspressoTestingIdlingResource();
-            IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
+            IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
             bot = new String[4];
             /*bot[0] = b;
             bot[1] = "bot001";
@@ -484,13 +484,11 @@ public class CucumberTestSteps {
                 scroll.swipe(Direction.UP, 1.0f);
                 device.waitForIdle();
                 UiObject2 webViewTemporal;
-                boolean childFound = false;
                 webViewTemporal = wb.getChildren().get(0);
-                while (!childFound) {
+                while (true) {
                     if (webViewTemporal.getText().contains("long")) {
                         webViewText = webViewTemporal.getText();
                         webViewLoaded = true;
-                        childFound = true;
                         device.waitForIdle();
                         break;
                     } else {
@@ -585,7 +583,7 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
-    void checkPrivacyStatus(String status){
+    private void checkPrivacyStatus(String status){
         int statusRating = -10;
         device.waitForIdle();
         waitUntilIdle();
@@ -608,7 +606,7 @@ public class CucumberTestSteps {
                 try {
                     onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
                 } catch (Exception e) {
-
+                    Timber.i("Cannot find subject");
                 }
             }
         switch (status){
