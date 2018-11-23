@@ -123,6 +123,7 @@ public class TestUtils {
     private TestConfig testConfig;
     public String botList[];
     public boolean testReset = false;
+    private JSONArray array;
     public Json json;
     private Gson gson;
 
@@ -1078,6 +1079,21 @@ public class TestUtils {
         } catch (Exception noJSON) {
             Timber.i("There are no JSON files attached");
         }
+    }
+
+    private void readAttachedJSONFile() {
+        try {
+            onView(withId(R.id.to)).perform(closeSoftKeyboard());
+        } catch (Exception ex) {
+            Timber.i("Cannot close keyboard");
+        }
+        donwloadJSon();
+        array = getJSon();}
+
+    private void donwloadJSon() {
+        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+        scroll.swipe(Direction.UP, 1.0f);
+        onView(withId(R.id.download)).perform(click());
     }
 
     public void waitForNewMessage() {

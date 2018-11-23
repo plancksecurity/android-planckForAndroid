@@ -293,14 +293,6 @@ public class CucumberTestSteps {
 
     @When("^I confirm trust words match$")
     public void I_confirm_trust_words_match() {
-        JSONArray array;
-        try {
-            onView(withId(R.id.to)).perform(closeSoftKeyboard());
-        } catch (Exception ex) {
-            Timber.i("Cannot close keyboard");
-        }
-        donwloadJSon();
-        array = testUtils.getJSon();
         device.waitForIdle();
         testUtils.doWaitForResource(R.id.toolbar);
         device.waitForIdle();
@@ -332,12 +324,6 @@ public class CucumberTestSteps {
         testUtils.selectFromMenu(R.string.pep_menu_long_trustwords);
         confirmAllTrustWords(webViewText);
         */
-    }
-
-    private void donwloadJSon() {
-        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-        scroll.swipe(Direction.UP, 1.0f);
-        onView(withId(R.id.download)).perform(click());
     }
 
     private void confirmAllTrustWords (JSONArray array) {
