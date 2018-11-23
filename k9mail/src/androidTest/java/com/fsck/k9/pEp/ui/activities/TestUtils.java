@@ -1041,36 +1041,36 @@ public class TestUtils {
                 "Mus urna dis enim curabitur erat nisi aenean imperdiet porttitor nulla ad velit, rutrum senectus congue morbi nisl duis pretium augue volutpat et ac vulputate auctor, sodales mi sociosqu facilisis convallis habitant tempor tortor massa at lectus. Sed aliquet sapien sollicitudin fusce cubilia felis consequat malesuada justo lacinia tincidunt viverra, magnis arcu commodo maecenas cum purus potenti massa himenaeos odio. Natoque sodales mauris proin gravida malesuada, faucibus lacinia neque pellentesque, habitant nisl porta velit.";
     }
 
-    public void clickLastMessage(){
+    public void clickLastMessage() {
         boolean messageClicked = false;
-        while (!messageClicked){
-        device.waitForIdle();
-        if (!viewIsDisplayed(R.id.reply_message)) {
-            try {
-                swipeDownMessageList();
-                device.waitForIdle();
-                onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
-                messageClicked = true;
-                device.waitForIdle();
-                if (viewIsDisplayed(R.id.fab_button_compose_message)) {
-                    try {
-                        messageClicked = false;
-                        pressBack();
-                    } catch (Exception ex) {
-                        Timber.i("Last message has been clicked");
-                    }
-                }
-            } catch (Exception ex) {
-                Timber.i("No message found");
-            }
+        while (!messageClicked) {
             device.waitForIdle();
-        } else {
-            messageClicked = true;
+            if (!viewIsDisplayed(R.id.reply_message)) {
+                try {
+                    swipeDownMessageList();
+                    device.waitForIdle();
+                    onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
+                    messageClicked = true;
+                    device.waitForIdle();
+                    if (viewIsDisplayed(R.id.fab_button_compose_message)) {
+                        try {
+                            messageClicked = false;
+                            pressBack();
+                        } catch (Exception ex) {
+                            Timber.i("Last message has been clicked");
+                        }
+                    }
+                } catch (Exception ex) {
+                    Timber.i("No message found");
+                }
+                device.waitForIdle();
+            } else {
+                messageClicked = true;
+            }
         }
-    }
-        try{
+        try {
             onView(withText(R.string.cancel_action)).perform(click());
-        }catch (NoMatchingViewException ignoredException){
+        } catch (NoMatchingViewException ignoredException) {
             Timber.i("Ignored exception. Email is not encrypted");
         }
         try {
