@@ -1075,7 +1075,7 @@ public class TestUtils {
             Timber.i("Ignored exception. Email is not encrypted");
         }
         try {
-            readJsonFile();
+            readAttachedJSONFile();
         } catch (Exception noJSON) {
             Timber.i("There are no JSON files attached");
         }
