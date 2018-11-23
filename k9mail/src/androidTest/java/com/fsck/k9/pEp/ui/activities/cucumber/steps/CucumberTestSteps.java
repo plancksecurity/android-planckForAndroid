@@ -425,14 +425,14 @@ public class CucumberTestSteps {
     }
 
     private void getTrustWords() {
-        while (trustWords == null) {
+        do {
             try {
                 device.waitForIdle();
                 trustWords = getTextFromView(onView(withId(R.id.trustwords)));
             } catch (Exception ex) {
                 Timber.i("Cannot find trustWords: " + ex.getMessage());
             }
-        }
+        } while (trustWords == null);
     }
 
     private void compareTextWithWebViewText(String [] arrayToCompare) {
