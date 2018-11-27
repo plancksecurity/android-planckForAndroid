@@ -809,6 +809,11 @@ public class CucumberTestSteps {
     @And("^I click reply message$")
     public void I_click_reply_message(){
         device.waitForIdle();
+        if (!viewIsDisplayed(testUtils.intToID("reply_message"))) {
+            UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+            scroll.swipe(Direction.DOWN, 1.0f);
+        }
+        onView(withId(R.id.reply_message)).check(matches(isDisplayed()));
         testUtils.clickView(testUtils.intToID("reply_message"));
         device.waitForIdle();
     }
