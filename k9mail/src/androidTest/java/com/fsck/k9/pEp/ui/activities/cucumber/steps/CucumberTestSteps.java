@@ -294,8 +294,7 @@ public class CucumberTestSteps {
     @When("^I confirm trust words match$")
     public void I_confirm_trust_words_match() {
         device.waitForIdle();
-        testUtils.doWaitForResource(R.id.toolbar);
-        device.waitForIdle();
+        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
         if (viewIsDisplayed(R.id.tvPep)) {
             device.waitForIdle();
             onView(withId(R.id.tvPep)).check(matches(isDisplayed()));
@@ -820,6 +819,10 @@ public class CucumberTestSteps {
         onView(withId(R.id.reply_message)).check(matches(isDisplayed()));
         testUtils.clickView(testUtils.intToID("reply_message"));
         device.waitForIdle();
+        while (!viewIsDisplayed(R.id.message_content)) {
+            device.waitForIdle();
+        }
+        onView(withId(R.id.message_content)).perform(typeText(" "));
     }
 
     @Then("^I send (\\d+) (?:message|messages) to (\\S+) with subject (\\S+) and body (\\S+)$")
