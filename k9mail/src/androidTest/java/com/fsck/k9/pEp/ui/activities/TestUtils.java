@@ -1088,12 +1088,24 @@ public class TestUtils {
             Timber.i("Cannot close keyboard");
         }
         donwloadJSon();
-        array = getJSon();}
+    }
 
     private void donwloadJSon() {
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         scroll.swipe(Direction.UP, 1.0f);
-        onView(withId(R.id.download)).perform(click());
+        device.waitForIdle();
+        while (array == null) {
+            try {
+                onView(withId(R.id.download)).perform(click());
+                array = getJSon();
+            } catch (Exception ex) {
+                device.waitForIdle();
+                scroll.swipe(Direction.DOWN, 1.0f);
+                device.waitForIdle();
+                scroll.swipe(Direction.UP, 1.0f);
+                device.waitForIdle();
+            }
+        }
     }
 
     public void waitForNewMessage() {
