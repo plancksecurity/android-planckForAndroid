@@ -124,8 +124,6 @@ public class TestUtils {
     public String botList[];
     public boolean testReset = false;
     public JSONArray array;
-    public Json json;
-    private Gson gson;
 
     public TestUtils(UiDevice device, Instrumentation instrumentation) {
         TestUtils.device = device;
@@ -1461,26 +1459,5 @@ public class TestUtils {
         String getSmtp_server() { return smtp_server;}
         String getImap_port() { return imap_port;}
         String getSmtp_port() { return smtp_port;}
-    }
-
-    public static class Json {
-        Attachments attachments;
-        Attributes attributes;
-        BotResponse botResponse;
-        Decrypted decrypted;
-        Decrypted_ decrypted_;
-        Encrypted encrypted;
-        Encrypted_ encrypted_;
-        Header header;
-        OptFields optFields;
-        OptFields_ optFields_;
-        Trustwords trustwords;
-        CA ca;
-        DE de;
-        EN en;
-        ES es;
-        FR fr;
-        NL nl;
-        TR tr;
     }
 }
