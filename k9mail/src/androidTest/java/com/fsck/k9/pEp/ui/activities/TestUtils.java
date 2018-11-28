@@ -1093,7 +1093,7 @@ public class TestUtils {
         while (array == null) {
             try {
                 onView(withId(R.id.download)).perform(click());
-                array = getJSon();
+                array = getJSonTrustWords();
             } catch (Exception ex) {
                 device.waitForIdle();
                 scroll.swipe(Direction.DOWN, 1.0f);
@@ -1297,7 +1297,7 @@ public class TestUtils {
         }
     }
 
-    private JSONArray getJSon() {
+    private JSONArray getJSonTrustWords() {
         try {
             String js = readJsonFile();
             JSONObject json = new JSONObject(js);
