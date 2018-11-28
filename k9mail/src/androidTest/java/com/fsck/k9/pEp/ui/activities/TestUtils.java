@@ -38,10 +38,7 @@ import android.view.View;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.ui.activities.pojo.*;
 import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -654,8 +651,6 @@ public class TestUtils {
     public void clickAttachedFiles(int total) {
         BySelector selector = By.clazz("android.widget.FrameLayout");
         Activity sentFolderActivity = getCurrentActivity();
-        /*intending((isInternal()))
-                .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null));*/
         int position;
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         scroll.swipe(Direction.UP, 1.0f);
@@ -1181,7 +1176,6 @@ public class TestUtils {
     public void clickFirstMessage(){
         boolean firstMessageClicked = false;
         device.waitForIdle();
-        //doWaitForResource(R.id.message_list);
         while (!firstMessageClicked){
             try{
                 if(viewIsDisplayed(R.id.message_list)) {
@@ -1315,7 +1309,6 @@ public class TestUtils {
                 array.put(json.get((String) x.next()));
             }
             return array;
-            //return  new JSONObject(js);
         } catch (JSONException e) {
             e.printStackTrace();
         }

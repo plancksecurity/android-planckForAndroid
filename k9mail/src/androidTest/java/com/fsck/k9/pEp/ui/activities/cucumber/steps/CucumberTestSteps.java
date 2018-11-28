@@ -30,6 +30,7 @@ import junit.framework.AssertionFailedError;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
@@ -55,7 +56,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.isCompletelyDis
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static android.support.test.espresso.web.sugar.Web.onWebView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containsText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containstText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
@@ -65,7 +65,6 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 import static org.hamcrest.CoreMatchers.not;
-import org.json.JSONObject;
 
 @RunWith(AndroidJUnit4.class)
 public class CucumberTestSteps {
@@ -98,10 +97,6 @@ public class CucumberTestSteps {
             espressoTestingIdlingResource = new EspressoTestingIdlingResource();
             IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
             bot = new String[4];
-            /*bot[0] = b;
-            bot[1] = "bot001";
-            bot[2] = "bot002";
-            bot[3] = "bot003";*/
             resources = InstrumentationRegistry.getTargetContext().getResources();
             startTimer(50000);
             if (testUtils.getCurrentActivity() == null) {
@@ -307,26 +302,6 @@ public class CucumberTestSteps {
         device.waitForIdle();
         testUtils.doWaitForResource(R.id.toolbar);
         confirmAllTrustWords(testUtils.array);
-        /*webViewText = getWebviewText();
-        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-        scroll.swipe(Direction.DOWN, 1.0f);
-        try {
-            onView(withId(R.id.to)).perform(click(), closeSoftKeyboard());
-            testUtils.doWaitForResource(R.id.to);
-            device.waitForIdle();
-        } catch (Exception ex) {
-            Timber.i("Cannot click field: to");
-        }
-        try {
-            onView(withId(R.id.tvPep)).perform(click());
-        } catch (Exception ex) {
-            onView(withId(R.id.pEp_indicator)).perform(click());
-        }
-        confirmAllTrustWords(webViewText);
-        device.waitForIdle();
-        testUtils.selectFromMenu(R.string.pep_menu_long_trustwords);
-        confirmAllTrustWords(webViewText);
-        */
     }
 
     private void confirmAllTrustWords (JSONArray array) {
