@@ -185,6 +185,9 @@ public class TestUtils {
 
     private void accountDescription(String description, String userName) {
         doWaitForResource(R.id.account_description);
+        while (!viewIsDisplayed(R.id.account_description)) {
+            device.waitForIdle();
+        }
         while (getTextFromView(onView(withId(R.id.account_description))).equals("")) {
             try {
                 device.waitForIdle();
