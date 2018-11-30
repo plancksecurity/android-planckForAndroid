@@ -33,6 +33,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
+import org.pEp.jniadapter.Rating;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -622,34 +623,34 @@ public class CucumberTestSteps {
             }
         switch (status){
             case "pEpRatingUndefined":
-                statusRating = 0;
+                statusRating = Rating.pEpRatingUndefined.value;
                 break;
             case "pEpRatingCannotDecrypt":
-                statusRating = 1;
+                statusRating = Rating.pEpRatingCannotDecrypt.value;
                 break;
             case "pEpRatingHaveNoKey":
-                statusRating = 2;
+                statusRating = Rating.pEpRatingHaveNoKey.value;
                 break;
             case "pEpRatingUnencrypted":
-                statusRating = 3;
+                statusRating = Rating.pEpRatingUnencrypted.value;
                 break;
             case "pEpRatingUnencryptedForSome":
-                statusRating = 4;
+                statusRating = Rating.pEpRatingUnencryptedForSome.value;
                 break;
             case "pEpRatingUnreliable":
-                statusRating = 5;
+                statusRating = Rating.pEpRatingUnreliable.value;
                 break;
             case "pEpRatingReliable":
-                statusRating = 6;
+                statusRating = Rating.pEpRatingReliable.value;
                 break;
             case "pEpRatingTrusted":
-                statusRating = 7;
+                statusRating = Rating.pEpRatingTrusted.value;
                 break;
             case "pEpRatingTrustedAndAnonymized":
-                statusRating = 8;
+                statusRating = Rating.pEpRatingTrustedAndAnonymized.value;
                 break;
             case "pEpRatingFullyAnonymous":
-                statusRating = 9;
+                statusRating = Rating.pEpRatingFullyAnonymous.value;
                 break;
             case "pEpRatingMistrust":
                 statusRating = 10;
