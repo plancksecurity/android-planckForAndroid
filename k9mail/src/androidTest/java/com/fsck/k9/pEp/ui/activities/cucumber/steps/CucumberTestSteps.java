@@ -241,6 +241,19 @@ public class CucumberTestSteps {
         }
     }
 
+    @When("^I compare (\\S+) from attachment with (\\S+)")
+    public void I_compare_name_with_string(String name, String stringToCompare) {
+        TestUtils.getJSONObject(name);
+        switch (name) {
+            case "rating":
+            case "rating_string":
+                assertText(TestUtils.rating, stringToCompare);
+                break;
+                default:
+                    assertTextInJSONArray(name, testUtils.jsonArray, stringToCompare);
+        }
+    }
+
     @When("^I compare messageBody with (\\S+)")
     public void I_compare_body(String cucumberBody) {
         String [] body;
@@ -288,6 +301,7 @@ public class CucumberTestSteps {
 
     @When("^I confirm trust words match$")
     public void I_confirm_trust_words_match() {
+        TestUtils.getJSONObject("trustwords");
         device.waitForIdle();
         onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
         if (viewIsDisplayed(R.id.tvPep)) {
@@ -301,7 +315,7 @@ public class CucumberTestSteps {
         }
         device.waitForIdle();
         testUtils.doWaitForResource(R.id.toolbar);
-        confirmAllTrustWords(testUtils.array);
+        confirmAllTrustWords(testUtils.jsonArray);
     }
 
     private void confirmAllTrustWords (JSONArray array) {
@@ -321,7 +335,7 @@ public class CucumberTestSteps {
             device.waitForIdle();
             selectLanguage(positionToClick, size, selector);
             getTrustWords();
-            assertTrustWords(array, words);
+            assertTextInJSONArray(trustWords, array, words);
         }
     }
 
@@ -334,6 +348,25 @@ public class CucumberTestSteps {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+        Assert.fail();
+    }
+    private void assertTextInJSONArray(String text, JSONArray array, String textToCompare) {
+        for (int position = 0; position < array.length(); position++) {
+            try {
+                if (text.contains(((JSONObject) array.get(position)).get(textToCompare).toString())) {
+                    return;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        Assert.fail();
+    }
+
+    private void assertText(String text, String textToCompare) {
+        if (text.contains(textToCompare)) {
+            return;
         }
         Assert.fail();
     }
