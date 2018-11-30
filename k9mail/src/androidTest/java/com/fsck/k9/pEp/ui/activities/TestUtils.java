@@ -120,7 +120,9 @@ public class TestUtils {
     private TestConfig testConfig;
     public String botList[];
     public boolean testReset = false;
-    public JSONArray array;
+    private static JSONObject json;
+    public static JSONArray jsonArray;
+    public static String rating;
 
     public TestUtils(UiDevice device, Instrumentation instrumentation) {
         TestUtils.device = device;
@@ -1090,16 +1092,23 @@ public class TestUtils {
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         scroll.swipe(Direction.UP, 1.0f);
         device.waitForIdle();
-        while (array == null) {
+        if (json != null) {
+            json = null;
+        }
+        while (json == null) {
             try {
                 onView(withId(R.id.download)).perform(click());
-                array = getJSonTrustWords();
+                String js = readJsonFile("results.json");
+                json = new JSONObject(js);
             } catch (Exception ex) {
                 device.waitForIdle();
                 scroll.swipe(Direction.DOWN, 1.0f);
                 device.waitForIdle();
                 scroll.swipe(Direction.UP, 1.0f);
                 device.waitForIdle();
+                if (!exists(onView(withId(R.id.download)))) {
+                    return;
+                }
             }
         }
     }
