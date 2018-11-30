@@ -1306,22 +1306,28 @@ public class TestUtils {
         }
     }
 
-    private JSONArray getJSonTrustWords() {
-        try {
-            String js = readJsonFile();
-            JSONObject json = new JSONObject(js);
-            json = json.getJSONObject("trustwords");
-            Iterator x = json.keys();
-            JSONArray array = new JSONArray();
-            while (x.hasNext()) {
-
-                array.put(json.get((String) x.next()));
-            }
-            return array;
-        } catch (JSONException e) {
-            e.printStackTrace();
+    public static void getJSONObject(String object) {
+        switch (object) {
+            case "rating":
+            case "rating_string":
+                try {
+                    rating = json.getJSONObject("decryption_results").get(object).toString();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+            default:
+                try {
+                    json = json.getJSONObject(object);
+                    Iterator x = json.keys();
+                    jsonArray = new JSONArray();
+                    while (x.hasNext()) {
+                        jsonArray.put(json.get((String) x.next()));
+                    }
+                } catch (JSONException e) {
+                    Timber.i("");
+                }
         }
-        return null;
     }
 
     private String readJsonFile() {
