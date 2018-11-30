@@ -1330,9 +1330,9 @@ public class TestUtils {
         }
     }
 
-    private String readJsonFile() {
+    private String readJsonFile(String fileName) {
         File directory = new File(Environment.getExternalStorageDirectory().toString());
-        File newFile = new File(directory, "Download/results.json");
+        File newFile = new File(directory, "Download/" + fileName);
         StringBuilder jsonText = new StringBuilder();
             try {
                 FileInputStream fin = new FileInputStream(newFile);
