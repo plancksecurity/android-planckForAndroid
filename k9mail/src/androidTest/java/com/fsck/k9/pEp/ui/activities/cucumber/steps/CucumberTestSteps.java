@@ -597,10 +597,11 @@ public class CucumberTestSteps {
 
     private void checkPrivacyStatus(String status){
         int statusRating = -10;
-        device.waitForIdle();
-        waitUntilIdle();
         BySelector selector = By.clazz("android.widget.ScrollView");
-        onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
+        while (!viewIsDisplayed(R.id.toolbar_container)) {
+            device.waitForIdle();
+            waitUntilIdle();
+        }
             try {
                 onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
             } catch (Exception ex) {
@@ -621,6 +622,7 @@ public class CucumberTestSteps {
                     Timber.i("Cannot find subject");
                 }
             }
+        onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
         switch (status){
             case "pEpRatingUndefined":
                 statusRating = Rating.pEpRatingUndefined.value;
