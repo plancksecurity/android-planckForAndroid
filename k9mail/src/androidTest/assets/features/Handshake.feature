@@ -18,6 +18,7 @@ Feature: Handshake
     And I confirm trust words match
     When I click confirm trust words
     Then I check if the privacy status is pEpRatingTrusted
+    And I go back to message compose
 
   @login-scenarios
   Scenario: Test Handshake HandshakeInExistingMessage
