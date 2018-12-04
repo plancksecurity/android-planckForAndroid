@@ -957,6 +957,7 @@ public class CucumberTestSteps {
                 Timber.i("Cannot find toolbar");
             }
         }
+        onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
         checkPrivacyStatus(color);
     }
 
