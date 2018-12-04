@@ -32,7 +32,7 @@ Feature: Handshake
     And I enter TestCase1.2.10 in the messageBody field
     Then I check if the privacy status is pEpRatingUnencrypted
     When I click the send message button
-    And I click the last message
+    And I wait for the message and click it
     And I click reply message
     Then I confirm trust words match
     When I click confirm trust words

@@ -19,11 +19,8 @@ import org.pEp.jniadapter.Rating;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 
 @RunWith(AndroidJUnit4.class)
 public class InboxActionBarChangingColorTest {
@@ -78,7 +75,7 @@ public class InboxActionBarChangingColorTest {
         testUtils.sendMessage();
         device.waitForIdle();
         testUtils.waitForNewMessage();
-        testUtils.clickLastMessageReceived();
+        testUtils.waitForMessageAndClickIt();
         testUtils.clickView(R.id.tvPep);
         testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
         device.waitForIdle();
@@ -97,7 +94,7 @@ public class InboxActionBarChangingColorTest {
         testUtils.sendMessage();
         device.waitForIdle();
         testUtils.waitForNewMessage();
-        testUtils.clickLastMessageReceived();
+        testUtils.waitForMessageAndClickIt();
         testUtils.checkToolbarColor(R.color.pep_yellow);
         device.waitForIdle();
         testUtils.pressBack();

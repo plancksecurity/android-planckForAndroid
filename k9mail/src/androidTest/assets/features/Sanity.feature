@@ -79,9 +79,9 @@ Feature: Sanity
     When I click the send message button
     And I press back
     And I wait for the new message
-    And I click the last message
-    #@Juan: I'd make a generic test to check any value from the bot, e.g. something like: Then I check if bot value "Accept-Language" is "en-US"
-    Then I compare messageBody with Rating/DecodedRating
+    And I wait and click the last message
+    Then I compare rating from attachment with 6
+    And I compare rating_string from attachment with PEP_rating_reliable
 
   @login-scenarios
   Scenario: Test Sanity MailToExistingContactEncrypted
@@ -99,7 +99,7 @@ Feature: Sanity
     Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
     When I send 1 message to bot1 with subject TestCase1.2.4 and body TestCase1.2.4
     And I go to the sent folder
-    And I click the last message
+    And I wait for the message and click it
     Then I check if the privacy status is pep_yellow
     And I compare messageBody with TestCase1.2.4
 
@@ -112,12 +112,12 @@ Feature: Sanity
     When I click compose message
     Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
     When I send 1 message to bot1 with subject TestCase1.2.5 and body TestCase1.2.5
-    And I click the last message
+    And I wait for the message and click it
     Then I check if the privacy status is pep_yellow
     When I press back
     And I click compose message
     And I send 1 message to bot2 with subject TestCase1.2.5 and body TestCase1.2.5
-    And I click the last message
+    And I wait for the message and click it
     Then I check if the privacy status is pep_yellow
     When I press back
     And I click compose message
@@ -136,7 +136,7 @@ Feature: Sanity
     When I click the send message button
     And I wait for the new message
     And I go to the sent folder
-    And I click the last message
+    And I wait for the message and click it
     Then I check if the privacy status is pep_yellow
     And I compare messageBody with empty
     And I go back to message compose
@@ -169,7 +169,7 @@ Feature: Sanity
     When I click the send message button
     And I wait for the new message
     And I go to the sent folder
-    And I click the last message
+    And I wait for the message and click it
     Then I check if the privacy status is pep_no_color
     And I compare messageBody with TestCase1.2.6
 
@@ -187,6 +187,6 @@ Feature: Sanity
     When I click the send message button
     And I wait for the new message
     And I go to the sent folder
-    And I click the last message
+    And I wait for the message and click it
     Then I check if the privacy status is pep_no_color
     Then I remove account

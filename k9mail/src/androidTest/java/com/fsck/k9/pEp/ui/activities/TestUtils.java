@@ -1038,7 +1038,7 @@ public class TestUtils {
         } while (!textIsOk);
     }
 
-    public void clickLastMessageReceived() {
+    public void waitForMessageAndClickIt() {
         Timber.i("MessageList antes: " + messageListSize[0] + " " + messageListSize[1]);
         if (messageListSize[0] > messageListSize [1]) {
             waitForNewMessage();

@@ -285,18 +285,13 @@ public class CucumberTestSteps {
     }
 
 
-    @When("^I click the last message$")
-    public void I_click_the_last_message() {
-        testUtils.clickLastMessageReceived();
+    @When("^I wait for the message and click it$")
+    public void I_wait_for_the_message_and_click_it() {
+        testUtils.waitForMessageAndClickIt();
     }
 
     @When("^I click the last message received$")
     public void I_click_the_last_message_received() {
-        testUtils.clickLastMessage();
-    }
-
-    @When("^I click message$")
-    public void I_click_message() {
         testUtils.clickLastMessage();
     }
 

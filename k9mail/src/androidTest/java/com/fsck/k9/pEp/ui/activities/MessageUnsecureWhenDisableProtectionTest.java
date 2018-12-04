@@ -68,7 +68,7 @@ public class MessageUnsecureWhenDisableProtectionTest {
         testUtils.pressBack();
         testUtils.sendMessage();
         testUtils.waitForNewMessage();
-        testUtils.clickLastMessageReceived();
+        testUtils.waitForMessageAndClickIt();
         uiDevice.waitForIdle();
         checkStatus();
         testUtils.goBackAndRemoveAccount();

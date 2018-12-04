@@ -63,7 +63,7 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
         testUtils.createAccount(false);
         sendMessages(3);
         device.waitForIdle();
-        testUtils.clickLastMessageReceived();
+        testUtils.waitForMessageAndClickIt();
         testUtils.clickMessageStatus();
         device.waitForIdle();
         onView(withId(R.id.confirmTrustWords)).perform(click());

@@ -23,8 +23,6 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 
 
@@ -74,7 +72,7 @@ public class StatusIncomingMessageTest {
         testUtils.sendMessage();
         device.waitForIdle();
         testUtils.waitForNewMessage();
-        testUtils.clickLastMessageReceived();
+        testUtils.waitForMessageAndClickIt();
         testUtils.clickMessageStatus();
         testUtils.clickView(R.id.confirmTrustWords);
         testUtils.clickView(R.id.tvPep);
