@@ -47,6 +47,7 @@ Feature: Sanity
     And I enter bodyText in the messageBody field
     Then I check in the handshake dialog if the privacy status is pEpRatingUnencrypted
     And I click the send message button
+    And I wait for the new message
 
   @login-scenarios
   Scenario: Test Sanity MailFromNewContactEncrypted
