@@ -912,19 +912,25 @@ public class TestUtils {
 
     public void selectFromScreen(int resource) {
         BySelector selector = By.clazz("android.widget.TextView");
-        try {
-            while (true) {
-                for (UiObject2 object : device.findObjects(selector)) {
+        while (true) {
+            for (UiObject2 object : device.findObjects(selector)) {
+                try {
                     if (object.getText().contains(resources.getString(resource))) {
-                        device.waitForIdle();
-                        object.longClick();
-                        device.waitForIdle();
-                        return;
+                        try {
+                            while (object.getText().contains(resources.getString(resource))) {
+                                device.waitForIdle();
+                                object.longClick();
+                            }
+                            device.waitForIdle();
+                            return;
+                        } catch (Exception ex1) {
+                            return;
+                        }
                     }
+                } catch (Exception ex) {
+                    Timber.i("Cannot find text on screen: " + ex);
                 }
             }
-        } catch (Exception ex) {
-            Timber.i("Cannot find text on screen: " + ex);
         }
     }
 
@@ -993,6 +999,7 @@ public class TestUtils {
     }
 
     public void goToSentFolder() {
+        int hashCode = 0;
         BySelector textViewSelector;
         textViewSelector = By.clazz("android.widget.TextView");
         selectFromMenu(R.string.account_settings_folders);
@@ -1003,7 +1010,12 @@ public class TestUtils {
                 try {
                     if (textView.findObject(textViewSelector).getText() != null && textView.findObject(textViewSelector).getText().contains(folder)) {
                         textView.findObject(textViewSelector).longClick();
-                        return;
+                        device.waitForIdle();
+                        if (hashCode == 0) {
+                            hashCode = textView.findObject(textViewSelector).hashCode();
+                        } else {
+                            return;
+                        }
                     }
                     device.waitForIdle();
                 } catch (Exception e) {
