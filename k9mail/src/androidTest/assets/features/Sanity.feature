@@ -140,6 +140,7 @@ Feature: Sanity
     And I click the last message
     Then I check if the privacy status is pep_yellow
     And I compare messageBody with empty
+    And I go back to message compose
 
   @login-scenarios
   Scenario: Test Sanity MailToMultipleContactsMixed
