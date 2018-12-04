@@ -712,6 +712,7 @@ public class TestUtils {
                 device.waitForIdle();
                 onView(withId(view)).perform(click());
             } catch (Exception ex) {
+                device.pressBack();
                 Timber.i("Cannot remove text from field " + viewId + ": " + ex.getMessage());
             }
         }
