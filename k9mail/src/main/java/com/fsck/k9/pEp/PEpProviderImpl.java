@@ -202,7 +202,8 @@ public class PEpProviderImpl implements PEpProvider {
             }
 
             if (isUsablePrivateKey(decReturn)) {
-                if (decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)) {
+                if (decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)
+                        || decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY)) {
                     Log.d(TAG, "pEpdecryptMessage() after decrypt has usable pEp key (import)");
                     return new DecryptResult(decMsg, decReturn.rating, new KeyDetail("", null), decReturn.flags);
                 } else {
