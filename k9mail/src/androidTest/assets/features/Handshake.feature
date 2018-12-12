@@ -6,7 +6,7 @@ Feature: Handshake
     Given I created an account
     Given I run the tests
 
-  @login-scenarios
+  @scenario
   Scenario: Test Handshake HandshakeInNewMessage
   Description: Make a handshake with a communication partner
   Assumption: You didn’t make a handshake with communication partner user1 yet
@@ -20,7 +20,7 @@ Feature: Handshake
     Then I check if the privacy status is pEpRatingTrusted
     And I go back to message compose
 
-  @login-scenarios
+  @scenario
   Scenario: Test Handshake HandshakeInExistingMessage
   Description: Make a handshake with a communication partner
   Assumption: You didn’t exchange any message with user4 yet
@@ -40,7 +40,7 @@ Feature: Handshake
     And I discard the message
     And I go back to message compose
 
-  @login-scenarios
+  @scenario
   Scenario: Test Handshake StopTrusting
   Description: Stop Trusting an identity
   Assumption: Handshake has been done with at least 1 person (user4)
@@ -57,7 +57,7 @@ Feature: Handshake
     And I click the last message received
     Then I check if the privacy status is pep_yellow
 
-  @login-scenarios
+  @scenario
   Scenario: Test Handshake WrongTrustwords
   Description: Assume the Trustwords between you and your communication partner don’t match
   and mistrust the communication partner

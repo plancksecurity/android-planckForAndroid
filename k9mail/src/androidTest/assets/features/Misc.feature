@@ -6,7 +6,7 @@ Feature: Attachment
     Given I create an account
     Given I start test
 
-  @login-scenarios
+  @scenario
   Scenario: Misc SearchInbox
   Description: Search for an item in your inbox
   Assumptions: You have at least 50 items in your inbox
@@ -17,7 +17,7 @@ Feature: Attachment
   •	VERIFY if Outlook found the item you are looking for.
   •	Repeat steps 1-3 for 4 other search terms.
 
-  @login-scenarios
+  @scenario
   Scenario: Misc SearchSentItems
   Description: Search for an item in your SENT items
   Assumptions: You have at least 50 items in your SENT folder
@@ -28,7 +28,7 @@ Feature: Attachment
   •	VERIFY (1.2.23_01) if Outlook found the item you are looking for.
   •	Repeat steps 1-3 for 4 other search terms.
 
-  @login-scenarios
+  @scenario
   Scenario: Misc MoveToSubfolderAndSearch
   Description: Create a new subfolder in Outlook and move an encrypted message to the subfolder.
     Once the message is moved, go back to the inbox and search for the message.
@@ -44,7 +44,7 @@ Feature: Attachment
   •	VERIFY (1.2.24_02) if pEp found the message in the subfolder
 
 
-  @login-scenarios
+  @scenario
   Scenario:  ***** As of September 2017 this is not implemented this will only be fully supported with the new message format.
   Description: Ensure pEp sends separate message to BCC contacts. This is necessary, to really keep the BCC contacts hidden.
   Assumptions: Public keys of at least two communication partners are available. One of these is test006@pep-security.net
@@ -60,7 +60,7 @@ Feature: Attachment
     Wait for the answer (may takes 1-2 hours, proceed with other tests)
   •	pEp team will inform you, if the test succeeded.
 
-  @login-scenarios
+  @scenario
   Scenario: Misc LocalDistributionListPublicKeyAvailable
   Description: When sending a message to a distribution list, pEp has to check if it has a public key for all recipients.
     If this is the case, it has to encrypt the message for all recipients.
@@ -76,7 +76,7 @@ Feature: Attachment
   •	VERIFY in SENT items if the message has been sent encrypted
   •	VERIFICATION: Ask a communication partner from the contact list if he received the message and if it was encrypted.
 
-  @login-scenarios
+  @scenario
   Scenario: Misc ExchangeDistributionList
   Description: When sending a message to an Exchange distribution list, pEp has to check if it has a public key for all recipients.
     If this is the case, it has to encrypt the message for all recipients.
@@ -91,7 +91,7 @@ Feature: Attachment
   •	VERIFY in SENT items if the message has been sent encrypted
   •	VERIFICATION: Ask a communication partner from the contact list if he received the message and if it was encrypted.
 
-  @login-scenarios
+  @scenario
   Scenario: Misc SaveMessageOnFileSystem
   Description: Save an encrypted message you receive on your file system. The message should be saved unencrypted
   Assumptions: None
@@ -103,7 +103,7 @@ Feature: Attachment
   •	Close Outlook.
   •	VERIFY if you can open the message (double click the files on the Desktop). Also open the attachment in the message.
 
-  @login-scenarios
+  @scenario
   Scenario: Misc PassiveMode
   Description: When pEp is in passive mode, it sends outgoing messages to unknown communication partners without a key attached.
     Only if it detect that the communication partner also uses pEp (by the pEp header field),
@@ -139,7 +139,7 @@ Feature: Attachment
   •	VERIFY if in the reply message the Privacy Status is “Secure…”
   •	Disable Passive Mode
 
-  @login-scenarios
+  @scenario
   Scenario: Misc UnprotectedMessageSubjects
   Description: Test the pEp option “unencrypted message subjects”
   Assumptions: A public key of at least of communication partner is available
@@ -152,7 +152,7 @@ Feature: Attachment
   •	In the reply, VERIFY if the subject of the original message has been encrypted.
   •	After the test, disable the setting “Enable unencrypted message subjects” again
 
-  @login-scenarios
+  @scenario
   Scenario: Misc UseKeyserver
   Description: Test the pEp option “Look up keys on key server”
   Assumptions: test003@peptest.ch public key is uploaded to key server.
@@ -167,7 +167,7 @@ Feature: Attachment
   •	VERIFY in SENT items, if the message has been sent encrypted “Secure…”
   •	After the test, disable the setting “Look up keys on key server” again.
 
-  @login-scenarios
+  @scenario
   Scenario: Misc MasterKey
   Description: Encrypt all outgoing messages with an additonal Master Key.
   Assumptions: Public key of test006@peptest.ch is in Key Store
@@ -189,7 +189,7 @@ Feature: Attachment
   •	Send the message
   •	Wait for the reply of the test bot and verify in the body, if the initial message was also encrypted with the Master Key
 
-  @login-scenarios
+  @scenario
   Scenario: Misc BlacklistingAddUser
   Description: In order not to use a key of a PGP user anymore, it can be blacklisted.
   This test case checks if blacklisted keys are ignored (not used to encrypt outgoing messages).
@@ -208,7 +208,7 @@ Feature: Attachment
   •	Send the message
   •	VERIFY in SENT items, if the message has Privacy Status “Unsecure”
 
-  @login-scenarios
+  @scenario
   Scenario: Misc BlacklistingRemoveUser
   Description: Remove a key from the blacklist and make sure the message is sent encrypted
   Assumptions: At least one key is on the blacklist (e.g. user1 from previous test)
@@ -223,7 +223,7 @@ Feature: Attachment
   •	Send the message
   •	VERIFY in SENT items, if the message has Privacy Status “Secure…” or “Secure & Trusted”
 
-  @login-scenarios
+  @scenario
   Scenario: Misc UnencryptedForwardWarningFlag
   Description: If a formerly encrypted message (that I received) is forwarded unencrypted, a warning message appears.
   Assumptions: An encrypted message is in the inbox
@@ -238,7 +238,7 @@ Feature: Attachment
   •	Verify if a warning message appears
   •	Select “Yes” to send the message
 
-  @login-scenarios
+  @scenario
   Scenario: Misc RenewExpiredKey (1/3)
   Description: If a key is expired, it should automatically be renewed 10 days before expiration.
   Assumptions: The key expiration date is < 10 days (for simulation, this can be changed manually)
@@ -249,7 +249,7 @@ Feature: Attachment
   •	Send an email to a communication partner
   •	VERIFY (1) in GPA, if the expiry date of the key has been changed. The new expiry date should be today+365 days.
 
-  @login-scenarios
+  @scenario
   Scenario: Misc RenewExpiredKey (2/3).Import updated key of other users
   Description: When another user updates his key, this key should be imported to the key store when receiving a message from that user
   Assumptions: An existing communication partner (you already have the public key in your key store) updates the expiry date of a key.
@@ -260,7 +260,7 @@ Feature: Attachment
   •	Open the message of the communication partner
   •	VERIFY (1) in GPA, if the expiry date of the key of the communication partner has been updated.
 
-  @login-scenarios
+  @scenario
   Scenario: Misc RenewExpiredKey (3/3). Store Protected. This test case only applies to trusted servers.
   Description: The Store Protected feature provides the sender of an email the possibility to ensure that a message will not be saved unencrypted on the server of the receiving communication Partner.
     This is an enterprise feature.
@@ -275,7 +275,7 @@ Feature: Attachment
     If you can read the message, this test failed. If the message is still encrypted, this test passed.
   •	Validation Steps
 
-  @login-scenarios
+  @scenario
   Scenario: DisabledProtection SendMessageNoKeyAvailable
   Description: With Privacy Protection disabled pEp will not attach a public key to outgoing messages.
   Assumptions: No messages have been exchanged with user8 yet.
@@ -288,7 +288,7 @@ Feature: Attachment
   •	Send the message
   •	Validation Steps
 
-  @login-scenarios
+  @scenario
   Scenario: DisabledProtection ReplyOnUnencryptedMessage
   Description: Reply on the unencrypted message from the previous test case
   Assumptions: You have a message from user8 of the previous test case.
@@ -299,7 +299,7 @@ Feature: Attachment
   •	VERIFY that the Privacy Status bar is not displayed
   •	Send the message
 
-  @login-scenarios
+  @scenario
   Scenario: DisabledProtection SendMessageWithEnableProtection
   Description: Create a new message to user9 and “Enable Protection” and make sure the public key has been attached to the outgoing message.
   Assumptions: No messages have been exchanged with user9 yet.
@@ -315,7 +315,7 @@ Feature: Attachment
   •	Wait for the reply of the test bot
   •	VERIFY that the Privacy Status of the reply is “Secure”
 
-  @login-scenarios
+  @scenario
   Scenario: DisabledProtection ReplyOnEncryptedMessage
   Description: When replying on an encrypted message the outgoing message will be encrypted.
   Assumptions: The reply message from the previous test case was encrypted.
@@ -329,7 +329,7 @@ Feature: Attachment
   •	VERIFY (1.3.3_02) that the Privacy Status is “Secure”
   •	Send the message
 
-  @login-scenarios
+  @scenario
   Scenario: DisabledProtection CreateNewMessageToContactWithKeyAvailable
   Description: When creating a new message to a contact where a key is already available the message will be sent unencrypted.
   Assumptions: The previous test case with user9 passed
@@ -343,7 +343,7 @@ Feature: Attachment
   •	Go to the Sent items and click on the message you just sent.
   •	VERIFY that the Privacy Status bar is not visible
 
-  @login-scenarios
+  @scenario
   Scenario: DisabledProtection ReceiveMessageWithContinueToDecryptMessagesDisabled
   Description: When “Continue to decrypt messages” is disabled, incoming messages will not be decrypted.
   Assumptions: A public key of user9 (previous tests) is available.
@@ -358,7 +358,7 @@ Feature: Attachment
   •	Wait for the reply of the test bot
   •	VERIFY that the message that has just been received cannot be read.
 
-  @login-scenarios
+  @scenario
   Scenario: Basic Conversation with Reader
   Description: Test simple conversation: incoming messages are decrypted and outgoing messages are sent unencrypted with public key attached.
   Assumptions: pEp for Outlook Reader is installed. Communication partner has pEp installed (full version)
@@ -411,7 +411,7 @@ Feature: Attachment
   •	VERIFY (2), if the settings you configured in 3. are still unchanged
   •	VERIFY (3), if the pEp version umber has changed
 
-  @login-scenarios
+  @scenario
   Scenario: Adding a second device (1/3)
   Description: The user already has pEp in use with one product (e.g. pEp for Outlook). The user adds a second device with the (e.g. pEp for Outlook).
   Assumptions: The user has pEp setup on one device
@@ -424,7 +424,7 @@ Feature: Attachment
   •	Reply to Bob encrypted
   •	Bob should verify, if the keys in both messages (from the first and second device) are identical
 
-  @login-scenarios
+  @scenario
   Scenario: Adding a second device while first device is offline (2/3)
   Description: The user already has pEp in use with one product (e.g. pEp for Outlook). The user adds a second device with the (e.g. pEp for Outlook).
   Assumptions: The user has pEp setup on one device
@@ -444,7 +444,7 @@ Feature: Attachment
   •	Reply to Bob encrypted
   •	Bob should verify, if the keys in both messages (from the first and second device) are identical
 
-  @login-scenarios
+  @scenario
   Scenario: Adding another device (3/3)
   Description: The user already has a device group (with at least two devices). The user adds another device.
   Assumptions: The user has device group according to the list above.
@@ -457,7 +457,7 @@ Feature: Attachment
   •	Reply to Bob encrypted
   •	Bob should verify, if the keys in both messages (from the first and third device) are identical
 
-  @login-scenarios
+  @scenario
   Scenario: Expired key renewed and synced across all devices
   Description: The user has a device group with two devices. The current key expires and should be renewed and synced across all devices.
   Assumptions: The device group is setup and the key expired

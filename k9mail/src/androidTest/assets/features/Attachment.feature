@@ -3,11 +3,11 @@ Feature: Attachment
   Keys for these test users will be obtained from the test bot
 
   Background:
-    Given I create an account
-    Given I start test
+    Given I created an account
+    Given I run the tests
 
 
-  @login-scenarios
+  @scenario
   Scenario: Test Attachment Send1FileTo1Contact (1/2)
   Description: Send 1 attachment to 1 contact
   Assumption: I already have the public key of the other contact
@@ -24,16 +24,16 @@ Feature: Attachment
     And I click the send message button
     Then I wait for the new message
 
-  @login-scenarios
+  @scenario
   Scenario: Test Attachment Send1FileTo1Contact (2/2)
   Description: Send 1 attachment to 1 contact
   Assumption: I already have the public key of the other contact
   and can send the message encrypted(user1)
   Expectation: Then message is in SENT items and I can open the attachments
-    And I click on the last message
+    And I wait for the message and click it
     Then I open 1 attached files
 
-  @login-scenarios
+  @scenario
   Scenario: Test Attachment Send4FilesTo3Contacts (1/2)
   Description: Send 4 attachment to 3 contacts
   Assumption: I already have the public key of 3 contacts and can send the message encrypted
@@ -59,7 +59,7 @@ Feature: Attachment
     And I wait for the new message
 
 
-  @login-scenarios
+  @scenario
   Scenario: Test Attachment Send4FilesTo3Contacts (2/2)
   Description: Send 4 attachment to 3 contacts
   Assumption: I already have the public key of 3 contacts and can send the message encrypted
@@ -76,7 +76,7 @@ Feature: Attachment
     And I click on the last message
     And I open 4 attached files
 
-  @login-scenarios
+  @scenario
   Scenario: Test Attachment SendEmbeddedPictureToMultipleContacts
   Description: Send message with an embedded picture to multiple contacts
   Assumptions: I already have the public key of 2 contacts and can send the message encrypted
@@ -96,7 +96,7 @@ Feature: Attachment
     And I enter bot2 in the messageTo field
 
 
-  @login-scenarios
+  @scenario
   Scenario: Test Attachment ReceiveAttachmentsOneFile
   Description: Receive one attachment that has only been sent to me from another pEp user
   Assumptions: The communication partner has my private key
@@ -110,7 +110,7 @@ Feature: Attachment
   •	Open the attachment
   •	VERIFY if the attachment opens as expected
 
-  @login-scenarios
+  @scenario
   Scenario: Test Attachment ReceiveAttachmentsThreeFiles
   Description: Receive three attachments that have been sent to me
     and another person from another pEp user
@@ -126,7 +126,7 @@ Feature: Attachment
   •	VERIFY if the attachment opens as expected
   •	Repeat 5 and 6 for each attachment
 
-  @login-scenarios
+  @scenario
   Scenario: Test Attachment ReceiveMessageWithEmbeddedPicture
   Description: Receive an encrypted message with an embedded picture
   Assumptions: The communication partner has my private key

@@ -7,7 +7,7 @@ Feature: Formatting
     Given I start test
 
 
-  @login-scenarios
+  @scenario
   Scenario: Misc FormattingHTML
   Description: Send message with HTML formatting and special characters to myself
   and see if the formatting changed.
@@ -29,7 +29,7 @@ Feature: Formatting
   •	Send the message and wait that it arrives in your inbox
   •	VERIFY (1.2.19_01) if all the formatting is kept
 
-  @login-scenarios
+  @scenario
   Scenario:  Misc FormattingPlain
   Description: Send message with Plain Text formatting and special characters to myself and see if the formatting changed.
   Assumptions: None
@@ -42,7 +42,7 @@ Feature: Formatting
   •	Send the message and wait that it arrives in your inbox
   •	VERIFY (1.2.20_01) if all the formatting is kept
 
-  @login-scenarios
+  @scenario
   Scenario: Misc FormattingRichText
   Description: Send message with Rich Text formatting (RTF) and special characters to myself and see if the formatting changed.
   Assumptions: None

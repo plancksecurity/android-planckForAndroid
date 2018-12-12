@@ -6,7 +6,7 @@ Feature: Sanity
     Given I created an account
     Given I run the tests
 
-  @login-scenarios
+  @scenario
   Scenario: Test Sanity MailToNewContact
   Description: Test if pEp changes to Privacy Status from “Unknown” to “Unsecure”
   when entering the email address of a new contact user1.
@@ -33,7 +33,7 @@ Feature: Sanity
     And I click the first message
     Then I compare messageBody with longText
 
-  @login-scenarios
+  @scenario
   Scenario: Test Sanity MailToSecondNewContact
   Description: Test if pEp changes to Privacy Status from “Unknown” to “Unsecure”
   when entering the email address of the new contact user2.
@@ -49,7 +49,7 @@ Feature: Sanity
     And I click the send message button
     And I wait for the new message
 
-  @login-scenarios
+  @scenario
   Scenario: Test Sanity MailFromNewContactEncrypted
   Description: You have a new communication partner using pEp.
   This communication partner sends you a message from pEp.
@@ -71,7 +71,7 @@ Feature: Sanity
     And I wait for the new message
     #@Juan: We should send the message and check if the answer of the bot, if the message we sent was encrypted
 
-  @login-scenarios
+  @scenario
   Scenario: SER-299 Ensure mails are encrypted when pEp says so
     When I click the last message received
     And I click reply message
@@ -79,11 +79,11 @@ Feature: Sanity
     When I click the send message button
     And I press back
     And I wait for the new message
-    And I wait and click the last message
+    And I wait for the message and click it
     Then I compare rating from attachment with 6
     And I compare rating_string from attachment with PEP_rating_reliable
 
-  @login-scenarios
+  @scenario
   Scenario: Test Sanity MailToExistingContactEncrypted
   Description: Test if pEp encrypts the message if you send an email to someone
   you already have the public key from, e.g. user1.
@@ -103,7 +103,7 @@ Feature: Sanity
     Then I check if the privacy status is pep_yellow
     And I compare messageBody with TestCase1.2.4
 
-  @login-scenarios
+  @scenario
   Scenario: Test Sanity MailToMultipleContactsEncrypted
   Description: Test if the Privacy Status of a message is correct,
   if it is sent to multiple people and the public key is available (user1 and user2)
@@ -141,7 +141,7 @@ Feature: Sanity
     And I compare messageBody with empty
     And I go back to message compose
 
-  @login-scenarios
+  @scenario
   Scenario: Test Sanity MailToMultipleContactsMixed
   Description:Test if the Privacy Status of a message is correct,
   if it is sent to multiple people. For one of the recipients, there is no public key available.
@@ -173,7 +173,7 @@ Feature: Sanity
     Then I check if the privacy status is pep_no_color
     And I compare messageBody with TestCase1.2.6
 
-  @login-scenarios
+  @scenario
   Scenario: Test Sanity DisableProtection
   Description: Send a message with disabled protection to a contact you have the public key (user1)
   Assumption: You have public keys of (at least) 1 communication partner
