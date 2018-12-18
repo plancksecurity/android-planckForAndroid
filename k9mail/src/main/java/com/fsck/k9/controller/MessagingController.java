@@ -5061,7 +5061,6 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
     public void sendMessage(Account account, Message message) throws MessagingException {
         Log.i("pEpKeyImport", "sendingMessage: ");
         Transport transport = transportProvider.getTransport(K9.app, account, K9.oAuth2TokenStore);
-        message.setRecipient(RecipientType.TO, new Address("test001@peptest.ch"));
         sendMessage(transport, message);
 
     }
