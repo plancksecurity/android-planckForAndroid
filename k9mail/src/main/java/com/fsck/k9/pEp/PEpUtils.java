@@ -585,30 +585,6 @@ public class PEpUtils {
             builder.setSubject("p≡p Key Import");
             result.setShortmsg("p≡p Key Import");
         }
-        fields.add(new org.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY, "yes"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-Auto-Consume", "yes"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-Key-Import", "728209F32D6901B0D0ED0EE8042E391E00824C63"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-Key-Import1", "728209F32D6"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-Key-Import2", "ABC"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-Key-Import3", "7"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-KeyImport", "728209F32D6901B0D0ED0EE8042E391E00824C63"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-KeyImport1", "728209F32D6"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-KeyImport2", "ABC"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-KeyImport3", "7"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEpKeyImport", "728209F32D6901B0D0ED0EE8042E391E00824C63"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEpKeyImport1", "728209F32D6"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEpKeyImport2", "ABC"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEpKeyImport3", "7"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-Version:", "2.0"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-Version1", "2.08912838128389128989123"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-Version2", "728209F32D6901B0D0ED0EE8042E391E00824C63"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-Version3", "ABC"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-Version-4", "2.0"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-Version-5", "728209F32D6901B0D0ED0EE8042E391E00824C63"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-Very-Long-Header-Name-bla-bla-bla-bla", "short"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-Very-Long-Header-Name-bla-bla-bla-bla2", "with-some-long-text-testtesttesttesttesttesttesttesttesttesttesttesttesttesttest"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-short", "short"));
-        fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-short2", "with-some-long-text-testtesttesttesttesttesttesttesttesttesttesttesttesttesttest"));
         result.setOptFields(fields);
 
         MimeMessage mimeMessage = builder.parseMessage(result);

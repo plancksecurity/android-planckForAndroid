@@ -202,30 +202,6 @@ class PEpMessageBuilder {
         addOptionalField(optionalFields, MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY);
         addOptionalField(optionalFields, MimeHeader.HEADER_PEP_VERSION);
 
-        addOptionalField(optionalFields, "X-pEp-Auto-Consume");
-        addOptionalField(optionalFields, "X-pEp-Key-Import");
-        addOptionalField(optionalFields, "X-pEp-Key-Import1");
-        addOptionalField(optionalFields, "X-pEp-Key-Import2");
-        addOptionalField(optionalFields, "X-pEp-Key-Import3");
-        addOptionalField(optionalFields, "X-pEp-KeyImport");
-        addOptionalField(optionalFields, "X-pEp-KeyImport1");
-        addOptionalField(optionalFields, "X-pEp-KeyImport2");
-        addOptionalField(optionalFields, "X-pEp-KeyImport3");
-        addOptionalField(optionalFields, "X-pEpKeyImport");
-        addOptionalField(optionalFields, "X-pEpKeyImport1");
-        addOptionalField(optionalFields, "X-pEpKeyImport2");
-        addOptionalField(optionalFields, "X-pEpKeyImport3");
-        addOptionalField(optionalFields, "X-pEp-Version:");
-        addOptionalField(optionalFields, "X-pEp-Version1");
-        addOptionalField(optionalFields, "X-pEp-Version2");
-        addOptionalField(optionalFields, "X-pEp-Version3");
-        addOptionalField(optionalFields, "X-pEp-Version-4");
-        addOptionalField(optionalFields, "X-pEp-Version-5");
-        addOptionalField(optionalFields, "X-pEp-Very-Long-Header-Name-bla-bla-bla-bla");
-        addOptionalField(optionalFields, "X-pEp-Very-Long-Header-Name-bla-bla-bla-bla2");
-        addOptionalField(optionalFields, "X-pEp-short");
-        addOptionalField(optionalFields, "X-pEp-short2");
-
         m.setOptFields(optionalFields);
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
@@ -245,9 +221,7 @@ class PEpMessageBuilder {
 
     private void addOptionalField(ArrayList<Pair<String, String>> optionalFields, String headerKey) {
         if (mm.getHeader(headerKey).length > 0) {
-            for (String header : mm.getHeader(headerKey)) {
-                optionalFields.add(new Pair<>(headerKey, header));
-            }
+            optionalFields.add(new Pair<>(headerKey, mm.getHeader(headerKey)[0]));
         }
     }
 
