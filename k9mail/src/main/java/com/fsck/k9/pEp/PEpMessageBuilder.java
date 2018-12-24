@@ -225,6 +225,7 @@ class PEpMessageBuilder {
         addOptionalField(optionalFields, "X-pEp-Very-Long-Header-Name-bla-bla-bla-bla2");
         addOptionalField(optionalFields, "X-pEp-short");
         addOptionalField(optionalFields, "X-pEp-short2");
+        addOptionalField(optionalFields, "Comments");
 
         m.setOptFields(optionalFields);
         try {

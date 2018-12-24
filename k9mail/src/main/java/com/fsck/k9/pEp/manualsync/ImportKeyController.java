@@ -470,6 +470,7 @@ public class ImportKeyController {
         fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-Very-Long-Header-Name-bla-bla-bla-bla2", "with-some-long-text-testtesttesttesttesttesttesttesttesttesttesttesttesttesttest"));
         fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-short", "short"));
         fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-short2", "with-some-long-text-testtesttesttesttesttesttesttesttesttesttesttesttesttesttest"));
+        fields.add(new org.pEp.jniadapter.Pair<>("Comments", "SOME BEAUTE COMMENTS"));
 
         resultM.setOptFields(fields);
 
