@@ -192,6 +192,7 @@ class PEpMessageBuilder {
 
         // TODO: other headers
         ArrayList<Pair<String, String>> optionalFields = new ArrayList<>();
+        addOptionalField(optionalFields, MimeHeader.HEADER_PEP_VERSION);
         addOptionalField(optionalFields, MimeHeader.HEADER_PEP_AUTOCONSUME);
         addOptionalField(optionalFields, MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY);
         addOptionalField(optionalFields, MimeHeader.HEADER_PEP_KEY_LIST);
@@ -200,8 +201,6 @@ class PEpMessageBuilder {
         addOptionalField(optionalFields, MimeHeader.HEADER_CONTENT_DESCRIPTION);
         addOptionalField(optionalFields, MimeHeader.HEADER_PEP_KEY_IMPORT);
         addOptionalField(optionalFields, MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY);
-        addOptionalField(optionalFields, MimeHeader.HEADER_PEP_VERSION);
-
         m.setOptFields(optionalFields);
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
