@@ -609,11 +609,9 @@ public class PEpUtils {
         fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-Very-Long-Header-Name-bla-bla-bla-bla2", "with-some-long-text-testtesttesttesttesttesttesttesttesttesttesttesttesttesttest"));
         fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-short", "short"));
         fields.add(new org.pEp.jniadapter.Pair<>("X-pEp-short2", "with-some-long-text-testtesttesttesttesttesttesttesttesttesttesttesttesttesttest"));
-        fields.add(new org.pEp.jniadapter.Pair<>("Comments", "SomeComments"));
         result.setOptFields(fields);
 
         MimeMessage mimeMessage = builder.parseMessage(result);
-        mimeMessage.setHeader("X-pEp-Very-Long-Header-Name-bla-bla-bla-bla", "Some----Bla-blasdblaasda-dsfds-fsdf-sdf-sd-fs-df-dsf-sd-fsbla");
         mimeMessage.setFlag(Flag.X_PEP_DISABLED, true);
         return pEp.encryptMessage(mimeMessage, null).get(PEpProvider.ENCRYPTED_MESSAGE_POSITION);
     }
