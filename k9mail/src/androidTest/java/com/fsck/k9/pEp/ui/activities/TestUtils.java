@@ -120,7 +120,7 @@ public class TestUtils {
     private TestConfig testConfig;
     public String botList[];
     public boolean testReset = false;
-    private static JSONObject json;
+    public static JSONObject json;
     public static JSONArray jsonArray;
     public static String rating;
 
@@ -129,6 +129,10 @@ public class TestUtils {
         this.instrumentation = instrumentation;
         context = InstrumentationRegistry.getTargetContext();
         resources = context.getResources();
+    }
+
+    public static Context getContext() {
+        return context;
     }
 
     public void increaseTimeoutWait() {
@@ -1329,6 +1333,13 @@ public class TestUtils {
                     e.printStackTrace();
                 }
                 break;
+            case "messageBody":
+                try {
+                    json = json.getJSONObject("attributes");
+                    object = "decrypted";
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             default:
                 try {
                     json = json.getJSONObject(object);
