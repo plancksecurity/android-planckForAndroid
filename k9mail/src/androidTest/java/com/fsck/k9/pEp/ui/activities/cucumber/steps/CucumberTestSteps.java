@@ -258,6 +258,9 @@ public class CucumberTestSteps {
             case "rating_string":
                 assertText(TestUtils.rating, stringToCompare);
                 break;
+            case "messageBody":
+                assertTextInJSON(testUtils.json, stringToCompare);
+                break;
                 default:
                     assertTextInJSONArray(name, testUtils.jsonArray, stringToCompare);
         }
