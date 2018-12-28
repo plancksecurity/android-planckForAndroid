@@ -1056,6 +1056,65 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
+    @Then("^I save test report$")
+    public void I_save_report(){
+        try {
+            /*ProcessBuilder pb = new ProcessBuilder ("adb shell chmod -R 777 /data/data/security.pEp/cucumber-reports");
+            Process p = pb.start();
+            p.waitFor();*/
+            /*String[] cmdArray = new String[1];
+            cmdArray[0]="adb shell chmod -R 777 /data/data/security.pEp/cucumber-reports";
+            Process p=null;
+            p = Runtime.getRuntime().exec(cmdArray);*/
+            SetDirectory();
+        } catch (Exception ex){
+            Timber.e("Error moving cucumber reports1: " + ex.getMessage());
+        }
+        /*try {
+            Runtime.getRuntime().exec("adb shell \"cp -r /data/data/security.pEp/cucumber-reports/ /sdcard/cucumberTestReports\"");
+        } catch (Exception ex){
+            Timber.e("Error moving cucumber reports2: " + ex.getMessage());
+        }*/
+    }
+    private void SetDirectory() {
+        CopyAssets(); // Then run the method to copy the file.
+        if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+
+
+        } else if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED_READ_ONLY)) {
+            Timber.e("Nope");
+        }
+    }
+
+    private void CopyAssets() {
+            try {
+                File file = new File("data/data/security.pEp/cucumber-reports/", "cucumber.json");
+                FileInputStream in = new FileInputStream(file);
+                String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+                File file2 = new File("/mnt/sdcard" + "/cucumber.json");
+                file2.createNewFile();
+                OutputStream out = new FileOutputStream(file2);
+                copyFile(in, out);
+                in.close();
+                out.flush();
+                out.close();
+            } catch (Exception e) {
+                Log.e("tag", e.getMessage());
+            }
+    }
+
+    private void copyFile(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int read;
+        try {
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+        } catch (Exception ex) {
+            Timber.e("Error guardando");
+        }
+    }
+
     private void startTimer(int finalTime) {
         if (time[0] == 0) {
             timer.scheduleAtFixedRate(new TimerTask() {
