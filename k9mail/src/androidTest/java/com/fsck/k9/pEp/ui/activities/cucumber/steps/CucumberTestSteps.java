@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Environment;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.action.ViewActions;
@@ -17,6 +18,7 @@ import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.Direction;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
+import android.util.Log;
 import android.view.KeyEvent;
 
 import com.fsck.k9.K9;
@@ -35,6 +37,12 @@ import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -597,6 +605,7 @@ public class CucumberTestSteps {
             device.waitForIdle();
             waitUntilIdle();
         }
+        onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
             try {
                 onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
             } catch (Exception ex) {
@@ -617,6 +626,8 @@ public class CucumberTestSteps {
                     Timber.i("Cannot find subject");
                 }
             }
+            device.waitForIdle();
+            waitUntilIdle();
         onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
         switch (status){
             case "pEpRatingUndefined":
@@ -952,6 +963,8 @@ public class CucumberTestSteps {
                 Timber.i("Cannot find toolbar");
             }
         }
+        device.waitForIdle();
+        waitUntilIdle();
         onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
         checkPrivacyStatus(color);
     }
