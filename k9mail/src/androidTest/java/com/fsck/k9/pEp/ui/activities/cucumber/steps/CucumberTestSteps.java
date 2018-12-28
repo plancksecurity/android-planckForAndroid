@@ -368,6 +368,13 @@ public class CucumberTestSteps {
         Assert.fail();
     }
 
+    private void assertTextInJSON(JSONObject json, String textToCompare) {
+        if (json.toString().contains(textToCompare)) {
+            return;
+        }
+        Assert.fail();
+    }
+
     private void assertText(String text, String textToCompare) {
         if (text.contains(textToCompare)) {
             return;
