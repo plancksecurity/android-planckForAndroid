@@ -995,13 +995,12 @@ public class CucumberTestSteps {
             try {
                 device.waitForIdle();
                 onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
-                if (!viewIsDisplayed(R.id.to)) {
-                    try {
-                        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-                        scroll.swipe(Direction.DOWN, 1.0f);
-                    } catch (Exception ex) {
-                        Timber.i("Cannot do scroll down");
-                    }
+                try {
+                    UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+                    scroll.swipe(Direction.DOWN, 1.0f);
+                    onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
+                } catch (Exception ex) {
+                    Timber.i("Cannot do scroll down");
                 }
                 device.waitForIdle();
                 waitUntilIdle();
