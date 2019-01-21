@@ -1067,9 +1067,12 @@ public class TestUtils {
                 try {
                     swipeDownMessageList();
                     device.waitForIdle();
-                    onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
-                    messageClicked = true;
-                    device.waitForIdle();
+                    while (viewIsDisplayed(R.id.message_list)) {
+                        onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
+                        messageClicked = true;
+                        device.waitForIdle();
+                        waitUntilIdle();
+                    }
                     if (viewIsDisplayed(R.id.fab_button_compose_message)) {
                         try {
                             messageClicked = false;
