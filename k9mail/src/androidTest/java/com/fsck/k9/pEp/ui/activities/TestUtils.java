@@ -752,9 +752,10 @@ public class TestUtils {
 
     public void assertMessageStatus(int status){
         clickStatus();
-        while (!viewIsDisplayed(R.id.pEpTitle)) {
+        while (!viewIsDisplayed(R.id.toolbar)) {
             device.waitForIdle();
         }
+        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
         if (!exists(onView(withId(R.id.send)))) {
             goBack(false);
@@ -769,7 +770,8 @@ public class TestUtils {
             waitUntilIdle();
             device.waitForIdle();
             clickView(R.id.pEp_indicator);
-            while (!exists(onView(withId(R.id.pEpTitle)))) {
+            device.waitForIdle();
+            while (!exists(onView(withId(R.id.toolbar)))) {
                 doWaitForResource(R.id.pEpTitle);
                 device.waitForIdle();
             }
