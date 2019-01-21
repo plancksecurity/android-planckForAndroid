@@ -58,6 +58,7 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.action.ViewActions.typeTextIntoFocusedView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.isInternal;
@@ -107,7 +108,7 @@ public class CucumberTestSteps {
             IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
             bot = new String[4];
             resources = InstrumentationRegistry.getTargetContext().getResources();
-            startTimer(50000);
+            startTimer(600);
             if (testUtils.getCurrentActivity() == null) {
                 //startTimer(350);
                 testUtils.testReset = true;
@@ -151,6 +152,7 @@ public class CucumberTestSteps {
 
     @When("^I enter (\\S+) in the messageTo field")
     public void I_fill_messageTo_field(String cucumberMessageTo) {
+        timeRequiredForThisMethod(15);
         device.waitForIdle();
         while (!exists(onView(withId(R.id.to)))) {
             device.waitForIdle();
@@ -213,11 +215,13 @@ public class CucumberTestSteps {
 
     @When("^I enter (\\S+) in the messageSubject field")
     public void I_fill_subject_field(String cucumberSubject) {
+        timeRequiredForThisMethod(15);
         textViewEditor(cucumberSubject,"subject");
     }
 
     @When("^I enter (\\S+) in the messageBody field")
     public void I_fill_body_field(String cucumberBody) {
+        timeRequiredForThisMethod(1);
         textViewEditor(cucumberBody, "message_content");
     }
 
@@ -228,17 +232,20 @@ public class CucumberTestSteps {
         scroll.swipe(Direction.DOWN, 1.0f);
         switch (text) {
             case "empty":
+                timeRequiredForThisMethod(30);
                 testUtils.removeTextFromTextView(viewName);
                 break;
             case "longText":
+                timeRequiredForThisMethod(30);
                 text = testUtils.longText();
             default:
+                timeRequiredForThisMethod(10);
                 while (!(containstText(onView(withId(viewId)), text))) {
                     try {
                         onView(withId(viewId)).perform(closeSoftKeyboard());
                         onView(withId(viewId)).perform(click());
                         onView(withId(viewId)).perform(closeSoftKeyboard());
-                        onView(withId(viewId)).perform(typeText(text), closeSoftKeyboard());
+                        onView(withId(viewId)).perform(typeTextIntoFocusedView(text), closeSoftKeyboard());
                         onView(withId(viewId)).perform(closeSoftKeyboard());
                     } catch (Exception ex) {
                         if (viewIsDisplayed((viewId))) {
@@ -252,6 +259,7 @@ public class CucumberTestSteps {
 
     @When("^I compare (\\S+) from attachment with (\\S+)")
     public void I_compare_name_with_string(String name, String stringToCompare) {
+        timeRequiredForThisMethod(10);
         TestUtils.getJSONObject(name);
         switch (name) {
             case "rating":
@@ -268,6 +276,7 @@ public class CucumberTestSteps {
 
     @When("^I compare messageBody with (\\S+)")
     public void I_compare_body(String cucumberBody) {
+        timeRequiredForThisMethod(10);
         String [] body;
         switch (cucumberBody) {
             case "empty":
@@ -298,16 +307,19 @@ public class CucumberTestSteps {
 
     @When("^I wait for the message and click it$")
     public void I_wait_for_the_message_and_click_it() {
+        timeRequiredForThisMethod(45);
         testUtils.waitForMessageAndClickIt();
     }
 
     @When("^I click the last message received$")
     public void I_click_the_last_message_received() {
+        timeRequiredForThisMethod(10);
         testUtils.clickLastMessage();
     }
 
     @When("^I confirm trust words match$")
     public void I_confirm_trust_words_match() {
+        timeRequiredForThisMethod(80);
         TestUtils.getJSONObject("trustwords");
         device.waitForIdle();
         onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
@@ -534,11 +546,13 @@ public class CucumberTestSteps {
 
     @When("^I reject trust words$")
     public void I_reject_trust_words() {
+        timeRequiredForThisMethod(20);
         onView(withId(R.id.wrongTrustwords)).perform(click());
     }
 
     @When("^I click confirm trust words$")
     public void I_click_confirm_trust_words() {
+        timeRequiredForThisMethod(10);
         testUtils.doWaitForResource(R.id.toolbar);
         device.waitForIdle();
         waitUntilIdle();
@@ -568,6 +582,7 @@ public class CucumberTestSteps {
     }
     @When("^I click wrong trust words$")
     public void I_click_wrong_trust_words() {
+        timeRequiredForThisMethod(10);
         testUtils.doWaitForResource(R.id.toolbar);
         device.waitForIdle();
         waitUntilIdle();
@@ -594,6 +609,7 @@ public class CucumberTestSteps {
 
     @When("^I stop trusting$")
     public void I_untrust_trust_words() {
+        timeRequiredForThisMethod(10);
         testUtils.clickMessageStatus();
         device.waitForIdle();
         onView(withId(R.id.handshake_button_text)).perform(click());
@@ -604,6 +620,7 @@ public class CucumberTestSteps {
 
     @When("^I check in the handshake dialog if the privacy status is (\\S+)$")
     public void I_check_pEp_status(String status) {
+        timeRequiredForThisMethod(20);
         checkPrivacyStatus(status);
         device.waitForIdle();
     }
@@ -611,11 +628,11 @@ public class CucumberTestSteps {
     private void checkPrivacyStatus(String status){
         int statusRating = -10;
         BySelector selector = By.clazz("android.widget.ScrollView");
-        while (!viewIsDisplayed(R.id.toolbar_container)) {
+        while (!viewIsDisplayed(R.id.toolbar)) {
             device.waitForIdle();
             waitUntilIdle();
         }
-        onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
+        onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
             try {
                 onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
             } catch (Exception ex) {
@@ -638,7 +655,6 @@ public class CucumberTestSteps {
             }
             device.waitForIdle();
             waitUntilIdle();
-        onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
         switch (status){
             case "pEpRatingUndefined":
                 statusRating = Rating.pEpRatingUndefined.value;
@@ -689,18 +705,21 @@ public class CucumberTestSteps {
 
     @And("^I select from message menu (\\S+)$")
     public void I_select_from_message_menu(String textToSelect){
+        timeRequiredForThisMethod(15);
         testUtils.selectFromMenu(testUtils.stringToID(textToSelect));
         device.waitForIdle();
     }
 
     @Then("^I open menu$")
     public void I_select_from_menu(){
+        timeRequiredForThisMethod(10);
         device.waitForIdle();
         testUtils.openOptionsMenu();
     }
 
     @Then("^I select from screen (\\S+)$")
     public void I_select_from_screen(String textToSelect){
+        timeRequiredForThisMethod(15);
         device.waitForIdle();
         testUtils.selectFromScreen(testUtils.stringToID(textToSelect));
         device.waitForIdle();
@@ -708,11 +727,13 @@ public class CucumberTestSteps {
 
     @Then("^I remove account$")
     public void I_remove_account() {
+        timeRequiredForThisMethod(25);
         testUtils.goBackAndRemoveAccount();
     }
 
     @Then("^I remove email address$")
     public void I_remove_email_address(){
+        timeRequiredForThisMethod(20);
         device.waitForIdle();
         device.pressKeyCode(KeyEvent.KEYCODE_DEL);
         device.waitForIdle();
@@ -720,6 +741,7 @@ public class CucumberTestSteps {
 
     @Then("^I attach files to message$")
     public void I_attach_files_to_message() {
+        timeRequiredForThisMethod(30);
         testUtils.fillMessage(new TestUtils.BasicMessage("", "", "", ""), true);
         testUtils.sendMessage();
         testUtils.testReset = true;
@@ -727,6 +749,7 @@ public class CucumberTestSteps {
 
     @Then("^I attach (\\S+)$")
     public void I_attach_file_to_message(String file) {
+        timeRequiredForThisMethod(15);
         device.waitForIdle();
         Set_external_mock(file);
         testUtils.attachFile(fileName);
@@ -736,6 +759,7 @@ public class CucumberTestSteps {
 
     @Given("^Set external mock (\\S+)$")
     public void Set_external_mock(String mock){
+        timeRequiredForThisMethod(10);
         int raw = 0;
         switch (mock){
             case "settings":
@@ -771,12 +795,14 @@ public class CucumberTestSteps {
 
     @When("^I open privacy status$")
     public void I_click_message_status() {
+        timeRequiredForThisMethod(10);
         testUtils.clickMessageStatus();
         device.waitForIdle();
     }
 
     @Then("^I click the send message button$")
     public void I_click_then_send_message_button() {
+        timeRequiredForThisMethod(5);
         while (exists(onView(withId(R.id.send)))) {
             testUtils.clickView(R.id.send);
         }
@@ -784,6 +810,7 @@ public class CucumberTestSteps {
 
     @When("^I click compose message")
     public void I_click_message_compose_button() {
+        timeRequiredForThisMethod(5);
         testUtils.composeMessageButton();
     }
 
@@ -803,7 +830,7 @@ public class CucumberTestSteps {
                         testUtils.swipeDownMessageList();
                         device.waitForIdle();
                         testUtils.getMessageListSize();
-                        time[0] = 0;
+                        time[0] = 350;
                         return;
                     }
                 } else {
@@ -831,6 +858,7 @@ public class CucumberTestSteps {
 
     @And("^I click view (\\S+)$")
     public void I_click_view(String viewClicked){
+        timeRequiredForThisMethod(10);
         device.waitForIdle();
         testUtils.clickView(testUtils.intToID(viewClicked));
         device.waitForIdle();
@@ -838,6 +866,7 @@ public class CucumberTestSteps {
 
     @And("^I click reply message$")
     public void I_click_reply_message(){
+        timeRequiredForThisMethod(10);
         device.waitForIdle();
         if (!viewIsDisplayed(testUtils.intToID("reply_message"))) {
             UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
@@ -889,23 +918,27 @@ public class CucumberTestSteps {
 
     @Then("^I wait for the new message$")
     public void I_wait_for_the_new_message(){
+        timeRequiredForThisMethod(40);
         testUtils.waitForNewMessage();
     }
 
     @And("^I go to the sent folder$")
     public void I_go_to_the_sent_folder(){
+        timeRequiredForThisMethod(25);
         device.waitForIdle();
         testUtils.goToSentFolder();
     }
 
     @And("^I click the first message$")
     public void I_click_the_first_message(){
+        timeRequiredForThisMethod(12);
         testUtils.clickFirstMessage();
     }
 
     @Given("^I create and remove (\\d+) accounts$")
     public void I_create_and_remove_accounts(int total){
         for (int account = 0; account < total; account++) {
+            timeRequiredForThisMethod(100);
             testUtils.createAccount(false);
             testUtils.goBackAndRemoveAccount();
             device.waitForIdle();
@@ -914,6 +947,7 @@ public class CucumberTestSteps {
 
     @Then("^I discard the message$")
     public void I_discard_the_message(){
+        timeRequiredForThisMethod(10);
         device.waitForIdle();
         testUtils.pressBack();
         testUtils.doWaitForObject("android.widget.Button");
@@ -922,6 +956,7 @@ public class CucumberTestSteps {
 
     @Given("^I press back$")
     public void I_press_back(){
+        timeRequiredForThisMethod(2);
         device.waitForIdle();
         testUtils.pressBack();
         device.waitForIdle();
@@ -929,6 +964,7 @@ public class CucumberTestSteps {
 
     @And("^I go back to app$")
     public void I_go_back_to_app(){
+        timeRequiredForThisMethod(15);
         testUtils.getActivityInstance();
     }
 
@@ -949,8 +985,9 @@ public class CucumberTestSteps {
     }
 
     @Then("^I check if the privacy status is (\\S+)$")
-    public void I_check_toolBar_color_is(String color){
-        while(!viewIsDisplayed(R.id.toolbar)) {
+    public void I_check_toolBar_color_is(String color) {
+        timeRequiredForThisMethod(10);
+        while (!viewIsDisplayed(R.id.toolbar)) {
             device.waitForIdle();
         }
         boolean wait = false;
@@ -981,11 +1018,13 @@ public class CucumberTestSteps {
 
     @And("^I go back to message compose$")
     public void I_go_back_to_message_compose(){
+        timeRequiredForThisMethod(15);
         testUtils.goBackToMessageList();
     }
 
     @And("^I check color is (\\S+) at position (\\d+)$")
     public void I_check_color_is___at_position(String color, int position){
+        timeRequiredForThisMethod(5);
         device.waitForIdle();
         testUtils.doWaitForResource(R.id.my_recycler_view);
         device.waitForIdle();
@@ -995,33 +1034,39 @@ public class CucumberTestSteps {
 
     @And("^I open (\\d+) attached files$")
     public void I_open_attached_files(int total) {
+        timeRequiredForThisMethod(15 * total);
         device.waitForIdle();
         testUtils.clickAttachedFiles(total);
     }
 
     @Then("^I set checkbox (\\S+) to (true|false)$")
     public void I_set_checkbox_to(String resource, boolean checked){
+        timeRequiredForThisMethod(5);
         testUtils.checkBoxOnScreenChecked(testUtils.stringToID(resource), checked);
     }
 
     @Then("^I go back and save as draft$")
     public void I_go_back_and_save_as_draft(){
+        timeRequiredForThisMethod(10);
         testUtils.goBackAndSaveAsDraft(activityTestRule);
     }
 
     @And("^I compare texts on screen: (\\S+) and (\\S+)$")
     public void I_compare_texts_on_screen(String text1, String text2) {
+        timeRequiredForThisMethod(5);
         testUtils.assertsTextsOnScreenAreEqual(testUtils.stringToID(text1), testUtils.stringToID(text2));
     }
 
     @And("^I check status color is (\\S+) at position (\\d+)$")
     public void I_check_color_at(String color, int position) {
+        timeRequiredForThisMethod(5);
         device.waitForIdle();
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(position)).check(matches(withBackgroundColor(testUtils.colorToID(color))));
     }
 
     @Then("^I click acceptButton$")
     public void iClickAcceptButton() {
+        timeRequiredForThisMethod(5);
         device.waitForIdle();
         testUtils.clickAcceptButton();
         device.waitForIdle();
@@ -1029,6 +1074,7 @@ public class CucumberTestSteps {
 
     @And("^I do next thing$")
     public void iDoNextThing() {
+        timeRequiredForThisMethod(5);
         onView(withId(R.id.accounts_list)).perform(ViewActions.click());
         device.waitForIdle();
         try{
@@ -1039,6 +1085,7 @@ public class CucumberTestSteps {
     }
     @Then("^I wait (\\d+) seconds$")
     public void I_wait_seconds(int seconds) {
+        timeRequiredForThisMethod(seconds);
         try {
             Thread.sleep(seconds * 1000);
         } catch (InterruptedException e) {
@@ -1048,6 +1095,7 @@ public class CucumberTestSteps {
 
     @And("^I save trustWords$")
     public void I_save_trustwords(){
+        timeRequiredForThisMethod(10);
         device.waitForIdle();
         onView(withId(R.id.tvPep)).perform(click());
         device.waitForIdle();
@@ -1058,6 +1106,7 @@ public class CucumberTestSteps {
 
     @Then("^I save test report$")
     public void I_save_report(){
+        timeRequiredForThisMethod(30);
         try {
             /*ProcessBuilder pb = new ProcessBuilder ("adb shell chmod -R 777 /data/data/security.pEp/cucumber-reports");
             Process p = pb.start();
@@ -1113,6 +1162,10 @@ public class CucumberTestSteps {
         } catch (Exception ex) {
             Timber.e("Error guardando");
         }
+    }
+
+    private void timeRequiredForThisMethod(int timeRequired) {
+        time[0] = time[0] - timeRequired;
     }
 
     private void startTimer(int finalTime) {
