@@ -76,6 +76,7 @@ import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.isInternal;
 import static android.support.test.espresso.matcher.RootMatchers.isDialog;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static android.support.test.espresso.matcher.ViewMatchers.hasSibling;
 import static android.support.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -1119,7 +1120,7 @@ public class TestUtils {
         }
         while (json == null) {
             try {
-                onView(withId(R.id.download)).perform(click());
+                downloadAttachedFile("results.json");
                 String js = readJsonFile("results.json");
                 json = new JSONObject(js);
             } catch (Exception ex) {
@@ -1133,6 +1134,25 @@ public class TestUtils {
                 }
             }
         }
+    }
+
+    public void downloadAttachedFile (String fileName) {
+        BySelector selector = By.clazz("android.widget.TextView");
+        for (UiObject2 object : device.findObjects(selector)) {
+            try {
+                if (object.getText().contains(fileName)) {
+                    device.waitForIdle();
+                    object.getParent().getChildren().get(3).click();
+                    return;
+                }
+            } catch (Exception ex){
+                Timber.i("Cannot find text on screen: " + ex);
+            }
+        }
+    }
+
+    public JSONObject returnJSON (){
+        return json;
     }
 
     public void waitForNewMessage() {
