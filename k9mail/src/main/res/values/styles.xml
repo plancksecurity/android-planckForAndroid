@@ -80,7 +80,10 @@
     </style>
 
     <style name="AppTheme.Widget.TextView" parent="android:Widget.Holo.Light.TextView">
-        <item name="fontPath">fonts/CourierNew.ttf</item>
+        <!--
+            <item name="fontPath">fonts/CourierNew.ttf</item>
+            TODO:: review how it shall be done now, as it does not work anymore
+        -->
     </style>
 
     <style name="ToolbarTheme" parent="Theme.AppCompat.NoActionBar">
