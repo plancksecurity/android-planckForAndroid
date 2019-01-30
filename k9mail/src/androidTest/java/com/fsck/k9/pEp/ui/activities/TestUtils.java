@@ -1132,6 +1132,20 @@ public class TestUtils {
                 if (!exists(onView(withId(R.id.download)))) {
                     return;
                 }
+                BySelector selector = By.clazz("android.widget.TextView");
+                boolean jsonExists = false;
+                for (UiObject2 object : device.findObjects(selector)) {
+                    try {
+                        if (object.getText().contains("results.json")) {
+                            jsonExists = true;
+                        }
+                    } catch (Exception json){
+                        Timber.i("Cannot find json file on the screen: " + json);
+                    }
+                }
+                if (jsonExists == false) {
+                    return;
+                }
             }
         }
     }
