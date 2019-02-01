@@ -37,12 +37,15 @@ import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.pEp.jniadapter.Rating;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -1031,11 +1034,78 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
-    @And("^I open (\\d+) attached files$")
-    public void I_open_attached_files(int total) {
-        timeRequiredForThisMethod(15 * total);
+    @And("^I open attached files$")
+    public void I_open_attached_files() {
+        emptyFolder("Download");
+        openAttached();
         device.waitForIdle();
-        testUtils.clickAttachedFiles(total);
+        File directory = new File(Environment.getExternalStorageDirectory().toString()+"/Download/");
+        File[] files = directory.listFiles();
+        byte[] buffer= new byte[8192];
+        int count;
+        for (File fileOpen : files) {
+            timeRequiredForThisMethod(5);
+            File file = new File(Environment.getExternalStorageDirectory().toString() + "/Download/" + fileOpen.getName());
+            device.waitForIdle();
+            try {
+                MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+                while ((count = bis.read(buffer)) > 0) {
+                    digest.update(buffer, 0, count);
+                }
+                bis.close();
+                byte[] hash = digest.digest();
+                String shaCode = new BigInteger(1, hash).toString(16);
+                JSONObject jsonObject = (JSONObject) (testUtils.returnJSON()).getJSONObject("attachments_in").get("decrypted");
+                if (!jsonObject.toString().contains(shaCode)) {
+                    Assert.fail();
+                }
+            } catch (Exception ex) {
+                Timber.i("Couldn't get SHA256 from file: " + file.getName());
+            }
+        }
+        emptyFolder("Download");
+    }
+
+    private void openAttached () {
+        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+        scroll.swipe(Direction.UP, 1.0f);
+        while (true) {
+            try {
+                while (!exists(onView(withId(R.id.attachments)))) {
+                    device.waitForIdle();
+                }
+                while (!viewIsDisplayed(R.id.attachments)) {
+                    device.waitForIdle();
+                }
+                BySelector layout = By.clazz("android.widget.LinearLayout");
+                onView(withId(R.id.attachments)).check(matches(isCompletelyDisplayed()));
+                for (UiObject2 object : device.findObjects(layout)) {
+                    if (object.getResourceName() != null && object.getResourceName().equals("security.pEp:id/attachments")) {
+                        int size = object.getChildren().size();
+                        for (int attachment = 0; attachment < size - 1; attachment++) {
+                            object.getChildren().get(attachment).getChildren().get(0).getChildren().get(0).getChildren().get(3).click();
+                        }
+                        Timber.i("");
+                        return;
+                    }
+                }
+            } catch (Exception ex) {
+                Timber.i("Message Error: " + ex.getMessage());
+            }
+        }
+    }
+
+    private void emptyFolder (String folderName) {
+        device.waitForIdle();
+        File dir = new File(Environment.getExternalStorageDirectory()+"/" + folderName + "/");
+        if (dir.isDirectory())
+        {
+            String[] children = dir.list();
+            for (String aChildren : children) {
+                new File(dir, aChildren).delete();
+            }
+        }
     }
 
     @Then("^I set checkbox (\\S+) to (true|false)$")
