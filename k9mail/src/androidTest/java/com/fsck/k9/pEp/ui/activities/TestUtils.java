@@ -482,6 +482,7 @@ public class TestUtils {
         device.waitForIdle();
         onView(withId(R.id.add_attachment)).perform(click());
         device.waitForIdle();
+        waitUntilIdle();
         onView(withId(R.id.attachments)).check(matches(hasDescendant(withText(fileName))));
     }
 
