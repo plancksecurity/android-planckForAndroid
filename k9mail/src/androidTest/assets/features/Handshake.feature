@@ -27,18 +27,17 @@ Feature: Handshake
   Expectation: Privacy Status for the single existing message
   changes from “Secure…” to “Secure & Trusted”
     When I click compose message
-    And I enter bot2 in the messageTo field
+    And I enter bot4 in the messageTo field
     And I enter TestCase1.2.10 in the messageSubject field
     And I enter TestCase1.2.10 in the messageBody field
     Then I check if the privacy status is pEpRatingUnencrypted
     When I click the send message button
-    And I wait for the message and click it
-    And I click reply message
+    And I wait for the new message
+    And I click compose message
+    And I enter bot4 in the messageTo field
     Then I confirm trust words match
     When I click confirm trust words
     Then I check if the privacy status is pEpRatingTrusted
-    And I discard the message
-    And I go back to message compose
 
   @scenario
   Scenario: Test Handshake StopTrusting

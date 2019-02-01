@@ -30,8 +30,8 @@ Feature: Attachment
   Assumption: I already have the public key of the other contact
   and can send the message encrypted(user1)
   Expectation: Then message is in SENT items and I can open the attachments
-    And I wait for the message and click it
-    Then I open 1 attached files
+    And I click the last message received
+    Then I open attached files
 
   @scenario
   Scenario: Test Attachment Send4FilesTo3Contacts (1/2)
@@ -46,7 +46,7 @@ Feature: Attachment
   •	Send the message
   •	VERIFY if the message is in SENT items of your mailbox and you can open the attachment.
   •	Ask the recipient, if he could open all attachments
-    When I click on the last message
+    When I click compose message
     Then I enter myself in the messageTo field
     And I enter subject in the messageSubject field
     And I enter body in the messageBody field
@@ -72,9 +72,9 @@ Feature: Attachment
   •	Send the message
   •	VERIFY if the message is in SENT items of your mailbox and you can open the attachment.
   •	Ask the recipient, if he could open all attachments
-    Then I go to sent folder
-    And I click on the last message
-    And I open 4 attached files
+    Then I go to the sent folder
+    And I click the last message received
+    And I open attached files
 
   @scenario
   Scenario: Test Attachment SendEmbeddedPictureToMultipleContacts
