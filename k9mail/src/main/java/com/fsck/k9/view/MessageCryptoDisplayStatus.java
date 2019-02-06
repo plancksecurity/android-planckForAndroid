@@ -42,27 +42,27 @@ public enum MessageCryptoDisplayStatus {
             R.string.crypto_msg_signed_unencrypted, R.string.crypto_msg_sign_verified
     ),
     UNENCRYPTED_SIGN_UNVERIFIED (
-            R.attr.openpgp_orange, 
+            R.attr.openpgp_orange,
             R.drawable.status_signature_verified_cutout, R.drawable.status_none_dots_2,
             R.string.crypto_msg_signed_unencrypted, R.string.crypto_msg_sign_unverified
     ),
     UNENCRYPTED_SIGN_MISMATCH (
-            R.attr.openpgp_red, 
+            R.attr.openpgp_red,
             R.drawable.status_signature_verified_cutout, R.drawable.status_none_dots_1,
             R.string.crypto_msg_signed_unencrypted, R.string.crypto_msg_sign_mismatch
     ),
     UNENCRYPTED_SIGN_EXPIRED (
-            R.attr.openpgp_red, 
+            R.attr.openpgp_red,
             R.drawable.status_signature_verified_cutout, R.drawable.status_none_dots_1,
             R.string.crypto_msg_signed_unencrypted, R.string.crypto_msg_sign_expired
     ),
     UNENCRYPTED_SIGN_REVOKED (
-            R.attr.openpgp_red, 
+            R.attr.openpgp_red,
             R.drawable.status_signature_verified_cutout, R.drawable.status_none_dots_1,
             R.string.crypto_msg_signed_unencrypted, R.string.crypto_msg_sign_revoked
     ),
     UNENCRYPTED_SIGN_INSECURE (
-            R.attr.openpgp_red, 
+            R.attr.openpgp_red,
             R.drawable.status_signature_verified_cutout, R.drawable.status_none_dots_1,
             R.string.crypto_msg_signed_unencrypted, R.string.crypto_msg_sign_insecure
     ),
@@ -79,12 +79,12 @@ public enum MessageCryptoDisplayStatus {
     ),
 
     ENCRYPTED_SIGN_VERIFIED (
-            R.attr.openpgp_green, 
+            R.attr.openpgp_green,
             R.drawable.status_lock, R.drawable.status_none_dots_3,
             R.string.crypto_msg_signed_encrypted, R.string.crypto_msg_sign_verified
     ),
     ENCRYPTED_SIGN_UNVERIFIED (
-            R.attr.openpgp_orange, 
+            R.attr.openpgp_orange,
             R.drawable.status_lock, R.drawable.status_none_dots_2,
             R.string.crypto_msg_signed_encrypted, R.string.crypto_msg_sign_unverified
     ),
@@ -94,12 +94,12 @@ public enum MessageCryptoDisplayStatus {
             R.string.crypto_msg_signed_encrypted, R.string.crypto_msg_sign_mismatch
     ),
     ENCRYPTED_SIGN_EXPIRED (
-            R.attr.openpgp_red, 
+            R.attr.openpgp_red,
             R.drawable.status_lock, R.drawable.status_none_dots_1,
             R.string.crypto_msg_signed_encrypted, R.string.crypto_msg_sign_expired
     ),
     ENCRYPTED_SIGN_REVOKED (
-            R.attr.openpgp_red, 
+            R.attr.openpgp_red,
             R.drawable.status_lock, R.drawable.status_none_dots_1,
             R.string.crypto_msg_signed_encrypted, R.string.crypto_msg_sign_revoked
     ),
@@ -109,7 +109,7 @@ public enum MessageCryptoDisplayStatus {
             R.string.crypto_msg_signed_encrypted, R.string.crypto_msg_sign_insecure
     ),
     ENCRYPTED_UNSIGNED (
-            R.attr.openpgp_red, 
+            R.attr.openpgp_red,
             R.drawable.status_lock, R.drawable.status_dots,
             R.string.crypto_msg_encrypted_unsigned, R.string.crypto_msg_unsigned_encrypted
     ),
@@ -213,6 +213,9 @@ public enum MessageCryptoDisplayStatus {
                 return UNENCRYPTED_SIGN_ERROR;
 
             case OPENPGP_ENCRYPTED_API_ERROR:
+                return ENCRYPTED_ERROR;
+
+            case OPENPGP_ENCRYPTED_NO_PROVIDER:
                 return ENCRYPTED_ERROR;
         }
         throw new IllegalStateException("Unhandled case!");

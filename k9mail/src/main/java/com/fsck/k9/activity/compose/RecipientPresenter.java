@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.VisibleForTesting;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -415,6 +416,7 @@ public class RecipientPresenter implements PermissionPingCallback {
         if (accountCryptoKey == Account.NO_OPENPGP_KEY) {
             accountCryptoKey = null;
         }
+    }
 
     public ComposeCryptoStatus getCurrentCryptoStatus() {
         if (cachedCryptoStatus == null) {
@@ -424,7 +426,7 @@ public class RecipientPresenter implements PermissionPingCallback {
                     .setEnablePgpInline(cryptoEnablePgpInline)
                     .setRecipients(getAllRecipients());
 
-            long accountCryptoKey = account.getCryptoKey();
+            long accountCryptoKey = account.getOpenPgpKey();
             if (accountCryptoKey != Account.NO_OPENPGP_KEY) {
                 // TODO split these into individual settings? maybe after key is bound to identity
                 builder.setSigningKeyId(accountCryptoKey);
@@ -767,30 +769,19 @@ public class RecipientPresenter implements PermissionPingCallback {
         }
     }
 
-    private void handleOpenPgpError(OpenPgpError error) {
-        Timber.e("OpenPGP Api error: %s", error);
-
-        if (error.getErrorId() == OpenPgpError.INCOMPATIBLE_API_VERSIONS) {
-            // nothing we can do here, this is irrecoverable!
-            openPgpProvider = null;
-            account.setOpenPgpProvider(null);
-            recipientMvpView.showErrorOpenPgpIncompatible();
-            setCryptoProviderState(CryptoProviderState.UNCONFIGURED);
-        } else {
-            recipientMvpView.showErrorOpenPgpConnection();
-        }
-    }
 
     private void setCryptoProviderState(CryptoProviderState state) {
         cryptoProviderState = state;
 
+        /*
         if (state == CryptoProviderState.OK) {
             recipientMvpView.setCryptoProvider(openPgpProvider);
         } else {
             recipientMvpView.setCryptoProvider(null);
         }
+        */
 
-        asyncUpdateCryptoStatus();
+        updateCryptoStatus();
     }
 
     public void onActivityDestroy() {

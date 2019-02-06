@@ -502,7 +502,6 @@ public class Account implements BaseAccount, StoreConfig {
         allowRemoteSearch = storage.getBoolean(accountUuid + ".allowRemoteSearch", false);
         remoteSearchFullText = storage.getBoolean(accountUuid + ".remoteSearchFullText", false);
         remoteSearchNumResults = storage.getInt(accountUuid + ".remoteSearchNumResults", DEFAULT_REMOTE_SEARCH_NUM_RESULTS);
-        mCryptoSupportSignOnly = storage.getBoolean(accountUuid + ".cryptoSupportSignOnly", false);
 
         isEnabled = storage.getBoolean(accountUuid + ".enabled", true);
         markMessageAsReadOnView = storage.getBoolean(accountUuid + ".markMessageAsReadOnView", true);
@@ -778,7 +777,6 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putBoolean(accountUuid + ".markMessageAsReadOnView", markMessageAsReadOnView);
         editor.putBoolean(accountUuid + ".alwaysShowCcBcc", alwaysShowCcBcc);
         editor.putString(accountUuid + ".cryptoApp", NO_OPENPGP_PROVIDER);
-        editor.putBoolean(accountUuid + ".cryptoSupportSignOnly", mCryptoSupportSignOnly);
 
         editor.putBoolean(accountUuid + ".vibrate", notificationSetting.isVibrateEnabled());
         editor.putInt(accountUuid + ".vibratePattern", notificationSetting.getVibratePattern());
@@ -1636,21 +1634,6 @@ public class Account implements BaseAccount, StoreConfig {
         this.stripSignature = stripSignature;
     }
 
-    public String getCryptoApp() {
-        return mCryptoApp;
-    }
-
-    public void setCryptoApp(String cryptoApp) {
-        //if (cryptoApp == null || cryptoApp.equals("apg")) {
-            mCryptoApp = NO_OPENPGP_PROVIDER;
-        //} else {
-        //    mCryptoApp = cryptoApp;
-        //}
-    }
-
-    public boolean isOpenPgpProviderConfigured() {
-        return openPgpProvider != null;
-    }
 
     @Nullable
     public String getOpenPgpProvider() {
@@ -1658,27 +1641,15 @@ public class Account implements BaseAccount, StoreConfig {
     }
 
     public void setOpenPgpProvider(String openPgpProvider) {
-        this.openPgpProvider = openPgpProvider;
+        this.openPgpProvider = "";
     }
 
     public long getOpenPgpKey() {
         return openPgpKey;
     }
 
-    public void setOpenPgpKey(long keyId) {
-        openPgpKey = keyId;
-    }
-
     public boolean hasOpenPgpKey() {
-        return openPgpKey != NO_OPENPGP_KEY;
-    }
-
-    public boolean getCryptoSupportSignOnly() {
-        return mCryptoSupportSignOnly;
-    }
-
-    public void setCryptoSupportSignOnly(boolean cryptoSupportSignOnly) {
-        mCryptoSupportSignOnly = cryptoSupportSignOnly;
+        return false;
     }
 
     public boolean getOpenPgpHideSignOnly() {
@@ -1729,15 +1700,8 @@ public class Account implements BaseAccount, StoreConfig {
         lastSelectedFolderName = folderName;
     }
 
-    public synchronized String getOpenPgpProvider() {
-        if (!isOpenPgpProviderConfigured()) {
-            return null;
-        }
-        return getCryptoApp();
-    }
-
     public synchronized boolean isOpenPgpProviderConfigured() {
-        return !NO_OPENPGP_PROVIDER.equals(getCryptoApp());
+        return false;
     }
 
     public synchronized NotificationSetting getNotificationSetting() {

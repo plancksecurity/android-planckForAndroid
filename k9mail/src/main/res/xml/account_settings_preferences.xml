@@ -519,14 +519,7 @@
             android:key="pep_extra_keys"
             android:singleLine="true"
             android:title="@string/master_key_management" />
-
-        <SwitchPreference
-            android:persistent="false"
-            android:key="openpgp_hide_sign_only"
-            android:title="@string/account_settings_crypto_hide_sign_only"
-            android:summaryOn="@string/account_settings_crypto_hide_sign_only_on"
-            android:summaryOff="@string/account_settings_crypto_hide_sign_only_off"
-            />
+        
 
     </PreferenceScreen>
 </PreferenceScreen>
