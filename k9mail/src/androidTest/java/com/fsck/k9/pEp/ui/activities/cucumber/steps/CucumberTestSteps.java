@@ -1036,7 +1036,7 @@ public class CucumberTestSteps {
 
     @And("^I open attached files$")
     public void I_open_attached_files() {
-        emptyFolder("Download");
+        testUtils.emptyFolder("Download");
         openAttached();
         device.waitForIdle();
         File directory = new File(Environment.getExternalStorageDirectory().toString()+"/Download/");
@@ -1064,7 +1064,7 @@ public class CucumberTestSteps {
                 Timber.i("Couldn't get SHA256 from file: " + file.getName());
             }
         }
-        emptyFolder("Download");
+        testUtils.emptyFolder("Download");
     }
 
     private void openAttached () {
@@ -1096,17 +1096,6 @@ public class CucumberTestSteps {
         }
     }
 
-    private void emptyFolder (String folderName) {
-        device.waitForIdle();
-        File dir = new File(Environment.getExternalStorageDirectory()+"/" + folderName + "/");
-        if (dir.isDirectory())
-        {
-            String[] children = dir.list();
-            for (String aChildren : children) {
-                new File(dir, aChildren).delete();
-            }
-        }
-    }
 
     @Then("^I set checkbox (\\S+) to (true|false)$")
     public void I_set_checkbox_to(String resource, boolean checked){
