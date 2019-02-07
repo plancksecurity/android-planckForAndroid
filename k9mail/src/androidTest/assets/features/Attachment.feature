@@ -14,15 +14,15 @@ Feature: Attachment
     and can send the message encrypted(user1)
   Expectation: Then message is in SENT items and I can open the attachments
     When I click compose message
-    Then I send 1 message to bot1 with subject subject and body body
-    Then I click compose message
+    And I send 1 message to bot1 with subject subject and body body
+    And I click compose message
     And I enter bot1 in the messageTo field
     And I enter subject in the messageSubject field
     And I enter ThisIsTheBody in the messageBody field
     Then I check if the privacy status is pep_yellow
-    Then I attach MSoffice
+    When I attach MSoffice
     And I click the send message button
-    Then I wait for the new message
+    And I wait for the new message
 
   @scenario
   Scenario: Test Attachment Send1FileTo1Contact (2/2)
@@ -47,11 +47,11 @@ Feature: Attachment
   •	VERIFY if the message is in SENT items of your mailbox and you can open the attachment.
   •	Ask the recipient, if he could open all attachments
     When I click compose message
-    Then I enter myself in the messageTo field
+    And I enter myself in the messageTo field
     And I enter subject in the messageSubject field
     And I enter body in the messageBody field
     Then I check if the privacy status is pep_green
-    And I attach PDF
+    When I attach PDF
     And I attach MSoffice
     And I attach settings
     And I attach picture
@@ -72,11 +72,11 @@ Feature: Attachment
   •	Send the message
   •	VERIFY if the message is in SENT items of your mailbox and you can open the attachment.
   •	Ask the recipient, if he could open all attachments
-    Then I go to the sent folder
+    And I go to the sent folder
     And I click the last message received
-    And I open attached files
+    Then I open attached files
 
-  @scenario
+  @OutlookTest
   Scenario: Test Attachment SendEmbeddedPictureToMultipleContacts
   Description: Send message with an embedded picture to multiple contacts
   Assumptions: I already have the public key of 2 contacts and can send the message encrypted
@@ -91,16 +91,12 @@ Feature: Attachment
   •	VERIFY if the message is in SENT items of your mailbox and you can read the preview.
   •	Open the message (double click)
   •	VERIFY if you can read the message including the embedded picture.
-    Given I click compose message
-    Then I enter bot1 in the messageTo field
-    And I enter bot2 in the messageTo field
-
 
   @scenario
   Scenario: Test Attachment ReceiveAttachmentsOneFile
   Description: Receive one attachment that has only been sent to me from another pEp user
   Assumptions: The communication partner has my private key
-    and can send me encrypted messages with pEp.
+  and can send me encrypted messages with pEp.
   Expectation: I can read the email and
   Steps for Testing
   •	Ask a communication partner to send a message with 1 attachment (Privacy Status: “Secure…” or “Secure & Trusted”).
@@ -109,13 +105,25 @@ Feature: Attachment
   •	VERIFY if you can read the content of the message
   •	Open the attachment
   •	VERIFY if the attachment opens as expected
+    When I click compose message
+    And I enter bot1 in the messageTo field
+    And I enter subject in the messageSubject field
+    And I enter ThisIsTheBody in the messageBody field
+    And I attach PDF
+    Then I check if the privacy status is pep_yellow
+    When I click the send message button
+    And I wait for the message and click it
+    Then I check if the privacy status is pep_yellow
+    Then I compare messageBody from attachment with ThisIsTheBody
+    And I open attached files
+
 
   @scenario
   Scenario: Test Attachment ReceiveAttachmentsThreeFiles
   Description: Receive three attachments that have been sent to me
-    and another person from another pEp user
+  and another person from another pEp user
   Assumptions: The communication partner has my private key
-    and can send me encrypted messages with pEp
+  and can send me encrypted messages with pEp
   Expectation: I can read the email and attachment
   Steps for Testing
   •	Ask a communication partner to send a message with 3 attachments encrypted to myself and another person
@@ -125,8 +133,21 @@ Feature: Attachment
   •	Open the attachment
   •	VERIFY if the attachment opens as expected
   •	Repeat 5 and 6 for each attachment
+    When I click compose message
+    And I enter bot1 in the messageTo field
+    And I enter bot2 in the messageTo field
+    And I enter subject in the messageSubject field
+    And I enter ThisIsTheBody in the messageBody field
+    And I attach PDF
+    And I attach MSoffice
+    And I attach picture
+    Then I check if the privacy status is pep_yellow
+    When I click the send message button
+    And I wait for the message and click it
+    Then I check if the privacy status is pep_yellow
+    And I open attached files
 
-  @scenario
+  @OutlookTest
   Scenario: Test Attachment ReceiveMessageWithEmbeddedPicture
   Description: Receive an encrypted message with an embedded picture
   Assumptions: The communication partner has my private key
