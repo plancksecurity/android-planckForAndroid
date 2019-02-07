@@ -1121,6 +1121,17 @@ public class TestUtils {
             Timber.i("There are no JSON files attached");
         }
     }
+    public void emptyFolder (String folderName) {
+        device.waitForIdle();
+        File dir = new File(Environment.getExternalStorageDirectory()+"/" + folderName + "/");
+        if (dir.isDirectory())
+        {
+            String[] children = dir.list();
+            for (String aChildren : children) {
+                new File(dir, aChildren).delete();
+            }
+        }
+    }
 
     private void readAttachedJSONFile() {
         try {
