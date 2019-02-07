@@ -1134,6 +1134,7 @@ public class TestUtils {
     }
 
     private void readAttachedJSONFile() {
+        emptyFolder("Download");
         try {
             onView(withId(R.id.to)).perform(closeSoftKeyboard());
         } catch (Exception ex) {
