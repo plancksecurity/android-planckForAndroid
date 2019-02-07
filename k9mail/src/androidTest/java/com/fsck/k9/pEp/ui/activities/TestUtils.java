@@ -478,10 +478,12 @@ public class TestUtils {
         }
     }
 
-    public void attachFile(String fileName) {//, String extension
-        device.waitForIdle();
-        onView(withId(R.id.add_attachment)).perform(click());
-        device.waitForIdle();
+    public void attachFile(String fileName) {
+        do {
+            device.waitForIdle();
+            onView(withId(R.id.add_attachment)).perform(click());
+            device.waitForIdle();
+        } while (!textExistsOnScreenTextView(fileName));
         waitUntilIdle();
         onView(withId(R.id.attachments)).check(matches(hasDescendant(withText(fileName))));
     }
