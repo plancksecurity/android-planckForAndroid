@@ -353,7 +353,9 @@ public class CucumberTestSteps {
         for (int positionToClick = 0; positionToClick < size; positionToClick++) {
             device.waitForIdle();
             testUtils.selectFromMenu(R.string.settings_language_label);
-            size = calculateNewSize(size, selector);
+            if (size == 1) {
+                size = calculateNewSize(size, selector);
+            }
             device.waitForIdle();
             selectLanguage(positionToClick, size, selector);
             getTrustWords();
