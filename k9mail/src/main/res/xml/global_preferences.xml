@@ -400,7 +400,6 @@
 
     <PreferenceScreen
         android:key="pep_global"
-        android:icon="@drawable/ic_peplogo"
         android:title="@string/pep">
 
         <!--<EditTextPreference-->

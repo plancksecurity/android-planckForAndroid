@@ -108,7 +108,7 @@ public class FolderList extends K9ListActivity {
     private Context context;
 
     private MenuItem mRefreshMenuItem;
-    private View mActionBarProgressView;
+    private View actionBarProgressView;
 
     private TextView mActionBarTitle;
     private TextView mActionBarSubTitle;
@@ -125,22 +125,15 @@ public class FolderList extends K9ListActivity {
         public void refreshTitle() {
             runOnUiThread(new Runnable() {
                 public void run() {
-                    mActionBarTitle.setText(getString(R.string.folders_title));
-
-                    if (mUnreadMessageCount == 0) {
-                        mActionBarUnread.setVisibility(View.GONE);
-                    } else {
-                        mActionBarUnread.setText(String.format("%d", mUnreadMessageCount));
-                        mActionBarUnread.setVisibility(View.GONE);
-                    }
+                    getToolbar().setTitle(R.string.folders_title);
 
                     String operation = mAdapter.mListener.getOperation(FolderList.this);
                     if (operation.length() < 1) {
-                        mActionBarSubTitle.setText(mAccount.getEmail());
-                        mActionBarTitle.setText(getString(R.string.folders_title));
+                        getToolbar().setSubtitle(mAccount.getEmail());
+                        getToolbar().setTitle(getString(R.string.folders_title));
                     } else {
-                        mActionBarSubTitle.setText(operation);
-                        mActionBarTitle.setText(getString(R.string.folders_title) + " (" + mAccount.getEmail() + ")");
+                        getToolbar().setSubtitle(operation);
+                        getToolbar().setTitle(getString(R.string.folders_title) + " (" + mAccount.getEmail() + ")");
                     }
                 }
             });
@@ -201,7 +194,7 @@ public class FolderList extends K9ListActivity {
             runOnUiThread(new Runnable() {
                 public void run() {
                     if (progress) {
-                        mRefreshMenuItem.setActionView(mActionBarProgressView);
+                        mRefreshMenuItem.setActionView(actionBarProgressView);
                     } else {
                         mRefreshMenuItem.setActionView(null);
                     }
@@ -278,7 +271,8 @@ public class FolderList extends K9ListActivity {
             return;
         }
 
-        mActionBarProgressView = getActionBarProgressView();
+        actionBarProgressView = getActionBarProgressView();
+        setContentView(R.layout.folder_list);
         initializeActionBar();
         mListView = getListView();
         mListView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
@@ -317,12 +311,6 @@ public class FolderList extends K9ListActivity {
 
     private void initializeActionBar() {
         setUpToolbar(true);
-        View customView = getToolbar().findViewById(R.id.actionbar_custom);
-
-        mActionBarTitle = (TextView) customView.findViewById(R.id.actionbar_title_first);
-        mActionBarSubTitle = (TextView) customView.findViewById(R.id.actionbar_title_sub);
-        mActionBarUnread = (TextView) customView.findViewById(R.id.actionbar_unread_count);
-
         initializeSearchBar();
     }
 
@@ -687,7 +675,7 @@ public class FolderList extends K9ListActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 folderMenuItem.collapseActionView();
-                mActionBarTitle.setText(getString(R.string.filter_folders_action));
+                getToolbar().setTitle(R.string.filter_folders_action);
                 return true;
             }
 
@@ -702,7 +690,7 @@ public class FolderList extends K9ListActivity {
 
             @Override
             public boolean onClose() {
-                mActionBarTitle.setText(getString(R.string.folders_title));
+                getToolbar().setTitle(R.string.folders_title);
                 return false;
             }
         });
