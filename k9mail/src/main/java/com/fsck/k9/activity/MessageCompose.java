@@ -1033,14 +1033,14 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             case R.id.add_from_contacts:
                 recipientPresenter.onMenuAddFromContacts();
                 break;
-            case R.id.openpgp_inline_enable:
-                recipientPresenter.onMenuSetPgpInline(true);
-                updateMessageFormat();
-                break;
-            case R.id.openpgp_inline_disable:
-                recipientPresenter.onMenuSetPgpInline(false);
-                updateMessageFormat();
-                break;
+            //case R.id.openpgp_inline_enable:
+            //    recipientPresenter.onMenuSetPgpInline(true);
+            //    updateMessageFormat();
+            //    break;
+            //case R.id.openpgp_inline_disable:
+            //    recipientPresenter.onMenuSetPgpInline(false);
+            //    updateMessageFormat();
+            //    break;
             //case R.id.openpgp_sign_only:
             //    recipientPresenter.onMenuSetSignOnly(true);
             //    break;
