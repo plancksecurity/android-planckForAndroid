@@ -228,8 +228,8 @@
         <item name="iconActionSave">@drawable/ic_floppy_light</item>
         <item name="iconActionCancel">@drawable/ic_clear_light</item>
         <item name="iconActionRequestReadReceipt">@drawable/ic_action_request_read_receipt_light</item>
-        <item name="iconActionExpand">@drawable/ic_chevron_down_dark</item>
-        <item name="iconActionCollapse">@drawable/ic_chevron_up_dark</item>
+        <item name="iconActionExpand">@drawable/ic_chevron_down_light</item>
+        <item name="iconActionCollapse">@drawable/ic_chevron_up_light</item>
         <item name="textColorPrimaryRecipientDropdown">@android:color/primary_text_light</item>
         <item name="textColorSecondaryRecipientDropdown">@android:color/secondary_text_light</item>
         <item name="messageListSelectedBackgroundColor">#8038B8E2</item>
