@@ -17,6 +17,7 @@ repositories {
 }
 
 dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlin_version}"
     api 'org.apache.james:apache-mime4j-core:0.7.2'
     api 'org.apache.james:apache-mime4j-dom:0.7.2'
     implementation "com.squareup.okio:okio:${okioVersion}"

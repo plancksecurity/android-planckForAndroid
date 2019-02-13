@@ -204,6 +204,7 @@ public class MimeMessageBuilder extends MessageBuilder {
      * @throws MessagingException
      */
     private void addAttachmentsToMessage(final MimeMultipart mp) throws MessagingException {
+        //TODO: Check if Headers.kt can be used and simplify this Look at MessageBuilder.
         Body body;
         Vector<Blob> attachments = pEpMessage.getAttachments();
         if (attachments == null) return;
