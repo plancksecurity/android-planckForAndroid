@@ -1,21 +1,13 @@
 
 package com.fsck.k9.activity.setup;
 
+
 import android.app.Activity;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.view.MenuItem;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.text.method.DigitsKeyListener;
-import timber.log.Timber;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.*;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
@@ -56,7 +48,7 @@ public class AccountSetupIncoming extends K9Activity {
         mAccount = Preferences.getPreferences(this).getAccount(accountUuid);
         if (savedInstanceState == null) {
             AccountSetupIncomingFragment accountSetupIncomingFragment = AccountSetupIncomingFragment.actionEditIncomingSettings(mAccount);
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.account_setup_container, accountSetupIncomingFragment).commit();
         }
     }

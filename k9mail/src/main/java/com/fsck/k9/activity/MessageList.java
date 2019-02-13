@@ -2,9 +2,6 @@ package com.fsck.k9.activity;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
-import android.app.FragmentManager;
-import android.app.FragmentManager.OnBackStackChangedListener;
-import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -17,15 +14,14 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -48,11 +44,7 @@ import com.fsck.k9.K9.SplitViewMode;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.MessageActions;
-import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
-import com.fsck.k9.activity.setup.AccountSettings;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
-import com.fsck.k9.activity.setup.FolderSettings;
-import com.fsck.k9.activity.setup.Prefs;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.fragment.MessageListFragment;
@@ -95,8 +87,6 @@ import com.pedrogomez.renderers.ListAdapteeCollection;
 import com.pedrogomez.renderers.RVRendererAdapter;
 import com.pedrogomez.renderers.RendererBuilder;
 
-import foundation.pEp.jniadapter.Rating;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -104,7 +94,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import timber.log.Timber;
+import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
 
@@ -1019,6 +1009,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 public void enableProgressIndicator(boolean enable) {
 
                 }
+
+                @Override
+                public void updateProgress(int progress) {
+
+                }
             });
         }
     }
@@ -1111,7 +1106,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         setIntent(intent);
 
         if (mFirstBackStackId >= 0) {
-            getFragmentManager().popBackStackImmediate(mFirstBackStackId,
+            getSupportFragmentManager().popBackStackImmediate(mFirstBackStackId,
                     FragmentManager.POP_BACK_STACK_INCLUSIVE);
             mFirstBackStackId = -1;
         }
@@ -1170,7 +1165,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void refreshMessages(LocalSearch search) {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.addOnBackStackChangedListener(this);
         boolean hasMessageListFragment = (mMessageListFragment != null);
         FragmentTransaction ft = fragmentManager.beginTransaction();
