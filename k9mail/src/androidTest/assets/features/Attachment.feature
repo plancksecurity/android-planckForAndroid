@@ -11,7 +11,7 @@ Feature: Attachment
   Scenario: Test Attachment Send1FileTo1Contact (1/2)
   Description: Send 1 attachment to 1 contact
   Assumption: I already have the public key of the other contact
-    and can send the message encrypted(user1)
+  and can send the message encrypted(user1)
   Expectation: Then message is in SENT items and I can open the attachments
     When I click compose message
     And I send 1 message to bot1 with subject subject and body body
@@ -134,6 +134,9 @@ Feature: Attachment
   •	VERIFY if the attachment opens as expected
   •	Repeat 5 and 6 for each attachment
     When I click compose message
+    And I send 1 message to bot1 with subject subject and body body
+    And I send 1 message to bot2 with subject subject and body body
+    And I click compose message
     And I enter bot1 in the messageTo field
     And I enter bot2 in the messageTo field
     And I enter subject in the messageSubject field
