@@ -612,6 +612,12 @@ public class PEpProviderImpl implements PEpProvider {
         engine.trustPersonalKey(id);
     }
 
+    public synchronized void trustOwnKey(Identity id) {
+        createEngineInstanceIfNeeded();
+        Log.i("pEpDecrypt", "Calling trust own key");
+        engine.trustPersonalKey(id);
+    }
+
     @Override
     public synchronized void keyCompromised(Identity id) {
         createEngineInstanceIfNeeded();
