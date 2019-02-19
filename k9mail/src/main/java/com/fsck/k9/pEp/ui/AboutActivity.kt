@@ -106,6 +106,7 @@ class AboutActivity : PepActivity() {
 
         val USED_LIBRARIES = mapOf(
                 "Android Support Library" to "https://developer.android.com/topic/libraries/support-library/index.html",
+                "Android-Support-Preference-V7-Fix" to "https://github.com/Gericop/Android-Support-Preference-V7-Fix",
                 "jutf7" to "http://jutf7.sourceforge.net/",
                 "JZlib" to "http://www.jcraft.com/jzlib/",
                 "Commons IO" to "http://commons.apache.org/io/",
