@@ -6,6 +6,7 @@ import android.support.v7.preference.PreferenceDataStore
 import com.fsck.k9.K9
 import com.fsck.k9.K9.Theme
 import com.fsck.k9.Preferences
+import com.fsck.k9.pEp.ui.blacklist.PepBlacklist
 import com.fsck.k9.service.MailService
 import java.util.concurrent.ExecutorService
 
@@ -47,11 +48,16 @@ class GeneralSettingsDataStore(
             "privacy_hide_hostname_when_connecting" -> K9.hideHostnameWhenConnecting()
             "debug_logging" -> K9.isDebug()
             "sensitive_logging" -> K9.DEBUG_SENSITIVE
+            "pep_use_keyserver" -> K9.getPEpUseKeyserver()
+            "pep_passive_mode" -> K9.getPEpPassiveMode()
+            "pep_subject_unprotected" -> K9.ispEpSubjectUnprotected()
+            "pep_forward_warning" -> K9.ispEpForwardWarningEnabled()
             else -> defValue
         }
     }
 
     override fun putBoolean(key: String, value: Boolean) {
+        val app = context.applicationContext as K9
         when (key) {
             "fixed_message_view_theme" -> K9.setUseFixedMessageViewTheme(value)
             "animations" -> K9.setAnimations(value)
@@ -82,6 +88,10 @@ class GeneralSettingsDataStore(
             "privacy_hide_hostname_when_connecting" -> K9.hideHostnameWhenConnecting()
             "debug_logging" -> K9.setDebug(value)
             "sensitive_logging" -> K9.DEBUG_SENSITIVE = value
+            "pep_use_keyserver" -> app.setPEpUseKeyserver(value)
+            "pep_passive_mode" -> app.setPEpPassiveMode(value)
+            "pep_subject_unprotected" -> app.setpEpSubjectUnprotected(value)
+            "pep_forward_warning" -> app.setpEpForwardWarningEnabled(value)
             else -> return
         }
 

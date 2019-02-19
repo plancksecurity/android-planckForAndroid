@@ -8,6 +8,7 @@ import android.support.v7.preference.Preference
 import com.fsck.k9.R
 import com.fsck.k9.helper.FileBrowserHelper
 import com.fsck.k9.notification.NotificationController
+import com.fsck.k9.pEp.ui.blacklist.PepBlacklist
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.withArguments
@@ -32,6 +33,14 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeConfirmActions()
         initializeLockScreenNotificationVisibility()
         initializeNotificationQuickDelete()
+        initializeBlackList()
+    }
+
+    private fun initializeBlackList() {
+        findPreference("pep_gpg_blacklist").setOnPreferenceClickListener {
+            PepBlacklist.actionShowBlacklist(activity)
+            true
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

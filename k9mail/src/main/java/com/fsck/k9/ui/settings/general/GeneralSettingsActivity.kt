@@ -13,10 +13,13 @@ import com.fsck.k9.ui.fragmentTransaction
 import com.fsck.k9.ui.fragmentTransactionWithBackStack
 
 class GeneralSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback {
+    override fun search(query: String?) {
+//
+   }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.general_settings)
+        bindViews(R.layout.general_settings)
 
         initializeActionBar()
 
@@ -28,6 +31,7 @@ class GeneralSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback {
     }
 
     private fun initializeActionBar() {
+        setUpToolbar(true)
         val actionBar = supportActionBar ?: throw RuntimeException("getSupportActionBar() == null")
         actionBar.setDisplayHomeAsUpEnabled(true)
     }
