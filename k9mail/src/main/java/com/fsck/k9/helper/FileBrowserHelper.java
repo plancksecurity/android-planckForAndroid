@@ -8,12 +8,16 @@ import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
 import android.widget.EditText;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.filepicker.FilePickerActivity;
+
+import static com.fsck.k9.ui.settings.general.GeneralSettingsFragment.FILE_CODE;
 
 public class FileBrowserHelper {
     /**
@@ -111,28 +115,35 @@ public class FileBrowserHelper {
         if (startPath == null) {
             startPath = new File(K9.getAttachmentDefaultPath());
         }
+        //TODO: Cleanup
+        //int listIndex = 0;
+        //do {
+        //    String intentAction = PICK_DIRECTORY_INTENTS[listIndex][0];
+        //    String uriPrefix = PICK_DIRECTORY_INTENTS[listIndex][1];
+        //    Intent intent = new Intent(intentAction);
+        //    intent.setData(Uri.parse(uriPrefix + startPath.getPath()));
 
-        int listIndex = 0;
-        do {
-            String intentAction = PICK_DIRECTORY_INTENTS[listIndex][0];
-            String uriPrefix = PICK_DIRECTORY_INTENTS[listIndex][1];
-            Intent intent = new Intent(intentAction);
-            intent.setData(Uri.parse(uriPrefix + startPath.getPath()));
-
-            try {
-                c.startActivityForResult(intent, requestcode);
-                success = true;
-            } catch (ActivityNotFoundException e) {
+        //    try {
+        //        c.startActivityForResult(intent, requestcode);
+        //        success = true;
+        //    } catch (ActivityNotFoundException e) {
                 // Try the next intent in the list
-                listIndex++;
-            }
-        } while (!success && (listIndex < PICK_DIRECTORY_INTENTS.length));
+        //        listIndex++;
+        //    }
+        // } while (!success && (listIndex < PICK_DIRECTORY_INTENTS.length));
 
-        if (listIndex == PICK_DIRECTORY_INTENTS.length) {
+        //if (listIndex == PICK_DIRECTORY_INTENTS.length) {
             //No Filebrowser is installed => show a fallback textdialog
-            showPathTextInput(c.getActivity(), startPath, callback);
+            String externalStoragePath = Environment.getExternalStorageDirectory().getPath();
+            Intent intent = new Intent(c.getContext(), FilePickerActivity.class);
+            intent.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
+            intent.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false);
+            intent.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_DIR);
+            intent.putExtra(FilePickerActivity.EXTRA_START_PATH, externalStoragePath);
+
+            c.startActivityForResult(intent, FILE_CODE);
             success = false;
-        }
+        //}
 
         return success;
     }

@@ -8,7 +8,7 @@ import android.support.v7.preference.Preference
 import com.fsck.k9.R
 import com.fsck.k9.helper.FileBrowserHelper
 import com.fsck.k9.notification.NotificationController
-import com.fsck.k9.pEp.ui.blacklist.PepBlacklist
+import com.fsck.k9.pEp.filepicker.Utils
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.withArguments
@@ -33,14 +33,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeConfirmActions()
         initializeLockScreenNotificationVisibility()
         initializeNotificationQuickDelete()
-        initializeBlackList()
-    }
-
-    private fun initializeBlackList() {
-        findPreference("pep_gpg_blacklist").setOnPreferenceClickListener {
-            PepBlacklist.actionShowBlacklist(activity)
-            true
-        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -108,6 +100,14 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                 setAttachmentDefaultPath(it)
             }
         }
+        //TODO: merge
+        if (requestCode == FILE_CODE && resultCode == Activity.RESULT_OK) {
+            val files = Utils.getSelectedFilesFromResult(result!!)
+            for (uri in files) {
+                val file = Utils.getFileForUri(uri)
+                setAttachmentDefaultPath(file.path)
+            }
+        }
     }
 
     private fun attachmentDefaultPath() = dataStore.getString(PREFERENCE_ATTACHMENT_DEFAULT_PATH, "")
@@ -122,6 +122,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     companion object {
         private const val REQUEST_PICK_DIRECTORY = 1
+        const val FILE_CODE = 2
         private const val PREFERENCE_ATTACHMENT_DEFAULT_PATH = "attachment_default_path"
         private const val PREFERENCE_START_IN_UNIFIED_INBOX = "start_integrated_inbox"
         private const val PREFERENCE_HIDE_SPECIAL_ACCOUNTS = "hide_special_accounts"

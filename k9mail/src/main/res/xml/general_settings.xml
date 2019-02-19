@@ -400,7 +400,9 @@
         <Preference
             android:key="pep_gpg_blacklist"
             android:title="Blacklist">
-
+            <intent
+                android:targetClass="com.fsck.k9.pEp.ui.blacklist.PepBlacklist"
+                android:targetPackage="@string/application_id" />
             <!--<Preference-->
             <!--android:key="pep_add_key_to_blacklist"-->
             <!--android:persistent="false"-->

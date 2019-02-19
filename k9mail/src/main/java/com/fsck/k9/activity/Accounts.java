@@ -70,6 +70,7 @@ import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.ui.settings.SettingsActivity;
+import com.fsck.k9.ui.settings.general.GeneralSettingsActivity;
 import com.karumi.dexter.listener.single.CompositePermissionListener;
 
 import org.pEp.jniadapter.Rating;
@@ -651,7 +652,7 @@ public class Accounts extends PEpImporterActivity {
         }, new OnBaseAccountClickListener() {
             @Override
             public void onClick(BaseAccount baseAccount) {
-                Prefs.actionPrefs(Accounts.this);
+               GeneralSettingsActivity.Companion.start(Accounts.this);
             }
         });
         foldersList.setAdapter(foldersAdapter);
