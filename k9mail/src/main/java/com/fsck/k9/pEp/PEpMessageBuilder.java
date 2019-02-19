@@ -15,6 +15,7 @@ import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.mail.internet.MimeUtility;
 
 import org.pEp.jniadapter.Blob;
+import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
 import org.pEp.jniadapter.Pair;
 
@@ -186,7 +187,8 @@ class PEpMessageBuilder {
         m.setId(mm.getMessageId());
         m.setInReplyTo(createMessageReferences(mm.getReferences()));
         m.setSent(mm.getSentDate());
-        m.setReplyTo(PEpUtils.createIdentities(Arrays.asList(mm.getReplyTo()), context));
+        Vector<Identity> identities = PEpUtils.createIdentities(Arrays.asList(mm.getReplyTo()), context);
+        m.setReplyTo(identities);
         m.setReferences(createMessageReferences(mm.getReferences()));
         m.setShortmsg(mm.getSubject());
 

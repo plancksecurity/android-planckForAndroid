@@ -47,6 +47,7 @@ import timber.log.Timber;
  */
 public class PEpProviderImpl implements PEpProvider {
     private static final String TAG = "pEp";
+    private static final String PEP_SIGNALING_BYPASS_DOMAIN = "@peptunnel.com";
     private final ThreadExecutor threadExecutor;
     private final PostExecutionThread postExecutionThread;
     private Context context;
@@ -192,7 +193,9 @@ public class PEpProviderImpl implements PEpProvider {
                     && decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE)[0].equals(PEP_ALWAYS_SECURE_TRUE);
             decMsg.setFlag(Flag.X_PEP_NEVER_UNSECURE, neverUnprotected);
 
-            if (decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)) {
+            extractpEpImportHeaderFromReplyTo(decMsg);
+            if (decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)
+                    || decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY)) {
                 Date lastValidDate = new Date(System.currentTimeMillis() - (TIMEOUT));
                 int flags = -1;
                 if (lastValidDate.after(decMsg.getSentDate())) {
@@ -223,6 +226,18 @@ public class PEpProviderImpl implements PEpProvider {
             if (srcMsg != null) srcMsg.close();
             if (decReturn != null && decReturn.dst != srcMsg) decReturn.dst.close();
             Log.d(TAG, "decryptMessage() exit");
+        }
+    }
+
+    private void extractpEpImportHeaderFromReplyTo(MimeMessage decMsg) {
+        Vector<Address> replyTo = new Vector<>();
+        for (Address address : decMsg.getReplyTo()) {
+            if (address.getHostname().contains("peptunnel")) {
+                decMsg.addHeader(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY, address.getPersonal());
+                decMsg.addHeader(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY, "true");
+            } else {
+                replyTo.add(address);
+            }
         }
     }
 
@@ -342,6 +357,15 @@ public class PEpProviderImpl implements PEpProvider {
         Message message = new PEpMessageBuilder(source).createMessage(context);
         try {
             if (engine == null) createEngineSession();
+            if (source.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY).length > 0) {
+                String key = source.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY)[0];
+                Vector<Identity> replyTo = message.getReplyTo();
+                if (replyTo == null) {
+                    replyTo = new Vector<>();
+                }
+                replyTo.add(PEpUtils.createIdentity(new Address(key + PEP_SIGNALING_BYPASS_DOMAIN, key), context));
+                message.setReplyTo(replyTo);
+            }
             resultMessages.add(getEncryptedCopy(source, message, extraKeys));
             return resultMessages;
         } catch (Throwable t) {
