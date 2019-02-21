@@ -24,7 +24,8 @@ import cucumber.api.CucumberOptions;
         //,plugin = {"json:target/cucumber.json"}
         ,plugin = {"pretty", "json:/data/data/security.pEp/cucumber-reports/cucumber.json"}
         //,plugin = {"pretty", "json:/mnt/sdcard/files/cucumber.json"}
-         ,tags={"~@manual", "@scenario"}
+        ,monochrome = true
+         ,tags={"~@ignore"}
 )
 // This class must be in a different package than the glue code
 // (this class is in '...cucumber.test' and glue is in '...cucumber.steps')
