@@ -392,14 +392,14 @@ public class CucumberTestSteps {
         if (json.toString().contains(textToCompare)) {
             return;
         }
-        Assert.fail();
+        Assert.fail("json file doesn't contain the text");
     }
 
     private void assertText(String text, String textToCompare) {
         if (text.contains(textToCompare)) {
             return;
         }
-        Assert.fail();
+        Assert.fail("Texts are different");
     }
 
     private void confirmAllTrustWords (String webViewText) {
@@ -768,7 +768,7 @@ public class CucumberTestSteps {
         int raw = 0;
         switch (mock){
             case "settings":
-                raw = R.raw.settings;
+                raw = R.raw.settingsthemedark;
                 fileName = "settings.k9s";
                 break;
             case "settingsthemedark":
@@ -1060,7 +1060,7 @@ public class CucumberTestSteps {
                 String shaCode = new BigInteger(1, hash).toString(16);
                 JSONObject jsonObject = (JSONObject) (testUtils.returnJSON()).getJSONObject("attachments_in").get("decrypted");
                 if (!jsonObject.toString().contains(shaCode)) {
-                    Assert.fail();
+                    Assert.fail("couldn't find shaCode in json file");
                 }
             } catch (Exception ex) {
                 Timber.i("Couldn't get SHA256 from file: " + file.getName());
@@ -1238,7 +1238,7 @@ public class CucumberTestSteps {
                     time[0]++;
                     Timber.i("Timeout: " + time[0] + "/" + finalTime);
                     if (activityTestRule == null) {
-                        Assert.fail();
+                        Assert.fail("Timeout. Closing the app...");
                     } else if (time[0] > finalTime) {
                         try {
                             Timber.e("Timeout: closing the app...");
