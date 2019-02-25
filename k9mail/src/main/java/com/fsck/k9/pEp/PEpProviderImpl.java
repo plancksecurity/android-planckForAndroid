@@ -639,7 +639,7 @@ public class PEpProviderImpl implements PEpProvider {
     public synchronized void trustOwnKey(Identity id) {
         createEngineInstanceIfNeeded();
         Log.i("pEpDecrypt", "Calling trust own key");
-        engine.trustPersonalKey(id);
+        engine.trustOwnKey(id);
     }
 
     @Override
