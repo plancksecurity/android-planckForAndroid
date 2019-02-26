@@ -34,6 +34,8 @@ class AccountSettingsDataStore(
             "notification_opens_unread" -> account.goToUnreadMessageSearch()
             "remote_search_enabled" -> account.allowRemoteSearch()
             "openpgp_hide_sign_only" -> account.openPgpHideSignOnly
+            "pep_disable_privacy_protection" -> account.ispEpPrivacyProtected()
+            "pep_save_encrypted" -> account.isUntrustedSever
             else -> defValue
         }
     }
@@ -63,6 +65,8 @@ class AccountSettingsDataStore(
             "notification_opens_unread" -> account.setGoToUnreadMessageSearch(value)
             "remote_search_enabled" -> account.setAllowRemoteSearch(value)
             "openpgp_hide_sign_only" -> account.openPgpHideSignOnly = value
+            "pep_disable_privacy_protection" -> account.setpEpPrivacyProtection(value)
+            "pep_save_encrypted" -> account.setPEpStoreEncryptedOnServer(value)
             else -> return
         }
 

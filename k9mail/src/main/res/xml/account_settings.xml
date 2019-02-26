@@ -19,12 +19,12 @@
             android:key="account_default"
             android:summary="@string/account_settings_default_summary"
             android:title="@string/account_settings_default_label" />
-
+        <!--
         <com.fsck.k9.ui.settings.account.HoloColorPickerPreference
             android:key="chip_color"
             android:summary="@string/account_settings_color_summary"
             android:title="@string/account_settings_color_label" />
-
+        -->
     </PreferenceScreen>
 
     <PreferenceScreen
@@ -244,7 +244,7 @@
             android:key="folder_target_mode"
             android:summary="%s"
             android:title="@string/account_settings_folder_target_mode_label" />
-
+        <!-- P4A-572
         <ListPreference
             android:dialogTitle="@string/account_settings_searchable_label"
             android:entries="@array/account_settings_searchable_entries"
@@ -252,7 +252,7 @@
             android:key="searchable_folders"
             android:summary="%s"
             android:title="@string/account_settings_searchable_label" />
-
+        -->
         <com.fsck.k9.ui.settings.account.FolderListPreference
             android:key="archive_folder"
             android:summary="%s"
@@ -413,13 +413,11 @@
         android:key="pep">
 
         <CheckBoxPreference
-            android:persistent="false"
             android:key="pep_disable_privacy_protection"
             android:title="@string/pep_enable_privacy_protection"
             android:defaultValue="false"
             android:summary="@string/pep_account_privacy_protection_explanation" />
         <CheckBoxPreference
-            android:persistent="false"
             android:key="pep_save_encrypted"
             android:title="@string/pep_mistrust_server_and_store_mails_encrypted"
             android:defaultValue="true" />
@@ -433,7 +431,11 @@
             android:persistent="false"
             android:key="pep_extra_keys"
             android:singleLine="true"
-            android:title="@string/master_key_management" />
+            android:title="@string/master_key_management" >
+        <intent
+            android:targetClass="com.fsck.k9.pEp.ui.blacklist.PepBlacklist"
+            android:targetPackage="@string/application_id" />
+        </Preference>
 
     </PreferenceScreen>
 

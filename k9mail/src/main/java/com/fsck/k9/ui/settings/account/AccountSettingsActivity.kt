@@ -25,7 +25,7 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_account_settings)
+        bindViews(R.layout.activity_account_settings)
 
         initializeActionBar()
 
@@ -39,8 +39,7 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback {
     }
 
     private fun initializeActionBar() {
-        val actionBar = supportActionBar ?: throw RuntimeException("getSupportActionBar() == null")
-        actionBar.setDisplayHomeAsUpEnabled(true)
+       setUpToolbar(true)
     }
 
     private fun decodeArguments(): Boolean {
@@ -57,7 +56,7 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback {
                 return@observe
             }
 
-            supportActionBar!!.subtitle = account.email
+            toolbar!!.subtitle = account.email
             addAccountSettingsFragment()
         }
     }

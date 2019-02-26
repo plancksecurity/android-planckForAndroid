@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v14.preference.SwitchPreference
 import android.support.v7.preference.ListPreference
+import android.support.v7.preference.Preference
+import android.support.v7.preference.TwoStatePreference
 import android.widget.Toast
 import com.fsck.k9.Account
 import com.fsck.k9.R
@@ -13,6 +15,7 @@ import com.fsck.k9.activity.setup.AccountSetupIncoming
 import com.fsck.k9.activity.setup.AccountSetupOutgoing
 import com.fsck.k9.crypto.OpenPgpApiHelper
 import com.fsck.k9.mailstore.StorageManager
+import com.fsck.k9.pEp.ui.keys.PepExtraKeys
 import com.fsck.k9.ui.endtoend.AutocryptKeyTransferActivity
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.oneTimeClickListener
@@ -51,6 +54,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializeManageIdentities()
         initializeOutgoingServer()
         initializeQuoteStyle()
+        initializepEpPrivacyProtection()
         initializeDeletePolicy(account)
         initializeExpungePolicy(account)
         initializeMessageAge(account)
@@ -58,6 +62,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializeLocalStorageProvider()
         initializeCryptoSettings(account)
         initializeFolderSettings(account)
+        initializeExtraKeysManagement(account)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -139,6 +144,36 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    private fun initializepEpPrivacyProtection() {
+        (findPreference(PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION) as? TwoStatePreference).apply {
+           this?.apply {
+               val pEpSaveEncrypted =
+                       findPreference(PREFERENCE_PEP_SAVE_ENCRYPTED_ON_SERVER) as TwoStatePreference
+               pEpSaveEncrypted.isEnabled = isChecked
+
+               setOnPreferenceChangeListener { preference, newValue ->
+                   val value = newValue as Boolean
+                   pEpSaveEncrypted.isEnabled = value
+                   /*
+                   if (!value) {
+                       pEpSaveEncrypted.isChecked = false
+                       //if (!ispEpSyncEnabled) {
+                       //  mPEpSyncAccount.setChecked(false);
+                       //}
+                   } else {
+                       pEpSaveEncrypted.isChecked = true
+                       //if (BuildConfig.WITH_KEY_SYNC) {
+                       // mPEpSyncAccount.setChecked(true);
+                       // mPEpSyncAccount.setEnabled(true);
+                       //}
+                   }
+                    */
+                   true
+               }
+           }
+        }
+    }
+
     private fun initializeCryptoSettings(account: Account) {
         findPreference(PREFERENCE_OPENPGP)?.let {
             configureCryptoPreferences(account)
@@ -193,6 +228,15 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    private fun initializeExtraKeysManagement(account: Account) {
+        findPreference(PEP_EXTRA_KEYS)?.apply {
+            setOnPreferenceClickListener {
+                PepExtraKeys.actionShowBlacklist(context, account)
+                true
+            }
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         /*val openPgpKeyPreference = findPreference(PREFERENCE_OPENPGP_KEY) as? OpenPgpKeyPreferenceCompat
         if (openPgpKeyPreference?.handleOnActivityResult(requestCode, resultCode, data) == true) {
@@ -221,9 +265,6 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_ADVANCED_PUSH_SETTINGS = "push_advanced"
         private const val PREFERENCE_REMOTE_SEARCH = "search"
         private const val PREFERENCE_LOCAL_STORAGE_PROVIDER = "local_storage_provider"
-        private const val PREFERENCE_OPENPGP_ENABLE = "openpgp_provider"
-        private const val PREFERENCE_OPENPGP_KEY = "openpgp_key"
-        private const val PREFERENCE_AUTOCRYPT_TRANSFER = "autocrypt_transfer"
         private const val PREFERENCE_FOLDERS = "folders"
         private const val PREFERENCE_AUTO_EXPAND_FOLDER = "account_setup_auto_expand_folder"
         private const val PREFERENCE_ARCHIVE_FOLDER = "archive_folder"
@@ -231,6 +272,10 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_SENT_FOLDER = "sent_folder"
         private const val PREFERENCE_SPAM_FOLDER = "spam_folder"
         private const val PREFERENCE_TRASH_FOLDER = "trash_folder"
+        private const val PREFERENCE_PEP_SAVE_ENCRYPTED_ON_SERVER = "pep_save_encrypted"
+        private const val PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION = "pep_disable_privacy_protection"
+        private const val PEP_ENABLE_SYNC_ACCOUNT = "pep_enable_sync_account"
+        private const val PEP_EXTRA_KEYS = "pep_extra_keys"
         private const val DELETE_POLICY_MARK_AS_READ = "MARK_AS_READ"
 
         private val FOLDER_LIST_PREFERENCES = listOf(
