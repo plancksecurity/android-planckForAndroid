@@ -11,7 +11,6 @@ import com.fsck.k9.activity.ManageIdentities
 import com.fsck.k9.activity.setup.AccountSetupComposition
 import com.fsck.k9.activity.setup.AccountSetupIncoming
 import com.fsck.k9.activity.setup.AccountSetupOutgoing
-import com.fsck.k9.activity.setup.OpenPgpAppSelectDialog
 import com.fsck.k9.crypto.OpenPgpApiHelper
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.ui.endtoend.AutocryptKeyTransferActivity
@@ -25,7 +24,6 @@ import com.fsck.k9.ui.observe
 import org.koin.android.architecture.ext.sharedViewModel
 import org.koin.android.ext.android.inject
 import org.openintents.openpgp.OpenPgpApiManager
-import org.openintents.openpgp.util.OpenPgpKeyPreferenceCompat
 import org.openintents.openpgp.util.OpenPgpProviderUtil
 
 class AccountSettingsFragment : PreferenceFragmentCompat() {
@@ -163,9 +161,6 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
             }
         }
 
-        configureEnablePgpSupport(account, isPgpConfigured, pgpProviderName)
-        configurePgpKey(account, pgpProvider)
-        configureAutocryptTransfer(account)
     }
 
     private fun getOpenPgpProviderName(pgpProvider: String?): String? {
@@ -173,48 +168,6 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         return OpenPgpProviderUtil.getOpenPgpProviderName(packageManager, pgpProvider)
     }
 
-    private fun configureEnablePgpSupport(account: Account, isPgpConfigured: Boolean, pgpProviderName: String?) {
-        (findPreference(PREFERENCE_OPENPGP_ENABLE) as SwitchPreference).apply {
-            if (!isPgpConfigured) {
-                isChecked = false
-                setSummary(R.string.account_settings_crypto_summary_off)
-                oneTimeClickListener(clickHandled = false) {
-                    val context = requireContext().applicationContext
-                    val openPgpProviderPackages = OpenPgpProviderUtil.getOpenPgpProviderPackages(context)
-                    if (openPgpProviderPackages.size == 1) {
-                        account.openPgpProvider = openPgpProviderPackages[0]
-                        configureCryptoPreferences(account)
-                    } else {
-                        OpenPgpAppSelectDialog.startOpenPgpChooserActivity(requireActivity(), account)
-                    }
-                }
-            } else {
-                isChecked = true
-                summary = getString(R.string.account_settings_crypto_summary_on, pgpProviderName)
-                oneTimeClickListener {
-                    account.openPgpProvider = null
-                    account.openPgpKey = Account.NO_OPENPGP_KEY
-                    configureCryptoPreferences(account)
-                }
-            }
-        }
-    }
-
-    private fun configurePgpKey(account: Account, pgpProvider: String?) {
-        (findPreference(PREFERENCE_OPENPGP_KEY) as OpenPgpKeyPreferenceCompat).apply {
-            setOpenPgpProvider(openPgpApiManager, pgpProvider)
-            setIntentSenderFragment(this@AccountSettingsFragment)
-            setDefaultUserId(OpenPgpApiHelper.buildUserId(account.getIdentity(0)))
-            setShowAutocryptHint(true)
-        }
-    }
-
-    private fun configureAutocryptTransfer(account: Account) {
-        findPreference(PREFERENCE_AUTOCRYPT_TRANSFER).onClick {
-            val intent = AutocryptKeyTransferActivity.createIntent(requireContext(), account.uuid)
-            startActivity(intent)
-        }
-    }
 
     private fun initializeFolderSettings(account: Account) {
         findPreference(PREFERENCE_FOLDERS)?.let {
@@ -241,10 +194,10 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val openPgpKeyPreference = findPreference(PREFERENCE_OPENPGP_KEY) as? OpenPgpKeyPreferenceCompat
+        /*val openPgpKeyPreference = findPreference(PREFERENCE_OPENPGP_KEY) as? OpenPgpKeyPreferenceCompat
         if (openPgpKeyPreference?.handleOnActivityResult(requestCode, resultCode, data) == true) {
             return
-        }
+        }*/
         super.onActivityResult(requestCode, resultCode, data)
     }
 

@@ -34,8 +34,6 @@ class AccountSettingsDataStore(
             "notification_opens_unread" -> account.goToUnreadMessageSearch()
             "remote_search_enabled" -> account.allowRemoteSearch()
             "openpgp_hide_sign_only" -> account.openPgpHideSignOnly
-            "openpgp_encrypt_subject" -> account.openPgpEncryptSubject
-            "autocrypt_prefer_encrypt" -> account.autocryptPreferEncryptMutual
             else -> defValue
         }
     }
@@ -65,8 +63,6 @@ class AccountSettingsDataStore(
             "notification_opens_unread" -> account.setGoToUnreadMessageSearch(value)
             "remote_search_enabled" -> account.setAllowRemoteSearch(value)
             "openpgp_hide_sign_only" -> account.openPgpHideSignOnly = value
-            "openpgp_encrypt_subject" -> account.openPgpEncryptSubject = value
-            "autocrypt_prefer_encrypt" -> account.autocryptPreferEncryptMutual = value
             else -> return
         }
 
@@ -100,7 +96,7 @@ class AccountSettingsDataStore(
 
     override fun putLong(key: String?, value: Long) {
         when (key) {
-            "openpgp_key" -> account.openPgpKey = value
+            //"openpgp_key" -> account.openPgpKey = value
             else -> return
         }
 

@@ -48,8 +48,8 @@ constructor(
 
     companion object {
         init {
-            PreferenceFragmentCompat.registerPreferenceFragment(
-                    AutocryptPreferEncryptPreference::class.java, AutocryptPreferEncryptDialogFragment::class.java)
+         //   PreferenceFragmentCompat.registerPreferenceFragment(
+         //           AutocryptPreferEncryptPreference::class.java, AutocryptPreferEncryptDialogFragment::class.java)
         }
     }
 }

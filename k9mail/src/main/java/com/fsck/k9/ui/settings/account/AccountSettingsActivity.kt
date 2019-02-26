@@ -113,4 +113,9 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback {
             context.startActivity(intent)
         }
     }
+
+    override fun search(query: String?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
 }
