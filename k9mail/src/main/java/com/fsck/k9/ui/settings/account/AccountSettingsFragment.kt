@@ -2,9 +2,7 @@ package com.fsck.k9.ui.settings.account
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v14.preference.SwitchPreference
 import android.support.v7.preference.ListPreference
-import android.support.v7.preference.Preference
 import android.support.v7.preference.TwoStatePreference
 import android.widget.Toast
 import com.fsck.k9.Account
@@ -13,12 +11,9 @@ import com.fsck.k9.activity.ManageIdentities
 import com.fsck.k9.activity.setup.AccountSetupComposition
 import com.fsck.k9.activity.setup.AccountSetupIncoming
 import com.fsck.k9.activity.setup.AccountSetupOutgoing
-import com.fsck.k9.crypto.OpenPgpApiHelper
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys
-import com.fsck.k9.ui.endtoend.AutocryptKeyTransferActivity
 import com.fsck.k9.ui.settings.onClick
-import com.fsck.k9.ui.settings.oneTimeClickListener
 import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry
 import com.fsck.k9.ui.withArguments
@@ -231,7 +226,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     private fun initializeExtraKeysManagement(account: Account) {
         findPreference(PEP_EXTRA_KEYS)?.apply {
             setOnPreferenceClickListener {
-                PepExtraKeys.actionShowBlacklist(context, account)
+                PepExtraKeys.actionStart(context, account)
                 true
             }
         }

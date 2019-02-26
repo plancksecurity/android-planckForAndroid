@@ -18,7 +18,6 @@ import android.preference.RingtonePreference;
 import android.support.v7.widget.Toolbar;
 import android.preference.SwitchPreference;
 import android.widget.ListAdapter;
-import android.widget.Toast;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.DeletePolicy;
@@ -26,9 +25,7 @@ import com.fsck.k9.Account.Expunge;
 import com.fsck.k9.Account.FolderMode;
 import com.fsck.k9.Account.MessageFormat;
 import com.fsck.k9.Account.QuoteStyle;
-import com.fsck.k9.Account.Searchable;
 import com.fsck.k9.Account.ShowPictures;
-import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.NotificationSetting;
 import com.fsck.k9.Preferences;
@@ -46,7 +43,6 @@ import com.fsck.k9.pEp.ui.keys.PepExtraKeys;
 import com.fsck.k9.service.MailServiceLegacy;
 
 import org.openintents.openpgp.util.OpenPgpAppPreference;
-import com.fsck.k9.ui.endtoend.AutocryptKeyTransferActivity;
 import org.openintents.openpgp.OpenPgpApiManager;
 import org.openintents.openpgp.util.OpenPgpKeyPreference;
 
@@ -55,7 +51,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.openintents.openpgp.util.OpenPgpProviderUtil;
 import timber.log.Timber;
 
 
@@ -829,7 +824,7 @@ public class AccountSettings extends K9PreferenceActivity {
         mPepExtraKeys.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                PepExtraKeys.actionShowBlacklist(AccountSettings.this, account);
+                PepExtraKeys.actionStart(AccountSettings.this, account);
                 return true;
             }
         });

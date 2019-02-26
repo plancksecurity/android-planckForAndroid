@@ -37,7 +37,7 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
     private List<String> keys;
     private String account;
 
-    public static void actionShowBlacklist(Context context, Account account) {
+    public static void actionStart(Context context, Account account) {
         Intent i = new Intent(context, PepExtraKeys.class);
         i.putExtra(ACCOUNT_UUID, account.getUuid());
         context.startActivity(i);
