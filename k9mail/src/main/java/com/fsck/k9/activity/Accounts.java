@@ -627,7 +627,7 @@ public class Accounts extends PEpImporterActivity {
         }, new OnBaseAccountClickListener() {
             @Override
             public void onClick(BaseAccount baseAccount) {
-                AccountSettings.actionSettings(Accounts.this, baseAccount.getUuid());
+                AccountSettingsActivity.start(Accounts.this, baseAccount.getUuid());
             }
         });
         accountsList.setAdapter(adapter);
