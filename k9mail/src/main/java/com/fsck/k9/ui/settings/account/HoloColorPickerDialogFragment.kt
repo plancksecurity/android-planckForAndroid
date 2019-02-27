@@ -26,7 +26,7 @@ class HoloColorPickerDialogFragment : PreferenceDialogFragmentCompat() {
                 .setTitle(R.string.color_picker_default_title)
                 .setView(view)
                 .setPositiveButton(R.string.okay_action, { _, _ -> updateColor(colorPicker.color) })
-                .setNeutralButton(R.string.account_settings_color_none, { _, _ -> updateColor(COLOR_TRANSPARENT) })
+                //.setNeutralButton(R.string.account_settings_color_none, { _, _ -> updateColor(COLOR_TRANSPARENT) })
                 .setNegativeButton(R.string.cancel_action, null)
                 .create()
     }
