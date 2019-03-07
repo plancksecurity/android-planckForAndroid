@@ -270,6 +270,9 @@ public class CucumberTestSteps {
                 assertText(TestUtils.rating, stringToCompare);
                 break;
             case "messageBody":
+                if (stringToCompare.equals("longText")){
+                    stringToCompare = testUtils.longText();
+                }
                 assertTextInJSON(testUtils.json, stringToCompare);
                 break;
                 default:
