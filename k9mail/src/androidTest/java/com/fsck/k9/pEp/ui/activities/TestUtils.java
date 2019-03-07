@@ -1075,8 +1075,7 @@ public class TestUtils {
     }
 
     public String longText() {
-        return "Lorem ipsum dolor sit amet consectetur adipiscing elit lectus neque, nulla eros ullamcorper phasellus egestas sagittis ridiculus cursus montes, morbi taciti hendrerit sed metus nam nascetur velit. Placerat nascetur congue risus mollis felis in nisl, fames arcu nunc nostra ultricies taciti, massa conubia rutrum commodo augue vivamus. Quisque aliquam sem nostra purus inceptos velit cubilia arcu, netus aliquet sodales at a ad consequat magna odio, dui duis suscipit orci nulla tellus massa.\n" +
-                "\n" +
+        return "Lorem ipsum dolor sit amet consectetur adipiscing elit lectus neque, nulla eros ullamcorper phasellus egestas sagittis ridiculus cursus montes, morbi taciti hendrerit sed metus nam nascetur velit. Placerat nascetur congue risus mollis felis in nisl, fames arcu nunc nostra ultricies taciti, massa conubia rutrum commodo augue vivamus. Quisque aliquam sem nostra purus inceptos velit cubilia arcu, netus aliquet sodales at a ad consequat magna odio, dui duis suscipit orci nulla tellus massa." +
                 "Mus urna dis enim curabitur erat nisi aenean imperdiet porttitor nulla ad velit, rutrum senectus congue morbi nisl duis pretium augue volutpat et ac vulputate auctor, sodales mi sociosqu facilisis convallis habitant tempor tortor massa at lectus. Sed aliquet sapien sollicitudin fusce cubilia felis consequat malesuada justo lacinia tincidunt viverra, magnis arcu commodo maecenas cum purus potenti massa himenaeos odio. Natoque sodales mauris proin gravida malesuada, faucibus lacinia neque pellentesque, habitant nisl porta velit.";
     }
 
