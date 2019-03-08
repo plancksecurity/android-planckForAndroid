@@ -934,6 +934,7 @@ public class CucumberTestSteps {
     public void I_go_to_the_sent_folder(){
         timeRequiredForThisMethod(25);
         device.waitForIdle();
+        testUtils.goBackToMessageList();
         testUtils.goToSentFolder();
     }
 
