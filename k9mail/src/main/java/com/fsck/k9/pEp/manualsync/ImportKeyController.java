@@ -134,8 +134,7 @@ public class ImportKeyController {
     }
 
     private <MSG extends Message> boolean ispEpKeyImportMsg(MSG srcMsg, MSG decryptedMsg) {
-        return srcMsg.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT).length > 0
-                || decryptedMsg.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT).length > 0;
+        return PEpUtils.hasKeyImportHeader(srcMsg, decryptedMsg);
     }
 
     private <MSG extends Message> boolean isExpectedPGPKeyImportMsg(MSG srcMsg, PEpProvider.DecryptResult result) {
@@ -365,7 +364,7 @@ public class ImportKeyController {
         MimeMessage handshakeUnencryptedMessage = createMimeMessage(account);
         MimeMessage handshakeMessage = pEp.encryptMessage(handshakeUnencryptedMessage,
                 new String[]{senderKey}).get(PEpProvider.ENCRYPTED_MESSAGE_POSITION);
-        handshakeMessage.addHeader(MimeHeader.HEADER_PEP_AUTOCONSUME, "yes");
+        handshakeMessage.addHeader(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY, "yes");
         return handshakeMessage;
     }
 
@@ -385,15 +384,10 @@ public class ImportKeyController {
 
 
     private <MSG extends Message> String extractSenderKey(MSG srcMsg, MimeMessage decryptedMsg, Rating rating) {
-        String senderKey = "";
-        if (rating.value < Rating.pEpRatingTrusted.value) {
-            if (srcMsg.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT).length > 0) {
-                senderKey = srcMsg.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT)[0];
-            } else if (decryptedMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)) {
-                senderKey = decryptedMsg.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT)[0];
-            }
-        } else if (decryptedMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)) {
-            senderKey = decryptedMsg.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT)[0];
+        String senderKey;
+        senderKey = PEpUtils.extractKeyFromHeader(srcMsg, decryptedMsg, rating, MimeHeader.HEADER_PEP_KEY_IMPORT);
+        if (senderKey.isEmpty()) {
+            senderKey = PEpUtils.extractKeyFromHeader(srcMsg, decryptedMsg, rating, MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY);
         }
         return senderKey;
     }
@@ -436,7 +430,7 @@ public class ImportKeyController {
         handshakeUnencryptedMessage.setSubject("I'm a key");
         Message ownKeyMessage = pEp.generatePrivateKeyMessage(handshakeUnencryptedMessage, senderKey);
         if (ownKeyMessage != null) {
-            ownKeyMessage.addHeader(MimeHeader.HEADER_PEP_AUTOCONSUME, "yes");
+            ownKeyMessage.addHeader(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY, "yes");
         }
         return ownKeyMessage;
     }
@@ -451,8 +445,8 @@ public class ImportKeyController {
         resultM.setFrom(identity);
         resultM.setTo(new Vector<>(Collections.singletonList(identity)));
         ArrayList<Pair<String, String>> fields = new ArrayList<>();
-        fields.add(new org.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_KEY_IMPORT, identity.fpr));
-        fields.add(new org.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_AUTOCONSUME, "yes"));
+        fields.add(new org.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY, identity.fpr));
+        fields.add(new org.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY, "yes"));
         resultM.setOptFields(fields);
 
         resultM.setSent(new Date(System.currentTimeMillis()));

@@ -1706,9 +1706,9 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                                     }
                                 }
                                 if (tempResult.flags == -1)
-                                    Timber.e("PEPJNI", "messageFinished: null");
+                                    Timber.e("PEPJNI %s", "messageFinished: null");
                                 if (tempResult.flags != -1) {
-                                    Timber.e("PEPJNI", "messageFinished: " + tempResult.flags);
+                                    Timber.e("PEPJNI %s: %s", "messageFinished", tempResult.flags);
                            /* For keysync not needed intil pEp sync is in place again.
                            switch (tempResult.flags) {
                                 case PEPDecryptFlagConsumed:
@@ -1724,7 +1724,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                             }
                         */
                                     if ((tempResult.flags & DecryptFlags.PEPDecryptFlagConsumed.value) == DecryptFlags.PEPDecryptFlagConsumed.value) {
-                                        Timber.v("pEpJNI", "messageFinished: Deleting");
+                                        Timber.v("pEpJNI %s", "messageFinished: Deleting");
                                         tempResult = null;
                                         store = false;
                                     } else if ((tempResult.flags & DecryptFlags.PEPDecryptFlagIgnored.value) == DecryptFlags.PEPDecryptFlagIgnored.value) {
@@ -5016,7 +5016,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
             }).start();
 
 //            Timber.e("PEPJNI", "messageToSend: " + pEpMessage.getShortmsg());
-//            Timber.e("PEPJNI", "messageToSend: " + pEpMessage.getLongmsg());
+//            Timber.e("PEPJNIm", "messageToSend: " + pEpMessage.getLongmsg());
         } catch (MessagingException e) {
             e.printStackTrace();
         }

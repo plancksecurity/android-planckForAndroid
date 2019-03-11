@@ -188,7 +188,7 @@ public class AddDevicePresenter implements Presenter {
     private class ManualpEpKeyImportStrategy extends KeyImportStrategy{
         @Override
         void acceptHandshake(Identity partner) {
-            pEpProvider.trustPersonaKey(partner);
+            pEpProvider.trustOwnKey(partner);
         }
 
         @Override
@@ -205,7 +205,7 @@ public class AddDevicePresenter implements Presenter {
     private class ManualPGPKeyImportStrategy extends KeyImportStrategy{
         @Override
         void acceptHandshake(Identity partner) {
-            pEpProvider.trustPersonaKey(partner);
+            pEpProvider.trustOwnKey(partner);
         }
 
         @Override
