@@ -15,6 +15,7 @@ import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.mail.internet.MimeUtility;
 
 import org.pEp.jniadapter.Blob;
+import org.pEp.jniadapter.Identity;
 import org.pEp.jniadapter.Message;
 import org.pEp.jniadapter.Pair;
 
@@ -186,7 +187,8 @@ class PEpMessageBuilder {
         m.setId(mm.getMessageId());
         m.setInReplyTo(createMessageReferences(mm.getReferences()));
         m.setSent(mm.getSentDate());
-        m.setReplyTo(PEpUtils.createIdentities(Arrays.asList(mm.getReplyTo()), context));
+        Vector<Identity> identities = PEpUtils.createIdentities(Arrays.asList(mm.getReplyTo()), context);
+        m.setReplyTo(identities);
         m.setReferences(createMessageReferences(mm.getReferences()));
         m.setShortmsg(mm.getSubject());
 
@@ -194,11 +196,13 @@ class PEpMessageBuilder {
         ArrayList<Pair<String, String>> optionalFields = new ArrayList<>();
         addOptionalField(optionalFields, MimeHeader.HEADER_PEP_VERSION);
         addOptionalField(optionalFields, MimeHeader.HEADER_PEP_AUTOCONSUME);
+        addOptionalField(optionalFields, MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY);
         addOptionalField(optionalFields, MimeHeader.HEADER_PEP_KEY_LIST);
         addOptionalField(optionalFields, MimeHeader.HEADER_PEP_ALWAYS_SECURE);
         addOptionalField(optionalFields, MimeHeader.HEADER_PEP_RATING);
         addOptionalField(optionalFields, MimeHeader.HEADER_CONTENT_DESCRIPTION);
         addOptionalField(optionalFields, MimeHeader.HEADER_PEP_KEY_IMPORT);
+        addOptionalField(optionalFields, MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY);
         m.setOptFields(optionalFields);
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);

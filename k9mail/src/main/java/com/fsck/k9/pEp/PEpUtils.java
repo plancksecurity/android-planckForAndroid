@@ -557,7 +557,7 @@ public class PEpUtils {
         result.setFrom(identity);
         result.setTo(new Vector<>(Collections.singletonList(identity)));
         ArrayList<org.pEp.jniadapter.Pair<String, String>> fields = new ArrayList<>();
-        fields.add(new org.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_AUTOCONSUME, "yes"));
+        fields.add(new org.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY, "yes"));
 
         result.setSent(new Date(System.currentTimeMillis()));
         result.setEncFormat(org.pEp.jniadapter.Message.EncFormat.None);
@@ -575,7 +575,7 @@ public class PEpUtils {
                 .setAttachments(Collections.emptyList());
 
         if (ispEp) {
-            fields.add(new org.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_KEY_IMPORT, identity.fpr));
+            fields.add(new org.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY, identity.fpr));
             builder.setSubject("Please ignore, this message is part of import key protocol");
             result.setShortmsg("Please ignore, this message is part of import key protocol");
             result.setLongmsg("");
@@ -601,5 +601,25 @@ public class PEpUtils {
         }
     }
 
+    public static <MSG extends Message> boolean hasKeyImportHeader(MSG srcMsg, MSG decryptedMsg) {
+        return srcMsg.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT).length > 0
+                || decryptedMsg.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT).length > 0
+                || srcMsg.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY).length > 0
+                || decryptedMsg.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY).length > 0;
+
+    }
+
+    public static <MSG extends Message> String extractKeyFromHeader(MSG srcMsg, MimeMessage decryptedMsg, Rating rating, String header) {
+        if (rating.value < Rating.pEpRatingTrusted.value) {
+            if (srcMsg.getHeader(header).length > 0) {
+                return srcMsg.getHeader(header)[0];
+            } else if (decryptedMsg.getHeaderNames().contains(header)) {
+                return decryptedMsg.getHeader(header)[0];
+            }
+        } else if (decryptedMsg.getHeaderNames().contains(header)) {
+            return decryptedMsg.getHeader(header)[0];
+        }
+        return "";
+    }
 }
 

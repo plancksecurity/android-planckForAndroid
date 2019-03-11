@@ -137,6 +137,13 @@ public interface PEpProvider {
     void trustPersonaKey(Identity id);
 
     /**
+     * Trust own identity
+     *
+     * @param id identity to trust it
+     */
+    void trustOwnKey(Identity id);
+
+    /**
      * Mark key as compromised
      *
      * @param id identity to mark
