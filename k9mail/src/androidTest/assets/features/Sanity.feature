@@ -33,6 +33,48 @@ Feature: Sanity
     And I click the first message
     Then I compare messageBody with longText
 
+  @TM-A1
+  Scenario: Test Send Unencrypted email with long text
+    When I click compose message
+    And I check if the privacy status is pEpRatingUndefined
+    And I enter bot2 in the messageTo field
+    And I enter longText in the messageBody field
+    And I click the send message button
+    And I wait for the message and click it
+    Then I compare messageBody from attachment with longText
+    And I go to the sent folder
+    And I click the first message
+    Then I compare messageBody with longText
+
+  @TM-A2
+  Scenario: Test Send Encrypted email with long text
+    When I click compose message
+    And I send 1 message to bot1 with subject sendEncrypted and body sendEncryptedTest
+    And I click compose message
+    And I enter bot1 in the messageTo field
+    Then I check if the privacy status is pep_yellow
+    When I enter subject in the messageSubject field
+    And I enter longText in the messageBody field
+    And I click the send message button
+    And I wait for the message and click it
+    Then I compare messageBody from attachment with longText
+    Then I check if the privacy status is pep_yellow
+    When I go back to message compose
+    And I go to the sent folder
+    And I click the first message
+    Then I compare messageBody with longText
+
+  @TM-A3
+  Scenario: Test Send Unencrypted email with long text
+    When I click compose message
+    And I check if the privacy status is pEpRatingUndefined
+    And I enter bot2 in the messageTo field
+    And I enter longText in the messageBody field
+    And I go back and save as draft
+    And I go to the drafts folder
+    And I click the first message
+    Then I compare messageBody with longText
+
   @TM-7
   Scenario: Test Sanity MailToSecondNewContact
   Description: Test if pEp changes to Privacy Status from “Unknown” to “Unsecure”
