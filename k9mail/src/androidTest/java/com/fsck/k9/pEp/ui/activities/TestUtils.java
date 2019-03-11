@@ -1017,6 +1017,9 @@ public class TestUtils {
 
     public void goBackToMessageList(){
         boolean backToMessageCompose = false;
+        if (viewIsDisplayed(R.id.fab_button_compose_message)){
+            backToMessageCompose = true;
+        }
         while (!backToMessageCompose){
             device.pressBack();
             device.waitForIdle();
@@ -1026,13 +1029,12 @@ public class TestUtils {
         }
     }
 
-    public void goToSentFolder() {
+    public void goToFolder(String folder) {
         int hashCode = 0;
         BySelector textViewSelector;
         textViewSelector = By.clazz("android.widget.TextView");
         selectFromMenu(R.string.account_settings_folders);
         device.waitForIdle();
-        String folder = resources.getString(R.string.special_mailbox_name_sent);
         while (true) {
             for (UiObject2 textView : device.findObjects(textViewSelector)) {
                 try {
@@ -1067,9 +1069,7 @@ public class TestUtils {
 
     public void waitForMessageAndClickIt() {
         Timber.i("MessageList antes: " + messageListSize[0] + " " + messageListSize[1]);
-        if (messageListSize[0] > messageListSize [1]) {
-            waitForNewMessage();
-        }
+        waitForNewMessage();
         Timber.i("MessageList despues: " + messageListSize[0] + " " + messageListSize[1]);
         clickLastMessage();
     }
