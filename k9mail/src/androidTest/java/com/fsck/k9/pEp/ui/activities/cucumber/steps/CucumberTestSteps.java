@@ -239,8 +239,10 @@ public class CucumberTestSteps {
                 testUtils.removeTextFromTextView(viewName);
                 break;
             case "longText":
-                timeRequiredForThisMethod(30);
-                text = testUtils.longText();
+                timeRequiredForThisMethod(300000);
+                for (int i=0; i<40; i++) {
+                    text = text + testUtils.longText() + " " + i + " ";
+                }
             default:
                 timeRequiredForThisMethod(10);
                 while (!(containstText(onView(withId(viewId)), text))) {
@@ -306,6 +308,12 @@ public class CucumberTestSteps {
                 }
                 compareTextWithWebViewText(body);
                 return;
+            } else if (exists(onView(withId(R.id.message_content)))) {
+                if (getTextFromView(onView(withId(R.id.message_content))).contains(cucumberBody)) {
+                    return;
+                } else {
+                    Assert.fail("Error: body text != text to compare");
+                }
             }
         }
     }
@@ -935,7 +943,15 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(25);
         device.waitForIdle();
         testUtils.goBackToMessageList();
-        testUtils.goToSentFolder();
+        testUtils.goToFolder(resources.getString(R.string.special_mailbox_name_sent));
+    }
+
+    @And("^I go to the drafts folder$")
+    public void I_go_to_the_drafts_folder(){
+        timeRequiredForThisMethod(25);
+        device.waitForIdle();
+        testUtils.goBackToMessageList();
+        testUtils.goToFolder(resources.getString(R.string.special_mailbox_name_drafts));
     }
 
     @And("^I click the first message$")
