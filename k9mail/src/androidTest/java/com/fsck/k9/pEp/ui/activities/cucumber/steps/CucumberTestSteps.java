@@ -239,9 +239,10 @@ public class CucumberTestSteps {
                 testUtils.removeTextFromTextView(viewName);
                 break;
             case "longText":
-                timeRequiredForThisMethod(300000);
-                for (int i=0; i<40; i++) {
-                    text = text + testUtils.longText() + " " + i + " ";
+                timeRequiredForThisMethod(3000);
+                StringBuilder textBuilder = new StringBuilder(text);
+                for (int i = 0; i<4; i++) {
+                    textBuilder.append(testUtils.longText()).append(" ").append(i).append(" ");
                 }
                 text = textBuilder.toString();
             default:
