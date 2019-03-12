@@ -60,6 +60,7 @@ import timber.log.Timber;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.action.ViewActions.typeTextIntoFocusedView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -239,12 +240,15 @@ public class CucumberTestSteps {
                 testUtils.removeTextFromTextView(viewName);
                 break;
             case "longText":
-                timeRequiredForThisMethod(3000);
+                timeRequiredForThisMethod(300);
                 StringBuilder textBuilder = new StringBuilder(text);
-                for (int i = 0; i<4; i++) {
+                for (int i = 0; i<120; i++) {
                     textBuilder.append(testUtils.longText()).append(" ").append(i).append(" ");
                 }
                 text = textBuilder.toString();
+                onView(withId(viewId)).perform(click(), replaceText(text));
+                onView(withId(viewId)).check(matches(withText(text)));
+                return;
             default:
                 timeRequiredForThisMethod(10);
                 while (!(containstText(onView(withId(viewId)), text))) {
