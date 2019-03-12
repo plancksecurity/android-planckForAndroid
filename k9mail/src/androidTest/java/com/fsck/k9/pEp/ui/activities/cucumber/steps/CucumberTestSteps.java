@@ -243,6 +243,7 @@ public class CucumberTestSteps {
                 for (int i=0; i<40; i++) {
                     text = text + testUtils.longText() + " " + i + " ";
                 }
+                text = textBuilder.toString();
             default:
                 timeRequiredForThisMethod(10);
                 while (!(containstText(onView(withId(viewId)), text))) {
@@ -275,10 +276,10 @@ public class CucumberTestSteps {
                 if (stringToCompare.equals("longText")){
                     stringToCompare = testUtils.longText();
                 }
-                assertTextInJSON(testUtils.json, stringToCompare);
+                assertTextInJSON(TestUtils.json, stringToCompare);
                 break;
                 default:
-                    assertTextInJSONArray(name, testUtils.jsonArray, stringToCompare);
+                    assertTextInJSONArray(name, TestUtils.jsonArray, stringToCompare);
         }
     }
 
@@ -348,7 +349,7 @@ public class CucumberTestSteps {
         }
         device.waitForIdle();
         testUtils.doWaitForResource(R.id.toolbar);
-        confirmAllTrustWords(testUtils.jsonArray);
+        confirmAllTrustWords(TestUtils.jsonArray);
     }
 
     private void confirmAllTrustWords (JSONArray array) {
@@ -1234,7 +1235,7 @@ public class CucumberTestSteps {
             }
     }
 
-    private void copyFile(InputStream in, OutputStream out) throws IOException {
+    private void copyFile(InputStream in, OutputStream out) {
         byte[] buffer = new byte[1024];
         int read;
         try {
