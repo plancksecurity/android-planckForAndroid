@@ -69,7 +69,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
         device.waitForIdle();
         testUtils.sendMessage();
         testUtils.waitForNewMessage();
-        testUtils.goToSentFolder();
+        testUtils.goToFolder(resources.getString(R.string.special_mailbox_name_sent));
         testUtils.clickFirstMessage();
         testUtils.clickView(R.id.tvPep);
         testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
