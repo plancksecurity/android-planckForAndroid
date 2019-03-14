@@ -82,6 +82,8 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static android.support.test.runner.lifecycle.Stage.RESUMED;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containsText;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containstText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.hasValueEqualTo;
@@ -1202,6 +1204,10 @@ public class TestUtils {
 
     public void waitForNewMessage() {
         boolean newEmail = false;
+        device.waitForIdle();
+        while (!exists(onView(withId(R.id.message_list)))){
+            device.waitForIdle();
+        }
         doWaitForResource(R.id.message_list);
         doWaitForIdlingListViewResource(R.id.message_list);
         while (!newEmail) {
