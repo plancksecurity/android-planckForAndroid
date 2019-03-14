@@ -120,7 +120,6 @@ Feature: Sanity
     Then I check if the privacy status is pep_yellow
     When I click the send message button
     And I press back
-    And I wait for the new message
     And I wait for the message and click it
     Then I compare rating from attachment with 6
     And I compare rating_string from attachment with PEP_rating_reliable
