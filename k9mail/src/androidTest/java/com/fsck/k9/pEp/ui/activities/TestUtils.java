@@ -895,7 +895,7 @@ public class TestUtils {
         return false;
     }
 
-    public boolean textExistsOnScreenTextView (String text) {
+    private boolean textExistsOnScreenTextView(String text) {
         boolean viewExists = false;
         device.waitForIdle();
         BySelector selector = By.clazz("android.widget.TextView");
@@ -1177,14 +1177,14 @@ public class TestUtils {
                         Timber.i("Cannot find json file on the screen: " + json);
                     }
                 }
-                if (jsonExists == false) {
+                if (!jsonExists) {
                     return;
                 }
             }
         }
     }
 
-    public void downloadAttachedFile (String fileName) {
+    private void downloadAttachedFile(String fileName) {
         BySelector selector = By.clazz("android.widget.TextView");
         for (UiObject2 object : device.findObjects(selector)) {
             try {
