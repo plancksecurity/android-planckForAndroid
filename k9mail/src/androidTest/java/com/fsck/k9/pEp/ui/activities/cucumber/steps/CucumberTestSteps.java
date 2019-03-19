@@ -110,7 +110,7 @@ public class CucumberTestSteps {
             testUtils.increaseTimeoutWait();
             espressoTestingIdlingResource = new EspressoTestingIdlingResource();
             IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
-            bot = new String[4];
+            bot = new String[6];
             resources = InstrumentationRegistry.getTargetContext().getResources();
             startTimer(600);
             if (testUtils.getCurrentActivity() == null) {
@@ -184,6 +184,14 @@ public class CucumberTestSteps {
             case "bot4":
                 Timber.i("Filling message to bot4");
                 cucumberMessageTo = bot[3] + HOST;
+                break;
+            case "bot5":
+                Timber.i("Filling message to bot4");
+                cucumberMessageTo = bot[4] + HOST;
+                break;
+            case "bot6":
+                Timber.i("Filling message to bot4");
+                cucumberMessageTo = bot[5] + HOST;
                 break;
         }
         if (!(getTextFromView(onView(withId(R.id.to))).equals("") || getTextFromView(onView(withId(R.id.to))).equals(" "))) {
@@ -409,7 +417,7 @@ public class CucumberTestSteps {
         if (json.toString().contains(textToCompare)) {
             return;
         }
-        Assert.fail("json file doesn't contain the text");
+        Assert.fail("json file doesn't contain the text: " + json.toString());
     }
 
     private void assertText(String text, String textToCompare) {
@@ -919,6 +927,12 @@ public class CucumberTestSteps {
             case "bot4":
                 messageTo = bot[3] + HOST;
                 break;
+            case "bot5":
+                messageTo = bot[4] + HOST;
+                break;
+            case "bot6":
+                messageTo = bot[5] + HOST;
+                break;
         }
         device.waitForIdle();
         for (int message = 0; message < totalMessages; message++) {
@@ -1264,13 +1278,14 @@ public class CucumberTestSteps {
                     time[0]++;
                     Timber.i("Timeout: " + time[0] + "/" + finalTime);
                     if (activityTestRule == null) {
-                        Assert.fail("Timeout. Closing the app...");
+                        time[0] = 0;
+                        Assert.fail("Timeout. Couldn't finish the test");
                     } else if (time[0] > finalTime) {
                         try {
-                            Timber.e("Timeout: closing the app...");
-                            Assert.fail();
+                            time[0] = 0;
+                            Assert.fail("Timeout. Couldn't finish the test");
                         } catch (Exception ex) {
-                            Timber.e("Couldn't close the app");
+                            Timber.e("Couldn't close the test");
                         }
                     }
                 }
