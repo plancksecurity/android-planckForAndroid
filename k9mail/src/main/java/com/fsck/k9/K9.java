@@ -1604,9 +1604,10 @@ public class K9 extends Application {
 
     private static void updateLoggingStatus() {
         Timber.uprootAll();
-        boolean enableDebugLogging = BuildConfig.DEBUG || DEBUG;
+        //boolean enableDebugLogging = BuildConfig.DEBUG || DEBUG;
+        boolean enableDebugLogging = true;
         if (enableDebugLogging) {
-            Timber.plant(new DebugTree());
+            Timber.plant(new PEpDebugTree());
         }
     }
 
