@@ -112,7 +112,7 @@ public class CucumberTestSteps {
             IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
             bot = new String[6];
             resources = InstrumentationRegistry.getTargetContext().getResources();
-            startTimer(600);
+            startTimer(2000);
             if (testUtils.getCurrentActivity() == null) {
                 //startTimer(350);
                 testUtils.testReset = true;
