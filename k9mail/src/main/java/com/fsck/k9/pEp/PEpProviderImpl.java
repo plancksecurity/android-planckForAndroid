@@ -297,7 +297,16 @@ public class PEpProviderImpl implements PEpProvider {
             text = message.getLongmsg();
         }
 
-        Date sent = message.getSent();
+        Date sent;
+        if (source != null) {
+            Timber.d("Creating MimeMessage original message source != null ");
+            sent = source.getSentDate();
+            Timber.d("Source date: " + sent);
+
+        } else {
+            Timber.d("Creating MimeMessage original message source == null ");
+        }
+        sent = message.getSent();
         if (sent == null) sent = new Date();
 
         Address[] replyTo = new Address[0];
