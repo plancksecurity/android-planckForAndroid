@@ -1155,6 +1155,7 @@ public class TestUtils {
         while (json == null) {
             try {
                 downloadAttachedFile("results.json");
+                device.waitForIdle();
                 String js = readJsonFile("results.json");
                 json = new JSONObject(js);
             } catch (Exception ex) {
@@ -1178,6 +1179,7 @@ public class TestUtils {
                     }
                 }
                 if (!jsonExists) {
+                    device.waitForIdle();
                     return;
                 }
             }
