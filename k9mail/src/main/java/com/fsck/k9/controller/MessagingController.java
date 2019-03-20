@@ -819,7 +819,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
              * Get the message list from the local store and create an index of
              * the uids within the list.
              */
-            Timber.v("SYNC: About to get local folder %s", folder);
+            Timber.d("SYNC: About to get local folder %s", folder);
 
             final LocalStore localStore = account.getLocalStore();
             tLocalFolder = localStore.getFolder(folder);
@@ -829,12 +829,12 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
             Map<String, Long> localUidMap = localFolder.getAllMessagesAndEffectiveDates();
 
             if (providedRemoteFolder != null) {
-                Timber.v("SYNC: using providedRemoteFolder %s", folder);
+                Timber.d("SYNC: using providedRemoteFolder %s", folder);
                 remoteFolder = providedRemoteFolder;
             } else {
                 Store remoteStore = account.getRemoteStore();
 
-                Timber.v("SYNC: About to get remote folder %s", folder);
+                Timber.d("SYNC: About to get remote folder %s", folder);
                 remoteFolder = remoteStore.getFolder(folder);
 
                 if (!verifyOrCreateRemoteSpecialFolder(account, folder, remoteFolder, listener)) {
@@ -863,7 +863,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                 /*
                  * Open the remote folder. This pre-loads certain metadata like message count.
                  */
-                Timber.v("SYNC: About to open remote folder %s", folder);
+                Timber.d("SYNC: About to open remote folder %s", folder);
 
                 remoteFolder.open(Folder.OPEN_MODE_RW);
                 if (Expunge.EXPUNGE_ON_POLL == account.getExpungePolicy()) {
@@ -889,7 +889,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
             final List<Message> remoteMessages = new ArrayList<>();
             Map<String, Message> remoteUidMap = new HashMap<>();
 
-            Timber.v("SYNC: Remote message count for folder %s is %d", folder, remoteMessageCount);
+            Timber.d("SYNC: Remote message count for folder %s is %d", folder, remoteMessageCount);
 
             final Date earliestDate = account.getEarliestPollDate();
             long earliestTimestamp = earliestDate != null ? earliestDate.getTime() : 0L;
@@ -904,7 +904,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                     remoteStart = 1;
                 }
 
-                Timber.v("SYNC: About to get messages %d through %d for folder %s",
+                Timber.d("SYNC: About to get messages %d through %d for folder %s",
                         remoteStart, remoteMessageCount, folder);
 
                 final AtomicInteger headerProgress = new AtomicInteger(0);
@@ -930,7 +930,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                     }
                 }
 
-                Timber.v("SYNC: Got %d messages for folder %s", remoteUidMap.size(), folder);
+                Timber.d("SYNC: Got %d messages for folder %s", remoteUidMap.size(), folder);
 
                 for (MessagingListener l : getListeners(listener)) {
                     l.synchronizeMailboxHeadersFinished(account, folder, headerProgress.get(), remoteUidMap.size());
@@ -1090,7 +1090,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
              * the uids within the list.
              */
             if (K9.isDebug())
-                Timber.v(K9.LOG_TAG, "SYNC: About to get local folder " + folder);
+                Timber.d(K9.LOG_TAG, "SYNC: About to get local folder " + folder);
 
             final LocalStore localStore = account.getLocalStore();
             tLocalFolder = localStore.getFolder(folder);
@@ -1105,13 +1105,13 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
 
             if (providedRemoteFolder != null) {
                 if (K9.isDebug())
-                    Timber.v(K9.LOG_TAG, "SYNC: using providedRemoteFolder " + folder);
+                    Timber.d(K9.LOG_TAG, "SYNC: using providedRemoteFolder " + folder);
                 remoteFolder = providedRemoteFolder;
             } else {
                 Store remoteStore = account.getRemoteStore();
 
                 if (K9.isDebug())
-                    Timber.v(K9.LOG_TAG, "SYNC: About to get remote folder " + folder);
+                    Timber.d(K9.LOG_TAG, "SYNC: About to get remote folder " + folder);
                 remoteFolder = remoteStore.getFolder(folder);
 
                 if (!verifyOrCreateRemoteSpecialFolder(account, folder, remoteFolder, listener)) {
@@ -1141,7 +1141,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                  * Open the remote folder. This pre-loads certain metadata like message count.
                  */
                 if (K9.isDebug())
-                    Timber.v(K9.LOG_TAG, "SYNC: About to open remote folder " + folder);
+                    Timber.d(K9.LOG_TAG, "SYNC: About to open remote folder " + folder);
 
                 remoteFolder.open(Folder.OPEN_MODE_RW);
                 if (Expunge.EXPUNGE_ON_POLL == account.getExpungePolicy()) {
@@ -1169,7 +1169,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
             Map<String, Message> remoteUidMap = new HashMap<>();
 
             if (K9.isDebug())
-                Timber.v(K9.LOG_TAG, "SYNC: Remote message count for folder " + folder + " is " + remoteMessageCount);
+                Timber.d(K9.LOG_TAG, "SYNC: Remote message count for folder " + folder + " is " + remoteMessageCount);
             final Date earliestDate = account.getEarliestPollDate();
 
 
@@ -1183,7 +1183,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                 }
 
                 if (K9.isDebug())
-                    Timber.v(K9.LOG_TAG, "SYNC: About to get messages " + remoteStart + " through " + remoteMessageCount + " for folder " + folder);
+                    Timber.d(K9.LOG_TAG, "SYNC: About to get messages " + remoteStart + " through " + remoteMessageCount + " for folder " + folder);
 
                 final AtomicInteger headerProgress = new AtomicInteger(0);
                 for (MessagingListener l : getListeners(listener)) {
@@ -1207,7 +1207,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                     }
                 }
                 if (K9.isDebug())
-                    Timber.v(K9.LOG_TAG, "SYNC: Got " + remoteUidMap.size() + " messages for folder " + folder);
+                    Timber.d(K9.LOG_TAG, "SYNC: Got " + remoteUidMap.size() + " messages for folder " + folder);
 
                 for (MessagingListener l : getListeners(listener)) {
                     l.synchronizeMailboxHeadersFinished(account, folder, headerProgress.get(), remoteUidMap.size());
@@ -1534,7 +1534,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                                             final List<Message> syncFlagMessages,
                                             boolean flagSyncOnly) throws MessagingException {
         if (message.isSet(Flag.DELETED)) {
-            Timber.v("Message with uid %s is marked as deleted", message.getUid());
+            Timber.d("Message with uid %s is marked as deleted", message.getUid());
 
             syncFlagMessages.add(message);
             return;
@@ -1545,11 +1545,11 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
         if (localMessage == null) {
             if (!flagSyncOnly) {
                 if (!message.isSet(Flag.X_DOWNLOADED_FULL) && !message.isSet(Flag.X_DOWNLOADED_PARTIAL)) {
-                    Timber.v("Message with uid %s has not yet been downloaded", message.getUid());
+                    Timber.d("Message with uid %s has not yet been downloaded", message.getUid());
 
                     unsyncedMessages.add(message);
                 } else {
-                    Timber.v("Message with uid %s is partially or fully downloaded", message.getUid());
+                    Timber.d("Message with uid %s is partially or fully downloaded", message.getUid());
 
                     // Store the updated message locally
                     localFolder.appendMessages(Collections.singletonList(message));
@@ -1567,10 +1567,10 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                 }
             }
         } else if (!localMessage.isSet(Flag.DELETED)) {
-            Timber.v("Message with uid %s is present in the local store", message.getUid());
+            Timber.d("Message with uid %s is present in the local store", message.getUid());
 
             if (!localMessage.isSet(Flag.X_DOWNLOADED_FULL) && !localMessage.isSet(Flag.X_DOWNLOADED_PARTIAL)) {
-                Timber.v("Message with uid %s is not downloaded, even partially; trying again", message.getUid());
+                Timber.d("Message with uid %s is not downloaded, even partially; trying again", message.getUid());
 
                 unsyncedMessages.add(message);
             } else {
@@ -1581,7 +1581,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                 syncFlagMessages.add(message);
             }
         } else {
-            Timber.v("Local copy of message with uid %s is marked as deleted", message.getUid());
+            Timber.d("Local copy of message with uid %s is marked as deleted", message.getUid());
         }
     }
 
@@ -1603,7 +1603,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                             if (message.isSet(Flag.DELETED) || message.olderThan(earliestDate)) {
                                 if (K9.isDebug()) {
                                     if (message.isSet(Flag.DELETED)) {
-                                        Timber.v("Newly downloaded message %s:%s:%s was marked deleted on server, " +
+                                        Timber.d("Newly downloaded message %s:%s:%s was marked deleted on server, " +
                                                 "skipping", account, folder, message.getUid());
                                     } else {
                                         Timber.d("Newly downloaded message %s is older than %s, skipping",
@@ -1712,19 +1712,19 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                            /* For keysync not needed intil pEp sync is in place again.
                            switch (tempResult.flags) {
                                 case PEPDecryptFlagConsumed:
-                                    Timber.v("pEpJNI", "messageFinished: Deleting");
+                                    Timber.d("pEpJNI", "messageFinished: Deleting");
                                     tempResult = null;
                                     store = false;
                                     break;
                                 case PEPDecryptFlagIgnored:
-                                    Timber.v("pEpJNI", "messageFinished: ");
+                                    Timber.d("pEpJNI", "messageFinished: ");
                                     tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null, null);
                                     store = false;
                                     break;
                             }
                         */
                                     if ((tempResult.flags & DecryptFlags.PEPDecryptFlagConsumed.value) == DecryptFlags.PEPDecryptFlagConsumed.value) {
-                                        Timber.v("pEpJNI %s", "messageFinished: Deleting");
+                                        Timber.d("pEpJNI %s", "messageFinished: Deleting");
                                         tempResult = null;
                                         store = false;
                                     } else if ((tempResult.flags & DecryptFlags.PEPDecryptFlagIgnored.value) == DecryptFlags.PEPDecryptFlagIgnored.value) {
@@ -1779,7 +1779,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                                         newMessages.incrementAndGet();
                                     }
 
-                                    Timber.v("About to notify listeners that we got a new small message %s:%s:%s",
+                                    Timber.d("About to notify listeners that we got a new small message %s:%s:%s",
                                             account, folder, message.getUid());
 
                                     // Update the listener with what we've found
@@ -1888,7 +1888,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                 downloadPartial(remoteFolder, localFolder, message);
             }
 
-            Timber.v("About to notify listeners that we got a new large message %s:%s:%s",
+            Timber.d("About to notify listeners that we got a new large message %s:%s:%s",
                     account, folder, message.getUid());
 
             // Update the listener with what we've found
@@ -3014,7 +3014,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                         l.loadAttachmentFinished(account, message, part);
                     }
                 } catch (MessagingException me) {
-                    Timber.v(me, "Exception loading attachment");
+                    Timber.d(me, "Exception loading attachment");
 
                     for (MessagingListener l : getListeners(listener)) {
                         l.loadAttachmentFailed(account, message, part, me.getMessage());
@@ -3145,7 +3145,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
             localFolder = localStore.getFolder(
                     account.getOutboxFolderName());
             if (!localFolder.exists()) {
-                Timber.v("Outbox does not exist");
+                Timber.d("Outbox does not exist");
                 return;
             }
             for (MessagingListener l : getListeners()) {
@@ -3197,7 +3197,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                     localFolder.fetch(Collections.singletonList(message), fp, null);
                     try {
                         if (message.getHeader(K9.IDENTITY_HEADER).length > 0) {
-                            Timber.v("The user has set the Outbox and Drafts folder to the same thing. " +
+                            Timber.d("The user has set the Outbox and Drafts folder to the same thing. " +
                                     "This message appears to be a draft, so K-9 will not send it");
                             continue;
                         }
@@ -3273,7 +3273,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
             Timber.i("Failed to send pending messages because storage is not available - trying again later.");
             throw new UnavailableAccountException(e);
         } catch (Exception e) {
-            Timber.v(e, "Failed to send pending messages");
+            Timber.d(e, "Failed to send pending messages");
 
             for (MessagingListener l : getListeners()) {
                 l.sendPendingMessagesFailed(account);
@@ -4227,7 +4227,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                     // Never sync a folder that isn't displayed
                     /*
                     if (K9.isDebug()) {
-                        Timber.v(K9.LOG_TAG, "Not syncing folder " + folder.getName() +
+                        Timber.d(K9.LOG_TAG, "Not syncing folder " + folder.getName() +
                               " which is in display mode " + fDisplayClass + " while account is in display mode " + aDisplayMode);
                     }
                     */
@@ -4239,7 +4239,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                     // Do not sync folders in the wrong class
                     /*
                     if (K9.isDebug()) {
-                        Timber.v(K9.LOG_TAG, "Not syncing folder " + folder.getName() +
+                        Timber.d(K9.LOG_TAG, "Not syncing folder " + folder.getName() +
                               " which is in sync mode " + fSyncClass + " while account is in sync mode " + aSyncMode);
                     }
                     */
@@ -4255,7 +4255,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
             putBackground("clear notification flag for " + account.getDescription(), null, new Runnable() {
                         @Override
                         public void run() {
-                            Timber.v("Clearing notification flag for %s", account.getDescription());
+                            Timber.d("Clearing notification flag for %s", account.getDescription());
 
                             account.setRingNotified(false);
                             try {
@@ -4302,7 +4302,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                     // Never sync a folder that isn't displayed
                     /*
                     if (K9.isDebug())
-                        Timber.v(K9.LOG_TAG, "Not syncing folder " + folder.getName() +
+                        Timber.d(K9.LOG_TAG, "Not syncing folder " + folder.getName() +
                               " which is in display mode " + fDisplayClass + " while account is in display mode " + aDisplayMode);
                     */
 
@@ -4313,7 +4313,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                     // Do not sync folders in the wrong class
                     /*
                     if (K9.isDebug())
-                        Timber.v(K9.LOG_TAG, "Not syncing folder " + folder.getName() +
+                        Timber.d(K9.LOG_TAG, "Not syncing folder " + folder.getName() +
                               " which is in sync mode " + fSyncClass + " while account is in sync mode " + aSyncMode);
                     */
 
@@ -4333,7 +4333,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
 //                        @Override
 //                        public void run() {
 //                            if (K9.isDebug())
-//                                Timber.v(K9.LOG_TAG, "Clearing notification flag for " + account.getDescription());
+//                                Timber.d(K9.LOG_TAG, "Clearing notification flag for " + account.getDescription());
 //                            account.setRingNotified(false);
 //                            try {
 //                                AccountStats stats = account.getStats(context);
@@ -4358,11 +4358,11 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
             final long accountInterval,
             final MessagingListener listener) {
 
-        Timber.v("Folder %s was last synced @ %tc", folder.getName(), folder.getLastChecked());
+        Timber.d("Folder %s was last synced @ %tc", folder.getName(), folder.getLastChecked());
 
         if (!ignoreLastCheckedTime && folder.getLastChecked() >
                 (System.currentTimeMillis() - accountInterval)) {
-            Timber.v("Not syncing folder %s, previously synced @ %tc which would be too recent for the account " +
+            Timber.d("Not syncing folder %s, previously synced @ %tc which would be too recent for the account " +
                     "period", folder.getName(), folder.getLastChecked());
 
 
@@ -4382,7 +4382,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                             if (!ignoreLastCheckedTime && tLocalFolder.getLastChecked() >
                                     (System.currentTimeMillis() - accountInterval)) {
                                 if (K9.isDebug())
-                                    Timber.v(K9.LOG_TAG, "Not running Command for folder " + folder.getName()
+                                    Timber.d(K9.LOG_TAG, "Not running Command for folder " + folder.getName()
                                             + ", previously synced @ " + new Date(folder.getLastChecked())
                                             + " which would be too recent for the account period");
                                 return;
@@ -4417,13 +4417,13 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
 
 
         if (K9.isDebug())
-            Timber.v(K9.LOG_TAG, "Folder " + folder.getName() + " was last synced @ " +
+            Timber.d(K9.LOG_TAG, "Folder " + folder.getName() + " was last synced @ " +
                     new Date(folder.getLastChecked()));
 
         if (!ignoreLastCheckedTime && folder.getLastChecked() >
                 (System.currentTimeMillis() - accountInterval)) {
             if (K9.isDebug())
-                Timber.v(K9.LOG_TAG, "Not syncing folder " + folder.getName()
+                Timber.d(K9.LOG_TAG, "Not syncing folder " + folder.getName()
                         + ", previously synced @ " + new Date(folder.getLastChecked())
                         + " which would be too recent for the account period");
 
@@ -4443,7 +4443,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
 
                             if (!ignoreLastCheckedTime && tLocalFolder.getLastChecked() >
                                     (System.currentTimeMillis() - accountInterval)) {
-                                Timber.v("Not running Command for folder %s, previously synced @ %tc which would " +
+                                Timber.d("Not running Command for folder %s, previously synced @ %tc which would " +
                                                 "be too recent for the account period",
                                         folder.getName(), folder.getLastChecked());
                                 return;
@@ -4748,7 +4748,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                         || folder.getName().equals(account.getOutboxFolderName())) {
                     /*
                     if (K9.isDebug()) {
-                        Timber.v(K9.LOG_TAG, "Not pushing folder " + folder.getName() +
+                        Timber.d(K9.LOG_TAG, "Not pushing folder " + folder.getName() +
                               " which should never be pushed");
                     }
                     */
@@ -4764,7 +4764,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                     // Never push a folder that isn't displayed
                     /*
                     if (K9.isDebug()) {
-                        Timber.v(K9.LOG_TAG, "Not pushing folder " + folder.getName() +
+                        Timber.d(K9.LOG_TAG, "Not pushing folder " + folder.getName() +
                               " which is in display class " + fDisplayClass + " while account is in display mode " + aDisplayMode);
                     }
                     */
@@ -4776,7 +4776,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                     // Do not push folders in the wrong class
                     /*
                     if (K9.isDebug()) {
-                        Timber.v(K9.LOG_TAG, "Not pushing folder " + folder.getName() +
+                        Timber.d(K9.LOG_TAG, "Not pushing folder " + folder.getName() +
                               " which is in push mode " + fPushClass + " while account is in push mode " + aPushMode);
                     }
                     */
