@@ -403,8 +403,11 @@ public class TestUtils {
     }
 
     private void allowPermissions(){
-        allowPermissions(2);
-        allowPermissions(1);
+        device.waitForIdle();
+        do {
+            allowPermissions(2);
+            allowPermissions(1);
+        }while (!viewIsDisplayed((R.id.action_continue)));
     }
 
     private void allowPermissions(int index) {
