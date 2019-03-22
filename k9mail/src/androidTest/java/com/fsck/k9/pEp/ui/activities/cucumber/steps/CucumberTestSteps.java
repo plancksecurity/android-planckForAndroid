@@ -113,11 +113,13 @@ public class CucumberTestSteps {
             bot = new String[6];
             resources = InstrumentationRegistry.getTargetContext().getResources();
             startTimer(2000);
+            device.waitForIdle();
             if (testUtils.getCurrentActivity() == null) {
                 //startTimer(350);
                 testUtils.testReset = true;
                 try {
                     activityTestRule.launchActivity(new Intent());
+                    device.waitForIdle();
                 } catch (Exception ex) {
                     Timber.i("Cannot launch activity");
                 }
@@ -312,6 +314,7 @@ public class CucumberTestSteps {
         while (true) {
             device.waitForIdle();
             if (exists(onView(withId(R.id.message_container)))) {
+                onView(withId(R.id.message_container)).check(matches(isDisplayed()));
                 if (cucumberBody.equals("Rating/DecodedRating")) {
                     body = new String[2];
                     body[0] = "Rating | 6";
@@ -323,6 +326,7 @@ public class CucumberTestSteps {
                 compareTextWithWebViewText(body);
                 return;
             } else if (exists(onView(withId(R.id.message_content)))) {
+                onView(withId(R.id.message_content)).check(matches(isDisplayed()));
                 if (getTextFromView(onView(withId(R.id.message_content))).contains(cucumberBody)) {
                     return;
                 } else {
@@ -1058,6 +1062,7 @@ public class CucumberTestSteps {
         waitUntilIdle();
         onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
         checkPrivacyStatus(color);
+        device.waitForIdle();
     }
 
     @And("^I go back to message compose$")
