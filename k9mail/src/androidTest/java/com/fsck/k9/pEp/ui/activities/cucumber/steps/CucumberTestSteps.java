@@ -330,6 +330,8 @@ public class CucumberTestSteps {
                 if (getTextFromView(onView(withId(R.id.message_content))).contains(cucumberBody)) {
                     return;
                 } else {
+                    device.waitForIdle();
+                    onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
                     Assert.fail("Error: body text != text to compare");
                 }
             }
