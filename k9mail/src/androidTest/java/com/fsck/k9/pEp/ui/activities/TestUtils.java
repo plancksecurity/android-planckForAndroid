@@ -1216,11 +1216,13 @@ public class TestUtils {
         }
         doWaitForResource(R.id.message_list);
         doWaitForIdlingListViewResource(R.id.message_list);
+        onView(withId(R.id.message_list)).check(matches(isDisplayed()));
         while (!newEmail) {
             try {
                 device.waitForIdle();
                 swipeDownMessageList();
                 device.waitForIdle();
+                onView(withId(R.id.message_list)).check(matches(isDisplayed()));
                 onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 1));
                 if (messageListSize[1] > messageListSize[0]){
                     newEmail = true;
