@@ -1045,7 +1045,6 @@ public class CucumberTestSteps {
         while (!wait) {
             try {
                 device.waitForIdle();
-                onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
                 try {
                     UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
                     scroll.swipe(Direction.DOWN, 1.0f);
@@ -1062,7 +1061,6 @@ public class CucumberTestSteps {
         }
         device.waitForIdle();
         waitUntilIdle();
-        onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
         checkPrivacyStatus(color);
         device.waitForIdle();
     }
