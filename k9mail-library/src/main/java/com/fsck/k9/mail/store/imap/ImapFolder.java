@@ -534,12 +534,11 @@ class ImapFolder extends Folder<ImapMessage> {
     }
 
     private String getDateSearchString(Date earliestDate) {
-        // TODO: 19/03/19 IF this is the issue: USE UID to update
-        //if (earliestDate == null) {
+        if (earliestDate == null) {
             return "";
-        //}
+        }
 
-       // return " SINCE " + RFC3501_DATE.get().format(earliestDate);
+        return " SINCE " + RFC3501_DATE.get().format(earliestDate);
     }
 
     @Override
