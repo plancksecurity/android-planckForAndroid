@@ -139,7 +139,7 @@ public class TestUtils {
     }
 
     public void increaseTimeoutWait() {
-        long waitingTime = DateUtils.SECOND_IN_MILLIS * 200;
+        long waitingTime = DateUtils.SECOND_IN_MILLIS * 500;
         IdlingPolicies.setMasterPolicyTimeout(waitingTime, TimeUnit.MILLISECONDS);
         IdlingPolicies.setIdlingResourceTimeout(waitingTime, TimeUnit.MILLISECONDS);
     }
