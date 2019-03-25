@@ -170,6 +170,8 @@ public abstract class Message implements Part, Body {
      * @throws MessagingException
      */
     public void setFlag(Flag flag, boolean set) throws MessagingException {
+        Timber.e("Setting flag message id: %s, flag: %s, value: %b",
+                this.getMessageId(), flag.name(), set);
         if (set) {
             mFlags.add(flag);
         } else {
