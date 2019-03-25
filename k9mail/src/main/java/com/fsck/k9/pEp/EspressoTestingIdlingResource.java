@@ -10,15 +10,18 @@ public class EspressoTestingIdlingResource {
 
     private static CountingIdlingResource mCountingIdlingResource;
     private static int contador = 0;
+    private static boolean testStarted;
 
     public EspressoTestingIdlingResource(){
         mCountingIdlingResource =
                 new CountingIdlingResource(RESOURCE);
+        testStarted = false;
     }
 
     public static void increment() {
         if (mCountingIdlingResource != null) {
             contador++;
+            testStarted = true;
             Timber.i("Contador: " + contador);
             mCountingIdlingResource.increment();
         }
@@ -26,7 +29,7 @@ public class EspressoTestingIdlingResource {
 
     public static void decrement() {
         Timber.i("Contador entra en decrement");
-        if (mCountingIdlingResource != null) {
+        if (mCountingIdlingResource != null && testStarted) {
             contador--;
             Timber.i("Contador: " + contador);
             mCountingIdlingResource.decrement();
