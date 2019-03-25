@@ -213,7 +213,7 @@ class ImapConnection {
         String clientCertificateAlias = settings.getClientCertificateAlias();
 
         if (K9MailLib.isDebug() && DEBUG_PROTOCOL_IMAP) {
-            Timber.d("Connecting to %s as %s", host, address);
+            Timber.i("Connecting to %s as %s", host, address);
         }
 
         SocketAddress socketAddress = new InetSocketAddress(address, port);
@@ -247,7 +247,7 @@ class ImapConnection {
     private void readInitialResponse() throws IOException {
         ImapResponse initialResponse = responseParser.readResponse();
         if (K9MailLib.isDebug() && DEBUG_PROTOCOL_IMAP) {
-            Timber.d("%s <<< %s", getLogId(), initialResponse);
+            Timber.i("%s <<< %s", getLogId(), initialResponse);
         }
         extractCapabilities(Collections.singletonList(initialResponse));
     }
@@ -257,7 +257,7 @@ class ImapConnection {
         if (capabilityResponse != null) {
             Set<String> receivedCapabilities = capabilityResponse.getCapabilities();
             if (K9MailLib.isDebug()) {
-                Timber.d("Saving %s capabilities for %s", receivedCapabilities, getLogId());
+                Timber.i("Saving %s capabilities for %s", receivedCapabilities, getLogId());
             }
             capabilities = receivedCapabilities;
         }
@@ -269,7 +269,7 @@ class ImapConnection {
         CapabilityResponse capabilityResponse = CapabilityResponse.parse(responses);
         if (capabilityResponse != null) {
             Set<String> receivedCapabilities = capabilityResponse.getCapabilities();
-            Timber.d("Saving %s capabilities for %s", receivedCapabilities, getLogId());
+            Timber.i("Saving %s capabilities for %s", receivedCapabilities, getLogId());
             capabilities = receivedCapabilities;
         } else {
             Timber.i("Did not get capabilities in post-auth banner, requesting CAPABILITY for %s", getLogId());
@@ -394,7 +394,7 @@ class ImapConnection {
     }
 
     private AuthenticationFailedException handlePermanentXoauth2Failure(NegativeImapResponseException e) {
-        Timber.d(e, "Permanent failure during XOAUTH2");
+        Timber.i(e, "Permanent failure during XOAUTH2");
         return new AuthenticationFailedException(e.getMessage(), e);
     }
 
@@ -404,13 +404,13 @@ class ImapConnection {
         //if a token was invalid before use (e.g. due to expiry). But we don't
         //This is the intended behaviour per AccountManager
 
-        Timber.d(e, "Temporary failure - retrying with new token");
+        Timber.i(e, "Temporary failure - retrying with new token");
         try {
             return attemptXOAuth2();
         } catch (NegativeImapResponseException e2) {
             //Okay, we failed on a new token.
             //Invalidate the token anyway but assume it's permanent.
-            Timber.d(e, "Authentication exception for new token, permanent error assumed");
+            Timber.i(e, "Authentication exception for new token, permanent error assumed");
             oauthTokenProvider.invalidateToken(settings.getUsername());
             throw handlePermanentXoauth2Failure(e2);
         }
@@ -568,7 +568,7 @@ class ImapConnection {
         if (networkInfo != null) {
             int type = networkInfo.getType();
             if (K9MailLib.isDebug()) {
-                Timber.d("On network type %s", type);
+                Timber.i("On network type %s", type);
             }
 
             NetworkType networkType = NetworkType.fromConnectivityManagerType(type);
@@ -576,7 +576,7 @@ class ImapConnection {
         }
 
         if (K9MailLib.isDebug()) {
-            Timber.d("useCompression: %b", useCompression);
+            Timber.i("useCompression: %b", useCompression);
         }
 
         return useCompression;
@@ -586,7 +586,7 @@ class ImapConnection {
         try {
             executeSimpleCommand(Commands.COMPRESS_DEFLATE);
         } catch (NegativeImapResponseException e) {
-            Timber.d(e, "Unable to negotiate compression: ");
+            Timber.i(e, "Unable to negotiate compression: ");
             return;
         }
 
@@ -637,7 +637,7 @@ class ImapConnection {
             settings.setCombinedPrefix(null);
 
             if (K9MailLib.isDebug()) {
-                Timber.d("Got path '%s' and separator '%s'", prefix, hierarchyDelimiter);
+                Timber.i("Got path '%s' and separator '%s'", prefix, hierarchyDelimiter);
             }
         }
     }
@@ -653,7 +653,7 @@ class ImapConnection {
         try {
             listResponses = executeSimpleCommand(Commands.LIST + " \"\" \"\"");
         } catch (NegativeImapResponseException e) {
-            Timber.d(e, "Error getting path delimiter using LIST command");
+            Timber.i(e, "Error getting path delimiter using LIST command");
             return;
         }
 
@@ -664,7 +664,7 @@ class ImapConnection {
                 settings.setCombinedPrefix(null);
 
                 if (K9MailLib.isDebug()) {
-                    Timber.d("Got path delimiter '%s' for %s", settings.getPathDelimiter(), getLogId());
+                    Timber.i("Got path delimiter '%s' for %s", settings.getPathDelimiter(), getLogId());
                 }
 
                 break;
@@ -690,7 +690,7 @@ class ImapConnection {
 
     protected boolean isIdleCapable() {
         if (K9MailLib.isDebug()) {
-            Timber.d("Connection %s has %d capabilities", getLogId(), capabilities.size());
+            Timber.i("Connection %s has %d capabilities", getLogId(), capabilities.size());
         }
 
         return capabilities.contains(Capabilities.IDLE);
@@ -756,9 +756,9 @@ class ImapConnection {
 
             if (K9MailLib.isDebug() && DEBUG_PROTOCOL_IMAP) {
                 if (sensitive && !K9MailLib.isDebugSensitive()) {
-                    Timber.d("%s>>> [Command Hidden, Enable Sensitive Debug Logging To Show]", getLogId());
+                    Timber.i("%s>>> [Command Hidden, Enable Sensitive Debug Logging To Show]", getLogId());
                 } else {
-                    Timber.d("%s>>> %s %s %s", getLogId(), tag, command, initialClientResponse);
+                    Timber.i("%s>>> %s %s %s", getLogId(), tag, command, initialClientResponse);
                 }
             }
 
@@ -780,9 +780,9 @@ class ImapConnection {
 
             if (K9MailLib.isDebug() && DEBUG_PROTOCOL_IMAP) {
                 if (sensitive && !K9MailLib.isDebugSensitive()) {
-                    Timber.d("%s>>> [Command Hidden, Enable Sensitive Debug Logging To Show]", getLogId());
+                    Timber.i("%s>>> [Command Hidden, Enable Sensitive Debug Logging To Show]", getLogId());
                 } else {
-                    Timber.d("%s>>> %s %s", getLogId(), tag, command);
+                    Timber.i("%s>>> %s %s", getLogId(), tag, command);
                 }
             }
 
@@ -800,7 +800,7 @@ class ImapConnection {
         outputStream.flush();
 
         if (K9MailLib.isDebug() && DEBUG_PROTOCOL_IMAP) {
-            Timber.d("%s>>> %s", getLogId(), continuation);
+            Timber.i("%s>>> %s", getLogId(), continuation);
         }
     }
 
@@ -813,7 +813,7 @@ class ImapConnection {
             ImapResponse response = responseParser.readResponse(callback);
 
             if (K9MailLib.isDebug() && DEBUG_PROTOCOL_IMAP) {
-                Timber.d("%s<<<%s", getLogId(), response);
+                Timber.i("%s<<<%s", getLogId(), response);
             }
 
             return response;

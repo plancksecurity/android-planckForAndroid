@@ -175,7 +175,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public synchronized DecryptResult decryptMessage(MimeMessage source) {
-        Log.d(TAG, "decryptMessage() enter");
+        Timber.i("About to decrypt message: %s", source.getMessageId());
         Message srcMsg = null;
         Engine.decrypt_message_Return decReturn = null;
         try {
@@ -299,12 +299,12 @@ public class PEpProviderImpl implements PEpProvider {
 
         Date sent;
         if (source != null) {
-            Timber.d("Creating MimeMessage original message source != null ");
+            Timber.i("Creating MimeMessage original message source != null ");
             sent = source.getSentDate();
-            Timber.d("Source date: " + sent);
+            Timber.i("Source date: " + sent);
 
         } else {
-            Timber.d("Creating MimeMessage original message source == null ");
+            Timber.i("Creating MimeMessage original message source == null ");
         }
         sent = message.getSent();
         if (sent == null) sent = new Date();
