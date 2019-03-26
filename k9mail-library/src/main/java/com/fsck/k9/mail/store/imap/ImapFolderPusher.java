@@ -625,6 +625,7 @@ class ImapFolderPusher extends ImapFolder {
                     ImapMessage message = new ImapMessage(uid, ImapFolderPusher.this);
 
                     try {
+                        Timber.e("Setting flag DELETED from: %s", "ImapFolderPusher.removeMessages");
                         message.setFlagInternal(Flag.DELETED, true);
                     } catch (MessagingException me) {
                         Timber.e("Unable to set DELETED flag on message %s", message.getUid());

@@ -8,6 +8,8 @@ import java.util.Set;
 
 import com.fsck.k9.mail.Flag;
 
+import timber.log.Timber;
+
 import static com.fsck.k9.mail.store.imap.ImapResponseParser.equalsIgnoreCase;
 
 
@@ -47,6 +49,8 @@ class PermanentFlagsResponse {
 
             switch (compareFlag) {
                 case "\\deleted": {
+                    Timber.e("Setting flag DELETED from: %s", "PermanentFlagsResponse.parse");
+
                     flags.add(Flag.DELETED);
                     break;
                 }

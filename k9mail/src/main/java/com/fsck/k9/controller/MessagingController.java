@@ -1833,7 +1833,9 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
     private <T extends Message> void deleteMessage(T message, Account account, String folder, LocalFolder localFolder) throws MessagingException {
         List<String> uuids = new ArrayList<>();
         uuids.add(message.getUid());
+        Timber.e("Queuing flag DELETED from: %s", "MessagingController.deleteMessage");
         queueSetFlag(account, folder, true, Flag.DELETED, uuids);
+        Timber.e("Setting flag DELETED from: %s", "MessagingController.deleteMessage");
         localFolder.setFlags(Collections.singletonList(message), Collections.singleton(Flag.DELETED), true);
     }
 
@@ -2048,6 +2050,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
         }
         if (remoteMessage.isSet(Flag.DELETED)) {
             if (localMessage.getFolder().syncRemoteDeletions()) {
+                Timber.e("Setting flag DELETED from: %s, (cause: marked as deleted on server)", "MessagingControler.syncFlags");
                 localMessage.setFlag(Flag.DELETED, true);
                 messageChanged = true;
             }
@@ -2311,6 +2314,9 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                         l.messageUidChanged(account, folder, oldUid, localMessage.getUid());
                     }
                     if (remoteDate != null) {
+                        Timber.e("Setting flag DELETED from: %s (cause remote message are older than local)",
+                                "MessagingControler.processPengingAppend");
+
                         remoteMessage.setFlag(Flag.DELETED, true);
                         if (Expunge.EXPUNGE_IMMEDIATELY == account.getExpungePolicy()) {
                             remoteFolder.expunge();
@@ -3294,6 +3300,8 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
             Timber.i("Account does not have a sent mail folder; deleting sent message");
 
             message.setFlag(Flag.DELETED, true);
+            Timber.e("Setting flag DELETED from: %s", "MessagingControler.moveOrDeleteSentMessage:3303");
+
         } else {
             LocalFolder localSentFolder = localStore.getFolder(account.getSentFolderName());
             Timber.i("Moving sent message to folder '%s' (%d)",
@@ -3329,6 +3337,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
             LocalFolder localoutbox = localStore.getFolder(account.getOutboxFolderName());
             LocalMessage messageToDelete = localoutbox.getMessage(message.getUid());
             messageToDelete.setFlag(Flag.DELETED, true);
+            Timber.e("Setting flag DELETED from: %s", "MessagingControler.moveOrDeleteSentMessage::3339");
 
 //                        }
 
@@ -3856,7 +3865,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                     || !account.hasTrashFolder()) {
                 Timber.e("Deleting messages in trash folder or trash set to -None-, not copying");
 
-
+                Timber.e("Setting flag DELETED from: %s", "MessagingController.deleteMessagesSynchronous");
                 localFolder.setFlags(messages, Collections.singleton(Flag.DELETED), true);
             } else {
                 localTrashFolder = localStore.getFolder(account.getTrashFolderName());
@@ -3891,6 +3900,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                 processPendingCommands(account);
             } else if (account.getDeletePolicy() == DeletePolicy.ON_DELETE) {
                 if (folder.equals(account.getTrashFolderName())) {
+                    Timber.e("Queuing flag DELETED from: %s", "MessagingController.deleteMessagesSynchronous");
                     queueSetFlag(account, folder, true, Flag.DELETED, uids);
                 } else {
                     queueMoveOrCopy(account, folder, account.getTrashFolderName(), false, uids, uidMap);
@@ -3925,6 +3935,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
             if (remoteFolder.exists()) {
                 remoteFolder.open(Folder.OPEN_MODE_RW);
                 remoteFolder.setFlags(Collections.singleton(Flag.DELETED), true);
+                Timber.e("Setting flag DELETED from: %s", "MessagingController.processPendingEmptyTrash");
                 if (Expunge.EXPUNGE_IMMEDIATELY == account.getExpungePolicy()) {
                     remoteFolder.expunge();
                 }
@@ -3956,6 +3967,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                         localFolder.clearAllMessages();
                     } else {
                         localFolder.setFlags(Collections.singleton(Flag.DELETED), true);
+                        Timber.e("Setting flag DELETED from: %s", "MessagingController.emptyTrash");
                     }
 
                     for (MessagingListener l : getListeners()) {

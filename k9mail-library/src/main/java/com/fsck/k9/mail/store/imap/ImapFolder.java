@@ -386,7 +386,7 @@ class ImapFolder extends Folder<ImapMessage> {
         }
 
         Map<String, String> uidMapping = copyMessages(messages, folder);
-
+        Timber.e("Setting flag DELETED from: %s", "ImapFolder.moveMessages");
         setFlags(messages, Collections.singleton(Flag.DELETED), true);
 
         return uidMapping;
@@ -400,6 +400,8 @@ class ImapFolder extends Folder<ImapMessage> {
 
         if (trashFolderName == null || getName().equalsIgnoreCase(trashFolderName)) {
             setFlags(messages, Collections.singleton(Flag.DELETED), true);
+            Timber.e("Setting flag DELETED from: %s", "ImapFolder.delete");
+
         } else {
             ImapFolder remoteTrashFolder = getStore().getFolder(trashFolderName);
             String encodedTrashFolderName = folderNameCodec.encode(remoteTrashFolder.getPrefixedName());
@@ -869,6 +871,7 @@ class ImapFolder extends Folder<ImapMessage> {
                     String flag = flags.getString(i);
                     if (flag.equalsIgnoreCase("\\Deleted")) {
                         message.setFlagInternal(Flag.DELETED, true);
+                        Timber.e("Setting flag DELETED from: %s", "ImapFolder.handleFetchResponse");
                     } else if (flag.equalsIgnoreCase("\\Answered")) {
                         message.setFlagInternal(Flag.ANSWERED, true);
                     } else if (flag.equalsIgnoreCase("\\Seen")) {
@@ -1293,6 +1296,7 @@ class ImapFolder extends Folder<ImapMessage> {
             if (flag == Flag.SEEN) {
                 flagNames.add("\\Seen");
             } else if (flag == Flag.DELETED) {
+                Timber.e("Setting flag DELETED from: %s", "ImapFolder.combineFlags");
                 flagNames.add("\\Deleted");
             } else if (flag == Flag.ANSWERED) {
                 flagNames.add("\\Answered");
@@ -1433,6 +1437,7 @@ class ImapFolder extends Folder<ImapMessage> {
                     for (Flag flag : requiredFlags) {
                         switch (flag) {
                             case DELETED: {
+                                Timber.e("Setting flag DELETED from: %s", "ImapFolder.search.required");
                                 imapQuery += "DELETED ";
                                 break;
                             }
@@ -1467,6 +1472,7 @@ class ImapFolder extends Folder<ImapMessage> {
                     for (Flag flag : forbiddenFlags) {
                         switch (flag) {
                             case DELETED: {
+                                Timber.e("Setting flag DELETED from: %s", "ImapFolder.search.forbidden");
                                 imapQuery += "UNDELETED ";
                                 break;
                             }
