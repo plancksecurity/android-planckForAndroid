@@ -264,13 +264,17 @@ public class LocalMessage extends MimeMessage {
 
     @Override
     public void setFlag(final Flag flag, final boolean set) throws MessagingException {
-
+        if (flag.equals(Flag.DELETED)) {
+            Timber.e("Trying to set flag DELETED on LocalMessage");
+          //  return;
+        }
         try {
             this.localStore.database.execute(true, new DbCallback<Void>() {
                 @Override
                 public Void doDbWork(final SQLiteDatabase db) throws WrappedException, UnavailableStorageException {
                     try {
                         if (flag == Flag.DELETED && set) {
+                            Timber.e("Deleting message from: %s", "LocalMessage.setFlag.dbWork");
                             delete();
                         }
 

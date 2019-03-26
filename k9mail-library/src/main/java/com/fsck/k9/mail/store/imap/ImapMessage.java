@@ -8,6 +8,8 @@ import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeMessage;
 
+import timber.log.Timber;
+
 
 class ImapMessage extends MimeMessage {
     ImapMessage(String uid, Folder folder) {
@@ -26,6 +28,9 @@ class ImapMessage extends MimeMessage {
     @Override
     public void setFlag(Flag flag, boolean set) throws MessagingException {
         super.setFlag(flag, set);
+        if (flag.equals(Flag.DELETED)) {
+            Timber.e("Trying to set flag DELETED on ImapMessage");
+        }
         mFolder.setFlags(Collections.singletonList(this), Collections.singleton(flag), set);
     }
 

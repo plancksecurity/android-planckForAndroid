@@ -386,7 +386,7 @@ class ImapFolder extends Folder<ImapMessage> {
         }
 
         Map<String, String> uidMapping = copyMessages(messages, folder);
-        Timber.e("Setting flag DELETED from: %s", "ImapFolder.moveMessages");
+        Timber.e("Setting flags DELETED from: %s", "ImapFolder.moveMessages");
         setFlags(messages, Collections.singleton(Flag.DELETED), true);
 
         return uidMapping;
@@ -871,7 +871,7 @@ class ImapFolder extends Folder<ImapMessage> {
                     String flag = flags.getString(i);
                     if (flag.equalsIgnoreCase("\\Deleted")) {
                         message.setFlagInternal(Flag.DELETED, true);
-                        Timber.e("Setting flag DELETED from: %s", "ImapFolder.handleFetchResponse");
+                        Timber.e("Setting flag DELETED from: %s came from IMAP", "ImapFolder.handleFetchResponse");
                     } else if (flag.equalsIgnoreCase("\\Answered")) {
                         message.setFlagInternal(Flag.ANSWERED, true);
                     } else if (flag.equalsIgnoreCase("\\Seen")) {
@@ -1349,6 +1349,10 @@ class ImapFolder extends Folder<ImapMessage> {
     @Override
     public void setFlags(List<? extends Message> messages, final Set<Flag> flags, boolean value)
             throws MessagingException {
+        if (flags.contains(Flag.DELETED)){
+            Timber.e("Trying to set flags DELETED (contains) on ImapFolder");
+        }
+
         open(OPEN_MODE_RW);
         checkOpen();
 

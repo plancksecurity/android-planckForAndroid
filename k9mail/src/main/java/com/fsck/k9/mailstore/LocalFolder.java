@@ -1730,6 +1730,10 @@ public class LocalFolder extends Folder<LocalMessage> implements Serializable {
     @Override
     public void setFlags(final List<? extends Message> messages, final Set<Flag> flags, final boolean value)
     throws MessagingException {
+        if (flags.contains(Flag.DELETED)) {
+            Timber.e("Trying to set flags DELETED (contains) on LocalFolder");
+           // return;
+        }
         open(OPEN_MODE_RW);
 
         // Use one transaction to set all flags
