@@ -152,6 +152,8 @@ public class CucumberTestSteps {
         device.waitForIdle();
         if (!exists(onView(withId(R.id.message_list)))) {
             testUtils.createAccount(false);
+        } else {
+            onView(withId(R.id.message_list)).check(matches(isDisplayed()));
         }
     }
 
