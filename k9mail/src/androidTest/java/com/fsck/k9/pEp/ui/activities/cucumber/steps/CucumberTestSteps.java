@@ -1044,6 +1044,7 @@ public class CucumberTestSteps {
         while (!viewIsDisplayed(R.id.toolbar)) {
             device.waitForIdle();
         }
+        onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
         boolean wait = false;
         while (!wait) {
             try {
