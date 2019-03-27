@@ -620,8 +620,10 @@ public class CucumberTestSteps {
     public void I_click_wrong_trust_words() {
         timeRequiredForThisMethod(10);
         testUtils.doWaitForResource(R.id.toolbar);
-        device.waitForIdle();
-        waitUntilIdle();
+        while (!exists(onView(withId(R.id.toolbar)))) {
+            device.waitForIdle();
+            waitUntilIdle();
+        }
         onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
         if (!exists(onView(withId(R.id.reply_message)))) {
             device.waitForIdle();
@@ -648,6 +650,10 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(10);
         testUtils.clickMessageStatus();
         device.waitForIdle();
+        while (!exists(onView(withId(R.id.handshake_button_text)))) {
+            device.waitForIdle();
+        }
+        onView(withId(R.id.handshake_button_text)).check(matches(isDisplayed()));
         onView(withId(R.id.handshake_button_text)).perform(click());
         device.waitForIdle();
         device.pressBack();
