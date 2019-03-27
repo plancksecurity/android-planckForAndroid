@@ -860,6 +860,7 @@ public class CucumberTestSteps {
             try {
                 device.waitForIdle();
                 if (exists(onView(withId(R.id.accounts_list)))) {
+                    onView(withId(R.id.accounts_list)).check(matches(isCompletelyDisplayed()));
                     while (exists(onView(withId(R.id.accounts_list)))) {
                         onView(withId(R.id.accounts_list)).perform(click());
                         device.waitForIdle();
