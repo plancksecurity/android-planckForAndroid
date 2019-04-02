@@ -50,7 +50,6 @@ import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.controller.SimpleMessagingListener;
 import com.fsck.k9.helper.SizeFormatter;
-import com.fsck.k9.job.K9JobManager;
 import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.power.TracingPowerManager;
@@ -62,6 +61,7 @@ import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
+import com.fsck.k9.service.MailServiceLegacy;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -78,7 +78,7 @@ import static com.fsck.k9.activity.MessageList.EXTRA_SEARCH_ACCOUNT;
  * Activity shows list of the Account's folders
  */
 
-public class FolderList extends K9ListActivity {
+public class FolderListLegacy extends K9ListActivity {
     private static final String EXTRA_ACCOUNT = "account";
 
     private static final String EXTRA_FROM_SHORTCUT = "fromShortcut";
@@ -110,9 +110,6 @@ public class FolderList extends K9ListActivity {
     private EditText searchInput;
     private View clearSearchIcon;
 
-
-    private final K9JobManager jobManager = K9.jobManager;
-
     class FolderListHandler extends Handler {
 
         public void refreshTitle() {
@@ -127,7 +124,7 @@ public class FolderList extends K9ListActivity {
                         mActionBarUnread.setVisibility(View.GONE);
                     }
 
-                    String operation = mAdapter.mListener.getOperation(FolderList.this);
+                    String operation = mAdapter.mListener.getOperation(FolderListLegacy.this);
                     if (operation.length() < 1) {
                         mActionBarSubTitle.setText(mAccount.getEmail());
                         mActionBarTitle.setText(getString(R.string.folders_title));
@@ -246,7 +243,7 @@ public class FolderList extends K9ListActivity {
     }
 
     public static Intent actionHandleAccountIntent(Context context, Account account, boolean fromShortcut) {
-        Intent intent = new Intent(context, FolderList.class);
+        Intent intent = new Intent(context, FolderListLegacy.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra(EXTRA_ACCOUNT, account.getUuid());
 
@@ -528,7 +525,7 @@ public class FolderList extends K9ListActivity {
         mAccount.setFolderDisplayMode(newMode);
         mAccount.save(Preferences.getPreferences(this));
         if (mAccount.getFolderPushMode() != FolderMode.NONE) {
-            jobManager.schedulePusherRefresh();
+            MailServiceLegacy.actionRestartPushers(this, null);
         }
         mAdapter.getFilter().filter(null);
         onRefresh(false);
@@ -710,7 +707,7 @@ public class FolderList extends K9ListActivity {
         });
     }
 
-    @Override public boolean onContextItemSelected(android.view.MenuItem item) {
+    @Override public boolean onContextItemSelected(MenuItem item) {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) item .getMenuInfo();
         FolderInfoHolder folder = (FolderInfoHolder) mAdapter.getItem(info.position);
 
@@ -826,7 +823,7 @@ public class FolderList extends K9ListActivity {
                     List<FolderInfoHolder> newFolders = new LinkedList<FolderInfoHolder>();
                     List<FolderInfoHolder> topFolders = new LinkedList<FolderInfoHolder>();
 
-                    Account.FolderMode aMode = account.getFolderDisplayMode();
+                    FolderMode aMode = account.getFolderDisplayMode();
                     for (LocalFolder folder : folders) {
                         Folder.FolderClass fMode = folder.getDisplayClass();
 
@@ -894,7 +891,7 @@ public class FolderList extends K9ListActivity {
                 LocalFolder localFolder = null;
                 try {
                     if (account != null && folderName != null) {
-                        if (!account.isAvailable(FolderList.this)) {
+                        if (!account.isAvailable(FolderListLegacy.this)) {
                             Timber.i("not refreshing folder of unavailable account");
                             return;
                         }
@@ -1311,7 +1308,7 @@ public class FolderList extends K9ListActivity {
 
         @Override
         public void onClick(View v) {
-            MessageList.actionDisplaySearch(FolderList.this, search, true, false, true);
+            MessageList.actionDisplaySearch(FolderListLegacy.this, search, true, false, true);
         }
     }
 }

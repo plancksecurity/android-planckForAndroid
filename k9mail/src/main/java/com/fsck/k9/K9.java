@@ -23,12 +23,17 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.evernote.android.job.JobManager;
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.UpgradeDatabases;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.SimpleMessagingListener;
+import com.fsck.k9.job.K9JobCreator;
+import com.fsck.k9.job.K9JobManager;
+import com.fsck.k9.job.MailSyncJobManager;
+import com.fsck.k9.job.PusherRefreshJobManager;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.K9MailLib;
 import com.fsck.k9.mail.Message;
@@ -47,7 +52,7 @@ import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.UnreadWidgetProvider;
 import com.fsck.k9.service.BootReceiver;
-import com.fsck.k9.service.MailService;
+import com.fsck.k9.service.MailServiceLegacy;
 import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
 import com.fsck.k9.widget.list.MessageListWidgetProvider;
@@ -87,6 +92,8 @@ public class K9 extends Application {
     public PEpProvider pEpProvider, pEpSyncProvider;
     private Account currentAccount;
     private ApplicationComponent component;
+
+    public static K9JobManager jobManager;
 
     public boolean isBatteryOptimizationAsked() {
         return batteryOptimizationAsked;
@@ -417,9 +424,9 @@ public class K9 extends Application {
         int acctLength = Preferences.getPreferences(appContext).getAvailableAccounts().size();
         boolean enable = acctLength > 0;
 
-        setServicesEnabled(appContext, enable, null);
+        setServicesEnabled(appContext, enable);
 
-        updateDeviceIdleReceiver(appContext, enable);
+        //updateDeviceIdleReceiver(appContext, enable);
     }
 
     private static void updateDeviceIdleReceiver(Context context, boolean enable) {
@@ -431,19 +438,20 @@ public class K9 extends Application {
         }
     }
 
-    private static void setServicesEnabled(Context context, boolean enabled, Integer wakeLockId) {
+    private static void setServicesEnabled(Context context, boolean enabled) {
 
         PackageManager pm = context.getPackageManager();
 
-        if (!enabled && pm.getComponentEnabledSetting(new ComponentName(context, MailService.class)) ==
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
-            /*
-             * If no accounts now exist but the service is still enabled we're about to disable it
-             * so we'll reschedule to kill off any existing alarms.
-             */
-            MailService.actionReset(context, wakeLockId);
-        }
-        Class<?>[] classes = { MessageCompose.class, BootReceiver.class, MailService.class };
+//        if (!enabled && pm.getComponentEnabledSetting(new ComponentName(context, MailService.class)) ==
+//                PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
+//            /*
+//             * If no accounts now exist but the service is still enabled we're about to disable it
+//             * so we'll reschedule to kill off any existing alarms.
+//             */
+//            MailService.actionReset(context, wakeLockId);
+//        }
+
+        Class<?>[] classes = { MessageCompose.class, BootReceiver.class, MailServiceLegacy.class };
 
         for (Class<?> clazz : classes) {
 
@@ -459,15 +467,18 @@ public class K9 extends Application {
             }
         }
 
-        if (enabled && pm.getComponentEnabledSetting(new ComponentName(context, MailService.class)) ==
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
-            /*
-             * And now if accounts do exist then we've just enabled the service and we want to
-             * schedule alarms for the new accounts.
-             */
-            MailService.actionReset(context, wakeLockId);
-        }
+//        if (enabled && pm.getComponentEnabledSetting(new ComponentName(context, MailService.class)) ==
+//                PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
+//            /*
+//             * And now if accounts do exist then we've just enabled the service and we want to
+//             * schedule alarms for the new accounts.
+//             */
+//            MailService.actionReset(context, wakeLockId);
+//        }
 
+        if (enabled) {
+            jobManager.scheduleAllMailJobs();
+        }
     }
 
     /**
@@ -609,7 +620,6 @@ public class K9 extends Application {
         app = this;
         Globals.setContext(this);
         oAuth2TokenStore = new AndroidAccountOAuth2TokenStore(this);
-
         K9MailLib.setDebugStatus(new K9MailLib.DebugStatus() {
             @Override public boolean enabled() {
                 return DEBUG;
@@ -632,6 +642,8 @@ public class K9 extends Application {
         BinaryTempFileBody.setTempDirectory(getCacheDir());
 
         LocalKeyStore.setKeyStoreLocation(getDir("KeyStore", MODE_PRIVATE).toString());
+
+        initJobManager(prefs);
 
         /*
          * Enable background sync of messages
@@ -661,6 +673,7 @@ public class K9 extends Application {
                         folder,
                         message.getUid());
             }
+
 
             private void updateUnreadWidget() {
                 try {
@@ -727,6 +740,17 @@ public class K9 extends Application {
             String packageName = getPackageName();
             batteryOptimizationAsked = powerManager.isIgnoringBatteryOptimizations(packageName);
         }
+    }
+
+    private void initJobManager(Preferences prefs) {
+        MessagingController messagingController = MessagingController.getInstance(this);
+
+        MailSyncJobManager mailSyncJobManager = new MailSyncJobManager(messagingController, prefs);
+        PusherRefreshJobManager pusherRefreshJobManager = new PusherRefreshJobManager(this, messagingController, prefs);
+        K9JobCreator jobCreator = new K9JobCreator(mailSyncJobManager, pusherRefreshJobManager);
+
+        jobManager = new K9JobManager(jobCreator, JobManager.create(this), prefs,
+                mailSyncJobManager, pusherRefreshJobManager);
     }
 
     private void pEpInitEnvironment() {

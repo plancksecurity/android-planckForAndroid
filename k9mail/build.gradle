@@ -18,6 +18,7 @@ buildscript {
 }
 
 apply plugin: "com.android.application"
+apply plugin: 'kotlin-android'
 
 if (!rootProject.optimizeForDevelopment) {
     apply from: "../gradle/plugins/checkstyle-android.gradle"
@@ -77,6 +78,7 @@ dependencies {
     implementation "org.jsoup:jsoup:${jsoupVersion}"
     implementation "uk.co.chrisjenx:calligraphy:${callygraphyVersion}"
     //implementation "com.klinkerapps:floating-tutorial:1.0.4"
+    implementation 'com.evernote:android-job:1.2.6'
 
     androidTestImplementation "com.android.support.test.espresso:espresso-intents:${espressoVersion}"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:${espressoVersion}"
@@ -95,6 +97,7 @@ dependencies {
 
     implementation 'com.android.support.test.espresso:espresso-idling-resource:3.0.1'
     androidTestImplementation "com.android.support.test.espresso.idling:idling-concurrent:3.0.1"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 android {
@@ -104,7 +107,7 @@ android {
         applicationId "${appId}"
         versionCode 23
         minSdkVersion 18
-        targetSdkVersion 25
+        targetSdkVersion 27
         setProperty("archivesBaseName", "$version-$versionCode")
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]
 

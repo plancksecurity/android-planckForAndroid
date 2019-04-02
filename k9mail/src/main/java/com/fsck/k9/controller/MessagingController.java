@@ -5073,6 +5073,30 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
         void act(Account account, LocalFolder messageFolder, List<LocalMessage> messages);
     }
 
+    public void checkMailBlocking(Account account) {
+        final CountDownLatch latch = new CountDownLatch(1);
+        checkMail(context, account, true, false, new SimpleMessagingListener() {
+            @Override
+            public void checkMailFinished(Context context, Account account) {
+                latch.countDown();
+            }
+        });
+
+        Timber.v("checkMailBlocking(%s) about to await latch release", account.getDescription());
+
+        try {
+            latch.await();
+            Timber.v("checkMailBlocking(%s) got latch release", account.getDescription());
+        } catch (Exception e) {
+            Timber.e(e, "Interrupted while awaiting latch release");
+        }
+    }
+
+
+    public Pusher getPusher(Account account) {
+        return pushers.get(account);
+    }
+
     private static class Command implements Comparable<Command> {
         public Runnable runnable;
         public MessagingListener listener;

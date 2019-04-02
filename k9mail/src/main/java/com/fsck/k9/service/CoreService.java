@@ -6,7 +6,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
@@ -14,6 +16,7 @@ import android.os.PowerManager;
 import timber.log.Timber;
 import com.fsck.k9.K9;
 import com.fsck.k9.controller.MessagingController;
+import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.power.TracingPowerManager;
 import com.fsck.k9.mail.power.TracingPowerManager.TracingWakeLock;
 
@@ -279,7 +282,7 @@ public abstract class CoreService extends Service {
      *         If this parameter is {@code null} you need to call {@code setAutoShutdown(false)}
      *         otherwise the auto shutdown code will stop the service.
      */
-    public void execute(Context context, final Runnable runner, int wakeLockTime,
+    public void execute(final Context context, final Runnable runner, int wakeLockTime,
             final Integer startId) {
 
         boolean serviceShutdownScheduled = false;
@@ -295,7 +298,8 @@ public abstract class CoreService extends Service {
             public void run() {
                 try {
                     // Get the sync status
-                    boolean oldIsSyncDisabled = MailService.isSyncDisabled();
+                    //boolean oldIsSyncDisabled = MailService.isSyncDisabled();
+                    boolean oldIsSyncDisabled = CoreService.isMailSyncDisabled(context);
 
                     Timber.d("CoreService (%s) running Runnable %d with startId %d",
                             className, runner.hashCode(), startId);
@@ -305,8 +309,10 @@ public abstract class CoreService extends Service {
 
                     // If the sync status changed while runner was executing, notify
                     // MessagingController
-                    if (MailService.isSyncDisabled() != oldIsSyncDisabled) {
+                    if (CoreService.isMailSyncDisabled(context) != oldIsSyncDisabled) {
+                        //TODO INJECT DEPENDENCY
                         MessagingController.getInstance(getApplication()).systemStatusChanged();
+
                     }
                 } finally {
                     // Making absolutely sure stopSelf() will be called
@@ -415,5 +421,29 @@ public abstract class CoreService extends Service {
     public IBinder onBind(Intent intent) {
         // Unused
         return null;
+    }
+
+    public static boolean isMailSyncDisabled(Context context){
+
+        final boolean hasConnectivity = Utility.hasConnectivity(context);
+        @SuppressLint("MissingPermission")
+        final boolean autoSync = ContentResolver.getMasterSyncAutomatically();
+        boolean doBackground = true;
+        K9.BACKGROUND_OPS bOps = K9.getBackgroundOps();
+
+        switch (bOps) {
+            case NEVER:
+                doBackground = false;
+                break;
+            case ALWAYS:
+                doBackground = true;
+                break;
+            case WHEN_CHECKED_AUTO_SYNC:
+                doBackground = autoSync;
+                break;
+        }
+
+        return !(doBackground && hasConnectivity);
+
     }
 }

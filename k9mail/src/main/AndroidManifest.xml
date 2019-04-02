@@ -302,7 +302,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
-            <intent-filter>
+            <!--intent-filter>
                 <action android:name="android.intent.action.DEVICE_STORAGE_LOW" />
             </intent-filter>
             <intent-filter>
@@ -310,7 +310,7 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter>
+            </intent-filter-->
             <intent-filter>
                 <action android:name="android.net.conn.BACKGROUND_DATA_SETTING_CHANGED" />
             </intent-filter>
@@ -383,7 +383,7 @@
             android:enabled="true"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
         <service
-            android:name=".service.MailService"
+            android:name=".service.MailServiceLegacy"
             android:enabled="true" />
         <service
             android:name=".notification.NotificationActionService"
@@ -392,7 +392,7 @@
             android:name=".service.PushService"
             android:enabled="true" />
         <service
-            android:name=".service.PollService"
+            android:name=".service.PollServiceLegacy"
             android:enabled="true" />
         <service
             android:name=".service.RemoteControlService"

@@ -7,22 +7,24 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import timber.log.Timber;
-import com.fsck.k9.*;
+
+import com.fsck.k9.Account;
+import com.fsck.k9.Preferences;
+import com.fsck.k9.R;
 import com.fsck.k9.activity.FolderInfoHolder;
 import com.fsck.k9.activity.K9PreferenceActivity;
-import com.fsck.k9.job.K9JobManager;
 import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mail.Folder.FolderClass;
-
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalStore;
+import com.fsck.k9.service.MailServiceLegacy;
 
-public class FolderSettings extends K9PreferenceActivity {
+import timber.log.Timber;
+
+public class FolderSettingsLegacy extends K9PreferenceActivity {
 
     private static final String EXTRA_FOLDER_NAME = "com.fsck.k9.folderName";
     private static final String EXTRA_ACCOUNT = "com.fsck.k9.account";
@@ -44,10 +46,8 @@ public class FolderSettings extends K9PreferenceActivity {
     private ListPreference mPushClass;
     private ListPreference mNotifyClass;
 
-    private final K9JobManager jobManager = K9.jobManager;
-
     public static void actionSettings(Context context, Account account, String folderName) {
-        Intent i = new Intent(context, FolderSettings.class);
+        Intent i = new Intent(context, FolderSettingsLegacy.class);
         i.putExtra(EXTRA_FOLDER_NAME, folderName);
         i.putExtra(EXTRA_ACCOUNT, account.getUuid());
         context.startActivity(i);
@@ -162,7 +162,7 @@ public class FolderSettings extends K9PreferenceActivity {
 
         if (oldPushClass != newPushClass
                 || (newPushClass != FolderClass.NO_CLASS && oldDisplayClass != newDisplayClass)) {
-            jobManager.schedulePusherRefresh();
+            MailServiceLegacy.actionRestartPushers(getApplication(), null);
         }
     }
 
