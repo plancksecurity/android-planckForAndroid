@@ -1017,6 +1017,8 @@ public class Account implements BaseAccount, StoreConfig {
      * Returns -1 for never.
      */
     public synchronized int getAutomaticCheckIntervalMinutes() {
+        //https://developer.android.com/reference/androidx/work/PeriodicWorkRequest#MIN_PERIODIC_INTERVAL_MILLIS
+        if (automaticCheckIntervalMinutes != -1) return Math.max(15, automaticCheckIntervalMinutes);
         return automaticCheckIntervalMinutes;
     }
 
