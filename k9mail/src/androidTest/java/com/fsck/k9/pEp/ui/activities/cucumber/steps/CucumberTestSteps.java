@@ -650,11 +650,11 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(10);
         testUtils.clickMessageStatus();
         device.waitForIdle();
-        while (!exists(onView(withId(R.id.handshake_button_text)))) {
+        while (!exists(onView(withId(R.id.wrongTrustwords)))) {
             device.waitForIdle();
         }
-        onView(withId(R.id.handshake_button_text)).check(matches(isDisplayed()));
-        onView(withId(R.id.handshake_button_text)).perform(click());
+        onView(withId(R.id.wrongTrustwords)).check(matches(isDisplayed()));
+        onView(withId(R.id.wrongTrustwords)).perform(click());
         device.waitForIdle();
         device.pressBack();
         device.waitForIdle();
