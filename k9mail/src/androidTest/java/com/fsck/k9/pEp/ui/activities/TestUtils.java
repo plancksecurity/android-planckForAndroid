@@ -1133,6 +1133,9 @@ public class TestUtils {
         } catch (Exception noJSON) {
             Timber.i("There are no JSON files attached");
         }
+        device.waitForIdle();
+        onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
+        device.waitForIdle();
     }
     public void emptyFolder (String folderName) {
         device.waitForIdle();
