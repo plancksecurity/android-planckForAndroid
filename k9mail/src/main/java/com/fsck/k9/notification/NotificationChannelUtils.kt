@@ -1,7 +1,6 @@
 package com.fsck.k9.notification
 
 
-import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationChannelGroup
 import android.app.NotificationManager
@@ -9,7 +8,6 @@ import android.content.Context
 import android.os.Build
 import android.support.annotation.RequiresApi
 import com.fsck.k9.Account
-import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -42,7 +40,7 @@ class NotificationChannelUtils @Inject constructor(@Named("AppContext") private 
             notificationManager: NotificationManager, accounts: List<Account>) {
         for (account in accounts) {
             val groupId = account.uuid
-            val group = NotificationChannelGroup(groupId, account.name)
+            val group = NotificationChannelGroup(groupId, displayName(account))
 
             val channelMessages = getChannelMessages(account)
             val channelMiscellaneous = getChannelMiscellaneous(account)
@@ -68,7 +66,7 @@ class NotificationChannelUtils @Inject constructor(@Named("AppContext") private 
             var shouldDelete = false
             if (!existingAccounts.containsKey(groupId)) {
                 shouldDelete = true
-            } else if (existingAccounts[groupId]?.name != group.name.toString()) {
+            } else if (displayName(existingAccounts[groupId]) != group.name.toString()) {
                 // There is no way to change group names. Deleting group, so it is re-generated.
                 shouldDelete = true
             }
@@ -119,5 +117,9 @@ class NotificationChannelUtils @Inject constructor(@Named("AppContext") private 
         } else {
             "miscellaneous_channel_$accountUuid"
         }
+    }
+
+    fun displayName(account: Account?): String {
+        return account?.name + " (" +account?.email +")"
     }
 }
