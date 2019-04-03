@@ -6,6 +6,7 @@ import android.app.LoaderManager;
 import android.content.Context;
 
 import com.fsck.k9.K9;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.manualsync.ImportKeyController;
@@ -61,5 +62,10 @@ public class PEpModule {
     @Provides
     public ImportKeyController provideImportkeyController(@Named("Background") PEpProvider  pEp) {
         return ImportKeyControllerFactory.getInstance().getImportKeyController(context, pEp);
+    }
+
+    @Provides
+    public Preferences providePreferences() {
+        return Preferences.getPreferences(context);
     }
 }

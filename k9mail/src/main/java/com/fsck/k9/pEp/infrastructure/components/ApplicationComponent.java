@@ -12,6 +12,7 @@ import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
 import com.fsck.k9.pEp.ui.fragments.PEpFragment;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Component;
@@ -30,5 +31,6 @@ public interface ApplicationComponent {
 
     PostExecutionThread getPostExecutionThread();
 
-    Application getContext();
+    @Named("AppContext")
+    Context getContext();
 }

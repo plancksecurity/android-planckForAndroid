@@ -18,7 +18,7 @@ class MailSyncJobManager(
 
         getSyncIntervalInMillisecondsIfEnabled(account)?.let { syncInterval ->
 
-            Timber.v("scheduling mail sync job for ${account.description}")
+            Timber.v("scheduling mail sync job for ${account.description} :: $syncInterval")
 
             val extras = PersistableBundleCompat()
             extras.putString(K9JobManager.EXTRA_KEY_ACCOUNT_UUID, account.uuid)

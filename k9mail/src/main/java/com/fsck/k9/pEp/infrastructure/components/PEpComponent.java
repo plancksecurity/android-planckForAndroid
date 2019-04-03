@@ -5,6 +5,7 @@ import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.pEp.filepicker.SelectPathFragment;
 import com.fsck.k9.pEp.infrastructure.PerActivity;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
+import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
 import com.fsck.k9.pEp.ui.About;

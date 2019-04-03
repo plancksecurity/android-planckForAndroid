@@ -51,7 +51,7 @@ abstract class BaseNotifications {
     }
 
     protected NotificationCompat.Builder createAndInitializeNotificationBuilder(Account account) {
-        return controller.createNotificationBuilder()
+        return controller.createNotificationBuilder(account, NotificationChannelUtils.ChannelType.MESSAGES)
                 .setSmallIcon(getNewMailNotificationIcon())
                 .setColor(account.getChipColor())
                 .setWhen(System.currentTimeMillis())

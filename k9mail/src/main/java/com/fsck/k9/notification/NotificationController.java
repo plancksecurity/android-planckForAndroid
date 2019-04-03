@@ -10,6 +10,7 @@ import android.text.TextUtils;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mailstore.LocalMessage;
@@ -33,6 +34,7 @@ public class NotificationController {
     private final SendFailedNotifications sendFailedNotifications;
     private final NewMailNotifications newMailNotifications;
 
+    private final NotificationChannelUtils channelUtils;
 
     public static NotificationController newInstance(Context context) {
         Context appContext = context.getApplicationContext();
@@ -52,6 +54,7 @@ public class NotificationController {
     NotificationController(Context context, NotificationManagerCompat notificationManager) {
         this.context = context;
         this.notificationManager = notificationManager;
+        this.channelUtils = new NotificationChannelUtils(context, Preferences.getPreferences(context));
 
         NotificationActionCreator actionBuilder = new NotificationActionCreator(context);
         certificateErrorNotifications = new CertificateErrorNotifications(this);
@@ -158,7 +161,8 @@ public class NotificationController {
         return notificationManager;
     }
 
-    NotificationCompat.Builder createNotificationBuilder() {
-        return new NotificationCompat.Builder(context);
+    NotificationCompat.Builder createNotificationBuilder(Account account, NotificationChannelUtils.ChannelType channelType) {
+        return new NotificationCompat.Builder(context,
+                channelUtils.getChannelIdFor(account, channelType));
     }
 }
