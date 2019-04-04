@@ -4,8 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.PowerManager;
-import timber.log.Timber;
-import com.fsck.k9.*;
+
+import com.fsck.k9.Account;
+import com.fsck.k9.K9;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.SimpleMessagingListener;
 import com.fsck.k9.mail.power.TracingPowerManager;
@@ -14,7 +15,9 @@ import com.fsck.k9.mail.power.TracingPowerManager.TracingWakeLock;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PollService extends CoreService {
+import timber.log.Timber;
+
+public class PollServiceLegacy extends CoreService {
     private static String START_SERVICE = "com.fsck.k9.service.PollService.startService";
     private static String STOP_SERVICE = "com.fsck.k9.service.PollService.stopService";
 
@@ -22,16 +25,16 @@ public class PollService extends CoreService {
 
     public static void startService(Context context) {
         Intent i = new Intent();
-        i.setClass(context, PollService.class);
-        i.setAction(PollService.START_SERVICE);
+        i.setClass(context, PollServiceLegacy.class);
+        i.setAction(PollServiceLegacy.START_SERVICE);
         addWakeLock(context, i);
         context.startService(i);
     }
 
     public static void stopService(Context context) {
         Intent i = new Intent();
-        i.setClass(context, PollService.class);
-        i.setAction(PollService.STOP_SERVICE);
+        i.setClass(context, PollServiceLegacy.class);
+        i.setAction(PollServiceLegacy.STOP_SERVICE);
         addWakeLock(context, i);
         context.startService(i);
     }
@@ -83,7 +86,7 @@ public class PollService extends CoreService {
         public synchronized void wakeLockAcquire() {
             TracingWakeLock oldWakeLock = wakeLock;
 
-            TracingPowerManager pm = TracingPowerManager.getPowerManager(PollService.this);
+            TracingPowerManager pm = TracingPowerManager.getPowerManager(PollServiceLegacy.this);
             wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "PollService wakeLockAcquire");
             wakeLock.setReferenceCounted(false);
             wakeLock.acquire(K9.WAKE_LOCK_TIMEOUT);
@@ -123,9 +126,9 @@ public class PollService extends CoreService {
 
             MessagingController controller = MessagingController.getInstance(getApplication());
             controller.setCheckMailListener(null);
-            MailService.saveLastCheckEnd(getApplication());
+            MailServiceLegacy.saveLastCheckEnd(getApplication());
 
-            MailService.actionReschedulePoll(PollService.this, null);
+            MailServiceLegacy.actionReschedulePoll(PollServiceLegacy.this, null);
             wakeLockRelease();
 
             Timber.i("PollService stopping with startId = %d", startId);

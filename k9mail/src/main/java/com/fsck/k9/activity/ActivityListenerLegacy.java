@@ -11,9 +11,9 @@ import com.fsck.k9.AccountStats;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.controller.SimpleMessagingListener;
-import com.fsck.k9.service.CoreService;
+import com.fsck.k9.service.MailServiceLegacy;
 
-public class ActivityListener extends SimpleMessagingListener {
+public class ActivityListenerLegacy extends SimpleMessagingListener {
     private Account mAccount = null;
     private String mLoadingFolderName = null;
     private String mLoadingHeaderFolderName = null;
@@ -40,7 +40,24 @@ public class ActivityListener extends SimpleMessagingListener {
             return getActionInProgressOperation(context);
 
         } else {
-            if (CoreService.isMailSyncDisabled(context)) {
+            long nextPollTime = MailServiceLegacy.getNextPollTime();
+            if (nextPollTime != -1) {
+                return context.getString(R.string.status_next_poll,
+                        DateUtils.getRelativeTimeSpanString(nextPollTime, System.currentTimeMillis(),
+                                DateUtils.MINUTE_IN_MILLIS, 0));
+            } else if (K9.isDebug() && MailServiceLegacy.isSyncDisabled()) {
+                if (MailServiceLegacy.hasNoConnectivity()) {
+                    return context.getString(R.string.status_no_network);
+                } else if (MailServiceLegacy.isSyncNoBackground()) {
+                    return context.getString(R.string.status_no_background);
+                } else if (MailServiceLegacy.isSyncBlocked()) {
+                    return context.getString(R.string.status_syncing_blocked);
+                } else if (MailServiceLegacy.isPollAndPushDisabled()) {
+                    return context.getString(R.string.status_poll_and_push_disabled);
+                } else {
+                    return context.getString(R.string.status_syncing_off);
+                }
+            } else if (MailServiceLegacy.isSyncDisabled()) {
                 return context.getString(R.string.status_syncing_off);
             } else {
                 return "";

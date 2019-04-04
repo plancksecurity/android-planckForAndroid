@@ -8,7 +8,8 @@ import android.os.Build;
 import android.os.PowerManager;
 import android.support.annotation.RequiresApi;
 
-import com.fsck.k9.service.MailService;
+import com.fsck.k9.service.MailServiceLegacy;
+
 import timber.log.Timber;
 
 
@@ -27,7 +28,7 @@ class DeviceIdleReceiver extends BroadcastReceiver {
         Timber.v("Device idle mode changed. Idle: %b", deviceInIdleMode);
 
         if (!deviceInIdleMode) {
-            MailService.actionReset(context, null);
+            MailServiceLegacy.actionReset(context, null);
         }
     }
 }

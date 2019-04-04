@@ -35,11 +35,12 @@ import com.fsck.k9.activity.ChooseIdentity;
 import com.fsck.k9.activity.ColorPickerDialog;
 import com.fsck.k9.activity.K9PreferenceActivity;
 import com.fsck.k9.activity.ManageIdentities;
+import com.fsck.k9.job.K9JobManager;
 import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys;
-import com.fsck.k9.service.MailService;
+import com.fsck.k9.service.MailServiceLegacy;
 
 import org.openintents.openpgp.util.OpenPgpAppPreference;
 import org.openintents.openpgp.util.OpenPgpKeyPreference;
@@ -211,6 +212,7 @@ public class AccountSettings extends K9PreferenceActivity {
     private ListPreference trashFolder;
     private CheckBoxPreference alwaysShowCcBcc;
 
+    private final K9JobManager jobManager = K9.jobManager;
 
     public static void actionSettings(Context context, Account account) {
         Intent i = new Intent(context, AccountSettings.class);
@@ -921,11 +923,14 @@ public class AccountSettings extends K9PreferenceActivity {
             }
 
             if (needsRefresh && needsPushRestart) {
-                MailService.actionReset(this, null);
+                jobManager.scheduleAllMailJobs();
+                //MailServiceLegacy.actionReset(this, null);
             } else if (needsRefresh) {
-                MailService.actionReschedulePoll(this, null);
+                jobManager.scheduleMailSync();
+                //MailServiceLegacy.actionReschedulePoll(this, null);
             } else if (needsPushRestart) {
-                MailService.actionRestartPushers(this, null);
+                jobManager.schedulePusherRefresh();
+                //MailServiceLegacy.actionRestartPushers(this, null);
             }
         }
 

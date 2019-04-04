@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -39,7 +38,6 @@ import com.fsck.k9.activity.setup.AuthTypeHolder;
 import com.fsck.k9.activity.setup.ConnectionSecurityAdapter;
 import com.fsck.k9.activity.setup.ConnectionSecurityHolder;
 import com.fsck.k9.helper.Utility;
-import com.fsck.k9.job.K9JobManager;
 import com.fsck.k9.mail.AuthType;
 import com.fsck.k9.mail.CertificateValidationException;
 import com.fsck.k9.mail.ConnectionSecurity;
@@ -57,6 +55,7 @@ import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpCertificateException;
 import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpSetupException;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.service.MailServiceLegacy;
 import com.fsck.k9.view.ClientCertificateSpinner;
 
 import java.net.URI;
@@ -75,7 +74,7 @@ import javax.inject.Inject;
 
 import static android.app.Activity.RESULT_OK;
 
-public class AccountSetupIncomingFragment extends PEpFragment {
+public class AccountSetupIncomingFragmentLegacy extends PEpFragment {
 
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_ACTION = "action";
@@ -118,11 +117,8 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     private AccountSetupNavigator accountSetupNavigator;
     private boolean editSettings;
 
-
-    private final K9JobManager jobManager = K9.jobManager;
-
-    public static AccountSetupIncomingFragment actionIncomingSettings(Account account, boolean makeDefault) {
-        AccountSetupIncomingFragment fragment = new AccountSetupIncomingFragment();
+    public static AccountSetupIncomingFragmentLegacy actionIncomingSettings(Account account, boolean makeDefault) {
+        AccountSetupIncomingFragmentLegacy fragment = new AccountSetupIncomingFragmentLegacy();
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_ACCOUNT, account.getUuid());
         bundle.putBoolean(EXTRA_MAKE_DEFAULT, makeDefault);
@@ -130,8 +126,8 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         return fragment;
     }
 
-    public static AccountSetupIncomingFragment actionEditIncomingSettings(Account account) {
-        AccountSetupIncomingFragment fragment = new AccountSetupIncomingFragment();
+    public static AccountSetupIncomingFragmentLegacy actionEditIncomingSettings(Account account) {
+        AccountSetupIncomingFragmentLegacy fragment = new AccountSetupIncomingFragmentLegacy();
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_ACCOUNT, account.getUuid());
         bundle.putString(EXTRA_ACTION, Intent.ACTION_EDIT);
@@ -139,8 +135,8 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         return fragment;
     }
 
-    public static AccountSetupIncomingFragment actionEditIncomingSettings(String accountUuid) {
-        AccountSetupIncomingFragment fragment = new AccountSetupIncomingFragment();
+    public static AccountSetupIncomingFragmentLegacy actionEditIncomingSettings(String accountUuid) {
+        AccountSetupIncomingFragmentLegacy fragment = new AccountSetupIncomingFragmentLegacy();
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_ACCOUNT, accountUuid);
         bundle.putString(EXTRA_ACTION, Intent.ACTION_EDIT);
@@ -571,7 +567,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
                     Log.e(K9.LOG_TAG, "Could not get remote store", e);
                 }
                 if (isPushCapable && mAccount.getFolderPushMode() != Account.FolderMode.NONE) {
-                    jobManager.schedulePusherRefresh();
+                    MailServiceLegacy.actionRestartPushers(getActivity(), null);
                 }
                 mAccount.save(Preferences.getPreferences(getActivity()));
                 getActivity().finish();

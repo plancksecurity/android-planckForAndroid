@@ -26,6 +26,7 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.ColorPickerDialog;
 import com.fsck.k9.activity.K9PreferenceActivity;
+import com.fsck.k9.job.K9JobManager;
 import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.pEp.filepicker.FilePickerActivity;
 import com.fsck.k9.pEp.filepicker.Utils;
@@ -36,7 +37,7 @@ import com.fsck.k9.preferences.CheckBoxListPreference;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.preferences.TimePickerPreference;
-import com.fsck.k9.service.MailService;
+import com.fsck.k9.service.MailServiceLegacy;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -179,6 +180,8 @@ public class Prefs extends K9PreferenceActivity {
     private CheckBoxPreference mPepForwardWarning;
     //private CheckBoxPreference mPEpSyncAccount;
     //private Preference mPEpManageKeysync;
+
+    private final K9JobManager jobManager = K9.jobManager;
 
     public static void actionPrefs(Context context) {
         Intent i = new Intent(context, Prefs.class);
@@ -622,7 +625,8 @@ public class Prefs extends K9PreferenceActivity {
         editor.commit();
 
         if (needsRefresh) {
-            MailService.actionReset(this, null);
+            //MailServiceLegacy.actionReset(this, null);
+            jobManager.scheduleAllMailJobs();
         }
     }
 

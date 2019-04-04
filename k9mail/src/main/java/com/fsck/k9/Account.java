@@ -182,6 +182,8 @@ public class Account implements BaseAccount, StoreConfig {
     public static final String NO_OPENPGP_PROVIDER = "";
     public static final long NO_OPENPGP_KEY = 0;
 
+    public static final int INTERVAL_MINUTES_NEVER = -1;
+
     private DeletePolicy deletePolicy = DeletePolicy.NEVER;
 
     private final String accountUuid;
@@ -305,7 +307,7 @@ public class Account implements BaseAccount, StoreConfig {
     protected Account(Context context) {
         accountUuid = UUID.randomUUID().toString();
         localStorageProviderId = StorageManager.getInstance(context).getDefaultProviderId();
-        automaticCheckIntervalMinutes = -1;
+        automaticCheckIntervalMinutes = INTERVAL_MINUTES_NEVER;
         idleRefreshMinutes = 24;
         pushPollOnConnect = true;
         displayCount = K9.DEFAULT_VISIBLE_LIMIT;
@@ -415,7 +417,7 @@ public class Account implements BaseAccount, StoreConfig {
         transportUri = Base64.decode(storage.getString(accountUuid + ".transportUri", null));
         description = storage.getString(accountUuid + ".description", null);
         alwaysBcc = storage.getString(accountUuid + ".alwaysBcc", alwaysBcc);
-        automaticCheckIntervalMinutes = storage.getInt(accountUuid + ".automaticCheckIntervalMinutes", -1);
+        automaticCheckIntervalMinutes = storage.getInt(accountUuid + ".automaticCheckIntervalMinutes", INTERVAL_MINUTES_NEVER);
         idleRefreshMinutes = storage.getInt(accountUuid + ".idleRefreshMinutes", 24);
         pushPollOnConnect = storage.getBoolean(accountUuid + ".pushPollOnConnect", true);
         displayCount = storage.getInt(accountUuid + ".displayCount", K9.DEFAULT_VISIBLE_LIMIT);
@@ -1015,6 +1017,8 @@ public class Account implements BaseAccount, StoreConfig {
      * Returns -1 for never.
      */
     public synchronized int getAutomaticCheckIntervalMinutes() {
+        //https://developer.android.com/reference/androidx/work/PeriodicWorkRequest#MIN_PERIODIC_INTERVAL_MILLIS
+        if (automaticCheckIntervalMinutes != -1) return Math.max(15, automaticCheckIntervalMinutes);
         return automaticCheckIntervalMinutes;
     }
 

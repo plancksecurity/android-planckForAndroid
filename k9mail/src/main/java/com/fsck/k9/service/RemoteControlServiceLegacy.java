@@ -3,7 +3,6 @@ package com.fsck.k9.service;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.View;
 
 import com.fsck.k9.Account;
@@ -12,24 +11,14 @@ import com.fsck.k9.K9;
 import com.fsck.k9.K9.BACKGROUND_OPS;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.job.K9JobManager;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.remotecontrol.K9RemoteControl;
-import com.fsck.k9.Preferences;
-import com.fsck.k9.R;
-import com.fsck.k9.Account.FolderMode;
-import com.fsck.k9.K9.BACKGROUND_OPS;
-
-import static com.fsck.k9.remotecontrol.K9RemoteControl.*;
-
-import android.content.Context;
-import android.content.Intent;
-import timber.log.Timber;
-import android.widget.Toast;
 
 import java.util.List;
+
+import timber.log.Timber;
 
 import static com.fsck.k9.remotecontrol.K9RemoteControl.K9_ACCOUNT_UUID;
 import static com.fsck.k9.remotecontrol.K9RemoteControl.K9_ALL_ACCOUNTS;
@@ -42,7 +31,7 @@ import static com.fsck.k9.remotecontrol.K9RemoteControl.K9_RING_ENABLED;
 import static com.fsck.k9.remotecontrol.K9RemoteControl.K9_THEME;
 import static com.fsck.k9.remotecontrol.K9RemoteControl.K9_VIBRATE_ENABLED;
 
-public class RemoteControlService extends CoreService {
+public class RemoteControlServiceLegacy extends CoreService {
     private final static String RESCHEDULE_ACTION = "com.fsck.k9.service.RemoteControlService.RESCHEDULE_ACTION";
     private final static String PUSH_RESTART_ACTION = "com.fsck.k9.service.RemoteControlService.PUSH_RESTART_ACTION";
 
@@ -50,8 +39,8 @@ public class RemoteControlService extends CoreService {
 
     public static void set(Context context, Intent i, Integer wakeLockId) {
         //  Intent i = new Intent();
-        i.setClass(context, RemoteControlService.class);
-        i.setAction(RemoteControlService.SET_ACTION);
+        i.setClass(context, RemoteControlServiceLegacy.class);
+        i.setAction(RemoteControlServiceLegacy.SET_ACTION);
         addWakeLockId(context, i, wakeLockId, true);
         context.startService(i);
     }
@@ -62,16 +51,15 @@ public class RemoteControlService extends CoreService {
     public int startService(final Intent intent, final int startId) {
         Timber.i("RemoteControlService started with startId = %d", startId);
         final Preferences preferences = Preferences.getPreferences(this);
-        final K9JobManager jobManager = K9.jobManager;
 
         if (RESCHEDULE_ACTION.equals(intent.getAction())) {
-            Timber.i("RemoteControlService requesting jobManager mail poll reschedule");
-            jobManager.scheduleMailSync();
+            Timber.i("RemoteControlService requesting MailService poll reschedule");
+            MailServiceLegacy.actionReschedulePoll(this, null);
         }
         if (PUSH_RESTART_ACTION.equals(intent.getAction())) {
-            Timber.i("RemoteControlService requesting jobManager push restart");
-            jobManager.schedulePusherRefresh();
-        } else if (RemoteControlService.SET_ACTION.equals(intent.getAction())) {
+            Timber.i("RemoteControlService requesting MailService push restart");
+            MailServiceLegacy.actionRestartPushers(this, null);
+        } else if (RemoteControlServiceLegacy.SET_ACTION.equals(intent.getAction())) {
             Timber.i("RemoteControlService got request to change settings");
             execute(getApplication(), new Runnable() {
                 public void run() {
@@ -126,7 +114,7 @@ public class RemoteControlService extends CoreService {
                                         }
                                     }
                                 }
-                                account.save(Preferences.getPreferences(RemoteControlService.this));
+                                account.save(Preferences.getPreferences(RemoteControlServiceLegacy.this));
                             }
                         }
 
@@ -154,16 +142,16 @@ public class RemoteControlService extends CoreService {
                         editor.commit();
 
                         if (needsReschedule) {
-                            Intent i = new Intent(RemoteControlService.this, RemoteControlService.class);
+                            Intent i = new Intent(RemoteControlServiceLegacy.this, RemoteControlServiceLegacy.class);
                             i.setAction(RESCHEDULE_ACTION);
                             long nextTime = System.currentTimeMillis() + 10000;
-                            BootReceiver.scheduleIntent(RemoteControlService.this, nextTime, i);
+                            BootReceiverLegacy.scheduleIntent(RemoteControlServiceLegacy.this, nextTime, i);
                         }
                         if (needsPushRestart) {
-                            Intent i = new Intent(RemoteControlService.this, RemoteControlService.class);
+                            Intent i = new Intent(RemoteControlServiceLegacy.this, RemoteControlServiceLegacy.class);
                             i.setAction(PUSH_RESTART_ACTION);
                             long nextTime = System.currentTimeMillis() + 10000;
-                            BootReceiver.scheduleIntent(RemoteControlService.this, nextTime, i);
+                            BootReceiverLegacy.scheduleIntent(RemoteControlServiceLegacy.this, nextTime, i);
                         }
                     } catch (Exception e) {
                         Timber.e(e, "Could not handle K9_SET");
@@ -171,7 +159,7 @@ public class RemoteControlService extends CoreService {
                     }
                 }
             }
-            , RemoteControlService.REMOTE_CONTROL_SERVICE_WAKE_LOCK_TIMEOUT, startId);
+            , RemoteControlServiceLegacy.REMOTE_CONTROL_SERVICE_WAKE_LOCK_TIMEOUT, startId);
         }
 
         return START_NOT_STICKY;

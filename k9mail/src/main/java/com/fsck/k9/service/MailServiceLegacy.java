@@ -2,8 +2,6 @@
 package com.fsck.k9.service;
 
 
-import java.util.Collection;
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,10 +17,13 @@ import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.Pusher;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
+
+import java.util.Collection;
+
 import timber.log.Timber;
 
 
-public class MailService extends CoreService {
+public class MailServiceLegacy extends CoreService {
     private static final String ACTION_CHECK_MAIL = "com.fsck.k9.intent.action.MAIL_SERVICE_WAKEUP";
     private static final String ACTION_RESET = "com.fsck.k9.intent.action.MAIL_SERVICE_RESET";
     private static final String ACTION_RESCHEDULE_POLL = "com.fsck.k9.intent.action.MAIL_SERVICE_RESCHEDULE_POLL";
@@ -41,40 +42,40 @@ public class MailService extends CoreService {
 
     public static void actionReset(Context context, Integer wakeLockId) {
         Intent i = new Intent();
-        i.setClass(context, MailService.class);
-        i.setAction(MailService.ACTION_RESET);
+        i.setClass(context, MailServiceLegacy.class);
+        i.setAction(MailServiceLegacy.ACTION_RESET);
         addWakeLockId(context, i, wakeLockId, true);
         context.startService(i);
     }
 
     public static void actionRestartPushers(Context context, Integer wakeLockId) {
         Intent i = new Intent();
-        i.setClass(context, MailService.class);
-        i.setAction(MailService.ACTION_RESTART_PUSHERS);
+        i.setClass(context, MailServiceLegacy.class);
+        i.setAction(MailServiceLegacy.ACTION_RESTART_PUSHERS);
         addWakeLockId(context, i, wakeLockId, true);
         context.startService(i);
     }
 
     public static void actionReschedulePoll(Context context, Integer wakeLockId) {
         Intent i = new Intent();
-        i.setClass(context, MailService.class);
-        i.setAction(MailService.ACTION_RESCHEDULE_POLL);
+        i.setClass(context, MailServiceLegacy.class);
+        i.setAction(MailServiceLegacy.ACTION_RESCHEDULE_POLL);
         addWakeLockId(context, i, wakeLockId, true);
         context.startService(i);
     }
 
     public static void actionCancel(Context context, Integer wakeLockId) {
         Intent i = new Intent();
-        i.setClass(context, MailService.class);
-        i.setAction(MailService.ACTION_CANCEL);
+        i.setClass(context, MailServiceLegacy.class);
+        i.setAction(MailServiceLegacy.ACTION_CANCEL);
         addWakeLockId(context, i, wakeLockId, false); // CK:Q: why should we not create a wake lock if one is not already existing like for example in actionReschedulePoll?
         context.startService(i);
     }
 
     public static void connectivityChange(Context context, Integer wakeLockId) {
         Intent i = new Intent();
-        i.setClass(context, MailService.class);
-        i.setAction(MailService.CONNECTIVITY_CHANGE);
+        i.setClass(context, MailServiceLegacy.class);
+        i.setAction(MailServiceLegacy.CONNECTIVITY_CHANGE);
         addWakeLockId(context, i, wakeLockId, false); // CK:Q: why should we not create a wake lock if one is not already existing like for example in actionReschedulePoll?
         context.startService(i);
     }
@@ -119,7 +120,7 @@ public class MailService extends CoreService {
         if (ACTION_CHECK_MAIL.equals(intent.getAction())) {
             Timber.i("***** MailService *****: checking mail");
             if (hasConnectivity && doBackground) {
-                PollService.startService(this);
+                PollServiceLegacy.startService(this);
             }
             reschedulePollInBackground(hasConnectivity, doBackground, startId, false);
         } else if (ACTION_CANCEL.equals(intent.getAction())) {
@@ -161,9 +162,9 @@ public class MailService extends CoreService {
     }
 
     private void cancel() {
-        Intent i = new Intent(this, MailService.class);
+        Intent i = new Intent(this, MailServiceLegacy.class);
         i.setAction(ACTION_CHECK_MAIL);
-        BootReceiver.cancelIntent(this, i);
+        BootReceiverLegacy.cancelIntent(this, i);
     }
 
     private final static String PREVIOUS_INTERVAL = "MailService.previousInterval";
@@ -237,7 +238,7 @@ public class MailService extends CoreService {
             return;
         }
 
-        Preferences prefs = Preferences.getPreferences(MailService.this);
+        Preferences prefs = Preferences.getPreferences(MailServiceLegacy.this);
         Storage storage = prefs.getStorage();
         int previousInterval = storage.getInt(PREVIOUS_INTERVAL, -1);
         long lastCheckEnd = storage.getLong(LAST_CHECK_END, -1);
@@ -291,9 +292,9 @@ public class MailService extends CoreService {
                 Timber.e(e, "Exception while logging");
             }
 
-            Intent i = new Intent(this, MailService.class);
+            Intent i = new Intent(this, MailServiceLegacy.class);
             i.setAction(ACTION_CHECK_MAIL);
-            BootReceiver.scheduleIntent(MailService.this, nextTime, i);
+            BootReceiver.scheduleIntent(MailServiceLegacy.this, nextTime, i);
         }
     }
 
@@ -319,7 +320,7 @@ public class MailService extends CoreService {
 
     private void stopPushers() {
         MessagingController.getInstance(getApplication()).stopAllPushing();
-        PushService.stopService(MailService.this);
+        PushService.stopService(MailServiceLegacy.this);
     }
 
     private void reschedulePushers(boolean hasConnectivity, boolean doBackground) {
@@ -339,7 +340,7 @@ public class MailService extends CoreService {
 
     private void setupPushers() {
         boolean pushing = false;
-        for (Account account : Preferences.getPreferences(MailService.this).getAccounts()) {
+        for (Account account : Preferences.getPreferences(MailServiceLegacy.this).getAccounts()) {
             Timber.i("Setting up pushers for account %s", account.getDescription());
 
             if (account.isEnabled() && account.isAvailable(getApplicationContext())) {
@@ -349,7 +350,7 @@ public class MailService extends CoreService {
             }
         }
         if (pushing) {
-            PushService.startService(MailService.this);
+            PushService.startService(MailServiceLegacy.this);
         }
         pushingRequested = pushing;
     }
@@ -410,9 +411,9 @@ public class MailService extends CoreService {
             long nextTime = System.currentTimeMillis() + minInterval;
             Timber.d("Next pusher refresh scheduled for %tc", nextTime);
 
-            Intent i = new Intent(this, MailService.class);
+            Intent i = new Intent(this, MailServiceLegacy.class);
             i.setAction(ACTION_REFRESH_PUSHERS);
-            BootReceiver.scheduleIntent(MailService.this, nextTime, i);
+            BootReceiver.scheduleIntent(MailServiceLegacy.this, nextTime, i);
         }
     }
 

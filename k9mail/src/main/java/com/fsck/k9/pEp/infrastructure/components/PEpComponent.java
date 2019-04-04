@@ -5,6 +5,7 @@ import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.pEp.filepicker.SelectPathFragment;
 import com.fsck.k9.pEp.infrastructure.PerActivity;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
+import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
 import com.fsck.k9.pEp.ui.About;
@@ -12,6 +13,7 @@ import com.fsck.k9.pEp.ui.activities.PermissionsActivity;
 import com.fsck.k9.pEp.ui.blacklist.PepBlacklist;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
+import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragmentLegacy;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOptionsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
 import com.fsck.k9.pEp.ui.keys.keyimport.KeyImportActivity;
@@ -47,6 +49,8 @@ import dagger.Component;
     void inject(AccountSetupBasicsFragment accountSetupBasicsFragment);
 
     void inject(AccountSetupIncomingFragment accountSetupIncomingFragment);
+
+    void inject(AccountSetupIncomingFragmentLegacy accountSetupIncomingFragment);
 
     void inject(AccountSetupOutgoingFragment accountSetupOutgoingFragment);
 
