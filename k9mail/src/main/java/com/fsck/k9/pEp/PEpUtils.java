@@ -621,5 +621,9 @@ public class PEpUtils {
         }
         return "";
     }
+
+    public static String sanitizeFpr(String fpr) {
+        return fpr.toUpperCase().replaceAll("\\P{XDigit}", "");
+    }
 }
 

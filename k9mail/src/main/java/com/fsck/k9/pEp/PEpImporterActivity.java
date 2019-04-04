@@ -220,7 +220,7 @@ public abstract class PEpImporterActivity extends PepPermissionActivity {
             mUri = uri;
             this.currentAccount = currentAccount;
             this.isKeyImport = isKeyImport;
-            this.fpr = fpr;
+            this.fpr = PEpUtils.sanitizeFpr(fpr);
         }
 
         @Override
