@@ -706,7 +706,7 @@ public class PEpProviderImpl implements PEpProvider {
     public synchronized Identity setOwnIdentity(Identity id, String fpr)  {
         createEngineInstanceIfNeeded();
         try {
-            return engine.setOwnKey(id, fpr);
+            return engine.setOwnKey(id, fpr.replaceAll("\\s+",""));
         } catch (Exception e) {
             //TODO: Make pEpException a runtime one, and filter here
             return null;

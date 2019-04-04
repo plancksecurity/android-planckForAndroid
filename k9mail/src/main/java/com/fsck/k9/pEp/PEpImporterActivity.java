@@ -290,6 +290,9 @@ public abstract class PEpImporterActivity extends PepPermissionActivity {
                     //stream we assume we couldn't read the msg.
                     pEp.setOwnIdentity(accountIdentity, currentFpr);
                     throw new FileNotFoundException();
+                } catch (pEpException e) {
+                    pEp.setOwnIdentity(accountIdentity, currentFpr);
+                    return false;
                 }
 
                 finally {
