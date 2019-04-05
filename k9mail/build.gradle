@@ -1,6 +1,6 @@
 def pEpEngineRevision = 3424
-def pEpJNIAdapterRevision = 505
-def version = "1.0.214-dev13"
+def pEpJNIAdapterRevision = 510
+def version = "1.0.214-dev15"
 
 def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
 def pEpTestEmailPassword = "\"$System.env.PEP_TEST_EMAIL_PASSWORD\""

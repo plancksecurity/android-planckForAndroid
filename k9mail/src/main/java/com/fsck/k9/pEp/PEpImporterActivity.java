@@ -220,7 +220,7 @@ public abstract class PEpImporterActivity extends PepPermissionActivity {
             mUri = uri;
             this.currentAccount = currentAccount;
             this.isKeyImport = isKeyImport;
-            this.fpr = fpr;
+            this.fpr = PEpUtils.sanitizeFpr(fpr);
         }
 
         @Override
@@ -290,6 +290,9 @@ public abstract class PEpImporterActivity extends PepPermissionActivity {
                     //stream we assume we couldn't read the msg.
                     pEp.setOwnIdentity(accountIdentity, currentFpr);
                     throw new FileNotFoundException();
+                } catch (pEpException e) {
+                    pEp.setOwnIdentity(accountIdentity, currentFpr);
+                    return false;
                 }
 
                 finally {
