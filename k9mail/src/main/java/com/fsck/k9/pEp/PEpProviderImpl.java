@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.fsck.k9.K9;
+import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.MessagingException;
@@ -26,6 +27,7 @@ import org.pEp.jniadapter.Message;
 import org.pEp.jniadapter.Pair;
 import org.pEp.jniadapter.Rating;
 import org.pEp.jniadapter.Sync;
+import org.pEp.jniadapter.SyncHandshakeResult;
 import org.pEp.jniadapter.pEpException;
 
 import java.util.ArrayList;
@@ -100,6 +102,7 @@ public class PEpProviderImpl implements PEpProvider {
         engine.config_passive_mode(K9.getPEpPassiveMode());
         configKeyServerLockup(K9.getPEpUseKeyserver());
         engine.config_unencrypted_subject(K9.ispEpSubjectUnprotected());
+        engine.setMessageToSendCallback(MessagingController.getInstance(context));
     }
 
     private Engine getNewEngineSession() throws pEpException {
@@ -857,28 +860,33 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized void setSyncHandshakeCallback(Sync.notifyHandshakeCallback activity) {
-        engine.setnotifyHandshakeCallback(activity);
+    public synchronized void setSyncHandshakeCallback(Sync.NotifyHandshakeCallback activity) {
+        engine.setNotifyHandshakeCallback(activity);
     }
 
     @Override
     public synchronized void startSync() {
-        engine.startSync();
+        //Not needed anymore
+        //engine.startSync();
     }
 
+    //FIXME: Implement sync use lists.
     @Override
     public synchronized void acceptHandshake(Identity identity) {
-        engine.accept_sync_handshake(identity);
+        Vector<Identity> ids = new Vector<>(Collections.singletonList(identity));
+        engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeAccepted, ids);
     }
 
     @Override
     public synchronized void rejectHandshake(Identity identity) {
-        engine.reject_sync_handshake(identity);
+        Vector<Identity> ids = new Vector<>(Collections.singletonList(identity));
+        engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeRejected, ids);
     }
 
     @Override
     public synchronized void cancelHandshake(Identity identity) {
-        engine.cancel_sync_handshake(identity);
+        Vector<Identity> ids = new Vector<>(Collections.singletonList(identity));
+        engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeCancel, ids);
     }
 
     @Override

@@ -755,10 +755,10 @@ public class K9 extends Application {
 
     private void pEpInitEnvironment() {
         AndroidHelper.setup(this);
-        setupFastPoller();
         if (pEpSyncEnabled) {
             initSync();
         }
+        setupFastPoller();
     }
 
     public PEpProvider getpEpSyncProvider() {
@@ -768,38 +768,8 @@ public class K9 extends Application {
 
     private void initSync() {
         pEpSyncProvider = PEpProviderFactory.createAndSetupProvider(this);
-        pEpSyncProvider.setSyncHandshakeCallback(new Sync.notifyHandshakeCallback() {
 
-            @Override
-            public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
-                Timber.e("pEp", "notifyHandshake: " + signal.name());
-                switch (signal) {
-                    case SyncNotifyUndefined:
-                        break;
-                    case SyncNotifyInitAddOurDevice:
-                    case SyncNotifyInitAddOtherDevice:
-                    case SyncNotifyInitFormGroup:
-                        goToAddDevice(myself, partner, signal, getString(R.string.pep_add_device_ask_trustwords));
-                        break;
-                    case SyncNotifyInitMoveOurDevice:
-                        goToAddDevice(myself, partner, signal, getString(R.string.pep_add_device_ask_move_trustwords));
-                        break;
-                    case SyncNotifyTimeout:
-                        //Close handshake
-                        new Handler(Looper.getMainLooper()).post(()
-                                -> Toast.makeText(K9.this, R.string.pep_keysync_timeout, Toast.LENGTH_SHORT).show());
-                        Intent broadcastIntent = new Intent();
-                        K9.this.sendOrderedBroadcast(broadcastIntent, null);
-                        break;
-                    case SyncNotifyAcceptedDeviceAdded:
-                    case SyncNotifyAcceptedGroupCreated:
-                    case SyncNotifyAcceptedDeviceMoved:
-                        new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_LONG).show());
-                        break;
-                }
-
-            }
-        });
+        pEpSyncProvider.setSyncHandshakeCallback(notifyHandshakeCallback);
 
         pEpSyncProvider.setSyncSendMessageCallback(MessagingController.getInstance(K9.this));
 
@@ -1791,5 +1761,42 @@ public class K9 extends Application {
 
     public void setShowingKeyimportDialog(boolean showingKeyimportDialog) {
         this.showingKeyimportDialog = showingKeyimportDialog;
+    }
+
+    Sync.NotifyHandshakeCallback notifyHandshakeCallback = new Sync.NotifyHandshakeCallback() {
+
+        @Override
+        public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
+            Timber.e("pEp", "notifyHandshake: " + signal.name());
+            switch (signal) {
+                case SyncNotifyUndefined:
+                    break;
+                case SyncNotifyInitAddOurDevice:
+                case SyncNotifyInitAddOtherDevice:
+                case SyncNotifyInitFormGroup:
+                    goToAddDevice(myself, partner, signal, getString(R.string.pep_add_device_ask_trustwords));
+                    break;
+                case SyncNotifyInitMoveOurDevice:
+                    goToAddDevice(myself, partner, signal, getString(R.string.pep_add_device_ask_move_trustwords));
+                    break;
+                case SyncNotifyTimeout:
+                    //Close handshake
+                    new Handler(Looper.getMainLooper()).post(()
+                            -> Toast.makeText(K9.this, R.string.pep_keysync_timeout, Toast.LENGTH_SHORT).show());
+                    Intent broadcastIntent = new Intent();
+                    K9.this.sendOrderedBroadcast(broadcastIntent, null);
+                    break;
+                case SyncNotifyAcceptedDeviceAdded:
+                case SyncNotifyAcceptedGroupCreated:
+                case SyncNotifyAcceptedDeviceMoved:
+                    new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_LONG).show());
+                    break;
+            }
+
+        }
+    };
+
+    public Sync.NotifyHandshakeCallback getNotifyHandshakeCallback() {
+        return this.notifyHandshakeCallback;
     }
 }
