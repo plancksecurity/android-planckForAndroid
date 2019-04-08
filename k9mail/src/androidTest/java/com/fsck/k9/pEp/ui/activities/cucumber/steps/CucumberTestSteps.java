@@ -866,7 +866,16 @@ public class CucumberTestSteps {
 
     @When("^I run the tests")
     public void startTest() {
-        testUtils.readBotList();
+        boolean botListFull = false;
+        while (!botListFull) {
+            botListFull = true;
+            testUtils.readBotList();
+            for (int bot = 0; bot < testUtils.botList.length; bot++) {
+                if (testUtils.botList[bot] == null) {
+                    botListFull = false;
+                }
+            }
+        }
         bot = testUtils.botList;
         while (true) {
             try {
