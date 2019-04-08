@@ -653,15 +653,16 @@ public class CucumberTestSteps {
         while (!exists(onView(withId(R.id.wrongTrustwords)))) {
             device.waitForIdle();
         }
-        onView(withId(R.id.wrongTrustwords)).check(matches(isDisplayed()));
-        while (exists(onView(withId(R.id.wrongTrustwords)))) {
+        Assert.fail("This test is not working yet");
+        /*while (exists(onView(withId(R.id.wrongTrustwords)))) {
             device.waitForIdle();
             try {
+                onView(withId(R.id.wrongTrustwords)).check(matches(isDisplayed()));
                 onView(withId(R.id.wrongTrustwords)).perform(click());
             } catch (Exception e) {
                 Timber.i("Cannot click wrong Trustwords");
             }
-        }
+        }*/
         device.waitForIdle();
         device.pressBack();
         device.waitForIdle();
