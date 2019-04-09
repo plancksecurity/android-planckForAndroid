@@ -650,19 +650,21 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(10);
         testUtils.clickMessageStatus();
         device.waitForIdle();
-        while (!exists(onView(withId(R.id.wrongTrustwords)))) {
+        while (!exists(onView(withId(R.id.trustwords)))) {
             device.waitForIdle();
         }
-        Assert.fail("This test is not working yet");
-        /*while (exists(onView(withId(R.id.wrongTrustwords)))) {
+        //Assert.fail("This test is not working yet");
+        while (exists(onView(withId(R.id.wrongTrustwords)))) {
             device.waitForIdle();
             try {
+                Thread.sleep(4000);
                 onView(withId(R.id.wrongTrustwords)).check(matches(isDisplayed()));
                 onView(withId(R.id.wrongTrustwords)).perform(click());
+                device.waitForIdle();
             } catch (Exception e) {
                 Timber.i("Cannot click wrong Trustwords");
             }
-        }*/
+        }
         device.waitForIdle();
         device.pressBack();
         device.waitForIdle();
