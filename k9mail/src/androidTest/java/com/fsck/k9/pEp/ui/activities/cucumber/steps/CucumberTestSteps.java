@@ -639,7 +639,7 @@ public class CucumberTestSteps {
                 testUtils.clickView(R.id.tvPep);
             }
         }
-        while (!exists(onView(withId(R.id.confirmTrustWords)))) {
+        while (!viewIsDisplayed(R.id.trustwords)) {
             device.waitForIdle();
         }
         onView(withId(R.id.wrongTrustwords)).perform(click());
