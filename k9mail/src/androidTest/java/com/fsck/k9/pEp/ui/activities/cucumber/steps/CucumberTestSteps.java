@@ -653,7 +653,8 @@ public class CucumberTestSteps {
         while (!viewIsDisplayed(R.id.trustwords)) {
             device.waitForIdle();
         }
-        //Assert.fail("This test is not working yet");
+        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+        scroll.swipe(Direction.UP, 1.0f);
         while (exists(onView(withId(R.id.wrongTrustwords)))) {
             device.waitForIdle();
             try {
