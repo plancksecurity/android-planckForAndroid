@@ -310,6 +310,11 @@ public class CucumberTestSteps {
                 cucumberBody = testUtils.longText();
                 break;
         }
+        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+        scroll.swipe(Direction.UP, 1.0f);
+        while (!viewIsDisplayed(R.id.message_content)) {
+            device.waitForIdle();
+        }
         testUtils.doWaitForResource(R.id.message_container);
         while (true) {
             device.waitForIdle();
