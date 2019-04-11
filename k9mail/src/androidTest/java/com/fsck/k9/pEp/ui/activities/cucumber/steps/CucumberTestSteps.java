@@ -428,7 +428,7 @@ public class CucumberTestSteps {
         if (json.toString().contains(textToCompare)) {
             return;
         }
-        Assert.fail("json file doesn't contain the text: " + json.toString());
+        Assert.fail("json file doesn't contain the text: " + json.toString() + " ***TEXT*** : " + textToCompare);
     }
 
     private void assertText(String text, String textToCompare) {
