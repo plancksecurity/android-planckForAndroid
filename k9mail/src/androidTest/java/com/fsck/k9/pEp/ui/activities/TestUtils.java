@@ -1160,9 +1160,6 @@ public class TestUtils {
     }
 
     private void donwloadJSon() {
-        while (!viewIsDisplayed(R.id.message_content)) {
-            device.waitForIdle();
-        }
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         scroll.swipe(Direction.UP, 1.0f);
         device.waitForIdle();
