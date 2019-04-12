@@ -1086,6 +1086,7 @@ public class CucumberTestSteps {
                 try {
                     UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
                     scroll.swipe(Direction.DOWN, 1.0f);
+                    onView(withId(R.id.subject)).perform(closeSoftKeyboard());
                     onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
                 } catch (Exception ex) {
                     Timber.i("Cannot do scroll down");
