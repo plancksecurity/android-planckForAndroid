@@ -1767,8 +1767,8 @@ public class K9 extends Application {
 
         @Override
         public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
-            Timber.e("pEp", "notifyHandshake: " + signal.name());
-            switch (signal) {
+            Timber.e("pEp notifyHandshake: %s", signal.name());
+/*            switch (signal) {
                 case SyncNotifyUndefined:
                     break;
                 case SyncNotifyInitAddOurDevice:
@@ -1792,6 +1792,7 @@ public class K9 extends Application {
                     new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_LONG).show());
                     break;
             }
+            */
 
         }
     };
