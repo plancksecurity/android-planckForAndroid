@@ -131,7 +131,6 @@ public class CucumberTestSteps {
     public void tearDown() {
         IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
         timer.cancel();
-        if (testUtils.testReset) {
             while (testUtils.getCurrentActivity() != null) {
                 device.waitForIdle();
                 device.pressBack();
@@ -142,8 +141,6 @@ public class CucumberTestSteps {
                     Timber.i("There is no message to discard");
                 }
             }
-        }
-
         activityTestRule.finishActivity();
     }
 
