@@ -1268,7 +1268,7 @@ public class TestUtils {
         }
     }
 
-    private void removeMessagesFromList(){
+    public void removeMessagesFromList(){
         getMessageListSize();
         if (messageListSize[0] != 1) {
             clickFirstMessage();
