@@ -32,7 +32,7 @@ class CertificateErrorNotifications {
         String title = context.getString(R.string.notification_certificate_error_title, account.getDescription());
         String text = context.getString(R.string.notification_certificate_error_text);
 
-        NotificationCompat.Builder builder = controller.createNotificationBuilder(account, NotificationChannelUtils.ChannelType.MISCELLANEOUS)
+        NotificationCompat.Builder builder = controller.createNotificationBuilder(account, NotificationChannelManager.ChannelType.MISCELLANEOUS)
                 .setSmallIcon(getCertificateErrorNotificationIcon())
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true)

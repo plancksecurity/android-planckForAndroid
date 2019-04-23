@@ -34,7 +34,7 @@ public class NotificationController {
     private final SendFailedNotifications sendFailedNotifications;
     private final NewMailNotifications newMailNotifications;
 
-    private final NotificationChannelUtils channelUtils;
+    private final NotificationChannelManager channelUtils;
 
     public static NotificationController newInstance(Context context) {
         Context appContext = context.getApplicationContext();
@@ -54,7 +54,7 @@ public class NotificationController {
     NotificationController(Context context, NotificationManagerCompat notificationManager) {
         this.context = context;
         this.notificationManager = notificationManager;
-        this.channelUtils = new NotificationChannelUtils(context, Preferences.getPreferences(context));
+        this.channelUtils = new NotificationChannelManager(context, Preferences.getPreferences(context));
 
         NotificationActionCreator actionBuilder = new NotificationActionCreator(context);
         certificateErrorNotifications = new CertificateErrorNotifications(this);
@@ -161,7 +161,7 @@ public class NotificationController {
         return notificationManager;
     }
 
-    NotificationCompat.Builder createNotificationBuilder(Account account, NotificationChannelUtils.ChannelType channelType) {
+    NotificationCompat.Builder createNotificationBuilder(Account account, NotificationChannelManager.ChannelType channelType) {
         return new NotificationCompat.Builder(context,
                 channelUtils.getChannelIdFor(account, channelType));
     }

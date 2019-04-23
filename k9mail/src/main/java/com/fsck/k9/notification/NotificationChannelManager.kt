@@ -13,7 +13,7 @@ import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Named
 
-class NotificationChannelUtils @Inject constructor(@Named("AppContext") private val context: Context, private val preferences: Preferences) {
+class NotificationChannelManager @Inject constructor(@Named("AppContext") private val context: Context, private val preferences: Preferences) {
 
     enum class ChannelType {
         MESSAGES, MISCELLANEOUS

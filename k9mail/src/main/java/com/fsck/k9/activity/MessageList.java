@@ -57,7 +57,7 @@ import com.fsck.k9.mail.Part;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.StorageManager;
-import com.fsck.k9.notification.NotificationChannelUtils;
+import com.fsck.k9.notification.NotificationChannelManager;
 import com.fsck.k9.pEp.AccountUtils;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
@@ -111,7 +111,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         NavigationView.OnNavigationItemSelectedListener, DrawerLocker {
 
     @Inject AccountUtils accountUtils;
-    @Inject NotificationChannelUtils channelUtils;
+    @Inject
+    NotificationChannelManager channelUtils;
 
     @Deprecated
     //TODO: Remove after 2017-09-11
