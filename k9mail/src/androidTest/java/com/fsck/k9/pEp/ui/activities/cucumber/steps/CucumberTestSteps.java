@@ -70,14 +70,17 @@ import static android.support.test.espresso.matcher.ViewMatchers.isCompletelyDis
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.appendTextInTextView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containsText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containstText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromView;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.setTextInTextView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
+import static com.schibsted.spain.barista.interaction.BaristaEditTextInteractions.writeTo;
 import static org.hamcrest.CoreMatchers.not;
 
 @RunWith(AndroidJUnit4.class)
@@ -247,14 +250,17 @@ public class CucumberTestSteps {
                 testUtils.removeTextFromTextView(viewName);
                 break;
             case "longText":
-                timeRequiredForThisMethod(300);
-                StringBuilder textBuilder = new StringBuilder(text);
-                for (int i = 0; i<120; i++) {
-                    textBuilder.append(testUtils.longText()).append(" ").append(i).append(" ");
+                timeRequiredForThisMethod(3000);
+                device.waitForIdle();
+                String text1 = "";
+                for (int i = 1; i<31; i++) {
+                    text1 = text1 + testUtils.longText() + i;
+                    device.waitForIdle();
                 }
-                text = textBuilder.toString();
-                onView(withId(viewId)).perform(click(), replaceText(text));
-                onView(withId(viewId)).check(matches(withText(text)));
+                onView(withId(viewId)).perform(typeText(text1));
+                device.waitForIdle();
+                device.waitForIdle();
+                waitUntilIdle();
                 return;
             default:
                 timeRequiredForThisMethod(10);
@@ -309,7 +315,9 @@ public class CucumberTestSteps {
         }
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         scroll.swipe(Direction.UP, 1.0f);
-        while (!viewIsDisplayed(R.id.message_content)) {
+        device.waitForIdle();
+        waitUntilIdle();
+        while (!viewIsDisplayed(R.id.message_content) || !viewIsDisplayed(R.id.message_container)) {
             device.waitForIdle();
         }
         testUtils.doWaitForResource(R.id.message_container);
