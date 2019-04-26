@@ -1204,6 +1204,12 @@ public class CucumberTestSteps {
         testUtils.goBackAndSaveAsDraft(activityTestRule);
     }
 
+    @Then("^I save as draft$")
+    public void I_save_as_draft(){
+        timeRequiredForThisMethod(10);
+        testUtils.selectFromMenu(R.string.save_draft_action);
+    }
+
     @And("^I compare texts on screen: (\\S+) and (\\S+)$")
     public void I_compare_texts_on_screen(String text1, String text2) {
         timeRequiredForThisMethod(5);
