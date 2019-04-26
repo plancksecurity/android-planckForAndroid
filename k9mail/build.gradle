@@ -126,7 +126,10 @@ dependencies {
 
     androidTestImplementation 'com.android.support.test:rules:1.0.2'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
-
+    androidTestImplementation('com.schibsted.spain:barista:2.8.0') {
+        exclude group: 'com.android.support'
+        //exclude group: 'org.jetbrains.kotlin' // Only if you already use Kotlin in your project
+    }
     //appcenter
    /* def appCenterSdkVersion = '1.5.1'
     implementation "com.microsoft.appcenter:appcenter-analytics:${appCenterSdkVersion}"
