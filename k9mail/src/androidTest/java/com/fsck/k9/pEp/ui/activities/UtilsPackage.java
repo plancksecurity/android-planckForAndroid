@@ -451,4 +451,24 @@ public class UtilsPackage {
             }
         };
     }
+
+    public static ViewAction appendTextInTextView(final String value){
+        return new ViewAction() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Matcher<View> getConstraints() {
+                return allOf(isDisplayed(), isAssignableFrom(TextView.class));
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                ((TextView) view).append(value);
+            }
+
+            @Override
+            public String getDescription() {
+                return "replace text";
+            }
+        };
+    }
 }
