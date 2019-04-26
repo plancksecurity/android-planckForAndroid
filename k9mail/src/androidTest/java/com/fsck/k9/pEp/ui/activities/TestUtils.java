@@ -802,6 +802,13 @@ public class TestUtils {
         Activity currentActivity = getCurrentActivity();
         while (currentActivity == getCurrentActivity()){
             try {
+                if (saveAsDraft) {
+                    device.waitForIdle();
+                    while (!viewIsDisplayed(R.id.message_content)) {
+                        onView(withId(R.id.message_content)).perform(closeSoftKeyboard());
+                        device.waitForIdle();
+                    }
+                }
                 device.waitForIdle();
                 device.pressBack();
                 device.waitForIdle();
