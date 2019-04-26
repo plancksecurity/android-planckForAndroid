@@ -159,9 +159,11 @@ public class CucumberTestSteps {
     @When("^I enter (\\S+) in the messageTo field")
     public void I_fill_messageTo_field(String cucumberMessageTo) {
         timeRequiredForThisMethod(15);
+        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         device.waitForIdle();
         while (!exists(onView(withId(R.id.to)))) {
             device.waitForIdle();
+            scroll.swipe(Direction.UP, 1.0f);
         }
         switch (cucumberMessageTo) {
             case "empty":
