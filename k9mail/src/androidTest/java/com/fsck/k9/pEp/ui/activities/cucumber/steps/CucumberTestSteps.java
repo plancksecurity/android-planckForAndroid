@@ -3,6 +3,7 @@ package com.fsck.k9.pEp.ui.activities.cucumber.steps;
 
 import android.app.Activity;
 import android.app.Instrumentation;
+import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -60,6 +61,7 @@ import timber.log.Timber;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.longClick;
 import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.action.ViewActions.typeTextIntoFocusedView;
@@ -255,13 +257,22 @@ public class CucumberTestSteps {
                 timeRequiredForThisMethod(3000);
                 device.waitForIdle();
                 String text1 = "";
-                for (int i = 1; i<31; i++) {
-                    text1 = text1 + testUtils.longText() + i;
-                    device.waitForIdle();
+                for (int i = 0; i < 61; i++) {
+                    text1 = text1 + testUtils.longText();
                 }
-                onView(withId(viewId)).perform(typeText(text1));
+                BySelector selector = By.clazz("android.widget.EditText");
+                UiObject2 uiObject = device.findObject(By.res("security.pEp:id/message_content"));
+                for (UiObject2 object : device.findObjects(selector)) {
+                    if (object.getResourceName().equals(uiObject.getResourceName())) {
+                        while (!object.getText().contains(testUtils.longText())) {
+                            device.waitForIdle();
+                            object.setText(text1);
+                        }
+                    }
+
+                }
                 device.waitForIdle();
-                device.waitForIdle();
+                scroll.swipe(Direction.UP, 1.0f);
                 waitUntilIdle();
                 return;
             default:
