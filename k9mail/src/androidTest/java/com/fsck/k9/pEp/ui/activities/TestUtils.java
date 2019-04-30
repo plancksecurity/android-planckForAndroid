@@ -42,6 +42,8 @@ import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 
+import junit.framework.Assert;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -1384,6 +1386,85 @@ public class TestUtils {
                 .pressKeyCode(KeyEvent.KEYCODE_V, KeyEvent.META_CTRL_MASK);
         device.waitForIdle();
     }
+
+    public void compareMessageBody(String cucumberBody) {
+        String [] body;
+        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+        scroll.swipe(Direction.UP, 1.0f);
+        device.waitForIdle();
+        waitUntilIdle();
+        while (!viewIsDisplayed(R.id.message_content) || !viewIsDisplayed(R.id.message_container)) {
+            device.waitForIdle();
+        }
+        doWaitForResource(R.id.message_container);
+        while (true) {
+            device.waitForIdle();
+            if (exists(onView(withId(R.id.message_container)))) {
+                onView(withId(R.id.message_container)).check(matches(isDisplayed()));
+                if (cucumberBody.equals("Rating/DecodedRating")) {
+                    body = new String[2];
+                    body[0] = "Rating | 6";
+                    body[1] = "Decoded Rating | PEP_rating_reliable";
+                } else {
+                    body = new String[1];
+                    body[0] = cucumberBody;
+                }
+                compareTextWithWebViewText(body);
+                return;
+            } else if (exists(onView(withId(R.id.message_content)))) {
+                onView(withId(R.id.message_content)).check(matches(isDisplayed()));
+                if (getTextFromView(onView(withId(R.id.message_content))).contains(cucumberBody)) {
+                    return;
+                } else {
+                    device.waitForIdle();
+                    onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
+                    Assert.fail("Error: body text != text to compare");
+                }
+            }
+        }
+    }
+
+    private void compareTextWithWebViewText(String [] arrayToCompare) {
+        UiObject2 wb;
+        boolean webViewLoaded = false;
+        while (!webViewLoaded) {
+            try {
+                device.waitForIdle();
+                waitUntilIdle();
+                wb = device.findObject(By.clazz("android.webkit.WebView"));
+                wb.click();
+                UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+                scroll.swipe(Direction.UP, 1.0f);
+                String webViewText = "empty";
+                device.waitForIdle();
+                UiObject2 webViewTemporal;
+                boolean childFound = false;
+                webViewTemporal = wb.getChildren().get(0);
+                for (String textToCompare : arrayToCompare) {
+                    while (!childFound) {
+                        if (webViewTemporal.getText().contains(textToCompare)) {
+                            webViewText = webViewTemporal.getText();
+                            webViewLoaded = true;
+                            childFound = true;
+                            device.waitForIdle();
+                            break;
+                        } else {
+                            try {
+                                webViewTemporal = webViewTemporal.getChildren().get(0);
+                            } catch (Exception ex) {
+                                webViewTemporal = wb.getChildren().get(1);
+                            }
+                        }
+                    }
+                    onView(withId(R.id.message_container)).check(matches(containsText(webViewText, textToCompare)));
+                }
+            } catch (Exception ex) {
+                Timber.i("Cannot find webView: " + ex.getMessage());
+            }
+        }
+        device.waitForIdle();
+    }
+
     public void startActivity() {
         device.pressHome();
         final String launcherPackage = getLauncherPackageName();
