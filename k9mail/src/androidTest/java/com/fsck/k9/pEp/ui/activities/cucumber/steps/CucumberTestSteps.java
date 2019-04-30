@@ -329,6 +329,7 @@ public class CucumberTestSteps {
                     text1 = text1 + testUtils.longText();
                 }
                 cucumberBody = text1;
+                testUtils.compareMessageBodyLongText(cucumberBody);
                 break;
             default:
                 testUtils.compareMessageBody(cucumberBody);
