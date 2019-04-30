@@ -2,6 +2,8 @@ package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Activity;
 import android.app.Instrumentation;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -1370,6 +1372,18 @@ public class TestUtils {
         }
     }
 
+    public void setClipboard(String textToCopy) {
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(null, textToCopy);
+        clipboard.setPrimaryClip(clip);
+    }
+
+    public void pasteClipboard() {
+        device.waitForIdle();
+        UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+                .pressKeyCode(KeyEvent.KEYCODE_V, KeyEvent.META_CTRL_MASK);
+        device.waitForIdle();
+    }
     public void startActivity() {
         device.pressHome();
         final String launcherPackage = getLauncherPackageName();
