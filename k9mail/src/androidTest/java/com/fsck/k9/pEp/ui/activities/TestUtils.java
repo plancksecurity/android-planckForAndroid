@@ -705,7 +705,7 @@ public class TestUtils {
         }
     }
 
-    private void longClick(String viewId) {
+    public void longClick(String viewId) {
         UiObject2 list = device.findObject(By.res(APP_ID, viewId));
         Rect bounds = list.getVisibleBounds();
         device.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 450);
