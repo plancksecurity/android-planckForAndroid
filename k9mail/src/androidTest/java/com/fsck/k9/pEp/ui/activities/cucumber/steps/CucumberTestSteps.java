@@ -317,10 +317,10 @@ public class CucumberTestSteps {
     @When("^I compare messageBody with (\\S+)")
     public void I_compare_body(String cucumberBody) {
         timeRequiredForThisMethod(10);
-        String [] body;
         switch (cucumberBody) {
             case "empty":
                 cucumberBody = resources.getString(R.string.default_signature);
+                testUtils.compareMessageBody(cucumberBody);
                 break;
             case "longText":
                 device.waitForIdle();
@@ -330,39 +330,9 @@ public class CucumberTestSteps {
                 }
                 cucumberBody = text1;
                 break;
-        }
-        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-        scroll.swipe(Direction.UP, 1.0f);
-        device.waitForIdle();
-        waitUntilIdle();
-        while (!viewIsDisplayed(R.id.message_content) || !viewIsDisplayed(R.id.message_container)) {
-            device.waitForIdle();
-        }
-        testUtils.doWaitForResource(R.id.message_container);
-        while (true) {
-            device.waitForIdle();
-            if (exists(onView(withId(R.id.message_container)))) {
-                onView(withId(R.id.message_container)).check(matches(isDisplayed()));
-                if (cucumberBody.equals("Rating/DecodedRating")) {
-                    body = new String[2];
-                    body[0] = "Rating | 6";
-                    body[1] = "Decoded Rating | PEP_rating_reliable";
-                } else {
-                    body = new String[1];
-                    body[0] = cucumberBody;
-                }
-                compareTextWithWebViewText(body);
-                return;
-            } else if (exists(onView(withId(R.id.message_content)))) {
-                onView(withId(R.id.message_content)).check(matches(isDisplayed()));
-                if (getTextFromView(onView(withId(R.id.message_content))).contains(cucumberBody)) {
-                    return;
-                } else {
-                    device.waitForIdle();
-                    onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
-                    Assert.fail("Error: body text != text to compare");
-                }
-            }
+            default:
+                testUtils.compareMessageBody(cucumberBody);
+                break;
         }
     }
 
@@ -520,47 +490,6 @@ public class CucumberTestSteps {
                 Timber.i("Cannot find trustWords: " + ex.getMessage());
             }
         } while (trustWords == null);
-    }
-
-    private void compareTextWithWebViewText(String [] arrayToCompare) {
-        UiObject2 wb;
-        boolean webViewLoaded = false;
-        while (!webViewLoaded) {
-            try {
-                device.waitForIdle();
-                waitUntilIdle();
-                wb = device.findObject(By.clazz("android.webkit.WebView"));
-                wb.click();
-                UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-                scroll.swipe(Direction.UP, 1.0f);
-                String webViewText = "empty";
-                device.waitForIdle();
-                UiObject2 webViewTemporal;
-                boolean childFound = false;
-                webViewTemporal = wb.getChildren().get(0);
-                for (String textToCompare : arrayToCompare) {
-                    while (!childFound) {
-                        if (webViewTemporal.getText().contains(textToCompare)) {
-                            webViewText = webViewTemporal.getText();
-                            webViewLoaded = true;
-                            childFound = true;
-                            device.waitForIdle();
-                            break;
-                        } else {
-                            try {
-                                webViewTemporal = webViewTemporal.getChildren().get(0);
-                            } catch (Exception ex) {
-                                webViewTemporal = wb.getChildren().get(1);
-                            }
-                        }
-                    }
-                    onView(withId(R.id.message_container)).check(matches(containsText(webViewText, textToCompare)));
-                }
-            } catch (Exception ex) {
-                Timber.i("Cannot find webView: " + ex.getMessage());
-            }
-        }
-        device.waitForIdle();
     }
 
     private void checkWordIsInText(String [] arrayToCompare, String webViewText) {
