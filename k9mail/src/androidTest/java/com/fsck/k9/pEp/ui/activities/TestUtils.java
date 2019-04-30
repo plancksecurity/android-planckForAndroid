@@ -1424,6 +1424,27 @@ public class TestUtils {
         }
     }
 
+    public void compareMessageBodyLongText(String cucumberBody) {
+        onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
+        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+        scroll.swipe(Direction.UP, 1.0f);
+        device.waitForIdle();
+        waitUntilIdle();
+        BySelector selector = By.clazz("android.widget.EditText");
+        UiObject2 uiObject = device.findObject(By.res("security.pEp:id/message_content"));
+        for (UiObject2 object : device.findObjects(selector)) {
+            if (object.getResourceName().equals(uiObject.getResourceName())) {
+                device.waitForIdle();
+                cucumberBody.contains(object.getText());
+                return;
+            } else {
+                device.waitForIdle();
+                onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
+                Assert.fail("Error: body text != text to compare");
+            }
+        }
+    }
+
     private void compareTextWithWebViewText(String [] arrayToCompare) {
         UiObject2 wb;
         boolean webViewLoaded = false;
