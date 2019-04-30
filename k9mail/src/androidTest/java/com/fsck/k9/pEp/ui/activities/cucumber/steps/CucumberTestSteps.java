@@ -323,7 +323,12 @@ public class CucumberTestSteps {
                 cucumberBody = resources.getString(R.string.default_signature);
                 break;
             case "longText":
-                cucumberBody = testUtils.longText();
+                device.waitForIdle();
+                String text1 = "";
+                for (int i = 0; i < 61; i++) {
+                    text1 = text1 + testUtils.longText();
+                }
+                cucumberBody = text1;
                 break;
         }
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
