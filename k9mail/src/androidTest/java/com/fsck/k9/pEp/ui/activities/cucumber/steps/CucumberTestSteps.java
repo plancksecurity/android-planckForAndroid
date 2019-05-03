@@ -1024,11 +1024,12 @@ public class CucumberTestSteps {
     @Then("^I check if the privacy status is (\\S+)$")
     public void I_check_toolBar_color_is(String color) {
         timeRequiredForThisMethod(10);
-        while (!viewIsDisplayed(R.id.toolbar)) {
+        while (!viewIsDisplayed(R.id.toolbar) || !viewIsDisplayed(R.id.toolbar_container)) {
             device.waitForIdle();
         }
         device.waitForIdle();
         waitUntilIdle();
+        onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
         onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
         device.waitForIdle();
         waitUntilIdle();
