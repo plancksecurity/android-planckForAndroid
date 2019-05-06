@@ -1148,6 +1148,52 @@ public class TestUtils {
         onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
         device.waitForIdle();
     }
+
+    public void clickMessageAtPosition(int position) {
+        boolean messageClicked = false;
+        while (!messageClicked) {
+            device.waitForIdle();
+            if (!viewIsDisplayed(R.id.reply_message)) {
+                try {
+                    swipeDownMessageList();
+                    device.waitForIdle();
+                    while (viewIsDisplayed(R.id.message_list)) {
+                        onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(position - 1).perform(click());
+                        messageClicked = true;
+                        device.waitForIdle();
+                        waitUntilIdle();
+                    }
+                    if (viewIsDisplayed(R.id.fab_button_compose_message)) {
+                        try {
+                            messageClicked = false;
+                            pressBack();
+                        } catch (Exception ex) {
+                            Timber.i("Last message has been clicked");
+                        }
+                    }
+                } catch (Exception ex) {
+                    Timber.i("No message found");
+                }
+                device.waitForIdle();
+            } else {
+                messageClicked = true;
+            }
+        }
+        try {
+            onView(withText(R.string.cancel_action)).perform(click());
+        } catch (NoMatchingViewException ignoredException) {
+            Timber.i("Ignored exception. Email is not encrypted");
+        }
+        try {
+            readAttachedJSONFile();
+        } catch (Exception noJSON) {
+            Timber.i("There are no JSON files attached");
+        }
+        device.waitForIdle();
+        onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
+        device.waitForIdle();
+    }
+
     public void emptyFolder (String folderName) {
         device.waitForIdle();
         File dir = new File(Environment.getExternalStorageDirectory()+"/" + folderName + "/");
