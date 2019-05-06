@@ -350,6 +350,12 @@ public class CucumberTestSteps {
         testUtils.clickLastMessage();
     }
 
+    @When("^I click message at position (\\d+)$")
+    public void I_click_message_at_position(int position) {
+        timeRequiredForThisMethod(10);
+        testUtils.clickMessageAtPosition(position);
+    }
+
     @When("^I confirm trust words match$")
     public void I_confirm_trust_words_match() {
         timeRequiredForThisMethod(80);
