@@ -550,6 +550,11 @@ public class CucumberTestSteps {
         testUtils.doWaitForResource(R.id.toolbar);
         device.waitForIdle();
         waitUntilIdle();
+        testUtils.doWaitForResource(R.id.toolbar);
+        while (!exists(onView(withId(R.id.toolbar)))) {
+            device.waitForIdle();
+            waitUntilIdle();
+        }
         onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
         if (!exists(onView(withId(R.id.reply_message)))) {
             device.waitForIdle();
@@ -572,6 +577,12 @@ public class CucumberTestSteps {
             UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
             scroll.swipe(Direction.UP, 1.0f);
         }
+        testUtils.doWaitForResource(R.id.confirmTrustWords);
+        while (!exists(onView(withId(R.id.confirmTrustWords)))) {
+            device.waitForIdle();
+            waitUntilIdle();
+        }
+        onView(withId(R.id.confirmTrustWords)).check(matches(isCompletelyDisplayed()));
         onView(withId(R.id.confirmTrustWords)).perform(click());
     }
     @When("^I click wrong trust words$")
@@ -597,6 +608,12 @@ public class CucumberTestSteps {
                 testUtils.clickView(R.id.tvPep);
             }
         }
+        testUtils.doWaitForResource(R.id.wrongTrustwords);
+        while (!exists(onView(withId(R.id.wrongTrustwords)))) {
+            device.waitForIdle();
+            waitUntilIdle();
+        }
+        onView(withId(R.id.wrongTrustwords)).check(matches(isCompletelyDisplayed()));
         while (!viewIsDisplayed(R.id.trustwords)) {
             device.waitForIdle();
         }
