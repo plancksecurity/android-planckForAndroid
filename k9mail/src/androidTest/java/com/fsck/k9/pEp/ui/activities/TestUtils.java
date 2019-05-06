@@ -411,7 +411,7 @@ public class TestUtils {
         do {
             allowPermissions(2);
             allowPermissions(1);
-        }while (!viewIsDisplayed((R.id.action_continue)));
+        }while (!viewIsDisplayed((R.id.action_continue)) && !viewIsDisplayed((R.id.account_email)));
     }
 
     private void allowPermissions(int index) {
