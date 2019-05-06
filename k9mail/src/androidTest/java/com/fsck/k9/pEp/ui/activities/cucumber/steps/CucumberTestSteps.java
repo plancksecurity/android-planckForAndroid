@@ -215,7 +215,8 @@ public class CucumberTestSteps {
                     onView(withId(R.id.to)).check(matches(isDisplayed()));
                     onView(withId(R.id.to)).perform(closeSoftKeyboard());
                     device.waitForIdle();
-                    onView(withId(R.id.to)).perform(typeText(cucumberMessageTo), closeSoftKeyboard());
+                    fillMessage(cucumberMessageTo);
+                    onView(withId(R.id.to)).perform(closeSoftKeyboard());
                     filled = true;
                 } catch (Exception ex) {
                     Timber.i("Couldn't find view: " + ex.getMessage());
