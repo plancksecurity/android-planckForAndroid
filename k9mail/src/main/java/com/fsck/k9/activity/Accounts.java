@@ -392,7 +392,9 @@ public class Accounts extends PEpImporterActivity {
             createSpecialAccounts();
         }
 
-        List<Account> accounts = Preferences.getPreferences(this).getAccounts();
+        Preferences preferences = Preferences.getPreferences(this);
+        preferences.loadAccounts();
+        List<Account> accounts = preferences.getAccounts();
         Intent intent = getIntent();
         //onNewIntent(intent);
 
@@ -607,8 +609,10 @@ public class Accounts extends PEpImporterActivity {
 
     @Override
     public void refresh() {
+        Preferences preferences = Preferences.getPreferences(this);
+        preferences.loadAccounts();
         accounts.clear();
-        accounts.addAll(Preferences.getPreferences(this).getAccounts());
+        accounts.addAll(preferences.getAccounts());
 
         // see if we should show the welcome message
 //        if (accounts.length < 1) {

@@ -852,9 +852,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             }
 
             if (mAccount.ispEpPrivacyProtected()) {
-                PEpUtils.colorToolbar(pePUIArtefactCache, ((MessageList) getActivity()).getSupportActionBar(), pEpRating);
+                PEpUtils.colorToolbar(pePUIArtefactCache, ((MessageList) getActivity()).getToolbar(), pEpRating);
             } else {
-                PEpUtils.colorToolbar(pePUIArtefactCache, ((MessageList) getActivity()).getSupportActionBar(), Rating.pEpRatingUndefined);
+                PEpUtils.colorToolbar(pePUIArtefactCache, ((MessageList) getActivity()).getToolbar(), Rating.pEpRatingUndefined);
                 pEpRating = Rating.pEpRatingUndefined;
             }
             ((MessageList) getActivity()).setStatusBarPepColor(pEpRating);

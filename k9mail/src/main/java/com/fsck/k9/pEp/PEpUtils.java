@@ -84,6 +84,7 @@ public class PEpUtils {
         }
         if (isMyself(context, adr)) {
             id.user_id = PEpProvider.PEP_OWN_USER_ID;
+            id.me = true;
             return id;
         }
 

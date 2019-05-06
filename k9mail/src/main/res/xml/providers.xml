@@ -764,4 +764,41 @@
         <incoming uri="imap+ssl+://exchange.peptest.ch" username="$user" />
         <outgoing uri="smtp+tls+://exchange.peptest.ch" username="$user" />
     </provider>
+    <provider id="1und1-onlinede" label="1und1 Online.de" domain="online.de">
+        <incoming uri="imap+ssl+://imap.1und1.de" username="$email" />
+        <outgoing uri="smtp+tls+://smtp.1und1.de" username="$email" />
+    </provider>
+    <provider id="1und1-onlinehomede" label="1und1 Onlinehome.de" domain="onlinehome.de">
+        <incoming uri="imap+ssl+://imap.1und1.de" username="$email" />
+        <outgoing uri="smtp+tls+://smtp.1und1.de" username="$email" />
+    </provider>
+    <provider id="1und1-sofortstartde" label="1und1 sofortstart.de" domain="sofortstart.de">
+        <incoming uri="imap+ssl+://imap.1und1.de" username="$email" />
+        <outgoing uri="smtp+tls+://smtp.1und1.de" username="$email" />
+    </provider>
+    <provider id="1und1-sofort-startde" label="1und1 sofort-start.de" domain="sofort-start.de">
+        <incoming uri="imap+ssl+://imap.1und1.de" username="$email" />
+        <outgoing uri="smtp+tls+://smtp.1und1.de" username="$email" />
+    </provider>
+    <provider id="1und1-sofortsurfde" label="1und1 sofortsurf.de" domain="sofortsurf.de">
+        <incoming uri="imap+ssl+://imap.1und1.de" username="$email" />
+        <outgoing uri="smtp+tls+://smtp.1und1.de" username="$email" />
+    </provider>
+    <provider id="1und1-sofort-surfde" label="1und1 sofort-surf.de" domain="sofort-surf.de">
+        <incoming uri="imap+ssl+://imap.1und1.de" username="$email" />
+        <outgoing uri="smtp+tls+://smtp.1und1.de" username="$email" />
+    </provider>
+    <provider id="1und1-go4morede" label="1und1 go4more.de" domain="go4more.de">
+        <incoming uri="imap+ssl+://imap.1und1.de" username="$email" />
+        <outgoing uri="smtp+tls+://smtp.1und1.de" username="$email" />
+    </provider>
+    <provider id="1und1-kundenserverde" label="1und1 kundenserver.de" domain="kundenserver.de">
+        <incoming uri="imap+ssl+://imap.1und1.de" username="$email" />
+        <outgoing uri="smtp+tls+://smtp.1und1.de" username="$email" />
+    </provider>
+    <provider id="1und1-schlundde" label="1und1 schlund.de" domain="schlund.de">
+        <incoming uri="imap+ssl+://imap.1und1.de" username="$email" />
+        <outgoing uri="smtp+tls+://smtp.1und1.de" username="$email" />
+    </provider>
+
 </providers>

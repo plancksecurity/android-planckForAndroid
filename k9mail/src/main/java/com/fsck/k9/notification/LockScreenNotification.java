@@ -95,7 +95,7 @@ class LockScreenNotification {
         String title = context.getResources().getQuantityString(R.plurals.notification_new_messages_title,
                 newMessages, newMessages);
 
-        return controller.createNotificationBuilder(account, NotificationChannelUtils.ChannelType.MESSAGES)
+        return controller.createNotificationBuilder(account, NotificationChannelManager.ChannelType.MESSAGES)
                 .setSmallIcon(R.drawable.notification_icon_new_mail)
                 .setColor(account.getChipColor())
                 .setNumber(unreadCount)

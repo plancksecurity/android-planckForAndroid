@@ -34,7 +34,7 @@ class AuthenticationErrorNotifications {
         String text = context.getString(R.string.notification_authentication_error_text, account.getDescription());
 
         NotificationCompat.Builder builder = controller
-                .createNotificationBuilder(account, NotificationChannelUtils.ChannelType.MISCELLANEOUS)
+                .createNotificationBuilder(account, NotificationChannelManager.ChannelType.MISCELLANEOUS)
                 .setSmallIcon(R.drawable.notification_icon_warning)
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true)

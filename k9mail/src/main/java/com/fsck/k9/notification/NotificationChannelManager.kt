@@ -13,7 +13,7 @@ import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Named
 
-class NotificationChannelUtils @Inject constructor(@Named("AppContext") private val context: Context, private val preferences: Preferences) {
+class NotificationChannelManager @Inject constructor(@Named("AppContext") private val context: Context, private val preferences: Preferences) {
 
     enum class ChannelType {
         MESSAGES, MISCELLANEOUS
@@ -99,7 +99,7 @@ class NotificationChannelUtils @Inject constructor(@Named("AppContext") private 
         val channelName = "Miscellaneous"
         val channelDescription = "Miscellaneous notifications like errors etc."
         val channelId = getChannelIdFor(account, ChannelType.MISCELLANEOUS)
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val importance = NotificationManager.IMPORTANCE_LOW
         val channelGroupId = account.uuid
 
         val miscellaneousChannel = NotificationChannel(channelId, channelName, importance)
