@@ -6,6 +6,8 @@ Feature: Test
 
   @TM-NEW
   Scenario: Test NEW Version
+    When I click compose message
+    And I go back to message compose
     And I click message at position 1
     Then I check if the privacy status is pep_red
     When I go back to message compose
