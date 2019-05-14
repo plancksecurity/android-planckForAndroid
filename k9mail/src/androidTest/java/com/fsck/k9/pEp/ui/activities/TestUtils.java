@@ -440,8 +440,8 @@ public class TestUtils {
     }
 
     public void fillMessage(BasicMessage inputMessage, boolean attachFilesToMessage) {
-        boolean messageFilled = false;
-        while (!messageFilled){
+        while (!getTextFromView(onView(withId(R.id.subject))).contains(inputMessage.getSubject())
+                || !getTextFromView(onView(withId(R.id.message_content))).contains(inputMessage.getMessage())){
             try {
                 device.waitForIdle();
                 doWaitForResource(R.id.to);
@@ -459,7 +459,6 @@ public class TestUtils {
                 device.waitForIdle();
                 onView(withId(R.id.message_content)).perform(typeText(inputMessage.getMessage()), closeSoftKeyboard());
                 device.waitForIdle();
-                messageFilled = true;
             } catch (Exception ex){
                 Timber.i("Could not fill message: " + ex);
             }
