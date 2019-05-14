@@ -454,7 +454,6 @@ public class TestUtils {
                 device.waitForIdle();
                 device.findObject(By.res(APP_ID, "to")).click();
                 onView(withId(R.id.to)).perform(typeText(inputMessage.getTo() +  ","), closeSoftKeyboard());
-                doWaitForResource(R.id.subject);
                 device.waitForIdle();
                 onView(withId(R.id.subject)).perform(typeText(inputMessage.getSubject()), closeSoftKeyboard());
                 device.waitForIdle();
