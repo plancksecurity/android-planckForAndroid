@@ -3,11 +3,9 @@ package com.fsck.k9.pEp.ui.activities.cucumber.steps;
 
 import android.app.Activity;
 import android.app.Instrumentation;
-import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.test.InstrumentationRegistry;
@@ -43,7 +41,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
@@ -59,12 +56,9 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import timber.log.Timber;
 
-import static android.provider.UserDictionary.Words.APP_ID;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.longClick;
-import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.action.ViewActions.typeTextIntoFocusedView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -74,17 +68,13 @@ import static android.support.test.espresso.matcher.ViewMatchers.isCompletelyDis
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.appendTextInTextView;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containsText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containstText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromView;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.setTextInTextView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
-import static com.schibsted.spain.barista.interaction.BaristaEditTextInteractions.writeTo;
 import static org.hamcrest.CoreMatchers.not;
 
 @RunWith(AndroidJUnit4.class)
