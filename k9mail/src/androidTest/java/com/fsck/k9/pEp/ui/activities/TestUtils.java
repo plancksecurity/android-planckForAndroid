@@ -1350,36 +1350,29 @@ public class TestUtils {
     }
 
     public void clickFirstMessage(){
-        boolean firstMessageClicked = false;
-        device.waitForIdle();
-        while (!firstMessageClicked){
+        while (!viewIsDisplayed(R.id.message_list)) {
+            device.waitForIdle();
+        }
+        while ((exists(onView(withId(R.id.message_list))) || viewIsDisplayed(R.id.message_list))
+         && (!viewIsDisplayed(R.id.reply_message))){
             try{
-                if(viewIsDisplayed(R.id.message_list)) {
-                    doWaitForIdlingListViewResource(R.id.message_list);
                     device.waitForIdle();
                     swipeDownMessageList();
                     device.waitForIdle();
                     getMessageListSize();
                     if (viewIsDisplayed(R.id.reply_message)) {
-                        firstMessageClicked = true;
+                        return;
                     }
                     else {
                         device.waitForIdle();
                         onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
                         device.waitForIdle();
                     }
-                    if (!viewIsDisplayed(R.id.message_list)) {
-                        firstMessageClicked = true;
-                    }
-                } else {
-                    if (!exists(onView(withId(R.id.message_list)))) {
-                        firstMessageClicked = true;
-                    }
-                }
             } catch (Exception ex){
                 Timber.i("Cannot find list: " + ex);
             }
         }
+        device.waitForIdle();
     }
 
     void checkToolBarColor(int color) {
