@@ -212,10 +212,11 @@ public class PEpProviderImpl implements PEpProvider {
                         || decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY)) {
                     Log.d(TAG, "pEpdecryptMessage() after decrypt has usable pEp key (import)");
                     return new DecryptResult(decMsg, decReturn.rating, new KeyDetail("", null), decReturn.flags);
-                } else {
+                } else if (!decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_AUTOCONSUME) &&
+                        !decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY)) {
                     Log.d(TAG, "pEpdecryptMessage() after decrypt has usable PGP key (import)");
                     return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg), decReturn.flags);
-                }
+                } else return new DecryptResult(decMsg, decReturn.rating, null, 0x2);
             }
            else return new DecryptResult(decMsg, decReturn.rating, null, -1);
         }catch (Throwable t) {
@@ -348,7 +349,6 @@ public class PEpProviderImpl implements PEpProvider {
     private boolean isUsablePrivateKey(Engine.decrypt_message_Return result) {
         // TODO: 13/06/16 Check if is necesary check own id
         return result.rating.value >= Rating.pEpRatingTrusted.value
-                && result.flags != -1
                 && result.flags == 0x01;
     }
 
@@ -623,7 +623,10 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public synchronized void close() {
-        if (engine != null) engine.close();
+        if (engine != null) {
+            engine.stopSync();
+            engine.close();
+        }
     }
 
     @Override
@@ -866,8 +869,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public synchronized void startSync() {
-        //Not needed anymore
-        //engine.startSync();
+        engine.startSync();
     }
 
     //FIXME: Implement sync use lists.

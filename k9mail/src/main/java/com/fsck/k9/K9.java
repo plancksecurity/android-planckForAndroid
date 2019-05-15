@@ -1768,16 +1768,13 @@ public class K9 extends Application {
         @Override
         public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
             Timber.e("pEp notifyHandshake: %s", signal.name());
-/*            switch (signal) {
+            switch (signal) {
                 case SyncNotifyUndefined:
                     break;
                 case SyncNotifyInitAddOurDevice:
                 case SyncNotifyInitAddOtherDevice:
                 case SyncNotifyInitFormGroup:
                     goToAddDevice(myself, partner, signal, getString(R.string.pep_add_device_ask_trustwords));
-                    break;
-                case SyncNotifyInitMoveOurDevice:
-                    goToAddDevice(myself, partner, signal, getString(R.string.pep_add_device_ask_move_trustwords));
                     break;
                 case SyncNotifyTimeout:
                     //Close handshake
@@ -1788,11 +1785,10 @@ public class K9 extends Application {
                     break;
                 case SyncNotifyAcceptedDeviceAdded:
                 case SyncNotifyAcceptedGroupCreated:
-                case SyncNotifyAcceptedDeviceMoved:
                     new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_LONG).show());
                     break;
             }
-            */
+
 
         }
     };
