@@ -440,20 +440,28 @@ public class TestUtils {
     }
 
     public void fillMessage(BasicMessage inputMessage, boolean attachFilesToMessage) {
+            while (!viewIsDisplayed(R.id.to)) {
+                device.waitForIdle();
+            }
+            device.waitForIdle();
+            try {
+                if (!inputMessage.getTo().equals("")) {
+                    while (getTextFromView(onView(withId(R.id.to))).equals("")) {
+                        device.waitForIdle();
+                        onView(withId(R.id.to)).perform(typeText(inputMessage.getTo() + ","), closeSoftKeyboard());
+                    }
+                }
+        } catch (Exception ex) {
+            Timber.i(" ");
+        }
         while (!getTextFromView(onView(withId(R.id.subject))).contains(inputMessage.getSubject())
                 || !getTextFromView(onView(withId(R.id.message_content))).contains(inputMessage.getMessage())){
             try {
                 device.waitForIdle();
-                doWaitForResource(R.id.to);
-                device.waitForIdle();
-                device.findObject(By.res(APP_ID, "to")).click();
                 device.waitForIdle();
                 device.findObject(By.res(APP_ID, "subject")).click();
                 device.waitForIdle();
                 device.findObject(By.res(APP_ID, "message_content")).click();
-                device.waitForIdle();
-                device.findObject(By.res(APP_ID, "to")).click();
-                onView(withId(R.id.to)).perform(typeText(inputMessage.getTo() +  ","), closeSoftKeyboard());
                 device.waitForIdle();
                 onView(withId(R.id.subject)).perform(typeText(inputMessage.getSubject()), closeSoftKeyboard());
                 device.waitForIdle();
