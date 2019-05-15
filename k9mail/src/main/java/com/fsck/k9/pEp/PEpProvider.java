@@ -222,7 +222,7 @@ public interface PEpProvider {
 
     boolean canEncrypt(String address);
 
-    void importKey(String key);
+    void importKey(byte[] key);
 
     class KeyDetail {
         private final Address address;

@@ -272,7 +272,8 @@ public abstract class PEpImporterActivity extends PepPermissionActivity {
                 Identity accountIdentity = PEpUtils.createIdentity(new Address(currentAccount), mContext);
                 String currentFpr = pEp.myself(accountIdentity).fpr;
                 try {
-                    String key = IOUtils.toString(is);
+                    //String key = IOUtils.toString(is);
+                    byte[] key = IOUtils.toByteArray(is);
 
                     pEp.importKey(key);
                     Identity id = pEp.setOwnIdentity(accountIdentity, fpr);

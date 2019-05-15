@@ -1111,7 +1111,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void importKey(String key) {
+    public void importKey(byte[] key) {
         createEngineInstanceIfNeeded();
         engine.importKey(key);
     }
