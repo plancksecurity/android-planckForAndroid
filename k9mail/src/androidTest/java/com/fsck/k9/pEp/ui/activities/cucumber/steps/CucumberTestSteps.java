@@ -7,6 +7,7 @@ import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.test.InstrumentationRegistry;
@@ -58,6 +59,7 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import timber.log.Timber;
 
+import static android.provider.UserDictionary.Words.APP_ID;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -88,7 +90,7 @@ import static org.hamcrest.CoreMatchers.not;
 @RunWith(AndroidJUnit4.class)
 public class CucumberTestSteps {
 
-    private static final String HOST = "@test.pep-security.net";
+    private static final String HOST = "@sq.pep.security";
 
     private String bot[];
     public String b ="";
@@ -248,7 +250,10 @@ public class CucumberTestSteps {
         int viewId = testUtils.intToID(viewName);
         device.waitForIdle();
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-        scroll.swipe(Direction.DOWN, 1.0f);
+        while (!viewIsDisplayed(viewId)) {
+            scroll.swipe(Direction.DOWN, 1.0f);
+            device.waitForIdle();
+        }
         switch (text) {
             case "empty":
                 timeRequiredForThisMethod(30);
@@ -258,19 +263,22 @@ public class CucumberTestSteps {
                 timeRequiredForThisMethod(3000);
                 device.waitForIdle();
                 String text1 = "";
-                for (int i = 0; i < 61; i++) {
-                    text1 = text1 + testUtils.longText();
-                }
                 BySelector selector = By.clazz("android.widget.EditText");
                 UiObject2 uiObject = device.findObject(By.res("security.pEp:id/message_content"));
                 for (UiObject2 object : device.findObjects(selector)) {
                     if (object.getResourceName().equals(uiObject.getResourceName())) {
                         while (!object.getText().contains(testUtils.longText())) {
                             device.waitForIdle();
-                            object.setText(text1);
+                            object.click();
+                            testUtils.setClipboard(testUtils.longText());
+                            for (int i = 0; i < 61; i++) {
+                                device.waitForIdle();
+                                text1 = text1 + testUtils.longText();
+                            }
+                            testUtils.setClipboard(text1);
+                            testUtils.pasteClipboard();
                         }
                     }
-
                 }
                 device.waitForIdle();
                 scroll.swipe(Direction.UP, 1.0f);
