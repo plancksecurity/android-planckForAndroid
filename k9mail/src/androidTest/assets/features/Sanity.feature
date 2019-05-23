@@ -15,7 +15,7 @@ Feature: Sanity
   Expectation: Privacy Status of outgoing message is “Unsecure”
     When I click compose message
     And I check if the privacy status is pEpRatingUndefined
-    And I enter unknownuser@mail.es in the messageTo field
+    And I enter bot1 in the messageTo field
     And I enter subjectText in the messageSubject field
     And I enter bodyText in the messageBody field
     Then I check in the handshake dialog if the privacy status is pEpRatingUnencrypted
@@ -23,7 +23,7 @@ Feature: Sanity
     And I enter empty in the messageSubject field
     And I enter empty in the messageBody field
     Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
-    When I enter unknownuser@mail.es in the messageTo field
+    When I enter bot1 in the messageTo field
     And I enter empty in the messageSubject field
     And I enter empty in the messageBody field
     Then I check in the handshake dialog if the privacy status is pEpRatingUnencrypted
@@ -59,7 +59,7 @@ Feature: Sanity
     And I wait for the message and click it
     Then I compare messageBody from attachment with longText
     Then I check if the privacy status is pep_yellow
-    When I go back to message compose
+    When I go back to the Inbox
     And I go to the sent folder
     And I click the first message
     Then I compare messageBody with longText
@@ -84,7 +84,7 @@ Feature: Sanity
   Expectation: Privacy Status of outgoing message is “Unsecure”
     When I click compose message
     Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
-    When I enter user2@gmail.es in the messageTo field
+    When I enter bot3 in the messageTo field
     And I enter subject in the messageSubject field
     And I enter bodyText in the messageBody field
     Then I check in the handshake dialog if the privacy status is pEpRatingUnencrypted
@@ -109,7 +109,7 @@ Feature: Sanity
     And I enter bodyText in the messageBody field
     Then I check if the privacy status is pep_yellow
     And I click the send message button
-    And I go back to message compose
+    When I go back to the Inbox
     And I wait for the new message
     #@Juan: We should send the message and check if the answer of the bot, if the message we sent was encrypted
 
@@ -140,7 +140,7 @@ Feature: Sanity
     Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
     When I send 1 message to bot1 with subject TestCase1.2.4 and body TestCase1.2.4
     And I go to the sent folder
-    And I wait for the message and click it
+    And I click the last message received
     Then I check if the privacy status is pep_yellow
     And I compare messageBody with TestCase1.2.4
 
@@ -153,18 +153,17 @@ Feature: Sanity
     When I click compose message
     Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
     When I send 1 message to bot1 with subject TestCase1.2.5 and body TestCase1.2.5
-    And I wait for the message and click it
+    And I click the last message received
     Then I check if the privacy status is pep_yellow
     When I press back
     And I click compose message
     And I send 1 message to bot2 with subject TestCase1.2.5 and body TestCase1.2.5
-    And I wait for the message and click it
+    And I click the last message received
     Then I check if the privacy status is pep_yellow
     When I press back
     And I click compose message
     And I enter bot1 in the messageTo field
     And I enter bot2 in the messageTo field
-    And I wait 5 seconds
     Then I check if the privacy status is pep_yellow
     When I enter TestCase1.2.5 in the messageSubject field
     And I enter TestCase1.2.5 in the messageBody field
@@ -177,10 +176,10 @@ Feature: Sanity
     When I click the send message button
     And I wait for the new message
     And I go to the sent folder
-    And I wait for the message and click it
+    And I click the last message received
     Then I check if the privacy status is pep_yellow
     And I compare messageBody with empty
-    And I go back to message compose
+    And I go back to the Inbox
 
   @TM-12
   Scenario: Test Sanity MailToMultipleContactsMixed
@@ -197,7 +196,7 @@ Feature: Sanity
     And I enter bot1 in the messageTo field
     And I enter bot2 in the messageTo field
     Then I check if the privacy status is pep_yellow
-    When I enter unknown@user.es in the messageTo field
+    When I enter bot5 in the messageTo field
     Then I check if the privacy status is pep_no_color
     When I enter TestCase1.2.6 in the messageSubject field
     And I enter TestCase1.2.6 in the messageBody field
@@ -205,12 +204,12 @@ Feature: Sanity
     And I enter bot1 in the messageTo field
     And I enter bot2 in the messageTo field
     Then I check if the privacy status is pep_yellow
-    When I enter unknown@user.es in the messageTo field
+    When I enter bot5 in the messageTo field
     Then I check if the privacy status is pep_no_color
     When I click the send message button
     And I wait for the new message
     And I go to the sent folder
-    And I wait for the message and click it
+    And I click the last message received
     Then I check if the privacy status is pep_no_color
     And I compare messageBody with TestCase1.2.6
 
@@ -228,6 +227,6 @@ Feature: Sanity
     When I click the send message button
     And I wait for the new message
     And I go to the sent folder
-    And I wait for the message and click it
+    And I click the last message received
     Then I check if the privacy status is pep_no_color
     Then I remove account
