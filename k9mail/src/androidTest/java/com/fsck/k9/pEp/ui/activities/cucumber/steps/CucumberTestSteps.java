@@ -1081,8 +1081,8 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
-    @And("^I go back to message compose$")
-    public void I_go_back_to_message_compose(){
+    @And("^I go back to the Inbox$")
+    public void I_go_back_to_the_Inbox(){
         timeRequiredForThisMethod(15);
         testUtils.goBackToMessageList();
     }
