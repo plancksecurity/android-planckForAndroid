@@ -790,15 +790,8 @@ public class TestUtils {
         device.waitForIdle();
         if (!exists(onView(withId(R.id.reply_message)))) {
             device.waitForIdle();
-            doWaitForResource(R.id.pEp_indicator);
-            waitUntilIdle();
-            device.waitForIdle();
             clickView(R.id.pEp_indicator);
             device.waitForIdle();
-            while (!exists(onView(withId(R.id.toolbar)))) {
-                doWaitForResource(R.id.pEpTitle);
-                device.waitForIdle();
-            }
         } else {
             clickView(R.id.tvPep);
         }
