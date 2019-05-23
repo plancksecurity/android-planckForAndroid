@@ -240,7 +240,7 @@ public class CucumberTestSteps {
         int viewId = testUtils.intToID(viewName);
         device.waitForIdle();
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-        while (!viewIsDisplayed(viewId)) {
+        while (!exists(onView(withId(viewId)))) {
             scroll.swipe(Direction.DOWN, 1.0f);
             device.waitForIdle();
         }
@@ -267,6 +267,7 @@ public class CucumberTestSteps {
                             }
                             testUtils.setClipboard(text1);
                             testUtils.pasteClipboard();
+                            object.click();
                         }
                     }
                 }
