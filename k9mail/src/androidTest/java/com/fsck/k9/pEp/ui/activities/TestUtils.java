@@ -438,22 +438,21 @@ public class TestUtils {
     }
 
     public void fillMessage(BasicMessage inputMessage, boolean attachFilesToMessage) {
-            while (!viewIsDisplayed(R.id.to)) {
-                device.waitForIdle();
-            }
+        while (!viewIsDisplayed(R.id.to)) {
             device.waitForIdle();
-            try {
-                if (!inputMessage.getTo().equals("")) {
-                    while (getTextFromView(onView(withId(R.id.to))).equals("")) {
-                        device.waitForIdle();
-                        onView(withId(R.id.to)).perform(typeText(inputMessage.getTo() + ","), closeSoftKeyboard());
-                    }
-                }
-        } catch (Exception ex) {
-            Timber.i(" ");
+        }
+        device.waitForIdle();
+        UiObject2 list = device.findObject(By.res(APP_ID, "to"));
+        Rect bounds = list.getVisibleBounds();
+        if (!inputMessage.getTo().equals("")) {
+            onView(withId(R.id.to)).perform(click(), closeSoftKeyboard());
+            device.click(bounds.left - 5, bounds.centerY());
+            device.waitForIdle();
+            onView(withId(R.id.to)).perform(typeText(inputMessage.getTo() + ","), closeSoftKeyboard());
+
         }
         while (!getTextFromView(onView(withId(R.id.subject))).contains(inputMessage.getSubject())
-                || !getTextFromView(onView(withId(R.id.message_content))).contains(inputMessage.getMessage())){
+                || !getTextFromView(onView(withId(R.id.message_content))).contains(inputMessage.getMessage())) {
             try {
                 device.waitForIdle();
                 device.waitForIdle();
@@ -465,7 +464,7 @@ public class TestUtils {
                 device.waitForIdle();
                 onView(withId(R.id.message_content)).perform(typeText(inputMessage.getMessage()), closeSoftKeyboard());
                 device.waitForIdle();
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 Timber.i("Could not fill message: " + ex);
             }
         }
