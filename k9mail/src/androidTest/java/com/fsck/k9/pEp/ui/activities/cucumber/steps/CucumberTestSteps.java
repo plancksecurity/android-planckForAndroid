@@ -240,10 +240,8 @@ public class CucumberTestSteps {
         int viewId = testUtils.intToID(viewName);
         device.waitForIdle();
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-        while (!exists(onView(withId(viewId)))) {
-            scroll.swipe(Direction.DOWN, 1.0f);
-            device.waitForIdle();
-        }
+        scroll.swipe(Direction.DOWN, 1.0f);
+        device.waitForIdle();
         switch (text) {
             case "empty":
                 timeRequiredForThisMethod(30);
