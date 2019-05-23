@@ -720,6 +720,9 @@ public class TestUtils {
     public void removeTextFromTextView(String viewId) {
         device.waitForIdle();
         int view = intToID(viewId);
+        while (!exists(onView(withId(view)))) {
+            device.waitForIdle();
+        }
         onView(withId(view)).perform(closeSoftKeyboard());
         onView(withId(view)).perform(click());
         UiObject2 list = device.findObject(By.res(APP_ID, viewId));
