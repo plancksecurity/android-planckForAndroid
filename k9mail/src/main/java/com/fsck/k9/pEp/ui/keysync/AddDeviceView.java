@@ -1,6 +1,6 @@
 package com.fsck.k9.pEp.ui.keysync;
 
-import org.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Identity;
 
 import java.util.List;
 

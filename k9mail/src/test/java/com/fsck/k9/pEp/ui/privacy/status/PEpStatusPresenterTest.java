@@ -12,8 +12,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
 

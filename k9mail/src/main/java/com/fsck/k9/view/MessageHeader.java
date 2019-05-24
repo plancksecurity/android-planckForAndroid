@@ -47,7 +47,7 @@ import com.fsck.k9.pEp.PePUIArtefactCache;
 
 import com.fsck.k9.ui.messageview.OnCryptoClickListener;
 
-import org.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Rating;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;

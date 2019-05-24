@@ -34,7 +34,7 @@ import com.fsck.k9.mailstore.DatabasePreviewType;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 
-import org.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
 import java.util.List;

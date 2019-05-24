@@ -14,10 +14,10 @@ import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.mail.internet.MimeUtility;
 
-import org.pEp.jniadapter.Blob;
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Message;
-import org.pEp.jniadapter.Pair;
+import foundation.pEp.jniadapter.Blob;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Message;
+import foundation.pEp.jniadapter.Pair;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

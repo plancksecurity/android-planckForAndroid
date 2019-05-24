@@ -20,7 +20,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.pEp.jniadapter.Rating;
+import pEp.jniadapter.Rating;
 
 import timber.log.Timber;
 

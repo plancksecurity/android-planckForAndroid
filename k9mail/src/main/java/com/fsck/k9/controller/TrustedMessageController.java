@@ -12,7 +12,7 @@ import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 
-import org.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Rating;
 
 import timber.log.Timber;
 

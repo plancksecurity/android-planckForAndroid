@@ -33,8 +33,8 @@ import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.RecipientSelectView.TokenListener;
 
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
 import java.util.Arrays;

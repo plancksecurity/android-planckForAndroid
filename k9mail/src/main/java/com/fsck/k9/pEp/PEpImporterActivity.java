@@ -51,9 +51,9 @@ import com.fsck.k9.preferences.SettingsImporter;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Message;
-import org.pEp.jniadapter.pEpException;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Message;
+import foundation.pEp.jniadapter.pEpException;
 
 import java.io.File;
 import java.io.FileNotFoundException;

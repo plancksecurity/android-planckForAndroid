@@ -15,7 +15,7 @@ import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.ui.adapters.IdentitiesAdapter;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
-import org.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Identity;
 
 import java.util.ArrayList;
 import java.util.List;

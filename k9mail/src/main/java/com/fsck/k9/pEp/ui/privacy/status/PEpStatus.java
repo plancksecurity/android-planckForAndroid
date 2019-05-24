@@ -27,7 +27,7 @@ import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.ui.adapters.PEpIdentitiesAdapter;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
-import org.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Rating;
 
 import java.util.List;
 

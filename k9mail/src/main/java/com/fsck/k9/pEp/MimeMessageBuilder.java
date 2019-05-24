@@ -27,9 +27,9 @@ import com.fsck.k9.message.SimpleMessageFormat;
 import org.apache.james.mime4j.codec.EncoderUtil;
 import org.apache.james.mime4j.util.MimeUtil;
 import org.jsoup.Jsoup;
-import org.pEp.jniadapter.Blob;
-import org.pEp.jniadapter.Message;
-import org.pEp.jniadapter.Pair;
+import foundation.pEp.jniadapter.Blob;
+import foundation.pEp.jniadapter.Message;
+import foundation.pEp.jniadapter.Pair;
 
 import java.util.Locale;
 import java.util.Vector;

@@ -38,7 +38,7 @@ import android.view.View;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
 
-import org.pEp.jniadapter.Rating;
+import pEp.jniadapter.Rating;
 
 import java.io.File;
 import java.io.FileOutputStream;

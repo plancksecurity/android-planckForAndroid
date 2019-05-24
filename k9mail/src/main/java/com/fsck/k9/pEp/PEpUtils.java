@@ -28,10 +28,10 @@ import com.fsck.k9.mail.internet.Viewable;
 import com.fsck.k9.message.SimpleMessageFormat;
 
 import org.apache.commons.io.IOUtils;
-import org.pEp.jniadapter.CommType;
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.IdentityFlags;
-import org.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.CommType;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.IdentityFlags;
+import foundation.pEp.jniadapter.Rating;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -394,7 +394,7 @@ public class PEpUtils {
     @WorkerThread
     public static void pEpGenerateAccountKeys(Context context, Account account) {
         PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(context);
-        org.pEp.jniadapter.Identity myIdentity = PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), context);
+        foundation.pEp.jniadapter.Identity myIdentity = PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), context);
         myIdentity = pEp.myself(myIdentity);
         updateSyncFlag(account, pEp, myIdentity);
         pEp.close();
@@ -402,9 +402,9 @@ public class PEpUtils {
 
     private static void updateSyncFlag(Account account, PEpProvider pEp, Identity myIdentity) {
         if (!account.isPepSyncEnabled()) {
-            pEp.setIdentityFlag(myIdentity, IdentityFlags.PEPIdfNotForSync.value);
+            pEp.setIdentityFlag(myIdentity, IdentityFlags.pEpIdfNotForSync.value);
         } else {
-            pEp.unsetIdentityFlag(myIdentity, IdentityFlags.PEPIdfNotForSync.value);
+            pEp.unsetIdentityFlag(myIdentity, IdentityFlags.pEpIdfNotForSync.value);
         }
     }
 
@@ -550,18 +550,18 @@ public class PEpUtils {
 
     public static Message generateKeyImportRequest(Context context, PEpProvider pEp, Account account,
                                                    boolean ispEp, boolean encrypted) throws MessagingException {
-        org.pEp.jniadapter.Message result;
-        result = new org.pEp.jniadapter.Message();
+        foundation.pEp.jniadapter.Message result;
+        result = new foundation.pEp.jniadapter.Message();
         Address address = new Address(account.getEmail());
         Identity identity = createIdentity(address, context);
         identity = pEp.myself(identity);
         result.setFrom(identity);
         result.setTo(new Vector<>(Collections.singletonList(identity)));
-        ArrayList<org.pEp.jniadapter.Pair<String, String>> fields = new ArrayList<>();
-        fields.add(new org.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY, "yes"));
+        ArrayList<foundation.pEp.jniadapter.Pair<String, String>> fields = new ArrayList<>();
+        fields.add(new foundation.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY, "yes"));
 
         result.setSent(new Date(System.currentTimeMillis()));
-        result.setEncFormat(org.pEp.jniadapter.Message.EncFormat.None);
+        result.setEncFormat(foundation.pEp.jniadapter.Message.EncFormat.None);
 
         MimeMessageBuilder builder = new MimeMessageBuilder(result).newInstance();
 
@@ -576,7 +576,7 @@ public class PEpUtils {
                 .setAttachments(Collections.emptyList());
 
         if (ispEp) {
-            fields.add(new org.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY, identity.fpr));
+            fields.add(new foundation.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY, identity.fpr));
             builder.setSubject("Please ignore, this message is part of import key protocol");
             result.setShortmsg("Please ignore, this message is part of import key protocol");
             result.setLongmsg("");

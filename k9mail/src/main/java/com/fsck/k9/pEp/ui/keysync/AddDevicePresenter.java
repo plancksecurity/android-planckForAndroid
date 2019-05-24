@@ -6,8 +6,8 @@ import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.Presenter;
 
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.IdentityFlags;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.IdentityFlags;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -60,10 +60,10 @@ import com.fsck.k9.widget.list.MessageListWidgetProvider;
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
-import org.pEp.jniadapter.AndroidHelper;
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Sync;
-import org.pEp.jniadapter.SyncHandshakeSignal;
+import foundation.pEp.jniadapter.AndroidHelper;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Sync;
+import foundation.pEp.jniadapter.SyncHandshakeSignal;
 
 import java.io.File;
 import java.util.ArrayList;

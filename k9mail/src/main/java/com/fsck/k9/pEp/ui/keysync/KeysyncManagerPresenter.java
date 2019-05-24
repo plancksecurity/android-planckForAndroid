@@ -4,8 +4,8 @@ import com.fsck.k9.Account;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.Presenter;
 
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.IdentityFlags;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.IdentityFlags;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +65,7 @@ public class KeysyncManagerPresenter implements Presenter {
         Identity updatedIdentity = pEpProvider.updateIdentity(identity);
 
         if (!checked) {
-            pEpProvider.setIdentityFlag(updatedIdentity, IdentityFlags.PEPIdfNotForSync.value, new PEpProvider.CompletedCallback() {
+            pEpProvider.setIdentityFlag(updatedIdentity, IdentityFlags.pEpIdfNotForSync.value, new PEpProvider.CompletedCallback() {
                 @Override
                 public void onComplete() {
 
@@ -77,7 +77,7 @@ public class KeysyncManagerPresenter implements Presenter {
                 }
             });
         } else {
-            pEpProvider.unsetIdentityFlag(updatedIdentity, IdentityFlags.PEPIdfNotForSync.value, new PEpProvider.CompletedCallback() {
+            pEpProvider.unsetIdentityFlag(updatedIdentity, IdentityFlags.pEpIdfNotForSync.value, new PEpProvider.CompletedCallback() {
                 @Override
                 public void onComplete() {
 

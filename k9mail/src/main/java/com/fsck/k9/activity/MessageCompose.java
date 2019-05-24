@@ -96,7 +96,7 @@ import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
 import com.karumi.dexter.listener.single.CompositePermissionListener;
 
-import org.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Rating;
 
 import java.util.Collections;
 import java.util.Date;

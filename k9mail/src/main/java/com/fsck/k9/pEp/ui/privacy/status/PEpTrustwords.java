@@ -21,8 +21,8 @@ import com.fsck.k9.pEp.ui.HandshakeData;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.ui.keysync.languages.PEpLanguageSelector;
 
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Rating;
 
 import java.util.List;
 import java.util.Locale;
