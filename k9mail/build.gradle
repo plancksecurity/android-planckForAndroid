@@ -1,5 +1,5 @@
 def pEpEngineRevision = 3685
-def pEpJNIAdapterRevision = 534
+def pEpJNIAdapterRevision = 555
 def version = "1.0.216-dev"
 def libpEpAdapterVersion = 117
 
@@ -107,7 +107,7 @@ android {
     defaultConfig {
         applicationId "${appId}"
         versionCode 25
-        minSdkVersion 18
+        minSdkVersion 19
         targetSdkVersion 27
         setProperty("archivesBaseName", "$version-$versionCode")
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]

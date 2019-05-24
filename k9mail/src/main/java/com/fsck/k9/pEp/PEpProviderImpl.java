@@ -202,7 +202,7 @@ public class PEpProviderImpl implements PEpProvider {
                 Date lastValidDate = new Date(System.currentTimeMillis() - (TIMEOUT));
                 int flags = -1;
                 if (lastValidDate.after(decMsg.getSentDate())) {
-                    flags = DecryptFlags.PEPDecryptFlagConsumed.value;
+                    flags = DecryptFlags.pEpDecryptFlagConsumed.value;
                     return new DecryptResult(decMsg, decReturn.rating, null, flags);
                 }
             }
@@ -875,20 +875,17 @@ public class PEpProviderImpl implements PEpProvider {
     //FIXME: Implement sync use lists.
     @Override
     public synchronized void acceptHandshake(Identity identity) {
-        Vector<Identity> ids = new Vector<>(Collections.singletonList(identity));
-        engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeAccepted, ids);
+        engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeAccepted, new Vector<>());
     }
 
     @Override
     public synchronized void rejectHandshake(Identity identity) {
-        Vector<Identity> ids = new Vector<>(Collections.singletonList(identity));
-        engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeRejected, ids);
+        engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeRejected, new Vector<>());
     }
 
     @Override
     public synchronized void cancelHandshake(Identity identity) {
-        Vector<Identity> ids = new Vector<>(Collections.singletonList(identity));
-        engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeCancel, ids);
+        engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeCancel, new Vector<>());
     }
 
     @Override

@@ -21,4 +21,6 @@ public interface AddDeviceView {
     void hideIdentities();
 
     void showFPR();
+
+    void showKeySyncTitle();
 }

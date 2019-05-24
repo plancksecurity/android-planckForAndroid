@@ -88,7 +88,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     TextView currentAction;
     @Bind(R.id.description)
     TextView description;
-    @Bind(R.id.toolbarpEpTitle)
+    @Bind(R.id.toolbar_pEp_title)
     TextView toolbarpEpTitle;
     @Bind(R.id.tvProtocol)
     TextView protocol;

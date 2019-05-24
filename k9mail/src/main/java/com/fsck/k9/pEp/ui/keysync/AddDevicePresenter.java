@@ -1,5 +1,7 @@
 package com.fsck.k9.pEp.ui.keysync;
 
+import android.util.Log;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.mail.MessagingException;
@@ -49,6 +51,7 @@ public class AddDevicePresenter implements Presenter {
             }
         } else {
             keyImportStrategy = new KeySyncStrategy();
+            view.showKeySyncTitle();
         }
     }
 
@@ -101,7 +104,7 @@ public class AddDevicePresenter implements Presenter {
 
     public void identityCheckStatusChanged(Identity identity, Boolean checked) {
         if (!checked) {
-            pEpProvider.setIdentityFlag(identity, IdentityFlags.PEPIdfNotForSync.value, new PEpProvider.CompletedCallback() {
+            pEpProvider.setIdentityFlag(identity, IdentityFlags.pEpIdfNotForSync.value, new PEpProvider.CompletedCallback() {
                 @Override
                 public void onComplete() {
 
@@ -113,7 +116,7 @@ public class AddDevicePresenter implements Presenter {
                 }
             });
         } else {
-            pEpProvider.unsetIdentityFlag(identity, IdentityFlags.PEPIdfNotForSync.value, new PEpProvider.CompletedCallback() {
+            pEpProvider.unsetIdentityFlag(identity, IdentityFlags.pEpIdfNotForSync.value, new PEpProvider.CompletedCallback() {
                 @Override
                 public void onComplete() {
 
@@ -222,7 +225,8 @@ public class AddDevicePresenter implements Presenter {
 
         @Override
         void acceptHandshake(Identity partner) {
-            pEpProvider.acceptHandshake(partner);
+            Log.e("pEpEngine", String.format("acceptHandshake: myself(%s), partner(%s)", pEpProvider.myself(partner), partner) );
+            pEpProvider.acceptHandshake(pEpProvider.myself(partner));
         }
 
         @Override
