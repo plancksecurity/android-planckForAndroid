@@ -217,6 +217,10 @@ public class CucumberTestSteps {
         }
         try {
             onView(withId(R.id.subject)).perform(click(), closeSoftKeyboard());
+            onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
+            device.waitForIdle();
+            device.pressKeyCode(KeyEvent.KEYCODE_DEL);
+            device.waitForIdle();
             onView(withId(R.id.message_content)).perform(click(), closeSoftKeyboard());
             onView(withId(R.id.to)).check(matches(isDisplayed()));
         } catch (Exception ex) {
