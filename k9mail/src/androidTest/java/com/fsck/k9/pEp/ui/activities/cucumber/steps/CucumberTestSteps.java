@@ -193,7 +193,6 @@ public class CucumberTestSteps {
                 break;
         }
         if (!(getTextFromView(onView(withId(R.id.to))).equals("") || getTextFromView(onView(withId(R.id.to))).equals(" "))) {
-            cucumberMessageTo = cucumberMessageTo + ",";
             try {
                 fillMessage(cucumberMessageTo);
             } catch (Exception ex) {
