@@ -85,6 +85,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static android.support.test.runner.lifecycle.Stage.RESUMED;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.appendTextInTextView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containsText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromView;
@@ -446,9 +447,11 @@ public class TestUtils {
         Rect bounds = list.getVisibleBounds();
         if (!inputMessage.getTo().equals("")) {
             onView(withId(R.id.to)).perform(click(), closeSoftKeyboard());
-            device.click(bounds.left - 5, bounds.centerY());
+            device.click(bounds.left - 1, bounds.centerY());
             device.waitForIdle();
-            onView(withId(R.id.to)).perform(typeText(inputMessage.getTo() + ","), closeSoftKeyboard());
+            device.click(bounds.left - 1, bounds.centerY());
+            device.waitForIdle();
+            onView(withId(R.id.to)).perform(appendTextInTextView(inputMessage.getTo()), closeSoftKeyboard());
 
         }
         while (!getTextFromView(onView(withId(R.id.subject))).contains(inputMessage.getSubject())
