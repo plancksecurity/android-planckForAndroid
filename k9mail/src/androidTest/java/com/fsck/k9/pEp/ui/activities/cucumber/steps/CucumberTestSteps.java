@@ -295,8 +295,9 @@ public class CucumberTestSteps {
         }
     }
 
-    @When("^I compare (\\S+) from attachment with (\\S+)")
-    public void I_compare_name_with_string(String name, String stringToCompare) {
+
+    @When("^I compare (\\S+) from json file with (\\S+)")
+    public void I_compare_jsonfile_with_string(String name, String stringToCompare) {
         timeRequiredForThisMethod(10);
         TestUtils.getJSONObject(name);
         switch (name) {
@@ -305,13 +306,13 @@ public class CucumberTestSteps {
                 assertText(TestUtils.rating, stringToCompare);
                 break;
             case "messageBody":
-                if (stringToCompare.contains("longText")){
+                if (stringToCompare.contains("longText")) {
                     stringToCompare = testUtils.longText();
                 }
                 assertTextInJSON(TestUtils.json, stringToCompare);
                 break;
-                default:
-                    assertTextInJSONArray(name, TestUtils.jsonArray, stringToCompare);
+            default:
+                assertTextInJSONArray(name, TestUtils.jsonArray, stringToCompare);
         }
     }
 
