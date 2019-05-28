@@ -756,7 +756,7 @@ public class K9 extends Application {
     private void pEpInitEnvironment() {
         AndroidHelper.setup(this);
         if (pEpSyncEnabled) {
-            initSync();
+            //initSync();
         }
         setupFastPoller();
     }
