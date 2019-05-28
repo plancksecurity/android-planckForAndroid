@@ -1728,7 +1728,8 @@ public class Account implements BaseAccount, StoreConfig {
 
     // TODO: pEp: do we really *need* synchronized here?!
     public synchronized boolean isUntrustedSever() {
-        return pEpUntrustedServer;
+        return true;
+        //return pEpUntrustedServer;
     }
 
     public synchronized void setPEpStoreEncryptedOnServer(boolean mPEpStoreEncryptedOnServer) {
