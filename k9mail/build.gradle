@@ -1,5 +1,5 @@
-def pEpEngineRevision = 3685
-def pEpJNIAdapterRevision = 555
+def pEpEngineRevision = 3741
+def pEpJNIAdapterRevision = 557
 def version = "1.0.216-dev"
 def libpEpAdapterVersion = 117
 
