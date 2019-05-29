@@ -1,6 +1,7 @@
-def pEpEngineRevision = 3539
-def pEpJNIAdapterRevision = 520
-def version = "1.0.215"
+def pEpEngineRevision = 3741
+def pEpJNIAdapterRevision = 557
+def version = "1.0.216"
+def libpEpAdapterVersion = 117
 
 def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
 def pEpTestEmailPassword = "\"$System.env.PEP_TEST_EMAIL_PASSWORD\""
@@ -149,8 +150,8 @@ android {
 
     defaultConfig {
         applicationId "${appId}"
-        versionCode 25
-        minSdkVersion 18
+        versionCode 26
+        minSdkVersion 19
         targetSdkVersion 27
         setProperty("archivesBaseName", "$version-$versionCode")
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]

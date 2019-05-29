@@ -20,15 +20,15 @@ import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
 import com.fsck.k9.pEp.ui.HandshakeData;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
-import org.pEp.jniadapter.DecryptFlags;
-import org.pEp.jniadapter.Engine;
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Message;
-import org.pEp.jniadapter.Pair;
-import org.pEp.jniadapter.Rating;
-import org.pEp.jniadapter.Sync;
-import org.pEp.jniadapter.SyncHandshakeResult;
-import org.pEp.jniadapter.pEpException;
+import foundation.pEp.jniadapter.DecryptFlags;
+import foundation.pEp.jniadapter.Engine;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Message;
+import foundation.pEp.jniadapter.Pair;
+import foundation.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Sync;
+import foundation.pEp.jniadapter.SyncHandshakeResult;
+import foundation.pEp.jniadapter.pEpException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -202,7 +202,7 @@ public class PEpProviderImpl implements PEpProvider {
                 Date lastValidDate = new Date(System.currentTimeMillis() - (TIMEOUT));
                 int flags = -1;
                 if (lastValidDate.after(decMsg.getSentDate())) {
-                    flags = DecryptFlags.PEPDecryptFlagConsumed.value;
+                    flags = DecryptFlags.pEpDecryptFlagConsumed.value;
                     return new DecryptResult(decMsg, decReturn.rating, null, flags);
                 }
             }
@@ -212,10 +212,11 @@ public class PEpProviderImpl implements PEpProvider {
                         || decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY)) {
                     Log.d(TAG, "pEpdecryptMessage() after decrypt has usable pEp key (import)");
                     return new DecryptResult(decMsg, decReturn.rating, new KeyDetail("", null), decReturn.flags);
-                } else {
+                } else if (!decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_AUTOCONSUME) &&
+                        !decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY)) {
                     Log.d(TAG, "pEpdecryptMessage() after decrypt has usable PGP key (import)");
                     return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg), decReturn.flags);
-                }
+                } else return new DecryptResult(decMsg, decReturn.rating, null, 0x2);
             }
            else return new DecryptResult(decMsg, decReturn.rating, null, -1);
         }catch (Throwable t) {
@@ -348,7 +349,6 @@ public class PEpProviderImpl implements PEpProvider {
     private boolean isUsablePrivateKey(Engine.decrypt_message_Return result) {
         // TODO: 13/06/16 Check if is necesary check own id
         return result.rating.value >= Rating.pEpRatingTrusted.value
-                && result.flags != -1
                 && result.flags == 0x01;
     }
 
@@ -623,7 +623,10 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public synchronized void close() {
-        if (engine != null) engine.close();
+        if (engine != null) {
+            engine.stopSync();
+            engine.close();
+        }
     }
 
     @Override
@@ -866,27 +869,23 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public synchronized void startSync() {
-        //Not needed anymore
-        //engine.startSync();
+        engine.startSync();
     }
 
     //FIXME: Implement sync use lists.
     @Override
     public synchronized void acceptHandshake(Identity identity) {
-        Vector<Identity> ids = new Vector<>(Collections.singletonList(identity));
-        engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeAccepted, ids);
+        engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeAccepted, new Vector<>());
     }
 
     @Override
     public synchronized void rejectHandshake(Identity identity) {
-        Vector<Identity> ids = new Vector<>(Collections.singletonList(identity));
-        engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeRejected, ids);
+        engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeRejected, new Vector<>());
     }
 
     @Override
     public synchronized void cancelHandshake(Identity identity) {
-        Vector<Identity> ids = new Vector<>(Collections.singletonList(identity));
-        engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeCancel, ids);
+        engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeCancel, new Vector<>());
     }
 
     @Override
@@ -1113,7 +1112,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void importKey(String key) {
+    public void importKey(byte[] key) {
         createEngineInstanceIfNeeded();
         engine.importKey(key);
     }

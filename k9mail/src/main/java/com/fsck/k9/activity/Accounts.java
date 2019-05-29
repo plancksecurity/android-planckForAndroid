@@ -67,7 +67,7 @@ import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.karumi.dexter.listener.single.CompositePermissionListener;
 
-import org.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
 import java.util.Calendar;

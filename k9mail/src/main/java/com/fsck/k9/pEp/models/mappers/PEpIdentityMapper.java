@@ -3,7 +3,7 @@ package com.fsck.k9.pEp.models.mappers;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.models.PEpIdentity;
 
-import org.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Identity;
 
 import java.util.ArrayList;
 import java.util.List;

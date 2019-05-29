@@ -24,7 +24,7 @@ import com.fsck.k9.mailstore.LockableDatabase.WrappedException;
 import com.fsck.k9.message.extractors.PreviewResult.PreviewType;
 import com.fsck.k9.pEp.PEpUtils;
 
-import org.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Rating;
 
 import java.util.Date;
 

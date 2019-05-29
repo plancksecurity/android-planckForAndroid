@@ -42,8 +42,8 @@ import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
 import org.apache.james.mime4j.codec.EncoderUtil;
 import org.apache.james.mime4j.util.MimeUtil;
-import org.pEp.jniadapter.Blob;
-import org.pEp.jniadapter.Message;
+import foundation.pEp.jniadapter.Blob;
+import foundation.pEp.jniadapter.Message;
 
 import java.util.Collections;
 import java.util.Date;
@@ -651,7 +651,7 @@ public abstract class MessageBuilder {
         }
     }
 
-    public MessageBuilder setIdentity(org.pEp.jniadapter.Identity from, Address[] replyTo) {
+    public MessageBuilder setIdentity(foundation.pEp.jniadapter.Identity from, Address[] replyTo) {
         com.fsck.k9.Identity k9Identity = new com.fsck.k9.Identity();
         k9Identity.setSignatureUse(false);
         k9Identity.setSignature("");

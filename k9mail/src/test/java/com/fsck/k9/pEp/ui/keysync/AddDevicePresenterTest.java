@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Identity;
 import org.robolectric.annotation.Config;
 
 import java.util.Collections;

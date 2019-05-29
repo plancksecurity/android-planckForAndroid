@@ -93,9 +93,9 @@ import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification;
 import com.fsck.k9.search.SqlQueryBuilder;
 
-import org.pEp.jniadapter.DecryptFlags;
-import org.pEp.jniadapter.Rating;
-import org.pEp.jniadapter.Sync;
+import foundation.pEp.jniadapter.DecryptFlags;
+import foundation.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Sync;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;
@@ -1723,11 +1723,11 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                                     break;
                             }
                         */
-                                    if ((tempResult.flags & DecryptFlags.PEPDecryptFlagConsumed.value) == DecryptFlags.PEPDecryptFlagConsumed.value) {
+                                    if ((tempResult.flags & DecryptFlags.pEpDecryptFlagConsumed.value) == DecryptFlags.pEpDecryptFlagConsumed.value) {
                                         Timber.v("pEpJNI %s", "messageFinished: Deleting");
                                         tempResult = null;
                                         store = false;
-                                    } else if ((tempResult.flags & DecryptFlags.PEPDecryptFlagIgnored.value) == DecryptFlags.PEPDecryptFlagIgnored.value) {
+                                    } else if ((tempResult.flags & DecryptFlags.pEpDecryptFlagIgnored.value) == DecryptFlags.pEpDecryptFlagIgnored.value) {
                                         tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null, -1);
                                         store = false;
                                     }
@@ -5001,7 +5001,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
     }
 
     @Override
-    public void messageToSend(org.pEp.jniadapter.Message pEpMessage) {
+    public void messageToSend(foundation.pEp.jniadapter.Message pEpMessage) {
         try {
             Account currentAccount = loadMessageAccount(pEpMessage);
             Message message = PEpProviderImpl.getMimeMessage(pEpMessage);
@@ -5027,7 +5027,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
         sendMessage(transport, message);
     }
 
-    Account checkAccount(org.pEp.jniadapter.Message message, Account account) {
+    Account checkAccount(foundation.pEp.jniadapter.Message message, Account account) {
         for (Identity identity : account.getIdentities()) {
             if (identity.getEmail().equals(message.getFrom().address)) {
                 return account;
@@ -5036,7 +5036,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
         return Preferences.getPreferences(context).getDefaultAccount();
     }
 
-    private Account loadMessageAccount(org.pEp.jniadapter.Message pEpMessage) {
+    private Account loadMessageAccount(foundation.pEp.jniadapter.Message pEpMessage) {
         List<Account> accounts = Preferences.getPreferences(context).getAccounts();
         Account currentAccount = null;
         for (Account account : accounts) {

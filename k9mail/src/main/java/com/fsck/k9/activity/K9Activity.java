@@ -28,7 +28,7 @@ import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 
-import org.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Rating;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

@@ -2,7 +2,7 @@ package com.fsck.k9.pEp.ui.privacy.status;
 
 import com.fsck.k9.pEp.models.PEpIdentity;
 
-import org.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Rating;
 
 import java.util.List;
 

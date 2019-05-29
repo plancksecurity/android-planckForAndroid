@@ -6,7 +6,7 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 
-import org.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Identity;
 
 import javax.inject.Inject;
 import javax.inject.Named;

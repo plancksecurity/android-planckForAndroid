@@ -6,12 +6,12 @@ import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.pEp.ui.HandshakeData;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
-import org.pEp.jniadapter.DecryptFlags;
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Message;
-import org.pEp.jniadapter.Rating;
-import org.pEp.jniadapter.Sync;
-import org.pEp.jniadapter.pEpException;
+import foundation.pEp.jniadapter.DecryptFlags;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Message;
+import foundation.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Sync;
+import foundation.pEp.jniadapter.pEpException;
 
 import java.util.List;
 import java.util.Map;
@@ -222,7 +222,7 @@ public interface PEpProvider {
 
     boolean canEncrypt(String address);
 
-    void importKey(String key);
+    void importKey(byte[] key);
 
     class KeyDetail {
         private final Address address;

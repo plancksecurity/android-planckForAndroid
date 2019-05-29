@@ -47,7 +47,7 @@ import junit.framework.Assert;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.pEp.jniadapter.Rating;
+import pEp.jniadapter.Rating;
 
 import java.io.BufferedReader;
 import java.io.File;

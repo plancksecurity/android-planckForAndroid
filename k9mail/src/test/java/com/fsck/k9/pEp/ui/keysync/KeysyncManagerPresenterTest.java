@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Identity;
 
 import java.util.Collections;
 import java.util.List;

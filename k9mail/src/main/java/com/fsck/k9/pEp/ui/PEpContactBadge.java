@@ -12,7 +12,7 @@ import android.widget.QuickContactBadge;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpUtils;
 
-import org.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Rating;
 
 public class PEpContactBadge extends QuickContactBadge {
     Rating pEpRating;

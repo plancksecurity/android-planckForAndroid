@@ -9,8 +9,8 @@ import android.support.v4.content.ContextCompat;
 import com.fsck.k9.Account;
 import com.fsck.k9.R;
 
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
 import java.util.HashMap;

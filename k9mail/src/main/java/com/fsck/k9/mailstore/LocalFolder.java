@@ -46,7 +46,7 @@ import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import org.apache.commons.io.IOUtils;
 import org.apache.james.mime4j.util.MimeUtil;
-import org.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Rating;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

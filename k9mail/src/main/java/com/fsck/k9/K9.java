@@ -60,10 +60,10 @@ import com.fsck.k9.widget.list.MessageListWidgetProvider;
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
-import org.pEp.jniadapter.AndroidHelper;
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Sync;
-import org.pEp.jniadapter.SyncHandshakeSignal;
+import foundation.pEp.jniadapter.AndroidHelper;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Sync;
+import foundation.pEp.jniadapter.SyncHandshakeSignal;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -756,7 +756,7 @@ public class K9 extends Application {
     private void pEpInitEnvironment() {
         AndroidHelper.setup(this);
         if (pEpSyncEnabled) {
-            initSync();
+            //initSync();
         }
         setupFastPoller();
     }
@@ -1767,32 +1767,33 @@ public class K9 extends Application {
 
         @Override
         public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
-            Timber.e("pEp notifyHandshake: %s", signal.name());
-/*            switch (signal) {
+            Log.e("pEpEngine", String.format("pEp notifyHandshake: %s", signal.name()));
+
+            // Before starting a new "event" we dismiss the current one.
+            Intent broadcastIntent = new Intent("KEYSYNC_DISMISS");
+            K9.this.sendOrderedBroadcast(broadcastIntent, null);
+            switch (signal) {
                 case SyncNotifyUndefined:
                     break;
                 case SyncNotifyInitAddOurDevice:
                 case SyncNotifyInitAddOtherDevice:
                 case SyncNotifyInitFormGroup:
+                    needsFastPoll = true;
                     goToAddDevice(myself, partner, signal, getString(R.string.pep_add_device_ask_trustwords));
-                    break;
-                case SyncNotifyInitMoveOurDevice:
-                    goToAddDevice(myself, partner, signal, getString(R.string.pep_add_device_ask_move_trustwords));
                     break;
                 case SyncNotifyTimeout:
                     //Close handshake
                     new Handler(Looper.getMainLooper()).post(()
                             -> Toast.makeText(K9.this, R.string.pep_keysync_timeout, Toast.LENGTH_SHORT).show());
-                    Intent broadcastIntent = new Intent();
-                    K9.this.sendOrderedBroadcast(broadcastIntent, null);
+                    needsFastPoll = false;
                     break;
                 case SyncNotifyAcceptedDeviceAdded:
                 case SyncNotifyAcceptedGroupCreated:
-                case SyncNotifyAcceptedDeviceMoved:
+                    needsFastPoll = false;
                     new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_LONG).show());
                     break;
             }
-            */
+
 
         }
     };

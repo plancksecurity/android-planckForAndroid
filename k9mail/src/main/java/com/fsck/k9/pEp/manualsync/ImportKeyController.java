@@ -24,10 +24,10 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.keysync.PEpAddDevice;
 
-import org.pEp.jniadapter.DecryptFlags;
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Pair;
-import org.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.DecryptFlags;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Pair;
+import foundation.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -437,16 +437,16 @@ public class ImportKeyController {
 
     @NonNull
     private MimeMessage createMimeMessage(Account account) throws MessagingException {
-        org.pEp.jniadapter.Message resultM;
-        resultM = new org.pEp.jniadapter.Message();
+        foundation.pEp.jniadapter.Message resultM;
+        resultM = new foundation.pEp.jniadapter.Message();
         Address address = new Address(account.getEmail());
-        org.pEp.jniadapter.Identity identity = PEpUtils.createIdentity(address, context);
+        foundation.pEp.jniadapter.Identity identity = PEpUtils.createIdentity(address, context);
         identity = pEp.myself(identity);
         resultM.setFrom(identity);
         resultM.setTo(new Vector<>(Collections.singletonList(identity)));
         ArrayList<Pair<String, String>> fields = new ArrayList<>();
-        fields.add(new org.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY, identity.fpr));
-        fields.add(new org.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY, "yes"));
+        fields.add(new foundation.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY, identity.fpr));
+        fields.add(new foundation.pEp.jniadapter.Pair<>(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY, "yes"));
         resultM.setOptFields(fields);
 
         resultM.setSent(new Date(System.currentTimeMillis()));
@@ -481,8 +481,8 @@ public class ImportKeyController {
     }
 
     @NonNull
-    private org.pEp.jniadapter.Identity createSenderIdentity(Account account, String senderKey) {
-        org.pEp.jniadapter.Identity sender = PEpUtils.createIdentity(new Address(account.getEmail()), context);
+    private foundation.pEp.jniadapter.Identity createSenderIdentity(Account account, String senderKey) {
+        foundation.pEp.jniadapter.Identity sender = PEpUtils.createIdentity(new Address(account.getEmail()), context);
         sender.fpr = senderKey;
         sender.user_id = PEpProvider.PEP_OWN_USER_ID;
         return sender;

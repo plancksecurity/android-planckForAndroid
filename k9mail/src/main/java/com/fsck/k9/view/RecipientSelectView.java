@@ -40,7 +40,7 @@ import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.tokenautocomplete.TokenCompleteTextView;
 
 import org.apache.james.mime4j.util.CharsetUtil;
-import org.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Rating;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

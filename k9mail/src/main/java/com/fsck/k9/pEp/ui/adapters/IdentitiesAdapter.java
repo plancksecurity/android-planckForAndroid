@@ -10,7 +10,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.pEp.ui.IdentityClickListener;
 import com.fsck.k9.pEp.ui.viewholders.IdentityViewHolder;
 
-import org.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Identity;
 
 import java.util.Comparator;
 import java.util.List;

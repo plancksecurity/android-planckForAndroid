@@ -16,8 +16,8 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.models.PEpIdentity;
 
-import org.pEp.jniadapter.Identity;
-import org.pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
 import java.util.List;

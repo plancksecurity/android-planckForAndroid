@@ -26,7 +26,7 @@ import com.fsck.k9.pEp.ui.HandshakeData;
 import com.fsck.k9.pEp.ui.adapters.IdentitiesAdapter;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
-import org.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Identity;
 
 import java.util.List;
 import java.util.Locale;
@@ -58,6 +58,8 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
     TextView tvTrustwords;
     @Bind(R.id.advenced_keys_title)
     TextView advancedKeysTextView;
+    @Bind(R.id.toolbar_pEp_title_detail)
+    TextView toolbarTitleDetail;
     @Bind(R.id.explanation)
     TextView explanationTextView;
     @Bind(R.id.advanced_options_key_list)
@@ -348,6 +350,11 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
     }
 
     @Override
+    public void showKeySyncTitle() {
+       toolbarTitleDetail.setText("Key Sync");
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         trustwordsLanguage = Locale.getDefault().getLanguage();
@@ -436,7 +443,9 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
 
         @Override
         public void onReceive(final Context context, Intent intent) {
-            activity.finish();
+            if (activity != null) {
+                activity.finish();
+            }
         }
     }
 
