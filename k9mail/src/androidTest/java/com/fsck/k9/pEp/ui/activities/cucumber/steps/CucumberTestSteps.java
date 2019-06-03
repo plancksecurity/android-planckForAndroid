@@ -35,7 +35,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
-import org.pEp.jniadapter.Rating;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -54,6 +53,7 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
 import static android.support.test.espresso.Espresso.onView;
