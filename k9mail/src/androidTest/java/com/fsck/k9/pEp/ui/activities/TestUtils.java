@@ -1160,6 +1160,8 @@ public class TestUtils {
                 try {
                     swipeDownMessageList();
                     device.waitForIdle();
+                    swipeDownMessageList();
+                    device.waitForIdle();
                     while (viewIsDisplayed(R.id.message_list)) {
                         onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(position - 1).perform(click());
                         messageClicked = true;
