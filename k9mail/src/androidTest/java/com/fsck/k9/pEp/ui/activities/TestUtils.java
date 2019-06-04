@@ -1218,10 +1218,10 @@ public class TestUtils {
         } catch (Exception ex) {
             Timber.i("Cannot close keyboard");
         }
-        donwloadJSon();
+        downloadJSon();
     }
 
-    private void donwloadJSon() {
+    private void downloadJSon() {
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         scroll.swipe(Direction.UP, 1.0f);
         device.waitForIdle();
