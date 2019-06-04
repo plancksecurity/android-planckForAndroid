@@ -1225,9 +1225,7 @@ public class TestUtils {
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         scroll.swipe(Direction.UP, 1.0f);
         device.waitForIdle();
-        if (json != null) {
-            json = null;
-        }
+        json = null;
         while (json == null) {
             try {
                 downloadAttachedFile("results.json");
@@ -1236,17 +1234,13 @@ public class TestUtils {
                 json = new JSONObject(js);
             } catch (Exception ex) {
                 device.waitForIdle();
-                scroll.swipe(Direction.DOWN, 1.0f);
-                device.waitForIdle();
                 scroll.swipe(Direction.UP, 1.0f);
                 device.waitForIdle();
-                if (!exists(onView(withId(R.id.download)))) {
-                    return;
-                }
                 BySelector selector = By.clazz("android.widget.TextView");
                 boolean jsonExists = false;
                 for (UiObject2 object : device.findObjects(selector)) {
                     try {
+                        device.waitForIdle();
                         if (object.getText().contains("results.json")) {
                             jsonExists = true;
                         }
