@@ -1591,6 +1591,10 @@ public class TestUtils {
                 break;
             case "messageBody":
                 try {
+                    while (json == null) {
+                        String js = readJsonFile("results.json");
+                        json = new JSONObject(js);
+                    }
                     json = json.getJSONObject("attributes");
                     object = "decrypted";
                 } catch (JSONException e) {
