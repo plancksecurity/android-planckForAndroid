@@ -1614,7 +1614,7 @@ public class TestUtils {
         }
     }
 
-    private String readJsonFile(String fileName) {
+    private static String readJsonFile(String fileName) {
         File directory = new File(Environment.getExternalStorageDirectory().toString());
         File newFile = new File(directory, "Download/" + fileName);
         StringBuilder jsonText = new StringBuilder();
