@@ -1084,6 +1084,8 @@ public class CucumberTestSteps {
         }
         device.waitForIdle();
         waitUntilIdle();
+        onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
+        device.waitForIdle();
         checkPrivacyStatus(color);
         device.waitForIdle();
     }
