@@ -672,7 +672,9 @@ public class CucumberTestSteps {
             device.waitForIdle();
             waitUntilIdle();
         }
+        device.waitForIdle();
         onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
+        device.waitForIdle();
             try {
                 onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
             } catch (Exception ex) {
