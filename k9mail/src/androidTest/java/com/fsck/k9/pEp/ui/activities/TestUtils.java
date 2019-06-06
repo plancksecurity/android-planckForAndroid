@@ -1263,6 +1263,8 @@ public class TestUtils {
                 if (object.getText().contains(fileName)) {
                     device.waitForIdle();
                     object.getParent().getChildren().get(3).click();
+                    device.waitForIdle();
+                    onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
                     return;
                 }
             } catch (Exception ex){
