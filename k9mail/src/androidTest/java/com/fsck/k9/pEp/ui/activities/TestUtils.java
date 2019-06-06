@@ -1619,6 +1619,10 @@ public class TestUtils {
     private static String readJsonFile(String fileName) {
         File directory = new File(Environment.getExternalStorageDirectory().toString());
         File newFile = new File(directory, "Download/" + fileName);
+        while (!newFile.exists()) {
+            waitUntilIdle();
+            device.waitForIdle();
+        }
         StringBuilder jsonText = new StringBuilder();
             try {
                 FileInputStream fin = new FileInputStream(newFile);
