@@ -1223,34 +1223,38 @@ public class TestUtils {
 
     private void downloadJSon() {
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-        scroll.swipe(Direction.UP, 1.0f);
-        device.waitForIdle();
+        for (int scrollTimes = 0; scrollTimes < 5; scrollTimes++) {
+            scroll.swipe(Direction.UP, 1.0f);
+            device.waitForIdle();
+        }
         json = null;
-        while (json == null) {
-            try {
-                downloadAttachedFile("results.json");
-                device.waitForIdle();
-                String js = readJsonFile("results.json");
-                json = new JSONObject(js);
-            } catch (Exception ex) {
-                device.waitForIdle();
-                scroll.swipe(Direction.UP, 1.0f);
-                device.waitForIdle();
-                BySelector selector = By.clazz("android.widget.TextView");
-                boolean jsonExists = false;
-                for (UiObject2 object : device.findObjects(selector)) {
-                    try {
-                        device.waitForIdle();
-                        if (object.getText().contains("results.json")) {
-                            jsonExists = true;
-                        }
-                    } catch (Exception json){
-                        Timber.i("Cannot find json file on the screen: " + json);
-                    }
-                }
-                if (!jsonExists) {
+        if (exists(onView(withId(R.id.attachment_name)))) {
+            while (json == null) {
+                try {
+                    downloadAttachedFile("results.json");
                     device.waitForIdle();
-                    return;
+                    String js = readJsonFile("results.json");
+                    json = new JSONObject(js);
+                } catch (Exception ex) {
+                    device.waitForIdle();
+                    scroll.swipe(Direction.UP, 1.0f);
+                    device.waitForIdle();
+                    BySelector selector = By.clazz("android.widget.TextView");
+                    boolean jsonExists = false;
+                    for (UiObject2 object : device.findObjects(selector)) {
+                        try {
+                            device.waitForIdle();
+                            if (object.getText().contains("results.json")) {
+                                jsonExists = true;
+                            }
+                        } catch (Exception json) {
+                            Timber.i("Cannot find json file on the screen: " + json);
+                        }
+                    }
+                    if (!jsonExists) {
+                        device.waitForIdle();
+                        return;
+                    }
                 }
             }
         }
