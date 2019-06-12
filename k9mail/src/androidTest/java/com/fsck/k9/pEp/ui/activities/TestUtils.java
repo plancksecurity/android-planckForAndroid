@@ -959,9 +959,9 @@ public class TestUtils {
             try {
                 openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
                 device.waitForIdle();
-                return;
             } catch (Exception ex) {
                 Timber.i("Cannot open menu");
+                return;
             }
         }
     }
