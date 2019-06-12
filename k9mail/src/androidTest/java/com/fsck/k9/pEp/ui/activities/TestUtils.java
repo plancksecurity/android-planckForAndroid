@@ -1226,34 +1226,40 @@ public class TestUtils {
             device.waitForIdle();
         }
         json = null;
-        if (exists(onView(withId(R.id.attachment_name)))) {
-            while (json == null) {
-                try {
-                    downloadAttachedFile("results.json");
+        BySelector selector = By.clazz("android.widget.TextView");
+        for (UiObject2 object : device.findObjects(selector)) {
+            try {
+                if (object.getText().contains("results.json")) {
                     device.waitForIdle();
-                    String js = readJsonFile("results.json");
-                    json = new JSONObject(js);
-                } catch (Exception ex) {
-                    device.waitForIdle();
-                    scroll.swipe(Direction.UP, 1.0f);
-                    device.waitForIdle();
-                    BySelector selector = By.clazz("android.widget.TextView");
-                    boolean jsonExists = false;
-                    for (UiObject2 object : device.findObjects(selector)) {
+                    while (json == null) {
                         try {
+                            downloadAttachedFile("results.json");
                             device.waitForIdle();
-                            if (object.getText().contains("results.json")) {
-                                jsonExists = true;
+                            String js = readJsonFile("results.json");
+                            json = new JSONObject(js);
+                        } catch (Exception ex) {
+                            device.waitForIdle();
+                            scroll.swipe(Direction.UP, 1.0f);
+                            device.waitForIdle();
+                            boolean jsonExists = false;
+                                try {
+                                    device.waitForIdle();
+                                    if (object.getText().contains("results.json")) {
+                                        jsonExists = true;
+                                    }
+                                } catch (Exception json) {
+                                    Timber.i("Cannot find json file on the screen: " + json);
+                                }
+                            if (!jsonExists) {
+                                device.waitForIdle();
+                                return;
                             }
-                        } catch (Exception json) {
-                            Timber.i("Cannot find json file on the screen: " + json);
                         }
                     }
-                    if (!jsonExists) {
-                        device.waitForIdle();
-                        return;
-                    }
+                    return;
                 }
+            } catch (Exception ex){
+                Timber.i("Cannot find text on screen: " + ex);
             }
         }
     }
