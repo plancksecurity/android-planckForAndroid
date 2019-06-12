@@ -1141,15 +1141,18 @@ public class CucumberTestSteps {
 
     private void openAttached () {
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-        scroll.swipe(Direction.UP, 1.0f);
         while (true) {
             try {
                 while (!exists(onView(withId(R.id.attachments)))) {
                     device.waitForIdle();
                 }
+                onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
                 while (!viewIsDisplayed(R.id.attachments)) {
+                    scroll.swipe(Direction.UP, 1.0f);
                     device.waitForIdle();
                 }
+                scroll.swipe(Direction.UP, 1.0f);
+                device.waitForIdle();
                 BySelector layout = By.clazz("android.widget.LinearLayout");
                 onView(withId(R.id.attachments)).check(matches(isCompletelyDisplayed()));
                 for (UiObject2 object : device.findObjects(layout)) {
