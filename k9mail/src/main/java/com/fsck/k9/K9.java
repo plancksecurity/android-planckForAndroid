@@ -60,6 +60,7 @@ import com.fsck.k9.widget.list.MessageListWidgetProvider;
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
+
 import foundation.pEp.jniadapter.AndroidHelper;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Sync;
@@ -603,7 +604,7 @@ public class K9 extends Application {
 
     @Override
     public void onCreate() {
-        pEpInitEnvironment();
+        AndroidHelper.setup(this);
 
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
@@ -732,6 +733,7 @@ public class K9 extends Application {
             }
 
         });
+        pEpInitSyncEnvironment();
 
         notifyObservers();
 
@@ -753,8 +755,7 @@ public class K9 extends Application {
                 mailSyncJobManager, pusherRefreshJobManager);
     }
 
-    private void pEpInitEnvironment() {
-        AndroidHelper.setup(this);
+    private void pEpInitSyncEnvironment() {
         if (pEpSyncEnabled) {
             initSync();
         }
@@ -784,8 +785,9 @@ public class K9 extends Application {
                 }
             }
         });
-
-        pEpSyncProvider.startSync();
+//        if (Preferences.getPreferences(this).getAccounts().size() > 0) {
+            pEpSyncProvider.startSync();
+//        }
     }
 
     private void goToAddDevice(Identity myself, Identity partner, SyncHandshakeSignal signal, String explanation) {
@@ -1766,7 +1768,10 @@ public class K9 extends Application {
     Sync.NotifyHandshakeCallback notifyHandshakeCallback = new Sync.NotifyHandshakeCallback() {
 
         @Override
-        public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
+        public void  notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
+            System.out.println("pEpSync" +"notifyHandshakeCallFromC: " + notifyHandshakeCallback + " :: " + signal.name());
+            new Handler(Looper.getMainLooper()).post(()
+                    -> Toast.makeText(K9.this, signal.name(), Toast.LENGTH_SHORT).show());
             Log.e("pEpEngine", String.format("pEp notifyHandshake: %s", signal.name()));
 
             // Before starting a new "event" we dismiss the current one.

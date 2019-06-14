@@ -103,6 +103,7 @@ public class PEpProviderImpl implements PEpProvider {
         configKeyServerLockup(K9.getPEpUseKeyserver());
         engine.config_unencrypted_subject(K9.ispEpSubjectUnprotected());
         engine.setMessageToSendCallback(MessagingController.getInstance(context));
+        engine.setNotifyHandshakeCallback(((K9) context.getApplicationContext()).getNotifyHandshakeCallback());
     }
 
     private Engine getNewEngineSession() throws pEpException {
@@ -197,15 +198,8 @@ public class PEpProviderImpl implements PEpProvider {
             decMsg.setFlag(Flag.X_PEP_NEVER_UNSECURE, neverUnprotected);
 
             extractpEpImportHeaderFromReplyTo(decMsg);
-            if (decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)
-                    || decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY)) {
-                Date lastValidDate = new Date(System.currentTimeMillis() - (TIMEOUT));
-                int flags = -1;
-                if (lastValidDate.after(decMsg.getSentDate())) {
-                    flags = DecryptFlags.pEpDecryptFlagConsumed.value;
-                    return new DecryptResult(decMsg, decReturn.rating, null, flags);
-                }
-            }
+            DecryptResult flaggedResult = getConsumeFlaggedMessage(decReturn, decMsg);
+            if (flaggedResult != null) return flaggedResult;
 
             if (isUsablePrivateKey(decReturn)) {
                 if (decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)
@@ -231,6 +225,32 @@ public class PEpProviderImpl implements PEpProvider {
             if (decReturn != null && decReturn.dst != srcMsg) decReturn.dst.close();
             Log.d(TAG, "decryptMessage() exit");
         }
+    }
+
+    @org.jetbrains.annotations.Nullable
+    private DecryptResult getConsumeFlaggedMessage(Engine.decrypt_message_Return decReturn, MimeMessage decryptedMimeMessage) {
+        int flags = -1;
+        Date lastValidDate = new Date(System.currentTimeMillis() - (TIMEOUT));
+
+        if (decryptedMimeMessage.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)
+                || decryptedMimeMessage.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY)) {
+
+            if (lastValidDate.after(decryptedMimeMessage.getSentDate())) {
+                flags = DecryptFlags.pEpDecryptFlagConsumed.value;
+                return new DecryptResult(decryptedMimeMessage, decReturn.rating, null, flags);
+            }
+        }
+        /*else if (decryptedMimeMessage.getHeaderNames().contains(MimeHeader.HEADER_PEP_AUTOCONSUME)
+                || decryptedMimeMessage.getHeaderNames().contains(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY)) {
+            if (lastValidDate.after(decryptedMimeMessage.getSentDate())) {
+                flags = DecryptFlags.pEpDecryptFlagConsumed.value;
+                return new DecryptResult(decryptedMimeMessage, decReturn.rating, null, flags);
+            } else {
+                flags = DecryptFlags.pEpDecryptFlagIgnored.value;
+                return new DecryptResult(decryptedMimeMessage, decReturn.rating, null, flags);
+            }
+        }*/
+        return null;
     }
 
     private void extractpEpImportHeaderFromReplyTo(MimeMessage decMsg) {
@@ -869,7 +889,11 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public synchronized void startSync() {
-        engine.startSync();
+        try {
+            engine.startSync();
+        } catch (pEpException exception) {
+            Log.e(TAG, "Cannot startSync", exception);
+        }
     }
 
     //FIXME: Implement sync use lists.

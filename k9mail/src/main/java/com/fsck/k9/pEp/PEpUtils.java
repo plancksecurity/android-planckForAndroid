@@ -398,6 +398,7 @@ public class PEpUtils {
         myIdentity = pEp.myself(myIdentity);
         updateSyncFlag(account, pEp, myIdentity);
         pEp.close();
+        ((K9) context).getpEpSyncProvider().startSync();
     }
 
     private static void updateSyncFlag(Account account, PEpProvider pEp, Identity myIdentity) {
