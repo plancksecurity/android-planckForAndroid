@@ -430,6 +430,7 @@ public class CucumberTestSteps {
     }
 
     private void assertTextInJSON(JSONObject json, String textToCompare) {
+        device.waitForIdle();
         if (json.toString().contains(textToCompare)) {
             return;
         }
