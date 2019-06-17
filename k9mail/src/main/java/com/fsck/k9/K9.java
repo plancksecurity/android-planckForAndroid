@@ -1738,7 +1738,9 @@ public class K9 extends Application {
                 }
 
                 @Override
-                public void onError(Throwable throwable) {
+                public void onError(Throwable throwable)
+                {
+                    Log.e("pEpSync", "onError: ", throwable);
                     isPollingMessages = false;
                 }
             });

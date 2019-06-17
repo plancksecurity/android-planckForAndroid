@@ -240,7 +240,7 @@ public class PEpProviderImpl implements PEpProvider {
                 return new DecryptResult(decryptedMimeMessage, decReturn.rating, null, flags);
             }
         }
-        /*else if (decryptedMimeMessage.getHeaderNames().contains(MimeHeader.HEADER_PEP_AUTOCONSUME)
+        else if (decryptedMimeMessage.getHeaderNames().contains(MimeHeader.HEADER_PEP_AUTOCONSUME)
                 || decryptedMimeMessage.getHeaderNames().contains(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY)) {
             if (lastValidDate.after(decryptedMimeMessage.getSentDate())) {
                 flags = DecryptFlags.pEpDecryptFlagConsumed.value;
@@ -249,7 +249,7 @@ public class PEpProviderImpl implements PEpProvider {
                 flags = DecryptFlags.pEpDecryptFlagIgnored.value;
                 return new DecryptResult(decryptedMimeMessage, decReturn.rating, null, flags);
             }
-        }*/
+        }
         return null;
     }
 
