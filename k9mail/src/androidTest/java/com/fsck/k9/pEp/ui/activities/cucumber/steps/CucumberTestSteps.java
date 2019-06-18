@@ -274,7 +274,11 @@ public class CucumberTestSteps {
                 }
                 while (!viewIsDisplayed(R.id.subject)) {
                     device.waitForIdle();
-                    scroll.swipe(Direction.DOWN, 1.0f);
+                    try {
+                        scroll.swipe(Direction.DOWN, 1.0f);
+                    } catch (Exception e) {
+                        device.pressBack();
+                    }
                     waitUntilIdle();
                 }
                 onView(withId(R.id.subject)).check(matches(isCompletelyDisplayed()));
