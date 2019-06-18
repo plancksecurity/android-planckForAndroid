@@ -867,9 +867,9 @@ public class TestUtils {
         while (!toolbarExists) {
             waitUntilIdle();
             device.waitForIdle();
-            if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar)) {
+            if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
                 device.waitForIdle();
-                onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
+                onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
                 device.waitForIdle();
                 onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(color)));
                 toolbarExists = true;
