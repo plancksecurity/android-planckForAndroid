@@ -485,7 +485,9 @@ public class CucumberTestSteps {
                         }
                     }
                     try {
+                        device.waitForIdle();
                         onView(withId(android.R.id.button1)).perform(click());
+                        device.waitForIdle();
                     } catch (Exception ex) {
                         Timber.i("Cannot find button1");
                     }
