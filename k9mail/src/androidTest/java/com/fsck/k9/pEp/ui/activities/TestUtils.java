@@ -1342,10 +1342,13 @@ public class TestUtils {
     }
 
     public void swipeDownMessageList() {
-        boolean actionPerformed = false;
-        while (!actionPerformed) {
+        while (true) {
+            device.waitForIdle();
             onView(withId(R.id.message_list)).perform(swipeDown());
-            actionPerformed = true;
+            device.waitForIdle();
+            onView(withId(R.id.message_list)).perform(swipeDown());
+            device.waitForIdle();
+            return;
         }
     }
 
