@@ -408,6 +408,21 @@ public class TestUtils {
 
     private void allowPermissions(){
         device.waitForIdle();
+        try {
+            BySelector popUpMessage = By.clazz("android.widget.Button");
+            boolean buttonExists = true;
+            while (buttonExists) {
+                buttonExists = false;
+                for (UiObject2 object : device.findObjects(popUpMessage)) {
+                    if (object.getResourceName() != null && object.getResourceName().equals("com.android.permissioncontroller:id/permission_allow_button")) {
+                        buttonExists = true;
+                        object.click();
+                    }
+                }
+            }
+        } catch (Exception ex) {
+
+        }
         do {
             allowPermissions(2);
             allowPermissions(1);
