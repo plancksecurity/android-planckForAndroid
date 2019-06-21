@@ -1815,11 +1815,6 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
         Timber.d("SYNC: Done fetching small messages for folder %s", folder);
     }
 
-    private boolean isInitialBeacon(Rating rating, ImportKeyWizardState state) {
-        return state.equals(ImportKeyWizardState.INIT) && rating.equals(Rating.pEpRatingUnencrypted);
-    }
-
-
     private <T extends Message> PEpProvider.DecryptResult decryptMessage(MimeMessage message) {
         PEpProvider.DecryptResult tempResult;
         try {
