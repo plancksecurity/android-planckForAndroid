@@ -189,7 +189,10 @@ public class PEpProviderImpl implements PEpProvider {
             srcMsg.setDir(Message.Direction.Incoming);
 
             Log.d(TAG, "pEpdecryptMessage() before decrypt");
+            Log.e("KeySync", "pEpdecryptMessage() before decrypt");
             decReturn = engine.decrypt_message(srcMsg, new Vector<>(), 0);
+            Log.e("KeySync", "pEpdecryptMessage() *after* decrypt");
+
             Log.d(TAG, "pEpdecryptMessage() after decrypt Subject" +  decReturn.dst.getShortmsg());
             Message message = decReturn.dst;
             MimeMessage decMsg = getMimeMessage(source, message);
@@ -198,7 +201,7 @@ public class PEpProviderImpl implements PEpProvider {
             decMsg.setFlag(Flag.X_PEP_NEVER_UNSECURE, neverUnprotected);
 
             extractpEpImportHeaderFromReplyTo(decMsg);
-            DecryptResult flaggedResult = getConsumeFlaggedMessage(decReturn, decMsg);
+            DecryptResult flaggedResult = processKeyImportSyncMessages(decReturn, decMsg);
             if (flaggedResult != null) return flaggedResult;
 
             if (isUsablePrivateKey(decReturn)) {
@@ -228,7 +231,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @org.jetbrains.annotations.Nullable
-    private DecryptResult getConsumeFlaggedMessage(Engine.decrypt_message_Return decReturn, MimeMessage decryptedMimeMessage) {
+    private DecryptResult processKeyImportSyncMessages(Engine.decrypt_message_Return decReturn, MimeMessage decryptedMimeMessage) {
         int flags = -1;
         Date lastValidDate = new Date(System.currentTimeMillis() - (TIMEOUT));
 

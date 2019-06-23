@@ -755,7 +755,7 @@ public class K9 extends Application {
                 mailSyncJobManager, pusherRefreshJobManager);
     }
 
-    private void pEpInitSyncEnvironment() {
+    public void pEpInitSyncEnvironment() {
         if (pEpSyncEnabled) {
             initSync();
         }
