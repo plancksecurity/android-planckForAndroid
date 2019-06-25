@@ -52,7 +52,7 @@ public class PEpProviderImpl implements PEpProvider {
     private static final String PEP_SIGNALING_BYPASS_DOMAIN = "@peptunnel.com";
     private final ThreadExecutor threadExecutor;
     private final PostExecutionThread postExecutionThread;
-    private Context context;
+    private final Context context;
     private Engine engine;
 
     @Inject
@@ -266,6 +266,7 @@ public class PEpProviderImpl implements PEpProvider {
                 replyTo.add(address);
             }
         }
+        decMsg.setReplyTo((Address[]) replyTo.toArray());
     }
 
     @Override
@@ -358,7 +359,7 @@ public class PEpProviderImpl implements PEpProvider {
 
         MimeMessage mimeMessage = builder.parseMessage(message);
 
-        Boolean isRequestedFromPEpMessage = source == null;
+        boolean isRequestedFromPEpMessage = source == null;
         if (!isRequestedFromPEpMessage) {
             String[] alwaysSecureHeader = source.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE);
             if (alwaysSecureHeader.length > 0) {
@@ -403,9 +404,9 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized MimeMessage encryptMessageToSelf(MimeMessage source, String[] keys) throws MessagingException{
+    public synchronized MimeMessage encryptMessageToSelf(MimeMessage source, String[] keys) {
         if (source == null) {
-            return source;
+            return null;
         }
         createEngineInstanceIfNeeded();
         Message message = null;
@@ -464,7 +465,6 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     private List<MimeMessage> getEncryptedCopies(MimeMessage source, String[] extraKeys) throws pEpException, MessagingException {
-        List<MimeMessage> result = new ArrayList<>();
         List<Message> messagesToEncrypt = new ArrayList<>();
         Message toEncryptMessage = stripUnencryptedRecipients(source);
         messagesToEncrypt.add(toEncryptMessage);
@@ -473,7 +473,7 @@ public class PEpProviderImpl implements PEpProvider {
             handleEncryptedBCC(source, toEncryptMessage, messagesToEncrypt);
         }
 
-        result.addAll(encryptMessages(source, extraKeys, messagesToEncrypt));
+        List<MimeMessage> result = new ArrayList<>(encryptMessages(source, extraKeys, messagesToEncrypt));
 
         for (Message message : messagesToEncrypt) {
             message.close();
@@ -565,8 +565,7 @@ public class PEpProviderImpl implements PEpProvider {
     public synchronized Rating getRating(Identity ident) {
         createEngineInstanceIfNeeded();
         try {
-            Rating result =  engine.identity_rating(ident);
-            return result;
+            return engine.identity_rating(ident);
         } catch (pEpException e) {
             Log.e(TAG, "getRating: ", e);
             return Rating.pEpRatingUndefined;
@@ -717,7 +716,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public synchronized void printLog() {
-        String logLines[] = getLog().split("\n");
+        String[] logLines = getLog().split("\n");
         for (String logLine : logLines) {
             Log.i("PEPJNI", logLine);
         }
@@ -871,9 +870,8 @@ public class PEpProviderImpl implements PEpProvider {
         return null;
     }
 
-    boolean sendMessageSet = false;
-    boolean showHandshakeSet = false;
-    boolean keysyncStarted = false;
+    private final boolean sendMessageSet = false;
+    private final boolean showHandshakeSet = false;
 
 
     @Override
