@@ -1156,6 +1156,8 @@ public class CucumberTestSteps {
             try {
                 while (!exists(onView(withId(R.id.attachments)))) {
                     device.waitForIdle();
+                    scroll.swipe(Direction.UP, 1.0f);
+                    device.waitForIdle();
                 }
                 onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
                 while (!viewIsDisplayed(R.id.attachments)) {
