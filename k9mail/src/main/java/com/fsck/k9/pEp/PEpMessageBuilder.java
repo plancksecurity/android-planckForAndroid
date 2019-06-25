@@ -1,6 +1,7 @@
 package com.fsck.k9.pEp;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.fsck.k9.mail.Body;
@@ -164,15 +165,16 @@ class PEpMessageBuilder {
     }
 
     private String getFilenameUri(MimeBodyPart attachment) throws MessagingException {
-        if (hasContentId(attachment)) {
+        if (hasContentTypeAndIsInline(attachment)) {
             return MimeHeader.CID_SCHEME + attachment.getContentId();
         } else {
             return MimeHeader.FILE_SCHEME + getFileName(attachment);
         }
     }
 
-    private Boolean hasContentId(MimeBodyPart attachment) {
-        return attachment.getContentId() != null;
+    private Boolean hasContentTypeAndIsInline(MimeBodyPart attachment) {
+        return !TextUtils.isEmpty(attachment.getContentId())
+                && "inline".equalsIgnoreCase(attachment.getDisposition());
     }
 
 
