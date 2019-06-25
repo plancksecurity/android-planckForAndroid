@@ -1059,13 +1059,14 @@ public class CucumberTestSteps {
     @Then("^I check if the privacy status is (\\S+)$")
     public void I_check_toolBar_color_is(String color) {
         timeRequiredForThisMethod(10);
+        device.waitForIdle();
         while (!viewIsDisplayed(R.id.toolbar) || !viewIsDisplayed(R.id.toolbar_container)) {
             device.waitForIdle();
         }
         device.waitForIdle();
         waitUntilIdle();
-        onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
-        onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
+        onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
+        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
         device.waitForIdle();
         waitUntilIdle();
         boolean wait = false;
@@ -1074,7 +1075,12 @@ public class CucumberTestSteps {
                 device.waitForIdle();
                 try {
                     UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+                    scroll.swipe(Direction.UP, 1.0f);
+                    device.waitForIdle();
                     scroll.swipe(Direction.DOWN, 1.0f);
+                    device.waitForIdle();
+                    scroll.swipe(Direction.DOWN, 1.0f);
+                    device.waitForIdle();
                     onView(withId(R.id.subject)).perform(closeSoftKeyboard());
                     onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
                 } catch (Exception ex) {
