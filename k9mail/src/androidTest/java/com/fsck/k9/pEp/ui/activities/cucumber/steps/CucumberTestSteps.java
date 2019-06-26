@@ -266,8 +266,11 @@ public class CucumberTestSteps {
                                 device.waitForIdle();
                                 text1 = text1 + testUtils.longText();
                             }
-                            testUtils.setClipboard(text1);
-                            testUtils.pasteClipboard();
+                            while (!object.getText().contains(text1)) {
+                                device.waitForIdle();
+                                testUtils.setClipboard(text1);
+                                testUtils.pasteClipboard();
+                            }
                             object.click();
                         }
                     }
