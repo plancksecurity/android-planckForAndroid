@@ -157,6 +157,28 @@ public class UtilsPackage {
         };
     }
 
+    public static int getViewColorHSV(ViewInteraction interaction) {
+        final int[] color = new int[1];
+        interaction.perform(new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return isAssignableFrom(View.class);
+            }
+
+            @Override
+            public String getDescription() {
+                return "getting color from View";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                color[0] = 0;
+                color[0] = ((ColorDrawable) view.getBackground()).getColor();
+            }
+        });
+        return color[0];
+    }
+
     public static Matcher<View> childAtPosition(final Matcher<View> parentMatcher, final int position) {
         return new TypeSafeMatcher<View>() {
             @Override
