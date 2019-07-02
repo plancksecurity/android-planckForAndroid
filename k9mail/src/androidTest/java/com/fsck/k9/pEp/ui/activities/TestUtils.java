@@ -12,6 +12,7 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
@@ -33,10 +34,12 @@ import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
+import android.support.v4.content.ContextCompat;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
@@ -67,6 +70,7 @@ import timber.log.Timber;
 
 import static android.content.ContentValues.TAG;
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
@@ -887,8 +891,21 @@ public class TestUtils {
                 onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
                 device.waitForIdle();
                 onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(color)));
+                checkUpperToolbar(color);
                 toolbarExists = true;
             }
+        }
+    }
+
+    private void checkUpperToolbar (int color){
+        int colorFromResource = (ContextCompat.getColor(getTargetContext(), color) & 0x00FFFFFF);
+        float[] hsv = new float[3];
+        Color.RGBToHSV(Color.red(colorFromResource), Color.green(colorFromResource), Color.blue(colorFromResource), hsv);
+        hsv[2] = hsv[2]*0.9f;
+        color = Color.HSVToColor(hsv);
+        int upperToolbarColor = getCurrentActivity().getWindow().getStatusBarColor();
+        if (upperToolbarColor != color) {
+            org.junit.Assert.fail("Upper toolbar color is wrong");
         }
     }
 
