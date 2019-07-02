@@ -88,7 +88,7 @@ public class YellowStatusEmailFromBotTest {
         onView(withId(R.id.message_content)).perform(typeText(" "));
         device.waitForIdle();
         clickMailStatus();
-        testUtils.checkToolBarColor(R.color.pep_yellow);
+        testUtils.checkToolbarColor(R.color.pep_yellow);
         device.pressBack();
         testUtils.goBackToMessageListAndPressComposeMessageButton();
         testUtils.yellowStatusMessageTest(MESSAGE_SUBJECT, MESSAGE_BODY, messageTo);
