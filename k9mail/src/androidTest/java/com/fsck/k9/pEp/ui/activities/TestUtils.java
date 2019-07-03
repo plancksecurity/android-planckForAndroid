@@ -125,11 +125,11 @@ public class TestUtils {
     private static Context context;
     private Resources resources;
     private Instrumentation instrumentation;
-    private int messageListSize[] = new int[2];
+    private int[] messageListSize = new int[2];
 
     public static final int TIMEOUT_TEST = FIVE_MINUTES * MINUTE_IN_SECONDS * SECOND_IN_MILIS;
     private TestConfig testConfig;
-    public String botList[];
+    public String[] botList;
     public boolean testReset = false;
     public static JSONObject json;
     public static JSONArray jsonArray;
@@ -301,7 +301,7 @@ public class TestUtils {
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
                 String receiveString;
                 while ((receiveString = bufferedReader.readLine()) != null) {
-                    String line[] = receiveString.split(" = ");
+                    String[] line = receiveString.split(" = ");
                     if (line.length > 1) {
                         switch (line[0]) {
                             case "mail":
@@ -733,7 +733,7 @@ public class TestUtils {
         }
     }
 
-    public void longClick(String viewId) {
+    private void longClick(String viewId) {
         UiObject2 list = device.findObject(By.res(APP_ID, viewId));
         Rect bounds = list.getVisibleBounds();
         device.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX(), bounds.centerY(), 450);
@@ -1368,7 +1368,7 @@ public class TestUtils {
         }
     }
 
-    public void removeMessagesFromList(){
+    private void removeMessagesFromList(){
         getMessageListSize();
         if (messageListSize[0] != 1) {
             clickFirstMessage();
