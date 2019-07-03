@@ -39,7 +39,6 @@ import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.Window;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
@@ -312,6 +311,15 @@ public class TestUtils {
                                 break;
                             case "username":
                                 testConfig.setUsername(line[1]);
+                                break;
+                            case "trusted_server":
+                                if (line[1].equals("true")) {
+                                    testConfig.setTrusted_server(true);
+                                } else if (line[1].equals("false")){
+                                    testConfig.setTrusted_server(false);
+                                } else {
+                                    Assert.fail("Trusted_server must be true or false");
+                                }
                                 break;
                             case "imap_server":
                                 testConfig.setImap_server(line[1]);
@@ -1526,7 +1534,6 @@ public class TestUtils {
             } else {
                 device.waitForIdle();
                 onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
-                Assert.fail("Error: body text != text to compare");
             }
         }
     }
@@ -1773,6 +1780,7 @@ public class TestUtils {
         String mail;
         String password;
         String username;
+        boolean trusted_server;
         String imap_server;
         String smtp_server;
         String imap_port;
@@ -1782,6 +1790,7 @@ public class TestUtils {
             this.mail = "";
             this.password = "";
             this.username = "";
+            this.trusted_server = false;
             this.imap_server = "";
             this.smtp_server = "";
             this.imap_port = "";
@@ -1791,6 +1800,7 @@ public class TestUtils {
         public void setMail(String mail) { this.mail = mail;}
         void setPassword(String password) { this.password = password;}
         void setUsername(String username) { this.username = username;}
+        void setTrusted_server(boolean trusted_server) { this.trusted_server = trusted_server;}
         void setImap_server(String imap_server) { this.imap_server = imap_server;}
         void setSmtp_server(String smtp_server) { this.smtp_server = smtp_server;}
         void setImap_port(String imap_port) { this.imap_port = imap_port;}
@@ -1799,6 +1809,7 @@ public class TestUtils {
         String getMail() { return mail;}
         String getPassword() { return password;}
         String getUsername() { return username;}
+        boolean getTrusted_server() { return trusted_server;}
         String getImap_server() { return imap_server;}
         String getSmtp_server() { return smtp_server;}
         String getImap_port() { return imap_port;}
