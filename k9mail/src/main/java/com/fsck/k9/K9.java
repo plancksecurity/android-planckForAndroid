@@ -325,7 +325,7 @@ public class K9 extends Application {
     private static boolean sMessageViewCopyActionVisible = false;
     private static boolean sMessageViewSpamActionVisible = false;
     private static String pEpExtraAccounts = "";
-    private static boolean pEpUseKeyserver = false;
+    //private static boolean pEpUseKeyserver = false;
     private static boolean pEpPassiveMode = false;
     private static boolean pEpSubjectUnprotected = true;
     private static boolean pEpForwardWarningEnabled = false;
@@ -593,7 +593,7 @@ public class K9 extends Application {
         editor.putInt("pgpSignOnlyDialogCounter", sPgpSignOnlyDialogCounter);
 
         editor.putString("pEpExtraAccounts", pEpExtraAccounts);
-        editor.putBoolean("pEpUseKeyserver", pEpUseKeyserver);
+        //editor.putBoolean("pEpUseKeyserver", pEpUseKeyserver);
         editor.putBoolean("pEpPassiveMode", pEpPassiveMode);
         editor.putBoolean("pEpSubjectUnprotected", pEpSubjectUnprotected);
         editor.putBoolean("pEpForwardWarningEnabled", pEpForwardWarningEnabled);
@@ -923,7 +923,7 @@ public class K9 extends Application {
             sSplitViewMode = SplitViewMode.valueOf(splitViewMode);
         }
         pEpExtraAccounts = storage.getString("pEpExtraAccounts", null);
-        pEpUseKeyserver = storage.getBoolean("pEpUseKeyserver", false);
+        //pEpUseKeyserver = storage.getBoolean("pEpUseKeyserver", false);
         pEpPassiveMode = storage.getBoolean("pEpPassiveMode", false);
         pEpSubjectUnprotected = storage.getBoolean("pEpSubjectUnprotected", true);
         pEpForwardWarningEnabled = storage.getBoolean("pEpForwardWarningEnabled", false);
@@ -1663,17 +1663,19 @@ public class K9 extends Application {
     }
 
     public void setPEpUseKeyserver(boolean use) {
-        pEpUseKeyserver = use;
+        // Server lookup does not
+        /*pEpUseKeyserver = use;
         if (use) {
             pEpProvider.startKeyserverLookup();
         } else{
             pEpProvider.stopKeyserverLookup();
-        }
+        }*/
 
     }
 
     public static boolean getPEpUseKeyserver() {
-        return pEpUseKeyserver;
+       // return pEpUseKeyserver;
+        return false;
     }
 
 

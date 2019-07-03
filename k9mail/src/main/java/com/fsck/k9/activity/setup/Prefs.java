@@ -173,7 +173,7 @@ public class Prefs extends K9PreferenceActivity {
     private CheckBoxPreference mThreadedView;
     private ListPreference mSplitViewMode;
 //    private EditTextPreference mPEpExtraAccounts;
-    private CheckBoxPreference mPEpUseKeyserver;
+//    private CheckBoxPreference mPEpUseKeyserver;
     private CheckBoxPreference mPEpPassiveMode;
     private CheckBoxPreference mPEpSubjectUnprotected;
     private Preference mPEpBlacklist;
@@ -441,8 +441,8 @@ public class Prefs extends K9PreferenceActivity {
 //        mPEpExtraAccounts = (EditTextPreference) findPreference(PEP_EXTRA_ACCOUNTS);
 //        mPEpExtraAccounts.setText(K9.getPEpExtraAccounts());
 
-        mPEpUseKeyserver =(CheckBoxPreference) findPreference(PEP_USE_KEYSERVER);
-        mPEpUseKeyserver.setChecked(K9.getPEpUseKeyserver());
+        //mPEpUseKeyserver =(CheckBoxPreference) findPreference(PEP_USE_KEYSERVER);
+        //mPEpUseKeyserver.setChecked(K9.getPEpUseKeyserver());
 
         mPEpPassiveMode =(CheckBoxPreference) findPreference(PEP_PASSIVE_MODE);
         mPEpPassiveMode.setChecked(K9.getPEpPassiveMode());
@@ -613,7 +613,7 @@ public class Prefs extends K9PreferenceActivity {
         K9.setHideTimeZone(mHideTimeZone.isChecked());
 //        K9.setPEpExtraAccounts(mPEpExtraAccounts.getText());
         K9 app = ((K9) getApplicationContext());
-        app.setPEpUseKeyserver(mPEpUseKeyserver.isChecked());
+        //app.setPEpUseKeyserver(mPEpUseKeyserver.isChecked());
         app.setPEpPassiveMode(mPEpPassiveMode.isChecked());
         app.setpEpSubjectUnprotected(mPEpSubjectUnprotected.isChecked());
         app.setpEpForwardWarningEnabled(mPepForwardWarning.isChecked());
