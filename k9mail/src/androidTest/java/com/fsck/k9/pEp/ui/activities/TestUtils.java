@@ -879,11 +879,10 @@ public class TestUtils {
     }
 
     public void checkToolbarColor(int color) {
-        boolean toolbarExists = false;
         while (!viewIsDisplayed(R.id.toolbar)) {
             device.waitForIdle();
         }
-        while (!toolbarExists) {
+        while (true) {
             waitUntilIdle();
             device.waitForIdle();
             if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
@@ -892,7 +891,7 @@ public class TestUtils {
                 device.waitForIdle();
                 onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(color)));
                 checkUpperToolbar(color);
-                toolbarExists = true;
+                return;
             }
         }
     }
