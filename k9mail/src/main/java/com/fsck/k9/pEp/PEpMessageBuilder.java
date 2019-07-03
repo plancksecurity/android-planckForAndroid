@@ -187,7 +187,7 @@ class PEpMessageBuilder {
         m.setCc(PEpUtils.createIdentities(Arrays.asList(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC)), context));
         m.setBcc(PEpUtils.createIdentities(Arrays.asList(mm.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC)), context));
         m.setId(mm.getMessageId());
-        m.setInReplyTo(createMessageReferences(mm.getReferences()));
+        m.setInReplyTo(createMessageReferences(mm.getHeader("In-Reply-To")));
         m.setSent(mm.getSentDate());
         Vector<Identity> identities = PEpUtils.createIdentities(Arrays.asList(mm.getReplyTo()), context);
         m.setReplyTo(identities);
@@ -205,6 +205,17 @@ class PEpMessageBuilder {
         addOptionalField(optionalFields, MimeHeader.HEADER_CONTENT_DESCRIPTION);
         addOptionalField(optionalFields, MimeHeader.HEADER_PEP_KEY_IMPORT);
         addOptionalField(optionalFields, MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY);
+        //addOptionalField(optionalFields, "Return-Path");
+        //addOptionalField(optionalFields, "X-Original-To");
+        //addOptionalField(optionalFields, "Delivered-To");
+
+        /*
+        for (String headerName : mm.getHeaderNames()) {
+            for (String headerValue : mm.getHeader(headerName)) {
+                optionalFields.add(new Pair<>(headerName, headerValue));
+            }
+        }
+        */
         m.setOptFields(optionalFields);
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
@@ -223,8 +234,8 @@ class PEpMessageBuilder {
     }
 
     private void addOptionalField(ArrayList<Pair<String, String>> optionalFields, String headerKey) {
-        if (mm.getHeader(headerKey).length > 0) {
-            optionalFields.add(new Pair<>(headerKey, mm.getHeader(headerKey)[0]));
+        for (String headerValue : mm.getHeader(headerKey)) {
+            optionalFields.add(new Pair<>(headerKey, headerValue));
         }
     }
 

@@ -266,7 +266,8 @@ public class PEpProviderImpl implements PEpProvider {
                 replyTo.add(address);
             }
         }
-        decMsg.setReplyTo((Address[]) replyTo.toArray());
+
+        decMsg.setReplyTo(replyTo.toArray(new Address[0]));
     }
 
     @Override
