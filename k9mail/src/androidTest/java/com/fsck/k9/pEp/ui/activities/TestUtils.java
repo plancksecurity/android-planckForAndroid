@@ -1529,7 +1529,11 @@ public class TestUtils {
         for (UiObject2 object : device.findObjects(selector)) {
             if (object.getResourceName().equals(uiObject.getResourceName())) {
                 device.waitForIdle();
-                cucumberBody.contains(object.getText());
+                onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
+                device.waitForIdle();
+                if (!object.getText().contains(cucumberBody)) {
+                    Assert.fail("Error: body text != text to compare");
+                }
                 return;
             } else {
                 device.waitForIdle();
