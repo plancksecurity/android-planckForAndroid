@@ -1459,7 +1459,11 @@ public class TestUtils {
     public void setClipboard(String textToCopy) {
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText(null, textToCopy);
-        clipboard.setPrimaryClip(clip);
+        while (clipboard.getPrimaryClip() == null || clipboard.getPrimaryClip().equals("")) {
+            device.waitForIdle();
+            clipboard.setPrimaryClip(clip);
+            device.waitForIdle();
+        }
     }
 
     public void pasteClipboard() {
