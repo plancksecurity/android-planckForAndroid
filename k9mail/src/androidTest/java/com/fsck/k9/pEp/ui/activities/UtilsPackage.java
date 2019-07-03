@@ -340,7 +340,7 @@ public class UtilsPackage {
         return stringHolder[0];
     }
 
-    static ViewAction saveSizeInInt(int size[], int position) {
+    public static ViewAction saveSizeInInt(int size[], int position) {
         return new ViewAction() {
 
             @Override
