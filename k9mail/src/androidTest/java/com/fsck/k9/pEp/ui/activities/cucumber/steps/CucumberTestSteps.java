@@ -71,6 +71,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containstText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromView;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.saveSizeInInt;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
@@ -922,6 +923,21 @@ public class CucumberTestSteps {
         device.waitForIdle();
         testUtils.clickView(testUtils.intToID(viewClicked));
         device.waitForIdle();
+    }
+
+    @And("^I search for (\\d+) (?:message|messages) with subject (\\S+)$")
+    public void I_click_search_and_search_for_text(int messages, String text){
+        int[] messageListSize = new int[1];
+        timeRequiredForThisMethod(10);
+        device.waitForIdle();
+        testUtils.clickView(testUtils.intToID("search"));
+        device.waitForIdle();
+        onView(withId(R.id.search_input)).perform(typeText(text), closeSoftKeyboard());
+        device.waitForIdle();
+        onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 1));
+        if (messageListSize[0] - 1 != messages) {
+            Assert.fail("There are not " + messages + " in the list. There are: " + (messageListSize[0] - 1));
+        }
     }
 
     @And("^I click reply message$")
