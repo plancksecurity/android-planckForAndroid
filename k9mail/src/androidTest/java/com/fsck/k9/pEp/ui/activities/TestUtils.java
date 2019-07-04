@@ -1660,6 +1660,30 @@ public class TestUtils {
         }
     }
 
+    public void setCheckBox(String resourceText, boolean checked) {
+        BySelector selector = By.clazz("android.widget.CheckBox");
+        while (true) {
+            for (UiObject2 checkbox : device.findObjects(selector)) {
+                try {
+                    if (checkbox.getText().contains(resourceText)) {
+                        device.waitForIdle();
+                        if (checkbox.isChecked() != checked){
+                            device.waitForIdle();
+                            checkbox.longClick();
+                            device.waitForIdle();
+                        }
+                        if (checkbox.isChecked() == checked) {
+                            device.waitForIdle();
+                            return;
+                        }
+                    }
+                } catch (Exception ex){
+                    Timber.i("Cannot find text on screen: " + ex);
+                }
+            }
+        }
+    }
+
     public static void getJSONObject(String object) {
         switch (object) {
             case "rating":
