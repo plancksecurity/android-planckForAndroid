@@ -168,12 +168,34 @@ public class TestUtils {
                 Timber.i("Cannot fill account email");
             }
         }
-        while (getTextFromView(onView(withId(R.id.account_password))).equals("")) {
+        while (exists(onView(withId(R.id.account_password))) && getTextFromView(onView(withId(R.id.account_password))).equals("")) {
             try {
                 device.waitForIdle();
-                onView(withId(R.id.account_password)).perform(typeText(testConfig.getPassword()), closeSoftKeyboard()); // getPassword()
+                onView(withId(R.id.account_password)).perform(typeText(testConfig.getPassword()), closeSoftKeyboard());
                 device.waitForIdle();
-                onView(withId(R.id.next)).perform(click());
+                if (testConfig.getTrusted_server()) {
+                    device.waitForIdle();
+                    clickView(R.id.manual_setup);
+                    device.waitForIdle();
+                    while (true) {
+                        try {
+                            while (exists(onView(withId(R.id.account_trust_server)))) {
+                                setCheckBox("Trust server", true);
+                                device.waitForIdle();
+                                onView(withId(R.id.next)).perform(click());
+                                device.waitForIdle();
+                                return;
+                            }
+                                device.waitForIdle();
+                                onView(withId(R.id.next)).perform(click());
+                                device.waitForIdle();
+                        } catch (Exception eNext){
+                            Timber.i("Trust server not enabled yet");
+                        }
+                    }
+                } else {
+                    onView(withId(R.id.next)).perform(click());
+                }
                 if (viewWithTextIsDisplayed(resources.getString(R.string.account_already_exists))) {
                     device.pressBack();
                     return;
