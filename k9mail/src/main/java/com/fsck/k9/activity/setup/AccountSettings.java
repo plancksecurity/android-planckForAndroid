@@ -690,13 +690,13 @@ public class AccountSettings extends K9PreferenceActivity {
             }
         });
 
-        findPreference(PREFERENCE_MANAGE_IDENTITIES).setOnPreferenceClickListener(
+        /*findPreference(PREFERENCE_MANAGE_IDENTITIES).setOnPreferenceClickListener(
         new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
                 onManageIdentities();
                 return true;
             }
-        });
+        });*/
 
         findPreference(PREFERENCE_INCOMING).setOnPreferenceClickListener(
         new Preference.OnPreferenceClickListener() {

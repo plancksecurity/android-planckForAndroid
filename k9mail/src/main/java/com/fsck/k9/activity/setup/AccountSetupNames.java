@@ -19,6 +19,7 @@ import android.widget.EditText;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.BuildConfig;
+import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.Accounts;
@@ -168,6 +169,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
         @Override
         protected Void doInBackground(Void... params) {
             PEpUtils.pEpGenerateAccountKeys(getApplicationContext(), mAccount);
+            K9.setServicesEnabled(getApplicationContext());
             return null;
         }
     }

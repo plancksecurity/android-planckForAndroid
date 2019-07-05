@@ -420,10 +420,10 @@
             android:key="pep_gpg_compatibility"
             android:title="@string/pep_gpg_compatibility" />
 
-        <CheckBoxPreference
+        <!--CheckBoxPreference
             android:key="pep_use_keyserver"
             android:persistent="false"
-            android:title="@string/pep_use_keyserver" />
+            android:title="@string/pep_use_keyserver" /-->
         <CheckBoxPreference
             android:key="pep_subject_unprotected"
             android:persistent="false"

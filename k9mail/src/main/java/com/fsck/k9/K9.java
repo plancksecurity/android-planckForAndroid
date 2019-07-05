@@ -60,6 +60,7 @@ import com.fsck.k9.widget.list.MessageListWidgetProvider;
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
+
 import foundation.pEp.jniadapter.AndroidHelper;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Sync;
@@ -324,7 +325,7 @@ public class K9 extends Application {
     private static boolean sMessageViewCopyActionVisible = false;
     private static boolean sMessageViewSpamActionVisible = false;
     private static String pEpExtraAccounts = "";
-    private static boolean pEpUseKeyserver = false;
+    //private static boolean pEpUseKeyserver = false;
     private static boolean pEpPassiveMode = false;
     private static boolean pEpSubjectUnprotected = true;
     private static boolean pEpForwardWarningEnabled = false;
@@ -592,7 +593,7 @@ public class K9 extends Application {
         editor.putInt("pgpSignOnlyDialogCounter", sPgpSignOnlyDialogCounter);
 
         editor.putString("pEpExtraAccounts", pEpExtraAccounts);
-        editor.putBoolean("pEpUseKeyserver", pEpUseKeyserver);
+        //editor.putBoolean("pEpUseKeyserver", pEpUseKeyserver);
         editor.putBoolean("pEpPassiveMode", pEpPassiveMode);
         editor.putBoolean("pEpSubjectUnprotected", pEpSubjectUnprotected);
         editor.putBoolean("pEpForwardWarningEnabled", pEpForwardWarningEnabled);
@@ -603,7 +604,7 @@ public class K9 extends Application {
 
     @Override
     public void onCreate() {
-        pEpInitEnvironment();
+        AndroidHelper.setup(this);
 
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
@@ -732,6 +733,7 @@ public class K9 extends Application {
             }
 
         });
+        pEpInitSyncEnvironment();
 
         notifyObservers();
 
@@ -753,10 +755,9 @@ public class K9 extends Application {
                 mailSyncJobManager, pusherRefreshJobManager);
     }
 
-    private void pEpInitEnvironment() {
-        AndroidHelper.setup(this);
+    public void pEpInitSyncEnvironment() {
         if (pEpSyncEnabled) {
-            //initSync();
+            initSync();
         }
         setupFastPoller();
     }
@@ -784,8 +785,9 @@ public class K9 extends Application {
                 }
             }
         });
-
-        pEpSyncProvider.startSync();
+//        if (Preferences.getPreferences(this).getAccounts().size() > 0) {
+            pEpSyncProvider.startSync();
+//        }
     }
 
     private void goToAddDevice(Identity myself, Identity partner, SyncHandshakeSignal signal, String explanation) {
@@ -921,7 +923,7 @@ public class K9 extends Application {
             sSplitViewMode = SplitViewMode.valueOf(splitViewMode);
         }
         pEpExtraAccounts = storage.getString("pEpExtraAccounts", null);
-        pEpUseKeyserver = storage.getBoolean("pEpUseKeyserver", false);
+        //pEpUseKeyserver = storage.getBoolean("pEpUseKeyserver", false);
         pEpPassiveMode = storage.getBoolean("pEpPassiveMode", false);
         pEpSubjectUnprotected = storage.getBoolean("pEpSubjectUnprotected", true);
         pEpForwardWarningEnabled = storage.getBoolean("pEpForwardWarningEnabled", false);
@@ -1661,17 +1663,19 @@ public class K9 extends Application {
     }
 
     public void setPEpUseKeyserver(boolean use) {
-        pEpUseKeyserver = use;
+        // Server lookup does not
+        /*pEpUseKeyserver = use;
         if (use) {
             pEpProvider.startKeyserverLookup();
         } else{
             pEpProvider.stopKeyserverLookup();
-        }
+        }*/
 
     }
 
     public static boolean getPEpUseKeyserver() {
-        return pEpUseKeyserver;
+       // return pEpUseKeyserver;
+        return false;
     }
 
 
@@ -1736,7 +1740,9 @@ public class K9 extends Application {
                 }
 
                 @Override
-                public void onError(Throwable throwable) {
+                public void onError(Throwable throwable)
+                {
+                    Log.e("pEpSync", "onError: ", throwable);
                     isPollingMessages = false;
                 }
             });
@@ -1766,7 +1772,10 @@ public class K9 extends Application {
     Sync.NotifyHandshakeCallback notifyHandshakeCallback = new Sync.NotifyHandshakeCallback() {
 
         @Override
-        public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
+        public void  notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
+            System.out.println("pEpSync" +"notifyHandshakeCallFromC: " + notifyHandshakeCallback + " :: " + signal.name());
+            new Handler(Looper.getMainLooper()).post(()
+                    -> Toast.makeText(K9.this, signal.name(), Toast.LENGTH_SHORT).show());
             Log.e("pEpEngine", String.format("pEp notifyHandshake: %s", signal.name()));
 
             // Before starting a new "event" we dismiss the current one.

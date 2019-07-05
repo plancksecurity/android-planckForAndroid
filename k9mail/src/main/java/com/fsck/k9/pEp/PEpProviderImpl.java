@@ -52,7 +52,7 @@ public class PEpProviderImpl implements PEpProvider {
     private static final String PEP_SIGNALING_BYPASS_DOMAIN = "@peptunnel.com";
     private final ThreadExecutor threadExecutor;
     private final PostExecutionThread postExecutionThread;
-    private Context context;
+    private final Context context;
     private Engine engine;
 
     @Inject
@@ -103,6 +103,7 @@ public class PEpProviderImpl implements PEpProvider {
         configKeyServerLockup(K9.getPEpUseKeyserver());
         engine.config_unencrypted_subject(K9.ispEpSubjectUnprotected());
         engine.setMessageToSendCallback(MessagingController.getInstance(context));
+        engine.setNotifyHandshakeCallback(((K9) context.getApplicationContext()).getNotifyHandshakeCallback());
     }
 
     private Engine getNewEngineSession() throws pEpException {
@@ -188,7 +189,10 @@ public class PEpProviderImpl implements PEpProvider {
             srcMsg.setDir(Message.Direction.Incoming);
 
             Log.d(TAG, "pEpdecryptMessage() before decrypt");
+            Log.e("KeySync", "pEpdecryptMessage() before decrypt");
             decReturn = engine.decrypt_message(srcMsg, new Vector<>(), 0);
+            Log.e("KeySync", "pEpdecryptMessage() *after* decrypt");
+
             Log.d(TAG, "pEpdecryptMessage() after decrypt Subject" +  decReturn.dst.getShortmsg());
             Message message = decReturn.dst;
             MimeMessage decMsg = getMimeMessage(source, message);
@@ -197,15 +201,8 @@ public class PEpProviderImpl implements PEpProvider {
             decMsg.setFlag(Flag.X_PEP_NEVER_UNSECURE, neverUnprotected);
 
             extractpEpImportHeaderFromReplyTo(decMsg);
-            if (decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)
-                    || decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY)) {
-                Date lastValidDate = new Date(System.currentTimeMillis() - (TIMEOUT));
-                int flags = -1;
-                if (lastValidDate.after(decMsg.getSentDate())) {
-                    flags = DecryptFlags.pEpDecryptFlagConsumed.value;
-                    return new DecryptResult(decMsg, decReturn.rating, null, flags);
-                }
-            }
+            DecryptResult flaggedResult = processKeyImportSyncMessages(decReturn, decMsg);
+            if (flaggedResult != null) return flaggedResult;
 
             if (isUsablePrivateKey(decReturn)) {
                 if (decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)
@@ -233,6 +230,32 @@ public class PEpProviderImpl implements PEpProvider {
         }
     }
 
+    @org.jetbrains.annotations.Nullable
+    private DecryptResult processKeyImportSyncMessages(Engine.decrypt_message_Return decReturn, MimeMessage decryptedMimeMessage) {
+        int flags = -1;
+        Date lastValidDate = new Date(System.currentTimeMillis() - (TIMEOUT));
+
+        if (decryptedMimeMessage.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)
+                || decryptedMimeMessage.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY)) {
+
+            if (lastValidDate.after(decryptedMimeMessage.getSentDate())) {
+                flags = DecryptFlags.pEpDecryptFlagConsumed.value;
+                return new DecryptResult(decryptedMimeMessage, decReturn.rating, null, flags);
+            }
+        }
+        else if (decryptedMimeMessage.getHeaderNames().contains(MimeHeader.HEADER_PEP_AUTOCONSUME)
+                || decryptedMimeMessage.getHeaderNames().contains(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY)) {
+            if (lastValidDate.after(decryptedMimeMessage.getSentDate())) {
+                flags = DecryptFlags.pEpDecryptFlagConsumed.value;
+                return new DecryptResult(decryptedMimeMessage, decReturn.rating, null, flags);
+            } else {
+                flags = DecryptFlags.pEpDecryptFlagIgnored.value;
+                return new DecryptResult(decryptedMimeMessage, decReturn.rating, null, flags);
+            }
+        }
+        return null;
+    }
+
     private void extractpEpImportHeaderFromReplyTo(MimeMessage decMsg) {
         Vector<Address> replyTo = new Vector<>();
         for (Address address : decMsg.getReplyTo()) {
@@ -243,6 +266,8 @@ public class PEpProviderImpl implements PEpProvider {
                 replyTo.add(address);
             }
         }
+
+        decMsg.setReplyTo(replyTo.toArray(new Address[0]));
     }
 
     @Override
@@ -335,7 +360,7 @@ public class PEpProviderImpl implements PEpProvider {
 
         MimeMessage mimeMessage = builder.parseMessage(message);
 
-        Boolean isRequestedFromPEpMessage = source == null;
+        boolean isRequestedFromPEpMessage = source == null;
         if (!isRequestedFromPEpMessage) {
             String[] alwaysSecureHeader = source.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE);
             if (alwaysSecureHeader.length > 0) {
@@ -380,9 +405,9 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized MimeMessage encryptMessageToSelf(MimeMessage source, String[] keys) throws MessagingException{
+    public synchronized MimeMessage encryptMessageToSelf(MimeMessage source, String[] keys) {
         if (source == null) {
-            return source;
+            return null;
         }
         createEngineInstanceIfNeeded();
         Message message = null;
@@ -441,7 +466,6 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     private List<MimeMessage> getEncryptedCopies(MimeMessage source, String[] extraKeys) throws pEpException, MessagingException {
-        List<MimeMessage> result = new ArrayList<>();
         List<Message> messagesToEncrypt = new ArrayList<>();
         Message toEncryptMessage = stripUnencryptedRecipients(source);
         messagesToEncrypt.add(toEncryptMessage);
@@ -450,7 +474,7 @@ public class PEpProviderImpl implements PEpProvider {
             handleEncryptedBCC(source, toEncryptMessage, messagesToEncrypt);
         }
 
-        result.addAll(encryptMessages(source, extraKeys, messagesToEncrypt));
+        List<MimeMessage> result = new ArrayList<>(encryptMessages(source, extraKeys, messagesToEncrypt));
 
         for (Message message : messagesToEncrypt) {
             message.close();
@@ -542,8 +566,7 @@ public class PEpProviderImpl implements PEpProvider {
     public synchronized Rating getRating(Identity ident) {
         createEngineInstanceIfNeeded();
         try {
-            Rating result =  engine.identity_rating(ident);
-            return result;
+            return engine.identity_rating(ident);
         } catch (pEpException e) {
             Log.e(TAG, "getRating: ", e);
             return Rating.pEpRatingUndefined;
@@ -694,7 +717,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public synchronized void printLog() {
-        String logLines[] = getLog().split("\n");
+        String[] logLines = getLog().split("\n");
         for (String logLine : logLines) {
             Log.i("PEPJNI", logLine);
         }
@@ -848,9 +871,8 @@ public class PEpProviderImpl implements PEpProvider {
         return null;
     }
 
-    boolean sendMessageSet = false;
-    boolean showHandshakeSet = false;
-    boolean keysyncStarted = false;
+    private final boolean sendMessageSet = false;
+    private final boolean showHandshakeSet = false;
 
 
     @Override
@@ -869,7 +891,11 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public synchronized void startSync() {
-        engine.startSync();
+        try {
+            engine.startSync();
+        } catch (pEpException exception) {
+            Log.e(TAG, "Cannot startSync", exception);
+        }
     }
 
     //FIXME: Implement sync use lists.
