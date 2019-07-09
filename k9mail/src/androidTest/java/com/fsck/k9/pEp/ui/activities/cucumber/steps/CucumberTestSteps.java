@@ -59,6 +59,7 @@ import timber.log.Timber;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.pressImeActionButton;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.action.ViewActions.typeTextIntoFocusedView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -930,13 +931,31 @@ public class CucumberTestSteps {
         int[] messageListSize = new int[1];
         timeRequiredForThisMethod(10);
         device.waitForIdle();
-        testUtils.clickView(testUtils.intToID("search"));
+        while (!exists(onView(withId(R.id.search)))) {
+            device.waitForIdle();
+            device.pressBack();
+        }
         device.waitForIdle();
-        onView(withId(R.id.search_input)).perform(typeText(text), closeSoftKeyboard());
+        onView(withId(R.id.search)).perform(click());
         device.waitForIdle();
-        onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 1));
+        if (exists(onView(withId(R.id.search_clear)))) {
+            try {
+                onView(withId(R.id.search_clear)).perform(click());
+                device.waitForIdle();
+                onView(withId(R.id.search)).perform(click());
+                device.waitForIdle();
+            } catch (Exception e) {
+                Timber.i("Cannot clear text in search box");
+            }
+        }
+        device.waitForIdle();
+        onView(withId(R.id.search_input)).perform(typeText(text));
+        device.waitForIdle();
+        onView(withId(R.id.search_input)).perform(pressImeActionButton(), closeSoftKeyboard());
+        device.waitForIdle();
+        onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
         if (messageListSize[0] - 1 != messages) {
-            Assert.fail("There are not " + messages + " in the list. There are: " + (messageListSize[0] - 1));
+            Assert.fail("There are not " + messages + " messages in the list. There are: " + (messageListSize[0] - 1));
         }
     }
 
