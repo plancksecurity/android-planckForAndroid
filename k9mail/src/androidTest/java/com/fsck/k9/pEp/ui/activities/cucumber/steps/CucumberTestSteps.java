@@ -1053,6 +1053,19 @@ public class CucumberTestSteps {
         testUtils.goToFolder(resources.getString(R.string.special_mailbox_name_sent));
     }
 
+    @And("^I enable passive mode$")
+    public void I_enable_passive_mode(){
+        timeRequiredForThisMethod(25);
+        device.waitForIdle();
+        testUtils.selectFromMenu(R.string.action_settings);
+        device.waitForIdle();
+        testUtils.selectFromScreen(R.string.settings_import_global_settings);
+        device.waitForIdle();
+        testUtils.selectFromScreen(R.string.app_name);
+        device.waitForIdle();
+        testUtils.checkBoxOnScreenChecked(testUtils.stringToID("pep_passive_mode"), true);
+    }
+
     @And("^I go to the drafts folder$")
     public void I_go_to_the_drafts_folder(){
         timeRequiredForThisMethod(25);
