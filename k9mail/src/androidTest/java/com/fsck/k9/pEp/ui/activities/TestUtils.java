@@ -378,7 +378,7 @@ public class TestUtils {
             InputStreamReader inputStreamReader = new InputStreamReader(fin);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String receiveString;
-            botList = new String[6];
+            botList = new String[9];
             int position = 0;
             while ( (receiveString = bufferedReader.readLine()) != null ) {
                 botList[position++] = receiveString;

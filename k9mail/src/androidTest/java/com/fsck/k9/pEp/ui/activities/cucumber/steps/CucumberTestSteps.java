@@ -109,7 +109,7 @@ public class CucumberTestSteps {
             testUtils.increaseTimeoutWait();
             espressoTestingIdlingResource = new EspressoTestingIdlingResource();
             IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
-            bot = new String[6];
+            bot = new String[9];
             resources = InstrumentationRegistry.getTargetContext().getResources();
             startTimer(2000);
             device.waitForIdle();
@@ -186,12 +186,24 @@ public class CucumberTestSteps {
                 cucumberMessageTo = bot[3] + HOST;
                 break;
             case "bot5":
-                Timber.i("Filling message to bot4");
+                Timber.i("Filling message to bot5");
                 cucumberMessageTo = bot[4] + HOST;
                 break;
             case "bot6":
-                Timber.i("Filling message to bot4");
+                Timber.i("Filling message to bot6");
                 cucumberMessageTo = bot[5] + HOST;
+                break;
+            case "bot7":
+                Timber.i("Filling message to bot7");
+                cucumberMessageTo = bot[6] + HOST;
+                break;
+            case "bot8":
+                Timber.i("Filling message to bot8");
+                cucumberMessageTo = bot[7] + HOST;
+                break;
+            case "bot9":
+                Timber.i("Filling message to bot4");
+                cucumberMessageTo = bot[8] + HOST;
                 break;
         }
         if (!(getTextFromView(onView(withId(R.id.to))).equals("") || getTextFromView(onView(withId(R.id.to))).equals(" "))) {
@@ -998,6 +1010,15 @@ public class CucumberTestSteps {
                 break;
             case "bot6":
                 messageTo = bot[5] + HOST;
+                break;
+            case "bot7":
+                messageTo = bot[6] + HOST;
+                break;
+            case "bot8":
+                messageTo = bot[7] + HOST;
+                break;
+            case "bot9":
+                messageTo = bot[8] + HOST;
                 break;
         }
         device.waitForIdle();
