@@ -926,7 +926,7 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
-    @And("^I search for (\\d+) (?:message|messages) with subject (\\S+)$")
+    @And("^I search for (\\d+) (?:message|messages) with text (\\S+)$")
     public void I_click_search_and_search_for_text(int messages, String text){
         timeRequiredForThisMethod(25);
         testUtils.goBackToMessageList();
