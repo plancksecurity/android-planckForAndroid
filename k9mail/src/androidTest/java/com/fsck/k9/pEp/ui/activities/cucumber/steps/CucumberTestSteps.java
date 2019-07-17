@@ -37,10 +37,12 @@ import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -1250,6 +1252,29 @@ public class CucumberTestSteps {
                             }
                         }
                         Timber.i("");
+                        return;
+                    }
+                }
+            } catch (Exception ex) {
+                Timber.i("Message Error: " + ex.getMessage());
+            }
+        }
+    }
+
+    private void openAttachedMasterKey () {
+        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+        while (true) {
+            try {
+                device.waitForIdle();
+                scroll.swipe(Direction.UP, 1.0f);
+                device.waitForIdle();
+                onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
+                scroll.swipe(Direction.UP, 1.0f);
+                device.waitForIdle();
+                BySelector layout = By.clazz("android.widget.LinearLayout");
+                for (UiObject2 object : device.findObjects(layout)) {
+                    if (object.getResourceName() != null && object.getResourceName().equals("security.pEp:id/attachments") && object.getChildren().get(0).getChildren().get(0).getChildren().get(0).getChildren().get(1).getText().contains("masterkey")) {
+                        object.getChildren().get(0).getChildren().get(0).getChildren().get(0).getChildren().get(3).click();
                         return;
                     }
                 }
