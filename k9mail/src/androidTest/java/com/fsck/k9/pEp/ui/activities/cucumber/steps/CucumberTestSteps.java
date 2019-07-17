@@ -1225,6 +1225,29 @@ public class CucumberTestSteps {
         testUtils.emptyFolder("Download");
     }
 
+    @And("^I open attached Master Key$")
+    public void I_open_attached_Master_Key() {
+        testUtils.emptyFolder("Download");
+        String masterKeyText = "";
+        String masterKeyText2;
+        while (masterKeyText.equals("")) {
+            openAttachedMasterKey();
+            device.waitForIdle();
+            try {
+                masterKeyText = testUtils.readFile("/Download/", "masterkey.asc").toString();
+            } catch (Exception e) {
+                Timber.i("Trying to read masterkey.asc file: " + e.getMessage());
+            }
+        }
+        TestUtils.createFile("masterkeyfile.asc", R.raw.masterkey);
+        masterKeyText2 = testUtils.readFile("", "masterkeyfile.asc").toString();
+        if (!masterKeyText.equals(masterKeyText2)) {
+            Assert.fail("Wrong Master key file");
+        }
+        testUtils.emptyFolder("Download");
+        testUtils.emptyFolder("");
+    }
+
     private void openAttached () {
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         while (true) {
