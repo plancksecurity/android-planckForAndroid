@@ -1712,6 +1712,17 @@ public class TestUtils {
 
     public static void getJSONObject(String object) {
         switch (object) {
+            case "keys":
+                String keys = null;
+                try {
+                    keys = json.getJSONObject("decryption_results").get(object).toString();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if (!keys.contains("47220F5487391A9ADA8199FD8F8EB7716FA59050")) {
+                    Assert.fail();
+                }
+                break;
             case "rating":
             case "rating_string":
                 try {
