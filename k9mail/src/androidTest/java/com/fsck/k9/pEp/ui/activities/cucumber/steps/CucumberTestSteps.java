@@ -404,6 +404,19 @@ public class CucumberTestSteps {
         confirmAllTrustWords(TestUtils.jsonArray);
     }
 
+    @Then("^I check there is an extra key$")
+    public void I_check_there_is_an_extra_key() {
+        timeRequiredForThisMethod(80);
+        TestUtils.getJSONObject("keys");
+        device.waitForIdle();
+        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
+        device.waitForIdle();
+        testUtils.doWaitForResource(R.id.toolbar);
+        if (!TestUtils.jsonArray.toString().contains("47220F5487391A9ADA8199FD8F8EB7716FA59050")) {
+            Assert.fail();
+        }
+    }
+
     private void confirmAllTrustWords (JSONArray array) {
         checkTrustWords(array, "short");
         device.waitForIdle();
