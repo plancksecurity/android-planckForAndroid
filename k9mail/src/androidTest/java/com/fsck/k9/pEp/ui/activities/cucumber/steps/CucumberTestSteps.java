@@ -858,7 +858,7 @@ public class CucumberTestSteps {
                 fileName = "testpdf.pdf";
                 break;
             case "masterKey":
-                raw = R.raw.masterkey;
+                raw = R.raw.masterkeypro;
                 fileName = "masterkey.asc";
                 break;
             case "picture":
