@@ -1256,7 +1256,7 @@ public class CucumberTestSteps {
                 Timber.i("Trying to read masterkey.asc file: " + e.getMessage());
             }
         }
-        TestUtils.createFile("masterkeyfile.asc", R.raw.masterkey);
+        TestUtils.createFile("masterkeyfile.asc", R.raw.masterkeypro);
         masterKeyText2 = testUtils.readFile("", "masterkeyfile.asc").toString();
         if (!masterKeyText.equals(masterKeyText2)) {
             Assert.fail("Wrong Master key file");
