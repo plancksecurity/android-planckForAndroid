@@ -922,6 +922,26 @@ public class TestUtils {
         onView(withId(R.id.toolbar)).check(matches(valuesAreEqual(textOnScreen, resources.getString(comparedWith))));
     }
 
+    public void assertsTextExistsOnScreen (String textToCompare) {
+        BySelector selector = By.clazz("android.widget.TextView");
+        Boolean exists = false;
+        device.waitForIdle();
+        for (UiObject2 object : device.findObjects(selector)) {
+            try {
+                if (object.getText().contains(textToCompare)) {
+                    exists = true;
+                    device.waitForIdle();
+                    break;
+                }
+            } catch (Exception ex){
+                Timber.i("Cannot find text on screen: " + ex);
+            }
+        }
+        if (!exists) {
+            Assert.fail("Cannot find " + textToCompare + " on the screen");
+        }
+    }
+
     public int stringToID(String text){
         return resources.getIdentifier(text, "string", BuildConfig.APPLICATION_ID);
     }
@@ -959,6 +979,7 @@ public class TestUtils {
         hsv[2] = hsv[2]*0.9f;
         color = Color.HSVToColor(hsv);
         int upperToolbarColor = getCurrentActivity().getWindow().getStatusBarColor();
+        Assert.assertEquals("Text", upperToolbarColor, color);
         if (upperToolbarColor != color) {
             org.junit.Assert.fail("Upper toolbar color is wrong");
         }
