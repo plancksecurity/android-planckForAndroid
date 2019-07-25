@@ -417,6 +417,16 @@ public class CucumberTestSteps {
         }
     }
 
+    @Then("^I check there is an extra key on Key Management$")
+    public void I_check_there_is_an_extra_key_management() {
+        timeRequiredForThisMethod(80);
+        device.waitForIdle();
+        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
+        device.waitForIdle();
+        testUtils.doWaitForResource(R.id.toolbar);
+        testUtils.assertsTextExistsOnScreen("4722 0F54 8739 1A9A DA81\n99FD 8F8E B771 6FA5 9050");
+    }
+
     private void confirmAllTrustWords (JSONArray array) {
         checkTrustWords(array, "short");
         device.waitForIdle();
