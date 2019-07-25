@@ -455,7 +455,7 @@ public class TestUtils {
                 }
             }
         } catch (Exception ex) {
-
+            Timber.i("Cannot allow permissions");
         }
         do {
             allowPermissions(2);
@@ -924,7 +924,7 @@ public class TestUtils {
 
     public void assertsTextExistsOnScreen (String textToCompare) {
         BySelector selector = By.clazz("android.widget.TextView");
-        Boolean exists = false;
+        boolean exists = false;
         device.waitForIdle();
         for (UiObject2 object : device.findObjects(selector)) {
             try {
@@ -1436,12 +1436,16 @@ public class TestUtils {
 
     public void swipeDownMessageList() {
         while (true) {
-            device.waitForIdle();
-            onView(withId(R.id.message_list)).perform(swipeDown());
-            device.waitForIdle();
-            onView(withId(R.id.message_list)).perform(swipeDown());
-            device.waitForIdle();
-            return;
+            try {
+                device.waitForIdle();
+                onView(withId(R.id.message_list)).perform(swipeDown());
+                device.waitForIdle();
+                onView(withId(R.id.message_list)).perform(swipeDown());
+                device.waitForIdle();
+                return;
+            } catch (Exception e) {
+                Timber.i("Cannot swipe down");
+            }
         }
     }
 
@@ -1536,7 +1540,7 @@ public class TestUtils {
     public void setClipboard(String textToCopy) {
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText(null, textToCopy);
-        while (clipboard.getPrimaryClip() == null || clipboard.getPrimaryClip().equals("")) {
+        while (clipboard.getPrimaryClip() == null || clipboard.getPrimaryClip().toString().equals("")) {
             device.waitForIdle();
             clipboard.setPrimaryClip(clip);
             device.waitForIdle();
@@ -1707,7 +1711,7 @@ public class TestUtils {
         }
     }
 
-    public void setCheckBox(String resourceText, boolean checked) {
+    private void setCheckBox(String resourceText, boolean checked) {
         BySelector selector = By.clazz("android.widget.CheckBox");
         while (true) {
             for (UiObject2 checkbox : device.findObjects(selector)) {
@@ -1735,10 +1739,13 @@ public class TestUtils {
         switch (object) {
             case "keys":
                 String keys = null;
-                try {
-                    keys = json.getJSONObject("decryption_results").get(object).toString();
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                while (keys == null) {
+                    try {
+                        keys = json.getJSONObject("decryption_results").get(object).toString();
+                    } catch (JSONException e) {
+                        Timber.i("JSON file: " +e.getMessage());
+                        e.printStackTrace();
+                    }
                 }
                 if (!keys.contains("47220F5487391A9ADA8199FD8F8EB7716FA59050")) {
                     Assert.fail();
