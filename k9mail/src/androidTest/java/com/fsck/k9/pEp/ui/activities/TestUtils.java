@@ -963,8 +963,11 @@ public class TestUtils {
             device.waitForIdle();
             if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
                 device.waitForIdle();
+                waitUntilIdle();
                 onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
+                onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
                 device.waitForIdle();
+                waitUntilIdle();
                 onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(color)));
                 checkUpperToolbar(color);
                 return;
