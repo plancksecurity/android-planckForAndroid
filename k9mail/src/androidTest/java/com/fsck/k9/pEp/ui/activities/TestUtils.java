@@ -1341,6 +1341,11 @@ public class TestUtils {
             device.waitForIdle();
         }
         json = null;
+        device.waitForIdle();
+        waitUntilIdle();
+        onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
+        device.waitForIdle();
+        waitUntilIdle();
         BySelector selector = By.clazz("android.widget.TextView");
         for (UiObject2 object : device.findObjects(selector)) {
             try {
