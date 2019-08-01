@@ -1794,9 +1794,12 @@ public class TestUtils {
     }
 
     private static String readJsonFile(String fileName) {
+        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         File directory = new File(Environment.getExternalStorageDirectory().toString());
         File newFile = new File(directory, "Download/" + fileName);
         while (!newFile.exists()) {
+            scroll.swipe(Direction.UP, 1.0f);
+            downloadAttachedFile(fileName);
             waitUntilIdle();
             device.waitForIdle();
         }
