@@ -1335,8 +1335,10 @@ public class TestUtils {
         device.waitForIdle();
         waitUntilIdle();
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
-        for (int scrollTimes = 0; scrollTimes < 5; scrollTimes++) {
+        while (viewIsDisplayed(R.id.subject)) {
             device.waitForIdle();
+            waitUntilIdle();
+            onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
             scroll.swipe(Direction.UP, 1.0f);
             device.waitForIdle();
         }
