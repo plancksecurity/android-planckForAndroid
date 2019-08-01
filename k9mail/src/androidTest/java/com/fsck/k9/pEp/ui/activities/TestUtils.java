@@ -955,7 +955,10 @@ public class TestUtils {
     }
 
     public void checkToolbarColor(int color) {
-        while (!viewIsDisplayed(R.id.toolbar)) {
+        device.waitForIdle();
+        while (!exists(onView(withId(R.id.toolbar))) && !exists(onView(withId(R.id.toolbar_container)))) {
+            device.waitForIdle();
+            waitUntilIdle();
             device.waitForIdle();
         }
         while (true) {
