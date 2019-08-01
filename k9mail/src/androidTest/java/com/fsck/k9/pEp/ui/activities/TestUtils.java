@@ -1332,7 +1332,11 @@ public class TestUtils {
 
     private void downloadJSon() {
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+        device.waitForIdle();
+        waitUntilIdle();
+        onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         for (int scrollTimes = 0; scrollTimes < 5; scrollTimes++) {
+            device.waitForIdle();
             scroll.swipe(Direction.UP, 1.0f);
             device.waitForIdle();
         }
@@ -1375,11 +1379,13 @@ public class TestUtils {
         }
     }
 
-    private void downloadAttachedFile(String fileName) {
+    private static void downloadAttachedFile(String fileName) {
         BySelector selector = By.clazz("android.widget.TextView");
         for (UiObject2 object : device.findObjects(selector)) {
             try {
                 if (object.getText().contains(fileName)) {
+                    device.waitForIdle();
+                    onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
                     device.waitForIdle();
                     object.getParent().getChildren().get(3).click();
                     device.waitForIdle();
