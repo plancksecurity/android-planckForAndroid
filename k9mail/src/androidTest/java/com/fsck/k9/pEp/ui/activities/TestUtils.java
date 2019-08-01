@@ -1377,6 +1377,8 @@ public class TestUtils {
                         }
                     }
                     return;
+                } else {
+                    scroll.swipe(Direction.UP, 1.0f);
                 }
             } catch (Exception ex){
                 Timber.i("Cannot find text on screen: " + ex);
