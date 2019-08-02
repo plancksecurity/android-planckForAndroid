@@ -734,6 +734,7 @@ public class K9 extends Application {
 
         });
         pEpInitSyncEnvironment();
+        setupFastPoller();
 
         notifyObservers();
 
@@ -760,7 +761,6 @@ public class K9 extends Application {
             if (pEpSyncEnabled) {
                 initSync();
             }
-            setupFastPoller();
         }
     }
 
