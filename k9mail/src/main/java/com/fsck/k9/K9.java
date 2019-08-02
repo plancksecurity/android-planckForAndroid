@@ -756,10 +756,12 @@ public class K9 extends Application {
     }
 
     public void pEpInitSyncEnvironment() {
-        if (pEpSyncEnabled) {
-            initSync();
+        if (Preferences.getPreferences(this.getApplicationContext()).getAccounts().size() > 0) {
+            if (pEpSyncEnabled) {
+                initSync();
+            }
+            setupFastPoller();
         }
-        setupFastPoller();
     }
 
     public PEpProvider getpEpSyncProvider() {
