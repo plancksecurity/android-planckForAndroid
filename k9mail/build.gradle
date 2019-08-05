@@ -1,6 +1,6 @@
 def pEpEngineRevision = 3934
 def pEpJNIAdapterRevision = 572
-def version = "1.0.220"
+def version = "1.0.221"
 def libpEpAdapterVersion = 130
 
 def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
@@ -106,7 +106,7 @@ android {
 
     defaultConfig {
         applicationId "${appId}"
-        versionCode 30
+        versionCode 31
         minSdkVersion 19
         targetSdkVersion 27
         compileSdkVersion 28
