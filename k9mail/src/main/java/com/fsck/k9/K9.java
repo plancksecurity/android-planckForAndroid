@@ -734,6 +734,7 @@ public class K9 extends Application {
 
         });
         pEpInitSyncEnvironment();
+        setupFastPoller();
 
         notifyObservers();
 
@@ -756,10 +757,11 @@ public class K9 extends Application {
     }
 
     public void pEpInitSyncEnvironment() {
-        if (pEpSyncEnabled) {
-            initSync();
+        if (Preferences.getPreferences(this.getApplicationContext()).getAccounts().size() > 0) {
+            if (pEpSyncEnabled) {
+                initSync();
+            }
         }
-        setupFastPoller();
     }
 
     public PEpProvider getpEpSyncProvider() {
