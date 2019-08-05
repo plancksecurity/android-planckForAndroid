@@ -720,7 +720,8 @@ public class CucumberTestSteps {
             waitUntilIdle();
         }
         device.waitForIdle();
-        onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
+        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
+        onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         device.waitForIdle();
             try {
                 onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
