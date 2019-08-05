@@ -1340,7 +1340,7 @@ public class TestUtils {
         device.waitForIdle();
         waitUntilIdle();
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
-        while (viewIsDisplayed(R.id.subject)) {
+        for (int i=0; i<5; i++){
             device.waitForIdle();
             waitUntilIdle();
             onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
