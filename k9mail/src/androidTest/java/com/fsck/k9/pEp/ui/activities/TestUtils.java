@@ -956,11 +956,13 @@ public class TestUtils {
 
     public void checkToolbarColor(int color) {
         device.waitForIdle();
-        while (!exists(onView(withId(R.id.toolbar))) && !exists(onView(withId(R.id.toolbar_container)))) {
+        while (!viewIsDisplayed(R.id.toolbar) || !viewIsDisplayed(R.id.toolbar_container)) {
             device.waitForIdle();
             waitUntilIdle();
             device.waitForIdle();
         }
+        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
+        onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         while (true) {
             waitUntilIdle();
             device.waitForIdle();
