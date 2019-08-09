@@ -1599,11 +1599,12 @@ public class TestUtils {
                     body = new String[1];
                     body[0] = cucumberBody;
                 }
-                compareTextWithWebViewText(body);
+                compareTextWithWebViewText(body[0]);
                 return;
             } else if (exists(onView(withId(R.id.message_content)))) {
                 onView(withId(R.id.message_content)).check(matches(isDisplayed()));
-                if (getTextFromView(onView(withId(R.id.message_content))).contains(cucumberBody)) {
+                String[] text = getTextFromView(onView(withId(R.id.message_content))).split("--");
+                if (text[0].equals(cucumberBody)) {
                     return;
                 } else {
                     device.waitForIdle();
@@ -1638,10 +1639,12 @@ public class TestUtils {
         }
     }
 
-    private void compareTextWithWebViewText(String [] arrayToCompare) {
+    private void compareTextWithWebViewText(String textToCompare) {
         UiObject2 wb;
-        boolean webViewLoaded = false;
-        while (!webViewLoaded) {
+        device.waitForIdle();
+        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
+        device.waitForIdle();
+        while (true) {
             try {
                 device.waitForIdle();
                 waitUntilIdle();
@@ -1649,34 +1652,18 @@ public class TestUtils {
                 wb.click();
                 UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
                 scroll.swipe(Direction.UP, 1.0f);
-                String webViewText = "empty";
                 device.waitForIdle();
-                UiObject2 webViewTemporal;
-                boolean childFound = false;
-                webViewTemporal = wb.getChildren().get(0);
-                for (String textToCompare : arrayToCompare) {
-                    while (!childFound) {
-                        if (webViewTemporal.getText().contains(textToCompare)) {
-                            webViewText = webViewTemporal.getText();
-                            webViewLoaded = true;
-                            childFound = true;
-                            device.waitForIdle();
-                            break;
-                        } else {
-                            try {
-                                webViewTemporal = webViewTemporal.getChildren().get(0);
-                            } catch (Exception ex) {
-                                webViewTemporal = wb.getChildren().get(1);
-                            }
-                        }
-                    }
-                    onView(withId(R.id.message_container)).check(matches(containsText(webViewText, textToCompare)));
+                String[] webViewText = wb.getChildren().get(0).getText().split("\n");
+                if (webViewText[0].equals(textToCompare)) {
+                    device.waitForIdle();
+                    return;
+                } else {
+                    Assert.fail("Message Body text is different");
                 }
             } catch (Exception ex) {
                 Timber.i("Cannot find webView: " + ex.getMessage());
             }
         }
-        device.waitForIdle();
     }
 
     public void startActivity() {
