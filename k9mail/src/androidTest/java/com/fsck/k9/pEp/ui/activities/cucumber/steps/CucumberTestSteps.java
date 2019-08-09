@@ -347,8 +347,7 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(10);
         switch (cucumberBody) {
             case "empty":
-                cucumberBody = resources.getString(R.string.default_signature);
-                testUtils.compareMessageBody(cucumberBody);
+                testUtils.compareMessageBody("");
                 break;
             case "longText":
                 device.waitForIdle();
