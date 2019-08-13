@@ -133,16 +133,13 @@ public class CucumberTestSteps {
     public void tearDown() {
         IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
         timer.cancel();
-            while (testUtils.getCurrentActivity() != null) {
+        while (!exists(onView(withId(R.id.accounts_list)))) {
+            if (exists(onView(withText(R.string.discard_action)))) {
                 device.waitForIdle();
-                device.pressBack();
-                try {
-                    onView(withText(R.string.discard_action)).check(matches(isDisplayed()));
-                    onView(withText(R.string.discard_action)).perform(click());
-                } catch (Exception ex) {
-                    Timber.i("There is no message to discard");
-                }
+                onView(withText(R.string.discard_action)).perform(click());
             }
+            testUtils.pressBack();
+        }
         activityTestRule.finishActivity();
     }
 
