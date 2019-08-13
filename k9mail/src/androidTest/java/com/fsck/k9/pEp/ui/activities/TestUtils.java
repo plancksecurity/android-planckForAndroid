@@ -24,6 +24,7 @@ import android.support.test.espresso.IdlingPolicies;
 import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.NoMatchingViewException;
+import android.support.test.espresso.action.ViewActions;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import android.support.test.uiautomator.By;
@@ -86,6 +87,7 @@ import static android.support.test.espresso.matcher.RootMatchers.isDialog;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static android.support.test.runner.lifecycle.Stage.RESUMED;
@@ -197,7 +199,7 @@ public class TestUtils {
                     onView(withId(R.id.next)).perform(click());
                 }
                 if (viewWithTextIsDisplayed(resources.getString(R.string.account_already_exists))) {
-                    device.pressBack();
+                    pressBack();
                     return;
                 }
             } catch (Exception ex) {
@@ -667,7 +669,9 @@ public class TestUtils {
     }
 
     public void pressBack() {
-        device.pressBack();
+        device.waitForIdle();
+        onView(isRoot()).perform(ViewActions.pressBack());
+        device.waitForIdle();
     }
 
     void removeLastAccount() {
@@ -730,7 +734,7 @@ public class TestUtils {
                 finish = true;
             } else {
                 device.waitForIdle();
-                device.pressBack();
+                pressBack();
                 device.waitForIdle();
             }
         }
@@ -778,7 +782,7 @@ public class TestUtils {
                         }
                         while (getCurrentActivity() != sentFolderActivity) {
                             device.waitForIdle();
-                            device.pressBack();
+                            pressBack();
                         }
                     }
                 } catch (Exception ex) {
@@ -815,7 +819,7 @@ public class TestUtils {
                 device.waitForIdle();
                 onView(withId(view)).perform(click());
             } catch (Exception ex) {
-                device.pressBack();
+                pressBack();
                 Timber.i("Cannot remove text from field " + viewId + ": " + ex.getMessage());
             }
         }
@@ -823,7 +827,7 @@ public class TestUtils {
 
     void testStatusEmpty() {
         checkStatus(Rating.pEpRatingUndefined);
-        Espresso.pressBack();
+        pressBack();
     }
 
     void testStatusMail(BasicMessage inputMessage, BasicIdentity expectedIdentity) {
@@ -832,7 +836,7 @@ public class TestUtils {
         onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
         device.waitForIdle();
         checkStatus(expectedIdentity.getRating());
-        Espresso.pressBack();
+        pressBack();
     }
 
     void testStatusMailAndListMail(BasicMessage inputMessage, BasicIdentity expectedIdentity) {
@@ -842,7 +846,7 @@ public class TestUtils {
         device.waitForIdle();
         checkStatus(expectedIdentity.getRating());
         onView(withText(expectedIdentity.getAddress())).check(doesNotExist());
-        Espresso.pressBack();
+        pressBack();
     }
 
     void checkStatus(Rating rating) {
@@ -892,7 +896,7 @@ public class TestUtils {
                     }
                 }
                 device.waitForIdle();
-                device.pressBack();
+                pressBack();
                 device.waitForIdle();
                 if (saveAsDraft) {
                     onView(withText(R.string.save_draft_action)).perform(click());
@@ -918,7 +922,7 @@ public class TestUtils {
                 Timber.i("Cannot find text on screen: " + ex);
             }
         }
-        device.pressBack();
+        pressBack();
         onView(withId(R.id.toolbar)).check(matches(valuesAreEqual(textOnScreen, resources.getString(comparedWith))));
     }
 
@@ -1066,7 +1070,7 @@ public class TestUtils {
 
     private void goBackToOriginalApp() {
         while (!APP_ID.equals(device.getCurrentPackageName())) {
-            device.pressBack();
+            pressBack();
         }
     }
 
@@ -1165,7 +1169,7 @@ public class TestUtils {
             backToMessageCompose = true;
         }
         while (!backToMessageCompose){
-            device.pressBack();
+            pressBack();
             device.waitForIdle();
             if (viewIsDisplayed(R.id.fab_button_compose_message)){
                 backToMessageCompose = true;
@@ -1540,7 +1544,7 @@ public class TestUtils {
         Activity currentActivity = getCurrentActivity();
         while (!backToMessageList){
             try {
-                device.pressBack();
+                pressBack();
                 device.waitForIdle();
                 try {
                     if (currentActivity == getCurrentActivity() && exists(onView(withText(R.string.discard_action)))) {
