@@ -69,6 +69,7 @@ import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.isInternal;
 import static android.support.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containstText;
@@ -296,7 +297,7 @@ public class CucumberTestSteps {
                     try {
                         scroll.swipe(Direction.DOWN, 1.0f);
                     } catch (Exception e) {
-                        device.pressBack();
+                        testUtils.pressBack();
                     }
                     waitUntilIdle();
                 }
@@ -314,7 +315,7 @@ public class CucumberTestSteps {
                     } catch (Exception ex) {
                         if (viewIsDisplayed((viewId))) {
                             onView(withId(viewId)).perform(closeSoftKeyboard());
-                            device.pressBack();
+                            testUtils.pressBack();
                         }
                     }
                 }
@@ -975,7 +976,7 @@ public class CucumberTestSteps {
         device.waitForIdle();
         while (!exists(onView(withId(R.id.search)))) {
             device.waitForIdle();
-            device.pressBack();
+            testUtils.pressBack();
         }
         device.waitForIdle();
         onView(withId(R.id.search)).perform(click());
@@ -1402,7 +1403,7 @@ public class CucumberTestSteps {
         onView(withId(R.id.tvPep)).perform(click());
         device.waitForIdle();
         trustWords = getTextFromView(onView(withId(R.id.trustwords)));
-        device.pressBack();
+        testUtils.pressBack();
         device.waitForIdle();
     }
 
