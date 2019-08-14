@@ -1048,9 +1048,11 @@ public class CucumberTestSteps {
                 messageTo = bot[8] + HOST;
                 break;
         }
-        device.waitForIdle();
         for (int message = 0; message < totalMessages; message++) {
-            testUtils.composeMessageButton();
+            device.waitForIdle();
+            if (exists(onView(withId(R.id.fab_button_compose_message)))) {
+                testUtils.composeMessageButton();
+            }
             device.waitForIdle();
             testUtils.fillMessage(new TestUtils.BasicMessage("", subject, body, messageTo), false);
             device.waitForIdle();
