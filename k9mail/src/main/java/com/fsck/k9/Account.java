@@ -1084,8 +1084,7 @@ public class Account implements BaseAccount, StoreConfig {
                 folderName.equals(getArchiveFolderName()) ||
                 folderName.equals(getSpamFolderName()) ||
                 folderName.equals(getOutboxFolderName()) ||
-                folderName.equals(getSentFolderName()) ||
-                folderName.equals(getErrorFolderName())));
+                folderName.equals(getSentFolderName())));
     }
 
     public synchronized String getDraftsFolderName() {
@@ -1106,10 +1105,6 @@ public class Account implements BaseAccount, StoreConfig {
 
     public synchronized String getSentFolderName() {
         return sentFolderName;
-    }
-
-    public synchronized String getErrorFolderName() {
-        return K9.ERROR_FOLDER_NAME;
     }
 
     public synchronized void setSentFolderName(String name) {
@@ -1854,7 +1849,6 @@ public class Account implements BaseAccount, StoreConfig {
         excludeSpecialFolder(search, getSpamFolderName());
         excludeSpecialFolder(search, getOutboxFolderName());
         excludeSpecialFolder(search, getSentFolderName());
-        excludeSpecialFolder(search, getErrorFolderName());
         search.or(new SearchCondition(SearchField.FOLDER, Attribute.EQUALS, getInboxFolderName()));
     }
 
