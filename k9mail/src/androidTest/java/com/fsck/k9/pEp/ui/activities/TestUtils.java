@@ -1292,7 +1292,7 @@ public class TestUtils {
                 try {
                     swipeDownMessageList();
                     device.waitForIdle();
-                    while (viewIsDisplayed(R.id.message_list)) {
+                    while (viewIsDisplayed(R.id.message_list) || messageClicked) {
                         onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(position - 1).perform(click());
                         messageClicked = true;
                         device.waitForIdle();
@@ -1301,7 +1301,11 @@ public class TestUtils {
                     if (viewIsDisplayed(R.id.fab_button_compose_message)) {
                         try {
                             messageClicked = false;
-                            pressBack();
+                            while (exists(onView(withId(R.id.delete)))) {
+                                device.waitForIdle();
+                                pressBack();
+                                device.waitForIdle();
+                            }
                         } catch (Exception ex) {
                             Timber.i("Last message has been clicked");
                         }
