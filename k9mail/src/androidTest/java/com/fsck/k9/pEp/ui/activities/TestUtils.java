@@ -494,12 +494,21 @@ public class TestUtils {
     }
 
     public void fillMessage(BasicMessage inputMessage, boolean attachFilesToMessage) {
+        device.waitForIdle();
         while (!viewIsDisplayed(R.id.to)) {
             device.waitForIdle();
         }
-        device.waitForIdle();
-        UiObject2 list = device.findObject(By.res(APP_ID, "to"));
-        Rect bounds = list.getVisibleBounds();
+        UiObject2 list = null;
+        Rect bounds = null;
+        while (list == null || bounds == null) {
+            try {
+                device.waitForIdle();
+                list = device.findObject(By.res(APP_ID, "to"));
+                bounds = list.getVisibleBounds();
+            } catch (Exception ex) {
+                Timber.i("Cannot find view TO");
+            }
+        }
         if (!inputMessage.getTo().equals("")) {
             onView(withId(R.id.to)).perform(click(), closeSoftKeyboard());
             device.click(bounds.left - 1, bounds.centerY());
