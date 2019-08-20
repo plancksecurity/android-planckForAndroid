@@ -58,6 +58,7 @@ import cucumber.api.java.en.When;
 import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
+import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -81,6 +82,7 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.anything;
 
 @RunWith(AndroidJUnit4.class)
 public class CucumberTestSteps {
@@ -906,7 +908,17 @@ public class CucumberTestSteps {
     }
 
     @When("^I run the tests")
-    public void startTest() {
+    public void I_run_the_tests() {
+        startTest(0);
+    }
+
+
+    @When("^I select account (\\S+)$")
+    public void I_select_account(String account) {
+        startTest(Integer.parseInt(account));
+    }
+
+    public void startTest(int accountToStart) {
         boolean botListFull = false;
         while (!botListFull) {
             botListFull = true;
