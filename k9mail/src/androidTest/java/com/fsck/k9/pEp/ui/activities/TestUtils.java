@@ -127,6 +127,8 @@ public class TestUtils {
     private Resources resources;
     private Instrumentation instrumentation;
     private int[] messageListSize = new int[2];
+    private int totalAccounts = 1;
+    private int account = 0;
 
     public static final int TIMEOUT_TEST = FIVE_MINUTES * MINUTE_IN_SECONDS * SECOND_IN_MILIS;
     private TestConfig testConfig;
@@ -1925,8 +1927,8 @@ public class TestUtils {
     }
 
     public static class TestConfig {
-        String mail;
-        String password;
+        String[] mail;
+        String[] password;
         String username;
         boolean trusted_server;
         String imap_server;
@@ -1935,8 +1937,8 @@ public class TestUtils {
         String smtp_port;
 
         TestConfig(){
-            this.mail = "";
-            this.password = "";
+            this.mail = new String[3];
+            this.password = new String[3];
             this.username = "";
             this.trusted_server = false;
             this.imap_server = "";
@@ -1945,8 +1947,8 @@ public class TestUtils {
             this.smtp_port = "";
         }
 
-        public void setMail(String mail) { this.mail = mail;}
-        void setPassword(String password) { this.password = password;}
+        public void setMail(String mail, int account) { this.mail[account] = mail;}
+        void setPassword(String password, int account) { this.password[account] = password;}
         void setUsername(String username) { this.username = username;}
         void setTrusted_server(boolean trusted_server) { this.trusted_server = trusted_server;}
         void setImap_server(String imap_server) { this.imap_server = imap_server;}
@@ -1954,8 +1956,8 @@ public class TestUtils {
         void setImap_port(String imap_port) { this.imap_port = imap_port;}
         void setSmtp_port(String smtp_port) { this.smtp_port = smtp_port;}
 
-        String getMail() { return mail;}
-        String getPassword() { return password;}
+        String getMail(int account) { return mail[account];}
+        String getPassword(int account) { return password[account];}
         String getUsername() { return username;}
         boolean getTrusted_server() { return trusted_server;}
         String getImap_server() { return imap_server;}
