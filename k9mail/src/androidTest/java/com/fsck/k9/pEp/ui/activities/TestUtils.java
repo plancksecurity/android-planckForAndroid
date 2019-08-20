@@ -322,7 +322,7 @@ public class TestUtils {
         File directory = new File(Environment.getExternalStorageDirectory().toString());
         File newFile = new File(directory, "test/test_config.txt");
         testConfig = new TestConfig();
-        while (testConfig.getMail() == null || testConfig.getMail().equals("")) {
+        while (testConfig.getMail(0) == null || testConfig.getMail(0).equals("")) {
             try {
                 FileInputStream fin = new FileInputStream(newFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fin);
@@ -332,11 +332,35 @@ public class TestUtils {
                     String[] line = receiveString.split(" = ");
                     if (line.length > 1) {
                         switch (line[0]) {
-                            case "mail":
-                                testConfig.setMail(line[1]);
+                            case "mail1":
+                                testConfig.setMail(line[1], 0);
                                 break;
-                            case "password":
-                                testConfig.setPassword(line[1]);
+                            case "password1":
+                                testConfig.setPassword(line[1], 0);
+                                break;
+                            case "mail2":
+                                testConfig.setMail(line[1], 1);
+                                if (!testConfig.getMail(1).equals("")) {
+                                    totalAccounts = 2;
+                                }
+                                break;
+                            case "password2":
+                                testConfig.setPassword(line[1], 1);
+                                if (testConfig.getPassword(1).equals("") && !testConfig.getMail(1).equals("")) {
+                                    Assert.fail("Password is empty");
+                                }
+                                break;
+                            case "mail3":
+                                testConfig.setMail(line[1], 2);
+                                if (!testConfig.getMail(2).equals("")) {
+                                    totalAccounts = 3;
+                                }
+                                break;
+                            case "password3":
+                                testConfig.setPassword(line[1], 2);
+                                if (testConfig.getPassword(2).equals("") && !testConfig.getMail(2).equals("")) {
+                                    Assert.fail("Password is empty");
+                                }
                                 break;
                             case "username":
                                 testConfig.setUsername(line[1]);
