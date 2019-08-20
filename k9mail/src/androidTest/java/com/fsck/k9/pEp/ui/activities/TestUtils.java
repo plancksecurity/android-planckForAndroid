@@ -163,11 +163,11 @@ public class TestUtils {
         return resolveInfo.activityInfo.packageName;
     }
 
-    private void newEmailAccount() {
+    private void newEmailAccount(int account) {
         while (getTextFromView(onView(withId(R.id.account_email))).equals("")) {
             try {
                 device.waitForIdle();
-                onView(withId(R.id.account_email)).perform(typeText(testConfig.getMail()), closeSoftKeyboard());
+                onView(withId(R.id.account_email)).perform(typeText(testConfig.getMail(account)), closeSoftKeyboard());
             } catch (Exception ex) {
                 Timber.i("Cannot fill account email");
             }
@@ -175,7 +175,7 @@ public class TestUtils {
         while (exists(onView(withId(R.id.account_password))) && getTextFromView(onView(withId(R.id.account_password))).equals("")) {
             try {
                 device.waitForIdle();
-                onView(withId(R.id.account_password)).perform(typeText(testConfig.getPassword()), closeSoftKeyboard());
+                onView(withId(R.id.account_password)).perform(typeText(testConfig.getPassword(account)), closeSoftKeyboard());
                 device.waitForIdle();
                 if (testConfig.getTrusted_server()) {
                     device.waitForIdle();
