@@ -421,6 +421,10 @@ public class TestUtils {
 
     }
 
+    public int getTotalAccounts() {
+        return totalAccounts;
+    }
+
     private void createNewAccountWithPermissions(boolean isGmail){
         try {
             onView(withId(R.id.next)).perform(click());
