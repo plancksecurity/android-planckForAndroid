@@ -332,10 +332,10 @@ public class TestUtils {
                     String[] line = receiveString.split(" = ");
                     if (line.length > 1) {
                         switch (line[0]) {
-                            case "mail1":
+                            case "mail":
                                 testConfig.setMail(line[1], 0);
                                 break;
-                            case "password1":
+                            case "password":
                                 testConfig.setPassword(line[1], 0);
                                 break;
                             case "mail2":
