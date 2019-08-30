@@ -177,7 +177,7 @@ public class TestUtils {
                 device.waitForIdle();
                 onView(withId(R.id.account_password)).perform(typeText(testConfig.getPassword(account)), closeSoftKeyboard());
                 device.waitForIdle();
-                if (testConfig.getTrusted_server()) {
+                if (testConfig.getTrusted_server(account)) {
                     device.waitForIdle();
                     clickView(R.id.manual_setup);
                     device.waitForIdle();
@@ -340,6 +340,29 @@ public class TestUtils {
                                 break;
                             case "password":
                                 testConfig.setPassword(line[1], 0);
+                                break;case "username":
+                                testConfig.setUsername(line[1], 0);
+                                break;
+                            case "trusted_server":
+                                if (line[1].equals("true")) {
+                                    testConfig.setTrusted_server(true, 0);
+                                } else if (line[1].equals("false")){
+                                    testConfig.setTrusted_server(false, 0);
+                                } else {
+                                    Assert.fail("Trusted_server must be true or false");
+                                }
+                                break;
+                            case "imap_server":
+                                testConfig.setImap_server(line[1], 0);
+                                break;
+                            case "smtp_server":
+                                testConfig.setSmtp_server(line[1], 0);
+                                break;
+                            case "imap_port":
+                                testConfig.setImap_port(line[1], 0);
+                                break;
+                            case "smtp_port":
+                                testConfig.setSmtp_port(line[1], 0);
                                 break;
                             case "mail2":
                                 testConfig.setMail(line[1], 1);
@@ -352,6 +375,29 @@ public class TestUtils {
                                 if (testConfig.getPassword(1).equals("") && !testConfig.getMail(1).equals("")) {
                                     Assert.fail("Password is empty");
                                 }
+                                break;case "username2":
+                                testConfig.setUsername(line[1], 1);
+                                break;
+                            case "trusted_server2":
+                                if (line[1].equals("true")) {
+                                    testConfig.setTrusted_server(true, 1);
+                                } else if (line[1].equals("false")){
+                                    testConfig.setTrusted_server(false, 1);
+                                } else {
+                                    Assert.fail("Trusted_server must be true or false");
+                                }
+                                break;
+                            case "imap_server2":
+                                testConfig.setImap_server(line[1], 1);
+                                break;
+                            case "smtp_server2":
+                                testConfig.setSmtp_server(line[1], 1);
+                                break;
+                            case "imap_port2":
+                                testConfig.setImap_port(line[1], 1);
+                                break;
+                            case "smtp_port2":
+                                testConfig.setSmtp_port(line[1], 1);
                                 break;
                             case "mail3":
                                 testConfig.setMail(line[1], 2);
@@ -364,30 +410,29 @@ public class TestUtils {
                                 if (testConfig.getPassword(2).equals("") && !testConfig.getMail(2).equals("")) {
                                     Assert.fail("Password is empty");
                                 }
+                                break;case "username3":
+                                testConfig.setUsername(line[1], 2);
                                 break;
-                            case "username":
-                                testConfig.setUsername(line[1]);
-                                break;
-                            case "trusted_server":
+                            case "trusted_server3":
                                 if (line[1].equals("true")) {
-                                    testConfig.setTrusted_server(true);
+                                    testConfig.setTrusted_server(true, 2);
                                 } else if (line[1].equals("false")){
-                                    testConfig.setTrusted_server(false);
+                                    testConfig.setTrusted_server(false, 2);
                                 } else {
                                     Assert.fail("Trusted_server must be true or false");
                                 }
                                 break;
-                            case "imap_server":
-                                testConfig.setImap_server(line[1]);
+                            case "imap_server3":
+                                testConfig.setImap_server(line[1], 2);
                                 break;
-                            case "smtp_server":
-                                testConfig.setSmtp_server(line[1]);
+                            case "smtp_server3":
+                                testConfig.setSmtp_server(line[1], 2);
                                 break;
-                            case "imap_port":
-                                testConfig.setImap_port(line[1]);
+                            case "imap_port3":
+                                testConfig.setImap_port(line[1], 2);
                                 break;
-                            case "smtp_port":
-                                testConfig.setSmtp_port(line[1]);
+                            case "smtp_port3":
+                                testConfig.setSmtp_port(line[1], 2);
                                 break;
                             default:
                                 break;
@@ -1974,40 +2019,41 @@ public class TestUtils {
     public static class TestConfig {
         String[] mail;
         String[] password;
-        String username;
-        boolean trusted_server;
-        String imap_server;
-        String smtp_server;
-        String imap_port;
-        String smtp_port;
+        String[] username;
+        boolean[] trusted_server;
+        String[] imap_server;
+        String[] smtp_server;
+        String[] imap_port;
+        String[] smtp_port;
+        int total = 3;
 
         TestConfig(){
-            this.mail = new String[3];
-            this.password = new String[3];
-            this.username = "";
-            this.trusted_server = false;
-            this.imap_server = "";
-            this.smtp_server = "";
-            this.imap_port = "";
-            this.smtp_port = "";
+            this.mail = new String[total];
+            this.password = new String[total];
+            this.username = new String[total];
+            this.trusted_server = new boolean[total];
+            this.imap_server = new String[total];
+            this.smtp_server = new String[total];
+            this.imap_port = new String[total];
+            this.smtp_port = new String[total];
         }
 
         public void setMail(String mail, int account) { this.mail[account] = mail;}
         void setPassword(String password, int account) { this.password[account] = password;}
-        void setUsername(String username) { this.username = username;}
-        void setTrusted_server(boolean trusted_server) { this.trusted_server = trusted_server;}
-        void setImap_server(String imap_server) { this.imap_server = imap_server;}
-        void setSmtp_server(String smtp_server) { this.smtp_server = smtp_server;}
-        void setImap_port(String imap_port) { this.imap_port = imap_port;}
-        void setSmtp_port(String smtp_port) { this.smtp_port = smtp_port;}
+        void setUsername(String username, int account) { this.username[account] = username;}
+        void setTrusted_server(boolean trusted_server, int account) { this.trusted_server[account] = trusted_server;}
+        void setImap_server(String imap_server, int account) { this.imap_server[account] = imap_server;}
+        void setSmtp_server(String smtp_server, int account) { this.smtp_server[account] = smtp_server;}
+        void setImap_port(String imap_port, int account) { this.imap_port[account] = imap_port;}
+        void setSmtp_port(String smtp_port, int account) { this.smtp_port[account] = smtp_port;}
 
         String getMail(int account) { return mail[account];}
         String getPassword(int account) { return password[account];}
-        String getUsername() { return username;}
-        boolean getTrusted_server() { return trusted_server;}
-        String getImap_server() { return imap_server;}
-        String getSmtp_server() { return smtp_server;}
-        String getImap_port() { return imap_port;}
-        String getSmtp_port() { return smtp_port;}
+        String getUsername(int account) { return username[account];}
+        boolean getTrusted_server(int account) { return trusted_server[account];}
+        String getImap_server(int account) { return imap_server[account];}
+        String getSmtp_server(int account) { return smtp_server[account];}
+        String getImap_port(int account) { return imap_port[account];}
+        String getSmtp_port(int account) { return smtp_port[account];}
     }
 }
