@@ -919,10 +919,10 @@ public class CucumberTestSteps {
     @When("^I select account (\\S+)$")
     public void I_select_account(String account) {
         int accountSelected = Integer.parseInt(account);
-        if (accountSelected < testUtils.getTotalAccounts()) {
-            startTest(accountSelected);
-        } else {
-            Timber.i("Config file doesn't have account " + accountSelected + 1);
+        if (!(accountSelected < testUtils.getTotalAccounts())) {
+            skipTest("No more accounts");
+        }
+        startTest(accountSelected);
         }
 
     private void skipTest (String text) {
