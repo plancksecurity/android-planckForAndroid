@@ -921,6 +921,9 @@ public class CucumberTestSteps {
         } else {
             Timber.i("Config file doesn't have account " + accountSelected + 1);
         }
+
+    private void skipTest (String text) {
+        throw new cucumber.api.PendingException(text);
     }
 
     public void startTest(int accountToStart) {
