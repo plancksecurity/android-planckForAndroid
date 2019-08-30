@@ -127,7 +127,7 @@ public class TestUtils {
     private Resources resources;
     private Instrumentation instrumentation;
     private int[] messageListSize = new int[2];
-    private int totalAccounts = 1;
+    private int totalAccounts = -1;
     private int account = 0;
 
     public static final int TIMEOUT_TEST = FIVE_MINUTES * MINUTE_IN_SECONDS * SECOND_IN_MILIS;
@@ -318,11 +318,11 @@ public class TestUtils {
         getMessageListSize();
     }
 
-    private void readConfigFile() {
+    public void readConfigFile() {
         File directory = new File(Environment.getExternalStorageDirectory().toString());
         File newFile = new File(directory, "test/test_config.txt");
         testConfig = new TestConfig();
-        while (testConfig.getMail(0) == null || testConfig.getMail(0).equals("")) {
+        while (newFile.canRead() && (testConfig.getMail(0) == null || testConfig.getMail(0).equals(""))) {
             try {
                 FileInputStream fin = new FileInputStream(newFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fin);
@@ -334,6 +334,9 @@ public class TestUtils {
                         switch (line[0]) {
                             case "mail":
                                 testConfig.setMail(line[1], 0);
+                                if (!testConfig.getMail(0).equals("")) {
+                                    totalAccounts = 1;
+                                }
                                 break;
                             case "password":
                                 testConfig.setPassword(line[1], 0);
