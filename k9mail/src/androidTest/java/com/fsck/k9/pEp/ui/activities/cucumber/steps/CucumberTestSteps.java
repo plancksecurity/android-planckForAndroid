@@ -151,6 +151,9 @@ public class CucumberTestSteps {
         if (!exists(onView(withId(R.id.message_list)))) {
             testUtils.createAccount(false);
         }
+        if (testUtils.getTotalAccounts() == -1) {
+            testUtils.readConfigFile();
+        }
     }
 
 
