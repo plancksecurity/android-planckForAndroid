@@ -457,34 +457,39 @@ public class TestUtils {
                         Timber.i("Ignored", "Ignored exception");
                     }
                 }
-            try {
-                for (; account < totalAccounts; account++) {
-                    device.waitForIdle();
-                    if(exists(onView(withId(R.id.message_list)))) {
-                        pressBack();
-                        device.waitForIdle();
-                        onView(withId(R.id.add_account_container)).perform(click());
-                        device.waitForIdle();
-                    }
-                    if (isGmail) {
-                        gmailAccount();
-                    } else {
-                        newEmailAccount(account);
-                    }
-                    try {
-                        device.waitForIdle();
-                        accountDescription(DESCRIPTION, USER_NAME);
-                    } catch (Exception e) {
-                        Timber.i("Can not fill account description");
-                    }
-                }
-            } catch (Exception ex) {
-                Timber.i("Ignored", "Exists account");
-            }
+                createNAccounts(totalAccounts, isGmail);
         } catch (Exception ex) {
             readConfigFile();
             Timber.i("Ignored", "Exists account, failed creating new one");
         }
+    }
+
+    private void createNAccounts (int n, boolean isGmail) {
+        try {
+            for (; account < n; account++) {
+                device.waitForIdle();
+                if(exists(onView(withId(R.id.message_list)))) {
+                    pressBack();
+                    device.waitForIdle();
+                    onView(withId(R.id.add_account_container)).perform(click());
+                    device.waitForIdle();
+                }
+                if (isGmail) {
+                    gmailAccount();
+                } else {
+                    newEmailAccount(account);
+                }
+                try {
+                    device.waitForIdle();
+                    accountDescription(DESCRIPTION, USER_NAME);
+                } catch (Exception e) {
+                    Timber.i("Can not fill account description");
+                }
+            }
+        } catch (Exception ex) {
+            Timber.i("Ignored", "Exists account");
+        }
+
     }
 
     private void allowPermissions(){
