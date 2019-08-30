@@ -415,7 +415,7 @@ public class CucumberTestSteps {
         device.waitForIdle();
         testUtils.doWaitForResource(R.id.toolbar);
         if (!TestUtils.jsonArray.toString().contains("47220F5487391A9ADA8199FD8F8EB7716FA59050")) {
-            Assert.fail();
+            testUtils.assertFailWithMessage("Wrong extra key");
         }
     }
 
@@ -462,7 +462,7 @@ public class CucumberTestSteps {
                 e.printStackTrace();
             }
         }
-        Assert.fail();
+        testUtils.assertFailWithMessage("Wrong Trust Words");
     }
     private void assertTextInJSONArray(String text, JSONArray array, String textToCompare) {
         for (int position = 0; position < array.length(); position++) {
@@ -474,7 +474,7 @@ public class CucumberTestSteps {
                 e.printStackTrace();
             }
         }
-        Assert.fail();
+        testUtils.assertFailWithMessage("Text is not in JSON");
     }
 
     private void assertTextInJSON(JSONObject json, String textToCompare) {
@@ -482,14 +482,14 @@ public class CucumberTestSteps {
         if (json.toString().contains(textToCompare)) {
             return;
         }
-        Assert.fail("json file doesn't contain the text: " + json.toString() + " ***TEXT*** : " + textToCompare);
+        testUtils.assertFailWithMessage("json file doesn't contain the text: " + json.toString() + " ***TEXT*** : " + textToCompare);
     }
 
     private void assertText(String text, String textToCompare) {
         if (text.contains(textToCompare)) {
             return;
         }
-        Assert.fail("Texts are different");
+        testUtils.assertFailWithMessage("Texts are different");
     }
 
     private void confirmAllTrustWords (String webViewText) {
@@ -558,7 +558,7 @@ public class CucumberTestSteps {
     private void checkWordIsInText(String [] arrayToCompare, String webViewText) {
         for (String textToCompare : arrayToCompare) {
             if (!webViewText.contains(textToCompare)) {
-                Assert.fail("Text not found in Trustwords");
+                testUtils.assertFailWithMessage("Text not found in Trustwords");
             }
         }
     }
@@ -1019,7 +1019,7 @@ public class CucumberTestSteps {
         device.waitForIdle();
         onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
         if (messageListSize[0] - 1 != messages) {
-            Assert.fail("There are not " + messages + " messages in the list. There are: " + (messageListSize[0] - 1));
+            testUtils.assertFailWithMessage("There are not " + messages + " messages in the list. There are: " + (messageListSize[0] - 1));
         }
     }
 
@@ -1267,7 +1267,7 @@ public class CucumberTestSteps {
                 String shaCode = new BigInteger(1, hash).toString(16);
                 JSONObject jsonObject = (JSONObject) (testUtils.returnJSON()).getJSONObject("attachments_in").get("decrypted");
                 if (!jsonObject.toString().contains(shaCode)) {
-                    Assert.fail("couldn't find shaCode in json file");
+                    testUtils.assertFailWithMessage("couldn't find shaCode in json file");
                 }
             } catch (Exception ex) {
                 Timber.i("Couldn't get SHA256 from file: " + file.getName());
@@ -1293,7 +1293,7 @@ public class CucumberTestSteps {
         TestUtils.createFile("masterkeyfile.asc", R.raw.masterkeypro);
         masterKeyText2 = testUtils.readFile("", "masterkeyfile.asc").toString();
         if (!masterKeyText.equals(masterKeyText2)) {
-            Assert.fail("Wrong Master key file");
+            testUtils.assertFailWithMessage("Wrong Master key file");
         }
         testUtils.emptyFolder("Download");
         testUtils.emptyFolder("");
@@ -1503,11 +1503,11 @@ public class CucumberTestSteps {
                     Timber.i("Timeout: " + time[0] + "/" + finalTime);
                     if (activityTestRule == null) {
                         time[0] = 0;
-                        Assert.fail("Timeout. Couldn't finish the test");
+                        testUtils.assertFailWithMessage("Timeout. Couldn't finish the test");
                     } else if (time[0] > finalTime) {
                         try {
                             time[0] = 0;
-                            Assert.fail("Timeout. Couldn't finish the test");
+                            testUtils.assertFailWithMessage("Timeout. Couldn't finish the test");
                         } catch (Exception ex) {
                             Timber.e("Couldn't close the test");
                         }

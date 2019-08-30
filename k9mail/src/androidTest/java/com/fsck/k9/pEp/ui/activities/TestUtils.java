@@ -50,6 +50,7 @@ import junit.framework.Assert;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Assume;
 
 import foundation.pEp.jniadapter.Rating;
 
@@ -349,7 +350,7 @@ public class TestUtils {
                                 } else if (line[1].equals("false")){
                                     testConfig.setTrusted_server(false, 0);
                                 } else {
-                                    Assert.fail("Trusted_server must be true or false");
+                                    assertFailWithMessage("Trusted_server must be true or false");
                                 }
                                 break;
                             case "imap_server":
@@ -373,7 +374,7 @@ public class TestUtils {
                             case "password2":
                                 testConfig.setPassword(line[1], 1);
                                 if (testConfig.getPassword(1).equals("") && !testConfig.getMail(1).equals("")) {
-                                    Assert.fail("Password is empty");
+                                    assertFailWithMessage("Password is empty");
                                 }
                                 break;case "username2":
                                 testConfig.setUsername(line[1], 1);
@@ -384,7 +385,7 @@ public class TestUtils {
                                 } else if (line[1].equals("false")){
                                     testConfig.setTrusted_server(false, 1);
                                 } else {
-                                    Assert.fail("Trusted_server must be true or false");
+                                    assertFailWithMessage("Trusted_server must be true or false");
                                 }
                                 break;
                             case "imap_server2":
@@ -408,7 +409,7 @@ public class TestUtils {
                             case "password3":
                                 testConfig.setPassword(line[1], 2);
                                 if (testConfig.getPassword(2).equals("") && !testConfig.getMail(2).equals("")) {
-                                    Assert.fail("Password is empty");
+                                    assertFailWithMessage("Password is empty");
                                 }
                                 break;case "username3":
                                 testConfig.setUsername(line[1], 2);
@@ -419,7 +420,7 @@ public class TestUtils {
                                 } else if (line[1].equals("false")){
                                     testConfig.setTrusted_server(false, 2);
                                 } else {
-                                    Assert.fail("Trusted_server must be true or false");
+                                    assertFailWithMessage("Trusted_server must be true or false");
                                 }
                                 break;
                             case "imap_server3":
@@ -444,6 +445,10 @@ public class TestUtils {
                 Timber.i("Error reading config file, trying again");
             }
         }
+    }
+    
+    public static void assertFailWithMessage(String message) {
+        Assume.assumeTrue(message,false);
     }
 
     public void readBotList(){
@@ -1046,7 +1051,7 @@ public class TestUtils {
             }
         }
         if (!exists) {
-            Assert.fail("Cannot find " + textToCompare + " on the screen");
+            assertFailWithMessage("Cannot find " + textToCompare + " on the screen");
         }
     }
 
@@ -1097,7 +1102,7 @@ public class TestUtils {
         int upperToolbarColor = getCurrentActivity().getWindow().getStatusBarColor();
         Assert.assertEquals("Text", upperToolbarColor, color);
         if (upperToolbarColor != color) {
-            org.junit.Assert.fail("Upper toolbar color is wrong");
+            assertFailWithMessage("Upper toolbar color is wrong");
         }
     }
 
@@ -1721,7 +1726,7 @@ public class TestUtils {
                 } else {
                     device.waitForIdle();
                     onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
-                    Assert.fail("Error: body text != text to compare");
+                    assertFailWithMessage("Error: body text != text to compare");
                 }
             }
         }
@@ -1741,7 +1746,7 @@ public class TestUtils {
                 onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
                 device.waitForIdle();
                 if (!object.getText().contains(cucumberBody)) {
-                    Assert.fail("Error: body text != text to compare");
+                    assertFailWithMessage("Error: body text != text to compare");
                 }
                 return;
             } else {
@@ -1770,7 +1775,7 @@ public class TestUtils {
                     device.waitForIdle();
                     return;
                 } else {
-                    Assert.fail("Message Body text is different");
+                    assertFailWithMessage("Message Body text is different");
                 }
             } catch (Exception ex) {
                 Timber.i("Cannot find webView: " + ex.getMessage());
@@ -1870,7 +1875,7 @@ public class TestUtils {
                     }
                 }
                 if (!keys.contains("47220F5487391A9ADA8199FD8F8EB7716FA59050")) {
-                    Assert.fail();
+                    assertFailWithMessage("Wrong key");
                 }
                 break;
             case "rating":
