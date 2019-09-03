@@ -529,7 +529,7 @@ public class TestUtils {
                 }
                 try {
                     device.waitForIdle();
-                    accountDescription(DESCRIPTION, USER_NAME);
+                    accountDescription(testConfig.getUsername(account), testConfig.getUsername(account));
                 } catch (Exception e) {
                     Timber.i("Can not fill account description");
                 }
