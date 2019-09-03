@@ -87,6 +87,8 @@ public class CucumberTestSteps {
     private static final String HOST = "@sq.pep.security";
 
     private String bot[];
+    private int accounts = 3;
+    private int accountSelected = 0;
     public String b ="";
 
     private String fileName = "";
@@ -173,39 +175,39 @@ public class CucumberTestSteps {
                 break;
             case "bot1":
                 Timber.i("Filling message to bot1");
-                cucumberMessageTo = bot[0] + HOST;
+                cucumberMessageTo = bot[0] + "acc" + accountSelected + HOST;
                 break;
             case "bot2":
                 Timber.i("Filling message to bot2");
-                cucumberMessageTo = bot[1] + HOST;
+                cucumberMessageTo = bot[1] + "acc" + accountSelected + HOST;
                 break;
             case "bot3":
                 Timber.i("Filling message to bot3");
-                cucumberMessageTo = bot[2] + HOST;
+                cucumberMessageTo = bot[2] + "acc" + accountSelected + HOST;
                 break;
             case "bot4":
                 Timber.i("Filling message to bot4");
-                cucumberMessageTo = bot[3] + HOST;
+                cucumberMessageTo = bot[3] + "acc" + accountSelected + HOST;
                 break;
             case "bot5":
                 Timber.i("Filling message to bot5");
-                cucumberMessageTo = bot[4] + HOST;
+                cucumberMessageTo = bot[4] + "acc" + accountSelected + HOST;
                 break;
             case "bot6":
                 Timber.i("Filling message to bot6");
-                cucumberMessageTo = bot[5] + HOST;
+                cucumberMessageTo = bot[5] + "acc" + accountSelected + HOST;
                 break;
             case "bot7":
                 Timber.i("Filling message to bot7");
-                cucumberMessageTo = bot[6] + HOST;
+                cucumberMessageTo = bot[6] + "acc" + accountSelected + HOST;
                 break;
             case "bot8":
                 Timber.i("Filling message to bot8");
-                cucumberMessageTo = bot[7] + HOST;
+                cucumberMessageTo = bot[7] + "acc" + accountSelected + HOST;
                 break;
             case "bot9":
                 Timber.i("Filling message to bot4");
-                cucumberMessageTo = bot[8] + HOST;
+                cucumberMessageTo = bot[8] + "acc" + accountSelected + HOST;
                 break;
         }
         if (!(getTextFromView(onView(withId(R.id.to))).equals("") || getTextFromView(onView(withId(R.id.to))).equals(" "))) {
@@ -915,7 +917,7 @@ public class CucumberTestSteps {
 
     @When("^I select account (\\S+)$")
     public void I_select_account(String account) {
-        int accountSelected = Integer.parseInt(account);
+        accountSelected = Integer.parseInt(account);
         if (!(accountSelected < testUtils.getTotalAccounts())) {
             skipTest("No more accounts");
         }
@@ -1042,31 +1044,31 @@ public class CucumberTestSteps {
         String messageTo = "nothing";
         switch (botName){
             case "bot1":
-                messageTo = bot[0] + HOST;
+                messageTo = bot[0] + "acc" + accountSelected + HOST;
                 break;
             case "bot2":
-                messageTo = bot[1] + HOST;
+                messageTo = bot[1] + "acc" + accountSelected + HOST;
                 break;
             case "bot3":
-                messageTo = bot[2] + HOST;
+                messageTo = bot[2] + "acc" + accountSelected + HOST;
                 break;
             case "bot4":
-                messageTo = bot[3] + HOST;
+                messageTo = bot[3] + "acc" + accountSelected + HOST;
                 break;
             case "bot5":
-                messageTo = bot[4] + HOST;
+                messageTo = bot[4] + "acc" + accountSelected + HOST;
                 break;
             case "bot6":
-                messageTo = bot[5] + HOST;
+                messageTo = bot[5] + "acc" + accountSelected + HOST;
                 break;
             case "bot7":
-                messageTo = bot[6] + HOST;
+                messageTo = bot[6] + "acc" + accountSelected + HOST;
                 break;
             case "bot8":
-                messageTo = bot[7] + HOST;
+                messageTo = bot[7] + "acc" + accountSelected + HOST;
                 break;
             case "bot9":
-                messageTo = bot[8] + HOST;
+                messageTo = bot[8] + "acc" + accountSelected + HOST;
                 break;
         }
         for (int message = 0; message < totalMessages; message++) {
