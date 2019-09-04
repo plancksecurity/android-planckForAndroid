@@ -522,8 +522,8 @@ public class TestUtils {
                     onView(withId(R.id.add_account_container)).perform(click());
                     device.waitForIdle();
                 }
-                if () {
-
+                if (!testConfig.getImap_server(n).equals("") && !testConfig.getSmtp_server(n).equals("")) {
+                    manualAccount(account);
                 } else {
                     newEmailAccount(account);
                 }
@@ -538,6 +538,9 @@ public class TestUtils {
             Timber.i("Ignored", "Exists account");
         }
 
+    }
+
+    private void manualAccount(int account) {
     }
 
     private void allowPermissions(){
