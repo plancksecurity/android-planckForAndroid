@@ -312,7 +312,7 @@ public class TestUtils {
     }
 
     public void createAccount(boolean isGmail) {
-        createNewAccountWithPermissions(isGmail);
+        createNewAccountWithPermissions();
         removeMessagesFromList();
         getMessageListSize();
     }
@@ -476,7 +476,7 @@ public class TestUtils {
         return totalAccounts;
     }
 
-    private void createNewAccountWithPermissions(boolean isGmail){
+    private void createNewAccountWithPermissions(){
         try {
             onView(withId(R.id.next)).perform(click());
             device.waitForIdle();
@@ -505,14 +505,14 @@ public class TestUtils {
                         Timber.i("Ignored", "Ignored exception");
                     }
                 }
-                createNAccounts(totalAccounts, isGmail);
+                createNAccounts(totalAccounts);
         } catch (Exception ex) {
             readConfigFile();
             Timber.i("Ignored", "Exists account, failed creating new one");
         }
     }
 
-    private void createNAccounts (int n, boolean isGmail) {
+    private void createNAccounts (int n) {
         try {
             for (; account < n; account++) {
                 device.waitForIdle();
@@ -522,8 +522,8 @@ public class TestUtils {
                     onView(withId(R.id.add_account_container)).perform(click());
                     device.waitForIdle();
                 }
-                if (isGmail) {
-                    gmailAccount();
+                if () {
+
                 } else {
                     newEmailAccount(account);
                 }
