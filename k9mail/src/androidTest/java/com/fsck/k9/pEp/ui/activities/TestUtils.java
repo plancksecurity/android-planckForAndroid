@@ -162,7 +162,7 @@ public class TestUtils {
         return resolveInfo.activityInfo.packageName;
     }
 
-    private void newEmailAccount(int account) {
+    private void automaticAccount(int account) {
         while (getTextFromView(onView(withId(R.id.account_email))).equals("")) {
             try {
                 device.waitForIdle();
@@ -525,7 +525,7 @@ public class TestUtils {
                 if (!testConfig.getImap_server(n).equals("") && !testConfig.getSmtp_server(n).equals("")) {
                     manualAccount(account);
                 } else {
-                    newEmailAccount(account);
+                    automaticAccount(account);
                 }
                 try {
                     device.waitForIdle();
