@@ -1136,7 +1136,7 @@ public class CucumberTestSteps {
     public void I_create_and_remove_accounts(int total){
         for (int account = 0; account < total; account++) {
             timeRequiredForThisMethod(100);
-            testUtils.createAccount(false);
+            testUtils.createAccount();
             testUtils.goBackAndRemoveAccount();
             device.waitForIdle();
         }
