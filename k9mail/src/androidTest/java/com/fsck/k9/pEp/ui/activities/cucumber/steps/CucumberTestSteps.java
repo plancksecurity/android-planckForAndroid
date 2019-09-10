@@ -148,7 +148,7 @@ public class CucumberTestSteps {
     public void I_create_account() {
         device.waitForIdle();
         if (!exists(onView(withId(R.id.message_list)))) {
-            testUtils.createAccount(false);
+            testUtils.createAccount();
         }
         if (testUtils.getTotalAccounts() == -1) {
             testUtils.readConfigFile();

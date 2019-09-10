@@ -305,7 +305,7 @@ public class TestUtils {
          return resumedActivity[0];
     }
 
-    public void createAccount(boolean isGmail) {
+    public void createAccount() {
         createNewAccountWithPermissions();
         removeMessagesFromList();
         getMessageListSize();
