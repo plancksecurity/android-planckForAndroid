@@ -162,49 +162,43 @@ public class TestUtils {
         return resolveInfo.activityInfo.packageName;
     }
 
-    private void automaticAccount(int account) {
+    private void automaticAccount() {
+        trustedServer();
+    }
+
+    private void trustedServer() {
+        if (testConfig.getTrusted_server(account)) {
+        device.waitForIdle();
+        clickView(R.id.manual_setup);
+        device.waitForIdle();
+        while (true) {
+            try {
+                while (exists(onView(withId(R.id.account_trust_server)))) {
+                    setCheckBox("Trust server", true);
+                    device.waitForIdle();
+                    onView(withId(R.id.next)).perform(click());
+                    device.waitForIdle();
+                    return;
+                }
+                device.waitForIdle();
+                onView(withId(R.id.next)).perform(click());
+                device.waitForIdle();
+            } catch (Exception eNext){
+                Timber.i("Trust server not enabled yet");
+            }
+        }
+    } else {
+        onView(withId(R.id.next)).perform(click());
+    }
+    }
+
+    private void fillAccountAddress() {
         while (getTextFromView(onView(withId(R.id.account_email))).equals("")) {
             try {
                 device.waitForIdle();
                 onView(withId(R.id.account_email)).perform(typeText(testConfig.getMail(account)), closeSoftKeyboard());
             } catch (Exception ex) {
                 Timber.i("Cannot fill account email");
-            }
-        }
-        while (exists(onView(withId(R.id.account_password))) && getTextFromView(onView(withId(R.id.account_password))).equals("")) {
-            try {
-                device.waitForIdle();
-                onView(withId(R.id.account_password)).perform(typeText(testConfig.getPassword(account)), closeSoftKeyboard());
-                device.waitForIdle();
-                if (testConfig.getTrusted_server(account)) {
-                    device.waitForIdle();
-                    clickView(R.id.manual_setup);
-                    device.waitForIdle();
-                    while (true) {
-                        try {
-                            while (exists(onView(withId(R.id.account_trust_server)))) {
-                                setCheckBox("Trust server", true);
-                                device.waitForIdle();
-                                onView(withId(R.id.next)).perform(click());
-                                device.waitForIdle();
-                                return;
-                            }
-                                device.waitForIdle();
-                                onView(withId(R.id.next)).perform(click());
-                                device.waitForIdle();
-                        } catch (Exception eNext){
-                            Timber.i("Trust server not enabled yet");
-                        }
-                    }
-                } else {
-                    onView(withId(R.id.next)).perform(click());
-                }
-                if (viewWithTextIsDisplayed(resources.getString(R.string.account_already_exists))) {
-                    pressBack();
-                    return;
-                }
-            } catch (Exception ex) {
-                Timber.i("Cannot fill account password");
             }
         }
     }
@@ -522,10 +516,12 @@ public class TestUtils {
                     onView(withId(R.id.add_account_container)).perform(click());
                     device.waitForIdle();
                 }
+                fillAccountAddress();
+                fillAccountPassword();
                 if (!testConfig.getImap_server(n).equals("") && !testConfig.getSmtp_server(n).equals("")) {
-                    manualAccount(account);
+                    manualAccount();
                 } else {
-                    automaticAccount(account);
+                    automaticAccount();
                 }
                 try {
                     device.waitForIdle();
@@ -540,7 +536,103 @@ public class TestUtils {
 
     }
 
-    private void manualAccount(int account) {
+    private void fillAccountPassword() {
+        while (exists(onView(withId(R.id.account_password))) && getTextFromView(onView(withId(R.id.account_password))).equals("")) {
+            try {
+                device.waitForIdle();
+                onView(withId(R.id.account_password)).perform(typeText(testConfig.getPassword(account)), closeSoftKeyboard());
+                device.waitForIdle();
+                if (viewWithTextIsDisplayed(resources.getString(R.string.account_already_exists))) {
+                    pressBack();
+                    return;
+                }
+            } catch (Exception ex) {
+                Timber.i("Cannot fill account password: " + ex.getMessage());
+            }
+        }
+    }
+
+    private void manualAccount() {
+        while (exists(onView(withId(R.id.manual_setup)))) {
+            onView(withId(R.id.manual_setup)).perform(click());
+        }
+        setupImapServer();
+        setupSMTPServer();
+        onView(withId(R.id.next)).perform(click());
+    }
+
+    private void setupImapServer() {
+        setupAccountServerIMAP(testConfig.getImap_server(account), "IMAP server");
+    }
+
+    private void setupSMTPServer() {
+        setupAccountServerSMTP(testConfig.getSmtp_server(account), "SMTP server");
+    }
+
+    private void setupAccountServerIMAP(String accountServer, String server) {
+        device.waitForIdle();
+        onView(withId(R.id.account_server_label)).check(matches(isCompletelyDisplayed()));
+        while (!viewIsDisplayed(R.id.account_server_label) &&
+                !getTextFromView(onView(withId(R.id.account_server_label))).equals(server)) {
+            device.waitForIdle();
+        }
+        while (!getTextFromView(onView(withId(R.id.account_server))).equals(accountServer) &&
+            exists(onView(withId(R.id.account_server_label)))) {
+            try {
+                device.waitForIdle();
+                while (!getTextFromView(onView(withId(R.id.account_server))).equals("")){
+                    removeTextFromTextView("account_server");
+                }
+                device.waitForIdle();
+                while (!getTextFromView(onView(withId(R.id.account_server))).equals(accountServer)) {
+                    onView(withId(R.id.account_server)).perform(typeText(accountServer), closeSoftKeyboard());
+                    device.waitForIdle();
+                    onView(withId(R.id.account_server)).check(matches(isDisplayed()));
+                    device.waitForIdle();
+                }
+                onView(withId(R.id.next)).perform(click());
+                device.waitForIdle();
+                while (viewIsDisplayed(R.id.account_server_label)) {
+                    device.waitForIdle();
+                }
+                device.waitForIdle();
+                return;
+            } catch (Exception e) {
+                Timber.i("Cannot setup server: " + e.getMessage());
+            }
+        }
+    }    private void setupAccountServerSMTP(String accountServer, String server) {
+        device.waitForIdle();
+        waitUntilIdle();
+        onView(withId(R.id.account_server)).check(matches(isDisplayed()));
+        while (!exists(onView(withId(R.id.account_server)))) {
+            device.waitForIdle();
+        }
+        onView(withId(R.id.account_server)).check(matches(isCompletelyDisplayed()));
+        device.waitForIdle();
+        while (!getTextFromView(onView(withId(R.id.account_server))).equals(accountServer)) {
+            try {
+                device.waitForIdle();
+                while (!getTextFromView(onView(withId(R.id.account_server))).equals("")){
+                    removeTextFromTextView("account_server");
+                }
+                device.waitForIdle();
+                while (!getTextFromView(onView(withId(R.id.account_server))).equals(accountServer)) {
+                    onView(withId(R.id.account_server)).perform(typeText(accountServer), closeSoftKeyboard());
+                    device.waitForIdle();
+                    onView(withId(R.id.account_server)).check(matches(isDisplayed()));
+                    device.waitForIdle();
+                }
+                onView(withId(R.id.next)).perform(click());
+                device.waitForIdle();
+                while (viewIsDisplayed(R.id.account_server)) {
+                    device.waitForIdle();
+                }
+                return;
+            } catch (Exception e) {
+                Timber.i("Cannot setup server: " + e.getMessage());
+            }
+        }
     }
 
     private void allowPermissions(){
