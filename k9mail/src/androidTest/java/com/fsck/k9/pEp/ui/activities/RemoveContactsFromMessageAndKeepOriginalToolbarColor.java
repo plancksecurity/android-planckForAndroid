@@ -63,7 +63,7 @@ public class RemoveContactsFromMessageAndKeepOriginalToolbarColor {
     @Test (timeout = TIMEOUT_TEST)
     public void assertRemoveTwoDifferentColorContactsAndKeepOriginalToolbarColor() {
         testUtils.increaseTimeoutWait();
-        testUtils.createAccount(false);
+        testUtils.createAccount();
         messageFrom = testUtils.getTextFromTextViewThatContainsText("@");
         assertToolBarHasNoColorWhenUnkownReceiver(messageFrom);
         assertToolBarHasNoColorWhenUnkownReceiver("random@test.pep-security.net");

@@ -56,7 +56,7 @@ public class AttachFilesToEmailTest {
 
     private void attachFilesToAccount(boolean isGmail) {
         testUtils.increaseTimeoutWait();
-        testUtils.createAccount(isGmail);
+        testUtils.createAccount();
         testUtils.composeMessageButton();
         messageTo = getTextFromView(onView(withId(R.id.identity)));
         testUtils.fillMessage(new TestUtils.BasicMessage("", "Subject", "Message", messageTo), true);

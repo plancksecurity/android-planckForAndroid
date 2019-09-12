@@ -65,7 +65,7 @@ public class StatusIncomingMessageTest {
     }
 
     private void assertPartnerStatusIsTrusted() {
-        testUtils.createAccount(false);
+        testUtils.createAccount();
         testUtils.composeMessageButton();
         device.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);

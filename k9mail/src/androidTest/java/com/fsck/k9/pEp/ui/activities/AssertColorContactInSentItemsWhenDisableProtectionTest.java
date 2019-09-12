@@ -59,7 +59,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
 
     @Test (timeout = TIMEOUT_TEST)
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
-        testUtils.createAccount(false);
+        testUtils.createAccount();
         composeMessage();
         checkPEpStatus(Rating.pEpRatingTrusted);
         selectFromMenu(R.string.pep_force_unprotected);

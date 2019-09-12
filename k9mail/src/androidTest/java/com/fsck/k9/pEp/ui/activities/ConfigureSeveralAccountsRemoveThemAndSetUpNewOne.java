@@ -53,7 +53,7 @@ public class ConfigureSeveralAccountsRemoveThemAndSetUpNewOne {
     public void ConfigureAccountRemoveThemSetUpNewAccount() {
         int total = 14;
         for (int account = 0; account < total; account++) {
-            testUtils.createAccount(false);
+            testUtils.createAccount();
             testUtils.goBackAndRemoveAccount();
             device.waitForIdle();
         }

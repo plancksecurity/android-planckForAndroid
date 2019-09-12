@@ -59,7 +59,7 @@ public class GreenStatusEmailTest  {
 
     private void greenStatusMessageTest() {
         testUtils.increaseTimeoutWait();
-        testUtils.createAccount(false);
+        testUtils.createAccount();
         testUtils.composeMessageButton();
         testUtils.testStatusEmpty();
         device.waitForIdle();

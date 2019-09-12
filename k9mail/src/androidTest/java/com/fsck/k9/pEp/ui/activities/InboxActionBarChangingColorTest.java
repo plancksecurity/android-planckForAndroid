@@ -60,7 +60,7 @@ public class InboxActionBarChangingColorTest {
     @Test (timeout = TIMEOUT_TEST)
     public void assertActionBarColorIsNotChanging() {
         testUtils.increaseTimeoutWait();
-        testUtils.createAccount(false);
+        testUtils.createAccount();
         assertSelfMessageColor();
         assertBotMessageColor();
         testUtils.goBackAndRemoveAccount();

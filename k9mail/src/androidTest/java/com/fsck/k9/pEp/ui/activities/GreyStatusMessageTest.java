@@ -54,7 +54,7 @@ public class GreyStatusMessageTest {
 
     private void greyStatusEmailTest(boolean isGmail) {
         testUtils.increaseTimeoutWait();
-        testUtils.createAccount(isGmail);
+        testUtils.createAccount();
         testUtils.composeMessageButton();
         testUtils.testStatusEmpty();
         testUtils.testStatusMail(new TestUtils.BasicMessage("", "Subject", "Message", EMAIL),

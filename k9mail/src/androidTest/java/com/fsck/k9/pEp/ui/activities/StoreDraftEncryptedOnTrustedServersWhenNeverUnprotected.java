@@ -58,7 +58,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
 
     @Test
     public void StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected() {
-        testUtils.createAccount(false);
+        testUtils.createAccount();
         storeMessagesSecurely();
         testUtils.goBackToMessageListAndPressComposeMessageButton();
         device.waitForIdle();
