@@ -221,14 +221,28 @@ public class TestUtils {
         while (getTextFromView(onView(withId(R.id.account_description))).equals("")) {
             try {
                 device.waitForIdle();
-                onView(withId(R.id.account_description)).perform(typeText(description), closeSoftKeyboard());
+                onView(withId(R.id.account_description)).perform(click());
+                device.waitForIdle();
+                if (!description.equals("")) {
+                    onView(withId(R.id.account_description)).perform(typeText(description), closeSoftKeyboard());
+                } else {
+                    onView(withId(R.id.account_description)).perform(typeText("TEST"), closeSoftKeyboard());
+                }
+                device.waitForIdle();
             } catch (Exception ex) {
                 Timber.i("Cannot find account description field");
             }
         }
         while (getTextFromView(onView(withId(R.id.account_name))).equals("")) {
             try {
-                onView(withId(R.id.account_name)).perform(typeText(userName), closeSoftKeyboard());
+                device.waitForIdle();
+                onView(withId(R.id.account_name)).perform(click());
+                device.waitForIdle();
+                if (!userName.equals("")) {
+                    onView(withId(R.id.account_name)).perform(typeText(userName), closeSoftKeyboard());
+                } else {
+                    onView(withId(R.id.account_name)).perform(typeText("USER"), closeSoftKeyboard());
+                }
                 device.waitForIdle();
             } catch (Exception ex) {
                 Timber.i("Cannot find account name field");
