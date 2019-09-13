@@ -576,14 +576,14 @@ public class TestUtils {
     }
 
     private void setupImapServer() {
-        setupAccountServerIMAP(testConfig.getImap_server(account), "IMAP server");
+        setupAccountIMAPServer(testConfig.getImap_server(account), "IMAP server");
     }
 
     private void setupSMTPServer() {
-        setupAccountServerSMTP(testConfig.getSmtp_server(account), "SMTP server");
+        setupAccountSMTPServer(testConfig.getSmtp_server(account), "SMTP server");
     }
 
-    private void setupAccountServerIMAP(String accountServer, String server) {
+    private void setupAccountIMAPServer(String accountServer, String server) {
         device.waitForIdle();
         onView(withId(R.id.account_server_label)).check(matches(isCompletelyDisplayed()));
         while (!viewIsDisplayed(R.id.account_server_label) &&
@@ -615,7 +615,9 @@ public class TestUtils {
                 Timber.i("Cannot setup server: " + e.getMessage());
             }
         }
-    }    private void setupAccountServerSMTP(String accountServer, String server) {
+    }
+
+    private void setupAccountSMTPServer(String accountServer, String server) {
         device.waitForIdle();
         waitUntilIdle();
         onView(withId(R.id.account_server)).check(matches(isDisplayed()));
