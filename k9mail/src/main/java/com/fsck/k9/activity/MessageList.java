@@ -1114,8 +1114,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         removeMessageListFragment();
         removeMessageViewFragment();
 
-        messageReference = null;
-        search = null;
+        mMessageReference = null;
+        mSearch = null;
 
         initializeActionBar();
         if (!decodeExtras(intent)) {

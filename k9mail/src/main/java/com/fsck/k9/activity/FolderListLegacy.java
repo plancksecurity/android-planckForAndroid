@@ -600,12 +600,12 @@ public class FolderListLegacy extends K9ListActivity {
             onEditAccount();
 
             return true;
-
+/*
         case R.id.app_settings:
             onEditPrefs();
 
             return true;
-
+*/
         case R.id.empty_trash:
             onEmptyTrash(mAccount);
 
