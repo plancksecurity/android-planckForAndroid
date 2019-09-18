@@ -524,15 +524,19 @@ public class TestUtils {
         try {
             for (; account < n; account++) {
                 device.waitForIdle();
-                if(exists(onView(withId(R.id.message_list)))) {
+                while(exists(onView(withId(R.id.message_list)))) {
                     pressBack();
                     device.waitForIdle();
-                    onView(withId(R.id.add_account_container)).perform(click());
-                    device.waitForIdle();
+                    try {
+                        onView(withId(R.id.add_account_container)).perform(click());
+                        device.waitForIdle();
+                    } catch (Exception list) {
+                        Timber.i("Cannot add a new account");
+                    }
                 }
                 fillAccountAddress();
                 fillAccountPassword();
-                if (!testConfig.getImap_server(n).equals("") && !testConfig.getSmtp_server(n).equals("")) {
+                if (!testConfig.getImap_server(account).equals(null) && !testConfig.getSmtp_server(account).equals(null)) {
                     manualAccount();
                 } else {
                     automaticAccount();
@@ -568,11 +572,20 @@ public class TestUtils {
 
     private void manualAccount() {
         while (exists(onView(withId(R.id.manual_setup)))) {
+            device.waitForIdle();
             onView(withId(R.id.manual_setup)).perform(click());
         }
         setupImapServer();
         setupSMTPServer();
-        onView(withId(R.id.next)).perform(click());
+        device.waitForIdle();
+        /*while (exists(onView(withId(R.id.account_server)))) {
+            device.waitForIdle();
+        }*/
+        while (!exists(onView(withId(R.id.account_description)))) {
+            device.waitForIdle();
+            onView(withId(R.id.next)).perform(click());
+            device.waitForIdle();
+        }
     }
 
     private void setupImapServer() {
@@ -590,7 +603,7 @@ public class TestUtils {
                 !getTextFromView(onView(withId(R.id.account_server_label))).equals(server)) {
             device.waitForIdle();
         }
-        while (!getTextFromView(onView(withId(R.id.account_server))).equals(accountServer) &&
+        while (!getTextFromView(onView(withId(R.id.account_server))).equals(accountServer) ||
             exists(onView(withId(R.id.account_server_label)))) {
             try {
                 device.waitForIdle();
@@ -604,16 +617,34 @@ public class TestUtils {
                     onView(withId(R.id.account_server)).check(matches(isDisplayed()));
                     device.waitForIdle();
                 }
-                onView(withId(R.id.next)).perform(click());
+                setupPort(testConfig.getImap_port(account));
                 device.waitForIdle();
-                while (viewIsDisplayed(R.id.account_server_label)) {
+                while (exists(onView(withId(R.id.account_server_label)))) {
+                    onView(withId(R.id.next)).perform(click());
                     device.waitForIdle();
+                    waitUntilIdle();
+                    if (exists(onView(withId(R.id.alertTitle)))) {
+                        pressBack();
+                        device.waitForIdle();
+                    }
                 }
-                device.waitForIdle();
                 return;
             } catch (Exception e) {
-                Timber.i("Cannot setup server: " + e.getMessage());
+                Timber.i("Cannot setup IMAP server: " + e.getMessage());
             }
+        }
+    }
+
+    private void setupPort(String port) {
+        if (port != null && !getTextFromView(onView(withId(R.id.account_port))).equals(port)) {
+            device.waitForIdle();
+            removeTextFromTextView("account_port");
+            device.waitForIdle();
+            onView(withId(R.id.account_port)).perform(click());
+            onView(withId(R.id.account_port)).perform(typeText(port), closeSoftKeyboard());
+            device.waitForIdle();
+            onView(withId(R.id.account_port)).check(matches(isDisplayed()));
+            device.waitForIdle();
         }
     }
 
@@ -624,31 +655,36 @@ public class TestUtils {
         while (!exists(onView(withId(R.id.account_server)))) {
             device.waitForIdle();
         }
+        do {
+            removeTextFromTextView("account_server");
+        } while (!getTextFromView(onView(withId(R.id.account_server))).equals(""));
         onView(withId(R.id.account_server)).check(matches(isCompletelyDisplayed()));
         device.waitForIdle();
-        while (!getTextFromView(onView(withId(R.id.account_server))).equals(accountServer)) {
+        do {
             try {
                 device.waitForIdle();
-                while (!getTextFromView(onView(withId(R.id.account_server))).equals("")){
-                    removeTextFromTextView("account_server");
-                }
                 device.waitForIdle();
                 while (!getTextFromView(onView(withId(R.id.account_server))).equals(accountServer)) {
                     onView(withId(R.id.account_server)).perform(typeText(accountServer), closeSoftKeyboard());
                     device.waitForIdle();
-                    onView(withId(R.id.account_server)).check(matches(isDisplayed()));
-                    device.waitForIdle();
                 }
-                onView(withId(R.id.next)).perform(click());
+                setupPort(testConfig.getSmtp_port(account));
                 device.waitForIdle();
                 while (viewIsDisplayed(R.id.account_server)) {
                     device.waitForIdle();
+                    if (exists(onView(withId(R.id.alertTitle)))) {
+                        pressBack();
+                        device.waitForIdle();
+                    }else if (!exists(onView(withId(R.id.account_server)))) {
+                        return;
+                    } else {
+                        onView(withId(R.id.next)).perform(click());
+                    }
                 }
-                return;
             } catch (Exception e) {
                 Timber.i("Cannot setup server: " + e.getMessage());
             }
-        }
+        }while (!getTextFromView(onView(withId(R.id.account_server))).equals(accountServer));
     }
 
     private void allowPermissions(){
