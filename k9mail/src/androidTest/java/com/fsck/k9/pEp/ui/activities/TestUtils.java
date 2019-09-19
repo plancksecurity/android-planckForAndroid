@@ -571,6 +571,9 @@ public class TestUtils {
     }
 
     private void manualAccount() {
+        while (!viewIsDisplayed(R.id.manual_setup)) {
+            device.waitForIdle();
+        }
         while (exists(onView(withId(R.id.manual_setup)))) {
             device.waitForIdle();
             onView(withId(R.id.manual_setup)).perform(click());
