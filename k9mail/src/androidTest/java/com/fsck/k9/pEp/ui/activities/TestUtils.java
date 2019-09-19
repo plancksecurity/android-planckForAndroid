@@ -664,12 +664,12 @@ public class TestUtils {
         while (!exists(onView(withId(R.id.account_server)))) {
             device.waitForIdle();
         }
-        do {
+        while (!getTextFromView(onView(withId(R.id.account_server))).equals("")){
             removeTextFromTextView("account_server");
-        } while (!getTextFromView(onView(withId(R.id.account_server))).equals(""));
+        }
         onView(withId(R.id.account_server)).check(matches(isCompletelyDisplayed()));
         device.waitForIdle();
-        do {
+        while (exists(onView(withId(R.id.account_server))) && !getTextFromView(onView(withId(R.id.account_server))).equals(accountServer)){
             try {
                 device.waitForIdle();
                 device.waitForIdle();
@@ -693,7 +693,7 @@ public class TestUtils {
             } catch (Exception e) {
                 Timber.i("Cannot setup server: " + e.getMessage());
             }
-        }while (!getTextFromView(onView(withId(R.id.account_server))).equals(accountServer));
+        }
     }
 
     private void allowPermissions(){
