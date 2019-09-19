@@ -603,7 +603,7 @@ public class TestUtils {
                 !getTextFromView(onView(withId(R.id.account_server_label))).equals(server)) {
             device.waitForIdle();
         }
-        while (!getTextFromView(onView(withId(R.id.account_server))).equals(accountServer) ||
+        while (!getTextFromView(onView(withId(R.id.account_server))).equals(accountServer) &&
             exists(onView(withId(R.id.account_server_label)))) {
             try {
                 device.waitForIdle();
@@ -620,12 +620,18 @@ public class TestUtils {
                 setupPort(testConfig.getImap_port(account));
                 device.waitForIdle();
                 while (exists(onView(withId(R.id.account_server_label)))) {
-                    onView(withId(R.id.next)).perform(click());
-                    device.waitForIdle();
-                    waitUntilIdle();
-                    if (exists(onView(withId(R.id.alertTitle)))) {
-                        pressBack();
-                        device.waitForIdle();
+                    try {
+                        onView(withId(R.id.next)).perform(click());
+                        while (exists(onView(withId(R.id.account_server_label)))) {
+                            device.waitForIdle();
+                        }
+                        waitUntilIdle();
+                        if (exists(onView(withId(R.id.alertTitle)))) {
+                            pressBack();
+                            device.waitForIdle();
+                        }
+                    } catch (Exception ex) {
+                        Timber.i("Cannot click next button: " + ex.getMessage());
                     }
                 }
                 return;
