@@ -536,7 +536,7 @@ public class TestUtils {
                 }
                 fillAccountAddress();
                 fillAccountPassword();
-                if (!testConfig.getImap_server(account).equals(null) && !testConfig.getSmtp_server(account).equals(null)) {
+                if (!(testConfig.getImap_server(account) == null) && !(testConfig.getSmtp_server(account) == null)) {
                     manualAccount();
                 } else {
                     automaticAccount();
