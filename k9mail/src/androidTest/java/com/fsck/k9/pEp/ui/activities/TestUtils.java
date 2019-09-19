@@ -688,6 +688,9 @@ public class TestUtils {
                         return;
                     } else {
                         onView(withId(R.id.next)).perform(click());
+                        while (viewIsDisplayed(R.id.account_server)) {
+                            device.waitForIdle();
+                        }
                     }
                 }
             } catch (Exception e) {
