@@ -4,9 +4,10 @@ import android.arch.lifecycle.LiveData
 import android.content.Context
 import com.fsck.k9.Account
 import com.fsck.k9.Preferences
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
-import org.jetbrains.anko.coroutines.experimental.bg
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 class AccountsLiveData(context: Context) : LiveData<List<Account>>() {
     init {
@@ -14,8 +15,8 @@ class AccountsLiveData(context: Context) : LiveData<List<Account>>() {
     }
 
     private fun loadAccountsAsync(context: Context) {
-        launch(UI) {
-            val accounts = bg {
+        GlobalScope.launch(Dispatchers.Main) {
+            val accounts = async {
                 loadAccounts(context)
             }
 
