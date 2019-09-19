@@ -585,9 +585,13 @@ public class TestUtils {
             device.waitForIdle();
         }*/
         while (!exists(onView(withId(R.id.account_description)))) {
-            device.waitForIdle();
-            onView(withId(R.id.next)).perform(click());
-            device.waitForIdle();
+            try {
+                device.waitForIdle();
+                onView(withId(R.id.next)).perform(click());
+                device.waitForIdle();
+            } catch (Exception e) {
+                Timber.i("Cannot find Description");
+            }
         }
     }
 
