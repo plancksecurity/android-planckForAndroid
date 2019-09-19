@@ -20,6 +20,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.StrictMode;
+import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -83,7 +84,7 @@ import timber.log.Timber.DebugTree;
 @ReportsCrashes(mailTo = "crashreport@pep.security",
         mode = ReportingInteractionMode.TOAST,
         resToastText = R.string.crash_toast_text)
-public class K9 extends Application {
+public class K9 extends MultiDexApplication {
     public static final int POLLING_INTERVAL = 2000;
     private Poller poller;
     private boolean needsFastPoll = false;
