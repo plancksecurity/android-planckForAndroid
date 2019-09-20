@@ -1314,7 +1314,7 @@ public class Account implements BaseAccount, StoreConfig {
         return LocalStore.getInstance(this, K9.app);
     }
 
-    public Store getRemoteStore() throws MessagingException {
+    public RemoteStore getRemoteStore() throws MessagingException {
         return RemoteStore.getInstance(K9.app, this, K9.oAuth2TokenStore);
     }
 

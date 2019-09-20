@@ -209,13 +209,13 @@ public class MessageLoaderHelper {
             return;
         }
 
-        if (onlyLoadMetadata) {
+        /*if (onlyLoadMetadata) {
             MessageViewInfo messageViewInfo = MessageViewInfo.createForMetadataOnly(localMessage, !downloadedCompletely);
             onDecodeMessageFinished(messageViewInfo);
             return;
         }
 
-        /*String openPgpProvider = account.getOpenPgpProvider();
+        String openPgpProvider = account.getOpenPgpProvider();
         if (openPgpProvider != null) {
             startOrResumeCryptoOperation(openPgpProvider);
             return;

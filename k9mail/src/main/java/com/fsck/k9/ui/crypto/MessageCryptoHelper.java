@@ -18,7 +18,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.fsck.k9.K9;
-import com.fsck.k9.crypto.MessageCryptoStructureDetector;
+import com.fsck.k9.ui.crypto.MessageCryptoStructureDetector;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.BodyPart;

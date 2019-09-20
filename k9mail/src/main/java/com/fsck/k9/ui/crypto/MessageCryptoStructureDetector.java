@@ -1,4 +1,4 @@
-package com.fsck.k9.crypto;
+package com.fsck.k9.ui.crypto;
 
 
 import java.io.ByteArrayOutputStream;
@@ -10,7 +10,6 @@ import java.util.Stack;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
-import com.fsck.k9.helper.StringHelper;
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.BodyPart;
 import com.fsck.k9.mail.MessagingException;
@@ -278,7 +277,7 @@ public class MessageCryptoStructureDetector {
             return false;
         }
         String text = MessageExtractor.getTextFromPart(part, TEXT_LENGTH_FOR_INLINE_CHECK);
-        if (StringHelper.isNullOrEmpty(text)) {
+        if (text == null | text.isEmpty()) {
             return false;
         }
         text = text.trim();
@@ -293,7 +292,7 @@ public class MessageCryptoStructureDetector {
             return false;
         }
         String text = MessageExtractor.getTextFromPart(part, TEXT_LENGTH_FOR_INLINE_CHECK);
-        if (StringHelper.isNullOrEmpty(text)) {
+        if (text == null | text.isEmpty()) {
             return false;
         }
         text = text.trim();

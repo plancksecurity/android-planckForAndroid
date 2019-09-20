@@ -131,25 +131,6 @@ public class MessageTopView extends LinearLayout {
         }
     }
 
-    public void showMessageCryptoWarning(final MessageViewInfo messageViewInfo, Drawable providerIcon,
-            @StringRes int warningTextRes) {
-        resetAndPrepareMessageView(messageViewInfo);
-        View view = mInflater.inflate(R.layout.message_content_crypto_warning, containerView, false);
-        setCryptoProviderIcon(providerIcon, view);
-
-        view.findViewById(R.id.crypto_warning_override).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                messageCryptoPresenter.onClickShowMessageOverrideWarning();
-            }
-        });
-
-        TextView warningText = (TextView) view.findViewById(R.id.crypto_warning_text);
-        warningText.setText(warningTextRes);
-
-        containerView.addView(view);
-        displayViewOnLoadFinished(false);
-    }
 
     public void showMessageEncryptedButIncomplete(MessageViewInfo messageViewInfo, Drawable providerIcon) {
         resetAndPrepareMessageView(messageViewInfo);

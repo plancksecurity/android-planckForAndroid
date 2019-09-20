@@ -41,7 +41,7 @@ public abstract class RemoteStore extends Store {
     /**
      * Get an instance of a remote mail store.
      */
-    public static synchronized Store getInstance(Context context, StoreConfig storeConfig, OAuth2TokenProvider oAuth2TokenProvider) throws MessagingException {
+    public static synchronized RemoteStore getInstance(Context context, StoreConfig storeConfig, OAuth2TokenProvider oAuth2TokenProvider) throws MessagingException {
         String uri = storeConfig.getStoreUri();
 
         if (uri.startsWith("local")) {
@@ -72,7 +72,7 @@ public abstract class RemoteStore extends Store {
             throw new MessagingException("Unable to locate an applicable Store for " + uri);
         }
 
-        return store;
+        return ((RemoteStore) store);
     }
 
     /**
