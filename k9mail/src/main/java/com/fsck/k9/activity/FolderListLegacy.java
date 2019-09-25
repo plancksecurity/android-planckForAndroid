@@ -539,7 +539,7 @@ public class FolderListLegacy extends K9ListActivity {
     }
 
     private void onEditPrefs() {
-        Prefs.actionPrefs(this);
+       // Prefs.actionPrefs(this);
     }
     private void onEditAccount() {
         AccountSettings.actionSettings(this, mAccount);

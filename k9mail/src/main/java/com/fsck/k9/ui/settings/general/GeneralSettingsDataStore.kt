@@ -7,7 +7,7 @@ import com.fsck.k9.K9
 import com.fsck.k9.K9.Theme
 import com.fsck.k9.Preferences
 import com.fsck.k9.pEp.ui.blacklist.PepBlacklist
-import com.fsck.k9.service.MailService
+import com.fsck.k9.service.MailServiceLegacy
 import java.util.concurrent.ExecutorService
 
 class GeneralSettingsDataStore(
@@ -45,7 +45,6 @@ class GeneralSettingsDataStore(
             "disable_notifications_during_quiet_time" -> K9.isNotificationDuringQuietTimeEnabled()
             "privacy_hide_useragent" -> K9.hideUserAgent()
             "privacy_hide_timezone" -> K9.hideTimeZone()
-            "privacy_hide_hostname_when_connecting" -> K9.hideHostnameWhenConnecting()
             "debug_logging" -> K9.isDebug()
             "sensitive_logging" -> K9.DEBUG_SENSITIVE
             "pep_use_keyserver" -> K9.getPEpUseKeyserver()
@@ -85,7 +84,6 @@ class GeneralSettingsDataStore(
             "disable_notifications_during_quiet_time" -> K9.setNotificationDuringQuietTimeEnabled(value)
             "privacy_hide_useragent" -> K9.setHideUserAgent(value)
             "privacy_hide_timezone" -> K9.setHideTimeZone(value)
-            "privacy_hide_hostname_when_connecting" -> K9.hideHostnameWhenConnecting()
             "debug_logging" -> K9.setDebug(value)
             "sensitive_logging" -> K9.DEBUG_SENSITIVE = value
             "pep_use_keyserver" -> app.setPEpUseKeyserver(value)
@@ -258,7 +256,8 @@ class GeneralSettingsDataStore(
     }
 
     private fun resetMailService() {
-        MailService.actionReset(context, null)
+        K9.jobManager.scheduleAllMailJobs()
+        //MailServiceLegacy.actionReset(context, null)
     }
 
     private fun recreateActivity() {

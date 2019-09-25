@@ -1,10 +1,7 @@
 package com.fsck.k9.pEp.ui.fragments;
 
 
-import android.app.AlertDialog;
-import android.app.DialogFragment;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -12,6 +9,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;

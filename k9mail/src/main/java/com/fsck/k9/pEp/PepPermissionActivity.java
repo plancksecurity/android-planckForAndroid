@@ -61,7 +61,7 @@ public abstract class PepPermissionActivity extends K9Activity {
         pEpComponent = DaggerPEpComponent.builder()
                 .applicationComponent(applicationComponent)
                 .activityModule(new ActivityModule(this))
-                .pEpModule(new PEpModule(this, getLoaderManager(), getFragmentManager()))
+                .pEpModule(new PEpModule(this, getSupportLoaderManager(), getSupportFragmentManager()))
                 .build();
     }
 

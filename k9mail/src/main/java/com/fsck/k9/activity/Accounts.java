@@ -73,8 +73,8 @@ import com.fsck.k9.ui.settings.SettingsActivity;
 import com.fsck.k9.ui.settings.general.GeneralSettingsActivity;
 import com.karumi.dexter.listener.single.CompositePermissionListener;
 
-import org.pEp.jniadapter.Rating;
 
+import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
 
@@ -232,7 +232,8 @@ public class Accounts extends PEpImporterActivity {
 
         @Override
         public void folderStatusChanged(Account account, String folderServerId, int unreadMessageCount) {
-            try {
+            /*try {
+                //TODO: FIX;
                 AccountStats stats = controller.getAccountStats(account);
                 if (stats == null) {
                     Timber.w("Unable to get account stats");
@@ -241,7 +242,7 @@ public class Accounts extends PEpImporterActivity {
                 }
             } catch (Exception e) {
                 Timber.e(e, "Unable to get account stats");
-            }
+            }*/
         }
         @Override
         public void accountStatusChanged(BaseAccount account, AccountStats stats) {
@@ -286,8 +287,8 @@ public class Accounts extends PEpImporterActivity {
         }
 
         @Override
-        public void synchronizeMailboxStarted(Account account, String folderServerId, String folderName) {
-            super.synchronizeMailboxStarted(account, folderServerId, folderName);
+        public void synchronizeMailboxStarted(Account account, String folderName) {
+            super.synchronizeMailboxStarted(account, folderName);
             handler.progress(true);
         }
 
@@ -742,11 +743,11 @@ public class Accounts extends PEpImporterActivity {
                 Timber.i("refusing to open account that is not available");
                 return false;
             }
-            if (K9.FOLDER_NONE.equals(realAccount.getAutoExpandFolder())) {
+            if (K9.FOLDER_NONE.equals(realAccount.getAutoExpandFolderName())) {
                 FolderList.actionHandleAccount(this, realAccount);
             } else {
-                LocalSearch search = new LocalSearch(realAccount.getAutoExpandFolder());
-                search.addAllowedFolder(realAccount.getAutoExpandFolder());
+                LocalSearch search = new LocalSearch(realAccount.getAutoExpandFolderName());
+                search.addAllowedFolder(realAccount.getAutoExpandFolderName());
                 search.addAccountUuid(realAccount.getUuid());
                 MessageList.actionDisplaySearch(this, search, false, true);}
         }
