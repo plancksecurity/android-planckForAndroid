@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
 
 if (!rootProject.optimizeForDevelopment) {
     apply from: '../gradle/plugins/checkstyle-android.gradle'
@@ -15,8 +17,8 @@ repositories {
 }
 
 dependencies {
-    api 'org.apache.james:apache-mime4j-core:0.8.1'
-    api 'org.apache.james:apache-mime4j-dom:0.8.1'
+    api 'org.apache.james:apache-mime4j-core:0.7.2'
+    api 'org.apache.james:apache-mime4j-dom:0.7.2'
     implementation "com.squareup.okio:okio:${okioVersion}"
     implementation 'commons-io:commons-io:2.4'
     implementation 'com.jcraft:jzlib:1.0.7'
