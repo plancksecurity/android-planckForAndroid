@@ -390,7 +390,8 @@
 
     <PreferenceScreen
         android:key="search"
-        android:title="@string/account_settings_search">
+        android:title="@string/account_settings_search"
+        android:icon="?attr/iconActionSearch">
 
         <CheckBoxPreference
             android:key="remote_search_enabled"
@@ -409,7 +410,8 @@
     </PreferenceScreen>
 
     <PreferenceScreen
-        android:title="p≡p"
+        android:icon="@drawable/ic_peplogo"
+        android:title="@string/pep_long"
         android:key="pep">
 
         <CheckBoxPreference
