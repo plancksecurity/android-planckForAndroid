@@ -296,7 +296,6 @@ public class K9 extends MultiDexApplication {
     private static boolean mStartIntegratedInbox = false;
     private static boolean mMeasureAccounts = true;
     private static boolean mCountSearchMessages = true;
-    private static boolean mHideSpecialAccounts = false;
     private static boolean mAutofitWidth;
     private static boolean mQuietTimeEnabled = false;
     private static boolean mNotificationDuringQuietTimeEnabled = true;
@@ -536,7 +535,6 @@ public class K9 extends MultiDexApplication {
         editor.putBoolean("measureAccounts", mMeasureAccounts);
         editor.putBoolean("countSearchMessages", mCountSearchMessages);
         editor.putBoolean("messageListSenderAboveSubject", mMessageListSenderAboveSubject);
-        editor.putBoolean("hideSpecialAccounts", mHideSpecialAccounts);
         editor.putBoolean("messageListStars", mMessageListStars);
         editor.putInt("messageListPreviewLines", mMessageListPreviewLines);
         editor.putBoolean("messageListCheckboxes", mMessageListCheckboxes);
@@ -878,7 +876,6 @@ public class K9 extends MultiDexApplication {
         mStartIntegratedInbox = storage.getBoolean("startIntegratedInbox", false);
         mMeasureAccounts = storage.getBoolean("measureAccounts", true);
         mCountSearchMessages = storage.getBoolean("countSearchMessages", true);
-        mHideSpecialAccounts = storage.getBoolean("hideSpecialAccounts", false);
         mMessageListSenderAboveSubject = storage.getBoolean("messageListSenderAboveSubject", false);
         mMessageListCheckboxes = storage.getBoolean("messageListCheckboxes", false);
         mMessageListStars = storage.getBoolean("messageListStars", true);
@@ -1361,11 +1358,7 @@ public class K9 extends MultiDexApplication {
     }
 
     public static boolean isHideSpecialAccounts() {
-        return mHideSpecialAccounts;
-    }
-
-    public static void setHideSpecialAccounts(boolean hideSpecialAccounts) {
-        mHideSpecialAccounts = hideSpecialAccounts;
+        return false;
     }
 
     public static boolean confirmDelete() {

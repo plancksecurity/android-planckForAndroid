@@ -30,7 +30,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.general_settings, rootKey)
 
         initializeAttachmentDefaultPathPreference()
-        initializeStartInUnifiedInbox()
         initializeConfirmActions()
         initializeLockScreenNotificationVisibility()
         initializeNotificationQuickDelete()
@@ -58,14 +57,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                             override fun onCancel() = Unit
                         }
                 )
-            }
-        }
-    }
-
-    private fun initializeStartInUnifiedInbox() {
-        findPreference(PREFERENCE_START_IN_UNIFIED_INBOX)?.apply {
-            if (hideSpecialAccounts()) {
-                isEnabled = false
             }
         }
     }
@@ -116,15 +107,11 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         dataStore.putString(PREFERENCE_ATTACHMENT_DEFAULT_PATH, path)
     }
 
-    private fun hideSpecialAccounts() = dataStore.getBoolean(PREFERENCE_HIDE_SPECIAL_ACCOUNTS, false)
-
-
     companion object {
         private const val REQUEST_PICK_DIRECTORY = 1
         const val FILE_CODE = 2
         private const val PREFERENCE_ATTACHMENT_DEFAULT_PATH = "attachment_default_path"
         private const val PREFERENCE_START_IN_UNIFIED_INBOX = "start_integrated_inbox"
-        private const val PREFERENCE_HIDE_SPECIAL_ACCOUNTS = "hide_special_accounts"
         private const val PREFERENCE_CONFIRM_ACTIONS = "confirm_actions"
         private const val PREFERENCE_LOCK_SCREEN_NOTIFICATION_VISIBILITY = "lock_screen_notification_visibility"
         private const val PREFERENCE_NOTIFICATION_QUICK_DELETE = "notification_quick_delete"
