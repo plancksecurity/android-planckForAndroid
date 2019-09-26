@@ -1919,6 +1919,7 @@ public class TestUtils {
 
     private void compareTextWithWebViewText(String textToCompare) {
         UiObject2 wb;
+        String[] webViewText = new String[1];
         device.waitForIdle();
         onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
         device.waitForIdle();
@@ -1931,15 +1932,15 @@ public class TestUtils {
                 UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
                 scroll.swipe(Direction.UP, 1.0f);
                 device.waitForIdle();
-                String[] webViewText = wb.getChildren().get(0).getText().split("\n");
-                if (webViewText[0].equals(textToCompare)) {
-                    device.waitForIdle();
-                    return;
-                } else {
-                    assertFailWithMessage("Message Body text is different");
-                }
+                webViewText = wb.getChildren().get(0).getText().split("\n");
             } catch (Exception ex) {
                 Timber.i("Cannot find webView: " + ex.getMessage());
+            }
+            if (webViewText[0].equals(textToCompare)) {
+                device.waitForIdle();
+                return;
+            } else {
+                assertFailWithMessage("Message Body text is different");
             }
         }
     }
