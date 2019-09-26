@@ -32,7 +32,6 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.ChooseFolder;
 import com.fsck.k9.activity.ChooseIdentity;
-import com.fsck.k9.activity.ColorPickerDialog;
 import com.fsck.k9.activity.K9PreferenceActivity;
 import com.fsck.k9.activity.ManageIdentities;
 import com.fsck.k9.job.K9JobManager;
@@ -42,7 +41,6 @@ import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys;
 import com.fsck.k9.service.MailServiceLegacy;
 
-import org.openintents.openpgp.util.OpenPgpAppPreference;
 import org.openintents.openpgp.OpenPgpApiManager;
 import org.openintents.openpgp.util.OpenPgpKeyPreference;
 
@@ -191,7 +189,6 @@ public class AccountSettings extends K9PreferenceActivity {
     private ListPreference idleRefreshPeriod;
     private ListPreference mMaxPushFolders;
     private OpenPgpKeyPreference pgpCryptoKey;
-    private OpenPgpAppPreference mCryptoApp;
     private CheckBoxPreference pgpSupportSignOnly;
 
     private CheckBoxPreference pEpSaveEncrypted;
@@ -1013,7 +1010,7 @@ public class AccountSettings extends K9PreferenceActivity {
         showDialog(DIALOG_COLOR_PICKER_LED);
     }
 
-    @Override
+    /*@Override
     public Dialog onCreateDialog(int id) {
         Dialog dialog = null;
 
@@ -1043,9 +1040,9 @@ public class AccountSettings extends K9PreferenceActivity {
         }
 
         return dialog;
-    }
+    }*/
 
-    @Override
+   /* @Override
     public void onPrepareDialog(int id, Dialog dialog) {
         switch (id) {
             case DIALOG_COLOR_PICKER_ACCOUNT: {
@@ -1060,7 +1057,7 @@ public class AccountSettings extends K9PreferenceActivity {
             }
         }
     }
-
+*/
     public void onChooseAutoExpandFolder() {
         Intent selectIntent = new Intent(this, ChooseFolder.class);
         selectIntent.putExtra(ChooseFolder.EXTRA_ACCOUNT, account.getUuid());

@@ -35,10 +35,6 @@ repositories {
     google()
 }
 
-ext {
-    supportLibraryVersion = "28.0.0"
-}
-
 //noinspection GroovyAssignabilityCheck
 configurations.all {
     resolutionStrategy {
@@ -53,12 +49,12 @@ dependencies {
     implementation project(":plugins:HoloColorPicker")
     implementation project(":plugins:openpgp-api-lib:openpgp-api")
 
-    implementation "com.android.support:support-v4:${project.supportLibraryVersion}"
-    implementation "com.android.support:cardview-v7:${project.supportLibraryVersion}"
-    implementation "com.android.support:design:${project.supportLibraryVersion}"
-    implementation "com.android.support:appcompat-v7:${project.supportLibraryVersion}"
-    implementation "com.android.support:recyclerview-v7:${project.supportLibraryVersion}"
-    implementation "com.android.support:support-vector-drawable:${project.supportLibraryVersion}"
+    implementation "com.android.support:support-v4:${androidSupportLibraryVersion}"
+    implementation "com.android.support:cardview-v7:${androidSupportLibraryVersion}"
+    implementation "com.android.support:design:${androidSupportLibraryVersion}"
+    implementation "com.android.support:appcompat-v7:${androidSupportLibraryVersion}"
+    implementation "com.android.support:recyclerview-v7:${androidSupportLibraryVersion}"
+    implementation "com.android.support:support-vector-drawable:${androidSupportLibraryVersion}"
 
     implementation "com.squareup.okio:okio:${okioVersion}"
     implementation "com.squareup.moshi:moshi:${moshiVersion}"
@@ -110,7 +106,7 @@ dependencies {
 
     implementation 'com.android.support.test.espresso:espresso-idling-resource:3.0.1'
     androidTestImplementation "com.android.support.test.espresso.idling:idling-concurrent:3.0.1"
-    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlin_version}"
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlinVersion}"
     testImplementation "org.robolectric:robolectric:${robolectricVersion}"
     testImplementation "junit:junit:${junitVersion}"
     testImplementation "com.google.truth:truth:${truthVersion}"
@@ -118,7 +114,7 @@ dependencies {
     testImplementation "org.jdom:jdom2:2.0.6"
     testImplementation "org.koin:koin-test:${koinVersion}"
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1'
     implementation 'com.android.support:multidex:1.0.3'
