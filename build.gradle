@@ -2,13 +2,18 @@ buildscript {
     ext {
         buildConfig = [
                 'compileSdk': 28,
-                'minSdk': 19
+                'targetSdk': 27,
+                'minSdk': 19,
+                'versionCode': 33
         ]
 
         versions = [
                 'kotlin': '1.3.10',
+                'supportLibrary': '28.0.0',
                 'preferencesFix': '28.0.0.0',
-                'lifecycleExtensions': '1.1.0',
+                'androidX': '1.0.0',
+                'constraintLayout' :'1.1.3',
+                'lifecycleExtensions': '2.0.0',
                 'okio': '1.14.0',
                 'timber': '4.5.1',
                 'koin': '0.9.1',
@@ -30,7 +35,17 @@ buildscript {
                 'swipeLayout': '1.2.0',
                 'dexter': '5.0.0',
                 'swipeToDismiss': '1.0',
-                'workManager':'1.0.1',
+                'workRuntime':'2.0.1',
+                'androidJob': '1.3.0-rc1',
+                'jcipAnnotations': '1.0',
+                'jdom':'2.0.6',
+                'dagger':'2.4',
+                'groupie': '2.1.0',
+                'ankoCoroutines': '0.10.4',
+                'kotlinCoroutines':'1.2.1',
+                'multidex':'2.0.0',
+
+
 
 
                 'junit': '4.12',
@@ -38,7 +53,8 @@ buildscript {
                 'mockito': '2.18.0',
                 'mockitoKotlin': '1.5.0',
                 'truth': '0.35',
-                'espresso': '3.0.1'
+                'espresso': '3.0.1',
+                'uiAutomator':'2.2.0'
         ]
     }
 
