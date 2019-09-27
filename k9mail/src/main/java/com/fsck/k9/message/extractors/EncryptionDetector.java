@@ -1,7 +1,7 @@
 package com.fsck.k9.message.extractors;
 
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.fsck.k9.crypto.MessageDecryptVerifier;
 import com.fsck.k9.mail.Body;

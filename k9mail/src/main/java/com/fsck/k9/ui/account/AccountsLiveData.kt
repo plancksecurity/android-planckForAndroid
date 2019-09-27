@@ -1,6 +1,6 @@
 package com.fsck.k9.ui.account
 
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 import com.fsck.k9.Account
 import com.fsck.k9.Preferences
 import kotlinx.coroutines.Dispatchers

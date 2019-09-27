@@ -2,8 +2,8 @@ package com.fsck.k9.ui.settings.account
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.preference.ListPreference
-import android.support.v7.preference.TwoStatePreference
+import androidx.preference.ListPreference
+import androidx.preference.TwoStatePreference
 import android.widget.Toast
 import com.fsck.k9.Account
 import com.fsck.k9.R

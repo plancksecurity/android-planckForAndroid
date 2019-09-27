@@ -2,8 +2,8 @@ package com.fsck.k9.ui.settings.account
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.support.v4.content.res.TypedArrayUtils
-import android.support.v7.preference.ListPreference
+import androidx.core.content.res.TypedArrayUtils
+import androidx.preference.ListPreference
 import android.util.AttributeSet
 import com.fsck.k9.K9
 import com.fsck.k9.mailstore.Folder
@@ -20,7 +20,7 @@ class FolderListPreference
 constructor(
         context: Context,
         attrs: AttributeSet? = null,
-        defStyleAttr: Int = TypedArrayUtils.getAttr(context, android.support.v7.preference.R.attr.dialogPreferenceStyle,
+        defStyleAttr: Int = TypedArrayUtils.getAttr(context, androidx.preference.R.attr.dialogPreferenceStyle,
                 android.R.attr.dialogPreferenceStyle),
         defStyleRes: Int = 0
 ) : ListPreference(context, attrs, defStyleAttr, defStyleRes), KoinComponent {

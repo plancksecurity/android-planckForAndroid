@@ -1,7 +1,6 @@
 
 package com.fsck.k9.activity.setup;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,7 +14,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import android.preference.SwitchPreference;
 import android.widget.ListAdapter;
 
@@ -39,7 +38,6 @@ import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys;
-import com.fsck.k9.service.MailServiceLegacy;
 
 import org.openintents.openpgp.OpenPgpApiManager;
 import org.openintents.openpgp.util.OpenPgpKeyPreference;

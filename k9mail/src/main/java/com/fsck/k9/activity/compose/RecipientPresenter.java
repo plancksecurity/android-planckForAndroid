@@ -10,9 +10,9 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.app.LoaderManager;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.loader.app.LoaderManager;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -41,13 +41,10 @@ import org.openintents.openpgp.OpenPgpApiManager;
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpApiManagerCallback;
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderError;
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderState;
-import org.openintents.openpgp.util.OpenPgpApi;
 
 import org.openintents.openpgp.IOpenPgpService2;
-import org.openintents.openpgp.util.OpenPgpApi;
-import org.openintents.openpgp.util.OpenPgpApi.PermissionPingCallback;
 import org.openintents.openpgp.util.OpenPgpServiceConnection;
-import org.openintents.openpgp.util.OpenPgpServiceConnection.OnBound;
+
 import foundation.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;

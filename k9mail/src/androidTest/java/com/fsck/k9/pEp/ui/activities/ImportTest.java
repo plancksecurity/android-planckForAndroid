@@ -5,8 +5,8 @@ import android.app.Instrumentation;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.ContactsContract;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.rule.ActivityTestRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 
 import com.fsck.k9.activity.setup.AccountSetupBasics;
@@ -18,10 +18,10 @@ import org.junit.runner.RunWith;
 import java.io.File;
 import java.io.IOException;
 
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
-import static android.support.test.espresso.intent.Intents.intending;
-import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
-import static android.support.test.espresso.intent.matcher.IntentMatchers.hasData;
+import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
+import static androidx.test.espresso.intent.Intents.intending;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
 import static org.hamcrest.Matchers.allOf;
 
 @LargeTest

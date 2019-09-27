@@ -3,7 +3,7 @@ package com.fsck.k9.message;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 import com.fsck.k9.Globals;
 import com.fsck.k9.mail.BoundaryGenerator;

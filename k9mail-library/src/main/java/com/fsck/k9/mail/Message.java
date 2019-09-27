@@ -7,13 +7,10 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.Set;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.fsck.k9.mail.filter.CountingOutputStream;
 import com.fsck.k9.mail.filter.EOLConvertingOutputStream;
-import timber.log.Timber;
-
-
 import timber.log.Timber;
 
 public abstract class Message implements Part, Body {

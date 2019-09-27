@@ -23,7 +23,7 @@
             android:layout_gravity="center_horizontal|center_vertical"
             android:orientation="vertical" >
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -37,7 +37,7 @@
                     android:layout_height="wrap_content"
                     android:layout_width="fill_parent"
                     android:contentDescription="@string/account_settings_email_label"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
 
             <Spinner
@@ -48,7 +48,7 @@
                 android:visibility="gone">
             </Spinner>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -63,7 +63,7 @@
                     android:layout_width="fill_parent"
                     android:nextFocusDown="@+id/next"
                     android:contentDescription="@string/account_setup_outgoing_password_label"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <CheckBox
                 android:id="@+id/show_password"

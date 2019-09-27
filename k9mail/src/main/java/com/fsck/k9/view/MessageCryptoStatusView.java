@@ -2,7 +2,7 @@ package com.fsck.k9.view;
 
 
 import android.content.Context;
-import android.support.annotation.ColorInt;
+import androidx.annotation.ColorInt;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;

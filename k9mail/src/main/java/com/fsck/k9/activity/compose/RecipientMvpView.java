@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import android.app.PendingIntent;
-import android.support.v4.app.LoaderManager;
+import androidx.loader.app.LoaderManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -40,8 +40,6 @@ import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 
 public class RecipientMvpView implements OnFocusChangeListener, OnClickListener {

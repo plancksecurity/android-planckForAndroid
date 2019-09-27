@@ -3,10 +3,10 @@ package com.fsck.k9.view;
 
 import android.content.Context;
 import android.content.res.Resources.Theme;
-import android.support.annotation.AttrRes;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
-import android.support.annotation.UiThread;
+import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.annotation.UiThread;
 import android.util.TypedValue;
 
 

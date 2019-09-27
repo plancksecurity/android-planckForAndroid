@@ -3,8 +3,8 @@ package com.fsck.k9.ui.settings.general
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.support.v14.preference.MultiSelectListPreference
-import android.support.v7.preference.Preference
+import androidx.preference.MultiSelectListPreference
+import androidx.preference.Preference
 import com.fsck.k9.R
 import com.fsck.k9.helper.FileBrowserHelper
 import com.fsck.k9.notification.NotificationController

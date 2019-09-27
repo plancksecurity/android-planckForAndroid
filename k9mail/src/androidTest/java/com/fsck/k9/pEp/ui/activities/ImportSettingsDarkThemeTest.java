@@ -1,10 +1,10 @@
 package com.fsck.k9.pEp.ui.activities;
 
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.IdlingRegistry;
-import android.support.test.espresso.action.ViewActions;
-import android.support.test.espresso.intent.rule.IntentsTestRule;
-import android.support.test.uiautomator.UiDevice;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.espresso.IdlingRegistry;
+import androidx.test.espresso.action.ViewActions;
+import androidx.test.espresso.intent.rule.IntentsTestRule;
+import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
@@ -18,8 +18,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
 
 

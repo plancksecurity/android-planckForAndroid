@@ -2,8 +2,8 @@ package com.fsck.k9.pEp.infrastructure.modules;
 
 
 import android.content.Context;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.LoaderManager;
+import androidx.fragment.app.FragmentManager;
+import androidx.loader.app.LoaderManager;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;

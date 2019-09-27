@@ -3,7 +3,7 @@ package com.fsck.k9.pEp.ui.keysync.languages;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.fsck.k9.R;
 

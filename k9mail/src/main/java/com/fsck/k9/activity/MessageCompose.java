@@ -20,8 +20,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.TypedValue;
@@ -107,7 +107,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.openintents.openpgp.OpenPgpApiManager;
-import org.openintents.openpgp.util.OpenPgpApi;
+
 import timber.log.Timber;
 
 

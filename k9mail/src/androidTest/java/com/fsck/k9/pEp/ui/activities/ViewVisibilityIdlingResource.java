@@ -1,10 +1,10 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Activity;
-import android.os.Handler;
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
-import android.support.test.espresso.*;
+
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.test.espresso.*;
 import android.view.View;
 
 import java.lang.ref.WeakReference;

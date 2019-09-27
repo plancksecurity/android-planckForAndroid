@@ -4,7 +4,7 @@ package com.fsck.k9.mailstore;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import timber.log.Timber;
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;

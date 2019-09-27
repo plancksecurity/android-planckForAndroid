@@ -1,48 +1,10 @@
 package com.fsck.k9.activity.setup;
 //TODO:NOT USED TO BE REMOVED AFTER INTEGRAE SYNC
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Environment;
-import android.preference.CheckBoxPreference;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceScreen;
-import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
-import android.view.View;
+import androidx.appcompat.widget.Toolbar;
 
 import com.fsck.k9.BuildConfig;
-import com.fsck.k9.K9;
-import com.fsck.k9.K9.NotificationHideSubject;
-import com.fsck.k9.K9.NotificationQuickDelete;
-import com.fsck.k9.K9.SplitViewMode;
-import com.fsck.k9.Preferences;
-import com.fsck.k9.R;
 import com.fsck.k9.activity.K9PreferenceActivity;
-import com.fsck.k9.job.K9JobManager;
-import com.fsck.k9.notification.NotificationController;
-import com.fsck.k9.pEp.filepicker.FilePickerActivity;
-import com.fsck.k9.pEp.filepicker.Utils;
-import com.fsck.k9.pEp.ui.blacklist.PepBlacklist;
-import com.fsck.k9.pEp.ui.keysync.KeysyncManagement;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
-import com.fsck.k9.preferences.Storage;
-import com.fsck.k9.preferences.StorageEditor;
-import com.fsck.k9.service.MailServiceLegacy;
 
 
 public class Prefs extends K9PreferenceActivity {

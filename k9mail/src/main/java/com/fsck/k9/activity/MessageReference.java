@@ -1,7 +1,7 @@
 package com.fsck.k9.activity;
 
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.filter.Base64;

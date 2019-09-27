@@ -1,6 +1,6 @@
 package com.fsck.k9.mail.store.webdav;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.fsck.k9.mail.FetchProfile;
 import com.fsck.k9.mail.Flag;

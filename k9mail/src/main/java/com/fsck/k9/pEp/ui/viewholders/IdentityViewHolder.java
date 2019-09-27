@@ -1,8 +1,8 @@
 package com.fsck.k9.pEp.ui.viewholders;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;

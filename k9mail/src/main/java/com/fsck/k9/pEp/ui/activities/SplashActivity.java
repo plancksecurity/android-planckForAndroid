@@ -2,7 +2,7 @@ package com.fsck.k9.pEp.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.fsck.k9.activity.Accounts;
 

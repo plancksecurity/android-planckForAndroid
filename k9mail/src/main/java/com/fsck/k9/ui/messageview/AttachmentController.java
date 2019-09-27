@@ -10,7 +10,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.support.annotation.WorkerThread;
+import androidx.annotation.WorkerThread;
 import timber.log.Timber;
 import android.view.View;
 

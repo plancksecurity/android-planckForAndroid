@@ -15,8 +15,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.LruCache;
+import androidx.annotation.VisibleForTesting;
+import androidx.collection.LruCache;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
