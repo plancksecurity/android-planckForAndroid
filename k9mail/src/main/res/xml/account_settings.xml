@@ -8,7 +8,8 @@
 
     <PreferenceScreen
         android:key="account_settings"
-        android:title="@string/account_settings_general_title">
+        android:title="@string/account_settings_general_title"
+        android:icon="?attr/iconActionSettings">
 
         <com.takisoft.fix.support.v7.preference.AutoSummaryEditTextPreference
             android:dialogTitle="@string/account_settings_description_label"
