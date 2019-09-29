@@ -46,115 +46,116 @@
                 android:summary="@string/account_settings_mark_message_as_read_on_view_summary"
                 android:title="@string/account_settings_mark_message_as_read_on_view_label" />
             </PreferenceCategory>
+
+            <PreferenceCategory
+                android:key="incoming_prefs"
+                android:title="@string/account_settings_sync">
+
+                <ListPreference
+                    android:dialogTitle="@string/account_settings_mail_display_count_label"
+                    android:entries="@array/display_count_entries"
+                    android:entryValues="@array/display_count_values"
+                    android:key="account_display_count"
+                    android:summary="%s"
+                    android:title="@string/account_settings_mail_display_count_label" />
+
+                <ListPreference
+                    android:dialogTitle="@string/account_settings_message_age_label"
+                    android:entries="@array/message_age_entries"
+                    android:entryValues="@array/message_age_values"
+                    android:key="account_message_age"
+                    android:summary="%s"
+                    android:title="@string/account_settings_message_age_label" />
+
+                <ListPreference
+                    android:dialogTitle="@string/account_settings_autodownload_message_size_label"
+                    android:entries="@array/autodownload_message_size_entries"
+                    android:entryValues="@array/autodownload_message_size_values"
+                    android:key="account_autodownload_size"
+                    android:summary="%s"
+                    android:title="@string/account_settings_autodownload_message_size_label" />
+
+                <ListPreference
+                    android:dialogTitle="@string/account_settings_mail_check_frequency_label"
+                    android:entries="@array/check_frequency_entries"
+                    android:entryValues="@array/check_frequency_values"
+                    android:key="account_check_frequency"
+                    android:summary="%s"
+                    android:title="@string/account_settings_mail_check_frequency_label" />
+
+                <ListPreference
+                    android:dialogTitle="@string/account_settings_folder_sync_mode_label"
+                    android:entries="@array/folder_sync_mode_entries"
+                    android:entryValues="@array/folder_sync_mode_values"
+                    android:key="folder_sync_mode"
+                    android:summary="%s"
+                    android:title="@string/account_settings_folder_sync_mode_label" />
+
+                <ListPreference
+                    android:dialogTitle="@string/account_settings_folder_push_mode_label"
+                    android:entries="@array/folder_push_mode_entries"
+                    android:entryValues="@array/folder_push_mode_values"
+                    android:key="folder_push_mode"
+                    android:summary="%s"
+                    android:title="@string/account_settings_folder_push_mode_label" />
+
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="account_sync_remote_deletetions"
+                    android:summary="@string/account_settings_sync_remote_deletetions_summary"
+                    android:title="@string/account_settings_sync_remote_deletetions_label" />
+
+                <ListPreference
+                    android:dialogTitle="@string/account_setup_incoming_delete_policy_label"
+                    android:entries="@array/delete_policy_entries"
+                    android:entryValues="@array/delete_policy_values"
+                    android:key="delete_policy"
+                    android:summary="%s"
+                    android:title="@string/account_setup_incoming_delete_policy_label" />
+
+                <ListPreference
+                    android:dialogTitle="@string/account_setup_expunge_policy_label"
+                    android:entries="@array/expunge_policy_entries"
+                    android:entryValues="@array/expunge_policy_values"
+                    android:key="expunge_policy"
+                    android:summary="%s"
+                    android:title="@string/account_setup_expunge_policy_label" />
+
+                <Preference
+                    android:key="incoming"
+                    android:summary="@string/account_settings_incoming_summary"
+                    android:title="@string/account_settings_incoming_label" />
+
+                <PreferenceScreen
+                    android:key="push_advanced"
+                    android:title="@string/account_settings_push_advanced_title">
+
+                    <CheckBoxPreference
+                        android:key="push_poll_on_connect"
+                        android:title="@string/push_poll_on_connect_label" />
+
+                    <ListPreference
+                        android:entries="@array/push_limit_entries"
+                        android:entryValues="@array/push_limit_values"
+                        android:key="max_push_folders"
+                        android:summary="%s"
+                        android:title="@string/account_setup_push_limit_label" />
+
+                    <ListPreference
+                        android:entries="@array/idle_refresh_period_entries"
+                        android:entryValues="@array/idle_refresh_period_values"
+                        android:key="idle_refresh_period"
+                        android:summary="%s"
+                        android:title="@string/idle_refresh_period_label" />
+
+                </PreferenceScreen>
+
+            </PreferenceCategory>
         </PreferenceCategory>
 
     </PreferenceScreen>
 
 
-    <PreferenceScreen
-        android:key="incoming_prefs"
-        android:title="@string/account_settings_sync">
-
-        <ListPreference
-            android:dialogTitle="@string/account_settings_mail_display_count_label"
-            android:entries="@array/display_count_entries"
-            android:entryValues="@array/display_count_values"
-            android:key="account_display_count"
-            android:summary="%s"
-            android:title="@string/account_settings_mail_display_count_label" />
-
-        <ListPreference
-            android:dialogTitle="@string/account_settings_message_age_label"
-            android:entries="@array/message_age_entries"
-            android:entryValues="@array/message_age_values"
-            android:key="account_message_age"
-            android:summary="%s"
-            android:title="@string/account_settings_message_age_label" />
-
-        <ListPreference
-            android:dialogTitle="@string/account_settings_autodownload_message_size_label"
-            android:entries="@array/autodownload_message_size_entries"
-            android:entryValues="@array/autodownload_message_size_values"
-            android:key="account_autodownload_size"
-            android:summary="%s"
-            android:title="@string/account_settings_autodownload_message_size_label" />
-
-        <ListPreference
-            android:dialogTitle="@string/account_settings_mail_check_frequency_label"
-            android:entries="@array/check_frequency_entries"
-            android:entryValues="@array/check_frequency_values"
-            android:key="account_check_frequency"
-            android:summary="%s"
-            android:title="@string/account_settings_mail_check_frequency_label" />
-
-        <ListPreference
-            android:dialogTitle="@string/account_settings_folder_sync_mode_label"
-            android:entries="@array/folder_sync_mode_entries"
-            android:entryValues="@array/folder_sync_mode_values"
-            android:key="folder_sync_mode"
-            android:summary="%s"
-            android:title="@string/account_settings_folder_sync_mode_label" />
-
-        <ListPreference
-            android:dialogTitle="@string/account_settings_folder_push_mode_label"
-            android:entries="@array/folder_push_mode_entries"
-            android:entryValues="@array/folder_push_mode_values"
-            android:key="folder_push_mode"
-            android:summary="%s"
-            android:title="@string/account_settings_folder_push_mode_label" />
-
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="account_sync_remote_deletetions"
-            android:summary="@string/account_settings_sync_remote_deletetions_summary"
-            android:title="@string/account_settings_sync_remote_deletetions_label" />
-
-        <ListPreference
-            android:dialogTitle="@string/account_setup_incoming_delete_policy_label"
-            android:entries="@array/delete_policy_entries"
-            android:entryValues="@array/delete_policy_values"
-            android:key="delete_policy"
-            android:summary="%s"
-            android:title="@string/account_setup_incoming_delete_policy_label" />
-
-        <ListPreference
-            android:dialogTitle="@string/account_setup_expunge_policy_label"
-            android:entries="@array/expunge_policy_entries"
-            android:entryValues="@array/expunge_policy_values"
-            android:key="expunge_policy"
-            android:summary="%s"
-            android:title="@string/account_setup_expunge_policy_label" />
-
-        <Preference
-            android:key="incoming"
-            android:summary="@string/account_settings_incoming_summary"
-            android:title="@string/account_settings_incoming_label" />
-
-        <PreferenceScreen
-            android:key="push_advanced"
-            android:title="@string/account_settings_push_advanced_title">
-
-            <CheckBoxPreference
-                android:key="push_poll_on_connect"
-                android:title="@string/push_poll_on_connect_label" />
-
-            <ListPreference
-                android:entries="@array/push_limit_entries"
-                android:entryValues="@array/push_limit_values"
-                android:key="max_push_folders"
-                android:summary="%s"
-                android:title="@string/account_setup_push_limit_label" />
-
-            <ListPreference
-                android:entries="@array/idle_refresh_period_entries"
-                android:entryValues="@array/idle_refresh_period_values"
-                android:key="idle_refresh_period"
-                android:summary="%s"
-                android:title="@string/idle_refresh_period_label" />
-
-        </PreferenceScreen>
-
-    </PreferenceScreen>
 
     <PreferenceScreen
         android:key="composing"
