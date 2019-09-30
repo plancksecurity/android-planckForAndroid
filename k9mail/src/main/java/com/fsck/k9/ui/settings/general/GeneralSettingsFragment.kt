@@ -5,10 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
+import com.fsck.k9.Account
 import com.fsck.k9.R
 import com.fsck.k9.helper.FileBrowserHelper
 import com.fsck.k9.notification.NotificationController
 import com.fsck.k9.pEp.filepicker.Utils
+import com.fsck.k9.pEp.ui.keys.PepExtraKeys
+import com.fsck.k9.ui.settings.account.AccountSettingsFragment
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry
@@ -33,6 +36,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeConfirmActions()
         initializeLockScreenNotificationVisibility()
         initializeNotificationQuickDelete()
+        initializeExtraKeysManagement()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -84,6 +88,15 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    private fun initializeExtraKeysManagement() {
+        findPreference(GeneralSettingsFragment.PEP_EXTRA_KEYS)?.apply {
+            setOnPreferenceClickListener {
+                PepExtraKeys.actionStart(context)
+                true
+            }
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, result: Intent?) {
         if (requestCode == REQUEST_PICK_DIRECTORY && resultCode == Activity.RESULT_OK && result != null) {
             result.data?.path?.let {
@@ -116,6 +129,8 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_LOCK_SCREEN_NOTIFICATION_VISIBILITY = "lock_screen_notification_visibility"
         private const val PREFERENCE_NOTIFICATION_QUICK_DELETE = "notification_quick_delete"
         private const val CONFIRM_ACTION_DELETE_FROM_NOTIFICATION = "delete_notif"
+        private const val PEP_EXTRA_KEYS = "pep_extra_keys"
+
 
         fun create(rootKey: String? = null) = GeneralSettingsFragment().withArguments(
                 PreferenceFragmentCompat.ARG_PREFERENCE_ROOT to rootKey)

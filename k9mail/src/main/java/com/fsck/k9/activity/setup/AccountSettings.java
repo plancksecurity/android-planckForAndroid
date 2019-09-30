@@ -51,6 +51,7 @@ import timber.log.Timber;
 
 
 public class AccountSettings extends K9PreferenceActivity {
+    //NOT USED.
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_SHOW_OPENPGP = "show_openpgp";
 
@@ -819,7 +820,7 @@ public class AccountSettings extends K9PreferenceActivity {
         mPepExtraKeys.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                PepExtraKeys.actionStart(AccountSettings.this, account);
+                PepExtraKeys.actionStart(AccountSettings.this);
                 return true;
             }
         });

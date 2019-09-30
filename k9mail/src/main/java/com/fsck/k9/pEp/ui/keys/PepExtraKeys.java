@@ -16,7 +16,9 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -33,13 +35,10 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
     private PEpProvider pEp;
     private KeyItemAdapter keysAdapter;
     private LinearLayoutManager keysViewManager;
-    private Preferences preferences;
-    private List<String> keys;
-    private String account;
+    private HashSet<String> keys;
 
-    public static void actionStart(Context context, Account account) {
+    public static void actionStart(Context context) {
         Intent i = new Intent(context, PepExtraKeys.class);
-        i.putExtra(ACCOUNT_UUID, account.getUuid());
         context.startActivity(i);
     }
 
@@ -54,9 +53,7 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
         keysViewManager.setOrientation(LinearLayoutManager.VERTICAL);
         keysView.setLayoutManager(keysViewManager);
 
-        preferences = Preferences.getPreferences(PepExtraKeys.this);
-        account = getIntent().getStringExtra(ACCOUNT_UUID);
-        keys = preferences.getMasterKeys(account);
+        keys = new HashSet<>(K9.getMasterKeys());
         presenter.initialize(this, pEp, keys);
         initializeToolbar(true, R.string.master_key_management);
     }
@@ -71,10 +68,10 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
         keysAdapter = new KeyItemAdapter(availableKeys,(item, checked) -> {
             if (checked) {
                 keys.add(item.getFpr());
-                preferences.setMasterKeysFPRs(account, keys);
+                K9.setMasterKeys(keys);
             } else {
                 keys.remove(item.getFpr());
-                preferences.setMasterKeysFPRs(account, keys);
+                K9.setMasterKeys(keys);
             }
         });
         keysView.setVisibility(View.VISIBLE);

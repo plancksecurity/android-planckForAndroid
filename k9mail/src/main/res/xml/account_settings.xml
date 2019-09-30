@@ -458,17 +458,6 @@
                     />
 
                 <Preference
-                    android:persistent="false"
-                    android:key="pep_extra_keys"
-                    android:singleLine="true"
-                    android:title="@string/master_key_management"
-                    android:summary="Encrypt messages with additional keys.">
-                    <intent
-                        android:targetClass="com.fsck.k9.pEp.ui.blacklist.PepBlacklist"
-                        android:targetPackage="@string/application_id" />
-                </Preference>
-
-                <Preference
                     android:key="pep_key_reset"
                     android:title="Key Reset" />
                 <PreferenceCategory

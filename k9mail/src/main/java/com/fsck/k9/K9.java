@@ -70,11 +70,13 @@ import foundation.pEp.jniadapter.SyncHandshakeSignal;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
@@ -96,6 +98,14 @@ public class K9 extends MultiDexApplication {
     private ApplicationComponent component;
 
     public static K9JobManager jobManager;
+
+    public static Set<String> getMasterKeys() {
+        return pEpExtraKeys;
+    }
+
+    public static void setMasterKeys(Set<String> keys) {
+        pEpExtraKeys = keys;
+    }
 
     public boolean isBatteryOptimizationAsked() {
         return batteryOptimizationAsked;
@@ -325,6 +335,8 @@ public class K9 extends MultiDexApplication {
     private static boolean pEpSubjectUnprotected = true;
     private static boolean pEpForwardWarningEnabled = false;
     private static boolean pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
+    private static Set<String> pEpExtraKeys = Collections.emptySet();
+
 
 
     private static int sPgpInlineDialogCounter;

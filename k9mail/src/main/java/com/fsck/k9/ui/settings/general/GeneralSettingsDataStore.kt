@@ -181,6 +181,8 @@ class GeneralSettingsDataStore(
                     if (K9.useVolumeKeysForListNavigationEnabled()) add("list")
                 }
             }
+            "pep_pep_extra_keys" -> K9.getMasterKeys()
+
             else -> defValues
         }
     }
@@ -207,6 +209,7 @@ class GeneralSettingsDataStore(
                 K9.setUseVolumeKeysForNavigation("message" in checkedValues)
                 K9.setUseVolumeKeysForListNavigation("list" in checkedValues)
             }
+            "pep_pep_extra_keys" -> K9.setMasterKeys(checkedValues)
             else -> return
         }
 

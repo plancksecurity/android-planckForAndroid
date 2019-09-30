@@ -3222,7 +3222,8 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
 
     private Message processWithpEpAndSend(Transport transport, LocalMessage message, Account account) throws MessagingException {
         Preferences preferences = Preferences.getPreferences(context);
-        String[] keys = preferences.getMasterKeysArray(account.getUuid());
+        //TODO: Move to pEp provider
+        String[] keys = K9.getMasterKeys().toArray(new String[0]);
         List<MimeMessage> encryptedMessages = pEpProvider.encryptMessage(message, keys);
         Message encryptedMessageToSave = encryptedMessages.get(PEpProvider.ENCRYPTED_MESSAGE_POSITION); //
 

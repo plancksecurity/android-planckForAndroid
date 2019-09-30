@@ -57,7 +57,6 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializeLocalStorageProvider()
         initializeCryptoSettings(account)
         initializeFolderSettings(account)
-        initializeExtraKeysManagement(account)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -193,14 +192,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun initializeExtraKeysManagement(account: Account) {
-        findPreference(PEP_EXTRA_KEYS)?.apply {
-            setOnPreferenceClickListener {
-                PepExtraKeys.actionStart(context, account)
-                true
-            }
-        }
-    }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         /*val openPgpKeyPreference = findPreference(PREFERENCE_OPENPGP_KEY) as? OpenPgpKeyPreference
@@ -240,7 +232,6 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_PEP_SAVE_ENCRYPTED_ON_SERVER = "pep_save_encrypted"
         private const val PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION = "pep_disable_privacy_protection"
         private const val PEP_ENABLE_SYNC_ACCOUNT = "pep_enable_sync_account"
-        private const val PEP_EXTRA_KEYS = "pep_extra_keys"
         private const val DELETE_POLICY_MARK_AS_READ = "MARK_AS_READ"
 
         private val FOLDER_LIST_PREFERENCES = listOf(

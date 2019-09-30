@@ -329,84 +329,106 @@
                 android:summary="@string/pep_forward_warning_description"
                 android:title="@string/pep_forward_warning" />
         </PreferenceCategory>
+
         <PreferenceCategory
-            android:key="pep_gpg_compatibility"
-            android:title="@string/pep_gpg_compatibility" />
+            android:key="advanced_pep_global"
+            app:allowDividerAbove="false"
+            app:initialExpandedChildrenCount="0">
 
-        <CheckBoxPreference
-            android:key="pep_use_keyserver"
-            android:title="@string/pep_use_keyserver" />
-        <CheckBoxPreference
-            android:key="pep_subject_unprotected"
-            android:title="@string/pep_subject_unprotected" />
-        <Preference
-            android:key="pep_gpg_blacklist"
-            android:title="Blacklist">
-            <intent
-                android:targetClass="com.fsck.k9.pEp.ui.blacklist.PepBlacklist"
-                android:targetPackage="@string/application_id" />
-            <!--<Preference-->
-            <!--android:key="pep_add_key_to_blacklist"-->
-            <!--android:persistent="false"-->
-            <!--android:title="@string/pep_add_key_to_blacklist" />-->
+            <Preference
+                android:persistent="false"
+                android:key="pep_extra_keys"
+                android:singleLine="true"
+                android:title="@string/master_key_management"
+                android:summary="Encrypt messages with additional keys.">
+            </Preference>
 
-            <!--<PreferenceCategory-->
-            <!--android:key="pep_blacklisted_keys"-->
-            <!--android:persistent="false"-->
-            <!--android:title="Blacklisted keys" >-->
-            <!--<SwitchPreference-->
-            <!--android:key="1"-->
-            <!--android:persistent="false"-->
-            <!--android:title="1" />-->
-            <!--<SwitchPreference-->
-            <!--android:key="2"-->
-            <!--android:persistent="false"-->
-            <!--android:title="2" />-->
-            <!--<SwitchPreference-->
-            <!--android:key="3"-->
-            <!--android:persistent="false"-->
-            <!--android:title="3" />-->
-            <!--<SwitchPreference-->
-            <!--android:key="4"-->
-            <!--android:persistent="false"-->
-            <!--android:title="4" />-->
-            <!--<SwitchPreference-->
-            <!--android:key="5"-->
-            <!--android:persistent="false"-->
-            <!--android:title="5" />-->
-            <!--</PreferenceCategory>-->
+            <PreferenceCategory
+                android:key="pep_gpg_compatibility"
+                android:title="@string/pep_gpg_compatibility">
 
-        </Preference>
+                <!--CheckBoxPreference
+                    android:key="pep_use_keyserver"
+                    android:title="@string/pep_use_keyserver" /-->
+                <CheckBoxPreference
+                    android:key="pep_subject_unprotected"
+                    android:title="@string/pep_subject_unprotected" />
+                <Preference
+                    android:key="pep_gpg_blacklist"
+                    android:title="Blacklist">
+                    <intent
+                        android:targetClass="com.fsck.k9.pEp.ui.blacklist.PepBlacklist"
+                        android:targetPackage="@string/application_id" />
+                    <!--<Preference-->
+                    <!--android:key="pep_add_key_to_blacklist"-->
+                    <!--android:persistent="false"-->
+                    <!--android:title="@string/pep_add_key_to_blacklist" />-->
 
-        <!--<EditTextPreference-->
-        <!--android:persistent="false"-->
-        <!--android:key="pep_remove_key_from_blacklist"-->
-        <!--android:singleLine="true"-->
-        <!--android:title="@string/pep_remove_key_from_blacklist"-->
-        <!--android:summary=""-->
-        <!--android:dialogTitle="@string/pep_remove_key_from_blacklist"-->
-        <!--/>-->
+                    <!--<PreferenceCategory-->
+                    <!--android:key="pep_blacklisted_keys"-->
+                    <!--android:persistent="false"-->
+                    <!--android:title="Blacklisted keys" >-->
+                    <!--<SwitchPreference-->
+                    <!--android:key="1"-->
+                    <!--android:persistent="false"-->
+                    <!--android:title="1" />-->
+                    <!--<SwitchPreference-->
+                    <!--android:key="2"-->
+                    <!--android:persistent="false"-->
+                    <!--android:title="2" />-->
+                    <!--<SwitchPreference-->
+                    <!--android:key="3"-->
+                    <!--android:persistent="false"-->
+                    <!--android:title="3" />-->
+                    <!--<SwitchPreference-->
+                    <!--android:key="4"-->
+                    <!--android:persistent="false"-->
+                    <!--android:title="4" />-->
+                    <!--<SwitchPreference-->
+                    <!--android:key="5"-->
+                    <!--android:persistent="false"-->
+                    <!--android:title="5" />-->
+                    <!--</PreferenceCategory>-->
 
-        <!--PreferenceCategory
-            android:key="pep_keysync"
-            android:title="PEP KEYSYNC" />
+                </Preference>
 
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="pep_enable_sync"
-            android:persistent="false"
-            android:title="ENABLE PEP SYNC GLOBALLY" />
-        <Preference
-            android:key="pep_manage_keysync"
-            android:persistent="false"
-            android:singleLine="true"
-            android:summary="@string/account_settings_led_color_summary"
-            android:title="MANAGE PEP SYNC" /-->
+                <!--<EditTextPreference-->
+                <!--android:persistent="false"-->
+                <!--android:key="pep_remove_key_from_blacklist"-->
+                <!--android:singleLine="true"-->
+                <!--android:title="@string/pep_remove_key_from_blacklist"-->
+                <!--android:summary=""-->
+                <!--android:dialogTitle="@string/pep_remove_key_from_blacklist"-->
+                <!--/>-->
 
-        <CheckBoxPreference
-            android:key="privacy_hide_timezone"
-            android:summary="@string/global_settings_privacy_hide_timezone_detail"
-            android:title="@string/global_settings_privacy_hide_timezone" />
+                <!--PreferenceCategory
+                    android:key="pep_keysync"
+                    android:title="PEP KEYSYNC" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="pep_enable_sync"
+                    android:persistent="false"
+                    android:title="ENABLE PEP SYNC GLOBALLY" />
+                <Preference
+                    android:key="pep_manage_keysync"
+                    android:persistent="false"
+                    android:singleLine="true"
+                    android:summary="@string/account_settings_led_color_summary"
+                    android:title="MANAGE PEP SYNC" /-->
+            </PreferenceCategory>
+
+            <PreferenceCategory
+                android:key="generic_privacy"
+                android:title="Other privacy options">
+
+                <CheckBoxPreference
+                    android:key="privacy_hide_timezone"
+                    android:summary="@string/global_settings_privacy_hide_timezone_detail"
+                    android:title="@string/global_settings_privacy_hide_timezone" />
+            </PreferenceCategory>
+        </PreferenceCategory>
+
     </PreferenceScreen>
 
     <PreferenceScreen

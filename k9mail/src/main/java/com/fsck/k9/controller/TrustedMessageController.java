@@ -3,6 +3,7 @@ package com.fsck.k9.controller;
 import android.content.Context;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
@@ -63,9 +64,8 @@ class TrustedMessageController {
     private Message encryptUntrustedMessage(Context context, PEpProvider pEpProvider, Account account, LocalMessage localMessage) throws MessagingException {
         Message encryptedMessage;
         try {
-            Preferences preferences = Preferences.getPreferences(context);
-            String[] keys = preferences.getMasterKeysArray(account.getUuid());
-
+            //TODO: Move to pEp provider
+            String[] keys = K9.getMasterKeys().toArray(new String[0]);
             if (PEpUtils.ispEpDisabled(account, null)) {
                 encryptedMessage = localMessage;
             } else if (account.getDraftsFolderName().equals(localMessage.getFolder().getName()) ||
