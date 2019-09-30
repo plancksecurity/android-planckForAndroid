@@ -8,6 +8,7 @@ import android.widget.Toast
 import com.fsck.k9.Account
 import com.fsck.k9.R
 import com.fsck.k9.activity.ManageIdentities
+import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.activity.setup.AccountSetupComposition
 import com.fsck.k9.activity.setup.AccountSetupIncoming
 import com.fsck.k9.activity.setup.AccountSetupOutgoing
@@ -67,7 +68,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializeIncomingServer() {
         findPreference(PREFERENCE_INCOMING_SERVER)?.onClick {
-            AccountSetupIncoming.actionEditIncomingSettings(requireActivity(), accountUuid)
+            AccountSetupBasics.actionEditIncomingSettings(requireActivity(), accountUuid)
         }
     }
 
@@ -85,7 +86,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializeOutgoingServer() {
         findPreference(PREFERENCE_OUTGOING_SERVER)?.onClick {
-            AccountSetupOutgoing.actionEditOutgoingSettings(requireActivity(), accountUuid)
+            AccountSetupBasics.actionEditOutgoingSettings(requireActivity(), accountUuid)
         }
     }
 

@@ -60,8 +60,8 @@ class AuthenticationErrorNotifications {
 
     PendingIntent createContentIntent(Context context, Account account, boolean incoming) {
         Intent editServerSettingsIntent = incoming ?
-                AccountSetupBasics.intentActionEditIncomingSettings(context, account) :
-                AccountSetupBasics.intentActionEditOutgoingSettings(context, account);
+                AccountSetupBasics.intentActionEditIncomingSettings(context, account.getUuid()) :
+                AccountSetupBasics.intentActionEditOutgoingSettings(context, account.getUuid());
 
         return PendingIntent.getActivity(context, account.getAccountNumber(), editServerSettingsIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);

@@ -53,25 +53,25 @@ public class AccountSetupBasics extends PEpImporterActivity {
         context.startActivity(i);
     }
 
-    public static void actionEditIncomingSettings(Activity context, Account account) {
-        context.startActivity(intentActionEditIncomingSettings(context, account));
+    public static void actionEditIncomingSettings(Activity context, String accountUuid) {
+        context.startActivity(intentActionEditIncomingSettings(context, accountUuid));
     }
 
-    public static Intent intentActionEditIncomingSettings(Context context, Account account) {
+    public static Intent intentActionEditIncomingSettings(Context context, String accountUuid) {
         Intent i = new Intent(context, AccountSetupBasics.class);
         i.putExtra(EXTRA_EDIT_INCOMING, true);
-        i.putExtra(EXTRA_ACCOUNT, account.getUuid());
+        i.putExtra(EXTRA_ACCOUNT, accountUuid);
         return i;
     }
 
-    public static void actionEditOutgoingSettings(Context context, Account account) {
-        context.startActivity(intentActionEditOutgoingSettings(context, account));
+    public static void actionEditOutgoingSettings(Context context, String accountUuid) {
+        context.startActivity(intentActionEditOutgoingSettings(context, accountUuid));
     }
 
-    public static Intent intentActionEditOutgoingSettings(Context context, Account account) {
+    public static Intent intentActionEditOutgoingSettings(Context context, String accountUuid) {
         Intent i = new Intent(context, AccountSetupBasics.class);
         i.putExtra(EXTRA_EDIT_OUTGOING, true);
-        i.putExtra(EXTRA_ACCOUNT, account.getUuid());
+        i.putExtra(EXTRA_ACCOUNT, accountUuid);
         return i;
     }
 

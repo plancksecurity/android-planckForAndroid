@@ -992,11 +992,11 @@ public class AccountSettings extends K9PreferenceActivity {
     }
 
     private void onIncomingSettings() {
-        AccountSetupBasics.actionEditIncomingSettings(this, account);
+        AccountSetupBasics.actionEditIncomingSettings(this, account.getUuid());
     }
 
     private void onOutgoingSettings() {
-        AccountSetupBasics.actionEditOutgoingSettings(this, account);
+        AccountSetupBasics.actionEditOutgoingSettings(this, account.getUuid());
     }
 
     public void onChooseChipColor() {
