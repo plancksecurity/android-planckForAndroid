@@ -295,7 +295,6 @@
     </PreferenceScreen>
 
     <PreferenceScreen
-        app:singleLineTitle="false"
         android:key="notifications"
         android:title="@string/notifications_title"
         app:icon="?attr/iconPreferencesNotifications">
