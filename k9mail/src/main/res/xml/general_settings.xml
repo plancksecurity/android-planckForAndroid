@@ -409,14 +409,11 @@
             android:title="@string/global_settings_privacy_hide_timezone" />
     </PreferenceScreen>
 
-
-
     <PreferenceScreen
         android:key="advanced_preferences"
         android:title="@string/advanced">
         <PreferenceCategory
             android:title="@string/miscellaneous_preferences"
-            android:icon="?attr/iconPreferencesVarious"
             android:key="misc_preferences">
 
             <Preference
@@ -435,12 +432,12 @@
         </PreferenceCategory>
 
         <PreferenceCategory
-            android:icon="?attr/iconPreferencesDebug"
             android:key="debug_preferences"
             android:title="@string/debug_preferences">
 
             <CheckBoxPreference
                 android:key="debug_logging"
+                android:icon="?attr/iconPreferencesDebug"
                 android:summary="@string/debug_enable_debug_logging_summary"
                 android:title="@string/debug_enable_debug_logging_title" />
 
@@ -452,6 +449,5 @@
         </PreferenceCategory>
 
     </PreferenceScreen>
-
 
 </PreferenceScreen>
