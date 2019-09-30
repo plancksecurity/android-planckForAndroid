@@ -298,29 +298,14 @@
 
     <PreferenceScreen
         android:key="notifications"
-        android:title="@string/notifications_title">
+        android:title="@string/notifications_title"
+        android:icon="?attr/iconPreferencesNotifications">
 
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="account_notify"
             android:summary="@string/account_settings_notify_summary"
             android:title="@string/account_settings_notify_label" />
-
-        <ListPreference
-            android:dependency="account_notify"
-            android:dialogTitle="@string/account_settings_folder_notify_new_mail_mode_label"
-            android:entries="@array/folder_notify_new_mail_mode_entries"
-            android:entryValues="@array/folder_notify_new_mail_mode_values"
-            android:key="folder_notify_new_mail_mode"
-            android:summary="%s"
-            android:title="@string/account_settings_folder_notify_new_mail_mode_label" />
-
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:dependency="account_notify"
-            android:key="account_notify_self"
-            android:summary="@string/account_settings_notify_self_summary"
-            android:title="@string/account_settings_notify_self_label" />
 
         <CheckBoxPreference
             android:defaultValue="false"
@@ -378,17 +363,37 @@
             android:summary="@string/account_settings_led_color_summary"
             android:title="@string/account_settings_led_color_label" />
 
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="account_notify_sync"
-            android:summary="@string/account_settings_notify_sync_summary"
-            android:title="@string/account_settings_notify_sync_label" />
+        <PreferenceCategory
+            app:initialExpandedChildrenCount="0">
+            <ListPreference
+                android:dependency="account_notify"
+                android:dialogTitle="@string/account_settings_folder_notify_new_mail_mode_label"
+                android:entries="@array/folder_notify_new_mail_mode_entries"
+                android:entryValues="@array/folder_notify_new_mail_mode_values"
+                android:key="folder_notify_new_mail_mode"
+                android:summary="%s"
+                android:title="@string/account_settings_folder_notify_new_mail_mode_label" />
 
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="notification_opens_unread"
-            android:summary="@string/account_settings_notification_opens_unread_summary"
-            android:title="@string/account_settings_notification_opens_unread_label" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="account_notify"
+                android:key="account_notify_self"
+                android:summary="@string/account_settings_notify_self_summary"
+                android:title="@string/account_settings_notify_self_label" />
+
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="account_notify_sync"
+                android:summary="@string/account_settings_notify_sync_summary"
+                android:title="@string/account_settings_notify_sync_label" />
+
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="notification_opens_unread"
+                android:summary="@string/account_settings_notification_opens_unread_summary"
+                android:title="@string/account_settings_notification_opens_unread_label" />
+
+        </PreferenceCategory>
 
     </PreferenceScreen>
 
