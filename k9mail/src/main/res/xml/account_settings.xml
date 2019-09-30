@@ -36,7 +36,7 @@
             android:title="@string/account_settings_show_pictures_label" />
 
         <PreferenceCategory
-            android:key="advanced_reading"
+            android:key="advanced_accounts_reading"
             app:initialExpandedChildrenCount="0">
             <PreferenceCategory
                 android:key="reading_mail"
@@ -61,7 +61,7 @@
             android:summary="@string/account_settings_incoming_summary"
             android:title="@string/account_settings_incoming_label" />
         <PreferenceCategory
-            android:key="advanced_incoming"
+            android:key="advanced_accounts_incoming"
             app:initialExpandedChildrenCount="0">
 
             <ListPreference
@@ -194,7 +194,7 @@
             android:title="@string/account_settings_outgoing_label" />
 
         <PreferenceCategory
-            android:key="advanced_outgoing"
+            android:key="advanced_accounts_outgoing"
             app:initialExpandedChildrenCount="0">
 
             <!-- Hidden til ENGINE supports aliases -->
@@ -362,7 +362,7 @@
             android:title="@string/account_settings_led_color_label" />
 
         <PreferenceCategory
-            android:key="advanced_notifications"
+            android:key="advanced_accounts_notifications"
             app:initialExpandedChildrenCount="0">
             <ListPreference
                 android:dependency="account_notify"
@@ -421,32 +421,66 @@
         android:icon="@drawable/ic_peplogo"
         android:title="@string/pep_long"
         android:key="pep">
+        <PreferenceCategory
+            app:title="p≡p General settings"
+            android:key="pep_general_settings">
 
-        <CheckBoxPreference
-            android:key="pep_disable_privacy_protection"
-            android:title="@string/pep_enable_privacy_protection"
-            android:defaultValue="false"
-            android:summary="@string/pep_account_privacy_protection_explanation" />
-        <CheckBoxPreference
-            android:key="pep_save_encrypted"
-            android:title="@string/pep_mistrust_server_and_store_mails_encrypted"
-            android:defaultValue="true" />
-        <!--CheckBoxPreference
-            android:persistent="false"
-            android:key="pep_enable_sync_account"
-            android:title="@string/pep_enable_sync_account"
-            android:defaultValue="false" /-->
+            <SwitchPreferenceCompat
+                android:key="pep_disable_privacy_protection"
+                android:title="@string/pep_enable_privacy_protection"
+                android:defaultValue="false"
+                android:summary="@string/pep_account_privacy_protection_explanation" />
 
-        <Preference
-            android:persistent="false"
-            android:key="pep_extra_keys"
-            android:singleLine="true"
-            android:title="@string/master_key_management" >
-        <intent
-            android:targetClass="com.fsck.k9.pEp.ui.blacklist.PepBlacklist"
-            android:targetPackage="@string/application_id" />
-        </Preference>
 
+            <CheckBoxPreference
+                android:key="pep_save_encrypted"
+                android:title="@string/pep_mistrust_server_and_store_mails_encrypted"
+                android:summaryOn="Stores encrypted messages encrypted on the server."
+                android:summaryOff="Encrypted messages will be decrypted and stored unencrypted on the server."
+                android:defaultValue="true"
+                app:dependency="pep_disable_privacy_protection"
+                />
+    </PreferenceCategory>
+        <PreferenceCategory
+            app:key="pep_related_settings"
+            app:allowDividerAbove="false"
+            app:dependency="pep_disable_privacy_protection">
+            <PreferenceCategory
+                android:key="advanced_accounts_pep"
+                app:initialExpandedChildrenCount="0"
+                app:allowDividerAbove="false">
+
+                <SwitchPreferenceCompat
+                    android:persistent="false"
+                    android:key="pep_enable_sync_account"
+                    android:title="@string/pep_enable_sync_account"
+                    android:defaultValue="true"
+                    />
+
+                <Preference
+                    android:persistent="false"
+                    android:key="pep_extra_keys"
+                    android:singleLine="true"
+                    android:title="@string/master_key_management"
+                    android:summary="Encrypt messages with additional keys.">
+                    <intent
+                        android:targetClass="com.fsck.k9.pEp.ui.blacklist.PepBlacklist"
+                        android:targetPackage="@string/application_id" />
+                </Preference>
+
+                <Preference
+                    android:key="pep_key_reset"
+                    android:title="Key Reset" />
+                <PreferenceCategory
+                    android:key="accounts_pep_pgp"
+                    android:title="@string/pep_gpg_compatibility">
+                    <Preference
+                        android:key="pep_key_import_from_fs"
+                        android:title="Import PGP key from filesystem" />
+                </PreferenceCategory>
+
+            </PreferenceCategory>
+        </PreferenceCategory>
     </PreferenceScreen>
 
 </PreferenceScreen>

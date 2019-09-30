@@ -50,7 +50,6 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializeManageIdentities()
         initializeOutgoingServer()
         initializeQuoteStyle()
-        initializepEpPrivacyProtection()
         initializeDeletePolicy(account)
         initializeExpungePolicy(account)
         initializeMessageAge(account)
@@ -137,36 +136,6 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
             val providers = storageManager.availableProviders.entries
             entries = providers.map { it.value }.toTypedArray()
             entryValues = providers.map { it.key }.toTypedArray()
-        }
-    }
-
-    private fun initializepEpPrivacyProtection() {
-        (findPreference(PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION) as? TwoStatePreference).apply {
-           this?.apply {
-               val pEpSaveEncrypted =
-                       findPreference(PREFERENCE_PEP_SAVE_ENCRYPTED_ON_SERVER) as TwoStatePreference
-               pEpSaveEncrypted.isEnabled = isChecked
-
-               setOnPreferenceChangeListener { preference, newValue ->
-                   val value = newValue as Boolean
-                   pEpSaveEncrypted.isEnabled = value
-                   /*
-                   if (!value) {
-                       pEpSaveEncrypted.isChecked = false
-                       //if (!ispEpSyncEnabled) {
-                       //  mPEpSyncAccount.setChecked(false);
-                       //}
-                   } else {
-                       pEpSaveEncrypted.isChecked = true
-                       //if (BuildConfig.WITH_KEY_SYNC) {
-                       // mPEpSyncAccount.setChecked(true);
-                       // mPEpSyncAccount.setEnabled(true);
-                       //}
-                   }
-                    */
-                   true
-               }
-           }
         }
     }
 
