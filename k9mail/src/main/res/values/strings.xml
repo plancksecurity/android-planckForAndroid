@@ -584,7 +584,7 @@
     <string name="account_settings_general_title">General settings</string>
     <string name="account_settings_reading_mail">Reading mail</string>
     <string name="account_settings_sync">Fetching mail</string>
-    <string name="account_settings_folders">Folders</string>
+    <string name="account_settings_folders">Default folders</string>
     <string name="account_settings_quote_prefix_label">Quoted text prefix</string>
     <string name="account_settings_crypto">End-to-end encryption</string>
     <string name="account_settings_crypto_app">Enable OpenPGP support</string>

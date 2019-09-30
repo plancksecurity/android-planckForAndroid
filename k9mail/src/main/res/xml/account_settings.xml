@@ -237,7 +237,8 @@
 
     <PreferenceScreen
         android:key="folders"
-        android:title="@string/account_settings_folders">
+        android:title="@string/account_settings_folders"
+        android:icon="?attr/iconFolder">
 
         <com.fsck.k9.ui.settings.account.FolderListPreference
             android:key="account_setup_auto_expand_folder"
