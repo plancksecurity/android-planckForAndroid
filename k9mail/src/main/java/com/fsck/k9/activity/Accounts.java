@@ -58,6 +58,7 @@ import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.PEpImporterActivity;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
 import com.fsck.k9.pEp.manualsync.KeySourceType;
+import com.fsck.k9.pEp.ui.AboutActivity;
 import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -1014,6 +1015,9 @@ public class Accounts extends PEpImporterActivity {
         case R.id.compose:
             onCompose();
             break;
+        case R.id.about:
+            onAbout();
+            break;
         case R.id.search:
             showSearchView();
             break;
@@ -1028,6 +1032,11 @@ public class Accounts extends PEpImporterActivity {
         }
         return true;
     }
+
+    private void onAbout() {
+        AboutActivity.Companion.onAbout(this);
+    }
+
 
     /**
      * Get current version number.
