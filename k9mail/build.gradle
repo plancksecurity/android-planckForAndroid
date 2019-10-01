@@ -87,8 +87,8 @@ dependencies {
     implementation "androidx.work:work-runtime:${versions.workRuntime}"
 
 //TODO: SWITCH TO ANDROID-X
-    androidTestImplementation "com.android.support.test.espresso:espresso-intents:${versions.espresso}"
-    androidTestImplementation ('com.android.support.test.espresso:espresso-core:2.2.1') {
+    androidTestImplementation "androidx.test.espresso:espresso-intents:${versions.espresso}"
+    androidTestImplementation ("androidx.test.espresso:espresso-core:${versions.espresso}") {
         exclude module: 'support-annotations'
     }
     testImplementation "org.robolectric:robolectric:${versions.robolectric}"
@@ -107,18 +107,12 @@ dependencies {
     implementation "org.koin:koin-android-architecture:${versions.koin}"
     implementation "androidx.core:core-ktx:${versions.androidX}"
 
-    androidTestImplementation "androidx.test.uiautomator:uiautomator:${versions.uiAutomator}"
+    //androidTestImplementation "androidx.test.uiautomator:uiautomator:${versions.uiAutomator}"
 
     //TODO: SWITCH TO ANDROID-X
-    implementation "com.android.support.test.espresso:espresso-idling-resource:${versions.espresso}"
-    androidTestImplementation "com.android.support.test.espresso.idling:idling-concurrent:${versions.espresso}"
-    androidTestImplementation('com.android.support.test.espresso:espresso-contrib:2.2.2') {
-        exclude group: 'com.android.support', module: 'support-annotations:27.1.1'
-        exclude group: 'com.android.support', module: 'support-v4'
-        exclude group: 'com.android.support', module: 'recyclerview-v7'
-        exclude group: 'com.android.support', module: 'appcompat-v7'
-        exclude group: 'com.android.support', module: 'design'
-    }
+    implementation "androidx.test.espresso:espresso-idling-resource:${versions.espresso}"
+    androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:${versions.espresso}"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:${versions.espresso}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
     testImplementation "org.robolectric:robolectric:${versions.robolectric}"
@@ -141,6 +135,7 @@ dependencies {
     androidTestImplementation('info.cukes:cucumber-android:1.2.4') {
         exclude module: 'cucumber-jvm-deps'
     }
+
     androidTestImplementation('info.cukes:cucumber-picocontainer:1.2.4') {
         exclude module: 'cucumber-jvm-deps'
     }
@@ -148,12 +143,13 @@ dependencies {
     // Screenshots
     androidTestImplementation 'com.squareup.spoon:spoon-client:1.7.1'
 
-    androidTestImplementation 'com.android.support.test:rules:1.0.2'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation('com.schibsted.spain:barista:2.8.0') {
         exclude group: 'com.android.support'
         //exclude group: 'org.jetbrains.kotlin' // Only if you already use Kotlin in your project
     }
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
 }
 
 android {
