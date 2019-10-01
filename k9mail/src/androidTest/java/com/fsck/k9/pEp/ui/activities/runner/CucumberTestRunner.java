@@ -12,7 +12,7 @@ import cucumber.api.android.CucumberInstrumentationCore;
  * This class must be in a different package than the glue code
  * (this class is in '...cucumber.runner' and glue is in '...cucumber.steps')
  */
-public class CucumberTestRunner extends android.support.test.runner.AndroidJUnitRunner {
+public class CucumberTestRunner extends androidx.test.runner.AndroidJUnitRunner {
 
     public static final String TAG = com.fsck.k9.pEp.ui.activities.runner.CucumberTestRunner.class.getSimpleName();
     /**
