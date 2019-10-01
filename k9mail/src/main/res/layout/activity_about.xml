@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:padding="16dp"
-        tools:context="com.fsck.k9.pEp.ui.About">
+        tools:context="com.fsck.k9.pEp.ui.AboutActivity">
 
         <WebView
             android:id="@+id/about_text"

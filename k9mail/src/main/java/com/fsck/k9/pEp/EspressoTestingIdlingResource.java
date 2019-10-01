@@ -1,7 +1,7 @@
 package com.fsck.k9.pEp;
 
-import android.support.test.espresso.IdlingResource;
-import android.support.test.espresso.idling.CountingIdlingResource;
+import androidx.test.espresso.IdlingResource;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import timber.log.Timber;
 

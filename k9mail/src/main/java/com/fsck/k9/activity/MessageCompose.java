@@ -20,8 +20,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.TypedValue;
@@ -105,6 +105,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import org.openintents.openpgp.OpenPgpApiManager;
 
 import timber.log.Timber;
 
@@ -313,8 +315,10 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
         recipientMvpView = new RecipientMvpView(this);
         ComposePgpInlineDecider composePgpInlineDecider = new ComposePgpInlineDecider();
-        recipientPresenter = new RecipientPresenter(getApplicationContext(), getLoaderManager(), recipientMvpView,
-                account, composePgpInlineDecider, new ReplyToParser(), this);
+        OpenPgpApiManager openPgpApiManager = new OpenPgpApiManager(getApplicationContext(), this);
+        recipientPresenter = new RecipientPresenter(getApplicationContext(), getSupportLoaderManager(),
+                openPgpApiManager, recipientMvpView, account, composePgpInlineDecider, new ReplyToParser(), this
+        );
         recipientPresenter.updateCryptoStatus();
 
 
@@ -326,7 +330,8 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
         QuotedMessageMvpView quotedMessageMvpView = new QuotedMessageMvpView(this);
         quotedMessagePresenter = new QuotedMessagePresenter(this, quotedMessageMvpView, account);
-        attachmentPresenter = new AttachmentPresenter(getApplicationContext(), attachmentMvpView, getLoaderManager(), this);
+        attachmentPresenter = new AttachmentPresenter(getApplicationContext(), attachmentMvpView,
+                getSupportLoaderManager(), this);
 
         messageContentView = (EolConvertingEditText) findViewById(R.id.message_content);
         messageContentView.getInputExtras(true).putBoolean("allowEmoji", true);
@@ -421,8 +426,8 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         if (!relatedMessageProcessed) {
             if (action == Action.REPLY || action == Action.REPLY_ALL ||
                     action == Action.FORWARD || action == Action.EDIT_DRAFT) {
-                messageLoaderHelper = new MessageLoaderHelper(this, getLoaderManager(), getFragmentManager(),
-                        messageLoaderCallbacks);
+                messageLoaderHelper = new MessageLoaderHelper(this, getSupportLoaderManager(),
+                        getSupportFragmentManager(), messageLoaderCallbacks);
                 internalMessageHandler.sendEmptyMessage(MSG_PROGRESS_ON);
 
                 Parcelable cachedDecryptionResult = intent.getParcelableExtra(EXTRA_MESSAGE_DECRYPTION_RESULT);
@@ -494,15 +499,6 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                     .build();
 
             shortcutManager.setDynamicShortcuts(Collections.singletonList(composeShortcut));
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (recipientPresenter != null) {
-            recipientPresenter.onActivityDestroy();
         }
     }
 
@@ -1038,14 +1034,14 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             case R.id.add_from_contacts:
                 recipientPresenter.onMenuAddFromContacts();
                 break;
-            case R.id.openpgp_inline_enable:
-                recipientPresenter.onMenuSetPgpInline(true);
-                updateMessageFormat();
-                break;
-            case R.id.openpgp_inline_disable:
-                recipientPresenter.onMenuSetPgpInline(false);
-                updateMessageFormat();
-                break;
+            //case R.id.openpgp_inline_enable:
+            //    recipientPresenter.onMenuSetPgpInline(true);
+            //    updateMessageFormat();
+            //    break;
+            //case R.id.openpgp_inline_disable:
+            //    recipientPresenter.onMenuSetPgpInline(false);
+            //    updateMessageFormat();
+            //    break;
             //case R.id.openpgp_sign_only:
             //    recipientPresenter.onMenuSetSignOnly(true);
             //    break;
@@ -1839,13 +1835,13 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
             ProgressDialogFragment fragment = ProgressDialogFragment.newInstance(title,
                     getString(R.string.fetching_attachment_dialog_message));
-            fragment.show(getFragmentManager(), FRAGMENT_WAITING_FOR_ATTACHMENT);
+            fragment.show(getSupportFragmentManager(), FRAGMENT_WAITING_FOR_ATTACHMENT);
         }
 
         @Override
         public void dismissWaitingForAttachmentDialog() {
             ProgressDialogFragment fragment = (ProgressDialogFragment)
-                    getFragmentManager().findFragmentByTag(FRAGMENT_WAITING_FOR_ATTACHMENT);
+                    getSupportFragmentManager().findFragmentByTag(FRAGMENT_WAITING_FOR_ATTACHMENT);
 
             if (fragment != null) {
                 fragment.dismiss();

@@ -2,15 +2,15 @@ package com.fsck.k9.activity.loader;
 
 import java.io.File;
 
-import android.content.AsyncTaskLoader;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
+import androidx.loader.content.AsyncTaskLoader;
+
 import timber.log.Timber;
 
-import com.fsck.k9.K9;
 import com.fsck.k9.activity.misc.Attachment;
 import com.fsck.k9.activity.misc.Attachment.LoadingState;
 import com.fsck.k9.mail.internet.MimeUtility;

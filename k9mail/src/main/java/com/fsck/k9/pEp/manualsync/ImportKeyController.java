@@ -4,8 +4,8 @@ import android.app.Application;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.util.Log;
+import androidx.annotation.NonNull;
+
 import android.widget.Toast;
 
 import com.fsck.k9.Account;

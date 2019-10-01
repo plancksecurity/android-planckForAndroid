@@ -2,7 +2,7 @@ package com.fsck.k9.pEp.ui.privacy.status;
 
 import android.content.Intent;
 import android.content.IntentSender;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageLoaderHelper;

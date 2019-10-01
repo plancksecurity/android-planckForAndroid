@@ -51,7 +51,7 @@
             android:title="@string/pep_force_unprotected"
             app:showAsAction="never"/>
 
-    <item
+    <!--item
         android:id="@+id/openpgp_inline_enable"
         android:alphabeticShortcut="i"
         android:title="@string/enable_inline_pgp"
@@ -62,11 +62,11 @@
         android:alphabeticShortcut="i"
         android:title="@string/disable_inline_pgp"
         app:showAsAction="never"
-        />
+        /-->
     <item
         android:id="@+id/is_always_secure"
         android:alphabeticShortcut="g"
         android:title="@string/is_always_secure"
-        android:showAsAction="never"
+        app:showAsAction="never"
         />
 </menu>

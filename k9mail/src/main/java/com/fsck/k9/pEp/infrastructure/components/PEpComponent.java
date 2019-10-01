@@ -8,7 +8,7 @@ import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
-import com.fsck.k9.pEp.ui.About;
+import com.fsck.k9.pEp.ui.AboutActivity;
 import com.fsck.k9.pEp.ui.activities.PermissionsActivity;
 import com.fsck.k9.pEp.ui.blacklist.PepBlacklist;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
@@ -38,7 +38,7 @@ import dagger.Component;
 
     void inject(KeysyncManagement activity);
 
-    void inject(About activity);
+    void inject(AboutActivity activity);
 
     void inject(PermissionsActivity activity);
 

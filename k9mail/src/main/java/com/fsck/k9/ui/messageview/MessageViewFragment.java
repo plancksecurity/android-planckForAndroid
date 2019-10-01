@@ -3,11 +3,7 @@ package com.fsck.k9.ui.messageview;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DialogFragment;
 import android.app.DownloadManager;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -16,6 +12,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -36,9 +36,9 @@ import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderCallbacks;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.controller.MessagingController;
+import com.fsck.k9.fragment.AttachmentDownloadDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmentListener;
-import com.fsck.k9.fragment.ProgressDialogFragment;
 import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
@@ -79,10 +79,8 @@ import foundation.pEp.jniadapter.Rating;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import timber.log.Timber;
 
@@ -148,16 +146,15 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private AttachmentViewInfo currentAttachmentViewInfo;
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
-        mContext = activity;
+        mContext = context.getApplicationContext();
 
         try {
-            mFragmentListener = (MessageViewFragmentListener) activity;
+            mFragmentListener = (MessageViewFragmentListener) getActivity();
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.getClass() +
-                    " must implement MessageViewFragmentListener");
+            throw new ClassCastException("This fragment must be attached to a MessageViewFragmentListener");
         }
     }
 
@@ -174,6 +171,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         mController = MessagingController.getInstance(context);
         downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         messageCryptoPresenter = new MessageCryptoPresenter(savedInstanceState, messageCryptoMvpView);
+        messageLoaderHelper = new MessageLoaderHelper(
+                context, getLoaderManager(), getFragmentManager(), messageLoaderCallbacks);
         mInitialized = true;
     }
 
@@ -336,7 +335,11 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
                 mMessageView, mAccount, messageViewInfo);
         if (!handledByCryptoPresenter) {
             mMessageView.showMessage(mAccount, messageViewInfo);
-//            mMessageView.getMessageHeaderView().setCryptoStatusDisabled();
+            /*if (mAccount.isOpenPgpProviderConfigured()) {
+                mMessageView.getMessageHeaderView().setCryptoStatusDisabled();
+            } else {
+                mMessageView.getMessageHeaderView().hideCryptoStatus();
+            }*/
         }
     }
 
@@ -606,7 +609,8 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
             }
             case R.id.dialog_attachment_progress: {
                 String message = getString(R.string.dialog_attachment_progress_title);
-                fragment = ProgressDialogFragment.newInstance(null, message);
+                long size = currentAttachmentViewInfo.size;
+                fragment = AttachmentDownloadDialogFragment.newInstance(size, message);
                 break;
             }
             default: {
@@ -633,7 +637,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         DialogFragment fragment = (DialogFragment) fm.findFragmentByTag(getDialogTag(dialogId));
 
         if (fragment != null) {
-            fragment.dismiss();
+            fragment.dismissAllowingStateLoss();
         }
     }
 

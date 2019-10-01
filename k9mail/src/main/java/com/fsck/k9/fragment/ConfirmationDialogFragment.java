@@ -1,16 +1,16 @@
 package com.fsck.k9.fragment;
 
+
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
-import timber.log.Timber;
+import androidx.fragment.app.DialogFragment;
+import androidx.appcompat.app.AlertDialog;
 
-import com.fsck.k9.K9;
+import timber.log.Timber;
 
 public class ConfirmationDialogFragment extends DialogFragment implements OnClickListener,
         OnCancelListener {

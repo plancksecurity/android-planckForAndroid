@@ -23,7 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import android.net.TrafficStats;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 import android.text.TextUtils;
 
 import com.fsck.k9.mail.Address;

@@ -1,12 +1,19 @@
 package com.fsck.k9.activity;
 
+
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -14,9 +21,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PersistableBundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
+import androidx.core.content.ContextCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -25,7 +31,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
@@ -44,9 +49,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.MessageActions;
 import com.fsck.k9.activity.misc.ExtendedAsyncTask;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
-import com.fsck.k9.activity.setup.AccountSettings;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
-import com.fsck.k9.activity.setup.Prefs;
 import com.fsck.k9.activity.setup.WelcomeMessage;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.helper.SizeFormatter;
@@ -55,7 +58,7 @@ import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.PEpImporterActivity;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
 import com.fsck.k9.pEp.manualsync.KeySourceType;
-import com.fsck.k9.pEp.ui.About;
+import com.fsck.k9.pEp.ui.AboutActivity;
 import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -65,18 +68,13 @@ import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
+import com.fsck.k9.ui.settings.SettingsActivity;
+import com.fsck.k9.ui.settings.account.AccountSettingsActivity;
+import com.fsck.k9.ui.settings.general.GeneralSettingsActivity;
 import com.karumi.dexter.listener.single.CompositePermissionListener;
 
+
 import foundation.pEp.jniadapter.Rating;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 import timber.log.Timber;
 
 
@@ -97,6 +95,8 @@ public class Accounts extends PEpImporterActivity {
     private static final int DIALOG_RECREATE_ACCOUNT = 3;
     private static final int DIALOG_NO_FILE_MANAGER = 4;
 
+    private MessagingController controller;
+
     /*
      * Must be serializable hence implementation class used for declaration.
      */
@@ -104,21 +104,17 @@ public class Accounts extends PEpImporterActivity {
 
     private ConcurrentMap<BaseAccount, String> pendingWork = new ConcurrentHashMap<BaseAccount, String>();
 
-    private BaseAccount mSelectedContextAccount;
-    private int mUnreadMessageCount = 0;
+    private BaseAccount selectedContextAccount;
 
-    private AccountsHandler mHandler = new AccountsHandler();
-    private FoldersAdapter mAdapter;
-    private FoldersAdapter mFoldersAdapter;
-    private SearchAccount mAllMessagesAccount = null;
-    private SearchAccount mUnifiedInboxAccount = null;
-    private FontSizes mFontSizes = K9.getFontSizes();
+    private AccountsHandler handler = new AccountsHandler();
+    private FoldersAdapter adapter;
+    private FoldersAdapter foldersAdapter;
+    private SearchAccount allMessagesAccount = null;
+    private SearchAccount unifiedInboxAccount = null;
+    private FontSizes fontSizes = K9.getFontSizes();
 
-    private MenuItem mRefreshMenuItem;
-
-    private TextView mActionBarTitle;
-    private TextView mActionBarSubTitle;
-    private TextView mActionBarUnread;
+    private MenuItem refreshMenuItem;
+    //private ActionBar actionBar;
 
     private boolean exportGlobalSettings;
     private ArrayList<String> exportAccountUuids;
@@ -128,7 +124,7 @@ public class Accounts extends PEpImporterActivity {
      *
      * @see #onRetainNonConfigurationInstance()
      */
-    private NonConfigurationInstance mNonConfigurationInstance;
+    private NonConfigurationInstance nonConfigurationInstance;
 
 
     private static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
@@ -141,22 +137,14 @@ public class Accounts extends PEpImporterActivity {
 
     class AccountsHandler extends Handler {
         private void setViewTitle() {
-            mActionBarTitle.setText(getString(R.string.accounts_title));
-
-            if (mUnreadMessageCount == 0) {
-                mActionBarUnread.setVisibility(View.GONE);
-            } else {
-                mActionBarUnread.setText(String.format("%d", mUnreadMessageCount));
-                mActionBarUnread.setVisibility(View.GONE);
-            }
+            getToolbar().setTitle(R.string.accounts_title);
 
             String operation = mListener.getOperation(Accounts.this);
             operation = operation.trim();
             if (operation.length() < 1) {
-                mActionBarSubTitle.setVisibility(View.GONE);
+                getToolbar().setSubtitle(null);
             } else {
-                mActionBarSubTitle.setVisibility(View.VISIBLE);
-                mActionBarSubTitle.setText(operation);
+                getToolbar().setSubtitle(operation);
             }
         }
         public void refreshTitle() {
@@ -170,11 +158,11 @@ public class Accounts extends PEpImporterActivity {
         public void dataChanged() {
             runOnUiThread(new Runnable() {
                 public void run() {
-                    if (mAdapter != null) {
-                        mAdapter.notifyDataSetChanged();
+                    if (adapter != null) {
+                        adapter.notifyDataSetChanged();
                     }
-                    if (mFoldersAdapter != null) {
-                        mFoldersAdapter.notifyDataSetChanged();
+                    if (foldersAdapter != null) {
+                        foldersAdapter.notifyDataSetChanged();
                     }
                 }
             });
@@ -199,8 +187,8 @@ public class Accounts extends PEpImporterActivity {
                     String toastText = getString(R.string.account_size_changed, account.getDescription(),
                                                  SizeFormatter.formatSize(getApplication(), oldSize), SizeFormatter.formatSize(getApplication(), newSize));
                     FeedbackTools.showLongFeedback(accountsList, toastText);
-                    if (mAdapter != null) {
-                        mAdapter.notifyDataSetChanged();
+                    if (adapter != null) {
+                        adapter.notifyDataSetChanged();
                     }
                 }
             });
@@ -208,16 +196,16 @@ public class Accounts extends PEpImporterActivity {
         public void progress(final boolean progress) {
             // Make sure we don't try this before the menu is initialized
             // this could happen while the activity is initialized.
-            if (mRefreshMenuItem == null) {
+            if (refreshMenuItem == null) {
                 return;
             }
 
             runOnUiThread(new Runnable() {
                 public void run() {
                     if (progress) {
-                        mRefreshMenuItem.setActionView(R.layout.actionbar_indeterminate_progress_actionview);
+                        refreshMenuItem.setActionView(R.layout.actionbar_indeterminate_progress_actionview);
                     } else {
-                        mRefreshMenuItem.setActionView(null);
+                        refreshMenuItem.setActionView(null);
                     }
                 }
             });
@@ -233,19 +221,20 @@ public class Accounts extends PEpImporterActivity {
     }
 
     public void setProgress(boolean progress) {
-        mHandler.progress(progress);
+        handler.progress(progress);
     }
 
     ActivityListener mListener = new ActivityListener() {
         @Override
         public void informUserOfStatus() {
-            mHandler.refreshTitle();
+            handler.refreshTitle();
         }
 
         @Override
-        public void folderStatusChanged(Account account, String folderName, int unreadMessageCount) {
-            try {
-                AccountStats stats = account.getStats(Accounts.this);
+        public void folderStatusChanged(Account account, String folderServerId, int unreadMessageCount) {
+            /*try {
+                //TODO: FIX;
+                AccountStats stats = controller.getAccountStats(account);
                 if (stats == null) {
                     Timber.w("Unable to get account stats");
                 } else {
@@ -253,7 +242,7 @@ public class Accounts extends PEpImporterActivity {
                 }
             } catch (Exception e) {
                 Timber.e(e, "Unable to get account stats");
-            }
+            }*/
         }
         @Override
         public void accountStatusChanged(BaseAccount account, AccountStats stats) {
@@ -267,59 +256,54 @@ public class Accounts extends PEpImporterActivity {
                 stats.available = false;
             }
             accountStats.put(account.getUuid(), stats);
-            if (account instanceof Account) {
-                mUnreadMessageCount += stats.unreadMessageCount - oldUnreadMessageCount;
-            }
-            mHandler.dataChanged();
+            handler.dataChanged();
             pendingWork.remove(account);
 
             if (pendingWork.isEmpty()) {
-                mHandler.progress(Window.PROGRESS_END);
-                mHandler.refreshTitle();
+                handler.progress(Window.PROGRESS_END);
+                handler.refreshTitle();
             } else {
-                int level = (Window.PROGRESS_END / mAdapter.getCount()) * (mAdapter.getCount() - pendingWork.size()) ;
-                mHandler.progress(level);
+                int level = (Window.PROGRESS_END / adapter.getCount()) * (adapter.getCount() - pendingWork.size()) ;
+                handler.progress(level);
             }
         }
 
         @Override
         public void accountSizeChanged(Account account, long oldSize, long newSize) {
-            mHandler.accountSizeChanged(account, oldSize, newSize);
+            handler.accountSizeChanged(account, oldSize, newSize);
         }
 
         @Override
         public void synchronizeMailboxFinished(
             Account account,
-            String folder,
+            String folderServerId,
             int totalMessagesInMailbox,
         int numNewMessages) {
             MessagingController.getInstance(getApplication()).getAccountStats(Accounts.this, account, mListener);
-            super.synchronizeMailboxFinished(account, folder, totalMessagesInMailbox, numNewMessages);
+            super.synchronizeMailboxFinished(account, folderServerId, totalMessagesInMailbox, numNewMessages);
 
-            mHandler.progress(false);
+            handler.progress(false);
 
         }
 
         @Override
-        public void synchronizeMailboxStarted(Account account, String folder) {
-            super.synchronizeMailboxStarted(account, folder);
-            mHandler.progress(true);
+        public void synchronizeMailboxStarted(Account account, String folderName) {
+            super.synchronizeMailboxStarted(account, folderName);
+            handler.progress(true);
         }
 
         @Override
-        public void synchronizeMailboxFailed(Account account, String folder,
+        public void synchronizeMailboxFailed(Account account, String folderServerId,
         String message) {
-            super.synchronizeMailboxFailed(account, folder, message);
-            mHandler.progress(false);
+            super.synchronizeMailboxFailed(account, folderServerId, message);
+            handler.progress(false);
 
         }
 
     };
 
-    private static String ACCOUNT_STATS = "accountStats";
-
-    private static String STATE_UNREAD_COUNT = "unreadCount";
-    private static String SELECTED_CONTEXT_ACCOUNT = "selectedContextAccount";
+    private static final String ACCOUNT_STATS = "accountStats";
+    private static final String SELECTED_CONTEXT_ACCOUNT = "selectedContextAccount";
     private static final String STATE_EXPORT_GLOBAL_SETTINGS = "exportGlobalSettings";
     private static final String STATE_EXPORT_ACCOUNTS = "exportAccountUuids";
     public static final String EXTRA_STARTUP = "startup";
@@ -374,6 +358,9 @@ public class Accounts extends PEpImporterActivity {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+
+        controller = MessagingController.getInstance(getApplicationContext());
+
         bindViews(R.layout.accounts);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.message_swipe);
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.pep_green),
@@ -392,9 +379,7 @@ public class Accounts extends PEpImporterActivity {
             createSpecialAccounts();
         }
 
-        Preferences preferences = Preferences.getPreferences(this);
-        preferences.loadAccounts();
-        List<Account> accounts = preferences.getAccounts();
+        List<Account> accounts = Preferences.getPreferences(this).getAccounts();
         Intent intent = getIntent();
         //onNewIntent(intent);
 
@@ -414,7 +399,7 @@ public class Accounts extends PEpImporterActivity {
 
         boolean startup = intent.getBooleanExtra(EXTRA_STARTUP, true);
         if (startup && K9.startIntegratedInbox() && !K9.isHideSpecialAccounts()) {
-            onOpenAccount(mUnifiedInboxAccount);
+            onOpenAccount(unifiedInboxAccount);
             finish();
             return;
         } else if (startup && accounts.size() > 0 && onOpenAccount(accounts.get(0))) {
@@ -428,16 +413,16 @@ public class Accounts extends PEpImporterActivity {
 
         if (icicle != null && icicle.containsKey(SELECTED_CONTEXT_ACCOUNT)) {
             String accountUuid = icicle.getString("selectedContextAccount");
-            mSelectedContextAccount = Preferences.getPreferences(this).getAccount(accountUuid);
+            selectedContextAccount = Preferences.getPreferences(this).getAccount(accountUuid);
         }
 
         restoreAccountStats(icicle);
-        mHandler.setViewTitle();
+        handler.setViewTitle();
 
         // Handle activity restarts because of a configuration change (e.g. rotating the screen)
-        mNonConfigurationInstance = (NonConfigurationInstance) getLastNonConfigurationInstance();
-        if (mNonConfigurationInstance != null) {
-            mNonConfigurationInstance.restore(this);
+        nonConfigurationInstance = (NonConfigurationInstance) getLastCustomNonConfigurationInstance();
+        if (nonConfigurationInstance != null) {
+            nonConfigurationInstance.restore(this);
         }
 
         setupAddAccountButton();
@@ -471,7 +456,7 @@ public class Accounts extends PEpImporterActivity {
         settingsButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                onEditPrefs();
+                onEditSettings();
             }
         });
     }
@@ -488,20 +473,16 @@ public class Accounts extends PEpImporterActivity {
 
     private void initializeActionBar() {
         setUpToolbar(false);
-        View customView = getToolbar().findViewById(R.id.actionbar_custom);
+        //View customView = getToolbar().findViewById(R.id.actionbar_custom);
         setStatusBarPepColor(Rating.pEpRatingFullyAnonymous);
-
-        mActionBarTitle = (TextView) customView.findViewById(R.id.actionbar_title_first);
-        mActionBarSubTitle = (TextView) customView.findViewById(R.id.actionbar_title_sub);
-        mActionBarUnread = (TextView) customView.findViewById(R.id.actionbar_unread_count);
     }
 
     /**
      * Creates and initializes the special accounts ('Unified Inbox' and 'All Messages')
      */
     private void createSpecialAccounts() {
-        mUnifiedInboxAccount = SearchAccount.createUnifiedInboxAccount(this);
-        mAllMessagesAccount = SearchAccount.createAllMessagesAccount(this);
+        unifiedInboxAccount = SearchAccount.createUnifiedInboxAccount(this);
+        allMessagesAccount = SearchAccount.createAllMessagesAccount(this);
     }
 
     @SuppressWarnings("unchecked")
@@ -511,17 +492,15 @@ public class Accounts extends PEpImporterActivity {
             if (oldStats != null) {
                 accountStats.putAll(oldStats);
             }
-            mUnreadMessageCount = icicle.getInt(STATE_UNREAD_COUNT);
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mSelectedContextAccount != null) {
-            outState.putString(SELECTED_CONTEXT_ACCOUNT, mSelectedContextAccount.getUuid());
+        if (selectedContextAccount != null) {
+            outState.putString(SELECTED_CONTEXT_ACCOUNT, selectedContextAccount.getUuid());
         }
-        outState.putSerializable(STATE_UNREAD_COUNT, mUnreadMessageCount);
         outState.putSerializable(ACCOUNT_STATS, accountStats);
 
         outState.putBoolean(STATE_EXPORT_GLOBAL_SETTINGS, exportGlobalSettings);
@@ -582,8 +561,8 @@ public class Accounts extends PEpImporterActivity {
 //    @Override
 //    public Object onRetainNonConfigurationInstance() {
 //        Object retain = null;
-//        if (mNonConfigurationInstance != null && mNonConfigurationInstance.retain()) {
-//            retain = mNonConfigurationInstance;
+//        if (nonConfigurationInstance != null && nonConfigurationInstance.retain()) {
+//            retain = nonConfigurationInstance;
 //        }
 //        return retain;
 //    }
@@ -609,10 +588,8 @@ public class Accounts extends PEpImporterActivity {
 
     @Override
     public void refresh() {
-        Preferences preferences = Preferences.getPreferences(this);
-        preferences.loadAccounts();
         accounts.clear();
-        accounts.addAll(preferences.getAccounts());
+        accounts.addAll(Preferences.getPreferences(this).getAccounts());
 
         // see if we should show the welcome message
 //        if (accounts.length < 1) {
@@ -622,21 +599,21 @@ public class Accounts extends PEpImporterActivity {
 
         List<BaseAccount> newAccounts;
         if (!K9.isHideSpecialAccounts() && accounts.size() > 0) {
-            if (mUnifiedInboxAccount == null || mAllMessagesAccount == null) {
+            if (unifiedInboxAccount == null || allMessagesAccount == null) {
                 createSpecialAccounts();
             }
 
             newAccounts = new ArrayList<BaseAccount>(accounts.size() +
                     SPECIAL_ACCOUNTS_COUNT);
-            newAccounts.add(mUnifiedInboxAccount);
-            newAccounts.add(mAllMessagesAccount);
+            newAccounts.add(unifiedInboxAccount);
+            newAccounts.add(allMessagesAccount);
         } else {
             newAccounts = new ArrayList<BaseAccount>(accounts.size());
         }
 
         newAccounts.addAll(accounts);
 
-        mAdapter = new FoldersAdapter(accounts, new OnFolderClickListener() {
+        adapter = new FoldersAdapter(accounts, new OnFolderClickListener() {
             @Override
             public void onClick(LocalFolder folder) {
 
@@ -650,19 +627,19 @@ public class Accounts extends PEpImporterActivity {
         }, new OnBaseAccountClickListener() {
             @Override
             public void onClick(BaseAccount baseAccount) {
-                AccountSettings.actionSettings(Accounts.this, baseAccount.getUuid());
+                AccountSettingsActivity.start(Accounts.this, baseAccount.getUuid());
             }
         });
-        accountsList.setAdapter(mAdapter);
+        accountsList.setAdapter(adapter);
 
         List<BaseAccount> folders = new ArrayList<>(SPECIAL_ACCOUNTS_COUNT);
 
         if (!K9.isHideSpecialAccounts() && accounts.size() > 0) {
-            folders.add(mUnifiedInboxAccount);
-            folders.add(mAllMessagesAccount);
+            folders.add(unifiedInboxAccount);
+            folders.add(allMessagesAccount);
         }
 
-        mFoldersAdapter = new FoldersAdapter(folders, new OnFolderClickListener() {
+        foldersAdapter = new FoldersAdapter(folders, new OnFolderClickListener() {
             @Override
             public void onClick(LocalFolder folder) {
 
@@ -670,22 +647,21 @@ public class Accounts extends PEpImporterActivity {
 
             @Override
             public void onClick(Integer position) {
-                BaseAccount account = mFoldersAdapter.getItem(position);
+                BaseAccount account = foldersAdapter.getItem(position);
                 onOpenAccount(account);
             }
         }, new OnBaseAccountClickListener() {
             @Override
             public void onClick(BaseAccount baseAccount) {
-                Prefs.actionPrefs(Accounts.this);
+               GeneralSettingsActivity.Companion.start(Accounts.this);
             }
         });
-        foldersList.setAdapter(mFoldersAdapter);
-
+        foldersList.setAdapter(foldersAdapter);
         if (!newAccounts.isEmpty()) {
-            mHandler.progress(Window.PROGRESS_START);
+            handler.progress(Window.PROGRESS_START);
         }
         pendingWork.clear();
-        mHandler.refreshTitle();
+        handler.refreshTitle();
 
         MessagingController controller = MessagingController.getInstance(getApplication());
 
@@ -701,15 +677,15 @@ public class Accounts extends PEpImporterActivity {
             }
         }
 
-        mFoldersAdapter.notifyDataSetChanged();
+        foldersAdapter.notifyDataSetChanged();
     }
 
     private void onAddNewAccount() {
         AccountSetupBasics.actionNewAccount(this);
     }
 
-    private void onEditPrefs() {
-        Prefs.actionPrefs(this);
+    private void onEditSettings() {
+        SettingsActivity.launch(this);
     }
 
 
@@ -805,12 +781,12 @@ public class Accounts extends PEpImporterActivity {
     }
 
     private void onDeleteAccount(Account account) {
-        mSelectedContextAccount = account;
+        selectedContextAccount = account;
         showDialog(DIALOG_REMOVE_ACCOUNT);
     }
 
     private void onEditAccount(Account account) {
-        AccountSettings.actionSettings(this, account);
+        AccountSettingsActivity.start(this, account.getUuid());
     }
 
     @Override
@@ -819,21 +795,21 @@ public class Accounts extends PEpImporterActivity {
         // dismissed. Make sure we have all information necessary before creating a new dialog.
         switch (id) {
         case DIALOG_REMOVE_ACCOUNT: {
-            if (mSelectedContextAccount == null) {
+            if (selectedContextAccount == null) {
                 return null;
             }
 
             return ConfirmationDialog.create(this, id,
                                              R.string.account_delete_dlg_title,
                                              getString(R.string.account_delete_dlg_instructions_fmt,
-                                                     mSelectedContextAccount.getDescription()),
+                                                     selectedContextAccount.getDescription()),
                                              R.string.okay_action,
                                              R.string.cancel_action,
             new Runnable() {
                 @Override
                 public void run() {
-                    if (mSelectedContextAccount instanceof Account) {
-                        Account realAccount = (Account) mSelectedContextAccount;
+                    if (selectedContextAccount instanceof Account) {
+                        Account realAccount = (Account) selectedContextAccount;
                         try {
                             realAccount.getLocalStore().delete();
                         } catch (Exception e) {
@@ -847,28 +823,27 @@ public class Accounts extends PEpImporterActivity {
                         K9.setServicesEnabled(Accounts.this);
                         refresh();
 
-                        refreshAccountsStats(realAccount);
                     }
                 }
             });
         }
         case DIALOG_CLEAR_ACCOUNT: {
-            if (mSelectedContextAccount == null) {
+            if (selectedContextAccount == null) {
                 return null;
             }
 
             return ConfirmationDialog.create(this, id,
                                              R.string.account_clear_dlg_title,
                                              getString(R.string.account_clear_dlg_instructions_fmt,
-                                                     mSelectedContextAccount.getDescription()),
+                                                     selectedContextAccount.getDescription()),
                                              R.string.okay_action,
                                              R.string.cancel_action,
             new Runnable() {
                 @Override
                 public void run() {
-                    if (mSelectedContextAccount instanceof Account) {
-                        Account realAccount = (Account) mSelectedContextAccount;
-                        mHandler.workingAccount(realAccount,
+                    if (selectedContextAccount instanceof Account) {
+                        Account realAccount = (Account) selectedContextAccount;
+                        handler.workingAccount(realAccount,
                                                 R.string.clearing_account);
                         MessagingController.getInstance(getApplication())
                         .clear(realAccount, null);
@@ -877,22 +852,22 @@ public class Accounts extends PEpImporterActivity {
             });
         }
         case DIALOG_RECREATE_ACCOUNT: {
-            if (mSelectedContextAccount == null) {
+            if (selectedContextAccount == null) {
                 return null;
             }
 
             return ConfirmationDialog.create(this, id,
                                              R.string.account_recreate_dlg_title,
                                              getString(R.string.account_recreate_dlg_instructions_fmt,
-                                                     mSelectedContextAccount.getDescription()),
+                                                     selectedContextAccount.getDescription()),
                                              R.string.okay_action,
                                              R.string.cancel_action,
             new Runnable() {
                 @Override
                 public void run() {
-                    if (mSelectedContextAccount instanceof Account) {
-                        Account realAccount = (Account) mSelectedContextAccount;
-                        mHandler.workingAccount(realAccount,
+                    if (selectedContextAccount instanceof Account) {
+                        Account realAccount = (Account) selectedContextAccount;
+                        handler.workingAccount(realAccount,
                                                 R.string.recreating_account);
                         MessagingController.getInstance(getApplication())
                         .recreate(realAccount, null);
@@ -920,37 +895,23 @@ public class Accounts extends PEpImporterActivity {
         return super.onCreateDialog(id);
     }
 
-    private void refreshAccountsStats(Account realAccount) {
-        AccountStats oldStats = accountStats.get(realAccount.getUuid());
-        if (oldStats != null) {
-            int oldUnreadMessageCount = oldStats.unreadMessageCount;
-            mUnreadMessageCount -= oldUnreadMessageCount;
-        }
-        mHandler.setViewTitle();
-        if (accounts.size() < 1) {
-            accountStats.clear();
-            WelcomeMessage.showWelcomeMessage(this);
-            finish();
-        }
-    }
-
     @Override
     public void onPrepareDialog(int id, Dialog d) {
         AlertDialog alert = (AlertDialog) d;
         switch (id) {
         case DIALOG_REMOVE_ACCOUNT: {
             alert.setMessage(getString(R.string.account_delete_dlg_instructions_fmt,
-                                       mSelectedContextAccount.getDescription()));
+                                       selectedContextAccount.getDescription()));
             break;
         }
         case DIALOG_CLEAR_ACCOUNT: {
             alert.setMessage(getString(R.string.account_clear_dlg_instructions_fmt,
-                                       mSelectedContextAccount.getDescription()));
+                                       selectedContextAccount.getDescription()));
             break;
         }
         case DIALOG_RECREATE_ACCOUNT: {
             alert.setMessage(getString(R.string.account_recreate_dlg_instructions_fmt,
-                                       mSelectedContextAccount.getDescription()));
+                                       selectedContextAccount.getDescription()));
             break;
         }
         }
@@ -964,10 +925,10 @@ public class Accounts extends PEpImporterActivity {
         // submenus don't actually set the menuInfo, so the "advanced"
         // submenu wouldn't work.
         if (menuInfo != null) {
-            mSelectedContextAccount = (BaseAccount)accountsList.getItemAtPosition(menuInfo.position);
+            selectedContextAccount = (BaseAccount)accountsList.getItemAtPosition(menuInfo.position);
         }
-        if (mSelectedContextAccount instanceof Account) {
-            Account realAccount = (Account)mSelectedContextAccount;
+        if (selectedContextAccount instanceof Account) {
+            Account realAccount = (Account) selectedContextAccount;
             switch (item.getItemId()) {
                 case R.id.delete_account:
                     onDeleteAccount(realAccount);
@@ -1045,8 +1006,8 @@ public class Accounts extends PEpImporterActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case R.id.add_new_account:
-            onAddNewAccount();
+        case R.id.settings:
+            onEditSettings();
             break;
         case R.id.check_mail:
             onCheckMail(null);
@@ -1055,7 +1016,7 @@ public class Accounts extends PEpImporterActivity {
             onCompose();
             break;
         case R.id.about:
-            startActivity(About.onAbout(Accounts.this));
+            onAbout();
             break;
         case R.id.search:
             showSearchView();
@@ -1072,101 +1033,10 @@ public class Accounts extends PEpImporterActivity {
         return true;
     }
 
-    public static String[][] USED_LIBRARIES = new String[][]{
-            new String[]{"Android Support Library", "https://developer.android.com/topic/libraries/support-library/index.html"},
-            new String[]{"jutf7", "http://jutf7.sourceforge.net/"},
-            new String[]{"JZlib", "http://www.jcraft.com/jzlib/"},
-            new String[]{"Commons IO", "http://commons.apache.org/io/"},
-            new String[]{"Mime4j", "http://james.apache.org/mime4j/"},
-//        new String[] {"Android-PullToRefresh", "https://github.com/chrisbanes/Android-PullToRefresh"},
-//        new String[] {"ckChangeLog", "https://github.com/cketti/ckChangeLog"},
-            new String[]{"HoloColorPicker", "https://github.com/LarsWerkman/HoloColorPicker"},
-            new String[]{"Glide", "https://github.com/bumptech/glide"},
-            new String[]{"jsoup", "https://jsoup.org/"},
-            new String[]{"Moshi", "https://github.com/square/moshi"},
-            new String[]{"Okio", "https://github.com/square/okio"},
-            new String[]{"SafeContentResolver", "https://github.com/cketti/SafeContentResolver"},
-            new String[]{"ShowcaseView", "https://github.com/amlcurran/ShowcaseView"},
-            new String[]{"Timber", "https://github.com/JakeWharton/timber"},
-            new String[]{"TokenAutoComplete", "https://github.com/splitwise/TokenAutoComplete/"}, new String[]{"ButterKnife", "https://github.com/JakeWharton/butterknife"},
-            new String[]{"Calligraphy", "https://github.com/chrisjenx/Calligraphy"},
-            new String[]{"GPGME", "https://www.gnupg.org/(en)/related_software/gpgme/index.html"},
-            new String[]{"LibGPG-error", "https://www.gnupg.org/(en)/related_software/libgpg-error/index.html"},
-            new String[]{"Libcrypt", "https://directory.fsf.org/wiki/Libgcrypt"},
-            new String[]{"Libassuan", "https://www.gnupg.org/(en)/related_software/libassuan/index.html"},
-            new String[]{"Libksba", "https://www.gnupg.org/(en)/related_software/libksba/index.html"},
-            new String[]{"GNUPG", "https://www.gnupg.org/"},
-            new String[]{"Libcurl", "https://curl.haxx.se/libcurl/"},
-            new String[]{"Libiconv", "https://www.gnu.org/software/libiconv/"},
-            new String[]{"LibEtPan", "https://www.etpan.org/libetpan.html"},
-
-    };
-
     private void onAbout() {
-        String appName = getString(R.string.app_name);
-        int year = Calendar.getInstance().get(Calendar.YEAR);
-        WebView wv = new WebView(this);
-        StringBuilder html = new StringBuilder()
-        .append("<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" />")
-        .append("<img src=\"file:///android_asset/icon.png\" alt=\"").append(appName).append("\"/>")
-        .append("<h1>")
-        .append(String.format(getString(R.string.about_title_fmt),
-                              "<a href=\"" + getString(R.string.app_webpage_url)) + "\">")
-        .append(appName)
-        .append("</a>")
-        .append("</h1><p>")
-        .append(appName)
-        .append(" ")
-        .append(String.format(getString(R.string.debug_version_fmt), getVersionNumber()))
-        .append("</p><p>")
-        .append(String.format(getString(R.string.app_authors_fmt),
-                              getString(R.string.app_authors)))
-        .append("</p><p>")
-//        .append(String.format(getString(R.string.app_revision_fmt),
-//                              "<a href=\"" + getString(R.string.app_revision_url) + "\">" +
-//                              getString(R.string.app_revision_url) +
-//                              "</a>"))
-        .append("</p><hr/><p>")
-        .append(String.format(getString(R.string.app_copyright_fmt), Integer.toString(year), Integer.toString(year)))
-        .append("</p><hr/><p>")
-        .append(getString(R.string.pep_app_license))
-        .append("</p><hr/><p>")
-// Credits
-        .append("p≡p Team in alphabetical order:<br /><br />")
-		.append("Volker Birk, Simon Witts, Sandro Köchli,Sabrina Schleifer, Robert Goldmann, Rena Tangens, Patricia Bednar, Patrick Meier, padeluun, Nana Karlstetter, Meinhard Starostik, Mathijs de Haan, Martin Vojcik, Markus Schaber, Lix, Leonard Marquitan, Leon Schumacher, Lars Rohwedder, Krista Grothoff, Kinga Prettenhoffer, Hussein Kasem, Hernâni Marques, Edouard Tisserant, Dolça Moreno, Dirk Zimmermann Dietz Proepper, Detlev Sieber, Dean, Daniel Sosa, be, Berna Alp, Bart Polot, Arturo Jiménez, Andy Weber, Ana Rebollo")
-        .append("</p><hr/><p>");
-
-        StringBuilder libs = new StringBuilder().append("<ul>");
-        for (String[] library : USED_LIBRARIES) {
-            libs.append("<li><a href=\"").append(library[1]).append("\">").append(library[0]).append("</a></li>");
-        }
-        libs.append("</ul>");
-
-        html.append(String.format(getString(R.string.app_libraries), libs.toString()))
-        .append("</p><hr/><p>")
-        .append(String.format(getString(R.string.app_emoji_icons),
-                              "<div>TypePad \u7d75\u6587\u5b57\u30a2\u30a4\u30b3\u30f3\u753b\u50cf " +
-                              "(<a href=\"http://typepad.jp/\">Six Apart Ltd</a>) / " +
-                              "<a href=\"http://creativecommons.org/licenses/by/2.1/jp/\">CC BY 2.1</a></div>"))
-        .append("</p>");
-
-
-        wv.loadDataWithBaseURL("file:///android_res/drawable/", html.toString(), "text/html", "utf-8", null);
-        new AlertDialog.Builder(this)
-        .setView(wv)
-        .setCancelable(true)
-        .setPositiveButton(R.string.okay_action, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface d, int c) {
-                d.dismiss();
-            }
-        })
-//        .setNeutralButton(R.string.changelog_full_title, new DialogInterface.OnClickListener() {
-//            public void onClick(DialogInterface d, int c) {
-//                new ChangeLog(Accounts.this).getFullLogDialog().show();
-//            }
-//        })
-        .show();
+        AboutActivity.Companion.onAbout(this);
     }
+
 
     /**
      * Get current version number.
@@ -1192,7 +1062,7 @@ public class Accounts extends PEpImporterActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.accounts_option, menu);
-        mRefreshMenuItem = menu.findItem(R.id.check_mail);
+        refreshMenuItem = menu.findItem(R.id.check_mail);
         return true;
     }
 
@@ -1203,7 +1073,7 @@ public class Accounts extends PEpImporterActivity {
         menu.setHeaderTitle(R.string.accounts_context_menu_title);
 
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-        BaseAccount account =  mAdapter.getItem(info.position);
+        BaseAccount account =  adapter.getItem(info.position);
 
         if ((account instanceof Account) && !((Account) account).isEnabled()) {
             getMenuInflater().inflate(R.menu.disabled_accounts_context, menu);
@@ -1269,9 +1139,16 @@ public class Accounts extends PEpImporterActivity {
     }
 
 
-    @Override
+    /**
+     * Set the {@code NonConfigurationInstance} this activity should retain on configuration
+     * changes.
+     *
+     * @param inst
+     *         The {@link NonConfigurationInstance} that should be retained when
+     *         {@link Accounts#onRetainNonConfigurationInstance()} is called.
+     */
     public void setNonConfigurationInstance(NonConfigurationInstance inst) {
-        mNonConfigurationInstance = inst;
+        nonConfigurationInstance = inst;
     }
 
     private class AccountClickListener implements OnClickListener {
@@ -1306,7 +1183,7 @@ public class Accounts extends PEpImporterActivity {
                 Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
 
                 intent.setType("application/octet-stream");
-                intent.putExtra(Intent.EXTRA_TITLE, SettingsExporter.EXPORT_FILENAME);
+                intent.putExtra(Intent.EXTRA_TITLE, SettingsExporter.generateDatedExportFileName());
 
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 startActivityForResult(intent, ACTIVITY_REQUEST_SAVE_SETTINGS_FILE);
@@ -1396,10 +1273,10 @@ public class Accounts extends PEpImporterActivity {
                 holder.email = (TextView) view.findViewById(R.id.email);
                 holder.newMessageCount = (TextView) view.findViewById(R.id.new_message_count);
                 holder.flaggedMessageCount = (TextView) view.findViewById(R.id.flagged_message_count);
-                holder.newMessageCountWrapper = (View) view.findViewById(R.id.new_message_count_wrapper);
-                holder.flaggedMessageCountWrapper = (View) view.findViewById(R.id.flagged_message_count_wrapper);
-                holder.newMessageCountIcon = (View) view.findViewById(R.id.new_message_count_icon);
-                holder.flaggedMessageCountIcon = (View) view.findViewById(R.id.flagged_message_count_icon);
+                holder.newMessageCountWrapper = view.findViewById(R.id.new_message_count_wrapper);
+                holder.flaggedMessageCountWrapper = view.findViewById(R.id.flagged_message_count_wrapper);
+                holder.newMessageCountIcon = view.findViewById(R.id.new_message_count_icon);
+                holder.flaggedMessageCountIcon = view.findViewById(R.id.flagged_message_count_icon);
                 holder.activeIcons = (RelativeLayout) view.findViewById(R.id.active_icons);
 
                 holder.folders = (ImageButton) view.findViewById(R.id.folders);
@@ -1469,8 +1346,8 @@ public class Accounts extends PEpImporterActivity {
 
 
 
-            mFontSizes.setViewTextSize(holder.description, mFontSizes.getAccountName());
-            mFontSizes.setViewTextSize(holder.email, mFontSizes.getAccountDescription());
+            fontSizes.setViewTextSize(holder.description, fontSizes.getAccountName());
+            fontSizes.setViewTextSize(holder.email, fontSizes.getAccountDescription());
 
             if (account instanceof SearchAccount) {
                 holder.folders.setVisibility(View.GONE);

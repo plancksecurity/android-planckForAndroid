@@ -6,6 +6,7 @@ import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -18,13 +19,13 @@ public class PepExtraKeysPresenter implements Presenter {
     public PepExtraKeysPresenter() {
     }
 
-    public void initialize(PepExtraKeysView view, PEpProvider pEp, List<String> keys) {
+    public void initialize(PepExtraKeysView view, PEpProvider pEp, Set<String> keys) {
         this.pEp = pEp;
         this.view = view;
         setupMasterKeys(keys);
     }
 
-    private void setupMasterKeys(List<String> keys) {
+    private void setupMasterKeys(Set<String> keys) {
         List<KeyListItem> availableKeys = pEp.getMasterKeysInfo();
         List<KeyListItem> masterKeys = new ArrayList<>(availableKeys.size());
         for (KeyListItem availableKey : availableKeys) {

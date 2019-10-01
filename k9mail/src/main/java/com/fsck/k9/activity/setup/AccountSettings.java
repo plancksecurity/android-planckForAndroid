@@ -1,7 +1,6 @@
 
 package com.fsck.k9.activity.setup;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,7 +14,9 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
+import android.preference.SwitchPreference;
+import android.widget.ListAdapter;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.DeletePolicy;
@@ -23,16 +24,13 @@ import com.fsck.k9.Account.Expunge;
 import com.fsck.k9.Account.FolderMode;
 import com.fsck.k9.Account.MessageFormat;
 import com.fsck.k9.Account.QuoteStyle;
-import com.fsck.k9.Account.Searchable;
 import com.fsck.k9.Account.ShowPictures;
-import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.NotificationSetting;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.ChooseFolder;
 import com.fsck.k9.activity.ChooseIdentity;
-import com.fsck.k9.activity.ColorPickerDialog;
 import com.fsck.k9.activity.K9PreferenceActivity;
 import com.fsck.k9.activity.ManageIdentities;
 import com.fsck.k9.job.K9JobManager;
@@ -40,9 +38,8 @@ import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys;
-import com.fsck.k9.service.MailServiceLegacy;
 
-import org.openintents.openpgp.util.OpenPgpAppPreference;
+import org.openintents.openpgp.OpenPgpApiManager;
 import org.openintents.openpgp.util.OpenPgpKeyPreference;
 
 import java.util.Iterator;
@@ -54,7 +51,9 @@ import timber.log.Timber;
 
 
 public class AccountSettings extends K9PreferenceActivity {
+    //NOT USED.
     private static final String EXTRA_ACCOUNT = "account";
+    private static final String EXTRA_SHOW_OPENPGP = "show_openpgp";
 
     private static final int DIALOG_COLOR_PICKER_ACCOUNT = 1;
     private static final int DIALOG_COLOR_PICKER_LED = 2;
@@ -62,6 +61,7 @@ public class AccountSettings extends K9PreferenceActivity {
     private static final int SELECT_AUTO_EXPAND_FOLDER = 1;
 
     private static final int ACTIVITY_MANAGE_IDENTITIES = 2;
+    private static final int ACTIVITY_CRYPTO_TRANSFER_KEY = 3;
 
     private static final String PREFERENCE_SCREEN_MAIN = "main";
     private static final String PREFERENCE_SCREEN_COMPOSING = "composing";
@@ -113,9 +113,12 @@ public class AccountSettings extends K9PreferenceActivity {
     private static final String PREFERENCE_REPLY_AFTER_QUOTE = "reply_after_quote";
     private static final String PREFERENCE_STRIP_SIGNATURE = "strip_signature";
     private static final String PREFERENCE_SYNC_REMOTE_DELETIONS = "account_sync_remote_deletetions";
-    private static final String PREFERENCE_CRYPTO = "crypto";
-    private static final String PREFERENCE_CRYPTO_APP = "crypto_app";
-    private static final String PREFERENCE_CRYPTO_KEY = "crypto_key";
+    private static final String PREFERENCE_CRYPTO = "openpgp";
+    private static final String PREFERENCE_CRYPTO_PROVIDER = "openpgp_provider";
+    private static final String PREFERENCE_CRYPTO_KEY = "openpgp_key";
+    private static final String PREFERENCE_CRYPTO_HIDE_SIGN_ONLY = "openpgp_hide_sign_only";
+    private static final String PREFERENCE_AUTOCRYPT_PREFER_ENCRYPT = "autocrypt_prefer_encrypt";
+    private static final String PREFERENCE_AUTOCRYPT_TRANSFER = "autocrypt_transfer";
     private static final String PREFERENCE_CLOUD_SEARCH_ENABLED = "remote_search_enabled";
     private static final String PREFERENCE_REMOTE_SEARCH_NUM_RESULTS = "account_remote_search_num_results";
     private static final String PREFERENCE_REMOTE_SEARCH_FULL_TEXT = "account_remote_search_full_text";
@@ -184,15 +187,14 @@ public class AccountSettings extends K9PreferenceActivity {
     private CheckBoxPreference pushPollOnConnect;
     private ListPreference idleRefreshPeriod;
     private ListPreference mMaxPushFolders;
-   // private boolean hasPgpCrypto = false;
     private OpenPgpKeyPreference pgpCryptoKey;
-    private OpenPgpAppPreference mCryptoApp;
     private CheckBoxPreference pgpSupportSignOnly;
 
     private CheckBoxPreference pEpSaveEncrypted;
     private CheckBoxPreference pEpDisablePrivacyProtection;
     //private CheckBoxPreference mPEpSyncAccount;
     private Preference mPepExtraKeys;
+    private SwitchPreference pgpHideSignOnly;
 
     private PreferenceScreen searchScreen;
     private CheckBoxPreference cloudSearchEnabled;
@@ -211,6 +213,8 @@ public class AccountSettings extends K9PreferenceActivity {
     private ListPreference spamFolder;
     private ListPreference trashFolder;
     private CheckBoxPreference alwaysShowCcBcc;
+    private SwitchPreference pgpEnable;
+    private OpenPgpApiManager openPgpApiManager;
 
     private final K9JobManager jobManager = K9.jobManager;
 
@@ -230,8 +234,11 @@ public class AccountSettings extends K9PreferenceActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        openPgpApiManager = new OpenPgpApiManager(getApplicationContext(), this);
+
         String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
         account = Preferences.getPreferences(this).getAccount(accountUuid);
+        boolean startInOpenPgp = getIntent().getBooleanExtra(EXTRA_SHOW_OPENPGP, false);
 
         try {
             final Store store = account.getRemoteStore();
@@ -715,6 +722,18 @@ public class AccountSettings extends K9PreferenceActivity {
             }
         });
 
+//        setupCryptoSettings();
+
+        if (savedInstanceState == null && startInOpenPgp) {
+            PreferenceScreen preference = (PreferenceScreen) findPreference(PREFERENCE_CRYPTO);
+            goToPreferenceScreen(preference);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
 //        mHasCrypto = OpenPgpUtils.isAvailable(this);
 //        if (mHasCrypto) {
 //            mCryptoApp = (OpenPgpAppPreference) findPreference(PREFERENCE_CRYPTO_APP);
@@ -801,7 +820,7 @@ public class AccountSettings extends K9PreferenceActivity {
         mPepExtraKeys.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                PepExtraKeys.actionShowBlacklist(AccountSettings.this, account);
+                PepExtraKeys.actionStart(AccountSettings.this);
                 return true;
             }
         });
@@ -865,11 +884,10 @@ public class AccountSettings extends K9PreferenceActivity {
         account.setReplyAfterQuote(replyAfterQuote.isChecked());
         account.setStripSignature(stripSignature.isChecked());
         account.setLocalStorageProviderId(localStorageProvider.getValue());
-//        if (hasPgpCrypto) {
-//            account.setCryptoKey(pgpCryptoKey.getValue());
-//        } else {
-//            account.setCryptoKey(Account.NO_OPENPGP_KEY);
-//        }
+        //if (pgpCryptoKey != null) {
+        //    account.setOpenPgpKey(pgpCryptoKey.getValue());
+        //}
+        //account.setOpenPgpHideSignOnly(pgpHideSignOnly.isChecked());
 
         // In webdav account we use the exact folder name also for inbox,
         // since it varies because of internationalization
@@ -975,11 +993,11 @@ public class AccountSettings extends K9PreferenceActivity {
     }
 
     private void onIncomingSettings() {
-        AccountSetupBasics.actionEditIncomingSettings(this, account);
+        AccountSetupBasics.actionEditIncomingSettings(this, account.getUuid());
     }
 
     private void onOutgoingSettings() {
-        AccountSetupBasics.actionEditOutgoingSettings(this, account);
+        AccountSetupBasics.actionEditOutgoingSettings(this, account.getUuid());
     }
 
     public void onChooseChipColor() {
@@ -991,7 +1009,7 @@ public class AccountSettings extends K9PreferenceActivity {
         showDialog(DIALOG_COLOR_PICKER_LED);
     }
 
-    @Override
+    /*@Override
     public Dialog onCreateDialog(int id) {
         Dialog dialog = null;
 
@@ -1021,9 +1039,9 @@ public class AccountSettings extends K9PreferenceActivity {
         }
 
         return dialog;
-    }
+    }*/
 
-    @Override
+   /* @Override
     public void onPrepareDialog(int id, Dialog dialog) {
         switch (id) {
             case DIALOG_COLOR_PICKER_ACCOUNT: {
@@ -1038,7 +1056,7 @@ public class AccountSettings extends K9PreferenceActivity {
             }
         }
     }
-
+*/
     public void onChooseAutoExpandFolder() {
         Intent selectIntent = new Intent(this, ChooseFolder.class);
         selectIntent.putExtra(ChooseFolder.EXTRA_ACCOUNT, account.getUuid());
@@ -1086,6 +1104,17 @@ public class AccountSettings extends K9PreferenceActivity {
 
             remoteSearchNumResults
                     .setSummary(String.format(getString(R.string.account_settings_remote_search_num_summary), maxResults));
+        }
+    }
+
+    private void goToPreferenceScreen(PreferenceScreen preference) {
+        PreferenceScreen preferenceScreen = getPreferenceScreen();
+        ListAdapter listAdapter = preferenceScreen.getRootAdapter();
+        for (int itemNumber = 0; itemNumber < listAdapter.getCount(); itemNumber++) {
+            if (listAdapter.getItem(itemNumber).equals(preference)) {
+                preferenceScreen.onItemClick(null, null, itemNumber, 0);
+                break;
+            }
         }
     }
 

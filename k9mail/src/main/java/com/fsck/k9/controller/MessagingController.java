@@ -32,14 +32,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.Process;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import android.util.Log;
 
 import com.fsck.k9.Account;
@@ -86,10 +85,10 @@ import com.fsck.k9.mail.TransportProvider;
 import com.fsck.k9.mail.internet.MessageExtractor;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
-import com.fsck.k9.mail.internet.MimeMessageHelper;
 import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.mail.power.TracingPowerManager;
 import com.fsck.k9.mail.power.TracingPowerManager.TracingWakeLock;
+import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mail.store.pop3.Pop3Store;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalFolder.MoreMessages;
@@ -106,7 +105,6 @@ import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
 import com.fsck.k9.pEp.manualsync.ImportKeyController;
 import com.fsck.k9.pEp.manualsync.ImportKeyController.KeyImportMessagingActions;
 import com.fsck.k9.pEp.manualsync.ImportKeyControllerFactory;
-import com.fsck.k9.pEp.manualsync.ImportKeyWizardState;
 import com.fsck.k9.pEp.manualsync.ImportWizardPresenter;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
@@ -120,33 +118,7 @@ import foundation.pEp.jniadapter.DecryptFlags;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
 
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import timber.log.Timber;
 
@@ -2344,26 +2316,40 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
     }
 
     void processPendingMoveOrCopy(PendingMoveOrCopy command, Account account) throws MessagingException {
+        String srcFolder = command.srcFolder;
+        String destFolder = command.destFolder;
+        boolean isCopy = command.isCopy;
+
+        Map<String, String> newUidMap = command.newUidMap;
+        Collection<String> uids = newUidMap != null ? newUidMap.keySet() : command.uids;
+
+        processPendingMoveOrCopy(account, srcFolder, destFolder, uids, isCopy, newUidMap);
+    }
+
+    @VisibleForTesting
+    void processPendingMoveOrCopy(Account account, String srcFolder, String destFolder, Collection<String> uids,
+            boolean isCopy, Map<String, String> newUidMap) throws MessagingException {
         Folder remoteSrcFolder = null;
         Folder remoteDestFolder = null;
         LocalFolder localDestFolder;
-        try {
-            String srcFolder = command.srcFolder;
-            String destFolder = command.destFolder;
-            boolean isCopy = command.isCopy;
 
-            Store remoteStore = account.getRemoteStore();
+        try {
+            RemoteStore remoteStore = account.getRemoteStore();
             remoteSrcFolder = remoteStore.getFolder(srcFolder);
 
             Store localStore = account.getLocalStore();
             localDestFolder = (LocalFolder) localStore.getFolder(destFolder);
             List<Message> messages = new ArrayList<>();
 
-            Collection<String> uids = command.newUidMap != null ? command.newUidMap.keySet() : command.uids;
             for (String uid : uids) {
                 if (!uid.startsWith(K9.LOCAL_UID_PREFIX)) {
                     messages.add(remoteSrcFolder.getMessage(uid));
                 }
+            }
+
+            if (messages.isEmpty()) {
+                Timber.i("processingPendingMoveOrCopy: no remote messages to move, skipping");
+                return;
             }
 
             if (!remoteSrcFolder.exists()) {
@@ -2407,11 +2393,12 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
              * This next part is used to bring the local UIDs of the local destination folder
              * upto speed with the remote UIDs of remote destination folder.
              */
-            if (command.newUidMap != null && remoteUidMap != null && !remoteUidMap.isEmpty()) {
-                for (Map.Entry<String, String> entry : remoteUidMap.entrySet()) {
+            if (newUidMap != null && remoteUidMap != null && !remoteUidMap.isEmpty()) {
+                Timber.i("processingPendingMoveOrCopy: changing local uids of %d messages", remoteUidMap.size());
+                for (Entry<String, String> entry : remoteUidMap.entrySet()) {
                     String remoteSrcUid = entry.getKey();
                     String newUid = entry.getValue();
-                    String localDestUid = command.newUidMap.get(remoteSrcUid);
+                    String localDestUid = newUidMap.get(remoteSrcUid);
                     if (localDestUid == null) {
                         continue;
                     }
@@ -3235,7 +3222,8 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
 
     private Message processWithpEpAndSend(Transport transport, LocalMessage message, Account account) throws MessagingException {
         Preferences preferences = Preferences.getPreferences(context);
-        String[] keys = preferences.getMasterKeysArray(account.getUuid());
+        //TODO: Move to pEp provider
+        String[] keys = K9.getMasterKeys().toArray(new String[0]);
         List<MimeMessage> encryptedMessages = pEpProvider.encryptMessage(message, keys);
         Message encryptedMessageToSave = encryptedMessages.get(PEpProvider.ENCRYPTED_MESSAGE_POSITION); //
 

@@ -1,6 +1,5 @@
 package com.fsck.k9.pEp.ui.fragments;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,9 +7,10 @@ import android.content.res.XmlResourceParser;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.ContentLoadingProgressBar;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.widget.ContentLoadingProgressBar;
+import androidx.appcompat.app.AlertDialog;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;

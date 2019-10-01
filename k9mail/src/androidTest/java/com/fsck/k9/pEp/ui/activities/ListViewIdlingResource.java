@@ -1,8 +1,8 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Instrumentation;
-import android.support.annotation.Nullable;
-import android.support.test.espresso.IdlingResource;
+import androidx.annotation.Nullable;
+import androidx.test.espresso.IdlingResource;
 import android.widget.ListView;
 
 public class ListViewIdlingResource implements IdlingResource {

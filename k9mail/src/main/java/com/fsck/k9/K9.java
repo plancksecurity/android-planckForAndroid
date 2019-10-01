@@ -20,6 +20,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.StrictMode;
+import androidx.multidex.MultiDexApplication;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -69,11 +70,13 @@ import foundation.pEp.jniadapter.SyncHandshakeSignal;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
@@ -83,7 +86,7 @@ import timber.log.Timber.DebugTree;
 @ReportsCrashes(mailTo = "crashreport@pep.security",
         mode = ReportingInteractionMode.TOAST,
         resToastText = R.string.crash_toast_text)
-public class K9 extends Application {
+public class K9 extends MultiDexApplication {
     public static final int POLLING_INTERVAL = 2000;
     private Poller poller;
     private boolean needsFastPoll = false;
@@ -95,6 +98,14 @@ public class K9 extends Application {
     private ApplicationComponent component;
 
     public static K9JobManager jobManager;
+
+    public static Set<String> getMasterKeys() {
+        return pEpExtraKeys;
+    }
+
+    public static void setMasterKeys(Set<String> keys) {
+        pEpExtraKeys = keys;
+    }
 
     public boolean isBatteryOptimizationAsked() {
         return batteryOptimizationAsked;
@@ -113,6 +124,9 @@ public class K9 extends Application {
     public void disableFastPolling() {
         needsFastPoll = false;
     }
+
+
+    public static final int VERSION_MIGRATE_OPENPGP_TO_ACCOUNTS = 63;
 
     /**
      * Components that are interested in knowing when the K9 instance is
@@ -292,7 +306,6 @@ public class K9 extends Application {
     private static boolean mStartIntegratedInbox = false;
     private static boolean mMeasureAccounts = true;
     private static boolean mCountSearchMessages = true;
-    private static boolean mHideSpecialAccounts = false;
     private static boolean mAutofitWidth;
     private static boolean mQuietTimeEnabled = false;
     private static boolean mNotificationDuringQuietTimeEnabled = true;
@@ -322,6 +335,8 @@ public class K9 extends Application {
     private static boolean pEpSubjectUnprotected = true;
     private static boolean pEpForwardWarningEnabled = false;
     private static boolean pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
+    private static Set<String> pEpExtraKeys = Collections.emptySet();
+
 
 
     private static int sPgpInlineDialogCounter;
@@ -378,7 +393,6 @@ public class K9 extends Application {
     public static final int MAIL_SERVICE_WAKE_LOCK_TIMEOUT = 60000;
 
     public static final int BOOT_RECEIVER_WAKE_LOCK_TIMEOUT = 60000;
-
 
     public static class Intents {
 
@@ -533,7 +547,6 @@ public class K9 extends Application {
         editor.putBoolean("measureAccounts", mMeasureAccounts);
         editor.putBoolean("countSearchMessages", mCountSearchMessages);
         editor.putBoolean("messageListSenderAboveSubject", mMessageListSenderAboveSubject);
-        editor.putBoolean("hideSpecialAccounts", mHideSpecialAccounts);
         editor.putBoolean("messageListStars", mMessageListStars);
         editor.putInt("messageListPreviewLines", mMessageListPreviewLines);
         editor.putBoolean("messageListCheckboxes", mMessageListCheckboxes);
@@ -548,6 +561,8 @@ public class K9 extends Application {
         editor.putBoolean("wrapFolderNames", mWrapFolderNames);
         editor.putBoolean("hideUserAgent", mHideUserAgent);
         editor.putBoolean("hideTimeZone", mHideTimeZone);
+        //editor.putBoolean("hideHostnameWhenConnecting", hideHostnameWhenConnecting);
+
 
         editor.putString("language", language);
         editor.putInt("theme", theme.ordinal());
@@ -611,6 +626,7 @@ public class K9 extends Application {
         ACRA.init(this);
         pEpSetupUiEngineSession();
         app = this;
+        DI.start(this);
         Globals.setContext(this);
         oAuth2TokenStore = new AndroidAccountOAuth2TokenStore(this);
         K9MailLib.setDebugStatus(new K9MailLib.DebugStatus() {
@@ -829,6 +845,28 @@ public class K9 extends Application {
         if (cachedVersion >= LocalStore.DB_VERSION) {
             K9.setDatabasesUpToDate(false);
         }
+        if (cachedVersion < VERSION_MIGRATE_OPENPGP_TO_ACCOUNTS) {
+            migrateOpenPgpGlobalToAccountSettings();
+        }
+    }
+
+    private void migrateOpenPgpGlobalToAccountSettings() {
+        Preferences preferences = Preferences.getPreferences(this);
+        Storage storage = preferences.getStorage();
+
+        String openPgpProvider = storage.getString("openPgpProvider", null);
+        boolean openPgpSupportSignOnly = storage.getBoolean("openPgpSupportSignOnly", false);
+
+        for (Account account : preferences.getAccounts()) {
+            account.setOpenPgpProvider(openPgpProvider);
+            account.setOpenPgpHideSignOnly(!openPgpSupportSignOnly);
+            account.save(preferences);
+        }
+
+        storage.edit()
+                .remove("openPgpProvider")
+                .remove("openPgpSupportSignOnly")
+                .commit();
     }
 
     /**
@@ -850,7 +888,6 @@ public class K9 extends Application {
         mStartIntegratedInbox = storage.getBoolean("startIntegratedInbox", false);
         mMeasureAccounts = storage.getBoolean("measureAccounts", true);
         mCountSearchMessages = storage.getBoolean("countSearchMessages", true);
-        mHideSpecialAccounts = storage.getBoolean("hideSpecialAccounts", false);
         mMessageListSenderAboveSubject = storage.getBoolean("messageListSenderAboveSubject", false);
         mMessageListCheckboxes = storage.getBoolean("messageListCheckboxes", false);
         mMessageListStars = storage.getBoolean("messageListStars", true);
@@ -1333,11 +1370,7 @@ public class K9 extends Application {
     }
 
     public static boolean isHideSpecialAccounts() {
-        return mHideSpecialAccounts;
-    }
-
-    public static void setHideSpecialAccounts(boolean hideSpecialAccounts) {
-        mHideSpecialAccounts = hideSpecialAccounts;
+        return false;
     }
 
     public static boolean confirmDelete() {

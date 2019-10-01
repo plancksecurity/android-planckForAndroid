@@ -69,7 +69,10 @@ public class MessagingControllerPushReceiver implements PushReceiver {
 
     @Override
     public void sleep(TracingWakeLock wakeLock, long millis) {
-        SleepService.sleep(context, millis, wakeLock, K9.PUSH_WAKE_LOCK_TIMEOUT);
+        //FIXME Workaround for P4A-740: This should avoid to keep wake look while waiting before trying again.
+        // Needs to be tested to see the real impact i may improve the battery usage.
+        // Need to value if does it worth to rewrite it as a JOB or not.
+        //SleepService.sleep(context, millis, wakeLock, K9.PUSH_WAKE_LOCK_TIMEOUT);
     }
 
     public void pushError(String errorMessage, Exception e) {

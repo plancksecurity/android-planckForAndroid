@@ -1,22 +1,21 @@
 package com.fsck.k9.activity;
 
 
-import android.app.FragmentManager;
-import android.app.LoaderManager;
-import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.Loader;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.fragment.app.FragmentManager;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.app.LoaderManager.LoaderCallbacks;
+import androidx.loader.content.Loader;
 import timber.log.Timber;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
@@ -127,7 +126,13 @@ public class MessageLoaderHelper {
     public void asyncRestartMessageCryptoProcessing() {
         cancelAndClearCryptoOperation();
         cancelAndClearDecodeLoader();
-        startOrResumeCryptoOperation();
+
+        if (account.isOpenPgpProviderConfigured()) {
+            String openPgpProvider = account.getOpenPgpProvider();
+            startOrResumeCryptoOperation(openPgpProvider);
+        } else {
+            startOrResumeDecodeMessage();
+        }
     }
 
     /** Cancels all loading processes, prevents future callbacks, and destroys all loading state. */
@@ -203,10 +208,17 @@ public class MessageLoaderHelper {
             return;
         }
 
-        if (account.isOpenPgpProviderConfigured()) {
-            startOrResumeCryptoOperation();
+        /*if (onlyLoadMetadata) {
+            MessageViewInfo messageViewInfo = MessageViewInfo.createForMetadataOnly(localMessage, !downloadedCompletely);
+            onDecodeMessageFinished(messageViewInfo);
             return;
         }
+
+        String openPgpProvider = account.getOpenPgpProvider();
+        if (openPgpProvider != null) {
+            startOrResumeCryptoOperation(openPgpProvider);
+            return;
+        }*/
 
         startOrResumeDecodeMessage();
     }
@@ -258,16 +270,18 @@ public class MessageLoaderHelper {
 
     // process with crypto helper
 
-    private void startOrResumeCryptoOperation() {
+    private void startOrResumeCryptoOperation(String openPgpProvider) {
         RetainFragment<MessageCryptoHelper> retainCryptoHelperFragment = getMessageCryptoHelperRetainFragment(true);
         if (retainCryptoHelperFragment.hasData()) {
             messageCryptoHelper = retainCryptoHelperFragment.getData();
-        } else {
-            messageCryptoHelper = new MessageCryptoHelper(context, account.getOpenPgpProvider());
+        }
+        if (messageCryptoHelper == null || !messageCryptoHelper.isConfiguredForOpenPgpProvider(openPgpProvider)) {
+            messageCryptoHelper = new MessageCryptoHelper(
+                    context,  openPgpProvider);
             retainCryptoHelperFragment.setData(messageCryptoHelper);
         }
         messageCryptoHelper.asyncStartOrResumeProcessingMessage(
-                localMessage, messageCryptoCallback, cachedDecryptionResult);
+                localMessage, messageCryptoCallback, cachedDecryptionResult, !account.getOpenPgpHideSignOnly());
     }
 
     private void cancelAndClearCryptoOperation() {

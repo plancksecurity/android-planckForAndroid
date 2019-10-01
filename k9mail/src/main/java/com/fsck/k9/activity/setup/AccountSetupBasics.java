@@ -3,11 +3,11 @@ package com.fsck.k9.activity.setup;
 
 
 import android.app.Activity;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import androidx.fragment.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -53,25 +53,25 @@ public class AccountSetupBasics extends PEpImporterActivity {
         context.startActivity(i);
     }
 
-    public static void actionEditIncomingSettings(Activity context, Account account) {
-        context.startActivity(intentActionEditIncomingSettings(context, account));
+    public static void actionEditIncomingSettings(Activity context, String accountUuid) {
+        context.startActivity(intentActionEditIncomingSettings(context, accountUuid));
     }
 
-    public static Intent intentActionEditIncomingSettings(Context context, Account account) {
+    public static Intent intentActionEditIncomingSettings(Context context, String accountUuid) {
         Intent i = new Intent(context, AccountSetupBasics.class);
         i.putExtra(EXTRA_EDIT_INCOMING, true);
-        i.putExtra(EXTRA_ACCOUNT, account.getUuid());
+        i.putExtra(EXTRA_ACCOUNT, accountUuid);
         return i;
     }
 
-    public static void actionEditOutgoingSettings(Context context, Account account) {
-        context.startActivity(intentActionEditOutgoingSettings(context, account));
+    public static void actionEditOutgoingSettings(Context context, String accountUuid) {
+        context.startActivity(intentActionEditOutgoingSettings(context, accountUuid));
     }
 
-    public static Intent intentActionEditOutgoingSettings(Context context, Account account) {
+    public static Intent intentActionEditOutgoingSettings(Context context, String accountUuid) {
         Intent i = new Intent(context, AccountSetupBasics.class);
         i.putExtra(EXTRA_EDIT_OUTGOING, true);
-        i.putExtra(EXTRA_ACCOUNT, account.getUuid());
+        i.putExtra(EXTRA_ACCOUNT, accountUuid);
         return i;
     }
 
@@ -94,26 +94,26 @@ public class AccountSetupBasics extends PEpImporterActivity {
         isEditingOutgoingSettings = getIntent().getBooleanExtra(EXTRA_EDIT_OUTGOING, false);
         isBackOutgoingSettings = getIntent().getBooleanExtra(EXTRA_BACK_OUTGOING, false);
         if (isEditingIncomingSettings) {
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.addToBackStack("AccountSetupIncomingFragment");
             String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
             ft.add(R.id.account_setup_container, AccountSetupIncomingFragment.actionEditIncomingSettings(accountUuid)).commit();
             accountSetupNavigator.setIsEditing(true);
         } else if (isEditingOutgoingSettings) {
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.addToBackStack("AccountSetupIncomingFragment");
             String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
             ft.add(R.id.account_setup_container, AccountSetupOutgoingFragment.intentActionEditOutgoingSettings(accountUuid)).commit();
             accountSetupNavigator.setIsEditing(true);
         } else if (isBackOutgoingSettings) {
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.addToBackStack("AccountSetupIncomingFragment");
             String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
             ft.add(R.id.account_setup_container, AccountSetupOutgoingFragment.intentBackToOutgoingSettings(accountUuid)).commit();
         }
         else if (savedInstanceState == null) {
             accountSetupBasicsFragment = new AccountSetupBasicsFragment();
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.addToBackStack("AccountSetupBasicsFragment");
             ft.add(R.id.account_setup_container, accountSetupBasicsFragment).commit();
         }
@@ -178,7 +178,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        AccountSetupIncomingFragment accountSetupIncomingFragment = (AccountSetupIncomingFragment)getFragmentManager().findFragmentByTag("accountSetupIncomingFragment");
+        AccountSetupIncomingFragment accountSetupIncomingFragment = (AccountSetupIncomingFragment)getSupportFragmentManager().findFragmentByTag("accountSetupIncomingFragment");
         if (accountSetupIncomingFragment != null && accountSetupIncomingFragment.isVisible()) {
             accountSetupIncomingFragment.onActivityResult(requestCode, resultCode, data);
         } else {
@@ -213,7 +213,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
         if (accountSetupNavigator.shouldDeleteAccount() && !isEditingIncomingSettings && !isEditingOutgoingSettings) {
             deleteAccount();
         }
-        accountSetupNavigator.goBack(this, getFragmentManager());
+        accountSetupNavigator.goBack(this, getSupportFragmentManager());
     }
 
     @Override

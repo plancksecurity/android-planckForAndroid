@@ -2,7 +2,7 @@ package com.fsck.k9;
 
 
 import android.content.Context;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 
 public class Globals {

@@ -11,7 +11,7 @@
         android:icon="@drawable/ic_content_filter"
         app:showAsAction="always|collapseActionView"
         android:title="@string/filter_folders_action"
-        app:actionViewClass="android.support.v7.widget.SearchView"/>
+        app:actionViewClass="androidx.appcompat.widget.SearchView"/>
     <item
         android:id="@+id/check_mail"
         android:alphabeticShortcut="r"
@@ -63,15 +63,6 @@
         android:id="@+id/settings"
         android:icon="?attr/iconActionSettings"
         app:showAsAction="never"
-        android:title="@string/preferences_action">
-        <menu>
-            <item
-                android:id="@+id/account_settings"
-                android:title="@string/account_settings_action"/>
-            <item
-                android:id="@+id/app_settings"
-                android:title="@string/global_settings_action"/>
-        </menu>
-    </item>
+        android:title="@string/preferences_action"/>
 
 </menu>

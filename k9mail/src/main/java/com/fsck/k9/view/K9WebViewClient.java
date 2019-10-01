@@ -12,7 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.provider.Browser;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import timber.log.Timber;
 import android.webkit.WebResourceRequest;
@@ -20,7 +20,6 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.fsck.k9.K9;
 import com.fsck.k9.mailstore.AttachmentResolver;
 import com.fsck.k9.view.MessageWebView.OnPageFinishedListener;
 

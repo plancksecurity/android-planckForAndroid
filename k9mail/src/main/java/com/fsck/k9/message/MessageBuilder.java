@@ -1,11 +1,17 @@
 package com.fsck.k9.message;
 
 
+import java.util.Date;
+import java.util.List;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+
+import com.fsck.k9.mail.internet.Headers;
+import timber.log.Timber;
 
 import com.fsck.k9.Account.QuoteStyle;
 import com.fsck.k9.Identity;
@@ -151,6 +157,9 @@ public abstract class MessageBuilder {
         if (isDraft && isPgpInlineEnabled) {
             message.setFlag(Flag.X_DRAFT_OPENPGP_INLINE, true);
         }
+        if (isDraft) {
+            message.setFlag(Flag.DRAFT, true);
+        }
         if (isForcedUnencrypted) message.setFlag(Flag.X_PEP_DISABLED, true);
 
         if (isAlwaysSecure) {
@@ -257,40 +266,26 @@ public abstract class MessageBuilder {
             Body body = new TempFileBody(attachment.filename);
             MimeBodyPart bp = new MimeBodyPart(body);
 
-            /*
-             * Correctly encode the filename here. Otherwise the whole
-             * header value (all parameters at once) will be encoded by
-             * MimeHeader.writeTo().
-             */
-            bp.addHeader(MimeHeader.HEADER_CONTENT_TYPE, String.format("%s;\r\n name=\"%s\"",
-                    contentType,
-                    EncoderUtil.encodeIfNecessary(attachment.name,
-                            EncoderUtil.Usage.WORD_ENTITY, 7)));
-
-            bp.setEncoding(MimeUtility.getEncodingforType(contentType));
-
-            /*
-             * TODO: Oh the joys of MIME...
-             *
-             * From RFC 2183 (The Content-Disposition Header Field):
-             * "Parameter values longer than 78 characters, or which
-             *  contain non-ASCII characters, MUST be encoded as specified
-             *  in [RFC 2184]."
-             *
-             * Example:
-             *
-             * Content-Type: application/x-stuff
-             *  title*1*=us-ascii'en'This%20is%20even%20more%20
-             *  title*2*=%2A%2A%2Afun%2A%2A%2A%20
-             *  title*3="isn't it!"
-             */
-            bp.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, String.format(Locale.US,
-                    "attachment;\r\n filename=\"%s\";\r\n size=%d",
-                    attachment.name, attachment.size));
+            addContentType(bp, attachment.contentType, attachment.name);
+            addContentDisposition(bp, attachment.name, attachment.size);
 
             mp.addBodyPart(bp);
         }
         addBlobAttachmentsToMessage(mp);
+    }
+
+    private void addContentType(MimeBodyPart bodyPart, String contentType, String name) throws MessagingException {
+        String value = Headers.contentType(contentType, name);
+        bodyPart.addHeader(MimeHeader.HEADER_CONTENT_TYPE, value);
+
+        if (!MimeUtil.isMessage(contentType)) {
+            bodyPart.setEncoding(MimeUtility.getEncodingforType(contentType));
+        }
+    }
+
+    private void addContentDisposition(MimeBodyPart bodyPart, String fileName, Long size) {
+        String value = Headers.contentDisposition("attachment", fileName, size);
+        bodyPart.addHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, value);
     }
 
     /**

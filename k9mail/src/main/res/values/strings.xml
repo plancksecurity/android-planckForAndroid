@@ -15,8 +15,8 @@
 
 
     <!-- Used in the about dialog -->
-    <string name="app_authors">Google, The K-9 Dog Walkers, p≡p Security S.A.</string>
-    <string name="app_copyright_fmt">Copyright 2016  p≡p Security S.A. Copyright 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
+    <string name="app_authors">The K-9 Dog Walkers, p≡p Security S.A.</string>
+    <string name="app_copyright_fmt">Copyright 2019  p≡p Security S.A. Copyright 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
     <string name="app_license">Licensed under the Apache License, Version 2.0.</string>
 
 
@@ -342,6 +342,8 @@
     <string name="global_settings_privacy_hide_useragent_detail">Remove p≡p User-Agent from mail headers</string>
     <string name="global_settings_privacy_hide_timezone">Hide timezone</string>
     <string name="global_settings_privacy_hide_timezone_detail">Use UTC instead of local timezone in mail headers and reply header</string>
+    <string name="global_settings_privacy_hide_hostname_when_connecting">Hide hostname</string>
+    <string name="global_settings_privacy_hide_hostname_when_connecting_detail">Identify as \'localhost\' when connecting to SMTP servers</string>
     <string name="global_settings_notification_hide_subject_title">Hide subject in notifications</string>
     <string name="global_settings_notification_hide_subject_never">Never</string>
     <string name="global_settings_notification_hide_subject_when_locked">When device is locked</string>
@@ -582,12 +584,15 @@
     <string name="account_settings_general_title">General settings</string>
     <string name="account_settings_reading_mail">Reading mail</string>
     <string name="account_settings_sync">Fetching mail</string>
-    <string name="account_settings_folders">Folders</string>
+    <string name="account_settings_folders">Default folders</string>
     <string name="account_settings_quote_prefix_label">Quoted text prefix</string>
-    <string name="account_settings_crypto">Advanced cryptography</string>
-    <string name="account_settings_crypto_app">OpenPGP app</string>
-    <string name="account_settings_crypto_key">My Key</string>
-    <string name="account_settings_no_openpgp_provider_installed">No OpenPGP app installed</string>
+    <string name="account_settings_crypto">End-to-end encryption</string>
+    <string name="account_settings_crypto_app">Enable OpenPGP support</string>
+    <string name="account_settings_crypto_key">Configure end-to-end key</string>
+    <string name="account_settings_crypto_summary_off">No OpenPGP app configured</string>
+    <string name="account_settings_crypto_summary_on">Connected to %s</string>
+    <string name="account_settings_no_openpgp_provider_configured">No OpenPGP app configured</string>
+    <string name="account_settings_no_openpgp_provider_installed">No OpenPGP app found - click to install</string>
 
     <string name="account_settings_mail_check_frequency_label">Folder poll frequency</string>
 
@@ -660,6 +665,8 @@
 
     <string name="account_settings_sync_remote_deletetions_label">Sync server deletions</string>
     <string name="account_settings_sync_remote_deletetions_summary">Remove messages when deleted on server</string>
+
+    <string name="account_settings_openpgp_missing">Missing OpenPGP app - was it uninstalled?</string>
 
     <string name="folder_settings_title">Folder settings</string>
 
@@ -1145,7 +1152,7 @@
     <string name="crypto_mode_opportunistic">Encrypt if possible</string>
     <string name="crypto_mode_private">Encrypt</string>
     <string name="error_crypto_provider_connect">Cannot connect to crypto provider, check your settings or click crypto icon to retry!</string>
-    <string name="error_crypto_provider_ui_required">Crypto provider access denied, click crypto icon to retry!</string>
+    <string name="error_crypto_provider_ui_required">Failed to initialize end-to-end encryption, please check your settings</string>
     <string name="error_crypto_inline_attach">PGP/INLINE mode does not support attachments!</string>
     <string name="enable_inline_pgp">Enable PGP/INLINE</string>
     <string name="disable_inline_pgp">Disable PGP/INLINE</string>
@@ -1207,7 +1214,9 @@
     <string name="messageview_crypto_warning_show_anyway">Show message anyway</string>
     <string name="recipient_error_non_ascii">Special characters are currently not supported!</string>
     <string name="recipient_error_parse_failed">Error parsing address!</string>
-    <string name="account_settings_crypto_support_sign_only">Support signing of unencrypted messages</string>
+    <string name="account_settings_crypto_hide_sign_only">Hide unencrypted signatures</string>
+    <string name="account_settings_crypto_hide_sign_only_on">Only encrypted signatures will be displayed</string>
+    <string name="account_settings_crypto_hide_sign_only_off">All signatures will be displayed</string>
     <string name="error_sign_only_no_encryption">Encryption unavailable in sign-only mode!</string>
     <string name="unsigned_text_divider_label">Unsigned Text</string>
 
@@ -1219,6 +1228,18 @@
     <string name="openpgp_inline_ok">Got it!</string>
     <string name="openpgp_inline_disable">Disable</string>
     <string name="openpgp_inline_keep_enabled">Keep Enabled</string>
+    <string name="apg_deprecated_title">APG Deprecation Warning</string>
+    <string name="apg_deprecated_1">APG is no longer maintained!</string>
+    <string name="apg_deprecated_2">Because of this, support for APG has been removed from K-9 Mail.</string>
+    <string name="apg_deprecated_bullet_1">Development stopped in early 2014</string>
+    <string name="apg_deprecated_bullet_2">Contains unfixed security issues</string>
+    <string name="apg_learn_more">You can <a href="https://k9mail.github.io/2017/01/13/Why-APG-is-no-longer-supported.html">click here</a> to learn more.</string>
+    <string name="apg_deprecated_ok">Got it!</string>
+    <string name="apg">APG</string>
+    <string name="no_crypto_provider_see_global">No OpenPGP app configured, see global settings!</string>
+    <string name="crypto_no_provider_title">This email is encrypted</string>
+    <string name="crypto_no_provider_message">This email has been encrypted with OpenPGP.\nTo read it, you need to install and configure a compatible OpenPGP App.</string>
+    <string name="crypto_no_provider_button">Go to Settings</string>
 
     <string name="xoauth2_auth_cancelled_by_user">Authentication cancelled</string>
     <string name="xoauth2_unable_to_contact_auth_server">Unable to contact authentication server</string>
@@ -1234,4 +1255,59 @@
     <string name="mail_list_widget_text">p≡p Message List</string>
     <string name="mail_list_widget_loading">Loading messages…</string>
     <string name="fetching_folders_failed">Fetching folder list failed</string>
+    <string name="messageview_crypto_warning_details">Show Details</string>
+    <string name="error_recipient_crypto_retrieve">Error retrieving recipient status from OpenPGP provider!</string>
+
+    <string name="openpgp_enabled_error_title">Encryption not possible</string>
+    <string name="openpgp_enabled_error_msg">Some of the selected recipients don\'t support this feature!</string>
+    <string name="enable_encryption">Enable Encryption</string>
+    <string name="disable_encryption">Disable Encryption</string>
+    <string name="openpgp_description_text1">Encrypting messages ensures they can be read by the recipient, and nobody else.</string>
+    <string name="openpgp_description_text3">Encryption will only show up if supported by all recipients, and they must have sent you an email before.</string>
+    <string name="openpgp_description_text2">Toggle encryption by clicking this icon.</string>
+    <string name="openpgp_enabled_error_gotit">Got it</string>
+    <string name="openpgp_enabled_error_back">Back</string>
+    <string name="openpgp_enabled_error_disable">Disable Encryption</string>
+    <string name="openpgp_encryption">OpenPGP Encryption</string>
+
+    <string name="account_settings_crypto_prefer_encrypt">Autocrypt mutual mode</string>
+    <string name="dialog_autocrypt_mutual_title">Autocrypt mutual mode</string>
+    <string name="dialog_autocrypt_mutual_description_1">Messages will normally be encrypted by choice, or when replying to an encrypted message.</string>
+    <string name="dialog_autocrypt_mutual_description_2">If both sender and recipients enable mutual mode, encryption will be enabled by default.</string>
+    <string name="dialog_autocrypt_mutual_learn_more">You can <a href="https://k9mail.github.io/2018/02/26/OpenPGP-Considerations-Part-III-Autocrypt.html">click here</a> to learn more.</string>
+
+    <string name="general_settings_title">General settings</string>
+
+    <string name="dialog_openkeychain_info_title">No OpenPGP app installed</string>
+    <string name="dialog_openkeychain_info_install">Install</string>
+    <string name="dialog_openkeychain_info_text">K-9 Mail requires OpenKeychain for end-to-end encryption.</string>
+
+    <string name="encrypted_subject">"Encrypted Message"</string>
+
+    <string name="toast_account_not_found">Internal error: Invalid account!</string>
+    <string name="toast_openpgp_provider_error">Error connecting to %s!</string>
+
+    <string name="ac_transfer_setting_title">Send Autocrypt Setup Message</string>
+    <string name="ac_transfer_setting_summary">Securely share end-to-end setup with other devices</string>
+
+    <string name="ac_transfer_title">Autocrypt Setup Message</string>
+    <string name="ac_transfer_intro">An Autocrypt Setup Message securely shares your end-to-end setup with other devices.</string>
+    <string name="ac_transfer_button_send">Send Setup Message</string>
+    <string name="ac_transfer_will_be_sent">The message will be sent to your address:</string>
+    <string name="ac_transfer_generating">Generating setup message…</string>
+    <string name="ac_transfer_sending_to">Sending message to:</string>
+    <string name="ac_transfer_finish">To finish, open the message on your other device and enter the setup code.</string>
+    <string name="ac_transfer_show_code">Show Setup Code</string>
+
+    <string name="ac_transfer_msg_subject">Autocrypt Setup Message</string>
+    <string name="ac_transfer_msg_body">This message contains all information to transfer your Autocrypt settings along with your secret key securely from your original device.
+
+To set up your new device for Autocrypt, please follow the instructions that should be presented by your new device.
+
+You can keep this message and use it as a backup for your secret key. If you want to do this, you should write down the password and store it securely.
+</string>
+    <string name="ac_transfer_error_send">An error occurred while sending the message. Please check your network connectivity and outgoing server configuration.</string>
+
+    <string name="switch_on">On</string>
+    <string name="switch_off">Off</string>
 </resources>

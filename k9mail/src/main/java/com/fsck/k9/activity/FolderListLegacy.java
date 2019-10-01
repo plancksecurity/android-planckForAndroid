@@ -7,7 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
-import android.support.v7.widget.SearchView;
+import androidx.appcompat.widget.SearchView;
 import android.text.Editable;
 import android.text.TextUtils.TruncateAt;
 import android.text.TextWatcher;
@@ -45,7 +45,6 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.MessageActions;
 import com.fsck.k9.activity.setup.AccountSettings;
 import com.fsck.k9.activity.setup.FolderSettings;
-import com.fsck.k9.activity.setup.Prefs;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.controller.SimpleMessagingListener;
@@ -539,7 +538,7 @@ public class FolderListLegacy extends K9ListActivity {
     }
 
     private void onEditPrefs() {
-        Prefs.actionPrefs(this);
+       // Prefs.actionPrefs(this);
     }
     private void onEditAccount() {
         AccountSettings.actionSettings(this, mAccount);
@@ -600,12 +599,12 @@ public class FolderListLegacy extends K9ListActivity {
             onEditAccount();
 
             return true;
-
+/*
         case R.id.app_settings:
             onEditPrefs();
 
             return true;
-
+*/
         case R.id.empty_trash:
             onEmptyTrash(mAccount);
 

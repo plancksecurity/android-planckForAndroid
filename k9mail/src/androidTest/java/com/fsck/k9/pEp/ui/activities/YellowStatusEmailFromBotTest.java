@@ -1,14 +1,17 @@
 package com.fsck.k9.pEp.ui.activities;
 
+import android.app.Activity;
 import android.app.Instrumentation;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.IdlingRegistry;
-import android.support.test.espresso.intent.rule.IntentsTestRule;
-import android.support.test.runner.AndroidJUnit4;
-import android.support.test.uiautomator.UiDevice;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.espresso.IdlingRegistry;
+import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.intent.rule.IntentsTestRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
+import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 
 import org.junit.After;
 import org.junit.Before;
@@ -20,14 +23,16 @@ import org.junit.runners.MethodSorters;
 
 import timber.log.Timber;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.core.internal.deps.guava.base.Preconditions.checkNotNull;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.core.internal.deps.guava.base.Preconditions.checkNotNull;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static junit.framework.Assert.assertTrue;
@@ -74,7 +79,7 @@ public class YellowStatusEmailFromBotTest {
 
     }
     public void sendMessageAndAssertYellowStatusMessage() {
-        testUtils.createAccount();
+        testUtils.createAccount(false);
         testUtils.composeMessageButton();
         device.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
@@ -82,16 +87,16 @@ public class YellowStatusEmailFromBotTest {
         testUtils.sendMessage();
         device.waitForIdle();
         testUtils.waitForNewMessage();
-        testUtils.waitForMessageAndClickIt();
+        testUtils.clickLastMessageReceived();
         testUtils.clickView(R.id.reply_message);
         onView(withId(R.id.subject)).perform(typeText(" "));
         onView(withId(R.id.message_content)).perform(typeText(" "));
         device.waitForIdle();
         clickMailStatus();
-        testUtils.checkToolbarColor(R.color.pep_yellow);
+        testUtils.checkToolBarColor(R.color.pep_yellow);
         device.pressBack();
         testUtils.goBackToMessageListAndPressComposeMessageButton();
-        testUtils.yellowStatusMessageTest(MESSAGE_SUBJECT, MESSAGE_BODY, messageTo);
+        yellowStatusMessageTest();
     }
 
     public void twoStatusMessageYellowAndGray() {
@@ -144,5 +149,21 @@ public class YellowStatusEmailFromBotTest {
     private void clickMailStatus() {
         testUtils.doWaitForResource(R.id.pEp_indicator);
         testUtils.clickView(R.id.pEp_indicator);
+    }
+
+    private void yellowStatusMessageTest() {
+        device.waitForIdle();
+        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
+        onView(withId(R.id.pEp_indicator)).perform(click());
+        onView(withId(R.id.my_recycler_view)).check(doesNotExist());
+        assertCurrentActivityIsInstanceOf(PEpTrustwords.class);
+
+    }
+
+    public void assertCurrentActivityIsInstanceOf(Class<? extends Activity> activityClass) {
+        Activity currentActivity = testUtils.getCurrentActivity();
+        checkNotNull(currentActivity);
+        checkNotNull(activityClass);
+        assertTrue(currentActivity.getClass().isAssignableFrom(activityClass));
     }
 }

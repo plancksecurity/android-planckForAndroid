@@ -2,9 +2,6 @@ package com.fsck.k9.activity;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
-import android.app.FragmentManager;
-import android.app.FragmentManager.OnBackStackChangedListener;
-import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -15,12 +12,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import com.google.android.material.navigation.NavigationView;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -44,10 +44,7 @@ import com.fsck.k9.K9.SplitViewMode;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.MessageActions;
-import com.fsck.k9.activity.setup.AccountSettings;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
-import com.fsck.k9.activity.setup.FolderSettings;
-import com.fsck.k9.activity.setup.Prefs;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.fragment.MessageListFragment;
@@ -81,6 +78,7 @@ import com.fsck.k9.search.SearchSpecification.SearchCondition;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.ui.messageview.MessageViewFragment;
 import com.fsck.k9.ui.messageview.MessageViewFragment.MessageViewFragmentListener;
+import com.fsck.k9.ui.settings.SettingsActivity;
 import com.fsck.k9.view.MessageHeader;
 import com.fsck.k9.view.MessageTitleView;
 import com.fsck.k9.view.ViewSwitcher;
@@ -89,8 +87,6 @@ import com.pedrogomez.renderers.ListAdapteeCollection;
 import com.pedrogomez.renderers.RVRendererAdapter;
 import com.pedrogomez.renderers.RendererBuilder;
 
-import foundation.pEp.jniadapter.Rating;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -98,6 +94,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
 
@@ -1012,6 +1009,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 public void enableProgressIndicator(boolean enable) {
 
                 }
+
+                @Override
+                public void updateProgress(int progress) {
+
+                }
             });
         }
     }
@@ -1104,7 +1106,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         setIntent(intent);
 
         if (mFirstBackStackId >= 0) {
-            getFragmentManager().popBackStackImmediate(mFirstBackStackId,
+            getSupportFragmentManager().popBackStackImmediate(mFirstBackStackId,
                     FragmentManager.POP_BACK_STACK_INCLUSIVE);
             mFirstBackStackId = -1;
         }
@@ -1113,7 +1115,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
         mMessageReference = null;
         mSearch = null;
-        mFolderName = null;
 
         initializeActionBar();
         if (!decodeExtras(intent)) {
@@ -1129,7 +1130,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
      * Get references to existing fragments if the activity was restarted.
      */
     private void findFragments() {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         mMessageListFragment = (MessageListFragment) fragmentManager.findFragmentById(
                 R.id.message_list_container);
         mMessageViewFragment = (MessageViewFragment) fragmentManager.findFragmentById(
@@ -1142,7 +1143,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
      * @see #findFragments()
      */
     private void initializeFragments() {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.addOnBackStackChangedListener(this);
 
         boolean hasMessageListFragment = (mMessageListFragment != null);
@@ -1164,7 +1165,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void refreshMessages(LocalSearch search) {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.addOnBackStackChangedListener(this);
         boolean hasMessageListFragment = (mMessageListFragment != null);
         FragmentTransaction ft = fragmentManager.beginTransaction();
@@ -1355,10 +1356,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             Timber.i("not opening MessageList of unavailable account");
             onAccountUnavailable();
             return false;
-        }
-
-        if (mSingleFolderMode) {
-            mFolderName = mSearch.getFolderNames().get(0);
         }
 
         // now we know if we are in single account mode and need a subtitle
@@ -1696,12 +1693,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         FolderList.actionHandleAccount(this, mAccount);
     }
 
-    private void onEditPrefs() {
-        Prefs.actionPrefs(this);
-    }
-
-    private void onEditAccount() {
-        AccountSettings.actionSettings(this, mAccount);
+    private void onEditSettings() {
+        SettingsActivity.launch(this);
     }
 
     @Override
@@ -1753,12 +1746,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 mMessageListFragment.selectAll();
                 return true;
             }
-            case R.id.app_settings: {
-                onEditPrefs();
-                return true;
-            }
-            case R.id.account_settings: {
-                onEditAccount();
+            case R.id.settings: {
+                onEditSettings();
                 return true;
             }
             case R.id.search: {
@@ -1859,12 +1848,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 mMessageListFragment.onSendPendingMessages();
                 return true;
             }
-            case R.id.folder_settings: {
-                if (mFolderName != null) {
-                    FolderSettings.actionSettings(this, mAccount, mFolderName);
-                }
-                return true;
-            }
             case R.id.expunge: {
                 mMessageListFragment.onExpunge();
                 return true;
@@ -1905,17 +1888,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private void configureMenu(Menu menu) {
         if (menu == null) {
             return;
-        }
-
-        // Set visibility of account/folder settings menu items
-        if (mMessageListFragment == null) {
-            menu.findItem(R.id.account_settings).setVisible(false);
-            menu.findItem(R.id.folder_settings).setVisible(false);
-        } else {
-            menu.findItem(R.id.account_settings).setVisible(
-                    mMessageListFragment.isSingleAccountMode());
-            menu.findItem(R.id.folder_settings).setVisible(
-                    mMessageListFragment.isSingleFolderMode());
         }
 
         /*
@@ -2130,7 +2102,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             }
 
             MessageViewFragment fragment = MessageViewFragment.newInstance(messageReference);
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             if (direction == null || direction.equals(MessageSwipeDirection.FORWARD)) {
                 ft.setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out);
             } else  {
@@ -2237,7 +2209,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void addMessageListFragment(MessageListFragment fragment, boolean addToBackStack) {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
         ft.replace(R.id.message_list_container, fragment);
         if (addToBackStack)
@@ -2296,7 +2268,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
      */
     private void removeMessageViewFragment() {
         if (mMessageViewFragment != null) {
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.remove(mMessageViewFragment);
             mMessageViewFragment = null;
             ft.commit();
@@ -2306,7 +2278,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void removeMessageListFragment() {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.remove(mMessageListFragment);
         mMessageListFragment = null;
         ft.commit();

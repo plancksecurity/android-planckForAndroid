@@ -1,5 +1,63 @@
 buildscript {
-    ext.kotlin_version = '1.3.10'
+    ext {
+        buildConfig = [
+                'compileSdk': 28,
+                'targetSdk': 27,
+                'minSdk': 19,
+                'versionCode': 34
+        ]
+
+        versions = [
+                'kotlin': '1.3.10',
+                'supportLibrary': '28.0.0',
+                'preferencesFix': '28.0.0.0',
+                'androidX': '1.0.0',
+                'constraintLayout' :'1.1.3',
+                'lifecycleExtensions': '2.0.0',
+                'okio': '1.14.0',
+                'timber': '4.5.1',
+                'koin': '0.9.1',
+                'commonsIo': '2.4',
+
+                'apacheCommons': '2.4',
+                'jsoup': '1.11.2',
+                'glide': '3.7.0',
+                'tokenAutoComplete': '2.0.7',
+                'safeContentResolver': '0.9.0',
+                'showCaseView': '5.4.1',
+                'moshi': '1.2.0',
+                'butterKnife': '7.0.1',
+                'callygraphy': '2.1.0',
+                'circleImageView': '2.1.0',
+                'renderers': '3.2.0',
+                'acra': '4.6.1',
+                'appIntro': '4.1.0',
+                'swipeLayout': '1.2.0',
+                'dexter': '5.0.0',
+                'swipeToDismiss': '1.0',
+                'workRuntime':'2.0.1',
+                'androidJob': '1.3.0-rc1',
+                'jcipAnnotations': '1.0',
+                'jdom':'2.0.6',
+                'dagger':'2.4',
+                'groupie': '2.1.0',
+                'ankoCoroutines': '0.10.4',
+                'kotlinCoroutines':'1.2.1',
+                'multidex':'2.0.0',
+
+
+
+
+                'junit': '4.12',
+                'robolectric': '3.7.1',
+                'mockito': '2.18.0',
+                'mockitoKotlin': '1.5.0',
+                'truth': '0.35',
+                'espresso': '3.0.1',
+                'uiAutomator':'2.2.0'
+        ]
+    }
+
     repositories {
         jcenter()
         maven { url 'https://maven.google.com' }
@@ -7,8 +65,9 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.android.tools.build:gradle:3.5.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
+        classpath "org.jetbrains.kotlin:kotlin-android-extensions:${versions.kotlin}"
     }
 }
 
@@ -21,14 +80,11 @@ allprojects {
 
 project.ext {
     testCoverage = project.hasProperty('testCoverage')
-    optimizeForDevelopment = project.hasProperty('optimizeForDevelopment') && optimizeForDevelopment == 'true'
 }
 
 subprojects {
-    project.plugins.whenPluginAdded { plugin ->
-        if ("com.android.build.gradle.AppPlugin".equals(plugin.class.name) ||
-                "com.android.build.gradle.LibraryPlugin".equals(plugin.class.name)) {
-            project.android.dexOptions.preDexLibraries = !rootProject.hasProperty('disablePreDex')
-        }
+    repositories {
+        jcenter()
+        google()
     }
 }

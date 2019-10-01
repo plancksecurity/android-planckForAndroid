@@ -6,7 +6,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -118,7 +118,7 @@ public class MessageTopView extends LinearLayout {
                 containerView, false);
         containerView.addView(view);
 
-        boolean hideUnsignedTextDivider = !account.getCryptoSupportSignOnly();
+        boolean hideUnsignedTextDivider = account.getOpenPgpHideSignOnly();
         view.displayMessageViewContainer(messageViewInfo, new OnRenderingFinishedListener() {
             @Override
             public void onLoadFinished() {
@@ -131,25 +131,6 @@ public class MessageTopView extends LinearLayout {
         }
     }
 
-    public void showMessageCryptoWarning(final MessageViewInfo messageViewInfo, Drawable providerIcon,
-            @StringRes int warningTextRes) {
-        resetAndPrepareMessageView(messageViewInfo);
-        View view = mInflater.inflate(R.layout.message_content_crypto_warning, containerView, false);
-        setCryptoProviderIcon(providerIcon, view);
-
-        view.findViewById(R.id.crypto_warning_override).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                messageCryptoPresenter.onClickShowMessageOverrideWarning();
-            }
-        });
-
-        TextView warningText = (TextView) view.findViewById(R.id.crypto_warning_text);
-        warningText.setText(warningTextRes);
-
-        containerView.addView(view);
-        displayViewOnLoadFinished(false);
-    }
 
     public void showMessageEncryptedButIncomplete(MessageViewInfo messageViewInfo, Drawable providerIcon) {
         resetAndPrepareMessageView(messageViewInfo);

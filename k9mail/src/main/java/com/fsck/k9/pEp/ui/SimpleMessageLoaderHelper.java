@@ -1,8 +1,8 @@
 package com.fsck.k9.pEp.ui;
 
-import android.app.FragmentManager;
-import android.app.LoaderManager;
 import android.content.Context;
+import androidx.fragment.app.FragmentManager;
+import androidx.loader.app.LoaderManager;
 
 import com.fsck.k9.activity.MessageLoaderHelper;
 import com.fsck.k9.activity.MessageReference;

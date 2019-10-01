@@ -6,7 +6,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.graphics.Rect;
 import android.os.Handler;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -14,6 +14,8 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.hudomju.swipe.adapter.ViewAdapter;
 
@@ -127,7 +129,7 @@ public class SwipeToDismissTouchListener<SomeCollectionView extends ViewAdapter>
          * Do NOT remove the list item yet, that should be done in {@link #onDismiss(com.hudomju.swipe.adapter.ViewAdapter, int)}
          * This may also be called immediately before and item is completely dismissed.
          *
-         * @param recyclerView The originating {@link android.support.v7.widget.RecyclerView}.
+         * @param recyclerView The originating {@link RecyclerView}.
          * @param position     The position of the dismissed item.
          */
         void onPendingDismiss(SomeCollectionView recyclerView, int position);
@@ -135,7 +137,7 @@ public class SwipeToDismissTouchListener<SomeCollectionView extends ViewAdapter>
         /**
          * Called when the item is completely dismissed and removed from the list, after the undo layout is hidden.
          *
-         * @param recyclerView The originating {@link android.support.v7.widget.RecyclerView}.
+         * @param recyclerView The originating {@link RecyclerView}.
          * @param position     The position of the dismissed item.
          */
         void onDismiss(SomeCollectionView recyclerView, int position);

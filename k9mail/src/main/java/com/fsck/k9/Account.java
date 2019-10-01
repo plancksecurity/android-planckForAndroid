@@ -7,15 +7,15 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import timber.log.Timber;
+import androidx.annotation.Nullable;
+import android.text.TextUtils;
 
-import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Folder.FolderClass;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.NetworkType;
-import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.filter.Base64;
 import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mail.store.RemoteStore;
@@ -244,9 +244,10 @@ public class Account implements BaseAccount, StoreConfig {
     private boolean replyAfterQuote;
     private boolean stripSignature;
     private boolean syncRemoteDeletions;
-    private String mCryptoApp;
-    private long pgpCryptoKey;
-    private boolean mCryptoSupportSignOnly;
+    private String openPgpProvider;
+    private long openPgpKey;
+    private boolean autocryptPreferEncryptMutual;
+    private boolean openPgpHideSignOnly;
     private boolean markMessageAsReadOnView;
     private boolean alwaysShowCcBcc;
     private boolean allowRemoteSearch;
@@ -343,9 +344,7 @@ public class Account implements BaseAccount, StoreConfig {
         replyAfterQuote = DEFAULT_REPLY_AFTER_QUOTE;
         stripSignature = DEFAULT_STRIP_SIGNATURE;
         syncRemoteDeletions = true;
-        mCryptoApp = NO_OPENPGP_PROVIDER;
-        pgpCryptoKey = NO_OPENPGP_KEY;
-        mCryptoSupportSignOnly = false;
+        openPgpKey = NO_OPENPGP_KEY;
         allowRemoteSearch = false;
         remoteSearchFullText = false;
         remoteSearchNumResults = DEFAULT_REMOTE_SEARCH_NUM_RESULTS;
@@ -497,13 +496,13 @@ public class Account implements BaseAccount, StoreConfig {
         isSignatureBeforeQuotedText = storage.getBoolean(accountUuid + ".signatureBeforeQuotedText", false);
         identities = loadIdentities(storage);
 
-        String cryptoApp = storage.getString(accountUuid + ".cryptoApp", NO_OPENPGP_PROVIDER);
-        setCryptoApp(cryptoApp);
-        pgpCryptoKey = storage.getLong(accountUuid + ".cryptoKey", NO_OPENPGP_KEY);
+        openPgpProvider = storage.getString(accountUuid + ".openPgpProvider", "");
+        openPgpKey = storage.getLong(accountUuid + ".cryptoKey", NO_OPENPGP_KEY);
+        openPgpHideSignOnly = storage.getBoolean(accountUuid + ".openPgpHideSignOnly", true);
+        autocryptPreferEncryptMutual = storage.getBoolean(accountUuid + ".autocryptMutualMode", false);
         allowRemoteSearch = storage.getBoolean(accountUuid + ".allowRemoteSearch", false);
         remoteSearchFullText = storage.getBoolean(accountUuid + ".remoteSearchFullText", false);
         remoteSearchNumResults = storage.getInt(accountUuid + ".remoteSearchNumResults", DEFAULT_REMOTE_SEARCH_NUM_RESULTS);
-        mCryptoSupportSignOnly = storage.getBoolean(accountUuid + ".cryptoSupportSignOnly", false);
 
         isEnabled = storage.getBoolean(accountUuid + ".enabled", true);
         markMessageAsReadOnView = storage.getBoolean(accountUuid + ".markMessageAsReadOnView", true);
@@ -770,7 +769,10 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putBoolean(accountUuid + ".defaultQuotedTextShown", defaultQuotedTextShown);
         editor.putBoolean(accountUuid + ".replyAfterQuote", replyAfterQuote);
         editor.putBoolean(accountUuid + ".stripSignature", stripSignature);
-        editor.putLong(accountUuid + ".cryptoKey", pgpCryptoKey);
+        editor.putLong(accountUuid + ".cryptoKey", openPgpKey);
+        editor.putBoolean(accountUuid + ".openPgpHideSignOnly", openPgpHideSignOnly);
+        editor.putString(accountUuid + ".openPgpProvider", openPgpProvider);
+        editor.putBoolean(accountUuid + ".autocryptMutualMode", autocryptPreferEncryptMutual);
         editor.putBoolean(accountUuid + ".allowRemoteSearch", allowRemoteSearch);
         editor.putBoolean(accountUuid + ".remoteSearchFullText", remoteSearchFullText);
         editor.putInt(accountUuid + ".remoteSearchNumResults", remoteSearchNumResults);
@@ -778,7 +780,6 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putBoolean(accountUuid + ".markMessageAsReadOnView", markMessageAsReadOnView);
         editor.putBoolean(accountUuid + ".alwaysShowCcBcc", alwaysShowCcBcc);
         editor.putString(accountUuid + ".cryptoApp", NO_OPENPGP_PROVIDER);
-        editor.putBoolean(accountUuid + ".cryptoSupportSignOnly", mCryptoSupportSignOnly);
 
         editor.putBoolean(accountUuid + ".vibrate", notificationSetting.isVibrateEnabled());
         editor.putInt(accountUuid + ".vibratePattern", notificationSetting.getVibratePattern());
@@ -1311,7 +1312,7 @@ public class Account implements BaseAccount, StoreConfig {
         return LocalStore.getInstance(this, K9.app);
     }
 
-    public Store getRemoteStore() throws MessagingException {
+    public RemoteStore getRemoteStore() throws MessagingException {
         return RemoteStore.getInstance(K9.app, this, K9.oAuth2TokenStore);
     }
 
@@ -1636,33 +1637,33 @@ public class Account implements BaseAccount, StoreConfig {
         this.stripSignature = stripSignature;
     }
 
-    public String getCryptoApp() {
-        return mCryptoApp;
+
+    @Nullable
+    public String getOpenPgpProvider() {
+        if (TextUtils.isEmpty(openPgpProvider)) {
+            return null;
+        }
+        return openPgpProvider;
     }
 
-    public void setCryptoApp(String cryptoApp) {
-        //if (cryptoApp == null || cryptoApp.equals("apg")) {
-            mCryptoApp = NO_OPENPGP_PROVIDER;
-        //} else {
-        //    mCryptoApp = cryptoApp;
-        //}
+    public void setOpenPgpProvider(String openPgpProvider) {
+        this.openPgpProvider = "";
     }
 
-    public long getCryptoKey() {
-        return pgpCryptoKey;
+    public long getOpenPgpKey() {
+        return openPgpKey;
     }
 
-    public void setCryptoKey(long keyId) {
-        //mCryptoKey = keyId;
-        pgpCryptoKey = NO_OPENPGP_KEY;
+    public boolean hasOpenPgpKey() {
+        return false;
     }
 
-    public boolean getCryptoSupportSignOnly() {
-        return mCryptoSupportSignOnly;
+    public boolean getOpenPgpHideSignOnly() {
+        return openPgpHideSignOnly;
     }
 
-    public void setCryptoSupportSignOnly(boolean cryptoSupportSignOnly) {
-        mCryptoSupportSignOnly = cryptoSupportSignOnly;
+    public void setOpenPgpHideSignOnly(boolean openPgpHideSignOnly) {
+        this.openPgpHideSignOnly = openPgpHideSignOnly;
     }
 
     public boolean allowRemoteSearch() {
@@ -1705,15 +1706,8 @@ public class Account implements BaseAccount, StoreConfig {
         lastSelectedFolderName = folderName;
     }
 
-    public synchronized String getOpenPgpProvider() {
-        if (!isOpenPgpProviderConfigured()) {
-            return null;
-        }
-        return getCryptoApp();
-    }
-
     public synchronized boolean isOpenPgpProviderConfigured() {
-        return !NO_OPENPGP_PROVIDER.equals(getCryptoApp());
+        return false;
     }
 
     public synchronized NotificationSetting getNotificationSetting() {

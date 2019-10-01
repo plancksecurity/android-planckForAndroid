@@ -1,11 +1,10 @@
 
 package com.fsck.k9.mail;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.text.util.Rfc822Token;
 import android.text.util.Rfc822Tokenizer;
-import android.util.Log;
 
 import com.fsck.k9.mail.filter.Base64;
 
@@ -15,10 +14,6 @@ import org.apache.james.mime4j.dom.address.Mailbox;
 import org.apache.james.mime4j.dom.address.MailboxList;
 import org.apache.james.mime4j.field.address.AddressBuilder;
 import timber.log.Timber;
-
-import android.text.TextUtils;
-import android.text.util.Rfc822Token;
-import android.text.util.Rfc822Tokenizer;
 
 import java.io.Serializable;
 import java.util.ArrayList;

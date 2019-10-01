@@ -4,9 +4,9 @@ package com.fsck.k9.notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationCompat.BigTextStyle;
-import android.support.v4.app.NotificationManagerCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationCompat.BigTextStyle;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.R;
@@ -60,8 +60,8 @@ class AuthenticationErrorNotifications {
 
     PendingIntent createContentIntent(Context context, Account account, boolean incoming) {
         Intent editServerSettingsIntent = incoming ?
-                AccountSetupBasics.intentActionEditIncomingSettings(context, account) :
-                AccountSetupBasics.intentActionEditOutgoingSettings(context, account);
+                AccountSetupBasics.intentActionEditIncomingSettings(context, account.getUuid()) :
+                AccountSetupBasics.intentActionEditOutgoingSettings(context, account.getUuid());
 
         return PendingIntent.getActivity(context, account.getAccountNumber(), editServerSettingsIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);

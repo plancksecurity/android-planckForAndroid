@@ -1,8 +1,11 @@
 package com.fsck.k9.activity.compose;
 
 
-import android.app.LoaderManager;
+import java.util.Arrays;
+import java.util.List;
+
 import android.app.PendingIntent;
+import androidx.loader.app.LoaderManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -37,8 +40,6 @@ import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 
 public class RecipientMvpView implements OnFocusChangeListener, OnClickListener {
@@ -463,12 +464,12 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
     public void showOpenPgpInlineDialog(boolean firstTime) {
         PgpInlineDialog dialog = PgpInlineDialog.newInstance(firstTime, R.id.crypto_special_mode);
-        dialog.show(activity.getFragmentManager(), "openpgp_inline");
+        dialog.show(activity.getSupportFragmentManager(), "openpgp_inline");
     }
 
     public void showOpenPgpSignOnlyDialog(boolean firstTime) {
         PgpSignOnlyDialog dialog = PgpSignOnlyDialog.newInstance(firstTime, R.id.crypto_special_mode);
-        dialog.show(activity.getFragmentManager(), "openpgp_signonly");
+        dialog.show(activity.getSupportFragmentManager(), "openpgp_signonly");
     }
 
     public void launchUserInteractionPendingIntent(PendingIntent pendingIntent, int requestCode) {

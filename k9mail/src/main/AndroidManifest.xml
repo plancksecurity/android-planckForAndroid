@@ -77,7 +77,7 @@
         android:theme="@style/Theme.K9.Light.NoActionBar"
         tools:replace="android:allowBackup">
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -93,6 +93,20 @@
             android:name="android.app.default_searchable"
             android:value="com.fsck.k9.activity.Search" />
 
+        <!-- TODO: Remove once minSdkVersion has been changed to 24+ -->
+        <meta-data
+            android:name="com.lge.support.SPLIT_WINDOW"
+            android:value="true"/>
+        <uses-library
+            android:name="com.sec.android.app.multiwindow"
+            android:required="false"/>
+        <meta-data
+            android:name="com.sec.android.support.multiwindow"
+            android:value="true"/>
+        <meta-data
+            android:name="com.samsung.android.sdk.multiwindow.penwindow.enable"
+            android:value="true"/>
+
         <activity
             android:name=".activity.Accounts"
             android:configChanges="locale"
@@ -102,15 +116,15 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
+
+                <!-- TODO: Remove once minSdkVersion has been changed to 24+ -->
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER"/>
+                <category android:name="android.intent.category.PENWINDOW_LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activity.setup.Prefs"
-            android:configChanges="locale"
-            android:excludeFromRecents="true"
-            android:label="@string/prefs_title"
-            android:taskAffinity="${applicationId}.activity.setup.Prefs" />
+
+
         <activity
             android:name=".activity.setup.WelcomeMessage"
             android:configChanges="locale"
@@ -183,16 +197,20 @@
         <activity
             android:name=".activity.setup.AccountSetupCheckSettings"
             android:configChanges="keyboardHidden|orientation|locale"
-            android:label="@string/account_setup_check_settings_title" />
-        <activity
-            android:name=".activity.setup.AccountSettings"
-            android:configChanges="locale"
-            android:label="@string/account_settings_title_fmt" />
+            android:label="@string/account_setup_check_settings_title"/>
+
+
         <activity
             android:name=".activity.setup.FolderSettings"
             android:configChanges="locale"
             android:label="@string/folder_settings_title"
             android:theme="@android:style/Theme.Dialog" />
+        <activity
+            android:name=".ui.endtoend.AutocryptKeyTransferActivity"
+            android:configChanges="locale"
+            android:label="@string/ac_transfer_title"
+            />
+
         <activity
             android:name=".activity.FolderList"
             android:configChanges="locale"
@@ -285,9 +303,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activity.EmailAddressList"
-            android:configChanges="locale" />
         <activity android:name=".activity.UnreadWidgetConfiguration">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
@@ -296,6 +311,18 @@
         <activity
             android:name=".activity.UpgradeDatabases"
             android:label="@string/upgrade_databases_title" />
+
+        <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:label="@string/prefs_title" />
+
+        <activity
+            android:name=".ui.settings.general.GeneralSettingsActivity"
+            android:label="@string/general_settings_title" />
+
+        <activity
+            android:name=".ui.settings.account.AccountSettingsActivity"
+            android:label="@string/account_settings_title_fmt" />
 
         <receiver
             android:name=".service.BootReceiver"
@@ -499,7 +526,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".pEp.ui.keysync.KeysyncManagement" />
-        <activity android:name=".pEp.ui.About" />
+        <activity android:name=".pEp.ui.AboutActivity"
+            android:label="@string/about_action"/>
         <activity
             android:name=".pEp.ui.keys.PepExtraKeys"
             android:label="Extra keys" />

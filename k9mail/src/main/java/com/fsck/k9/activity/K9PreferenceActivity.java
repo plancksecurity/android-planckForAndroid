@@ -3,14 +3,19 @@ package com.fsck.k9.activity;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.os.Build;
+
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle.State;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LifecycleRegistry;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatDelegate;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,20 +24,68 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import androidx.annotation.NonNull;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 
 
-public abstract class K9PreferenceActivity extends PreferenceActivity {
+public abstract class K9PreferenceActivity extends PreferenceActivity implements LifecycleOwner {
+    private LifecycleRegistry lifecycleRegistry;
 
     private AppCompatDelegate mDelegate;
     private Toolbar toolbar;
+
     @Override
     public void onCreate(Bundle icicle) {
         K9ActivityCommon.setLanguage(this, K9.getK9Language());
         setTheme(K9.getK9ThemeResourceId());
         super.onCreate(icicle);
+        lifecycleRegistry = new LifecycleRegistry(this);
+        lifecycleRegistry.markState(State.CREATED);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        lifecycleRegistry.markState(State.STARTED);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        lifecycleRegistry.markState(State.RESUMED);
+    }
+
+    @Override
+    protected void onPause() {
+        lifecycleRegistry.markState(State.STARTED);
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        lifecycleRegistry.markState(State.CREATED);
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        lifecycleRegistry.markState(State.DESTROYED);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        // see https://developer.android.com/topic/libraries/architecture/lifecycle.html#onStop-and-savedState
+        lifecycleRegistry.markState(State.CREATED);
+        super.onSaveInstanceState(outState);
+    }
+
+    @NonNull
+    @Override
+    public Lifecycle getLifecycle() {
+        return lifecycleRegistry;
     }
 
     @Override

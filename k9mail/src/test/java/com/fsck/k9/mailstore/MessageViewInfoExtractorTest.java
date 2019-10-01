@@ -248,7 +248,7 @@ public class MessageViewInfoExtractorTest {
         MimeMessageHelper.setBody(message, multipart);
 
         // Extract text
-        List<Part> outputNonViewableParts = new ArrayList<Part>();
+        List<Part> outputNonViewableParts = new ArrayList<>();
         ArrayList<Viewable> outputViewableParts = new ArrayList<>();
         MessageExtractor.findViewablesAndAttachments(message, outputViewableParts, outputNonViewableParts);
         ViewableExtractedText container = messageViewInfoExtractor.extractTextFromViewables(outputViewableParts);
@@ -356,6 +356,202 @@ public class MessageViewInfoExtractorTest {
                 messageViewInfoExtractor.extractTextFromViewables(outputViewableParts);
         assertEquals(expectedExtractedText, firstMessageExtractedText.text);
         assertEquals(expectedHtmlText, firstMessageExtractedText.html);
+    }
+
+    @Test
+    public void extractMessage_withAttachment() throws Exception {
+        BodyPart attachmentPart = bodypart("application/octet-stream");
+        Message message = messageFromBody(multipart("mixed",
+                bodypart("text/plain", "text"),
+                attachmentPart
+        ));
+        AttachmentViewInfo attachmentViewInfo = mock(AttachmentViewInfo.class);
+        setupAttachmentInfoForPart(attachmentPart, attachmentViewInfo);
+
+
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, null,
+                false);
+
+
+        assertEquals("<pre class=\"k9mail\">text</pre>", messageViewInfo.text);
+        assertSame(attachmentViewInfo, messageViewInfo.attachments.get(0));
+        assertNull(messageViewInfo.cryptoResultAnnotation);
+        assertTrue(messageViewInfo.extraAttachments.isEmpty());
+    }
+
+    @Test
+    public void extractMessage_withCryptoAnnotation() throws Exception {
+        Message message = messageFromBody(multipart("signed", "protocol=\"application/pgp-signature\"",
+                bodypart("text/plain", "text"),
+                bodypart("application/pgp-signature")
+        ));
+        CryptoResultAnnotation annotation = CryptoResultAnnotation.createOpenPgpResultAnnotation(
+                null, null, null, null, null, false);
+        MessageCryptoAnnotations messageCryptoAnnotations = createAnnotations(message, annotation);
+
+
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, messageCryptoAnnotations,
+                false);
+
+
+        assertEquals("<pre class=\"k9mail\">text</pre>", messageViewInfo.text);
+        assertSame(annotation, messageViewInfo.cryptoResultAnnotation);
+        assertSame(message, messageViewInfo.message);
+        assertSame(message, messageViewInfo.rootPart);
+        assertTrue(messageViewInfo.attachments.isEmpty());
+        assertTrue(messageViewInfo.extraAttachments.isEmpty());
+    }
+
+    @Test
+    public void extractMessage_withCryptoAnnotation_andReplacementPart() throws Exception {
+        Message message = messageFromBody(multipart("signed", "protocol=\"application/pgp-signature\"",
+                bodypart("text/plain", "text"),
+                bodypart("application/pgp-signature")
+        ));
+        MimeBodyPart replacementPart = bodypart("text/plain", "replacement text");
+        CryptoResultAnnotation annotation = CryptoResultAnnotation.createOpenPgpResultAnnotation(
+                null, null, null, null, replacementPart, false);
+        MessageCryptoAnnotations messageCryptoAnnotations = createAnnotations(message, annotation);
+
+
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, messageCryptoAnnotations,
+                false);
+
+
+        assertEquals("<pre class=\"k9mail\">replacement text</pre>", messageViewInfo.text);
+        assertSame(annotation, messageViewInfo.cryptoResultAnnotation);
+        assertSame(message, messageViewInfo.message);
+        assertSame(replacementPart, messageViewInfo.rootPart);
+        assertTrue(messageViewInfo.attachments.isEmpty());
+        assertTrue(messageViewInfo.extraAttachments.isEmpty());
+    }
+
+    @Test
+    public void extractMessage_withCryptoAnnotation_andExtraText() throws Exception {
+        MimeBodyPart signedPart = multipart("signed", "protocol=\"application/pgp-signature\"",
+                bodypart("text/plain", "text"),
+                bodypart("application/pgp-signature")
+        );
+        BodyPart extraText = bodypart("text/plain", "extra text");
+        Message message = messageFromBody(multipart("mixed",
+                signedPart,
+                extraText
+        ));
+        CryptoResultAnnotation annotation = CryptoResultAnnotation.createOpenPgpResultAnnotation(
+                null, null, null, null, null, false);
+        MessageCryptoAnnotations messageCryptoAnnotations = createAnnotations(signedPart, annotation);
+
+
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, messageCryptoAnnotations,
+                false);
+
+
+        assertEquals("<pre class=\"k9mail\">text</pre>", messageViewInfo.text);
+        assertSame(annotation, messageViewInfo.cryptoResultAnnotation);
+        assertEquals("extra text", messageViewInfo.extraText);
+        assertTrue(messageViewInfo.attachments.isEmpty());
+        assertTrue(messageViewInfo.extraAttachments.isEmpty());
+    }
+
+    @Test
+    public void extractMessage_withCryptoAnnotation_andExtraAttachment() throws Exception {
+        MimeBodyPart signedPart = multipart("signed", "protocol=\"application/pgp-signature\"",
+                bodypart("text/plain", "text"),
+                bodypart("application/pgp-signature")
+        );
+        BodyPart extraAttachment = bodypart("application/octet-stream");
+        Message message = messageFromBody(multipart("mixed",
+                signedPart,
+                extraAttachment
+        ));
+        CryptoResultAnnotation annotation = CryptoResultAnnotation.createOpenPgpResultAnnotation(
+                null, null, null, null, null, false);
+        MessageCryptoAnnotations messageCryptoAnnotations = createAnnotations(signedPart, annotation);
+
+        AttachmentViewInfo attachmentViewInfo = mock(AttachmentViewInfo.class);
+        setupAttachmentInfoForPart(extraAttachment, attachmentViewInfo);
+
+
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, messageCryptoAnnotations,
+                false);
+
+
+        assertEquals("<pre class=\"k9mail\">text</pre>", messageViewInfo.text);
+        assertSame(annotation, messageViewInfo.cryptoResultAnnotation);
+        assertSame(attachmentViewInfo, messageViewInfo.extraAttachments.get(0));
+        assertTrue(messageViewInfo.attachments.isEmpty());
+    }
+
+    @Test
+    public void extractMessage_openPgpEncrypted_withoutAnnotations() throws Exception {
+        Message message = messageFromBody(
+                multipart("encrypted", "protocol=\"application/pgp-encrypted\"",
+                        bodypart("application/pgp-encrypted"),
+                        bodypart("application/octet-stream")
+                )
+        );
+
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, null,
+                false);
+
+        assertEquals(CryptoError.OPENPGP_ENCRYPTED_NO_PROVIDER, messageViewInfo.cryptoResultAnnotation.getErrorType());
+        assertNull(messageViewInfo.text);
+        assertNull(messageViewInfo.attachments);
+        assertNull(messageViewInfo.extraAttachments);
+    }
+
+    @Test
+    public void extractMessage_multipartSigned_UnknownProtocol() throws Exception {
+        Message message = messageFromBody(
+                multipart("signed", "protocol=\"application/pkcs7-signature\"",
+                    bodypart("text/plain", "text"),
+                    bodypart("application/pkcs7-signature", "signature")
+                )
+        );
+
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, null,
+                false);
+
+        assertEquals("<pre class=\"k9mail\">text</pre>", messageViewInfo.text);
+        assertNull(messageViewInfo.cryptoResultAnnotation);
+        assertTrue(messageViewInfo.attachments.isEmpty());
+        assertTrue(messageViewInfo.extraAttachments.isEmpty());
+    }
+
+    @Test
+    public void extractMessage_multipartSigned_UnknownProtocol_withExtraAttachments() throws Exception {
+        BodyPart extraAttachment = bodypart("application/octet-stream");
+        Message message = messageFromBody(
+                multipart("mixed",
+                        multipart("signed", "protocol=\"application/pkcs7-signature\"",
+                                bodypart("text/plain", "text"),
+                                bodypart("application/pkcs7-signature", "signature")
+                        ),
+                        extraAttachment
+                )
+        );
+        AttachmentViewInfo mock = mock(AttachmentViewInfo.class);
+        setupAttachmentInfoForPart(extraAttachment, mock);
+
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, null,
+                false);
+
+        assertEquals("<pre class=\"k9mail\">text</pre>", messageViewInfo.text);
+        assertNull(messageViewInfo.cryptoResultAnnotation);
+        assertSame(mock, messageViewInfo.attachments.get(0));
+        assertTrue(messageViewInfo.extraAttachments.isEmpty());
+    }
+
+    void setupAttachmentInfoForPart(BodyPart extraAttachment, AttachmentViewInfo attachmentViewInfo)
+            throws MessagingException {
+        doReturn(attachmentViewInfo).when(attachmentInfoExtractor).extractAttachmentInfo(extraAttachment);
+    }
+
+    @NonNull
+    MessageCryptoAnnotations createAnnotations(Part part, CryptoResultAnnotation annotation) {
+        MessageCryptoAnnotations messageCryptoAnnotations = new MessageCryptoAnnotations();
+        messageCryptoAnnotations.put(part, annotation);
+        return messageCryptoAnnotations;
     }
 
     HtmlProcessor createFakeHtmlProcessor() {

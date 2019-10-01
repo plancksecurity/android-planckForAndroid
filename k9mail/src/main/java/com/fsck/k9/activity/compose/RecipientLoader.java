@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.content.AsyncTaskLoader;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -16,8 +15,9 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.Contacts.Data;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.Nullable;
+import androidx.loader.content.AsyncTaskLoader;
+import androidx.core.content.ContextCompat;
 
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;

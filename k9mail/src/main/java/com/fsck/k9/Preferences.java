@@ -38,7 +38,6 @@ public class Preferences {
     private List<Account> accountsInOrder = null;
     private Account newAccount;
     private Context context;
-    private List<String> keysInOrder = null;
 
     private Preferences(Context context) {
         storage = Storage.getStorage(context);
@@ -200,7 +199,7 @@ public class Preferences {
         editor.commit();
     }
 
-    public synchronized List<String> getMasterKeys(String uid) {
+    /*public synchronized List<String> getMasterKeys(String uid) {
         keysInOrder = new LinkedList<>();
         String keysFRPs = getStorage().getString(uid, null);
         if ((keysFRPs != null) && (keysFRPs.length() != 0)) {
@@ -232,4 +231,6 @@ public class Preferences {
         editor.putString(accountUuid, accountUuids);
         editor.commit();
     }
+
+     */
 }

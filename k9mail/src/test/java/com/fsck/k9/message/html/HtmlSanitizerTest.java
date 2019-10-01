@@ -158,4 +158,121 @@ public class HtmlSanitizerTest {
                 "<tr><td>Hmailserver service shutdown:</td><td>Ok</td></tr>" +
                 "</tbody></table></body></html>", toCompactString(result));
     }
+
+    @Test
+    public void shouldKeepHrTags() throws Exception {
+        String html = "<html><head></head><body>one<hr>two<hr />three</body></html>";
+
+        Document result = htmlSanitizer.sanitize(html);
+
+        assertEquals("<html><head></head><body>one<hr>two<hr>three</body></html>", toCompactString(result));
+    }
+
+    @Test
+    public void shouldKeepInsDelTags() {
+        String html = "<html><head></head><body><ins>Inserted</ins><del>Deleted</del></body></html>";
+
+        Document result = htmlSanitizer.sanitize(html);
+
+        assertEquals(html, toCompactString(result));
+    }
+
+    @Test
+    public void shouldKeepMapAreaTags() {
+        String html = "<html><head></head><body><map name=\"planetmap\">\n" +
+                "  <area shape=\"rect\" coords=\"0,0,82,126\" href=\"http://domain.com/sun.htm\" alt=\"Sun\">\n" +
+                "  <area shape=\"circle\" coords=\"90,58,3\" href=\"http://domain.com/mercur.htm\" alt=\"Mercury\">\n" +
+                "  <area shape=\"circle\" coords=\"124,58,8\" href=\"http://domain.com/venus.htm\" alt=\"Venus\">\n" +
+                "</map></body></html>";
+
+        Document result = htmlSanitizer.sanitize(html);
+
+        assertEquals(html, toCompactString(result));
+    }
+
+    @Test
+    public void shouldKeepImgUsemap() {
+        String html = "<html><head></head><body>" +
+                "<img src=\"http://domain.com/image.jpg\" usemap=\"#planetmap\">" +
+                "</body></html>";
+
+        Document result = htmlSanitizer.sanitize(html);
+
+        assertEquals(html, toCompactString(result));
+    }
+
+    @Test
+    public void shouldKeepWhitelistedElementsInHeadAndSkipTheRest() {
+        String html = "<html><head>" +
+                "<title>remove this</title>" +
+                "<style>keep this</style>" +
+                "<script>remove this</script>" +
+                "</head></html>";
+
+        Document result = htmlSanitizer.sanitize(html);
+
+        assertEquals("<html><head><style>keep this</style></head><body></body></html>", toCompactString(result));
+    }
+
+    @Test
+    public void shouldRemoveIFrames() {
+        String html = "<html><body>" +
+                "<iframe src=\"http://www.google.com\" />" +
+                "</body></html>";
+
+        Document result = htmlSanitizer.sanitize(html);
+
+        assertEquals("<html><head></head><body></body></html>", toCompactString(result));
+    }
+
+    @Test
+    public void shouldKeepFormattingTags() {
+        String html = "<html><body>" +
+                "<center><font face=\"Arial\" color=\"red\" size=\"12\">A</font></center>" +
+                "</body></html>";
+
+        Document result = htmlSanitizer.sanitize(html);
+
+        assertEquals("<html><head></head><body>" +
+                "<center><font face=\"Arial\" color=\"red\" size=\"12\">A</font></center>" +
+                "</body></html>", toCompactString(result));
+    }
+
+    @Test
+    public void shouldKeepUris() {
+        String html = "<html><body>" +
+                "<a href=\"http://example.com/index.html\">HTTP</a>" +
+                "<a href=\"https://example.com/default.html\">HTTPS</a>" +
+                "<a href=\"mailto:user@example.com\">Mailto</a>" +
+                "<a href=\"tel:00442079460111\">Telephone</a>" +
+                "<a href=\"sip:user@example.com\">SIP</a>" +
+                "<a href=\"bitcoin:12A1MyfXbW6RhdRAZEqofac5jCQQjwEPBu\">Bitcoin</a>" +
+                "<a href=\"ethereum:0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7\">Ethereum</a>" +
+                "<a href=\"rtsp://example.com/media.mp4\">RTSP</a>" +
+                "</body></html>";
+
+        Document result = htmlSanitizer.sanitize(html);
+
+        assertEquals("<html><head></head><body>" +
+                "<a href=\"http://example.com/index.html\">HTTP</a>" +
+                "<a href=\"https://example.com/default.html\">HTTPS</a>" +
+                "<a href=\"mailto:user@example.com\">Mailto</a>" +
+                "<a href=\"tel:00442079460111\">Telephone</a>" +
+                "<a href=\"sip:user@example.com\">SIP</a>" +
+                "<a href=\"bitcoin:12A1MyfXbW6RhdRAZEqofac5jCQQjwEPBu\">Bitcoin</a>" +
+                "<a href=\"ethereum:0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7\">Ethereum</a>" +
+                "<a href=\"rtsp://example.com/media.mp4\">RTSP</a>" +
+                "</body></html>", toCompactString(result));
+    }
+
+    @Test
+    public void shouldKeepDirAttribute() {
+        String html = "<html><head></head><body>" +
+                "<table><tbody><tr><td dir=\"rtl\"></td></tr></tbody></table>" +
+                "</body></html>";
+
+        Document result = htmlSanitizer.sanitize(html);
+
+        assertEquals(html, toCompactString(result));
+    }
 }

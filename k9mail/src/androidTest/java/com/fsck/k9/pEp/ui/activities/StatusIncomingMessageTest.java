@@ -1,10 +1,10 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Instrumentation;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.IdlingRegistry;
-import android.support.test.espresso.intent.rule.IntentsTestRule;
-import android.support.test.uiautomator.UiDevice;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.espresso.IdlingRegistry;
+import androidx.test.espresso.intent.rule.IntentsTestRule;
+import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
@@ -13,16 +13,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import foundation.pEp.jniadapter.Rating;
+import pEp.jniadapter.Rating;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.longClick;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.longClick;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 
 
@@ -65,20 +66,31 @@ public class StatusIncomingMessageTest {
     }
 
     private void assertPartnerStatusIsTrusted() {
-        testUtils.createAccount();
+        testUtils.createAccount(false);
         testUtils.composeMessageButton();
         device.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         testUtils.sendMessage();
         device.waitForIdle();
         testUtils.waitForNewMessage();
-        testUtils.waitForMessageAndClickIt();
+        testUtils.clickLastMessageReceived();
         testUtils.clickMessageStatus();
         testUtils.clickView(R.id.confirmTrustWords);
         testUtils.clickView(R.id.tvPep);
         testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
         device.waitForIdle();
-        testUtils.goBackToMessageList();
+        goBackToMessageList();
+    }
+
+    void goBackToMessageList(){
+        boolean backToMessageCompose = false;
+        while (!backToMessageCompose){
+            device.pressBack();
+            device.waitForIdle();
+            if (viewIsDisplayed(R.id.fab_button_compose_message)){
+                backToMessageCompose = true;
+            }
+        }
     }
 
     private void assertIncomingTrustedPartnerMessageIsGreen() {

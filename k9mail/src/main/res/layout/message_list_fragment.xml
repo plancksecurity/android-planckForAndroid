@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/message_list_container"
@@ -16,7 +16,7 @@
         tools:visibility="visible"
         android:visibility="gone"/>
 
-    <android.support.v4.widget.SwipeRefreshLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/message_swipe"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -27,9 +27,9 @@
             android:layout_height="match_parent"
             android:background="@drawable/selectable_message_background"
             android:dividerHeight="1px" />
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_button_compose_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -43,4 +43,4 @@
         app:elevation="4dp"
         app:layout_anchorGravity="right|bottom" />
 
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

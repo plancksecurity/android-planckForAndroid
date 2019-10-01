@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.PowerManager;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 
 import com.fsck.k9.service.MailServiceLegacy;
 

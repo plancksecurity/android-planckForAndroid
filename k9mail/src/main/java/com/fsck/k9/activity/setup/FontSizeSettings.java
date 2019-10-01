@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;

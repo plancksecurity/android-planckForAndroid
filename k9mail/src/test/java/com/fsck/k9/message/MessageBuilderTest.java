@@ -15,7 +15,7 @@ import android.app.Application;
 
 import com.fsck.k9.Account.QuoteStyle;
 import com.fsck.k9.Identity;
-import com.fsck.k9.K9RobolectricTestRunner;
+import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.activity.misc.Attachment;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.BodyPart;
@@ -30,7 +30,6 @@ import com.fsck.k9.message.MessageBuilder.Callback;
 import com.fsck.k9.message.quote.InsertableHtmlContent;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
@@ -45,25 +44,27 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(K9RobolectricTestRunner.class)
-public class MessageBuilderTest {
-    public static final String TEST_MESSAGE_TEXT = "soviet message\r\ntext ☭";
-    public static final String TEST_ATTACHMENT_TEXT = "text data in attachment";
-    public static final String TEST_SUBJECT = "test_subject";
-    public static final Address TEST_IDENTITY_ADDRESS = new Address("test@example.org", "tester");
-    public static final Address[] TEST_TO = new Address[] {
-            new Address("to1@example.org", "recip 1"), new Address("to2@example.org", "recip 2")
+public class MessageBuilderTest extends RobolectricTest {
+    private static final String TEST_MESSAGE_TEXT = "soviet message\r\ntext ☭";
+    private static final String TEST_ATTACHMENT_TEXT = "text data in attachment";
+    private static final String TEST_SUBJECT = "test_subject";
+    private static final Address TEST_IDENTITY_ADDRESS = new Address("test@example.org", "tester");
+    private static final Address[] TEST_TO = new Address[] {
+            new Address("to1@example.org", "recip 1"),
+            new Address("to2@example.org", "recip 2")
     };
-    public static final Address[] TEST_CC = new Address[] { new Address("cc@example.org", "cc recip") };
-    public static final Address[] TEST_BCC = new Address[] { new Address("bcc@example.org", "bcc recip") };
-    public static final String TEST_MESSAGE_ID = "<00000000-0000-007B-0000-0000000000EA@pretty.Easy.privacy>";
-    public static final Date SENT_DATE = new Date(10000000000L);
+    private static final Address[] TEST_CC = new Address[] {
+            new Address("cc@example.org", "cc recip") };
+    private static final Address[] TEST_BCC = new Address[] {
+            new Address("bcc@example.org", "bcc recip") };
+    private static final String TEST_MESSAGE_ID = "<00000000-0000-007B-0000-0000000000EA@pretty.Easy.privacy>";
+    private static final Date SENT_DATE = new Date(10000000000L);
 
-    public static final String BOUNDARY_1 = "----boundary1";
-    public static final String BOUNDARY_2 = "----boundary2";
-    public static final String BOUNDARY_3 = "----boundary3";
+    private static final String BOUNDARY_1 = "----boundary1";
+    private static final String BOUNDARY_2 = "----boundary2";
+    private static final String BOUNDARY_3 = "----boundary3";
 
-    public static final String MESSAGE_HEADERS = "" +
+    private static final String MESSAGE_HEADERS = "" +
             "Date: Sun, 26 Apr 1970 17:46:40 +0000\r\n" +
             "From: tester <test@example.org>\r\n" +
             "To: recip 1 <to1@example.org>,recip 2 <to2@example.org>\r\n" +
@@ -76,7 +77,7 @@ public class MessageBuilderTest {
             "Message-ID: " + TEST_MESSAGE_ID + "\r\n" +
             "MIME-Version: 1.0\r\n";
 
-    public static final String MESSAGE_CONTENT = "" +
+    private static final String MESSAGE_CONTENT = "" +
             "Content-Type: text/plain;\r\n" +
             " charset=utf-8\r\n" +
             "Content-Transfer-Encoding: quoted-printable\r\n" +
@@ -84,7 +85,7 @@ public class MessageBuilderTest {
             "soviet message\r\n" +
             "text =E2=98=AD";
 
-    public static final String MESSAGE_CONTENT_WITH_ATTACH = "" +
+    private static final String MESSAGE_CONTENT_WITH_ATTACH = "" +
             "Content-Type: multipart/mixed; boundary=\"" + BOUNDARY_1 + "\"\r\n" +
             "Content-Transfer-Encoding: 7bit\r\n" +
             "\r\n" +
@@ -97,17 +98,17 @@ public class MessageBuilderTest {
             "text =E2=98=AD\r\n" +
             "--" + BOUNDARY_1 + "\r\n" +
             "Content-Type: text/plain;\r\n" +
-            " name=\"attach.txt\"\r\n" +
+            " name=attach.txt\r\n" +
             "Content-Transfer-Encoding: base64\r\n" +
             "Content-Disposition: attachment;\r\n" +
-            " filename=\"attach.txt\";\r\n" +
+            " filename=attach.txt;\r\n" +
             " size=23\r\n" +
             "\r\n" +
             "dGV4dCBkYXRhIGluIGF0dGFjaG1lbnQ=\r\n" +
             "\r\n" +
             "--" + BOUNDARY_1 + "--\r\n";
 
-    public static final String MESSAGE_CONTENT_WITH_MESSAGE_ATTACH = "" +
+    private static final String MESSAGE_CONTENT_WITH_LONG_FILE_NAME =
             "Content-Type: multipart/mixed; boundary=\"" + BOUNDARY_1 + "\"\r\n" +
             "Content-Transfer-Encoding: 7bit\r\n" +
             "\r\n" +
@@ -119,14 +120,62 @@ public class MessageBuilderTest {
             "soviet message\r\n" +
             "text =E2=98=AD\r\n" +
             "--" + BOUNDARY_1 + "\r\n" +
-            "Content-Type: application/octet-stream;\r\n" +
-            " name=\"attach.txt\"\r\n" +
+            "Content-Type: text/plain;\r\n" +
+            " name*0*=UTF-8''~~~~~~~~~1~~~~~~~~~2~~~~~~~~~3~~~~~~~~~4~~~~~~~~~5~~~~~~~~~6~;\r\n" +
+            " name*1*=~~~~~~~~7.txt\r\n" +
             "Content-Transfer-Encoding: base64\r\n" +
             "Content-Disposition: attachment;\r\n" +
-            " filename=\"attach.txt\";\r\n" +
+            " filename*0*=UTF-8''~~~~~~~~~1~~~~~~~~~2~~~~~~~~~3~~~~~~~~~4~~~~~~~~~5~~~~~~~;\r\n" +
+            " filename*1*=~~6~~~~~~~~~7.txt;\r\n" +
             " size=23\r\n" +
             "\r\n" +
             "dGV4dCBkYXRhIGluIGF0dGFjaG1lbnQ=\r\n" +
+            "\r\n" +
+            "--" + BOUNDARY_1 + "--\r\n";
+
+    private static final String ATTACHMENT_FILENAME_NON_ASCII = "テスト文書.txt";
+    private static final String MESSAGE_CONTENT_WITH_ATTACH_NON_ASCII_FILENAME = "" +
+            "Content-Type: multipart/mixed; boundary=\"" + BOUNDARY_1 + "\"\r\n" +
+            "Content-Transfer-Encoding: 7bit\r\n" +
+            "\r\n" +
+            "--" + BOUNDARY_1 + "\r\n" +
+            "Content-Type: text/plain;\r\n" +
+            " charset=utf-8\r\n" +
+            "Content-Transfer-Encoding: quoted-printable\r\n" +
+            "\r\n" +
+            "soviet message\r\n" +
+            "text =E2=98=AD\r\n" +
+            "--" + BOUNDARY_1 + "\r\n" +
+            "Content-Type: text/plain;\r\n" +
+            " name*=UTF-8''%E3%83%86%E3%82%B9%E3%83%88%E6%96%87%E6%9B%B8.txt\r\n" +
+            "Content-Transfer-Encoding: base64\r\n" +
+            "Content-Disposition: attachment;\r\n" +
+            " filename*=UTF-8''%E3%83%86%E3%82%B9%E3%83%88%E6%96%87%E6%9B%B8.txt;\r\n" +
+            " size=23\r\n" +
+            "\r\n" +
+            "dGV4dCBkYXRhIGluIGF0dGFjaG1lbnQ=\r\n" +
+            "\r\n" +
+            "--" + BOUNDARY_1 + "--\r\n";
+
+    private static final String MESSAGE_CONTENT_WITH_MESSAGE_ATTACH = "" +
+            "Content-Type: multipart/mixed; boundary=\"" + BOUNDARY_1 + "\"\r\n" +
+            "Content-Transfer-Encoding: 7bit\r\n" +
+            "\r\n" +
+            "--" + BOUNDARY_1 + "\r\n" +
+            "Content-Type: text/plain;\r\n" +
+            " charset=utf-8\r\n" +
+            "Content-Transfer-Encoding: quoted-printable\r\n" +
+            "\r\n" +
+            "soviet message\r\n" +
+            "text =E2=98=AD\r\n" +
+            "--" + BOUNDARY_1 + "\r\n" +
+            "Content-Type: message/rfc822;\r\n" +
+            " name=attach.txt\r\n" +
+            "Content-Disposition: attachment;\r\n" +
+            " filename=attach.txt;\r\n" +
+            " size=23\r\n" +
+            "\r\n" +
+            "text data in attachment" +
             "\r\n" +
             "--" + BOUNDARY_1 + "--\r\n";
 
@@ -168,13 +217,44 @@ public class MessageBuilderTest {
     @Test
     public void build_withAttachment_shouldSucceed() throws Exception {
         MessageBuilder messageBuilder = createSimpleMessageBuilder();
-        Attachment attachment = createAttachmentWithContent("text/plain", "attach.txt", TEST_ATTACHMENT_TEXT);
+        Attachment attachment = createAttachmentWithContent(
+                "text/plain", "attach.txt", TEST_ATTACHMENT_TEXT);
         messageBuilder.setAttachments(Collections.singletonList(attachment));
 
         messageBuilder.buildAsync(callback);
 
         MimeMessage message = getMessageFromCallback();
         assertEquals(MESSAGE_HEADERS + MESSAGE_CONTENT_WITH_ATTACH, getMessageContents(message));
+    }
+
+    @Test
+    public void build_withAttachment_longFileName() throws Exception {
+        MessageBuilder messageBuilder = createSimpleMessageBuilder();
+        Attachment attachment = createAttachmentWithContent(
+                "text/plain",
+                "~~~~~~~~~1~~~~~~~~~2~~~~~~~~~3~~~~~~~~~4~~~~~~~~~5~~~~~~~~~6~~~~~~~~~7.txt",
+                TEST_ATTACHMENT_TEXT);
+        messageBuilder.setAttachments(Collections.singletonList(attachment));
+
+        messageBuilder.buildAsync(callback);
+
+        MimeMessage message = getMessageFromCallback();
+        assertEquals(MESSAGE_HEADERS + MESSAGE_CONTENT_WITH_LONG_FILE_NAME,
+                getMessageContents(message));
+    }
+
+    @Test
+    public void build_withAttachment_nonAscii_shouldSucceed() throws Exception {
+        MessageBuilder messageBuilder = createSimpleMessageBuilder();
+        Attachment attachment = createAttachmentWithContent(
+                "text/plain", ATTACHMENT_FILENAME_NON_ASCII, TEST_ATTACHMENT_TEXT);
+        messageBuilder.setAttachments(Collections.singletonList(attachment));
+
+        messageBuilder.buildAsync(callback);
+
+        MimeMessage message = getMessageFromCallback();
+        assertEquals(MESSAGE_HEADERS + MESSAGE_CONTENT_WITH_ATTACH_NON_ASCII_FILENAME,
+                getMessageContents(message));
     }
 
     @Test
@@ -193,15 +273,17 @@ public class MessageBuilderTest {
     }
 
     @Test
-    public void build_withMessageAttachment_shouldAttachAsApplicationOctetStream() throws Exception {
+    public void build_withMessageAttachment_shouldAttachAsMessageRfc822() throws Exception {
         MessageBuilder messageBuilder = createSimpleMessageBuilder();
-        Attachment attachment = createAttachmentWithContent("message/rfc822", "attach.txt", TEST_ATTACHMENT_TEXT);
+        Attachment attachment = createAttachmentWithContent(
+                "message/rfc822", "attach.txt", TEST_ATTACHMENT_TEXT);
         messageBuilder.setAttachments(Collections.singletonList(attachment));
 
         messageBuilder.buildAsync(callback);
 
         MimeMessage message = getMessageFromCallback();
-        assertEquals(MESSAGE_HEADERS + MESSAGE_CONTENT_WITH_MESSAGE_ATTACH, getMessageContents(message));
+        assertEquals(MESSAGE_HEADERS + MESSAGE_CONTENT_WITH_MESSAGE_ATTACH,
+                getMessageContents(message));
     }
 
     @Test
@@ -278,7 +360,7 @@ public class MessageBuilderTest {
         fileOutputStream.write(bytes);
         fileOutputStream.close();
 
-        return Attachment.createAttachment(null, 0, mimeType)
+        return Attachment.createAttachment(null, 0, mimeType, true)
                 .deriveWithMetadataLoaded(mimeType, filename, bytes.length)
                 .deriveWithLoadComplete(tempFile.getAbsolutePath());
     }

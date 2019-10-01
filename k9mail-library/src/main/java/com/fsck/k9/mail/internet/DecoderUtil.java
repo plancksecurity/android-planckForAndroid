@@ -1,13 +1,17 @@
 
 package com.fsck.k9.mail.internet;
 
-import com.fsck.k9.mail.Message;
-import com.fsck.k9.mail.MessagingException;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import org.apache.james.mime4j.codec.Base64InputStream;
+import com.fsck.k9.mail.Message;
+import com.fsck.k9.mail.MessagingException;
+import okio.Buffer;
+import okio.ByteString;
+import okio.Okio;
 import org.apache.james.mime4j.codec.QuotedPrintableInputStream;
 import org.apache.james.mime4j.util.CharsetUtil;
 import timber.log.Timber;
@@ -21,58 +25,6 @@ import timber.log.Timber;
  * it has to be determined with the sender address, the mailer and so on.
  */
 class DecoderUtil {
-    /**
-     * Decodes an encoded word encoded with the 'B' encoding (described in
-     * RFC 2047) found in a header field body.
-     *
-     * @param encodedWord the encoded word to decode.
-     * @param charset the Java charset to use.
-     * @return the decoded string.
-     */
-    private static String decodeB(String encodedWord, String charset) {
-        byte[] bytes = encodedWord.getBytes(Charset.forName("US-ASCII"));
-
-        Base64InputStream is = new Base64InputStream(new ByteArrayInputStream(bytes));
-        try {
-            return CharsetSupport.readToString(is, charset);
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Decodes an encoded word encoded with the 'Q' encoding (described in
-     * RFC 2047) found in a header field body.
-     *
-     * @param encodedWord the encoded word to decode.
-     * @param charset the Java charset to use.
-     * @return the decoded string.
-     */
-    private static String decodeQ(String encodedWord, String charset) {
-
-        /*
-         * Replace _ with =20
-         */
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < encodedWord.length(); i++) {
-            char c = encodedWord.charAt(i);
-            if (c == '_') {
-                sb.append("=20");
-            } else {
-                sb.append(c);
-            }
-        }
-
-        byte[] bytes = sb.toString().getBytes(Charset.forName("US-ASCII"));
-
-        QuotedPrintableInputStream is = new QuotedPrintableInputStream(new ByteArrayInputStream(bytes));
-        try {
-            return CharsetSupport.readToString(is, charset);
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
     /**
      * Decodes a string containing encoded words as defined by RFC 2047.
      * Encoded words in have the form
@@ -93,15 +45,15 @@ class DecoderUtil {
             return body;
         }
 
+        EncodedWord previousWord = null;
         int previousEnd = 0;
-        boolean previousWasEncoded = false;
 
         StringBuilder sb = new StringBuilder();
 
         while (true) {
             int begin = body.indexOf("=?", previousEnd);
             if (begin == -1) {
-                sb.append(body.substring(previousEnd));
+                decodePreviousAndAppendSuffix(sb, previousWord, body, previousEnd);
                 return sb.toString();
             }
 
@@ -110,43 +62,75 @@ class DecoderUtil {
             // to find the two '?' in the "header", before looking for the final "?=".
             int qm1 = body.indexOf('?', begin + 2);
             if (qm1 == -1) {
-                sb.append(body.substring(previousEnd));
+                decodePreviousAndAppendSuffix(sb, previousWord, body, previousEnd);
                 return sb.toString();
             }
 
             int qm2 = body.indexOf('?', qm1 + 1);
             if (qm2 == -1) {
-                sb.append(body.substring(previousEnd));
+                decodePreviousAndAppendSuffix(sb, previousWord, body, previousEnd);
                 return sb.toString();
             }
 
             int end = body.indexOf("?=", qm2 + 1);
             if (end == -1) {
-                sb.append(body.substring(previousEnd));
+                decodePreviousAndAppendSuffix(sb, previousWord, body, previousEnd);
                 return sb.toString();
             }
             end += 2;
 
             String sep = body.substring(previousEnd, begin);
 
-            String decoded = decodeEncodedWord(body, begin, end, message);
-            if (decoded == null) {
+            EncodedWord word = extractEncodedWord(body, begin, end, message);
+
+            if (previousWord == null) {
                 sb.append(sep);
-                sb.append(body.substring(begin, end));
-            } else {
-                if (!previousWasEncoded || !CharsetUtil.isWhitespace(sep)) {
-                    sb.append(sep);
+                if (word == null) {
+                    sb.append(body, begin, end);
                 }
-                sb.append(decoded);
+            } else {
+                if (word == null) {
+                    sb.append(charsetDecode(previousWord));
+                    sb.append(sep);
+                    sb.append(body, begin, end);
+                } else {
+                    if (!CharsetUtil.isWhitespace(sep)) {
+                        sb.append(charsetDecode(previousWord));
+                        sb.append(sep);
+                    } else if (previousWord.encoding.equals(word.encoding) &&
+                            previousWord.charset.equals(word.charset)) {
+                        word.data = concat(previousWord.data, word.data);
+                    } else {
+                        sb.append(charsetDecode(previousWord));
+                    }
+                }
             }
 
+            previousWord = word;
             previousEnd = end;
-            previousWasEncoded = decoded != null;
         }
     }
 
-    // return null on error
-    private static String decodeEncodedWord(String body, int begin, int end, Message message) {
+    private static void decodePreviousAndAppendSuffix(StringBuilder sb, EncodedWord previousWord, String body,
+            int previousEnd) {
+
+        if (previousWord != null) {
+            sb.append(charsetDecode(previousWord));
+        }
+
+        sb.append(body.substring(previousEnd));
+    }
+
+    private static String charsetDecode(EncodedWord word) {
+        try {
+            InputStream inputStream = new Buffer().write(word.data).inputStream();
+            return CharsetSupport.readToString(inputStream, word.charset);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    private static EncodedWord extractEncodedWord(String body, int begin, int end, Message message) {
         int qm1 = body.indexOf('?', begin + 2);
         if (qm1 == end - 2)
             return null;
@@ -155,7 +139,12 @@ class DecoderUtil {
         if (qm2 == end - 2)
             return null;
 
-        String mimeCharset = body.substring(begin + 2, qm1);
+        // Extract charset, skipping language information if present (example: =?utf-8*en?Q?Text?=)
+        String charsetPart = body.substring(begin + 2, qm1);
+        int languageSuffixStart = charsetPart.indexOf('*');
+        boolean languageSuffixFound = languageSuffixStart != -1;
+        String mimeCharset = languageSuffixFound ? charsetPart.substring(0, languageSuffixStart) : charsetPart;
+
         String encoding = body.substring(qm1 + 1, qm2);
         String encodedText = body.substring(qm2 + 1, end - 2);
 
@@ -171,13 +160,58 @@ class DecoderUtil {
             return null;
         }
 
+        EncodedWord encodedWord = new EncodedWord();
+        encodedWord.charset = charset;
         if (encoding.equalsIgnoreCase("Q")) {
-            return decodeQ(encodedText, charset);
+            encodedWord.encoding = "Q";
+            encodedWord.data = decodeQ(encodedText);
         } else if (encoding.equalsIgnoreCase("B")) {
-            return DecoderUtil.decodeB(encodedText, charset);
+            encodedWord.encoding = "B";
+            encodedWord.data = decodeB(encodedText);
         } else {
             Timber.w("Warning: Unknown encoding in encoded word '%s'", body.substring(begin, end));
             return null;
         }
+        return encodedWord;
+    }
+
+    private static ByteString decodeQ(String encodedWord) {
+        /*
+         * Replace _ with =20
+         */
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < encodedWord.length(); i++) {
+            char c = encodedWord.charAt(i);
+            if (c == '_') {
+                sb.append("=20");
+            } else {
+                sb.append(c);
+            }
+        }
+
+        byte[] bytes = sb.toString().getBytes(Charset.forName("US-ASCII"));
+
+        QuotedPrintableInputStream is = new QuotedPrintableInputStream(new ByteArrayInputStream(bytes));
+        try {
+            return Okio.buffer(Okio.source(is)).readByteString();
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    private static ByteString decodeB(String encodedText) {
+        ByteString decoded = ByteString.decodeBase64(encodedText);
+        return decoded == null ? ByteString.EMPTY : decoded;
+    }
+
+    private static ByteString concat(ByteString first, ByteString second) {
+        return new Buffer().write(first).write(second).readByteString();
+    }
+
+
+    private static class EncodedWord {
+        private String charset;
+        private String encoding;
+        private ByteString data;
     }
 }

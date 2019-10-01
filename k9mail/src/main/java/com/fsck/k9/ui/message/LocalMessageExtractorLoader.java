@@ -1,14 +1,13 @@
 package com.fsck.k9.ui.message;
 
 
-import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+import androidx.loader.content.AsyncTaskLoader;
+
 import timber.log.Timber;
 
-import com.fsck.k9.K9;
-import com.fsck.k9.mail.Message;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfoExtractor;
 import com.fsck.k9.mailstore.MessageViewInfo;
@@ -19,13 +18,13 @@ public class LocalMessageExtractorLoader extends AsyncTaskLoader<MessageViewInfo
     private static final MessageViewInfoExtractor messageViewInfoExtractor = MessageViewInfoExtractor.getInstance();
 
 
-    private final Message message;
+    private final LocalMessage message;
     private MessageViewInfo messageViewInfo;
     @Nullable
     private MessageCryptoAnnotations annotations;
 
     public LocalMessageExtractorLoader(
-            Context context, Message message, @Nullable MessageCryptoAnnotations annotations) {
+            Context context, LocalMessage message, @Nullable MessageCryptoAnnotations annotations) {
         super(context);
         this.message = message;
         this.annotations = annotations;
@@ -52,7 +51,7 @@ public class LocalMessageExtractorLoader extends AsyncTaskLoader<MessageViewInfo
     @WorkerThread
     public MessageViewInfo loadInBackground() {
         try {
-            return messageViewInfoExtractor.extractMessageForView(message, annotations);
+            return messageViewInfoExtractor.extractMessageForView(message, annotations, message.getAccount().isOpenPgpProviderConfigured());
         } catch (Exception e) {
             Timber.e(e, "Error while decoding message");
             return null;

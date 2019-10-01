@@ -7,7 +7,7 @@ import java.util.List;
 import com.fsck.k9.activity.compose.RecipientMvpView.CryptoSpecialModeDisplayType;
 import com.fsck.k9.activity.compose.RecipientMvpView.CryptoStatusDisplayType;
 import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
-import com.fsck.k9.activity.compose.RecipientPresenter.CryptoProviderState;
+import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderState;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.RecipientSelectView.RecipientCryptoStatus;
 
@@ -18,7 +18,7 @@ import com.fsck.k9.view.RecipientSelectView.RecipientCryptoStatus;
 public class ComposeCryptoStatus {
 
 
-    private CryptoProviderState cryptoProviderState;
+    private OpenPgpProviderState openPgpProviderState;
     private CryptoMode cryptoMode;
     private boolean allKeysAvailable;
     private boolean allKeysVerified;
@@ -28,6 +28,8 @@ public class ComposeCryptoStatus {
     private String[] recipientAddresses;
     private boolean enablePgpInline;
 
+    private boolean preferEncryptMutual;
+    private boolean isReplyToEncrypted;
 
     public long[] getEncryptKeyIds() {
         if (selfEncryptKeyId == null) {
@@ -45,13 +47,13 @@ public class ComposeCryptoStatus {
     }
 
     CryptoStatusDisplayType getCryptoStatusDisplayType() {
-        switch (cryptoProviderState) {
+        switch (openPgpProviderState) {
             case UNCONFIGURED:
                 return CryptoStatusDisplayType.UNCONFIGURED;
             case UNINITIALIZED:
                 return CryptoStatusDisplayType.UNINITIALIZED;
-            case LOST_CONNECTION:
             case ERROR:
+            case UI_REQUIRED:
                 return CryptoStatusDisplayType.ERROR;
             case OK:
                 // provider status is ok -> return value is based on cryptoMode
@@ -89,7 +91,7 @@ public class ComposeCryptoStatus {
     }
 
     CryptoSpecialModeDisplayType getCryptoSpecialModeDisplayType() {
-        if (cryptoProviderState != CryptoProviderState.OK) {
+        if (openPgpProviderState != OpenPgpProviderState.OK) {
             return CryptoSpecialModeDisplayType.NONE;
         }
 
@@ -109,11 +111,12 @@ public class ComposeCryptoStatus {
     }
 
     public boolean shouldUsePgpMessageBuilder() {
-        return cryptoProviderState != CryptoProviderState.UNCONFIGURED && cryptoMode != CryptoMode.DISABLE;
+        return openPgpProviderState != OpenPgpProviderState.UNCONFIGURED && cryptoMode != CryptoMode.DISABLE;
     }
 
     public boolean isEncryptionEnabled() {
-        return cryptoMode == CryptoMode.PRIVATE || cryptoMode == CryptoMode.OPPORTUNISTIC;
+        //This is k9 encryption
+        return false;
     }
 
     public boolean isEncryptionOpportunistic() {
@@ -137,20 +140,20 @@ public class ComposeCryptoStatus {
     }
 
     public boolean isProviderStateOk() {
-        return cryptoProviderState == CryptoProviderState.OK;
+        return openPgpProviderState == OpenPgpProviderState.OK;
     }
 
     public static class ComposeCryptoStatusBuilder {
 
-        private CryptoProviderState cryptoProviderState;
+        private OpenPgpProviderState openPgpProviderState;
         private CryptoMode cryptoMode;
         private Long signingKeyId;
         private Long selfEncryptKeyId;
         private List<Recipient> recipients;
         private Boolean enablePgpInline;
 
-        public ComposeCryptoStatusBuilder setCryptoProviderState(CryptoProviderState cryptoProviderState) {
-            this.cryptoProviderState = cryptoProviderState;
+        public ComposeCryptoStatusBuilder setOpenPgpProviderState(OpenPgpProviderState openPgpProviderState) {
+            this.openPgpProviderState = openPgpProviderState;
             return this;
         }
 
@@ -180,7 +183,7 @@ public class ComposeCryptoStatus {
         }
 
         public ComposeCryptoStatus build() {
-            if (cryptoProviderState == null) {
+            if (openPgpProviderState == null) {
                 throw new AssertionError("cryptoProviderState must be set!");
             }
             if (cryptoMode == null) {
@@ -213,7 +216,7 @@ public class ComposeCryptoStatus {
             }
 
             ComposeCryptoStatus result = new ComposeCryptoStatus();
-            result.cryptoProviderState = cryptoProviderState;
+            result.openPgpProviderState = openPgpProviderState;
             result.cryptoMode = cryptoMode;
             result.recipientAddresses = recipientAddresses.toArray(new String[0]);
             result.allKeysAvailable = allKeysAvailable;
@@ -231,7 +234,7 @@ public class ComposeCryptoStatus {
     }
 
     public SendErrorState getSendErrorStateOrNull() {
-        if (cryptoProviderState != CryptoProviderState.OK) {
+        if (openPgpProviderState != OpenPgpProviderState.OK) {
             // TODO: be more specific about this error
             return SendErrorState.PROVIDER_ERROR;
         }
@@ -252,7 +255,7 @@ public class ComposeCryptoStatus {
     }
 
     AttachErrorState getAttachErrorStateOrNull() {
-        if (cryptoProviderState == CryptoProviderState.UNCONFIGURED) {
+        if (openPgpProviderState == OpenPgpProviderState.UNCONFIGURED) {
             return null;
         }
 

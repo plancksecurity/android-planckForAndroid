@@ -1,11 +1,11 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Instrumentation;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.IdlingRegistry;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
-import android.support.test.uiautomator.UiDevice;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.espresso.IdlingRegistry;
+import androidx.test.rule.ActivityTestRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
@@ -15,12 +15,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import foundation.pEp.jniadapter.Rating;
+import pEp.jniadapter.Rating;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 
 @RunWith(AndroidJUnit4.class)
 public class InboxActionBarChangingColorTest {
@@ -60,7 +63,7 @@ public class InboxActionBarChangingColorTest {
     @Test (timeout = TIMEOUT_TEST)
     public void assertActionBarColorIsNotChanging() {
         testUtils.increaseTimeoutWait();
-        testUtils.createAccount();
+        testUtils.createAccount(false);
         assertSelfMessageColor();
         assertBotMessageColor();
         testUtils.goBackAndRemoveAccount();
@@ -75,16 +78,26 @@ public class InboxActionBarChangingColorTest {
         testUtils.sendMessage();
         device.waitForIdle();
         testUtils.waitForNewMessage();
-        testUtils.waitForMessageAndClickIt();
+        testUtils.clickLastMessageReceived();
         testUtils.clickView(R.id.tvPep);
         testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
         device.waitForIdle();
         testUtils.pressBack();
-        testUtils.checkToolbarColor(R.color.pep_green);
+        checkToolbarColor(R.color.pep_green);
         device.waitForIdle();
         testUtils.pressBack();
         device.waitForIdle();
-        testUtils.checkToolbarColor(R.color.pep_green);
+        checkToolbarColor(R.color.pep_green);
+    }
+
+    private void checkToolbarColor(int color) {
+        boolean toolbarExists = false;
+        while (!toolbarExists) {
+            if (exists(onView(withId(R.id.toolbar)))) {
+                onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(color)));
+                toolbarExists = true;
+            }
+        }
     }
 
     private void assertBotMessageColor(){
@@ -94,11 +107,11 @@ public class InboxActionBarChangingColorTest {
         testUtils.sendMessage();
         device.waitForIdle();
         testUtils.waitForNewMessage();
-        testUtils.waitForMessageAndClickIt();
-        testUtils.checkToolbarColor(R.color.pep_yellow);
+        testUtils.clickLastMessageReceived();
+        checkToolbarColor(R.color.pep_yellow);
         device.waitForIdle();
         testUtils.pressBack();
         device.waitForIdle();
-        testUtils.checkToolbarColor(R.color.pep_green);
+        checkToolbarColor(R.color.pep_green);
     }
 }

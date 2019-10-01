@@ -62,8 +62,8 @@
             android:persistent="false"
             android:key="show_pictures_enum"
             android:title="@string/account_settings_show_pictures_label"
-            android:entries="@array/account_settings_show_pictures_entries"
-            android:entryValues="@array/account_settings_show_pictures_values"
+            android:entries="@array/show_pictures_entries"
+            android:entryValues="@array/show_pictures_values"
             android:dialogTitle="@string/account_settings_show_pictures_label" />
 
         <CheckBoxPreference
@@ -82,48 +82,48 @@
             android:persistent="false"
             android:key="account_display_count"
             android:title="@string/account_settings_mail_display_count_label"
-            android:entries="@array/account_settings_display_count_entries"
-            android:entryValues="@array/account_settings_display_count_values"
+            android:entries="@array/display_count_entries"
+            android:entryValues="@array/display_count_values"
             android:dialogTitle="@string/account_settings_mail_display_count_label" />
 
         <ListPreference
             android:persistent="false"
             android:key="account_message_age"
             android:title="@string/account_settings_message_age_label"
-            android:entries="@array/account_settings_message_age_entries"
-            android:entryValues="@array/account_settings_message_age_values"
+            android:entries="@array/message_age_entries"
+            android:entryValues="@array/message_age_values"
             android:dialogTitle="@string/account_settings_message_age_label" />
 
         <ListPreference
             android:persistent="false"
             android:key="account_autodownload_size"
             android:title="@string/account_settings_autodownload_message_size_label"
-            android:entries="@array/account_settings_autodownload_message_size_entries"
-            android:entryValues="@array/account_settings_autodownload_message_size_values"
+            android:entries="@array/autodownload_message_size_entries"
+            android:entryValues="@array/autodownload_message_size_values"
             android:dialogTitle="@string/account_settings_autodownload_message_size_label" />
 
         <ListPreference
             android:persistent="false"
             android:key="account_check_frequency"
             android:title="@string/account_settings_mail_check_frequency_label"
-            android:entries="@array/account_settings_check_frequency_entries"
-            android:entryValues="@array/account_settings_check_frequency_values"
+            android:entries="@array/check_frequency_entries"
+            android:entryValues="@array/check_frequency_values"
             android:dialogTitle="@string/account_settings_mail_check_frequency_label" />
 
         <ListPreference
             android:persistent="false"
             android:key="folder_sync_mode"
             android:title="@string/account_settings_folder_sync_mode_label"
-            android:entries="@array/account_settings_folder_sync_mode_entries"
-            android:entryValues="@array/account_settings_folder_sync_mode_values"
+            android:entries="@array/folder_sync_mode_entries"
+            android:entryValues="@array/folder_sync_mode_values"
             android:dialogTitle="@string/account_settings_folder_sync_mode_label" />
 
         <ListPreference
             android:persistent="false"
             android:key="folder_push_mode"
             android:title="@string/account_settings_folder_push_mode_label"
-            android:entries="@array/account_settings_folder_push_mode_entries"
-            android:entryValues="@array/account_settings_folder_push_mode_values"
+            android:entries="@array/folder_push_mode_entries"
+            android:entryValues="@array/folder_push_mode_values"
             android:dialogTitle="@string/account_settings_folder_push_mode_label" />
 
         <CheckBoxPreference
@@ -137,16 +137,16 @@
             android:persistent="false"
             android:key="delete_policy"
             android:title="@string/account_setup_incoming_delete_policy_label"
-            android:entries="@array/account_setup_delete_policy_entries"
-            android:entryValues="@array/account_setup_delete_policy_values"
+            android:entries="@array/delete_policy_entries"
+            android:entryValues="@array/delete_policy_values"
             android:dialogTitle="@string/account_setup_incoming_delete_policy_label" />
 
         <ListPreference
             android:persistent="false"
             android:key="expunge_policy"
             android:title="@string/account_setup_expunge_policy_label"
-            android:entries="@array/account_setup_expunge_policy_entries"
-            android:entryValues="@array/account_setup_expunge_policy_values"
+            android:entries="@array/expunge_policy_entries"
+            android:entryValues="@array/expunge_policy_values"
             android:dialogTitle="@string/account_setup_expunge_policy_label" />
 
         <PreferenceScreen
@@ -167,8 +167,8 @@
                 android:persistent="false"
                 android:key="max_push_folders"
                 android:title="@string/account_setup_push_limit_label"
-                android:entries="@array/account_settings_push_limit_entries"
-                android:entryValues="@array/account_settings_push_limit_values" />
+                android:entries="@array/push_limit_entries"
+                android:entryValues="@array/push_limit_values" />
 
             <ListPreference
                 android:persistent="false"
@@ -199,8 +199,8 @@
             android:persistent="false"
             android:key="message_format"
             android:title="@string/account_settings_message_format_label"
-            android:entries="@array/account_settings_message_format_entries"
-            android:entryValues="@array/account_settings_message_format_values" />
+            android:entries="@array/message_format_entries"
+            android:entryValues="@array/message_format_values" />
 
         <CheckBoxPreference
             android:persistent="false"
@@ -217,8 +217,8 @@
             android:persistent="false"
             android:key="quote_style"
             android:title="@string/account_settings_quote_style_label"
-            android:entries="@array/account_settings_quote_style_entries"
-            android:entryValues="@array/account_settings_quote_style_values" />
+            android:entries="@array/quote_style_entries"
+            android:entryValues="@array/quote_style_values" />
 
         <CheckBoxPreference
             android:persistent="false"
@@ -270,16 +270,16 @@
             android:persistent="false"
             android:key="folder_display_mode"
             android:title="@string/account_settings_folder_display_mode_label"
-            android:entries="@array/account_settings_folder_display_mode_entries"
-            android:entryValues="@array/account_settings_folder_display_mode_values"
+            android:entries="@array/folder_display_mode_entries"
+            android:entryValues="@array/folder_display_mode_values"
             android:dialogTitle="@string/account_settings_folder_display_mode_label" />
 
         <ListPreference
             android:persistent="false"
             android:key="folder_target_mode"
             android:title="@string/account_settings_folder_target_mode_label"
-            android:entries="@array/account_settings_folder_target_mode_entries"
-            android:entryValues="@array/account_settings_folder_target_mode_values"
+            android:entries="@array/folder_target_mode_entries"
+            android:entryValues="@array/folder_target_mode_values"
             android:dialogTitle="@string/account_settings_folder_target_mode_label" />
         <!--
         <ListPreference
@@ -348,8 +348,8 @@
             android:key="folder_notify_new_mail_mode"
             android:dependency="account_notify"
             android:title="@string/account_settings_folder_notify_new_mail_mode_label"
-            android:entries="@array/account_settings_folder_notify_new_mail_mode_entries"
-            android:entryValues="@array/account_settings_folder_notify_new_mail_mode_values"
+            android:entries="@array/folder_notify_new_mail_mode_entries"
+            android:entryValues="@array/folder_notify_new_mail_mode_values"
             android:dialogTitle="@string/account_settings_folder_notify_new_mail_mode_label" />
 
         <CheckBoxPreference
@@ -395,8 +395,8 @@
             android:dependency="account_vibrate"
             android:key="account_vibrate_pattern"
             android:title="@string/account_settings_vibrate_pattern_label"
-            android:entries="@array/account_settings_vibrate_pattern_entries"
-            android:entryValues="@array/account_settings_vibrate_pattern_values"
+            android:entries="@array/vibrate_pattern_entries"
+            android:entryValues="@array/vibrate_pattern_values"
             android:dialogTitle="@string/account_settings_vibrate_pattern_label" />
 
         <ListPreference
@@ -405,8 +405,8 @@
             android:dependency="account_vibrate"
             android:key="account_vibrate_times"
             android:title="@string/account_settings_vibrate_times"
-            android:entries="@array/account_settings_vibrate_times_label"
-            android:entryValues="@array/account_settings_vibrate_times_label"
+            android:entries="@array/vibrate_times_label"
+            android:entryValues="@array/vibrate_times_label"
             android:dialogTitle="@string/account_settings_vibrate_times" />
 
         <CheckBoxPreference
@@ -452,8 +452,8 @@
 
         <ListPreference
             android:persistent="false"
-            android:entries="@array/account_settings_remote_search_num_results_entries"
-            android:entryValues="@array/account_settings_remote_search_num_results_values"
+            android:entries="@array/remote_search_num_results_entries"
+            android:entryValues="@array/remote_search_num_results_values"
             android:key="account_remote_search_num_results"
             android:title="@string/account_settings_remote_search_num_label"
             android:dialogTitle="@string/account_settings_remote_search_num_label"

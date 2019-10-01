@@ -5,10 +5,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.WorkerThread;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.WorkerThread;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Pair;
 
 import com.fsck.k9.Account;
@@ -24,7 +24,6 @@ import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.mail.internet.TextBody;
-import com.fsck.k9.mail.internet.Viewable;
 import com.fsck.k9.message.SimpleMessageFormat;
 
 import org.apache.commons.io.IOUtils;

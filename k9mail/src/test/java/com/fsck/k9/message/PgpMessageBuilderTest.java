@@ -72,9 +72,8 @@ public class PgpMessageBuilderTest {
     private PgpMessageBuilder pgpMessageBuilder = createDefaultPgpMessageBuilder(openPgpApi);
 
 
-    @Test(expected = AssertionError.class)
-    public void build__withDisabledCrypto__shouldError() throws MessagingException {
-        pgpMessageBuilder.setCryptoStatus(cryptoStatusBuilder.setCryptoMode(CryptoMode.DISABLE).build());
+        cryptoStatusBuilder.setOpenPgpProviderState(CryptoProviderState.UNCONFIGURED);
+        pgpMessageBuilder.setCryptoStatus(cryptoStatusBuilder.build());
 
         pgpMessageBuilder.buildAsync(mock(Callback.class));
     }
@@ -88,15 +87,75 @@ public class PgpMessageBuilderTest {
         };
 
         for (CryptoProviderState state : cryptoProviderStates) {
-            cryptoStatusBuilder.setCryptoProviderState(state);
+            cryptoStatusBuilder.setOpenPgpProviderState(state);
             pgpMessageBuilder.setCryptoStatus(cryptoStatusBuilder.build());
 
             Callback mockCallback = mock(Callback.class);
             pgpMessageBuilder.buildAsync(mockCallback);
 
-            verify(mockCallback).onMessageBuildException(any(MessagingException.class));
-            verifyNoMoreInteractions(mockCallback);
-        }
+        verify(mockCallback).onMessageBuildException(any(MessagingException.class));
+        verifyNoMoreInteractions(mockCallback);
+    }
+
+    @Test
+    public void build__withCryptoProviderError__shouldThrow() throws MessagingException {
+        cryptoStatusBuilder.setCryptoMode(CryptoMode.NO_CHOICE);
+
+        cryptoStatusBuilder.setOpenPgpProviderState(CryptoProviderState.ERROR);
+        pgpMessageBuilder.setCryptoStatus(cryptoStatusBuilder.build());
+
+        Callback mockCallback = mock(Callback.class);
+        pgpMessageBuilder.buildAsync(mockCallback);
+
+        verify(mockCallback).onMessageBuildException(any(MessagingException.class));
+        verifyNoMoreInteractions(mockCallback);
+    }
+
+    @Test
+    public void build__withCryptoProviderLostConnection__shouldThrow() throws MessagingException {
+        cryptoStatusBuilder.setCryptoMode(CryptoMode.NO_CHOICE);
+
+        cryptoStatusBuilder.setOpenPgpProviderState(CryptoProviderState.LOST_CONNECTION);
+        pgpMessageBuilder.setCryptoStatus(cryptoStatusBuilder.build());
+
+        Callback mockCallback = mock(Callback.class);
+        pgpMessageBuilder.buildAsync(mockCallback);
+
+        verify(mockCallback).onMessageBuildException(any(MessagingException.class));
+        verifyNoMoreInteractions(mockCallback);
+    }
+
+    @Test
+    public void buildCleartext__withNoSigningKey__shouldBuildTrivialMessage() {
+        cryptoStatusBuilder.setCryptoMode(CryptoMode.NO_CHOICE);
+        cryptoStatusBuilder.setOpenPgpKeyId(null);
+        pgpMessageBuilder.setCryptoStatus(cryptoStatusBuilder.build());
+
+        Callback mockCallback = mock(Callback.class);
+        pgpMessageBuilder.buildAsync(mockCallback);
+
+        ArgumentCaptor<MimeMessage> captor = ArgumentCaptor.forClass(MimeMessage.class);
+        verify(mockCallback).onMessageBuildSuccess(captor.capture(), eq(false));
+        verifyNoMoreInteractions(mockCallback);
+
+        MimeMessage message = captor.getValue();
+        assertEquals("text/plain", message.getMimeType());
+    }
+
+    @Test
+    public void buildCleartext__shouldSucceed() {
+        cryptoStatusBuilder.setCryptoMode(CryptoMode.NO_CHOICE);
+        pgpMessageBuilder.setCryptoStatus(cryptoStatusBuilder.build());
+
+        Callback mockCallback = mock(Callback.class);
+        pgpMessageBuilder.buildAsync(mockCallback);
+
+        ArgumentCaptor<MimeMessage> captor = ArgumentCaptor.forClass(MimeMessage.class);
+        verify(mockCallback).onMessageBuildSuccess(captor.capture(), eq(false));
+        verifyNoMoreInteractions(mockCallback);
+
+        MimeMessage message = captor.getValue();
+        assertMessageHasAutocryptHeader(message, SENDER_EMAIL, false, AUTOCRYPT_KEY_MATERIAL);
     }
 
     @Test
@@ -470,7 +529,7 @@ public class PgpMessageBuilderTest {
                 .setSigningKeyId(TEST_SIGN_KEY_ID)
                 .setSelfEncryptId(TEST_SELF_ENCRYPT_KEY_ID)
                 .setRecipients(new ArrayList<Recipient>())
-                .setCryptoProviderState(CryptoProviderState.OK);
+                .setOpenPgpProviderState(CryptoProviderState.OK);
     }
 
     private static PgpMessageBuilder createDefaultPgpMessageBuilder(OpenPgpApi openPgpApi) {
