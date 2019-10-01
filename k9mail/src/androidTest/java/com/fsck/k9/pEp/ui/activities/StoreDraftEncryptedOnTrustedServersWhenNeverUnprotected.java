@@ -3,10 +3,11 @@ package com.fsck.k9.pEp.ui.activities;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.res.Resources;
-import androidx.test.platform.app.InstrumentationRegistry;
+
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.BySelector;
 import androidx.test.uiautomator.UiDevice;
@@ -20,8 +21,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import pEp.jniadapter.Rating;
 
+import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -65,7 +66,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
 
     @Test
     public void StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected() {
-        testUtils.createAccount(false);
+        testUtils.createAccount();
         storeMessagesSecurely();
         testUtils.goBackToMessageListAndPressComposeMessageButton();
         device.waitForIdle();
@@ -73,7 +74,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
         device.waitForIdle();
         testUtils.checkStatus(Rating.pEpRatingUnencrypted);
         testUtils.pressBack();
-        testUtils.selectoFromMenu(R.string.is_always_secure);
+        //testUtils.selectoFromMenu(R.string.is_always_secure);
         goBackAndSaveAsDraft();
         clickFirstMessageFromDraft();
         openOptionsMenu();

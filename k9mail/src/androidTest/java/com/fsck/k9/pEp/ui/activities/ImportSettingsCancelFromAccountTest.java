@@ -1,8 +1,8 @@
 package com.fsck.k9.pEp.ui.activities;
 
-import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.IdlingRegistry;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;

@@ -1,12 +1,12 @@
 package com.fsck.k9.pEp.ui.activities;
 
 
-import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
+import androidx.test.runner.AndroidJUnit4;
 import androidx.test.uiautomator.UiDevice;
-import android.test.suitebuilder.annotation.LargeTest;
 
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
@@ -16,7 +16,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import pEp.jniadapter.Rating;
+
+import foundation.pEp.jniadapter.Rating;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -54,7 +55,7 @@ public class GreyStatusMessageTest {
 
     private void greyStatusEmailTest(boolean isGmail) {
         testUtils.increaseTimeoutWait();
-        testUtils.createAccount(isGmail);
+        testUtils.createAccount();
         testUtils.composeMessageButton();
         testUtils.testStatusEmpty();
         testUtils.testStatusMail(new TestUtils.BasicMessage("", "Subject", "Message", EMAIL),

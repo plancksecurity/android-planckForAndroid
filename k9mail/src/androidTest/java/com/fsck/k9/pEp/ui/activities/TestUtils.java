@@ -18,16 +18,19 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.IBinder;
 import androidx.annotation.NonNull;
-import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.core.content.ContextCompat;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingPolicies;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.NoMatchingViewException;
+import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.BySelector;
+import androidx.test.uiautomator.Direction;
 import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject;
 import androidx.test.uiautomator.UiObject2;
@@ -66,7 +69,8 @@ import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
 import static android.content.ContentValues.TAG;
-import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
+import static androidx.test.InstrumentationRegistry.getInstrumentation;
+import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
@@ -76,15 +80,18 @@ import static androidx.test.espresso.action.ViewActions.swipeDown;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Checks.checkNotNull;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.isInternal;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.runner.lifecycle.Stage.RESUMED;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.appendTextInTextView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.hasValueEqualTo;
@@ -133,7 +140,7 @@ public class TestUtils {
     public TestUtils(UiDevice device, Instrumentation instrumentation) {
         TestUtils.device = device;
         this.instrumentation = instrumentation;
-        context = InstrumentationRegistry.getTargetContext();
+        context = getTargetContext();
         resources = context.getResources();
     }
 
@@ -1843,7 +1850,7 @@ public class TestUtils {
 
     public void pasteClipboard() {
         device.waitForIdle();
-        UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        UiDevice.getInstance(getInstrumentation())
                 .pressKeyCode(KeyEvent.KEYCODE_V, KeyEvent.META_CTRL_MASK);
         device.waitForIdle();
     }
@@ -1962,7 +1969,7 @@ public class TestUtils {
     }
 
     private int getAnimationPermissionStatus() {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = getTargetContext();
         return context.checkCallingOrSelfPermission(ANIMATION_PERMISSION);
     }
 
