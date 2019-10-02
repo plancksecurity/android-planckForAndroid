@@ -345,7 +345,7 @@ public class Account implements BaseAccount, StoreConfig {
         stripSignature = DEFAULT_STRIP_SIGNATURE;
         syncRemoteDeletions = true;
         openPgpKey = NO_OPENPGP_KEY;
-        allowRemoteSearch = false;
+        allowRemoteSearch = true;
         remoteSearchFullText = false;
         remoteSearchNumResults = DEFAULT_REMOTE_SEARCH_NUM_RESULTS;
         isEnabled = true;
@@ -500,7 +500,7 @@ public class Account implements BaseAccount, StoreConfig {
         openPgpKey = storage.getLong(accountUuid + ".cryptoKey", NO_OPENPGP_KEY);
         openPgpHideSignOnly = storage.getBoolean(accountUuid + ".openPgpHideSignOnly", true);
         autocryptPreferEncryptMutual = storage.getBoolean(accountUuid + ".autocryptMutualMode", false);
-        allowRemoteSearch = storage.getBoolean(accountUuid + ".allowRemoteSearch", false);
+        allowRemoteSearch = storage.getBoolean(accountUuid + ".allowRemoteSearch", true);
         remoteSearchFullText = storage.getBoolean(accountUuid + ".remoteSearchFullText", false);
         remoteSearchNumResults = storage.getInt(accountUuid + ".remoteSearchNumResults", DEFAULT_REMOTE_SEARCH_NUM_RESULTS);
 
