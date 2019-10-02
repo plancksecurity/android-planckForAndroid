@@ -960,12 +960,6 @@ public class Accounts extends PEpImporterActivity {
                 case R.id.move_down:
                     onMove(realAccount, false);
                     break;
-                case R.id.import_pEp_key:
-                    onImportpEpKey(realAccount);
-                    break;
-                case R.id.import_PGP_key:
-                    onImportPGPKey(realAccount);
-                    break;
                 case R.id.import_PGP_key_from_SD:
                     onImportPGPKeyFromFileSystem(realAccount);
                     break;
@@ -979,16 +973,6 @@ public class Accounts extends PEpImporterActivity {
         currentAccount = realAccount.getEmail();
         onKeyImport();
     }
-
-    private void onImportPGPKey(Account realAccount) {
-        ImportWizardFrompEp.actionStartImportpEpKey(Accounts.this, realAccount.getUuid(), true, KeySourceType.PGP, null);
-
-    }
-
-    private void onImportpEpKey(Account realAccount) {
-        ImportWizardFrompEp.actionStartImportpEpKey(Accounts.this, realAccount.getUuid(), true, KeySourceType.PEP, null);
-    }
-
 
     private void onClear(Account account) {
         showDialog(DIALOG_CLEAR_ACCOUNT);
