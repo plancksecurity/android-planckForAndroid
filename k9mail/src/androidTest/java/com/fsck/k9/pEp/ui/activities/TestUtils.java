@@ -69,8 +69,6 @@ import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
 import static android.content.ContentValues.TAG;
-import static androidx.test.InstrumentationRegistry.getInstrumentation;
-import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
@@ -90,6 +88,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static androidx.test.runner.lifecycle.Stage.RESUMED;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.appendTextInTextView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
@@ -140,7 +139,7 @@ public class TestUtils {
     public TestUtils(UiDevice device, Instrumentation instrumentation) {
         TestUtils.device = device;
         this.instrumentation = instrumentation;
-        context = getTargetContext();
+        context = getContext();
         resources = context.getResources();
     }
 
@@ -157,7 +156,7 @@ public class TestUtils {
     private String getLauncherPackageName() {
         final Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
-        PackageManager pm = InstrumentationRegistry.getContext().getPackageManager();
+        PackageManager pm = getContext().getPackageManager();
         ResolveInfo resolveInfo = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
         return resolveInfo.activityInfo.packageName;
     }
@@ -1255,13 +1254,13 @@ public class TestUtils {
     }
 
     private void checkUpperToolbar (int color){
-        int colorFromResource = (ContextCompat.getColor(getTargetContext(), color) & 0x00FFFFFF);
+        int colorFromResource = (ContextCompat.getColor(getContext(), color) & 0x00FFFFFF);
         float[] hsv = new float[3];
         Color.RGBToHSV(Color.red(colorFromResource), Color.green(colorFromResource), Color.blue(colorFromResource), hsv);
         hsv[2] = hsv[2]*0.9f;
         color = Color.HSVToColor(hsv);
         int upperToolbarColor = getCurrentActivity().getWindow().getStatusBarColor();
-        Assert.assertEquals("Text", upperToolbarColor, color);
+        org.junit.Assert.assertEquals("Text", upperToolbarColor, color);
         if (upperToolbarColor != color) {
             assertFailWithMessage("Upper toolbar color is wrong");
         }
@@ -1347,7 +1346,7 @@ public class TestUtils {
     public void openOptionsMenu() {
         while (true) {
             try {
-                openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+                openActionBarOverflowOrOptionsMenu(getContext());
                 device.waitForIdle();
             } catch (Exception ex) {
                 Timber.i("Cannot open menu");
@@ -1950,7 +1949,7 @@ public class TestUtils {
         final String launcherPackage = getLauncherPackageName();
         assertThat(launcherPackage, notNullValue());
         device.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), LAUNCH_TIMEOUT);
-        Context context = InstrumentationRegistry.getContext();
+        Context context = getContext();
         final Intent intent = context.getPackageManager().getLaunchIntentForPackage(APP_ID);
         if (intent != null) {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -1969,7 +1968,7 @@ public class TestUtils {
     }
 
     private int getAnimationPermissionStatus() {
-        Context context = getTargetContext();
+        Context context = getContext();
         return context.checkCallingOrSelfPermission(ANIMATION_PERMISSION);
     }
 
