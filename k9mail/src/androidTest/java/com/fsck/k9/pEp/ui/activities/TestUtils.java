@@ -1451,7 +1451,7 @@ public class TestUtils {
         int hashCode = 0;
         BySelector textViewSelector;
         textViewSelector = By.clazz("android.widget.TextView");
-        selectFromMenu(R.string.account_settings_folders);
+        selectFromMenu(R.string.folders_title);
         device.waitForIdle();
         while (true) {
             for (UiObject2 textView : device.findObjects(textViewSelector)) {
