@@ -19,7 +19,6 @@ import android.os.Environment;
 import android.os.IBinder;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingPolicies;
 import androidx.test.espresso.IdlingRegistry;
@@ -44,9 +43,6 @@ import android.view.View;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
-
-import junit.framework.Assert;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,7 +63,6 @@ import java.util.concurrent.TimeUnit;
 
 import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
-
 import static android.content.ContentValues.TAG;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
@@ -88,6 +83,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import androidx.test.platform.app.InstrumentationRegistry ;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static androidx.test.runner.lifecycle.Stage.RESUMED;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.appendTextInTextView;
@@ -139,7 +135,7 @@ public class TestUtils {
     public TestUtils(UiDevice device, Instrumentation instrumentation) {
         TestUtils.device = device;
         this.instrumentation = instrumentation;
-        context = getContext();
+        context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         resources = context.getResources();
     }
 
@@ -156,7 +152,7 @@ public class TestUtils {
     private String getLauncherPackageName() {
         final Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
-        PackageManager pm = getContext().getPackageManager();
+        PackageManager pm = InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageManager();
         ResolveInfo resolveInfo = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
         return resolveInfo.activityInfo.packageName;
     }
@@ -1254,7 +1250,7 @@ public class TestUtils {
     }
 
     private void checkUpperToolbar (int color){
-        int colorFromResource = (ContextCompat.getColor(getContext(), color) & 0x00FFFFFF);
+        int colorFromResource = (ContextCompat.getColor(InstrumentationRegistry.getInstrumentation().getTargetContext(), color) & 0x00FFFFFF);
         float[] hsv = new float[3];
         Color.RGBToHSV(Color.red(colorFromResource), Color.green(colorFromResource), Color.blue(colorFromResource), hsv);
         hsv[2] = hsv[2]*0.9f;
@@ -1346,7 +1342,7 @@ public class TestUtils {
     public void openOptionsMenu() {
         while (true) {
             try {
-                openActionBarOverflowOrOptionsMenu(getContext());
+                openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
                 device.waitForIdle();
             } catch (Exception ex) {
                 Timber.i("Cannot open menu");
@@ -1949,7 +1945,7 @@ public class TestUtils {
         final String launcherPackage = getLauncherPackageName();
         assertThat(launcherPackage, notNullValue());
         device.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), LAUNCH_TIMEOUT);
-        Context context = getContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final Intent intent = context.getPackageManager().getLaunchIntentForPackage(APP_ID);
         if (intent != null) {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -1968,7 +1964,7 @@ public class TestUtils {
     }
 
     private int getAnimationPermissionStatus() {
-        Context context = getContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         return context.checkCallingOrSelfPermission(ANIMATION_PERMISSION);
     }
 
