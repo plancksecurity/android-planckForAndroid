@@ -1,13 +1,6 @@
 package com.fsck.k9.activity;
 
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -21,8 +14,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.core.content.ContextCompat;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -38,6 +29,9 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.AccountStats;
@@ -56,8 +50,6 @@ import com.fsck.k9.helper.SizeFormatter;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.pEp.PEpImporterActivity;
-import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
-import com.fsck.k9.pEp.manualsync.KeySourceType;
 import com.fsck.k9.pEp.ui.AboutActivity;
 import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener;
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
@@ -73,12 +65,18 @@ import com.fsck.k9.ui.settings.account.AccountSettingsActivity;
 import com.fsck.k9.ui.settings.general.GeneralSettingsActivity;
 import com.karumi.dexter.listener.single.CompositePermissionListener;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
 
-public class Accounts extends PEpImporterActivity {
+public class AccountsLegacy extends PEpImporterActivity {
 
     /**
      * URL used to open Android Market application
@@ -139,7 +137,7 @@ public class Accounts extends PEpImporterActivity {
         private void setViewTitle() {
             getToolbar().setTitle(R.string.accounts_title);
 
-            String operation = mListener.getOperation(Accounts.this);
+            String operation = mListener.getOperation(AccountsLegacy.this);
             operation = operation.trim();
             if (operation.length() < 1) {
                 getToolbar().setSubtitle(null);
@@ -279,7 +277,7 @@ public class Accounts extends PEpImporterActivity {
             String folderServerId,
             int totalMessagesInMailbox,
         int numNewMessages) {
-            MessagingController.getInstance(getApplication()).getAccountStats(Accounts.this, account, mListener);
+            MessagingController.getInstance(getApplication()).getAccountStats(AccountsLegacy.this, account, mListener);
             super.synchronizeMailboxFinished(account, folderServerId, totalMessagesInMailbox, numNewMessages);
 
             handler.progress(false);
@@ -312,7 +310,7 @@ public class Accounts extends PEpImporterActivity {
     public static final String ACTION_IMPORT_SETTINGS = "importSettings";
 
     public static void listAccountsOnStartup(Context context) {
-        Intent intent = new Intent(context, Accounts.class);
+        Intent intent = new Intent(context, AccountsLegacy.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP |
                 Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra(EXTRA_STARTUP, true);
@@ -320,7 +318,7 @@ public class Accounts extends PEpImporterActivity {
     }
 
     public static void listAccounts(Context context) {
-        Intent intent = new Intent(context, Accounts.class);
+        Intent intent = new Intent(context, AccountsLegacy.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP |
                 Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra(EXTRA_STARTUP, false);
@@ -328,7 +326,7 @@ public class Accounts extends PEpImporterActivity {
     }
 
     public static void importSettings(Context context) {
-        Intent intent = new Intent(context, Accounts.class);
+        Intent intent = new Intent(context, AccountsLegacy.class);
         intent.setAction(ACTION_IMPORT_SETTINGS);
         context.startActivity(intent);
     }
@@ -627,7 +625,7 @@ public class Accounts extends PEpImporterActivity {
         }, new OnBaseAccountClickListener() {
             @Override
             public void onClick(BaseAccount baseAccount) {
-                AccountSettingsActivity.start(Accounts.this, baseAccount.getUuid());
+                AccountSettingsActivity.start(AccountsLegacy.this, baseAccount.getUuid());
             }
         });
         accountsList.setAdapter(adapter);
@@ -653,7 +651,7 @@ public class Accounts extends PEpImporterActivity {
         }, new OnBaseAccountClickListener() {
             @Override
             public void onClick(BaseAccount baseAccount) {
-               GeneralSettingsActivity.Companion.start(Accounts.this);
+               GeneralSettingsActivity.Companion.start(AccountsLegacy.this);
             }
         });
         foldersList.setAdapter(foldersAdapter);
@@ -818,9 +816,9 @@ public class Accounts extends PEpImporterActivity {
                         }
                         MessagingController.getInstance(getApplication())
                         .deleteAccount(realAccount);
-                        Preferences.getPreferences(Accounts.this)
+                        Preferences.getPreferences(AccountsLegacy.this)
                         .deleteAccount(realAccount);
-                        K9.setServicesEnabled(Accounts.this);
+                        K9.setServicesEnabled(AccountsLegacy.this);
                         refresh();
 
                     }
@@ -920,7 +918,7 @@ public class Accounts extends PEpImporterActivity {
     }
 
     @Override
-    public boolean onContextItemSelected(android.view.MenuItem item) {
+    public boolean onContextItemSelected(MenuItem item) {
         AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo)item.getMenuInfo();
         // submenus don't actually set the menuInfo, so the "advanced"
         // submenu wouldn't work.
@@ -1067,7 +1065,7 @@ public class Accounts extends PEpImporterActivity {
 
         if (account instanceof SearchAccount) {
             for (int i = 0; i < menu.size(); i++) {
-                android.view.MenuItem item = menu.getItem(i);
+                MenuItem item = menu.getItem(i);
                     item.setVisible(false);
             }
         }
@@ -1129,7 +1127,7 @@ public class Accounts extends PEpImporterActivity {
      *
      * @param inst
      *         The {@link NonConfigurationInstance} that should be retained when
-     *         {@link Accounts#onRetainNonConfigurationInstance()} is called.
+     *         {@link AccountsLegacy#onRetainNonConfigurationInstance()} is called.
      */
     public void setNonConfigurationInstance(NonConfigurationInstance inst) {
         nonConfigurationInstance = inst;
@@ -1145,7 +1143,7 @@ public class Accounts extends PEpImporterActivity {
 
         @Override
         public void onClick(View v) {
-            MessageList.actionDisplaySearch(Accounts.this, search, true, false);
+            MessageList.actionDisplaySearch(AccountsLegacy.this, search, true, false);
         }
 
     }
@@ -1185,9 +1183,9 @@ public class Accounts extends PEpImporterActivity {
     }
 
     private void startExport(boolean exportGlobalSettings, ArrayList<String> exportAccountUuids, Uri documentsUri) {
-        ExportAsyncTask asyncTask = new ExportAsyncTask(this, exportGlobalSettings, exportAccountUuids, documentsUri);
-        setNonConfigurationInstance(asyncTask);
-        asyncTask.execute();
+      //  ExportAsyncTask asyncTask = new ExportAsyncTask(this, exportGlobalSettings, exportAccountUuids, documentsUri);
+      //  setNonConfigurationInstance(asyncTask);
+      //  asyncTask.execute();
     }
 
     private boolean hasWriteExternalPermission() {
@@ -1219,7 +1217,7 @@ public class Accounts extends PEpImporterActivity {
 
         @Override
         protected void onPostExecute(Void arg) {
-            Accounts activity = (Accounts) mActivity;
+            AccountsLegacy activity = (AccountsLegacy) mActivity;
 
             // Let the activity know that the background task is complete
             activity.setNonConfigurationInstance(null);
@@ -1234,7 +1232,7 @@ public class Accounts extends PEpImporterActivity {
         private final OnBaseAccountClickListener onBaseAccountClickListener;
 
         public FoldersAdapter(List<BaseAccount> accounts, OnFolderClickListener onFolderClickListener, OnBaseAccountClickListener onBaseAccountClickListener) {
-            super(Accounts.this, 0, accounts);
+            super(AccountsLegacy.this, 0, accounts);
             this.onFolderClickListener = onFolderClickListener;
             this.onBaseAccountClickListener = onBaseAccountClickListener;
         }
@@ -1279,7 +1277,7 @@ public class Accounts extends PEpImporterActivity {
             AccountStats stats = accountStats.get(account.getUuid());
 
             if (stats != null && account instanceof Account && stats.size >= 0) {
-                holder.email.setText(SizeFormatter.formatSize(Accounts.this, stats.size));
+                holder.email.setText(SizeFormatter.formatSize(AccountsLegacy.this, stats.size));
                 holder.email.setVisibility(View.VISIBLE);
             } else {
                 if (account.getEmail().equals(account.getDescription())) {
@@ -1322,9 +1320,9 @@ public class Accounts extends PEpImporterActivity {
             }
             if (account instanceof Account) {
                 Account realAccount = (Account)account;
-                holder.flaggedMessageCountIcon.setBackgroundDrawable(ContextCompat.getDrawable(Accounts.this, R.drawable.ic_unread_toggle_star));
+                holder.flaggedMessageCountIcon.setBackgroundDrawable(ContextCompat.getDrawable(AccountsLegacy.this, R.drawable.ic_unread_toggle_star));
             } else {
-                holder.flaggedMessageCountIcon.setBackgroundDrawable(ContextCompat.getDrawable(Accounts.this,
+                holder.flaggedMessageCountIcon.setBackgroundDrawable(ContextCompat.getDrawable(AccountsLegacy.this,
                         R.drawable.ic_unread_toggle_star));
             }
 
@@ -1339,7 +1337,7 @@ public class Accounts extends PEpImporterActivity {
                 holder.folders.setVisibility(View.VISIBLE);
                 holder.folders.setOnClickListener(new OnClickListener() {
                     public void onClick(View v) {
-                        FolderList.actionHandleAccount(Accounts.this, (Account)account);
+                        FolderList.actionHandleAccount(AccountsLegacy.this, (Account)account);
 
                     }
                 });
@@ -1372,7 +1370,7 @@ public class Accounts extends PEpImporterActivity {
         }
 
         private OnClickListener createUnreadSearchListener(BaseAccount account) {
-            LocalSearch search = createUnreadSearch(Accounts.this, account);
+            LocalSearch search = createUnreadSearch(AccountsLegacy.this, account);
             return new AccountClickListener(search);
         }
 

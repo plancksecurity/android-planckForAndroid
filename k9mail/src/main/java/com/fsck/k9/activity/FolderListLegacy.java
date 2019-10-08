@@ -460,7 +460,7 @@ public class FolderListLegacy extends K9ListActivity {
 
         if (!mAccount.isAvailable(this)) {
             Timber.i("account unavaliabale, not showing folder-list but account-list");
-            Accounts.listAccounts(this);
+            Accounts.Companion.listAccounts(this);
             finish();
             return;
         }
@@ -545,7 +545,7 @@ public class FolderListLegacy extends K9ListActivity {
     }
 
     private void onAccounts() {
-        Accounts.listAccounts(this);
+        Accounts.Companion.listAccounts(this);
         finish();
     }
 

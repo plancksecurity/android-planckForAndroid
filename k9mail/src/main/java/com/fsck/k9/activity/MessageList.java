@@ -1685,7 +1685,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void onAccounts() {
-        Accounts.listAccounts(this);
+        Accounts.Companion.listAccounts(this);
         finish();
     }
 
@@ -2030,7 +2030,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     protected void onAccountUnavailable() {
         finish();
         // TODO inform user about account unavailability using Toast
-        Accounts.listAccounts(this);
+        Accounts.Companion.listAccounts(this);
     }
 
     public void setActionBarTitle(String title) {

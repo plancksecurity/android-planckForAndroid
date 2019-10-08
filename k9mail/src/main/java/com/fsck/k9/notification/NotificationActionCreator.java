@@ -208,7 +208,7 @@ class NotificationActionCreator {
         TaskStackBuilder stack = TaskStackBuilder.create(context);
         if (!skipAccountsInBackStack()) {
             Intent intent = new Intent(context, Accounts.class);
-            intent.putExtra(Accounts.EXTRA_STARTUP, false);
+            intent.putExtra(Accounts.Companion.getEXTRA_STARTUP(), false);
 
             stack.addNextIntent(intent);
         }
@@ -228,7 +228,7 @@ class NotificationActionCreator {
     private TaskStackBuilder buildUnreadBackStack(final Account account) {
         TaskStackBuilder stack = buildAccountsBackStack();
 
-        LocalSearch search = Accounts.createUnreadSearch(context, account);
+        LocalSearch search = Accounts.Companion.createUnreadSearch(context, account);
         Intent intent = MessageList.intentDisplaySearch(context, search, true, false, false);
 
         stack.addNextIntent(intent);

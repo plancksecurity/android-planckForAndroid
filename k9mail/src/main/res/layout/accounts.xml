@@ -9,7 +9,7 @@
     android:orientation="vertical">
 
     <include layout="@layout/simple_toolbar_layout" />
-
+    
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/message_swipe"
         android:layout_width="match_parent"
