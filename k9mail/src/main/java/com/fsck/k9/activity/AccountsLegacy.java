@@ -1043,7 +1043,7 @@ public class AccountsLegacy extends PEpImporterActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.accounts_option, menu);
+        getMenuInflater().inflate(R.menu.accounts_option_legacy, menu);
         refreshMenuItem = menu.findItem(R.id.check_mail);
         return true;
     }

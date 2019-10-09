@@ -822,28 +822,16 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        /*
+
         when (item.itemId) {
             R.id.settings -> onEditSettings()
-            R.id.check_mail -> onCheckMail(null)
-            R.id.compose -> onCompose()
             R.id.about -> onAbout()
-            R.id.search -> showSearchView()
             R.id.export_all -> onExport(true, null)
             R.id.import_settings -> onSettingsImport()
+            android.R.id.home -> onBackPressed()
             else -> return super.onOptionsItemSelected(item)
         }
         return true
-
-         */
-
-        if (item.itemId == android.R.id.home) {
-            onBackPressed()
-            return true
-        }
-
-        return super.onOptionsItemSelected(item)
-
     }
 
     private fun onAbout() {
