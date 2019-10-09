@@ -86,78 +86,6 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
     private var addAccountButton: View? = null
     private val storagePermissionListener: CompositePermissionListener? = null
 
-    internal var mListener: ActivityListener = object : ActivityListener() {
-        override fun informUserOfStatus() {
-            handler.refreshTitle()
-        }
-
-        override fun folderStatusChanged(account: Account, folderServerId: String, unreadMessageCount: Int) {
-            /*try {
-                //TODO: FIX;
-                AccountStats stats = controller.getAccountStats(account);
-                if (stats == null) {
-                    Timber.w("Unable to get account stats");
-                } else {
-                    accountStatusChanged(account, stats);
-                }
-            } catch (Exception e) {
-                Timber.e(e, "Unable to get account stats");
-            }*/
-        }
-
-        override fun accountStatusChanged(account: BaseAccount, stats: AccountStats?) {
-            var stats = stats
-            val oldStats = accountStats[account.uuid]
-            var oldUnreadMessageCount = 0
-            if (oldStats != null) {
-                oldUnreadMessageCount = oldStats.unreadMessageCount
-            }
-            if (stats == null) {
-                stats = AccountStats() // empty stats for unavailable accounts
-                stats.available = false
-            }
-            accountStats[account.uuid] = stats
-            handler.dataChanged()
-            pendingWork.remove(account)
-
-            if (pendingWork.isEmpty()) {
-                handler.progress(Window.PROGRESS_END)
-                handler.refreshTitle()
-            } else {
-                val level = Window.PROGRESS_END / adapter!!.count * (adapter!!.count - pendingWork.size)
-                handler.progress(level)
-            }
-        }
-
-        override fun accountSizeChanged(account: Account, oldSize: Long, newSize: Long) {
-            handler.accountSizeChanged(account, oldSize, newSize)
-        }
-
-        override fun synchronizeMailboxFinished(
-                account: Account,
-                folderServerId: String,
-                totalMessagesInMailbox: Int,
-                numNewMessages: Int) {
-            MessagingController.getInstance(application).getAccountStats(this@Accounts, account, this)
-            super.synchronizeMailboxFinished(account, folderServerId, totalMessagesInMailbox, numNewMessages)
-
-            handler.progress(false)
-
-        }
-
-        override fun synchronizeMailboxStarted(account: Account, folderName: String) {
-            super.synchronizeMailboxStarted(account, folderName)
-            handler.progress(true)
-        }
-
-        override fun synchronizeMailboxFailed(account: Account, folderServerId: String,
-                                              message: String) {
-            super.synchronizeMailboxFailed(account, folderServerId, message)
-            handler.progress(false)
-
-        }
-
-    }
 
     private val storageListener = object : StorageManager.StorageListener {
 
@@ -189,14 +117,6 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
     internal inner class AccountsHandler : Handler() {
         internal fun setViewTitle() {
             toolbar.setTitle(R.string.accounts_title)
-
-            var operation = mListener.getOperation(this@Accounts)
-            operation = operation.trim { it <= ' ' }
-            if (operation.length < 1) {
-                toolbar.subtitle = null
-            } else {
-                toolbar.subtitle = operation
-            }
         }
 
         fun refreshTitle() {
@@ -403,17 +323,12 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
         super.onResume()
 
         refresh()
-        MessagingController.getInstance(application).addListener(mListener)
         StorageManager.getInstance(application).addListener(storageListener)
-        mListener.onResume(this)
     }
 
     public override fun onPause() {
         super.onPause()
-        MessagingController.getInstance(application).removeListener(mListener)
         StorageManager.getInstance(application).removeListener(storageListener)
-        onClearText()
-        mListener.onPause(this)
     }
 
     private enum class ACCOUNT_LOCATION {
@@ -485,16 +400,9 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
         pendingWork.clear()
         handler.refreshTitle()
 
-        val controller = MessagingController.getInstance(application)
-
         for (account in newAccounts) {
             pendingWork[account] = "true"
 
-            if (account is Account) {
-                controller.getAccountStats(this, account, mListener)
-            } else if (K9.countSearchMessages() && account is SearchAccount) {
-                controller.getSearchAccountStats(account, mListener)
-            }
         }
 
     }
