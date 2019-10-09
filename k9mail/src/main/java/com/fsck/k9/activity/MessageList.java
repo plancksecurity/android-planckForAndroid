@@ -80,7 +80,6 @@ import com.fsck.k9.search.SearchSpecification.SearchCondition;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.ui.messageview.MessageViewFragment;
 import com.fsck.k9.ui.messageview.MessageViewFragment.MessageViewFragmentListener;
-import com.fsck.k9.ui.settings.K9SettingsActivity;
 import com.fsck.k9.view.MessageHeader;
 import com.fsck.k9.view.MessageTitleView;
 import com.fsck.k9.view.ViewSwitcher;
@@ -1687,7 +1686,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void onAccounts() {
-        Accounts.Companion.listAccounts(this);
+        SettingsActivity.Companion.listAccounts(this);
         finish();
     }
 
@@ -1696,7 +1695,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void onEditSettings() {
-        Accounts.launch(this);
+        SettingsActivity.launch(this);
     }
 
     @Override
@@ -2032,7 +2031,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     protected void onAccountUnavailable() {
         finish();
         // TODO inform user about account unavailability using Toast
-        Accounts.Companion.listAccounts(this);
+        SettingsActivity.Companion.listAccounts(this);
     }
 
     public void setActionBarTitle(String title) {

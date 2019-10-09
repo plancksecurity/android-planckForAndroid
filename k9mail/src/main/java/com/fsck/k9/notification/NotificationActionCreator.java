@@ -10,7 +10,7 @@ import android.text.TextUtils;
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
-import com.fsck.k9.activity.Accounts;
+import com.fsck.k9.activity.SettingsActivity;
 import com.fsck.k9.activity.FolderList;
 import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.MessageReference;
@@ -207,8 +207,8 @@ class NotificationActionCreator {
     private TaskStackBuilder buildAccountsBackStack() {
         TaskStackBuilder stack = TaskStackBuilder.create(context);
         if (!skipAccountsInBackStack()) {
-            Intent intent = new Intent(context, Accounts.class);
-            intent.putExtra(Accounts.EXTRA_STARTUP, false);
+            Intent intent = new Intent(context, SettingsActivity.class);
+            intent.putExtra(SettingsActivity.EXTRA_STARTUP, false);
 
             stack.addNextIntent(intent);
         }
@@ -228,7 +228,7 @@ class NotificationActionCreator {
     private TaskStackBuilder buildUnreadBackStack(final Account account) {
         TaskStackBuilder stack = buildAccountsBackStack();
 
-        LocalSearch search = Accounts.Companion.createUnreadSearch(context, account);
+        LocalSearch search = SettingsActivity.Companion.createUnreadSearch(context, account);
         Intent intent = MessageList.intentDisplaySearch(context, search, true, false, false);
 
         stack.addNextIntent(intent);

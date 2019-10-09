@@ -52,7 +52,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 
-class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
+class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
 
     private var controller: MessagingController? = null
 
@@ -385,7 +385,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
                 val account = accountsList!!.getItemAtPosition(position!!) as BaseAccount
                 onOpenAccount(account)
             }
-        }, OnBaseAccountClickListener { baseAccount -> AccountSettingsActivity.start(this@Accounts, baseAccount.uuid) })
+        }, OnBaseAccountClickListener { baseAccount -> AccountSettingsActivity.start(this@SettingsActivity, baseAccount.uuid) })
         accountsList!!.adapter = adapter
 
         val folders = ArrayList<BaseAccount>(SPECIAL_ACCOUNTS_COUNT)
@@ -517,9 +517,9 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
 
                         MessagingController.getInstance(application)
                                 .deleteAccount(realAccount)
-                        Preferences.getPreferences(this@Accounts)
+                        Preferences.getPreferences(this@SettingsActivity)
                                 .deleteAccount(realAccount)
-                        K9.setServicesEnabled(this@Accounts)
+                        K9.setServicesEnabled(this@SettingsActivity)
                         refresh()
 
                     }
@@ -745,7 +745,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
      * changes.
      *
      * @param inst The [NonConfigurationInstance] that should be retained when
-     * [Accounts.onRetainNonConfigurationInstance] is called.
+     * [SettingsActivity.onRetainNonConfigurationInstance] is called.
      */
     override fun setNonConfigurationInstance(inst: NonConfigurationInstance?) {
         nonConfigurationInstance = inst
@@ -754,7 +754,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
     private inner class AccountClickListener internal constructor(internal val search: LocalSearch) : OnClickListener {
 
         override fun onClick(v: View) {
-            MessageList.actionDisplaySearch(this@Accounts, search, true, false)
+            MessageList.actionDisplaySearch(this@SettingsActivity, search, true, false)
         }
 
     }
@@ -817,7 +817,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
         }
 
         override fun onPostExecute(arg: Void) {
-            val activity = mActivity as Accounts
+            val activity = mActivity as SettingsActivity
 
             // Let the activity know that the background task is complete
             activity.setNonConfigurationInstance(null)
@@ -827,7 +827,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
         }
     }
 
-    internal inner class AccountListAdapter(accounts: List<BaseAccount>, private val onFolderClickListener: OnFolderClickListener, private val onBaseAccountClickListener: OnBaseAccountClickListener) : ArrayAdapter<BaseAccount>(this@Accounts, 0, accounts) {
+    internal inner class AccountListAdapter(accounts: List<BaseAccount>, private val onFolderClickListener: OnFolderClickListener, private val onBaseAccountClickListener: OnBaseAccountClickListener) : ArrayAdapter<BaseAccount>(this@SettingsActivity, 0, accounts) {
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val account = getItem(position)
@@ -864,7 +864,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
             val stats = accountStats[account!!.uuid]
 
             if (stats != null && account is Account && stats.size >= 0) {
-                holder.email!!.text = SizeFormatter.formatSize(this@Accounts, stats.size)
+                holder.email!!.text = SizeFormatter.formatSize(this@SettingsActivity, stats.size)
                 holder.email!!.visibility = View.VISIBLE
             } else {
                 if (account.email == account.description) {
@@ -902,9 +902,9 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
             }
             if (account is Account) {
                 val realAccount = account
-                holder.flaggedMessageCountIcon!!.setBackgroundDrawable(ContextCompat.getDrawable(this@Accounts, R.drawable.ic_unread_toggle_star))
+                holder.flaggedMessageCountIcon!!.setBackgroundDrawable(ContextCompat.getDrawable(this@SettingsActivity, R.drawable.ic_unread_toggle_star))
             } else {
-                holder.flaggedMessageCountIcon!!.setBackgroundDrawable(ContextCompat.getDrawable(this@Accounts,
+                holder.flaggedMessageCountIcon!!.setBackgroundDrawable(ContextCompat.getDrawable(this@SettingsActivity,
                         R.drawable.ic_unread_toggle_star))
             }
 
@@ -916,13 +916,13 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
                 holder.folders!!.visibility = View.GONE
             } else {
                 holder.folders!!.visibility = View.VISIBLE
-                holder.folders!!.setOnClickListener { FolderList.actionHandleAccount(this@Accounts, account as Account) }
+                holder.folders!!.setOnClickListener { FolderList.actionHandleAccount(this@SettingsActivity, account as Account) }
                 holder.settings?.let {
                     it.setOnClickListener { onEditAccount(account as Account) }
                 }
                 holder.deviceGroup?.let {
                     it.setOnClickListener {
-                        Toast.makeText(this@Accounts,
+                        Toast.makeText(this@SettingsActivity,
                                 "Leave Sync group: Option not implemented yet", Toast.LENGTH_LONG)
                                 .show()
                     }
@@ -956,7 +956,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
         }
 
         private fun createUnreadSearchListener(account: BaseAccount): OnClickListener {
-            val search = createUnreadSearch(this@Accounts, account)
+            val search = createUnreadSearch(this@SettingsActivity, account)
             return AccountClickListener(search)
         }
 
@@ -1010,7 +1010,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
         const val ACTION_IMPORT_SETTINGS = "importSettings"
 
         fun listAccountsOnStartup(context: Context) {
-            val intent = Intent(context, Accounts::class.java)
+            val intent = Intent(context, SettingsActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or
                     Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             intent.putExtra(EXTRA_STARTUP, true)
@@ -1018,7 +1018,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
         }
 
         fun listAccounts(context: Context) {
-            val intent = Intent(context, Accounts::class.java)
+            val intent = Intent(context, SettingsActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or
                     Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             intent.putExtra(EXTRA_STARTUP, false)
@@ -1026,7 +1026,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
         }
 
         fun importSettings(context: Context) {
-            val intent = Intent(context, Accounts::class.java)
+            val intent = Intent(context, SettingsActivity::class.java)
             intent.action = ACTION_IMPORT_SETTINGS
             context.startActivity(intent)
         }
@@ -1055,7 +1055,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
 
         @JvmStatic
         fun launch(activity: Activity) {
-            val intent = Intent(activity, Accounts::class.java)
+            val intent = Intent(activity, SettingsActivity::class.java)
             intent.putExtra(EXTRA_STARTUP, false)
             activity.startActivity(intent)
 

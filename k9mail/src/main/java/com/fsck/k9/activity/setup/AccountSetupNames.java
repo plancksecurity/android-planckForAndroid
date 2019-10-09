@@ -14,15 +14,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.Accounts;
+import com.fsck.k9.activity.SettingsActivity;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.pEp.PEpUtils;
@@ -163,7 +161,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
                     && !AccountSetupNames.this.isDestroyed()){
                 dialog.dismiss();
             }
-            Accounts.Companion.listAccountsOnStartup(AccountSetupNames.this);
+            SettingsActivity.Companion.listAccountsOnStartup(AccountSetupNames.this);
         }
 
         @Override
