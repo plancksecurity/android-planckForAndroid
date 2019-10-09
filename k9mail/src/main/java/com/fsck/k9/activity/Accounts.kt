@@ -413,10 +413,12 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
 
     private fun onClearCommands(account: Account) {
         MessagingController.getInstance(application).clearAllPending(account)
+        selectedContextAccount = null
     }
 
     private fun onEmptyTrash(account: Account) {
         MessagingController.getInstance(application).emptyTrash(account, null)
+        selectedContextAccount = null
     }
 
     /**
@@ -457,6 +459,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
         val disabledAccounts = ArrayList<Account>()
         disabledAccounts.add(account)
         promptForServerPasswords(disabledAccounts)
+        selectedContextAccount = null
     }
 
     /**
@@ -485,6 +488,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
 
     private fun onEditAccount(account: Account) {
         AccountSettingsActivity.start(this, account.uuid)
+        selectedContextAccount = null
     }
 
     public override fun onCreateDialog(id: Int): Dialog? {
@@ -518,6 +522,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
                         refresh()
 
                     }
+                    selectedContextAccount = null
                 }
 
             }
@@ -541,6 +546,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
                                     .clear(realAccount, null)
                         }
                     }
+                    selectedContextAccount = null
                 }
 
             }
@@ -563,6 +569,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
                                     .recreate(realAccount, null)
                         }
                     }
+                    selectedContextAccount = null
                 }
 
             }
@@ -576,6 +583,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
                     val uri = Uri.parse(ANDROID_MARKET_URL)
                     val intent = Intent(Intent.ACTION_VIEW, uri)
                     startActivity(intent)
+                    selectedContextAccount = null
                 }
             }
         }
@@ -598,13 +606,14 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
                 alert.setMessage(getString(R.string.account_recreate_dlg_instructions_fmt,
                         selectedContextAccount!!.description))
             }
+            else -> {}
         }
 
         super.onPrepareDialog(id, d)
     }
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
-        val menuInfo = item.menuInfo as AdapterContextMenuInfo
+        val menuInfo = item.menuInfo as AdapterContextMenuInfo?
         // submenus don't actually set the menuInfo, so the "advanced"
         // submenu wouldn't work.
         if (menuInfo != null) {
@@ -696,11 +705,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
             }
         } else {
             val accountLocation = accountLocation(account)
-            if (accountLocation.contains(ACCOUNT_LOCATION.TOP)) {
-                menu.findItem(R.id.move_up).isEnabled = false
-            } else {
-                menu.findItem(R.id.move_up).isEnabled = true
-            }
+            menu.findItem(R.id.move_up).isEnabled = !accountLocation.contains(ACCOUNT_LOCATION.TOP)
             menu.findItem(R.id.move_up).isEnabled = !accountLocation.contains(ACCOUNT_LOCATION.BOTTOM)
         }
     }
