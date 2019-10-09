@@ -116,7 +116,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
     internal inner class AccountsHandler : Handler() {
         internal fun setViewTitle() {
-            toolbar.setTitle(R.string.accounts_title)
+            toolbar.setTitle(R.string.action_settings)
         }
 
         fun refreshTitle() {
