@@ -33,7 +33,6 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 import com.fsck.k9.Account
 import com.fsck.k9.AccountStats
@@ -62,7 +61,6 @@ import com.fsck.k9.search.SearchAccount
 import com.fsck.k9.search.SearchSpecification.Attribute
 import com.fsck.k9.search.SearchSpecification.SearchField
 import com.fsck.k9.ui.fragmentTransaction
-import com.fsck.k9.ui.fragmentTransactionWithBackStack
 import com.fsck.k9.ui.settings.SettingsActivity
 import com.fsck.k9.ui.settings.account.AccountSettingsActivity
 import com.fsck.k9.ui.settings.general.GeneralSettingsActivity
@@ -73,7 +71,6 @@ import java.util.ArrayList
 import java.util.EnumSet
 import java.util.concurrent.ConcurrentHashMap
 
-import foundation.pEp.jniadapter.Rating
 import timber.log.Timber
 
 
@@ -91,7 +88,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
     private var selectedContextAccount: BaseAccount? = null
 
     private val handler = AccountsHandler()
-    private var adapter: FoldersAdapter? = null
+    private var adapter: AccountListAdapter? = null
     private var allMessagesAccount: SearchAccount? = null
     private var unifiedInboxAccount: SearchAccount? = null
     private val fontSizes = K9.getFontSizes()
@@ -507,7 +504,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
 
         newAccounts.addAll(accounts)
 
-        adapter = FoldersAdapter(accounts, object : OnFolderClickListener {
+        adapter = AccountListAdapter(accounts, object : OnFolderClickListener {
             override fun onClick(folder: LocalFolder) {
 
             }
@@ -998,7 +995,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
         }
     }
 
-    internal inner class FoldersAdapter(accounts: List<BaseAccount>, private val onFolderClickListener: OnFolderClickListener, private val onBaseAccountClickListener: OnBaseAccountClickListener) : ArrayAdapter<BaseAccount>(this@Accounts, 0, accounts) {
+    internal inner class AccountListAdapter(accounts: List<BaseAccount>, private val onFolderClickListener: OnFolderClickListener, private val onBaseAccountClickListener: OnBaseAccountClickListener) : ArrayAdapter<BaseAccount>(this@Accounts, 0, accounts) {
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val account = getItem(position)
