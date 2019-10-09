@@ -14,32 +14,15 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.view.ContextMenu
+import android.view.*
 import android.view.ContextMenu.ContextMenuInfo
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
 import android.view.View.OnClickListener
-import android.view.ViewGroup
-import android.view.Window
-import android.widget.AdapterView
+import android.widget.*
 import android.widget.AdapterView.AdapterContextMenuInfo
-import android.widget.ArrayAdapter
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
-import android.widget.TextView
-
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
-
-import com.fsck.k9.Account
-import com.fsck.k9.AccountStats
-import com.fsck.k9.BaseAccount
-import com.fsck.k9.K9
-import com.fsck.k9.Preferences
-import com.fsck.k9.R
+import com.fsck.k9.*
 import com.fsck.k9.activity.compose.MessageActions
 import com.fsck.k9.activity.misc.ExtendedAsyncTask
 import com.fsck.k9.activity.misc.NonConfigurationInstance
@@ -66,12 +49,9 @@ import com.fsck.k9.ui.settings.account.AccountSettingsActivity
 import com.fsck.k9.ui.settings.general.GeneralSettingsActivity
 import com.fsck.k9.ui.settings.general.GeneralSettingsFragment
 import com.karumi.dexter.listener.single.CompositePermissionListener
-
-import java.util.ArrayList
-import java.util.EnumSet
-import java.util.concurrent.ConcurrentHashMap
-
 import timber.log.Timber
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 
 class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
@@ -1021,6 +1001,8 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
                 holder.activeIcons = view.findViewById<View>(R.id.active_icons) as RelativeLayout
 
                 holder.folders = view.findViewById<View>(R.id.folders) as ImageButton
+                holder.deviceGroup = view.findViewById<View>(R.id.account_leave_device_group) as ImageButton
+                holder.settings = view.findViewById<View>(R.id.account_settings) as ImageButton
                 holder.accountsItemLayout = view.findViewById<View>(R.id.accounts_item_layout) as LinearLayout
                 val accountsDescriptionLayout = view.findViewById<View>(R.id.accounts_description_layout) as LinearLayout
 
@@ -1084,6 +1066,16 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
             } else {
                 holder.folders!!.visibility = View.VISIBLE
                 holder.folders!!.setOnClickListener { FolderList.actionHandleAccount(this@Accounts, account as Account) }
+                holder.settings?.let {
+                    it.setOnClickListener { onEditAccount(account as Account) }
+                }
+                holder.deviceGroup?.let {
+                    it.setOnClickListener {
+                        Toast.makeText(this@Accounts,
+                                "Leave Sync group: Option not implemented yet", Toast.LENGTH_LONG)
+                                .show()
+                    }
+                }
             }
 
             return view
@@ -1129,6 +1121,8 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
             var activeIcons: RelativeLayout? = null
             var chip: View? = null
             var folders: ImageButton? = null
+            var deviceGroup: ImageButton? = null
+            var settings: ImageButton? = null
             var accountsItemLayout: LinearLayout? = null
             var descriptionUnreadMessages: TextView? = null
         }
@@ -1217,7 +1211,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
     override fun onPreferenceStartScreen(
             caller: PreferenceFragmentCompat, preferenceScreen: PreferenceScreen
     ): Boolean {
-        GeneralSettingsActivity.start(this,  preferenceScreen.key)
+        GeneralSettingsActivity.start(this, preferenceScreen.key)
 
         return true
     }
