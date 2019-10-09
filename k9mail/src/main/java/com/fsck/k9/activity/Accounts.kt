@@ -2,13 +2,13 @@ package com.fsck.k9.activity
 
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -31,12 +31,13 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 
 import androidx.core.content.ContextCompat
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceScreen
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 import com.fsck.k9.Account
 import com.fsck.k9.AccountStats
 import com.fsck.k9.BaseAccount
-import com.fsck.k9.FontSizes
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.R
@@ -60,21 +61,23 @@ import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 import com.fsck.k9.search.SearchSpecification.Attribute
 import com.fsck.k9.search.SearchSpecification.SearchField
+import com.fsck.k9.ui.fragmentTransaction
+import com.fsck.k9.ui.fragmentTransactionWithBackStack
 import com.fsck.k9.ui.settings.SettingsActivity
 import com.fsck.k9.ui.settings.account.AccountSettingsActivity
 import com.fsck.k9.ui.settings.general.GeneralSettingsActivity
+import com.fsck.k9.ui.settings.general.GeneralSettingsFragment
 import com.karumi.dexter.listener.single.CompositePermissionListener
 
 import java.util.ArrayList
 import java.util.EnumSet
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentMap
 
 import foundation.pEp.jniadapter.Rating
 import timber.log.Timber
 
 
-class Accounts : PEpImporterActivity() {
+class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
 
     private var controller: MessagingController? = null
 
@@ -95,7 +98,6 @@ class Accounts : PEpImporterActivity() {
     private val fontSizes = K9.getFontSizes()
 
     private var refreshMenuItem: MenuItem? = null
-    //private ActionBar actionBar;
 
     private var exportGlobalSettings: Boolean = false
     private var exportAccountUuids: ArrayList<String>? = null
@@ -265,6 +267,7 @@ class Accounts : PEpImporterActivity() {
             }
         }
 
+        @SuppressLint("StringFormatMatches")
         fun accountSizeChanged(account: Account, oldSize: Long, newSize: Long) {
             runOnUiThread {
                 val stats = accountStats[account.uuid]
@@ -306,8 +309,8 @@ class Accounts : PEpImporterActivity() {
         handler.progress(progress)
     }
 
-    override fun onCreate(icicle: Bundle?) {
-        super.onCreate(icicle)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         controller = MessagingController.getInstance(applicationContext)
 
@@ -353,17 +356,24 @@ class Accounts : PEpImporterActivity() {
             finish()
             return
         }
-        // TODO: 28/9/16 is this really needed?
-        //        requestWindowFeature(Window.FEATURE_PROGRESS);
+
+
         initializeActionBar()
+
+        if (savedInstanceState == null) {
+            fragmentTransaction {
+                add(R.id.generalSettingsContainer, GeneralSettingsFragment.create())
+            }
+        }
+
         registerForContextMenu(accountsList)
 
-        if (icicle != null && icicle.containsKey(SELECTED_CONTEXT_ACCOUNT)) {
-            val accountUuid = icicle.getString("selectedContextAccount")
+        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_CONTEXT_ACCOUNT)) {
+            val accountUuid = savedInstanceState.getString("selectedContextAccount")
             selectedContextAccount = Preferences.getPreferences(this).getAccount(accountUuid)
         }
 
-        restoreAccountStats(icicle)
+        restoreAccountStats(savedInstanceState)
         handler.setViewTitle()
 
         // Handle activity restarts because of a configuration change (e.g. rotating the screen)
@@ -373,7 +383,6 @@ class Accounts : PEpImporterActivity() {
         }
 
         setupAddAccountButton()
-        setupSettingsButton()
         askForBatteryOptimizationWhiteListing()
     }
 
@@ -394,20 +403,19 @@ class Accounts : PEpImporterActivity() {
 
     }
 
-    private fun setupSettingsButton() {
-        val settingsButton = findViewById<View>(R.id.settings_container)
-        settingsButton.setOnClickListener { onEditSettings() }
-    }
-
     private fun setupAddAccountButton() {
         addAccountButton = findViewById(R.id.add_account_container)
         addAccountButton!!.setOnClickListener { onAddNewAccount() }
     }
 
     private fun initializeActionBar() {
-        setUpToolbar(false)
+        //setUpToolbar(false)
         //View customView = getToolbar().findViewById(R.id.actionbar_custom);
-        setStatusBarPepColor(Rating.pEpRatingFullyAnonymous)
+        //setStatusBarPepColor(Rating.pEpRatingFullyAnonymous)
+
+        setUpToolbar(true)
+        val actionBar = supportActionBar ?: throw RuntimeException("getSupportActionBar() == null")
+        actionBar.setDisplayHomeAsUpEnabled(true)
     }
 
     /**
@@ -542,7 +550,7 @@ class Accounts : PEpImporterActivity() {
                 val account = foldersAdapter!!.getItem(position!!)
                 onOpenAccount(account)
             }
-        }, OnBaseAccountClickListener { GeneralSettingsActivity.start(this@Accounts) })
+        }, OnBaseAccountClickListener { Accounts.start(this@Accounts) })
         foldersList!!.adapter = foldersAdapter
         if (!newAccounts.isEmpty()) {
             handler.progress(Window.PROGRESS_START)
@@ -841,6 +849,7 @@ class Accounts : PEpImporterActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        /*
         when (item.itemId) {
             R.id.settings -> onEditSettings()
             R.id.check_mail -> onCheckMail(null)
@@ -852,6 +861,16 @@ class Accounts : PEpImporterActivity() {
             else -> return super.onOptionsItemSelected(item)
         }
         return true
+
+         */
+
+        if (item.itemId == android.R.id.home) {
+            onBackPressed()
+            return true
+        }
+
+        return super.onOptionsItemSelected(item)
+
     }
 
     private fun onAbout() {
@@ -1230,5 +1249,19 @@ class Accounts : PEpImporterActivity() {
 
             return search
         }
+
+        fun start(context: Context) {
+            val intent = Intent(context, GeneralSettingsActivity::class.java)
+            context.startActivity(intent)
+        }
     }
+
+    override fun onPreferenceStartScreen(
+            caller: PreferenceFragmentCompat, preferenceScreen: PreferenceScreen
+    ): Boolean {
+        GeneralSettingsActivity.start(this,  preferenceScreen.key)
+
+        return true
+    }
+
 }

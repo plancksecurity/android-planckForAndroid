@@ -359,7 +359,7 @@ public class AccountsLegacy extends PEpImporterActivity {
 
         controller = MessagingController.getInstance(getApplicationContext());
 
-        bindViews(R.layout.accounts);
+        bindViews(R.layout.accounts_legacy);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.message_swipe);
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.pep_green),
                 getResources().getColor(R.color.pep_yellow),
@@ -450,14 +450,14 @@ public class AccountsLegacy extends PEpImporterActivity {
     }
 
     private void setupSettingsButton() {
-        View settingsButton = findViewById(R.id.settings_container);
+        /*View settingsButton = findViewById(R.id.settings_container);
         settingsButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 onEditSettings();
             }
         });
-    }
+    */}
 
     private void setupAddAccountButton() {
         addAccountButton = findViewById(R.id.add_account_container);
@@ -651,7 +651,7 @@ public class AccountsLegacy extends PEpImporterActivity {
         }, new OnBaseAccountClickListener() {
             @Override
             public void onClick(BaseAccount baseAccount) {
-               GeneralSettingsActivity.Companion.start(AccountsLegacy.this);
+//               GeneralSettingsActivity.Companion.start(AccountsLegacy.this);
             }
         });
         foldersList.setAdapter(foldersAdapter);
