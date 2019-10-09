@@ -210,7 +210,8 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
             onOpenAccount(unifiedInboxAccount)
             finish()
             return
-        } else if (startup && accounts.size > 0 && onOpenAccount(Preferences.getPreferences(this).defaultAccount)) {
+        } else if (startup && accounts.size > 0
+                && onOpenAccount(Preferences.getPreferences(this).defaultAccount)) {
             finish()
             return
         }
@@ -606,7 +607,8 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
                 alert.setMessage(getString(R.string.account_recreate_dlg_instructions_fmt,
                         selectedContextAccount!!.description))
             }
-            else -> {}
+            else -> {
+            }
         }
 
         super.onPrepareDialog(id, d)
@@ -1051,9 +1053,12 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
             return search
         }
 
-        @JvmStatic fun launch(activity: Activity) {
+        @JvmStatic
+        fun launch(activity: Activity) {
             val intent = Intent(activity, Accounts::class.java)
+            intent.putExtra(EXTRA_STARTUP, false)
             activity.startActivity(intent)
+
         }
     }
 

@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import com.google.android.material.navigation.NavigationView;
+
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
 import androidx.fragment.app.FragmentTransaction;
@@ -1484,8 +1486,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(Gravity.START)) {
-            drawerLayout.closeDrawer(Gravity.START);
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
             return;
         }
         if (isMessageViewVisible()) {
@@ -2312,11 +2314,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 finish();
             }
         } else {
-            if(isBackstackClear()) {
-                onAccounts();
-            } else {
-                finish();
-            }
+            super.onBackPressed();
         }
     }
 
