@@ -210,7 +210,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
             onOpenAccount(unifiedInboxAccount)
             finish()
             return
-        } else if (startup && accounts.size > 0 && onOpenAccount(accounts[0])) {
+        } else if (startup && accounts.size > 0 && onOpenAccount(Preferences.getPreferences(this).defaultAccount)) {
             finish()
             return
         }
