@@ -9,7 +9,7 @@ import com.fsck.k9.pEp.ui.AboutActivity
 internal enum class SettingsAction {
     GENERAL_SETTINGS {
         override fun execute(activity: Activity) {
-            Accounts.start(activity)
+            Accounts.launch(activity)
         }
     },
     ADD_ACCOUNT {

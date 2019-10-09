@@ -60,9 +60,8 @@ import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
-import com.fsck.k9.ui.settings.SettingsActivity;
+import com.fsck.k9.ui.settings.K9SettingsActivity;
 import com.fsck.k9.ui.settings.account.AccountSettingsActivity;
-import com.fsck.k9.ui.settings.general.GeneralSettingsActivity;
 import com.karumi.dexter.listener.single.CompositePermissionListener;
 
 import java.util.ArrayList;
@@ -683,7 +682,7 @@ public class AccountsLegacy extends PEpImporterActivity {
     }
 
     private void onEditSettings() {
-        SettingsActivity.launch(this);
+        K9SettingsActivity.launch(this);
     }
 
 

@@ -312,7 +312,7 @@
             android:label="@string/upgrade_databases_title" />
 
         <activity
-            android:name=".ui.settings.SettingsActivity"
+            android:name=".ui.settings.K9SettingsActivity"
             android:label="@string/prefs_title" />
 
         <activity

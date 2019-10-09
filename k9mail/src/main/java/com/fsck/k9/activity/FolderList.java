@@ -67,7 +67,7 @@ import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
-import com.fsck.k9.ui.settings.SettingsActivity;
+import com.fsck.k9.ui.settings.K9SettingsActivity;
 
 import timber.log.Timber;
 
@@ -530,7 +530,7 @@ public class FolderList extends K9ListActivity {
     }
 
     private void onEditSettings() {
-        SettingsActivity.launch(this);
+        Accounts.launch(this);
     }
 
     private void onAccounts() {

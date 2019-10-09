@@ -15,5 +15,5 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:scrollbars="vertical"
-        tools:context="com.fsck.k9.ui.settings.SettingsActivity" />
+        tools:context="com.fsck.k9.ui.settings.K9SettingsActivity" />
 </LinearLayout>

@@ -208,7 +208,7 @@ class NotificationActionCreator {
         TaskStackBuilder stack = TaskStackBuilder.create(context);
         if (!skipAccountsInBackStack()) {
             Intent intent = new Intent(context, Accounts.class);
-            intent.putExtra(Accounts.Companion.getEXTRA_STARTUP(), false);
+            intent.putExtra(Accounts.EXTRA_STARTUP, false);
 
             stack.addNextIntent(intent);
         }

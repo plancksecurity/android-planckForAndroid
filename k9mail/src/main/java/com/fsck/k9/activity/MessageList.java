@@ -78,7 +78,7 @@ import com.fsck.k9.search.SearchSpecification.SearchCondition;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.ui.messageview.MessageViewFragment;
 import com.fsck.k9.ui.messageview.MessageViewFragment.MessageViewFragmentListener;
-import com.fsck.k9.ui.settings.SettingsActivity;
+import com.fsck.k9.ui.settings.K9SettingsActivity;
 import com.fsck.k9.view.MessageHeader;
 import com.fsck.k9.view.MessageTitleView;
 import com.fsck.k9.view.ViewSwitcher;
@@ -1694,7 +1694,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void onEditSettings() {
-        SettingsActivity.launch(this);
+        Accounts.launch(this);
     }
 
     @Override

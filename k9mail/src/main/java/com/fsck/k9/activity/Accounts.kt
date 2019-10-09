@@ -23,7 +23,6 @@ import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import com.fsck.k9.*
-import com.fsck.k9.activity.compose.MessageActions
 import com.fsck.k9.activity.misc.ExtendedAsyncTask
 import com.fsck.k9.activity.misc.NonConfigurationInstance
 import com.fsck.k9.activity.setup.AccountSetupBasics
@@ -44,7 +43,6 @@ import com.fsck.k9.search.SearchAccount
 import com.fsck.k9.search.SearchSpecification.Attribute
 import com.fsck.k9.search.SearchSpecification.SearchField
 import com.fsck.k9.ui.fragmentTransaction
-import com.fsck.k9.ui.settings.SettingsActivity
 import com.fsck.k9.ui.settings.account.AccountSettingsActivity
 import com.fsck.k9.ui.settings.general.GeneralSettingsActivity
 import com.fsck.k9.ui.settings.general.GeneralSettingsFragment
@@ -188,24 +186,6 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
     private val accounts = ArrayList<BaseAccount>()
 
 
-    /**
-     * Get current version number.
-     *
-     * @return String version
-     */
-    private//Log.e(TAG, "Package name not found", e);
-    val versionNumber: String
-        get() {
-            var version = "?"
-            try {
-                val pi = packageManager.getPackageInfo(packageName, 0)
-                version = pi.versionName
-            } catch (e: PackageManager.NameNotFoundException) {
-            }
-
-            return version
-        }
-
     internal inner class AccountsHandler : Handler() {
         internal fun setViewTitle() {
             toolbar.setTitle(R.string.accounts_title)
@@ -242,7 +222,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
         fun accountSizeChanged(account: Account, oldSize: Long, newSize: Long) {
             runOnUiThread {
                 val stats = accountStats[account.uuid]
-                if (newSize != -1.toLong() && stats != null && K9.measureAccounts()) {
+                if (newSize != (-1).toLong() && stats != null && K9.measureAccounts()) {
                     stats.size = newSize
                 }
                 val toastText = getString(R.string.account_size_changed, account.description,
@@ -274,10 +254,6 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
         fun progress(progress: Int) {
             runOnUiThread { window.setFeatureInt(Window.FEATURE_PROGRESS, progress) }
         }
-    }
-
-    fun setProgress(progress: Boolean) {
-        handler.progress(progress)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -406,9 +382,9 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
 
         outState.putBoolean(STATE_EXPORT_GLOBAL_SETTINGS, exportGlobalSettings)
         outState.putStringArrayList(STATE_EXPORT_ACCOUNTS, exportAccountUuids)
-        outState.putString(PEpImporterActivity.CURRENT_ACCOUNT, currentAccount)
-        outState.putString(PEpImporterActivity.FPR, fpr)
-        outState.putBoolean(PEpImporterActivity.SHOWING_IMPORT_DIALOG, showingImportDialog)
+        outState.putString(CURRENT_ACCOUNT, currentAccount)
+        outState.putString(FPR, fpr)
+        outState.putBoolean(SHOWING_IMPORT_DIALOG, showingImportDialog)
     }
 
     override fun onRestoreInstanceState(state: Bundle) {
@@ -416,9 +392,9 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
 
         exportGlobalSettings = state.getBoolean(STATE_EXPORT_GLOBAL_SETTINGS, false)
         exportAccountUuids = state.getStringArrayList(STATE_EXPORT_ACCOUNTS)
-        currentAccount = state.getString(PEpImporterActivity.CURRENT_ACCOUNT)
-        fpr = state.getString(PEpImporterActivity.FPR, "").replace(" ", "")
-        if (state.getBoolean(PEpImporterActivity.SHOWING_IMPORT_DIALOG)) {
+        currentAccount = state.getString(CURRENT_ACCOUNT)
+        fpr = state.getString(FPR, "").replace(" ", "")
+        if (state.getBoolean(SHOWING_IMPORT_DIALOG)) {
             onKeyImport()
         }
     }
@@ -503,7 +479,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
             allMessagesAccount?.let { folders.add(it) }
         }
 
-        if (!newAccounts.isEmpty()) {
+        if (newAccounts.isNotEmpty()) {
             handler.progress(Window.PROGRESS_START)
         }
         pendingWork.clear()
@@ -527,42 +503,12 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
         AccountSetupBasics.actionNewAccount(this)
     }
 
-    private fun onEditSettings() {
-        SettingsActivity.launch(this)
-    }
-
-
-    /*
-     * This method is called with 'null' for the argument 'account' if
-     * all accounts are to be checked. This is handled accordingly in
-     * MessagingController.checkMail().
-     */
-    private fun onCheckMail(account: Account?) {
-        MessagingController.getInstance(application).checkMail(this, account, true, true, null)
-        if (account == null) {
-            MessagingController.getInstance(application).sendPendingMessages(null)
-        } else {
-            MessagingController.getInstance(application).sendPendingMessages(account, null)
-        }
-
-    }
-
     private fun onClearCommands(account: Account) {
         MessagingController.getInstance(application).clearAllPending(account)
     }
 
     private fun onEmptyTrash(account: Account) {
         MessagingController.getInstance(application).emptyTrash(account, null)
-    }
-
-
-    private fun onCompose() {
-        val defaultAccount = Preferences.getPreferences(this).defaultAccount
-        if (defaultAccount != null) {
-            MessageActions.actionCompose(this, defaultAccount)
-        } else {
-            onAddNewAccount()
-        }
     }
 
     /**
@@ -615,7 +561,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
      */
     private fun promptForServerPasswords(disabledAccounts: MutableList<Account>) {
         val account = disabledAccounts.removeAt(0)
-        val dialog = PEpImporterActivity.PasswordPromptDialog(account, disabledAccounts)
+        val dialog = PasswordPromptDialog(account, disabledAccounts)
         setNonConfigurationInstance(dialog)
         dialog.show(this)
     }
@@ -749,7 +695,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
         super.onPrepareDialog(id, d)
     }
 
-    override fun onContextItemSelected(item: android.view.MenuItem): Boolean {
+    override fun onContextItemSelected(item: MenuItem): Boolean {
         val menuInfo = item.menuInfo as AdapterContextMenuInfo
         // submenus don't actually set the menuInfo, so the "advanced"
         // submenu wouldn't work.
@@ -801,7 +747,6 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         when (item.itemId) {
-            R.id.settings -> onEditSettings()
             R.id.about -> onAbout()
             R.id.export_all -> onExport(true, null)
             R.id.import_settings -> onSettingsImport()
@@ -813,10 +758,6 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
 
     private fun onAbout() {
         AboutActivity.onAbout(this)
-    }
-
-    fun onItemLongClick(parent: AdapterView<*>, view: View, position: Int, id: Long): Boolean {
-        return true
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -852,11 +793,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
             } else {
                 menu.findItem(R.id.move_up).isEnabled = true
             }
-            if (accountLocation.contains(ACCOUNT_LOCATION.BOTTOM)) {
-                menu.findItem(R.id.move_down).isEnabled = false
-            } else {
-                menu.findItem(R.id.move_down).isEnabled = true
-            }
+            menu.findItem(R.id.move_up).isEnabled = !accountLocation.contains(ACCOUNT_LOCATION.BOTTOM)
         }
     }
 
@@ -870,19 +807,19 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
         when (requestCode) {
             ACTIVITY_REQUEST_PICK_SETTINGS_FILE -> onImport(data.data)
             ACTIVITY_REQUEST_SAVE_SETTINGS_FILE -> onExport(data)
-            PEpImporterActivity.ACTIVITY_REQUEST_PICK_KEY_FILE -> onKeyImport(data.data, currentAccount)
+            ACTIVITY_REQUEST_PICK_KEY_FILE -> onKeyImport(data.data, currentAccount)
         }
     }
 
 
     fun onKeyImport(uri: Uri?, currentAccount: String) {
-        val asyncTask = PEpImporterActivity.ListImportContentsAsyncTask(this, uri, currentAccount, true, fpr)
+        val asyncTask = ListImportContentsAsyncTask(this, uri, currentAccount, true, fpr)
         setNonConfigurationInstance(asyncTask)
         asyncTask.execute()
     }
 
     override fun onImport(uri: Uri?) {
-        val asyncTask = PEpImporterActivity.ListImportContentsAsyncTask(this, uri, currentAccount, false, null)
+        val asyncTask = ListImportContentsAsyncTask(this, uri, currentAccount, false, null)
         setNonConfigurationInstance(asyncTask)
         asyncTask.execute()
     }
@@ -942,7 +879,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
     }
 
     private fun startExport(exportGlobalSettings: Boolean, exportAccountUuids: ArrayList<String>?, documentsUri: Uri?) {
-        val asyncTask = PEpImporterActivity.ExportAsyncTask(this, exportGlobalSettings, exportAccountUuids, documentsUri)
+        val asyncTask = ExportAsyncTask(this, exportGlobalSettings, exportAccountUuids, documentsUri)
         setNonConfigurationInstance(asyncTask)
         asyncTask.execute()
     }
@@ -979,11 +916,10 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val account = getItem(position)
-            val view: View
-            if (convertView != null) {
-                view = convertView
+            val view: View = if (convertView != null) {
+                convertView
             } else {
-                view = layoutInflater.inflate(R.layout.accounts_item, parent, false)
+                layoutInflater.inflate(R.layout.accounts_item, parent, false)
             }
             view.isLongClickable = true
             var holder: AccountViewHolder? = view.tag as AccountViewHolder?
@@ -1133,30 +1069,30 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
         /**
          * URL used to open Android Market application
          */
-        private val ANDROID_MARKET_URL = "https://play.google.com/store/apps/details?id=org.openintents.filemanager"
+        private const val ANDROID_MARKET_URL = "https://play.google.com/store/apps/details?id=org.openintents.filemanager"
 
         /**
          * Number of special accounts ('Unified Inbox' and 'All Messages')
          */
-        private val SPECIAL_ACCOUNTS_COUNT = 2
+        private const val SPECIAL_ACCOUNTS_COUNT = 2
 
-        private val DIALOG_REMOVE_ACCOUNT = 1
-        private val DIALOG_CLEAR_ACCOUNT = 2
-        private val DIALOG_RECREATE_ACCOUNT = 3
-        private val DIALOG_NO_FILE_MANAGER = 4
-
-
-        private val ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1
-        private val ACTIVITY_REQUEST_SAVE_SETTINGS_FILE = 2
-
-        private val ACCOUNT_STATS = "accountStats"
-        private val SELECTED_CONTEXT_ACCOUNT = "selectedContextAccount"
-        private val STATE_EXPORT_GLOBAL_SETTINGS = "exportGlobalSettings"
-        private val STATE_EXPORT_ACCOUNTS = "exportAccountUuids"
-        val EXTRA_STARTUP = "startup"
+        private const val DIALOG_REMOVE_ACCOUNT = 1
+        private const val DIALOG_CLEAR_ACCOUNT = 2
+        private const val DIALOG_RECREATE_ACCOUNT = 3
+        private const val DIALOG_NO_FILE_MANAGER = 4
 
 
-        val ACTION_IMPORT_SETTINGS = "importSettings"
+        private const val ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1
+        private const val ACTIVITY_REQUEST_SAVE_SETTINGS_FILE = 2
+
+        private const val ACCOUNT_STATS = "accountStats"
+        private const val SELECTED_CONTEXT_ACCOUNT = "selectedContextAccount"
+        private const val STATE_EXPORT_GLOBAL_SETTINGS = "exportGlobalSettings"
+        private const val STATE_EXPORT_ACCOUNTS = "exportAccountUuids"
+        const val EXTRA_STARTUP = "startup"
+
+
+        const val ACTION_IMPORT_SETTINGS = "importSettings"
 
         fun listAccountsOnStartup(context: Context) {
             val intent = Intent(context, Accounts::class.java)
@@ -1202,9 +1138,9 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
             return search
         }
 
-        fun start(context: Context) {
-            val intent = Intent(context, GeneralSettingsActivity::class.java)
-            context.startActivity(intent)
+        @JvmStatic fun launch(activity: Activity) {
+            val intent = Intent(activity, Accounts::class.java)
+            activity.startActivity(intent)
         }
     }
 
