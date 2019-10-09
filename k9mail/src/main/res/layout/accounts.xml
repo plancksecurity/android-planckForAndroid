@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_view"
     android:layout_width="match_parent"
@@ -9,123 +8,73 @@
     android:orientation="vertical">
 
     <include layout="@layout/simple_toolbar_layout" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="16dp"
         android:fontFamily="sans-serif-medium"
-        android:paddingLeft="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:text="@string/global_settings_title"
         android:textColor="@color/colorPrimaryDark" />
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout
         android:id="@+id/generalSettingsContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        tools:layout_height="300dp"
+        />
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/message_swipe"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ScrollView
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
-            <LinearLayout
+            <FrameLayout
+                android:id="@+id/add_account_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_below="@id/accounts_list"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
 
-                <androidx.cardview.widget.CardView
+                <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    card_view:cardCornerRadius="0dp"
-                    card_view:cardElevation="0dp"
-                    android:visibility="gone">
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp"
+                    android:text="@string/add_account_action"
+                    android:textAllCaps="true"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textStyle="bold" />
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+            </FrameLayout>
 
-                        <TextView
-                            android:id="@+id/folders_title"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginBottom="8dp"
-                            android:fontFamily="sans-serif-medium"
-                            android:paddingLeft="16dp"
-                            android:text="@string/account_settings_folders"
-                            android:textColor="@color/colorPrimaryDark" />
+            <TextView
+                android:id="@+id/available_accounts_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="sans-serif-medium"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/available_accounts_title"
+                android:textColor="@color/colorPrimaryDark" />
 
-                        <com.fsck.k9.pEp.ui.tools.NestedListView
-                            android:id="@+id/folders_list"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/folders_title"
-                            android:layout_marginBottom="16dp" />
+            <com.fsck.k9.pEp.ui.tools.NestedListView
+                android:id="@+id/accounts_list"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/available_accounts_title" />
+        </RelativeLayout>
+    </ScrollView>
 
-                    </RelativeLayout>
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="8dp"
-                    card_view:cardCornerRadius="0dp"
-                    card_view:cardElevation="0dp"
-                    tools:visibility="gone">
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <FrameLayout
-                            android:id="@+id/add_account_container"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/accounts_list"
-                            android:background="?attr/selectableItemBackground"
-                            android:clickable="true">
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:paddingTop="16dp"
-                                android:paddingBottom="16dp"
-                                android:text="@string/add_account_action"
-                                android:textAllCaps="true"
-                                android:textColor="@color/colorPrimaryDark"
-                                android:textStyle="bold" />
-
-                        </FrameLayout>
-
-                        <TextView
-                            android:id="@+id/available_accounts_title"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginBottom="8dp"
-                            android:fontFamily="sans-serif-medium"
-                            android:paddingLeft="16dp"
-                            android:text="@string/available_accounts_title"
-                            android:textColor="@color/colorPrimaryDark" />
-
-                        <com.fsck.k9.pEp.ui.tools.NestedListView
-                            android:id="@+id/accounts_list"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/available_accounts_title" />
-                    </RelativeLayout>
-                </androidx.cardview.widget.CardView>
-            </LinearLayout>
-        </ScrollView>
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <include layout="@layout/simple_toolbar_layout" />
 </LinearLayout>

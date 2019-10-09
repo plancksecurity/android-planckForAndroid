@@ -92,7 +92,6 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
 
     private val handler = AccountsHandler()
     private var adapter: FoldersAdapter? = null
-    private var foldersAdapter: FoldersAdapter? = null
     private var allMessagesAccount: SearchAccount? = null
     private var unifiedInboxAccount: SearchAccount? = null
     private val fontSizes = K9.getFontSizes()
@@ -110,8 +109,6 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
     private var nonConfigurationInstance: NonConfigurationInstance? = null
     private var accountsList: NestedListView? = null
     private var addAccountButton: View? = null
-    private var foldersList: NestedListView? = null
-    private var swipeRefreshLayout: SwipeRefreshLayout? = null
     private val storagePermissionListener: CompositePermissionListener? = null
 
     internal var mListener: ActivityListener = object : ActivityListener() {
@@ -254,9 +251,6 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
                 if (adapter != null) {
                     adapter!!.notifyDataSetChanged()
                 }
-                if (foldersAdapter != null) {
-                    foldersAdapter!!.notifyDataSetChanged()
-                }
             }
         }
 
@@ -315,16 +309,7 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
         controller = MessagingController.getInstance(applicationContext)
 
         bindViews(R.layout.accounts)
-        swipeRefreshLayout = findViewById<View>(R.id.message_swipe) as SwipeRefreshLayout
-        swipeRefreshLayout!!.setColorSchemeColors(resources.getColor(R.color.pep_green),
-                resources.getColor(R.color.pep_yellow),
-                resources.getColor(R.color.pep_red))
-        swipeRefreshLayout!!.setOnRefreshListener {
-            onCheckMail(null)
-            swipeRefreshLayout!!.isRefreshing = false
-        }
         accountsList = findViewById<View>(R.id.accounts_list) as NestedListView
-        foldersList = findViewById<View>(R.id.folders_list) as NestedListView
         if (!K9.isHideSpecialAccounts()) {
             createSpecialAccounts()
         }
@@ -541,17 +526,6 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
             allMessagesAccount?.let { folders.add(it) }
         }
 
-        foldersAdapter = FoldersAdapter(folders, object : OnFolderClickListener {
-            override fun onClick(folder: LocalFolder) {
-
-            }
-
-            override fun onClick(position: Int?) {
-                val account = foldersAdapter!!.getItem(position!!)
-                onOpenAccount(account)
-            }
-        }, OnBaseAccountClickListener { Accounts.start(this@Accounts) })
-        foldersList!!.adapter = foldersAdapter
         if (!newAccounts.isEmpty()) {
             handler.progress(Window.PROGRESS_START)
         }
@@ -570,7 +544,6 @@ class Accounts : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceSta
             }
         }
 
-        foldersAdapter!!.notifyDataSetChanged()
     }
 
     private fun onAddNewAccount() {
