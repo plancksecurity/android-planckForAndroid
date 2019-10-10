@@ -134,7 +134,11 @@ public class CucumberTestSteps {
 
     @After
     public void tearDown() {
-        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
+        try {
+            IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
+        } catch (Exception ex) {
+            Timber.i("Error in After: " + ex.getMessage());
+        }
         timer.cancel();
         while (!exists(onView(withId(R.id.accounts_list)))) {
             if (exists(onView(withText(R.string.discard_action)))) {
