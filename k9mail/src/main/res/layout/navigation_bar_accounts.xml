@@ -57,7 +57,7 @@
             android:fontFamily="sans-serif-medium"
             android:paddingLeft="36dp"
             android:textColor="?android:attr/textColorPrimary"
-            android:text="@string/configure_account_action" />
+            android:text="@string/action_settings" />
 
     </RelativeLayout>
 </LinearLayout>
