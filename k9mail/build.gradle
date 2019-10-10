@@ -158,13 +158,13 @@ android {
     productFlavors {
         withkeysync {
             buildConfigField "boolean", "WITH_KEY_SYNC", "true"
-            versionName "${version}" + ".withKeysync"
+            versionName "${buildConfig.versionName}" + ".withKeysync"
             dimension "playStore"
 
         }
         withoutkeysync {
             buildConfigField "boolean", "WITH_KEY_SYNC", "false"
-            versionName "${version}" + ".withoutKeysync"
+            versionName "${buildConfig.versionName}" + ".withoutKeysync"
             dimension "playStore"
 
         }
