@@ -110,7 +110,7 @@ dependencies {
     //androidTestImplementation "androidx.test.uiautomator:uiautomator:${versions.uiAutomator}"
 
     //TODO: SWITCH TO ANDROID-X
-    implementation "androidx.test.espresso:espresso-idling-resource:${versions.espresso}"
+    implementation "androidx.test.espresso:espresso-idling-resource:3.2.0"
     androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:${versions.espresso}"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:${versions.espresso}"
 
