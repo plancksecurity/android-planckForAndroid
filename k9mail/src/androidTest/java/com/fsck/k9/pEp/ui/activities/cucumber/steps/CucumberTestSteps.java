@@ -1437,24 +1437,13 @@ public class CucumberTestSteps {
 
     @Then("^I save test report$")
     public void I_save_report(){
+        //IMPORTANT!!!!!!!!!!!!!!!!   Go to CucumberTestCase.java and modify plugin line before creating save_report.apk
         timeRequiredForThisMethod(30);
         try {
-            /*ProcessBuilder pb = new ProcessBuilder ("adb shell chmod -R 777 /data/data/security.pEp/cucumber-reports");
-            Process p = pb.start();
-            p.waitFor();*/
-            /*String[] cmdArray = new String[1];
-            cmdArray[0]="adb shell chmod -R 777 /data/data/security.pEp/cucumber-reports";
-            Process p=null;
-            p = Runtime.getRuntime().exec(cmdArray);*/
             SetDirectory();
         } catch (Exception ex){
             Timber.e("Error moving cucumber reports1: " + ex.getMessage());
         }
-        /*try {
-            Runtime.getRuntime().exec("adb shell \"cp -r /data/data/security.pEp/cucumber-reports/ /sdcard/cucumberTestReports\"");
-        } catch (Exception ex){
-            Timber.e("Error moving cucumber reports2: " + ex.getMessage());
-        }*/
     }
     private void SetDirectory() {
         CopyAssets(); // Then run the method to copy the file.
