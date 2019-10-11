@@ -23,9 +23,11 @@ class GeneralSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback {
 
         initializeActionBar()
 
-        intent.getStringExtra(PREFERENCE_KEY)?.let {
-            fragmentTransaction {
-                add(R.id.generalSettingsContainer, GeneralSettingsFragment.create(it))
+        if (savedInstanceState == null) {
+            intent.getStringExtra(PREFERENCE_KEY)?.let {
+                fragmentTransaction {
+                    add(R.id.generalSettingsContainer, GeneralSettingsFragment.create(it))
+                }
             }
         }
     }
