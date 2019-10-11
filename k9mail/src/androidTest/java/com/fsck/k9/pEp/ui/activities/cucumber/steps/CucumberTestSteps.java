@@ -117,7 +117,7 @@ public class CucumberTestSteps {
             IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
             bot = new String[9];
             resources = getTargetContext().getResources();
-            startTimer(2000);
+            //startTimer(2000);
             device.waitForIdle();
             if (testUtils.getCurrentActivity() == null) {
                 //startTimer(350);
@@ -139,7 +139,7 @@ public class CucumberTestSteps {
         } catch (Exception ex) {
             Timber.i("Error in After: " + ex.getMessage());
         }
-        timer.cancel();
+        //timer.cancel();
         while (!exists(onView(withId(R.id.accounts_list)))) {
             if (exists(onView(withText(R.string.discard_action)))) {
                 device.waitForIdle();
