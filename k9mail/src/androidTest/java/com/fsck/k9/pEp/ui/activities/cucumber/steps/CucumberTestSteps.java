@@ -1468,13 +1468,14 @@ public class CucumberTestSteps {
 
     private void CopyAssets() {
             try {
-                File file = new File("data/data/security.pEp/cucumber-reports/", "cucumber.json");
+                String extStorageDirectory = Environment.getExternalStorageDirectory().getAbsolutePath().toString();
+                File file = new File("/data/data/security.pEp/cucumber-reports/", "cucumber.json");
+                File file2 = new File(extStorageDirectory + "/cucumber.json");
                 FileInputStream in = new FileInputStream(file);
-                String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
-                File file2 = new File("/mnt/sdcard" + "/cucumber.json");
                 file2.createNewFile();
                 OutputStream out = new FileOutputStream(file2);
                 copyFile(in, out);
+                file.delete();
                 in.close();
                 out.flush();
                 out.close();
