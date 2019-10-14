@@ -130,6 +130,9 @@ android {
         versionCode buildConfig.versionCode
         minSdkVersion buildConfig.minSdk
         targetSdkVersion buildConfig.targetSdk
+
+        ndkVersion versions.ndk
+
         setProperty("archivesBaseName", "$buildConfig.versionName-$versionCode")
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]
 
