@@ -31,6 +31,12 @@ public class MimeHeader implements Cloneable {
     public static final String FILE_SCHEME = "file" + URI_SCHEME_SEPARATOR;
     public static final String INLINE_DISPOSITION = "inline";
 
+    public static final ArrayList MANDATORY_HEADER_NAMES = new ArrayList<>(Arrays.asList("DATE",
+            "FROM", "TO", "CC", "BCC", "RETURN-PATH",
+            "SUBJECT", "MESSAGE-ID", "IN-REPLY-TO", "REPLY-TO",
+            "RECEIVED", "REFERENCES", "MIME-VERSION",
+            "CONTENT-TYPE", "CONTENT-DISPOSITION", "CONTENT-TRANSFER-ENCODING"));
+
     private List<Field> mFields = new ArrayList<Field>();
     private String mCharset = null;
 

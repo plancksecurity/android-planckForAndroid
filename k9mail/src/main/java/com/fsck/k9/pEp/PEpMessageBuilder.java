@@ -194,28 +194,15 @@ class PEpMessageBuilder {
         m.setReferences(createMessageReferences(mm.getReferences()));
         m.setShortmsg(mm.getSubject());
 
-        // TODO: other headers
-        ArrayList<Pair<String, String>> optionalFields = new ArrayList<>();
-        addOptionalField(optionalFields, MimeHeader.HEADER_PEP_VERSION);
-        addOptionalField(optionalFields, MimeHeader.HEADER_PEP_AUTOCONSUME);
-        addOptionalField(optionalFields, MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY);
-        addOptionalField(optionalFields, MimeHeader.HEADER_PEP_KEY_LIST);
-        addOptionalField(optionalFields, MimeHeader.HEADER_PEP_ALWAYS_SECURE);
-        addOptionalField(optionalFields, MimeHeader.HEADER_PEP_RATING);
-        addOptionalField(optionalFields, MimeHeader.HEADER_CONTENT_DESCRIPTION);
-        addOptionalField(optionalFields, MimeHeader.HEADER_PEP_KEY_IMPORT);
-        addOptionalField(optionalFields, MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY);
-        //addOptionalField(optionalFields, "Return-Path");
-        //addOptionalField(optionalFields, "X-Original-To");
-        //addOptionalField(optionalFields, "Delivered-To");
 
-        /*
+        ArrayList<Pair<String, String>> optionalFields = new ArrayList<>();
+
         for (String headerName : mm.getHeaderNames()) {
-            for (String headerValue : mm.getHeader(headerName)) {
-                optionalFields.add(new Pair<>(headerName, headerValue));
+            if (!MimeHeader.MANDATORY_HEADER_NAMES.contains(headerName.toUpperCase())) {
+                addOptionalField(optionalFields, headerName);
             }
         }
-        */
+
         m.setOptFields(optionalFields);
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
