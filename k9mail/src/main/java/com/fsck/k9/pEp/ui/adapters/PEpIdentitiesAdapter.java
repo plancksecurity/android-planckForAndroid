@@ -98,12 +98,12 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
         public ViewHolder(View view) {
             super(view);
             context = view.getContext();
-            identityUserName = ((TextView) view.findViewById(R.id.tvUsername));
-            identityAdress = ((TextView) view.findViewById(R.id.tvAddress));
-            handshakeButton = ((FrameLayout) view.findViewById(R.id.buttonHandshake));
-            handshakeText = ((TextView) view.findViewById(R.id.handshake_button_text));
+            identityUserName = view.findViewById(R.id.tvUsername);
+            identityAdress = view.findViewById(R.id.tvAddress);
+            handshakeButton = view.findViewById(R.id.buttonHandshake);
+            handshakeText = view.findViewById(R.id.handshake_button_text);
             container = view.findViewById(R.id.recipientContainer);
-            badge = (ImageView) view.findViewById(R.id.status_badge);
+            badge = view.findViewById(R.id.status_badge);
         }
 
         private void renderRating(String address, Rating rating) {
@@ -133,9 +133,9 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
                 handshakeButton.setOnClickListener(onHandshakeClick);
                 handshakeText.setText(context.getString(R.string.pep_handshake));
                 badge.setVisibility(View.VISIBLE);
-                identityUserName.setTextColor(context.getResources().getColor(R.color.openpgp_black));
-                identityAdress.setTextColor(context.getResources().getColor(R.color.openpgp_black));
-                handshakeText.setTextColor(context.getResources().getColor(R.color.openpgp_black));
+                identityUserName.setTextColor(context.getResources().getColor(android.R.color.black));
+                identityAdress.setTextColor(context.getResources().getColor(android.R.color.black));
+                handshakeText.setTextColor(context.getResources().getColor(android.R.color.black));
             }
             Drawable drawableForRating = PEpUtils.getDrawableForRatingRecipient(context, rating);
             badge.setImageDrawable(drawableForRating);
