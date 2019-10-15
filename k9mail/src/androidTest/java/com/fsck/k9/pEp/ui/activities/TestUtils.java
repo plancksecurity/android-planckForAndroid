@@ -510,8 +510,10 @@ public class TestUtils {
                 }
                 createNAccounts(totalAccounts);
         } catch (Exception ex) {
-            readConfigFile();
-            Timber.i("Ignored", "Exists account, failed creating new one");
+            if (!exists(onView(withId(R.id.accounts_list)))) {
+                readConfigFile();
+                Timber.i("Ignored", "Exists account, failed creating new one");
+            }
         }
     }
 
@@ -520,7 +522,8 @@ public class TestUtils {
             for (; account < n; account++) {
                 device.waitForIdle();
                 while(exists(onView(withId(R.id.message_list)))) {
-                    pressBack();
+                    openOptionsMenu();
+                    selectFromMenu(R.string.action_settings);
                     device.waitForIdle();
                     try {
                         onView(withId(R.id.add_account_container)).perform(click());

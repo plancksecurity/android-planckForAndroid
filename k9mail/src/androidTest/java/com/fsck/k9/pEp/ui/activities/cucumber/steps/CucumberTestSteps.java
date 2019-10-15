@@ -24,7 +24,8 @@ import androidx.test.uiautomator.UiObject2;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.Accounts;
+import com.fsck.k9.activity.MessageList;
+import com.fsck.k9.activity.NotificationDeleteConfirmation;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 import com.fsck.k9.pEp.ui.activities.TestUtils;
 
@@ -104,7 +105,7 @@ public class CucumberTestSteps {
     private final Timer timer = new Timer();
     private final int[] time = {0};
     @Rule
-    public IntentsTestRule<Accounts> activityTestRule = new IntentsTestRule<>(Accounts.class, true, false);
+    public IntentsTestRule<MessageList> activityTestRule = new IntentsTestRule<>(MessageList.class, true, false);
 
     @Before
     public void setup() {
@@ -140,7 +141,7 @@ public class CucumberTestSteps {
             Timber.i("Error in After: " + ex.getMessage());
         }
         //timer.cancel();
-        while (!exists(onView(withId(R.id.accounts_list)))) {
+        while (!viewIsDisplayed(R.id.actionbar_title_first) || !getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.special_mailbox_name_inbox))) {
             if (exists(onView(withText(R.string.discard_action)))) {
                 device.waitForIdle();
                 onView(withText(R.string.discard_action)).perform(click());
@@ -153,7 +154,7 @@ public class CucumberTestSteps {
     @When(value = "^I created an account$")
     public void I_create_account() {
         device.waitForIdle();
-        if (!exists(onView(withId(R.id.message_list)))) {
+        if (!exists(onView(withId(R.id.accounts_list)))) {
             testUtils.createAccount();
         }
         if (testUtils.getTotalAccounts() == -1) {
@@ -965,14 +966,8 @@ public class CucumberTestSteps {
                     }
                 } else {
                     while (!exists(onView(withId(R.id.accounts_list)))) {
-                        testUtils.pressBack();
-                        try {
-                            device.waitForIdle();
-                            onView(withText(R.string.discard_action)).check(matches(isCompletelyDisplayed()));
-                            onView(withText(R.string.discard_action)).perform(click());
-                        } catch (Exception ex) {
-                            Timber.i("There is no message to discard");
-                        }
+                        testUtils.openOptionsMenu();
+                        testUtils.selectFromMenu(R.string.action_settings);
                         device.waitForIdle();
                     }
                 }
