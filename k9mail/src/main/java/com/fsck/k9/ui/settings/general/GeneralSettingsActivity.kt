@@ -23,9 +23,9 @@ class GeneralSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback {
 
         initializeActionBar()
 
-        if (savedInstanceState == null) {
+        intent.getStringExtra(PREFERENCE_KEY)?.let {
             fragmentTransaction {
-                add(R.id.generalSettingsContainer, GeneralSettingsFragment.create())
+                add(R.id.generalSettingsContainer, GeneralSettingsFragment.create(it))
             }
         }
     }
@@ -57,8 +57,11 @@ class GeneralSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback {
 
 
     companion object {
-        fun start(context: Context) {
+        private const val PREFERENCE_KEY = "preference_key"
+
+        fun start(context: Context, key: String) {
             val intent = Intent(context, GeneralSettingsActivity::class.java)
+            intent.putExtra(PREFERENCE_KEY, key)
             context.startActivity(intent)
         }
     }

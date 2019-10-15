@@ -208,10 +208,10 @@
         android:title="@string/send_messages_action"/>
 
     <!-- MessageList -->
-    <item
+    <!--item
         android:id="@+id/expunge"
         app:showAsAction="never"
-        android:title="@string/expunge_action"/>
+        android:title="@string/expunge_action"/-->
 
     <!-- MessageView -->
     <item

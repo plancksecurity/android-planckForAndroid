@@ -67,7 +67,6 @@ import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
-import com.fsck.k9.ui.settings.SettingsActivity;
 
 import timber.log.Timber;
 
@@ -452,7 +451,7 @@ public class FolderList extends K9ListActivity {
 
         if (!mAccount.isAvailable(this)) {
             Timber.i("account unavaliabale, not showing folder-list but account-list");
-            Accounts.listAccounts(this);
+            SettingsActivity.Companion.listAccounts(this);
             finish();
             return;
         }
@@ -534,7 +533,7 @@ public class FolderList extends K9ListActivity {
     }
 
     private void onAccounts() {
-        Accounts.listAccounts(this);
+        SettingsActivity.Companion.listAccounts(this);
         finish();
     }
 

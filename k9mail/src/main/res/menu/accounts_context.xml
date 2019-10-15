@@ -10,29 +10,22 @@
         android:title="@string/account_settings_action" />
     <item android:id="@+id/delete_account"
         android:title="@string/remove_account_action" />
-    <item android:id="@+id/clear"
-        android:title="@string/clear_action" />
-    <item android:id="@+id/recreate"
-        android:title="@string/recreate_action" />
-    <item android:id="@+id/clear_pending"
-        android:title="@string/clear_pending_action" />
+
     <item android:id="@+id/export"
         android:title="@string/settings_export_account" />
-    <item android:title="Key import">
+    <item
+        android:id="@+id/advanced"
+        android:title="@string/advanced">
         <menu>
-            <item
-                android:id="@+id/import_pEp_key"
-                android:title="p≡p Key import" />
-            <item android:title="PGP Key import">
-                <menu>
-                    <item
-                        android:id="@+id/import_PGP_key"
-                        android:title="PGP Key import wizard" />
-                    <item
-                        android:id="@+id/import_PGP_key_from_SD"
-                        android:title="PGP Key import from filesystem" />
-                </menu>
-            </item>
+            <item android:id="@+id/clear"
+                android:title="@string/clear_action" />
+            <item android:id="@+id/recreate"
+                android:title="@string/recreate_action" />
+            <item android:id="@+id/clear_pending"
+                android:title="@string/clear_pending_action" />
+            <item android:id="@+id/import_PGP_key_from_SD"
+                android:title="PGP Key import from filesystem" />
         </menu>
     </item>
+
 </menu>

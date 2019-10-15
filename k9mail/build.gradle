@@ -1,8 +1,3 @@
-def pEpEngineRevision = 4102
-def pEpJNIAdapterRevision = 579
-def version = "1.0.224"
-def libpEpAdapterVersion = 130
-
 def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
 def pEpTestEmailPassword = "\"$System.env.PEP_TEST_EMAIL_PASSWORD\""
 def pEpTestEmailServer = "\"$System.env.PEP_TEST_EMAIL_SERVER\""
@@ -167,7 +162,7 @@ android {
         versionCode buildConfig.versionCode
         minSdkVersion buildConfig.minSdk
         targetSdkVersion buildConfig.targetSdk
-        setProperty("archivesBaseName", "$version-$versionCode")
+        setProperty("archivesBaseName", "$buildConfig.versionName-$versionCode")
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]
 
         //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -178,8 +173,8 @@ android {
         vectorDrawables.useSupportLibrary = true
 
 
-        buildConfigField "int", "ENGINE_REVISION", "${pEpEngineRevision}"
-        buildConfigField "int", "ADAPTER_REVISION", "${pEpJNIAdapterRevision}"
+        buildConfigField "int", "ENGINE_REVISION", "$buildConfig.pEpEngineRevision"
+        buildConfigField "int", "ADAPTER_REVISION", "$buildConfig.pEpJNIAdapterRevision"
         buildConfigField "String", "PEP_TEST_EMAIL_ADDRESS", "${pEpTestEmailAddress}"
         buildConfigField "String", "PEP_TEST_EMAIL_PASSWORD", "${pEpTestEmailPassword}"
         buildConfigField "String", "PEP_TEST_EMAIL_SERVER", "${pEpTestEmailServer}"

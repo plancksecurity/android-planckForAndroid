@@ -14,7 +14,7 @@ import android.view.MenuItem;
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.Accounts;
+import com.fsck.k9.activity.SettingsActivity;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
 import com.fsck.k9.pEp.PEpImporterActivity;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
@@ -152,7 +152,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
 
     @Override
     protected void onImportFinished() {
-        Accounts.listAccounts(this);
+        SettingsActivity.Companion.listAccounts(this);
     }
 
     @Override

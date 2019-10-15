@@ -1305,12 +1305,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             onSendPendingMessages();
             return true;
         }
-        case R.id.expunge: {
-            if (currentFolder != null) {
-                onExpunge(account, currentFolder.name);
-            }
-            return true;
-        }
         default: {
             return super.onOptionsItemSelected(item);
         }

@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
-    tools:context="com.fsck.k9.activity.Accounts">
+    tools:context="com.fsck.k9.activity.SettingsActivity">
 
     <ScrollView
         android:layout_width="wrap_content"

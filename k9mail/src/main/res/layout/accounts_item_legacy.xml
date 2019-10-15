@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/accounts_item_layout"
+<LinearLayout android:id="@+id/accounts_item_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -73,44 +72,17 @@
             android:layout_gravity="center_vertical"
             android:orientation="horizontal"
             >
-        <ImageButton
-            android:id="@+id/account_leave_device_group"
-            android:gravity="center_vertical"
-            android:focusable="false"
-            app:srcCompat="?attr/iconpEpDeviceGroup"
-            android:background="?android:attr/selectableItemBackground"
-            android:layout_width="48dp"
-            android:layout_height="fill_parent"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:tint="@color/pep_green"
-            />
-        <ImageButton
-            android:id="@+id/account_settings"
-            android:gravity="center_vertical"
-            android:focusable="false"
-            android:src="?attr/iconActionSettings"
-            android:background="?android:attr/selectableItemBackground"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:tint="@color/pep_green"
-            app:tintMode="src_atop"
-            android:alpha="1"
-            />
 
         <ImageButton
-            android:id="@+id/folders"
-            android:gravity="center_vertical"
-            android:focusable="false"
-            android:src="?attr/iconFolder"
-            android:background="?android:attr/selectableItemBackground"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:tint="@color/pep_green"
-            />
+                android:id="@+id/folders"
+                android:gravity="center_vertical"
+                android:focusable="false"
+                android:src="@drawable/ic_file_folder"
+                android:background="?android:attr/selectableItemBackground"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                />
     </LinearLayout>
 </LinearLayout>

@@ -5,7 +5,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <!-- Unstranslatable strings -->
     <string name="pep" translatable="false">p≡p</string>
-    <string name="pep_long" translatable="false">Pretty easy privacy</string>
+    <string name="pep_long" translatable="false">pretty Easy privacy</string>
     <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>

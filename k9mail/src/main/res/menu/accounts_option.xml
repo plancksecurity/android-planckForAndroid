@@ -3,23 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/search"
-        android:icon="@drawable/ic_action_search"
-        app:showAsAction="always"
-        android:title="@string/search_action"/>
-    <item
-        android:id="@+id/check_mail"
-        android:alphabeticShortcut="r"
-        android:icon="@drawable/ic_action_refresh"
-        app:showAsAction="never"
-        android:title="@string/check_mail_action"/>
-    <item
-        android:id="@+id/compose"
-        android:alphabeticShortcut="c"
-        android:icon="@drawable/ic_action_write_message"
-        app:showAsAction="never"
-        android:title="@string/compose_action"/>
-    <item
         android:id="@+id/about"
         android:icon="?attr/iconActionAbout"
         android:title="@string/about_action"/>
@@ -36,10 +19,5 @@
                 android:title="@string/settings_import"/>
         </menu>
     </item>
-    <item
-        android:id="@+id/settings"
-        android:icon="?attr/iconActionSettings"
-        app:showAsAction="never"
-        android:title="@string/preferences_action"/>
 
 </menu>

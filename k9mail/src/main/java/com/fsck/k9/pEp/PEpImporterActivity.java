@@ -32,7 +32,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.Accounts;
+import com.fsck.k9.activity.SettingsActivity;
 import com.fsck.k9.activity.misc.ExtendedAsyncTask;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
 import com.fsck.k9.controller.MessagingController;
@@ -997,7 +997,7 @@ public abstract class PEpImporterActivity extends PepPermissionActivity {
         private Uri mUri;
 
 
-        public ExportAsyncTask(Accounts activity, boolean includeGlobals,
+        public ExportAsyncTask(SettingsActivity activity, boolean includeGlobals,
                                List<String> accountUuids, Uri uri) {
             super(activity);
             mIncludeGlobals = includeGlobals;

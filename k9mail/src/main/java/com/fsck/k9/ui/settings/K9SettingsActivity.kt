@@ -3,7 +3,6 @@ package com.fsck.k9.ui.settings
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.MenuItem
 import com.fsck.k9.Account
 import com.fsck.k9.R
@@ -17,7 +16,7 @@ import com.xwray.groupie.kotlinandroidextensions.ViewHolder
 import kotlinx.android.synthetic.main.activity_settings.*
 import org.koin.android.architecture.ext.viewModel
 
-class SettingsActivity : K9Activity() {
+class K9SettingsActivity : K9Activity() {
     private val viewModel: SettingsViewModel by viewModel()
 
     private lateinit var settingsAdapter: GroupAdapter<ViewHolder>
@@ -45,7 +44,7 @@ class SettingsActivity : K9Activity() {
 
         with(settings_list) {
             adapter = settingsAdapter
-            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this@SettingsActivity)
+            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this@K9SettingsActivity)
         }
     }
 
@@ -96,7 +95,7 @@ class SettingsActivity : K9Activity() {
 
     companion object {
         @JvmStatic fun launch(activity: Activity) {
-            val intent = Intent(activity, SettingsActivity::class.java)
+            val intent = Intent(activity, K9SettingsActivity::class.java)
             activity.startActivity(intent)
         }
     }

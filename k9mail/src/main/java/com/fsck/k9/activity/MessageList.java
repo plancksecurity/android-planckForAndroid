@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import com.google.android.material.navigation.NavigationView;
+
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
 import androidx.fragment.app.FragmentTransaction;
@@ -78,7 +80,6 @@ import com.fsck.k9.search.SearchSpecification.SearchCondition;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.ui.messageview.MessageViewFragment;
 import com.fsck.k9.ui.messageview.MessageViewFragment.MessageViewFragmentListener;
-import com.fsck.k9.ui.settings.SettingsActivity;
 import com.fsck.k9.view.MessageHeader;
 import com.fsck.k9.view.MessageTitleView;
 import com.fsck.k9.view.ViewSwitcher;
@@ -1484,8 +1485,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(Gravity.START)) {
-            drawerLayout.closeDrawer(Gravity.START);
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
             return;
         }
         if (isMessageViewVisible()) {
@@ -1685,7 +1686,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void onAccounts() {
-        Accounts.listAccounts(this);
+        SettingsActivity.Companion.listAccounts(this);
         finish();
     }
 
@@ -1848,10 +1849,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 mMessageListFragment.onSendPendingMessages();
                 return true;
             }
-            case R.id.expunge: {
-                mMessageListFragment.onExpunge();
-                return true;
-            }
             default: {
                 return super.onOptionsItemSelected(item);
             }
@@ -1999,7 +1996,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             menu.findItem(R.id.set_sort).setVisible(false);
             menu.findItem(R.id.select_all).setVisible(false);
             menu.findItem(R.id.send_messages).setVisible(false);
-            menu.findItem(R.id.expunge).setVisible(false);
             menu.findItem(R.id.mark_all_as_read).setVisible(false);
             menu.findItem(R.id.show_folder_list).setVisible(false);
             setDrawerEnabled(false);
@@ -2011,14 +2007,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                     mMessageListFragment.isMarkAllAsReadSupported());
 
             if (!mMessageListFragment.isSingleAccountMode()) {
-                menu.findItem(R.id.expunge).setVisible(false);
                 menu.findItem(R.id.send_messages).setVisible(false);
                 menu.findItem(R.id.show_folder_list).setVisible(false);
                 setDrawerEnabled(false);
             } else {
                 menu.findItem(R.id.send_messages).setVisible(mMessageListFragment.isOutbox());
-                menu.findItem(R.id.expunge).setVisible(mMessageListFragment.isRemoteFolder() &&
-                        mMessageListFragment.isAccountExpungeCapable());
                 menu.findItem(R.id.show_folder_list).setVisible(true);
                 setDrawerEnabled(true);
             }
@@ -2038,7 +2031,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     protected void onAccountUnavailable() {
         finish();
         // TODO inform user about account unavailability using Toast
-        Accounts.listAccounts(this);
+        SettingsActivity.Companion.listAccounts(this);
     }
 
     public void setActionBarTitle(String title) {
@@ -2320,11 +2313,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 finish();
             }
         } else {
-            if(isBackstackClear()) {
-                onAccounts();
-            } else {
-                finish();
-            }
+            super.onBackPressed();
         }
     }
 

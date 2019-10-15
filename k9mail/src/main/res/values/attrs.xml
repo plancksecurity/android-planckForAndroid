@@ -66,6 +66,8 @@
         <attr name="tintColorBulletPointNeutral" format="reference|color"/>
         <attr name="tintColorBulletPointNegative" format="reference|color"/>
 
+        <attr name="iconpEpDeviceGroup" format="reference"/>
+
         <attr name="openpgp_black" format="reference|color" />
         <attr name="openpgp_orange" format="reference|color" />
         <attr name="openpgp_red" format="reference|color" />

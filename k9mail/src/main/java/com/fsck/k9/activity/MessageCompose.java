@@ -300,7 +300,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
              * There are no accounts set up. This should not have happened. Prompt the
              * user to set up an account as an acceptable bailout.
              */
-            startActivity(new Intent(this, Accounts.class));
+            startActivity(new Intent(this, SettingsActivity.class));
             changesMadeSinceLastSave = false;
             finish();
             return;
