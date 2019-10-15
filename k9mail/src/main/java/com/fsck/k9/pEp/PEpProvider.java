@@ -6,7 +6,6 @@ import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.pEp.ui.HandshakeData;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
-import foundation.pEp.jniadapter.DecryptFlags;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.Rating;
@@ -148,7 +147,7 @@ public interface PEpProvider {
      *
      * @param id identity to mark
      */
-    void keyCompromised(Identity id);
+    void keyMistrusted(Identity id);
 
     /**
      * Reset id trust status, to do handshake again.
@@ -226,9 +225,9 @@ public interface PEpProvider {
 
     void keyResetIdentity(Identity ident, String fpr);
 
-    void key_reset_user( String userId, String fpr);
+    void keyResetUser(String userId, String fpr);
 
-    void key_reset_all_own_keys();
+    void keyResetAllOwnKeys();
 
     class KeyDetail {
         private final Address address;

@@ -1148,13 +1148,13 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void key_reset_user(String userId, String fpr) {
+    public void keyResetUser(String userId, String fpr) {
         createEngineInstanceIfNeeded();
         engine.key_reset_user(userId, fpr);
     }
 
     @Override
-    public void key_reset_all_own_keys() {
+    public void keyResetAllOwnKeys() {
         createEngineInstanceIfNeeded();
         engine.key_reset_all_own_keys();
     }
