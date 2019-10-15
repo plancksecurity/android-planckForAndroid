@@ -1141,6 +1141,25 @@ public class PEpProviderImpl implements PEpProvider {
         engine.importKey(key);
     }
 
+    @Override
+    public void keyResetIdentity(Identity ident, String fpr) {
+        createEngineInstanceIfNeeded();
+        engine.key_reset_identity(ident, fpr);
+    }
+
+    @Override
+    public void key_reset_user(String userId, String fpr) {
+        createEngineInstanceIfNeeded();
+        engine.key_reset_user(userId, fpr);
+    }
+
+    @Override
+    public void key_reset_all_own_keys() {
+        createEngineInstanceIfNeeded();
+        engine.key_reset_all_own_keys();
+    }
+
+
     private String getElementAtPosition(String chain) {
         return chain.substring(1, chain.length() - 1);
     }

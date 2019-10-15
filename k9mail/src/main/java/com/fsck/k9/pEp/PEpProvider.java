@@ -224,6 +224,12 @@ public interface PEpProvider {
 
     void importKey(byte[] key);
 
+    void keyResetIdentity(Identity ident, String fpr);
+
+    void key_reset_user( String userId, String fpr);
+
+    void key_reset_all_own_keys();
+
     class KeyDetail {
         private final Address address;
         private final String fpr;
