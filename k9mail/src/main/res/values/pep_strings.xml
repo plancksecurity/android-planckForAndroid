@@ -223,4 +223,6 @@
     <string name="key_import_success">%1$s Key imported successfully from %2$s</string>
     <string name="key_import_from_fs_input_fpr">Please enter the Key ID or the fingerprint of the key.</string>
 
+    <string name="reset_trust_for_identity">Reset p≡p data</string>
+
 </resources>

@@ -126,11 +126,19 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         ((LinearLayoutManager) recipientsLayoutManager).setOrientation(LinearLayoutManager.VERTICAL);
         recipientsView.setLayoutManager(recipientsLayoutManager);
         recipientsView.setVisibility(View.VISIBLE);
-        recipientsAdapter = new PEpIdentitiesAdapter(preferences.getAccounts(), getOnResetGreenClickListener(), getOnResetRedClickListener(), getOnHandshakeClickListener());
+        recipientsAdapter = new PEpIdentitiesAdapter(preferences.getAccounts(),
+                getOnResetGreenClickListener(),
+                getOnResetRedClickListener(),
+                getOnHandshakeClickListener(),
+                getContextActions());
         recipientsAdapter.setIdentities(pEpIdentities);
         recipientsView.setAdapter(recipientsAdapter);
         recipientsView.addItemDecoration(new SimpleDividerItemDecoration(this));
 
+    }
+
+    private PEpIdentitiesAdapter.ContextActions getContextActions() {
+        return position -> presenter.resetpEpData(position);
     }
 
     @NonNull

@@ -233,4 +233,14 @@ public class PEpStatusPresenter implements Presenter {
             }
         };
     }
+
+    public void resetpEpData(int position) {
+
+        Identity id = identities.get(position);
+//            resetIncomingMessageTrust(id);
+        pEpProvider.keyResetIdentity(id, null);
+        Rating rating = pEpProvider.incomingMessageRating(localMessage);
+
+        onTrustReset(rating, id);
+    }
 }

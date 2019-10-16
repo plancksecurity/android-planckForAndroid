@@ -1144,6 +1144,7 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public void keyResetIdentity(Identity ident, String fpr) {
         createEngineInstanceIfNeeded();
+        ident = updateIdentity(ident);
         engine.key_reset_identity(ident, fpr);
     }
 
