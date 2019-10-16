@@ -384,7 +384,7 @@ public class PEpTrustwords extends PepColoredActivity {
 
     @OnClick(R.id.wrongTrustwords)
     public void wrongTrustwords() {
-        getpEp().keyCompromised(partner);
+        getpEp().keyMistrusted(partner);
         getpEp().getRating(partner);
         Intent returnIntent = new Intent();
         returnIntent.putExtra(PARTNER_POSITION, partnerPosition);

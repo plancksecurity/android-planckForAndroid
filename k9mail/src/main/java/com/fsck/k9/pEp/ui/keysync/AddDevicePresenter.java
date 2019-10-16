@@ -3,8 +3,6 @@ package com.fsck.k9.pEp.ui.keysync;
 import android.util.Log;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.controller.MessagingController;
-import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.Presenter;
 
@@ -196,7 +194,7 @@ public class AddDevicePresenter implements Presenter {
 
         @Override
         void rejectHandshake(Identity partner) {
-            pEpProvider.keyCompromised(partner);
+            pEpProvider.keyMistrusted(partner);
         }
 
         @Override
@@ -213,7 +211,7 @@ public class AddDevicePresenter implements Presenter {
 
         @Override
         void rejectHandshake(Identity partner) {
-            pEpProvider.keyCompromised(partner);
+            pEpProvider.keyMistrusted(partner);
         }
 
         @Override
