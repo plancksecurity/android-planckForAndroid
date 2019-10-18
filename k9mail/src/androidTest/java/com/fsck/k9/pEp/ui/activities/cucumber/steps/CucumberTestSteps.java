@@ -150,7 +150,9 @@ public class CucumberTestSteps {
             testUtils.pressBack();
             device.waitForIdle();
         }
-        activityTestRule.finishActivity();
+        if (activityTestRule.getActivity() != null) {
+            activityTestRule.finishActivity();
+        }
     }
 
     @When(value = "^I created an account$")
