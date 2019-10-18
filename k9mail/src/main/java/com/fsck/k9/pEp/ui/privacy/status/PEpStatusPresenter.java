@@ -2,9 +2,9 @@ package com.fsck.k9.pEp.ui.privacy.status;
 
 import android.content.Intent;
 import android.content.IntentSender;
+
 import androidx.annotation.NonNull;
 
-import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageLoaderHelper;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
@@ -38,6 +38,7 @@ public class PEpStatusPresenter implements Presenter {
     private boolean isMessageIncoming;
     private Address senderAddress;
     private Rating currentRating;
+    private Identity latestHandshakeId;
 
     @Inject
     PEpStatusPresenter(SimpleMessageLoaderHelper simpleMessageLoaderHelper, PEpIdentityMapper pEpIdentityMapper) {
@@ -68,13 +69,17 @@ public class PEpStatusPresenter implements Presenter {
 
     void resetRecipientTrust(int position) {
         Identity id = identities.get(position);
+        resetTrust(id);
+
+    }
+
+    private void resetTrust(Identity id) {
         if (isMessageIncoming) {
             resetIncomingMessageTrust(id);
         } else {
             List<Address> addresses = getRecipientAddresses();
             resetOutgoingMessageTrust(id, addresses);
         }
-
     }
 
     private void resetOutgoingMessageTrust(Identity id, List<Address> addresses) {
@@ -153,15 +158,40 @@ public class PEpStatusPresenter implements Presenter {
         }
     }
 
-    void onResult() {
+    void onResult(Intent data) {
+        latestHandshakeId = ((Identity) data.getSerializableExtra(PEpTrustwords.PARTNER_DATA));
+        PEpProvider.TrustAction trustAction = ((PEpProvider.TrustAction) data.getSerializableExtra(PEpTrustwords.PARTNER_ACTION));
+
+        updateIdentities();
+
+        refreshRating();
+
+        showUndoAction(trustAction);
+    }
+
+    private void updateIdentities() {
         ArrayList<Identity> recipients = cache.getRecipients();
         identities = pEpIdentityMapper.mapRecipients(recipients);
         view.updateIdentities(identities);
+    }
+
+    private void refreshRating() {
         if (isMessageIncoming) {
             Rating rating = pEpProvider.incomingMessageRating(localMessage);
             onRatingChanged(rating);
         } else {
             setupOutgoingMessageRating();
+        }
+    }
+
+    private void showUndoAction(PEpProvider.TrustAction trustAction) {
+        switch (trustAction) {
+            case TRUST:
+                view.showUndoTrust(latestHandshakeId.username);
+                break;
+            case MISTRUST:
+                view.showUndoMistrust(latestHandshakeId.username);
+                break;
         }
     }
 
@@ -239,8 +269,16 @@ public class PEpStatusPresenter implements Presenter {
         Identity id = identities.get(position);
 //            resetIncomingMessageTrust(id);
         pEpProvider.keyResetIdentity(id, null);
-        Rating rating = pEpProvider.incomingMessageRating(localMessage);
+        //Rating rating = pEpProvider.incomingMessageRating(localMessage);
+        refreshRating();
+        //onTrustReset(currentRating, id);
+        view.showResetpEpDataFeedback();
+    //    view.finish();
+    }
 
-        onTrustReset(rating, id);
+    public void undoTrust() {
+        if (latestHandshakeId != null) {
+            resetTrust(latestHandshakeId);
+        }
     }
 }

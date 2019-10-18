@@ -4,6 +4,6 @@
       tools:context=".pEp.ui.privacy.status.PEpStatus">
     <item
             android:id="@+id/context_identity_key_reset"
-            android:title="@string/reset_trust_for_identity"
+            android:title="@string/key_reset_for_identity_context_title"
 />
 </menu>

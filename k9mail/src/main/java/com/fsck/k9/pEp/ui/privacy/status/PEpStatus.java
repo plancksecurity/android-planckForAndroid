@@ -210,6 +210,29 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         statusBadge.setVisibility(View.GONE);
     }
 
+    @Override
+    public void showResetpEpDataFeedback() {
+        FeedbackTools.showLongFeedback(getRootView(),getString(R.string.key_reset_identity_feedback));
+    }
+
+    @Override
+    public void showUndoTrust(String username) {
+       showUndo(getString(R.string.trust_identity_feedback, username));
+    }
+
+    @Override
+    public void showUndoMistrust(String username) {
+        showUndo(getString(R.string.mistrust_identity_feedback, username));
+    }
+
+    public void showUndo(String feedback) {
+        FeedbackTools.showLongFeedback(getRootView(),
+                feedback,
+                getString(R.string.message_list_item_undo),
+                v -> presenter.undoTrust()
+        );
+    }
+
     public class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
         private Drawable mDivider;
 
@@ -242,7 +265,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PEpTrustwords.REQUEST_HANDSHAKE) {
             if (resultCode == RESULT_OK) {
-                presenter.onResult();
+                presenter.onResult(data);
             }
         }
     }

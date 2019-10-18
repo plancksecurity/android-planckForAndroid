@@ -275,6 +275,11 @@ public interface PEpProvider {
         MESSAGE
     }
 
+    enum TrustAction {
+        TRUST,
+        MISTRUST
+    }
+
     interface Callback {
         void onError(Throwable throwable);
     }

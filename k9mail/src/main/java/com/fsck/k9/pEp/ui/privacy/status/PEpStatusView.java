@@ -22,4 +22,12 @@ public interface PEpStatusView {
     void showBadge(Rating rating);
 
     void hideBadge();
+
+    void showResetpEpDataFeedback();
+
+    void finish();
+
+    void showUndoTrust(String username);
+
+    void showUndoMistrust(String username);
 }
