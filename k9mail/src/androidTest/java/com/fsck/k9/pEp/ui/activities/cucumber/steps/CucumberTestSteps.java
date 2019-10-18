@@ -148,6 +148,7 @@ public class CucumberTestSteps {
                 onView(withText(R.string.discard_action)).perform(click());
             }
             testUtils.pressBack();
+            device.waitForIdle();
         }
         activityTestRule.finishActivity();
     }
