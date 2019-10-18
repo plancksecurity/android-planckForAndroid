@@ -204,7 +204,7 @@ public class PEpStatusPresenter implements Presenter {
 
             @Override
             public void onMessageDataLoadFailed() {
-                view.showError(R.string.status_loading_error);
+                view.showDataLoadError();
             }
 
             @Override

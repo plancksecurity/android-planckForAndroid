@@ -195,7 +195,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     }
 
     @Override
-    public void showError(int status_loading_error) {
+    public void showDataLoadError() {
         FeedbackTools.showLongFeedback(getRootView() ,getResources().getString(R.string.status_loading_error));
     }
 
