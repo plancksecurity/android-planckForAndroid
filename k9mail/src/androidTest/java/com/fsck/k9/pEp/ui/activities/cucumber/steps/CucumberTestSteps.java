@@ -141,18 +141,20 @@ public class CucumberTestSteps {
             Timber.i("Error in After: " + ex.getMessage());
         }
         //timer.cancel();
-        while (!viewIsDisplayed(R.id.actionbar_title_first) ||
-                (exists(onView(withId(R.id.actionbar_title_first))) && !getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.special_mailbox_name_inbox)))) {
+        while ((exists(onView(withId(R.id.actionbar_title_first))) && !getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.special_mailbox_name_inbox)))) {
             if (exists(onView(withText(R.string.discard_action)))) {
                 device.waitForIdle();
                 onView(withText(R.string.discard_action)).perform(click());
             }
-            testUtils.pressBack();
-            device.waitForIdle();
+            if (!exists(onView(withId(R.id.accounts_item_layout)))) {
+                testUtils.pressBack();
+                device.waitForIdle();
+            } else {
+                activityTestRule.finishActivity();
+                return;
+            }
         }
-        if (activityTestRule.getActivity() != null) {
-            activityTestRule.finishActivity();
-        }
+        activityTestRule.finishActivity();
     }
 
     @When(value = "^I created an account$")
