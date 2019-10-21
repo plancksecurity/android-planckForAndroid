@@ -34,6 +34,7 @@ import java.util.concurrent.Executors;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import timber.log.Timber;
 
 public class PEpTrustwords extends PepColoredActivity {
 
@@ -102,7 +103,7 @@ public class PEpTrustwords extends PepColoredActivity {
         i.setAction(ACTION_SHOW_PEP_TRUSTWORDS);
         i.putExtra(PARTNER_POSITION, partnerPosition);
         i.putExtra(MYSELF, myself);
-        i.putExtra(CURRENT_RATING, partnerRating).toString();
+        i.putExtra(CURRENT_RATING, partnerRating.toString());
         context.startActivityForResult(i, REQUEST_HANDSHAKE);
 
     }
