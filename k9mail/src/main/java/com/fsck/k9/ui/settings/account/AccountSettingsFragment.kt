@@ -229,9 +229,6 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_SENT_FOLDER = "sent_folder"
         private const val PREFERENCE_SPAM_FOLDER = "spam_folder"
         private const val PREFERENCE_TRASH_FOLDER = "trash_folder"
-        private const val PREFERENCE_PEP_SAVE_ENCRYPTED_ON_SERVER = "pep_save_encrypted"
-        private const val PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION = "pep_disable_privacy_protection"
-        private const val PEP_ENABLE_SYNC_ACCOUNT = "pep_enable_sync_account"
         private const val DELETE_POLICY_MARK_AS_READ = "MARK_AS_READ"
 
         private val FOLDER_LIST_PREFERENCES = listOf(
