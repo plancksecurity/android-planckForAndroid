@@ -1037,6 +1037,9 @@ public class CucumberTestSteps {
             UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
             scroll.swipe(Direction.DOWN, 1.0f);
         }
+        while (!viewIsDisplayed(R.id.reply_message)) {
+            device.waitForIdle();
+        }
         onView(withId(R.id.reply_message)).check(matches(isDisplayed()));
         testUtils.clickView(testUtils.intToID("reply_message"));
         device.waitForIdle();
