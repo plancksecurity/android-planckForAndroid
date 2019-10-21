@@ -536,15 +536,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 //        mIgnoreOnPause = true;  // do *not* save state
         pEpUiCache.setRecipients(mAccount, recipients);
 
-        if (pEpRating.value == Rating.pEpRatingReliable.value) {
-            if (pEpUiCache.getRecipients().size() == 1) {
-                PEpTrustwords.actionRequestHandshake(activity, getFrom(), 0);
-            } else {
-                PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom());
-            }
-        } else {
-            PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom());
-        }
+        PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom());
     }
 
     public void setMessageReference(MessageReference reference) {

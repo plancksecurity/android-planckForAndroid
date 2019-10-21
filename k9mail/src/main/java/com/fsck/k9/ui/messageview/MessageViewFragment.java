@@ -803,13 +803,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         }
 
 
-        PEpProvider pEpProvider = ((K9) getApplicationContext()).getpEpProvider();
-
-        if (pePUIArtefactCache.getRecipients().size() == 1
-                && pEpRating.equals(Rating.pEpRatingReliable)
-                && pEpProvider.getRating(pePUIArtefactCache.getRecipients().get(0)).equals(Rating.pEpRatingReliable)){
-            PEpTrustwords.actionRequestHandshake(context, myAdress, 0, Rating.pEpRatingReliable);
-        } else if (pePUIArtefactCache.getRecipients().size() == 0 // No recipients on the recipient list: means is from an own identity
+        if (pePUIArtefactCache.getRecipients().size() == 0 // No recipients on the recipient list: means is from an own identity
                 && mMessage.getRecipients(Message.RecipientType.TO).length == 1 // the meassege is to 1 recipient
                 && mMessage.getRecipients(Message.RecipientType.TO)[0].getAddress().equals(mMessage.getFrom()[0].getAddress()) //Same address to be sure is the same account
                 && mMessage.getpEpRating().value == Rating.pEpRatingReliable.value) {
