@@ -316,7 +316,6 @@ public class TestUtils {
 
     public void createAccount() {
         createNewAccountWithPermissions();
-        removeMessagesFromList();
         getMessageListSize();
     }
 
