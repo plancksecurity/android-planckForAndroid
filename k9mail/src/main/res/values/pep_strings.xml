@@ -230,4 +230,8 @@
     <string name="trust_identity_feedback">%s now is trusted</string>
     <string name="mistrust_identity_feedback">%s now is mistrusted</string>
 
+
+    <string name="pep_key_reset_all_own_ids_summary">Reset all accounts</string>
+    <string name="key_reset_all_own_identitities_feedback">All p≡p accounts have been reset.</string>
+
 </resources>

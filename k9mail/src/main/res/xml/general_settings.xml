@@ -336,6 +336,11 @@
             app:initialExpandedChildrenCount="0">
 
             <Preference
+                android:key="pep_key_reset"
+                android:title="@string/reset"
+                android:summary="@string/pep_key_reset_all_own_ids_summary"/>
+
+            <Preference
                 android:persistent="false"
                 android:key="pep_extra_keys"
                 android:singleLine="true"

@@ -3,21 +3,29 @@ package com.fsck.k9.ui.settings.general
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
 import com.fsck.k9.Account
 import com.fsck.k9.R
 import com.fsck.k9.helper.FileBrowserHelper
+import com.fsck.k9.mail.Address
 import com.fsck.k9.notification.NotificationController
+import com.fsck.k9.pEp.PEpProviderFactory
+import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.filepicker.Utils
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys
+import com.fsck.k9.pEp.ui.tools.FeedbackTools
 import com.fsck.k9.ui.settings.account.AccountSettingsFragment
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry
 import com.fsck.k9.ui.withArguments
 import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompat
+import kotlinx.android.synthetic.main.preference_loading_widget.*
+import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
+import timber.log.Timber
 import java.io.File
 
 class GeneralSettingsFragment : PreferenceFragmentCompat() {
@@ -37,6 +45,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeLockScreenNotificationVisibility()
         initializeNotificationQuickDelete()
         initializeExtraKeysManagement()
+        initializeGlobalpEpKeyReset()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -89,13 +98,56 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeExtraKeysManagement() {
-        findPreference(GeneralSettingsFragment.PEP_EXTRA_KEYS)?.apply {
+        findPreference(PEP_EXTRA_KEYS)?.apply {
             setOnPreferenceClickListener {
                 PepExtraKeys.actionStart(context)
                 true
             }
         }
     }
+
+    private fun initializeGlobalpEpKeyReset() {
+        findPreference(PREFERENCE_PEP_OWN_IDS_KEY_RESET)?.apply {
+            widgetLayoutResource = R.layout.preference_loading_widget
+            setOnPreferenceClickListener {
+                dopEpKeyReset()
+                true
+            }
+        }
+    }
+
+    private fun dopEpKeyReset() {
+        disableKeyResetClickListener()
+        loading.visibility = View.VISIBLE
+
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
+        uiScope.launch {
+            try {
+                ownKeyReset()
+                FeedbackTools.showLongFeedback(view,
+                        getString(R.string.key_reset_all_own_identitities_feedback))
+                initializeGlobalpEpKeyReset()
+                loading.visibility = View.GONE
+            } catch (e: Exception) {
+                Timber.e(e, "Not able to finish all pEp accounts key reset.")
+            }
+
+        }
+    }
+
+    private fun disableKeyResetClickListener() {
+        findPreference(PREFERENCE_PEP_OWN_IDS_KEY_RESET).onPreferenceClickListener = null
+    }
+
+    private suspend fun ownKeyReset() = withContext(Dispatchers.Default) {
+        val pEpProvider = PEpProviderFactory.createAndSetupProvider(context)
+        pEpProvider.apply {
+            keyResetAllOwnKeys()
+            close()
+        }
+    }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, result: Intent?) {
         if (requestCode == REQUEST_PICK_DIRECTORY && resultCode == Activity.RESULT_OK && result != null) {
@@ -130,6 +182,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_NOTIFICATION_QUICK_DELETE = "notification_quick_delete"
         private const val CONFIRM_ACTION_DELETE_FROM_NOTIFICATION = "delete_notif"
         private const val PEP_EXTRA_KEYS = "pep_extra_keys"
+        private const val PREFERENCE_PEP_OWN_IDS_KEY_RESET = "pep_key_reset"
 
 
         fun create(rootKey: String? = null) = GeneralSettingsFragment().withArguments(
