@@ -160,16 +160,18 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
     private fun dopEpKeyReset(account: Account) {
         disableKeyResetClickListener()
-        loading.visibility = View.VISIBLE
+        loading?.visibility = View.VISIBLE
 
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
         uiScope.launch {
             keyReset(account)
-            FeedbackTools.showLongFeedback(view, getString(R.string.key_reset_own_identity_feedback))
+            context?.applicationContext?.let {
+                FeedbackTools.showLongFeedback(view,
+                        it.getString(R.string.key_reset_own_identity_feedback))
+            }
             initializeAccountpEpKeyReset(account)
-            loading.visibility = View.GONE
-
+            loading?.visibility = View.GONE
         }
     }
 

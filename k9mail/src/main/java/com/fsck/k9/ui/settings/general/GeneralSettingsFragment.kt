@@ -6,17 +6,13 @@ import android.os.Bundle
 import android.view.View
 import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
-import com.fsck.k9.Account
 import com.fsck.k9.R
 import com.fsck.k9.helper.FileBrowserHelper
-import com.fsck.k9.mail.Address
 import com.fsck.k9.notification.NotificationController
 import com.fsck.k9.pEp.PEpProviderFactory
-import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.filepicker.Utils
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
-import com.fsck.k9.ui.settings.account.AccountSettingsFragment
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry
@@ -25,7 +21,6 @@ import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompat
 import kotlinx.android.synthetic.main.preference_loading_widget.*
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
-import timber.log.Timber
 import java.io.File
 
 class GeneralSettingsFragment : PreferenceFragmentCompat() {
@@ -118,21 +113,18 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun dopEpKeyReset() {
         disableKeyResetClickListener()
-        loading.visibility = View.VISIBLE
+        loading?.visibility = View.VISIBLE
 
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
         uiScope.launch {
-            try {
-                ownKeyReset()
+            ownKeyReset()
+            context?.applicationContext?.let {
                 FeedbackTools.showLongFeedback(view,
-                        getString(R.string.key_reset_all_own_identitities_feedback))
-                initializeGlobalpEpKeyReset()
-                loading.visibility = View.GONE
-            } catch (e: Exception) {
-                Timber.e(e, "Not able to finish all pEp accounts key reset.")
+                        it.getString(R.string.key_reset_all_own_identitities_feedback))
             }
-
+            initializeGlobalpEpKeyReset()
+            loading?.visibility = View.GONE
         }
     }
 
