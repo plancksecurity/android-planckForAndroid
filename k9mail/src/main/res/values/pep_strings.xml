@@ -223,8 +223,10 @@
     <string name="key_import_success">%1$s Key imported successfully from %2$s</string>
     <string name="key_import_from_fs_input_fpr">Please enter the Key ID or the fingerprint of the key.</string>
 
+    <string name="reset">Reset</string>
     <string name="key_reset_for_identity_context_title">Reset p≡p data</string>
     <string name="key_reset_identity_feedback">All p≡p data for this communication partner has been reset.</string>
+    <string name="key_reset_own_identity_feedback">The account has been reset.</string>
     <string name="trust_identity_feedback">%s now is trusted</string>
     <string name="mistrust_identity_feedback">%s now is mistrusted</string>
 

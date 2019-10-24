@@ -459,7 +459,7 @@
 
                 <Preference
                     android:key="pep_key_reset_account"
-                    android:title="Key Reset" />
+                    android:title="@string/reset" />
                 <PreferenceCategory
                     android:key="accounts_pep_pgp"
                     android:title="@string/pep_gpg_compatibility">
