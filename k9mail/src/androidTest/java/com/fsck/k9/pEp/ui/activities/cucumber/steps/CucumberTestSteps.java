@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
@@ -174,7 +175,16 @@ public class CucumberTestSteps {
                 }
             }
         }
-        activityTestRule.finishActivity();
+        device.waitForIdle();
+        while (activityTestRule.getActivity() != null) {
+            activityTestRule.finishActivity();
+            device.waitForIdle();
+        }
+        try {
+            Espresso.pressBackUnconditionally();
+        } catch (Exception backException) {
+            Timber.i("Cannot pressBackUnconditionally: " + backException.getMessage());
+        }
     }
 
     @When(value = "^I created an account$")
