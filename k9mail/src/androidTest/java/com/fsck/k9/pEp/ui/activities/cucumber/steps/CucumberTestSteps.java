@@ -686,6 +686,8 @@ public class CucumberTestSteps {
         }
         onView(withId(R.id.confirmTrustWords)).check(matches(isCompletelyDisplayed()));
         onView(withId(R.id.confirmTrustWords)).perform(click());
+        device.waitForIdle();
+        testUtils.pressBack();
     }
     @When("^I click wrong trust words$")
     public void I_click_wrong_trust_words() {
