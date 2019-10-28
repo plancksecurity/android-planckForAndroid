@@ -162,6 +162,9 @@ android {
         versionCode buildConfig.versionCode
         minSdkVersion buildConfig.minSdk
         targetSdkVersion buildConfig.targetSdk
+
+        ndkVersion versions.ndk
+
         setProperty("archivesBaseName", "$buildConfig.versionName-$versionCode")
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]
 
@@ -192,13 +195,13 @@ android {
     productFlavors {
         withkeysync {
             buildConfigField "boolean", "WITH_KEY_SYNC", "true"
-            versionName "${version}" + ".withKeysync"
+            versionName "${buildConfig.versionName}" + ".withKeysync"
             dimension "playStore"
 
         }
         withoutkeysync {
             buildConfigField "boolean", "WITH_KEY_SYNC", "false"
-            versionName "${version}" + ".withoutKeysync"
+            versionName "${buildConfig.versionName}" + ".withoutKeysync"
             dimension "playStore"
 
         }

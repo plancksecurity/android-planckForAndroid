@@ -126,11 +126,19 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         ((LinearLayoutManager) recipientsLayoutManager).setOrientation(LinearLayoutManager.VERTICAL);
         recipientsView.setLayoutManager(recipientsLayoutManager);
         recipientsView.setVisibility(View.VISIBLE);
-        recipientsAdapter = new PEpIdentitiesAdapter(preferences.getAccounts(), getOnResetGreenClickListener(), getOnResetRedClickListener(), getOnHandshakeClickListener());
+        recipientsAdapter = new PEpIdentitiesAdapter(preferences.getAccounts(),
+                getOnResetGreenClickListener(),
+                getOnResetRedClickListener(),
+                getOnHandshakeClickListener(),
+                getContextActions());
         recipientsAdapter.setIdentities(pEpIdentities);
         recipientsView.setAdapter(recipientsAdapter);
         recipientsView.addItemDecoration(new SimpleDividerItemDecoration(this));
 
+    }
+
+    private PEpIdentitiesAdapter.ContextActions getContextActions() {
+        return position -> presenter.resetpEpData(position);
     }
 
     @NonNull
@@ -187,7 +195,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     }
 
     @Override
-    public void showError(int status_loading_error) {
+    public void showDataLoadError() {
         FeedbackTools.showLongFeedback(getRootView() ,getResources().getString(R.string.status_loading_error));
     }
 
@@ -200,6 +208,29 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     @Override
     public void hideBadge() {
         statusBadge.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showResetpEpDataFeedback() {
+        FeedbackTools.showLongFeedback(getRootView(),getString(R.string.key_reset_identity_feedback));
+    }
+
+    @Override
+    public void showUndoTrust(String username) {
+       showUndo(getString(R.string.trust_identity_feedback, username));
+    }
+
+    @Override
+    public void showUndoMistrust(String username) {
+        showUndo(getString(R.string.mistrust_identity_feedback, username));
+    }
+
+    public void showUndo(String feedback) {
+        FeedbackTools.showLongFeedback(getRootView(),
+                feedback,
+                getString(R.string.message_list_item_undo),
+                v -> presenter.undoTrust()
+        );
     }
 
     public class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
@@ -234,7 +265,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PEpTrustwords.REQUEST_HANDSHAKE) {
             if (resultCode == RESULT_OK) {
-                presenter.onResult();
+                presenter.onResult(data);
             }
         }
     }

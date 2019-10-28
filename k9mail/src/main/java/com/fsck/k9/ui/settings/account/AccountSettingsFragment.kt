@@ -12,8 +12,12 @@ import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.activity.setup.AccountSetupComposition
 import com.fsck.k9.activity.setup.AccountSetupIncoming
 import com.fsck.k9.activity.setup.AccountSetupOutgoing
+import com.fsck.k9.mail.Address
 import com.fsck.k9.mailstore.StorageManager
+import com.fsck.k9.pEp.PEpProviderFactory
+import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys
+import com.fsck.k9.pEp.ui.tools.FeedbackTools
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry
@@ -57,6 +61,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializeLocalStorageProvider()
         initializeCryptoSettings(account)
         initializeFolderSettings(account)
+        initializeAccountpEpKeyReset(account)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -144,6 +149,24 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    private fun initializeAccountpEpKeyReset(account: Account) {
+        findPreference(PREFERENCE_PEP_ACCOUNT_KEY_RESET)?.apply {
+            setOnPreferenceClickListener {
+                configurepEpKeyReset(account)
+                true
+            }
+        }
+    }
+
+    private fun configurepEpKeyReset(account: Account) {
+        val pEpProvider = PEpProviderFactory.createAndSetupProvider(context)
+        val address = Address(account.email, account.name)
+        var id = PEpUtils.createIdentity(address, context);
+        id = pEpProvider.updateIdentity(id)
+        pEpProvider.keyResetIdentity(id, null)
+        FeedbackTools.showLongFeedback(view, "${account.email} Key reset: Not ready yet")
+    }
+
     private fun configureCryptoPreferences(account: Account) {
         var pgpProviderName: String? = null
         var pgpProvider = account.openPgpProvider
@@ -229,9 +252,8 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_SENT_FOLDER = "sent_folder"
         private const val PREFERENCE_SPAM_FOLDER = "spam_folder"
         private const val PREFERENCE_TRASH_FOLDER = "trash_folder"
-        private const val PREFERENCE_PEP_SAVE_ENCRYPTED_ON_SERVER = "pep_save_encrypted"
-        private const val PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION = "pep_disable_privacy_protection"
-        private const val PEP_ENABLE_SYNC_ACCOUNT = "pep_enable_sync_account"
+
+        private const val PREFERENCE_PEP_ACCOUNT_KEY_RESET = "pep_key_reset_account"
         private const val DELETE_POLICY_MARK_AS_READ = "MARK_AS_READ"
 
         private val FOLDER_LIST_PREFERENCES = listOf(

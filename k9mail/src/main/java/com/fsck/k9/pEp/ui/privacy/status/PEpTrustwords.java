@@ -41,6 +41,8 @@ public class PEpTrustwords extends PepColoredActivity {
 
     private static final String ACTION_SHOW_PEP_TRUSTWORDS = "com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS";
     public static final String PARTNER_POSITION = "partnerPositionKey";
+    public static final String PARTNER_DATA= "partnerKey";
+    public static final String PARTNER_ACTION= "partnerAction";
     public static final int DEFAULT_POSITION = -1;
     public static final int REQUEST_HANDSHAKE = 1;
     private static final String MYSELF = "myselfKey";
@@ -97,6 +99,15 @@ public class PEpTrustwords extends PepColoredActivity {
         context.startActivityForResult(i, REQUEST_HANDSHAKE);
     }
 
+    public static void actionRequestHandshake(Activity context, String myself, int partnerPosition, Rating partnerRating) {
+        Intent i = new Intent(context, PEpTrustwords.class);
+        i.setAction(ACTION_SHOW_PEP_TRUSTWORDS);
+        i.putExtra(PARTNER_POSITION, partnerPosition);
+        i.putExtra(MYSELF, myself);
+        i.putExtra(CURRENT_RATING, partnerRating.toString());
+        context.startActivityForResult(i, REQUEST_HANDSHAKE);
+
+    }
     public static void actionRequestHandshake(Activity context, String myself, int partnerPosition) {
         Intent i = new Intent(context, PEpTrustwords.class);
         i.setAction(ACTION_SHOW_PEP_TRUSTWORDS);
@@ -130,6 +141,9 @@ public class PEpTrustwords extends PepColoredActivity {
         }
 
         if (getIntent() != null) {
+            if (intent.hasExtra(CURRENT_RATING)) {
+                loadPepRating();
+            }
             if (intent.hasExtra(MYSELF)) {
                 myself = PEpUtils.createIdentity(new Address(intent.getStringExtra(MYSELF)), context);
                 if (!myself.username.equals(myself.address)) {
@@ -158,8 +172,6 @@ public class PEpTrustwords extends PepColoredActivity {
 
             } else {
                 loadPepRating();
-                PEpUtils.colorToolbar(getUiCache(), getSupportActionBar(), pEpRating);
-                setStatusBarPepColor();
                 //in this case we know partner address = myself address
                 includeIdentityData = true;
                 myself = getpEp().myself(myself);
@@ -389,16 +401,20 @@ public class PEpTrustwords extends PepColoredActivity {
         Intent returnIntent = new Intent();
         returnIntent.putExtra(PARTNER_POSITION, partnerPosition);
         setResult(Activity.RESULT_OK, returnIntent);
+        returnIntent.putExtra(PARTNER_DATA, partner);
+        returnIntent.putExtra(PARTNER_ACTION, PEpProvider.TrustAction.TRUST);
         finish();
 
     }
 
     @OnClick(R.id.wrongTrustwords)
     public void wrongTrustwords() {
-        getpEp().keyCompromised(partner);
+        getpEp().keyMistrusted(partner);
         getpEp().getRating(partner);
         Intent returnIntent = new Intent();
         returnIntent.putExtra(PARTNER_POSITION, partnerPosition);
+        returnIntent.putExtra(PARTNER_DATA, partner);
+        returnIntent.putExtra(PARTNER_ACTION, PEpProvider.TrustAction.MISTRUST);
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
 
@@ -422,5 +438,12 @@ public class PEpTrustwords extends PepColoredActivity {
         outState.putBoolean(SHOWING_PGP_FINGERPRINT, showingPgpFingerprint);
         outState.putBoolean(ARE_TRUSTWORD_SHORT, areTrustwordsShort);
         outState.putString(TRUSTWORD_LANGUAGE, trustwordsLanguage);
+    }
+
+    @Override
+    protected void loadPepRating() {
+        super.loadPepRating();
+        PEpUtils.colorToolbar(getUiCache(), getSupportActionBar(), pEpRating);
+        setStatusBarPepColor();
     }
 }

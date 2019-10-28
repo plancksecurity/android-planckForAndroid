@@ -332,7 +332,7 @@ public class K9 extends MultiDexApplication {
     private static String pEpExtraAccounts = "";
     //private static boolean pEpUseKeyserver = false;
     private static boolean pEpPassiveMode = false;
-    private static boolean pEpSubjectUnprotected = true;
+    private static boolean pEpSubjectUnprotected = false;
     private static boolean pEpForwardWarningEnabled = false;
     private static boolean pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
     private static Set<String> pEpExtraKeys = Collections.emptySet();
@@ -956,7 +956,7 @@ public class K9 extends MultiDexApplication {
         pEpExtraAccounts = storage.getString("pEpExtraAccounts", null);
         //pEpUseKeyserver = storage.getBoolean("pEpUseKeyserver", false);
         pEpPassiveMode = storage.getBoolean("pEpPassiveMode", false);
-        pEpSubjectUnprotected = storage.getBoolean("pEpSubjectUnprotected", true);
+        pEpSubjectUnprotected = storage.getBoolean("pEpSubjectUnprotected", false);
         pEpForwardWarningEnabled = storage.getBoolean("pEpForwardWarningEnabled", false);
         pEpSyncEnabled = storage.getBoolean("pEpEnableSync", BuildConfig.WITH_KEY_SYNC);
 

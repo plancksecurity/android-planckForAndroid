@@ -17,9 +17,17 @@ public interface PEpStatusView {
 
     void setRating(Rating pEpRating);
 
-    void showError(int status_loading_error);
+    void showDataLoadError();
 
     void showBadge(Rating rating);
 
     void hideBadge();
+
+    void showResetpEpDataFeedback();
+
+    void finish();
+
+    void showUndoTrust(String username);
+
+    void showUndoMistrust(String username);
 }

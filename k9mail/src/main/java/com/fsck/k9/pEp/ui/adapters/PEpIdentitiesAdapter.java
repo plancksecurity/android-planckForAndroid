@@ -3,7 +3,10 @@ package com.fsck.k9.pEp.ui.adapters;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -23,20 +26,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdapter.ViewHolder> {
-    private List<PEpIdentity> identities;
+    private final ContextActions contextActions;
 
-    private View.OnClickListener onHandshakeClick;
+    private final View.OnClickListener onHandshakeClick;
+    private final View.OnClickListener onResetGreenClick;
+    private final View.OnClickListener onResetRedClick;
+
+    private List<PEpIdentity> identities;
     private List<String> addressesOnDevice;
-    private View.OnClickListener onResetGreenClick;
-    private View.OnClickListener onResetRedClick;
 
     public PEpIdentitiesAdapter(List<Account> accounts, View.OnClickListener onResetGreenClick,
                                 View.OnClickListener onResetRedClick,
-                                View.OnClickListener onHandshakeClick) {
+                                View.OnClickListener onHandshakeClick,
+                                ContextActions contextActions) {
         initializeAddressesOnDevice(accounts);
         this.onResetGreenClick = onResetGreenClick;
         this.onResetRedClick = onResetRedClick;
         this.onHandshakeClick = onHandshakeClick;
+        this.contextActions = contextActions;
     }
 
     private void initializeAddressesOnDevice(List<Account> accounts) {
@@ -84,7 +91,9 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
         this.identities = identities;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
+        private static final int KEY_RESET_CONTEXT_POSITION = 0;
+
         // each data item is just a string in this case
         public TextView identityUserName;
         public TextView identityAdress;
@@ -97,13 +106,14 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
 
         public ViewHolder(View view) {
             super(view);
+            view.setOnCreateContextMenuListener(this);
             context = view.getContext();
-            identityUserName = ((TextView) view.findViewById(R.id.tvUsername));
-            identityAdress = ((TextView) view.findViewById(R.id.tvAddress));
-            handshakeButton = ((FrameLayout) view.findViewById(R.id.buttonHandshake));
-            handshakeText = ((TextView) view.findViewById(R.id.handshake_button_text));
+            identityUserName = view.findViewById(R.id.tvUsername);
+            identityAdress = view.findViewById(R.id.tvAddress);
+            handshakeButton = view.findViewById(R.id.buttonHandshake);
+            handshakeText = view.findViewById(R.id.handshake_button_text);
             container = view.findViewById(R.id.recipientContainer);
-            badge = (ImageView) view.findViewById(R.id.status_badge);
+            badge = view.findViewById(R.id.status_badge);
         }
 
         private void renderRating(String address, Rating rating) {
@@ -133,9 +143,9 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
                 handshakeButton.setOnClickListener(onHandshakeClick);
                 handshakeText.setText(context.getString(R.string.pep_handshake));
                 badge.setVisibility(View.VISIBLE);
-                identityUserName.setTextColor(context.getResources().getColor(R.color.openpgp_black));
-                identityAdress.setTextColor(context.getResources().getColor(R.color.openpgp_black));
-                handshakeText.setTextColor(context.getResources().getColor(R.color.openpgp_black));
+                identityUserName.setTextColor(context.getResources().getColor(android.R.color.black));
+                identityAdress.setTextColor(context.getResources().getColor(android.R.color.black));
+                handshakeText.setTextColor(context.getResources().getColor(android.R.color.black));
             }
             Drawable drawableForRating = PEpUtils.getDrawableForRatingRecipient(context, rating);
             badge.setImageDrawable(drawableForRating);
@@ -182,5 +192,19 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
                 identityAdress.setText(identity.address);
             }
         }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            Integer position = ((Integer) v.getTag());
+            new MenuInflater(v.getContext()).inflate(R.menu.menu_pep_status_identity_context, menu);
+            menu.getItem(KEY_RESET_CONTEXT_POSITION).setOnMenuItemClickListener(item -> {
+                contextActions.keyReset(position);
+                return true;
+            });
+        }
+    }
+
+    public interface ContextActions {
+        void keyReset(int position);
     }
 }

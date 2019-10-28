@@ -32,7 +32,7 @@ class AboutActivity : PepActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_about)
+        bindViews(R.layout.activity_about)
         setUpToolbar(true)
         PEpUtils.colorToolbar(toolbar, resources.getColor(R.color.pep_green))
         val about = getString(R.string.about_action) + " " + getString(R.string.app_name)

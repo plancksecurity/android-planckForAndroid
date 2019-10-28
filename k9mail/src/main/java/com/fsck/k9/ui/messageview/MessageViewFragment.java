@@ -297,8 +297,12 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         }
 
         if (resultCode == RESULT_OK && requestCode == PEpStatus.REQUEST_STATUS || requestCode == PEpTrustwords.REQUEST_HANDSHAKE) {
-            if (requestCode == PEpStatus.REQUEST_STATUS)  pEpRating = (Rating) data.getSerializableExtra(PEpStatus.CURRENT_RATING);
-            else pEpRating = ((K9) getApplicationContext()).getpEpProvider().incomingMessageRating(mMessage);
+            if (requestCode == PEpStatus.REQUEST_STATUS)  {
+                pEpRating = (Rating) data.getSerializableExtra(PEpStatus.CURRENT_RATING);
+            }
+            else {
+                pEpRating = ((K9) getApplicationContext()).getpEpProvider().incomingMessageRating(mMessage);
+            }
 
             K9Activity activity = (K9Activity) getActivity();
             if (mAccount.ispEpPrivacyProtected()) {
@@ -791,16 +795,15 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
         String myAdress = mAccount.getEmail();
         pePUIArtefactCache.setRecipients(mAccount, addresses);
+
         for (String s : mMessage.getHeaderNames()) {
             for (String s1 : mMessage.getHeader(s)) {
-                Timber.i("MessageHeader", "onClick " + s + " " + s1);
+                Timber.i("MessageHeader: on pEp status %s:%s1", s, s1);
             }
         }
 
-        if (pePUIArtefactCache.getRecipients().size() == 1
-                && pEpRating.value == Rating.pEpRatingReliable.value) {
-            PEpTrustwords.actionRequestHandshake(context, myAdress, 0);
-        } else if (pePUIArtefactCache.getRecipients().size() == 0 // No recipients on the recipient list: means is from an own identity
+
+        if (pePUIArtefactCache.getRecipients().size() == 0 // No recipients on the recipient list: means is from an own identity
                 && mMessage.getRecipients(Message.RecipientType.TO).length == 1 // the meassege is to 1 recipient
                 && mMessage.getRecipients(Message.RecipientType.TO)[0].getAddress().equals(mMessage.getFrom()[0].getAddress()) //Same address to be sure is the same account
                 && mMessage.getpEpRating().value == Rating.pEpRatingReliable.value) {

@@ -762,7 +762,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             @Override
             public void onClick(View v) {
                 drawerLayout.closeDrawers();
-                onAccounts();
+                onEditSettings();
             }
         });
     }

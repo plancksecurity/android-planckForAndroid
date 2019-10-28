@@ -672,7 +672,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized void keyCompromised(Identity id) {
+    public synchronized void keyMistrusted(Identity id) {
         createEngineInstanceIfNeeded();
         engine.keyMistrusted(id);
     }
@@ -1142,6 +1142,26 @@ public class PEpProviderImpl implements PEpProvider {
         createEngineInstanceIfNeeded();
         engine.importKey(key);
     }
+
+    @Override
+    public void keyResetIdentity(Identity ident, String fpr) {
+        createEngineInstanceIfNeeded();
+        ident = updateIdentity(ident);
+        engine.key_reset_identity(ident, fpr);
+    }
+
+    @Override
+    public void keyResetUser(String userId, String fpr) {
+        createEngineInstanceIfNeeded();
+        engine.key_reset_user(userId, fpr);
+    }
+
+    @Override
+    public void keyResetAllOwnKeys() {
+        createEngineInstanceIfNeeded();
+        engine.key_reset_all_own_keys();
+    }
+
 
     private String getElementAtPosition(String chain) {
         return chain.substring(1, chain.length() - 1);
