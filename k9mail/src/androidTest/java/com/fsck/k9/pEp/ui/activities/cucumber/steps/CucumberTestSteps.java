@@ -165,6 +165,7 @@ public class CucumberTestSteps {
                 if (exists(onView(withText(R.string.discard_action)))) {
                     device.waitForIdle();
                     onView(withText(R.string.discard_action)).perform(click());
+                    device.waitForIdle();
                 }
                 if (!exists(onView(withId(R.id.accounts_item_layout)))) {
                     testUtils.pressBack();
