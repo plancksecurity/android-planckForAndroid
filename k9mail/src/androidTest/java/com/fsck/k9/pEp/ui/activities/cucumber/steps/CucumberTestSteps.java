@@ -443,6 +443,8 @@ public class CucumberTestSteps {
         }
         device.waitForIdle();
         testUtils.doWaitForResource(R.id.toolbar);
+        onView(withId(R.id.buttonHandshake)).perform(click());
+        device.waitForIdle();
         confirmAllTrustWords(TestUtils.jsonArray);
     }
 
