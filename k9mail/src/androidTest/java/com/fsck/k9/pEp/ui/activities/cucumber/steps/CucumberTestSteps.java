@@ -176,10 +176,8 @@ public class CucumberTestSteps {
             }
         }
         device.waitForIdle();
-        while (activityTestRule.getActivity() != null) {
-            activityTestRule.finishActivity();
-            device.waitForIdle();
-        }
+        activityTestRule.finishActivity();
+        device.waitForIdle();
         try {
             Espresso.pressBackUnconditionally();
         } catch (Exception backException) {
