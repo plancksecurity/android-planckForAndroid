@@ -171,12 +171,13 @@ public class CucumberTestSteps {
                     onView(withText(R.string.discard_action)).perform(click());
                     device.waitForIdle();
                 }
-                if (!exists(onView(withId(R.id.accounts_item_layout)))) {
+                if (exists(onView(withId(R.id.send)))) {
                     testUtils.pressBack();
                     device.waitForIdle();
-                } else {
-                    activityTestRule.finishActivity();
-                    return;
+                }
+                if (exists(onView(withId(R.id.filter_folders)))) {
+                    testUtils.pressBack();
+                    device.waitForIdle();
                 }
             }
         }
