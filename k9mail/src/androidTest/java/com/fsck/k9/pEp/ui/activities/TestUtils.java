@@ -516,6 +516,13 @@ public class TestUtils {
         }
     }
 
+    public void clickHandShakeButton () {
+        if (exists(onView(withId(R.id.buttonHandshake)))) {
+            onView(withId(R.id.buttonHandshake)).perform(click());
+            device.waitForIdle();
+        }
+    }
+
     private void createNAccounts (int n) {
         try {
             for (; account < n; account++) {
