@@ -733,6 +733,9 @@ public class CucumberTestSteps {
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         scroll.swipe(Direction.UP, 1.0f);
         onView(withId(R.id.wrongTrustwords)).perform(click());
+        device.waitForIdle();
+        testUtils.pressBack();
+        device.waitForIdle();
     }
 
     @When("^I stop trusting$")
