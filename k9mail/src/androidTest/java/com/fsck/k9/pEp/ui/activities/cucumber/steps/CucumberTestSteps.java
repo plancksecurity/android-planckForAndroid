@@ -142,6 +142,10 @@ public class CucumberTestSteps {
             Timber.i("Error in After: " + ex.getMessage());
         }
         //timer.cancel();
+        if (exists(onView(withId(R.id.action_explanation)))) {
+            testUtils.pressBack();
+            device.waitForIdle();
+        }
         if (!exists(onView(withId(R.id.available_accounts_title)))) {
             while (exists(onView(withId(R.id.reply))) || exists(onView(withId(R.id.reply_message))) || exists(onView(withId(R.id.attachment_container)))) {
                 device.waitForIdle();
