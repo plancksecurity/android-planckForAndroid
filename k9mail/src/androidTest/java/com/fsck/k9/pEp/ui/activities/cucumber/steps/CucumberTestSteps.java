@@ -444,8 +444,7 @@ public class CucumberTestSteps {
         }
         device.waitForIdle();
         testUtils.doWaitForResource(R.id.toolbar);
-        onView(withId(R.id.buttonHandshake)).perform(click());
-        device.waitForIdle();
+        testUtils.clickHandShakeButton();
         confirmAllTrustWords(TestUtils.jsonArray);
     }
 
@@ -677,6 +676,7 @@ public class CucumberTestSteps {
                 Timber.i("Hecho click en tvPep");
             }
         }
+        testUtils.clickHandShakeButton();
         while (!viewIsDisplayed(R.id.confirmTrustWords)) {
             device.waitForIdle();
             UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
@@ -715,6 +715,7 @@ public class CucumberTestSteps {
                 testUtils.clickView(R.id.tvPep);
             }
         }
+        testUtils.clickHandShakeButton();
         testUtils.doWaitForResource(R.id.wrongTrustwords);
         while (!exists(onView(withId(R.id.wrongTrustwords)))) {
             device.waitForIdle();
@@ -734,6 +735,7 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(10);
         testUtils.clickMessageStatus();
         device.waitForIdle();
+        testUtils.clickHandShakeButton();
         while (!viewIsDisplayed(R.id.trustwords)) {
             device.waitForIdle();
         }
