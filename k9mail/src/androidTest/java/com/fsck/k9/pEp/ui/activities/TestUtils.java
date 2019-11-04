@@ -962,6 +962,7 @@ public class TestUtils {
 
     public void pressBack() {
         device.waitForIdle();
+        waitUntilIdle();
         onView(isRoot()).perform(ViewActions.pressBack());
         device.waitForIdle();
     }
