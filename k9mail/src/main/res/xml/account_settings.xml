@@ -418,8 +418,8 @@
     </PreferenceScreen>
 
     <PreferenceScreen
-        android:icon="@drawable/ic_peplogo"
-        android:title="@string/pep_long"
+        android:icon="?attr/iconpEpShield"
+        android:title="@string/privacy_preferences"
         android:key="pep">
         <PreferenceCategory
             app:title="p≡p General settings"

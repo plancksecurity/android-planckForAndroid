@@ -307,8 +307,8 @@
 
     <PreferenceScreen
         android:key="pep_global"
-        android:icon="@drawable/ic_peplogo"
-        android:title="@string/pep_long">
+        android:icon="?attr/iconpEpShield"
+        android:title="@string/privacy_preferences">
 
         <!--<EditTextPreference-->
         <!--android:persistent="false"-->

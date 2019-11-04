@@ -86,6 +86,9 @@
 
         <item name="background">@android:color/background_light</item>
         <item name="recipientTokenBackground">@color/recipient_token_background_light</item>
+
+        <item name="iconpEpShield">@drawable/pep_status_green_light</item>
+        <item name="iconAdavancedSettings">@drawable/ic_advanced_light</item>
     </style>
 
     <style name="Theme.K9.Light.NoActionBar" parent="Theme.K9.Light">
@@ -171,6 +174,9 @@
 
         <item name="background">@android:color/background_dark</item>
         <item name="recipientTokenBackground">@color/recipient_token_background_dark</item>
+
+        <item name="iconpEpShield">@drawable/pep_status_green_dark</item>
+        <item name="iconAdavancedSettings">@drawable/ic_advanced_dark</item>
     </style>
 
     <style name="Theme.K9.Dialog.Light" parent="Theme.K9.Light">
@@ -288,6 +294,9 @@
         <item name="openpgp_grey">#bbb</item>
         <item name="openpgp_dark_grey">#888</item>
         <item name="recipientTokenBackground">@color/recipient_token_background_light</item>
+
+        <item name="iconpEpShield">@drawable/pep_status_green_light</item>
+        <item name="iconAdavancedSettings">@drawable/ic_advanced_light</item>
     </style>
     <style name="Theme.K9.Dark.Common" parent="Theme.K9.Dark.Base">
         <item name="iconFolder">@drawable/ic_folder_dark</item>
@@ -364,5 +373,9 @@
         <item name="openpgp_grey">#888</item>
         <item name="openpgp_dark_grey">#bbb</item>
         <item name="recipientTokenBackground">@color/recipient_token_background_dark</item>
+
+        <item name="iconpEpShield">@drawable/pep_status_green_dark</item>
+        <item name="iconAdavancedSettings">@drawable/ic_advanced_dark</item>
+
     </style>
 </resources>
