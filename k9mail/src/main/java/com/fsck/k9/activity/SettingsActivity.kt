@@ -915,11 +915,17 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             if (account is SearchAccount) {
                 holder.folders!!.visibility = View.GONE
             } else {
-                holder.folders!!.visibility = View.VISIBLE
-                holder.folders!!.setOnClickListener { FolderList.actionHandleAccount(this@SettingsActivity, account as Account) }
+                holder.folders?.let {
+                    it.visibility = View.VISIBLE
+                    it.drawable.alpha = 255
+                    it.setOnClickListener { FolderList.actionHandleAccount(this@SettingsActivity, account as Account) }
+                }
+
                 holder.settings?.let {
+                    it.drawable.alpha = 255
                     it.setOnClickListener { onEditAccount(account as Account) }
                 }
+                holder.deviceGroup?.visibility = View.GONE
                 holder.deviceGroup?.let {
                     it.setOnClickListener {
                         Toast.makeText(this@SettingsActivity,
