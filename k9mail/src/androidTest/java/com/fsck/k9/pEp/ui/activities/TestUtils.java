@@ -187,6 +187,24 @@ public class TestUtils {
         }
     }
 
+    private void clickNextButton () {
+        device.waitForIdle();
+        onView(withId(R.id.next)).perform(click());
+        device.waitForIdle();
+        try {
+            UiObject2 uiObject = device.findObject(By.res("security.pEp:id/alertTitle"));
+            while (uiObject.getText() != null) {
+                pressBack();
+                device.waitForIdle();
+                onView(withId(R.id.next)).perform(click());
+                device.waitForIdle();
+                uiObject = device.findObject(By.res("security.pEp:id/alertTitle"));
+            }
+        } catch (Exception ex) {
+            Timber.i("Doesn't exist popup alert message");
+        }
+    }
+
     private void fillAccountAddress() {
         while (getTextFromView(onView(withId(R.id.account_email))).equals("")) {
             try {
