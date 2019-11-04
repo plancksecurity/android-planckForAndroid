@@ -1,6 +1,7 @@
 package com.fsck.k9.ui.settings.general
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -105,7 +106,16 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         findPreference(PREFERENCE_PEP_OWN_IDS_KEY_RESET)?.apply {
             widgetLayoutResource = R.layout.preference_loading_widget
             setOnPreferenceClickListener {
-                dopEpKeyReset()
+                AlertDialog.Builder(view?.context)
+                        .setMessage(R.string.pep_key_reset_all_own_ids_warning)
+                        .setTitle(R.string.pep_key_reset_all_own_ids_summary)
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.reset_all) { _, _ ->
+                            dopEpKeyReset()
+                        }.setNegativeButton(R.string.cancel_action, null)
+                        .show()
+
+
                 true
             }
         }

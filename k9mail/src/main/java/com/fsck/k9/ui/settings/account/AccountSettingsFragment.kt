@@ -1,5 +1,6 @@
 package com.fsck.k9.ui.settings.account
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -152,7 +153,13 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         findPreference(PREFERENCE_PEP_ACCOUNT_KEY_RESET)?.apply {
             widgetLayoutResource = R.layout.preference_loading_widget
             setOnPreferenceClickListener {
-                dopEpKeyReset(account)
+                AlertDialog.Builder(view?.context)
+                        .setTitle(getString(R.string.pep_key_reset_own_id_warning_title, account.email))
+                        .setMessage(R.string.pep_key_reset_own_id_warning)
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.reset) { _, _ ->
+                            dopEpKeyReset(account)
+                        }.setNegativeButton(R.string.cancel_action, null).show()
                 true
             }
         }
