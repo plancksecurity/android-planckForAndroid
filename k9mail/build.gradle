@@ -189,7 +189,7 @@ android {
         }
 
         debug {
-            // applicationIdSuffix ".debug"
+            applicationIdSuffix ".debug"
             testCoverageEnabled rootProject.testCoverage
 
             buildConfigField "boolean", "DEVELOPER_MODE", "true"
