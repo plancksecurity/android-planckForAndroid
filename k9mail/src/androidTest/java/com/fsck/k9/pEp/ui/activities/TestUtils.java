@@ -163,28 +163,28 @@ public class TestUtils {
 
     private void trustedServer() {
         if (testConfig.getTrusted_server(account)) {
-        device.waitForIdle();
-        clickView(R.id.manual_setup);
-        device.waitForIdle();
-        while (true) {
-            try {
-                while (exists(onView(withId(R.id.account_trust_server)))) {
-                    setCheckBox("Trust server", true);
+            device.waitForIdle();
+            clickView(R.id.manual_setup);
+            device.waitForIdle();
+            while (true) {
+                try {
+                    while (exists(onView(withId(R.id.account_trust_server)))) {
+                        setCheckBox("Trust server", true);
+                        device.waitForIdle();
+                        onView(withId(R.id.next)).perform(click());
+                        device.waitForIdle();
+                        return;
+                    }
                     device.waitForIdle();
                     onView(withId(R.id.next)).perform(click());
                     device.waitForIdle();
-                    return;
+                } catch (Exception eNext) {
+                    Timber.i("Trust server not enabled yet");
                 }
-                device.waitForIdle();
-                onView(withId(R.id.next)).perform(click());
-                device.waitForIdle();
-            } catch (Exception eNext){
-                Timber.i("Trust server not enabled yet");
             }
+        } else {
+            clickNextButton();
         }
-    } else {
-        onView(withId(R.id.next)).perform(click());
-    }
     }
 
     private void fillAccountAddress() {
