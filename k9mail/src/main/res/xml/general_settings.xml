@@ -438,7 +438,8 @@
 
     <PreferenceScreen
         android:key="advanced_preferences"
-        android:title="@string/advanced">
+        android:title="@string/advanced"
+        android:icon="@drawable/ic_advanced_light">
         <PreferenceCategory
             android:title="@string/miscellaneous_preferences"
             android:key="misc_preferences">
