@@ -320,7 +320,7 @@ public class CucumberTestSteps {
                 device.waitForIdle();
                 String text1 = "";
                 BySelector selector = By.clazz("android.widget.EditText");
-                UiObject2 uiObject = device.findObject(By.res("security.pEp:id/message_content"));
+                UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/message_content"));
                 for (UiObject2 object : device.findObjects(selector)) {
                     if (object.getResourceName().equals(uiObject.getResourceName())) {
                         while (!object.getText().contains(testUtils.longText())) {
@@ -1370,7 +1370,7 @@ public class CucumberTestSteps {
                 BySelector layout = By.clazz("android.widget.LinearLayout");
                 onView(withId(R.id.attachments)).check(matches(isCompletelyDisplayed()));
                 for (UiObject2 object : device.findObjects(layout)) {
-                    if (object.getResourceName() != null && object.getResourceName().equals("security.pEp:id/attachments")) {
+                    if (object.getResourceName() != null && object.getResourceName().equals("security.pEp.debug:id/attachments")) {
                         int size = object.getChildren().size();
                         for (int attachment = 0; attachment < size; attachment++) {
                             if (!object.getChildren().get(attachment).getChildren().get(0).getChildren().get(0).getChildren().get(1).toString().contains("results.json")) {
@@ -1399,7 +1399,7 @@ public class CucumberTestSteps {
                 device.waitForIdle();
                 BySelector layout = By.clazz("android.widget.LinearLayout");
                 for (UiObject2 object : device.findObjects(layout)) {
-                    if (object.getResourceName() != null && object.getResourceName().equals("security.pEp:id/attachments") && object.getChildren().get(0).getChildren().get(0).getChildren().get(0).getChildren().get(1).getText().contains("masterkey")) {
+                    if (object.getResourceName() != null && object.getResourceName().equals("security.pEp.debug:id/attachments") && object.getChildren().get(0).getChildren().get(0).getChildren().get(0).getChildren().get(1).getText().contains("masterkey")) {
                         object.getChildren().get(0).getChildren().get(0).getChildren().get(0).getChildren().get(3).click();
                         return;
                     }
@@ -1505,7 +1505,7 @@ public class CucumberTestSteps {
     private void CopyAssets() {
             try {
                 String extStorageDirectory = Environment.getExternalStorageDirectory().getAbsolutePath().toString();
-                File file = new File("/data/data/security.pEp/cucumber-reports/", "cucumber.json");
+                File file = new File("/data/data/security.pEp.debug/cucumber-reports/", "cucumber.json");
                 File file2 = new File(extStorageDirectory + "/cucumber.json");
                 FileInputStream in = new FileInputStream(file);
                 file2.createNewFile();

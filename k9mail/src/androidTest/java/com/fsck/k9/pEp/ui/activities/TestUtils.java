@@ -192,13 +192,13 @@ public class TestUtils {
         onView(withId(R.id.next)).perform(click());
         device.waitForIdle();
         try {
-            UiObject2 uiObject = device.findObject(By.res("security.pEp:id/alertTitle"));
+            UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/alertTitle"));
             while (uiObject.getText() != null) {
                 pressBack();
                 device.waitForIdle();
                 onView(withId(R.id.next)).perform(click());
                 device.waitForIdle();
-                uiObject = device.findObject(By.res("security.pEp:id/alertTitle"));
+                uiObject = device.findObject(By.res("security.pEp.debug:id/alertTitle"));
             }
         } catch (Exception ex) {
             Timber.i("Doesn't exist popup alert message");
@@ -1058,7 +1058,7 @@ public class TestUtils {
             while (size == 0) {
                 size = device.findObjects(selector).size();
             }
-            UiObject2 uiObject = device.findObject(By.res("security.pEp:id/attachment"));
+            UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/attachment"));
             position = -1;
             for (UiObject2 frameLayout : device.findObjects(selector)) {
                 device.waitForIdle();
@@ -1923,7 +1923,7 @@ public class TestUtils {
         device.waitForIdle();
         waitUntilIdle();
         BySelector selector = By.clazz("android.widget.EditText");
-        UiObject2 uiObject = device.findObject(By.res("security.pEp:id/message_content"));
+        UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/message_content"));
         for (UiObject2 object : device.findObjects(selector)) {
             if (object.getResourceName().equals(uiObject.getResourceName())) {
                 device.waitForIdle();

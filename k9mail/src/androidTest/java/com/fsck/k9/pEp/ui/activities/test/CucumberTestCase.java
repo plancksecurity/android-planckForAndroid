@@ -22,7 +22,7 @@ import cucumber.api.CucumberOptions;
                  // the following path here and in the build.gradle: /data/data/com.neoranga55.cleanguitestarchitecture/cucumber-reports/
          }*/
         //,plugin = {"json:target/cucumber.json"}
-        ,plugin = {"pretty", "json:/data/data/security.pEp/cucumber-reports/cucumber.json"}  //IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!!: Comment this line to create save_report.apk file
+        ,plugin = {"pretty", "json:/data/data/security.pEp.debug/cucumber-reports/cucumber.json"}  //IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!!: Comment this line to create save_report.apk file
         //,plugin = {"pretty", "json:/mnt/sdcard/files/cucumber.json"}
         ,monochrome = true
          ,tags={"~@ignore"}
