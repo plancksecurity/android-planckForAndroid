@@ -40,7 +40,6 @@ buildscript {
                 'appIntro': '4.1.0',
                 'swipeLayout': '1.2.0',
                 'dexter': '5.0.0',
-                'swipeToDismiss': '1.0',
                 'workRuntime':'2.0.1',
                 'androidJob': '1.3.0-rc1',
                 'jcipAnnotations': '1.0',
