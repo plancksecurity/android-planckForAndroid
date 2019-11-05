@@ -418,8 +418,8 @@
     </PreferenceScreen>
 
     <PreferenceScreen
-        android:icon="@drawable/ic_peplogo"
-        android:title="@string/pep_long"
+        android:icon="?attr/iconpEpShield"
+        android:title="@string/privacy_preferences"
         android:key="pep">
         <PreferenceCategory
             app:title="p≡p General settings"
@@ -459,7 +459,7 @@
 
                 <Preference
                     android:key="pep_key_reset_account"
-                    android:title="Key Reset" />
+                    android:title="@string/reset" />
                 <PreferenceCategory
                     android:key="accounts_pep_pgp"
                     android:title="@string/pep_gpg_compatibility">

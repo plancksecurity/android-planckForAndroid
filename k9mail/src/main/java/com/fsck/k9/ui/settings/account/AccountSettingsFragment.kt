@@ -1,29 +1,29 @@
 package com.fsck.k9.ui.settings.account
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import androidx.preference.ListPreference
-import androidx.preference.TwoStatePreference
+import android.view.View
 import android.widget.Toast
+import androidx.preference.ListPreference
 import com.fsck.k9.Account
 import com.fsck.k9.R
 import com.fsck.k9.activity.ManageIdentities
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.activity.setup.AccountSetupComposition
-import com.fsck.k9.activity.setup.AccountSetupIncoming
-import com.fsck.k9.activity.setup.AccountSetupOutgoing
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.pEp.PEpProviderFactory
 import com.fsck.k9.pEp.PEpUtils
-import com.fsck.k9.pEp.ui.keys.PepExtraKeys
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
+import com.fsck.k9.ui.observe
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry
 import com.fsck.k9.ui.withArguments
 import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompat
-import com.fsck.k9.ui.observe
+import kotlinx.android.synthetic.main.preference_loading_widget.*
+import kotlinx.coroutines.*
 import org.koin.android.architecture.ext.sharedViewModel
 import org.koin.android.ext.android.inject
 import org.openintents.openpgp.OpenPgpApiManager
@@ -151,20 +151,48 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializeAccountpEpKeyReset(account: Account) {
         findPreference(PREFERENCE_PEP_ACCOUNT_KEY_RESET)?.apply {
+            widgetLayoutResource = R.layout.preference_loading_widget
             setOnPreferenceClickListener {
-                configurepEpKeyReset(account)
+                AlertDialog.Builder(view?.context)
+                        .setTitle(getString(R.string.pep_key_reset_own_id_warning_title, account.email))
+                        .setMessage(R.string.pep_key_reset_own_id_warning)
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.reset) { _, _ ->
+                            dopEpKeyReset(account)
+                        }.setNegativeButton(R.string.cancel_action, null).show()
                 true
             }
         }
     }
 
-    private fun configurepEpKeyReset(account: Account) {
+    private fun dopEpKeyReset(account: Account) {
+        disableKeyResetClickListener()
+        loading?.visibility = View.VISIBLE
+
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
+        uiScope.launch {
+            keyReset(account)
+            context?.applicationContext?.let {
+                FeedbackTools.showLongFeedback(view,
+                        it.getString(R.string.key_reset_own_identity_feedback))
+            }
+            initializeAccountpEpKeyReset(account)
+            loading?.visibility = View.GONE
+        }
+    }
+
+    private fun disableKeyResetClickListener() {
+        findPreference(PREFERENCE_PEP_ACCOUNT_KEY_RESET).onPreferenceClickListener = null
+    }
+
+    private suspend fun keyReset(account: Account) = withContext(Dispatchers.Default) {
         val pEpProvider = PEpProviderFactory.createAndSetupProvider(context)
         val address = Address(account.email, account.name)
         var id = PEpUtils.createIdentity(address, context);
         id = pEpProvider.updateIdentity(id)
         pEpProvider.keyResetIdentity(id, null)
-        FeedbackTools.showLongFeedback(view, "${account.email} Key reset: Not ready yet")
+        pEpProvider.close()
     }
 
     private fun configureCryptoPreferences(account: Account) {

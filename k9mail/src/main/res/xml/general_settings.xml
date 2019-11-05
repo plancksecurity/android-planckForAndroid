@@ -307,8 +307,8 @@
 
     <PreferenceScreen
         android:key="pep_global"
-        android:icon="@drawable/ic_peplogo"
-        android:title="@string/pep_long">
+        android:icon="?attr/iconpEpShield"
+        android:title="@string/privacy_preferences">
 
         <!--<EditTextPreference-->
         <!--android:persistent="false"-->
@@ -334,6 +334,11 @@
             android:key="advanced_pep_global"
             app:allowDividerAbove="false"
             app:initialExpandedChildrenCount="0">
+
+            <Preference
+                android:key="pep_key_reset"
+                android:title="@string/reset"
+                android:summary="@string/pep_key_reset_all_own_ids_summary"/>
 
             <Preference
                 android:persistent="false"
@@ -433,7 +438,8 @@
 
     <PreferenceScreen
         android:key="advanced_preferences"
-        android:title="@string/advanced">
+        android:title="@string/advanced"
+        android:icon="@drawable/ic_advanced_light">
         <PreferenceCategory
             android:title="@string/miscellaneous_preferences"
             android:key="misc_preferences">

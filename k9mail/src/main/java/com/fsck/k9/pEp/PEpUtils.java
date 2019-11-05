@@ -502,7 +502,7 @@ public class PEpUtils {
         } else if (rating.value == Rating.pEpRatingMistrust.value) {
             return context.getResources().getDrawable(R.drawable.pep_status_red_white);
         } else if (rating.value >= Rating.pEpRatingTrusted.value) {
-            return context.getResources().getDrawable(R.drawable.pep_status_green_white);
+            return context.getResources().getDrawable(R.drawable.pep_status_green_dark);
         } else if (rating.value == Rating.pEpRatingReliable.value) {
             return context.getResources().getDrawable(R.drawable.pep_status_yellow_white);
         }
