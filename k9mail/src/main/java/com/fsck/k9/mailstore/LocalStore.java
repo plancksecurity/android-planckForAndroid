@@ -101,7 +101,7 @@ public class LocalStore extends Store implements Serializable {
         "subject, sender_list, date, uid, flags, messages.id, to_list, cc_list, " +
         "bcc_list, reply_to_list, attachment_count, internal_date, messages.message_id, " +
         "folder_id, preview, threads.id, threads.root, deleted, read, flagged, answered, " +
-        "forwarded, message_part_id, messages.mime_type, preview_type, header, pep_rating ";
+        "forwarded, message_part_id, messages.mime_type, preview_type, header, pep_rating, auto_consume ";
 
     static final String GET_FOLDER_COLS =
         "folders.id, name, visible_limit, last_updated, status, push_state, last_pushed, " +
@@ -153,7 +153,7 @@ public class LocalStore extends Store implements Serializable {
      */
     private static final int THREAD_FLAG_UPDATE_BATCH_SIZE = 500;
 
-    public static final int DB_VERSION = 62;
+    public static final int DB_VERSION = 63;
 
 
     public static String getColumnNameForFlag(Flag flag) {
