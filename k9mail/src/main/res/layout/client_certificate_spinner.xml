@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android" >
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <Button
         android:id="@+id/client_certificate_spinner_button"
@@ -17,6 +18,6 @@
         android:background="?android:attr/selectableItemBackground"
         android:contentDescription="@string/client_certificate_spinner_delete"
         android:padding="8dp"
-        android:src="?attr/iconActionCancel" />
+        app:srcCompat="?attr/iconActionCancel" />
 
 </merge>
