@@ -1195,6 +1195,20 @@ public class CucumberTestSteps {
         }
     }
 
+    @Given("^I test (\\d+) threads with address (\\S+)$")
+    public void I_summon_threads(int total, String address){
+        try {
+            for (int i = 0; i < total; i++) {
+                I_fill_messageTo_field(address);
+                testUtils.summonThreads();
+                I_fill_messageTo_field("empty");
+                testUtils.summonThreads();
+            }
+        } catch (Exception ex) {
+            Timber.e("Error summoning");
+        }
+    }
+
     @Then("^I discard the message$")
     public void I_discard_the_message(){
         timeRequiredForThisMethod(10);

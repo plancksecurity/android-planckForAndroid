@@ -1239,6 +1239,11 @@ public class TestUtils {
         }
     }
 
+    public void summonThreads () {
+        clickStatus();
+        pressBack();
+    }
+
     public int stringToID(String text){
         return resources.getIdentifier(text, "string", BuildConfig.APPLICATION_ID);
     }
