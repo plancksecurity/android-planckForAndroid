@@ -1005,6 +1005,10 @@ public class CucumberTestSteps {
                         device.waitForIdle();
                         onData(anything()).inAdapterView(withId(R.id.accounts_list)).atPosition(accountToStart).perform(click());
                         device.waitForIdle();
+                        if (!exists(onView(withId(R.id.actionbar_title_first)))) {
+                            testUtils.pressBack();
+                            device.waitForIdle();
+                        }
                     }
                     if (!exists(onView(withId(R.id.accounts_list)))) {
                         testUtils.swipeDownMessageList();
