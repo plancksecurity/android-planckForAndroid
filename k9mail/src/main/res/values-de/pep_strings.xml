@@ -51,7 +51,7 @@
     <string name="advanced_options">Erweiterte Optionen</string>
     <string name="basic_options">Einfache Optionen</string>
     <string name="pep_enable_auto_download">Decrypt messages</string>
-    <string name="pep_enable_sync_account">Dieses Konto synchronisieren</string>
+    <string name="pep_sync_enable_account">Dieses Konto synchronisieren</string>
     <string name="synchronize_these_accounts_between_my_devices">Diese Konten zwischen meinen Geräten synchronisieren</string>
 
     <string-array name="pep_title">
