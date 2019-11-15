@@ -1552,7 +1552,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                     }
                 }
             }
-        } else if (!localMessage.isSet(Flag.DELETED)) {
+        } else if (!localMessage.isSet(Flag.DELETED)) { //TODO: Look for jorg issue
             Timber.v("Message with uid %s is present in the local store", message.getUid());
 
             if (!localMessage.isSet(Flag.X_DOWNLOADED_FULL) && !localMessage.isSet(Flag.X_DOWNLOADED_PARTIAL)) {
@@ -1707,7 +1707,8 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                                     store = false;
                                     break;
                             }
-                        */
+                                    */
+/*
                                     if ((tempResult.flags & DecryptFlags.pEpDecryptFlagConsumed.value) == DecryptFlags.pEpDecryptFlagConsumed.value) {
                                         Timber.v("pEpJNI %s", "messageFinished: Deleting");
                                         tempResult = null;
@@ -1716,6 +1717,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                                         tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null, -1);
                                         store = false;
                                     }
+                                    */
                                 }
                                 result = tempResult;
                                 Timber.d("pEp", "messageDecrypted: " + (System.currentTimeMillis() - time));

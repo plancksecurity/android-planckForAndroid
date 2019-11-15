@@ -580,13 +580,13 @@ public class LocalStore extends Store implements Serializable {
 
         String[] selectionArgs = queryArgs.toArray(new String[queryArgs.size()]);
 
-        String sqlQuery = "SELECT " + GET_MESSAGES_COLS + "FROM messages " +
+        String sqlQuery = "SELECT " + GET_MESSAGES_COLS + "FRO  M messages " +
                 "LEFT JOIN threads ON (threads.message_id = messages.id) " +
                 "LEFT JOIN message_parts ON (message_parts.id = messages.message_part_id) " +
                 "LEFT JOIN folders ON (folders.id = messages.folder_id) WHERE " +
                 "(empty = 0 AND deleted = 0)" +
                 ((!TextUtils.isEmpty(where)) ? " AND (" + where + ")" : "") +
-                " ORDER BY date DESC";
+                " AND auto_consume = 0 ORDER BY date DESC";
 
         Timber.d("Query = %s", sqlQuery);
 
