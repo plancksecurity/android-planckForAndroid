@@ -1818,7 +1818,6 @@ public class K9 extends MultiDexApplication {
                     goToAddDevice(myself, partner, signal, getString(R.string.pep_add_device_ask_trustwords));
                     break;
                 case SyncNotifyTimeout:
-                case SyncNotifyOvertaken:
                     //Close handshake
                     new Handler(Looper.getMainLooper()).post(()
                             -> Toast.makeText(K9.this, R.string.pep_keysync_timeout, Toast.LENGTH_SHORT).show());
@@ -1828,9 +1827,6 @@ public class K9 extends MultiDexApplication {
                 case SyncNotifyAcceptedGroupCreated:
                     needsFastPoll = false;
                     new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_LONG).show());
-                    break;
-                case SyncNotifyFormingGroup:
-                    //TODO: Go to next step on wizard and show "loading"
                     break;
                 case SyncNotifySole:
                     break;
