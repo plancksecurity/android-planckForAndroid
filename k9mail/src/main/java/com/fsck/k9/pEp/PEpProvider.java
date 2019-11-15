@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * Created by dietz on 01.07.15.
  */
-public interface PEpProvider {
+public interface PEpProvider extends AutoCloseable {
     /**
      * If is outgoing any copy of the message encrypted (yellow, green, and un secure for some) it will be putted in this position,
      * if not, all copies will be unencrypted.
