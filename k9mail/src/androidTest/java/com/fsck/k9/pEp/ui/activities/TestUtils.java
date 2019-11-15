@@ -525,7 +525,7 @@ public class TestUtils {
                         Timber.i("Ignored", "Ignored exception");
                     }
                 }
-                createNAccounts(totalAccounts);
+                createNAccounts(1);
         } catch (Exception ex) {
             if (!exists(onView(withId(R.id.accounts_list)))) {
                 readConfigFile();
