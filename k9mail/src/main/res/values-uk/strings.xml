@@ -112,7 +112,7 @@
   <string name="compose_action">Написати новий лист</string>
   <string name="search_action">Пошук</string>
   <string name="search_results">Результати пошуку</string>
-  <string name="preferences_action">Налаштування</string>
+  <string name="action_settings">Налаштування</string>
   <string name="account_settings_action">Налаштування пошти</string>
   <string name="folder_settings_action">Налаштування теки</string>
   <string name="global_settings_action">Глобальні налаштування</string>

@@ -111,7 +111,7 @@ Vă rugăm să ne raportați defecte, să contribuiți cu funcționalități noi
   <string name="compose_action">Compune</string>
   <string name="search_action">Caută</string>
   <string name="search_results">Rezultate căutare</string>
-  <string name="preferences_action">Opțiuni</string>
+  <string name="action_settings">Opțiuni</string>
   <string name="account_settings_action">Opțiuni cont</string>
   <string name="folder_settings_action">Opțiuni dosar</string>
   <string name="global_settings_action">Opțiuni globale</string>

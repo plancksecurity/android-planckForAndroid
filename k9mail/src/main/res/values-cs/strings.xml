@@ -111,7 +111,7 @@
   <string name="compose_action">Nová</string>
   <string name="search_action">Hledat</string>
   <string name="search_results">Výsledky hledání</string>
-  <string name="preferences_action">Možnosti</string>
+  <string name="action_settings">Možnosti</string>
   <string name="account_settings_action">Nastavení účtu</string>
   <string name="folder_settings_action">Nastavení složky</string>
   <string name="global_settings_action">Všeobecná nastavení</string>

@@ -112,7 +112,7 @@ Por favor envie relatórios de falhas, contribua com novas funcionalidades e col
   <string name="compose_action">Compor</string>
   <string name="search_action">Pesquisar</string>
   <string name="search_results">Resultados da pesquisa</string>
-  <string name="preferences_action">Definições</string>
+  <string name="action_settings">Definições</string>
   <string name="account_settings_action">Definições da conta</string>
   <string name="folder_settings_action">Definições da pasta</string>
   <string name="global_settings_action">Definições gerais</string>
