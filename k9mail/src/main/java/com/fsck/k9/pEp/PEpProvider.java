@@ -229,6 +229,8 @@ public interface PEpProvider extends AutoCloseable {
 
     void keyResetAllOwnKeys();
 
+    void leaveDeviceGroup();
+
     class KeyDetail {
         private final Address address;
         private final String fpr;
