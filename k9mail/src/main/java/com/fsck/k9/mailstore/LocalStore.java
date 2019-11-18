@@ -33,6 +33,7 @@ import timber.log.Timber;
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
+import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.controller.PendingCommandSerializer;
 import com.fsck.k9.controller.MessagingControllerCommands.PendingCommand;
 import com.fsck.k9.helper.Utility;
@@ -56,6 +57,7 @@ import com.fsck.k9.message.extractors.AttachmentCounter;
 import com.fsck.k9.message.extractors.AttachmentInfoExtractor;
 import com.fsck.k9.message.extractors.MessageFulltextCreator;
 import com.fsck.k9.message.extractors.MessagePreviewCreator;
+import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.MessageColumns;
@@ -106,6 +108,11 @@ public class LocalStore extends Store implements Serializable {
     static final String GET_FOLDER_COLS =
         "folders.id, name, visible_limit, last_updated, status, push_state, last_pushed, " +
         "integrate, top_group, poll_class, push_class, display_class, notify_class, more_messages";
+
+    private static final String GET_AUTO_CONSUME_MESSAGE_REFERENCES_COLS = "folders.name, messages.uid";
+    private static final int AUTO_CONSUME_FOLDER_NAME_INDEX = 0;
+    private static final int AUTO_CONSUME_UID_INDEX = 1;
+
 
     static final int FOLDER_ID_INDEX = 0;
     static final int FOLDER_NAME_INDEX = 1;
@@ -650,6 +657,39 @@ public class LocalStore extends Store implements Serializable {
 
     }
 
+    public List <MessageReference> getAutoConsumeMessageReferences() throws MessagingException {
+        final List<MessageReference> messages = new ArrayList<>();
+        database.execute(false, (DbCallback<Void>) db -> {
+            Cursor cursor = null;
+            try {
+                String query = "SELECT " + GET_AUTO_CONSUME_MESSAGE_REFERENCES_COLS +
+                        " FROM messages INNER JOIN folders ON (messages.folder_id = folders.id) " +
+                        " WHERE auto_consume = 1 " +
+                        " AND empty = 0 AND deleted = 0" +
+                        " AND (((strftime(date) + " + PEpProvider.TIMEOUT + ") < strftime('%s','now')*1000) or date is null)";
+
+                cursor = db.rawQuery(query, null);
+
+                while (cursor.moveToNext()) {
+                    MessageReference messageReference = new MessageReference(
+                            getAccount().getUuid(),
+                            cursor.getString(AUTO_CONSUME_FOLDER_NAME_INDEX),
+                            cursor.getString(AUTO_CONSUME_UID_INDEX),
+                            null);
+
+                    messages.add(messageReference);
+                }
+                cursor.close();
+            } catch (Exception e) {
+                Timber.d(e, "Got an exception");
+            } finally {
+                Utility.closeQuietly(cursor);
+            }
+            return null;
+        });
+
+        return Collections.unmodifiableList(messages);
+    }
     public List<LocalMessage> getMessagesInThread(final long rootId) throws MessagingException {
         String rootIdString = Long.toString(rootId);
 

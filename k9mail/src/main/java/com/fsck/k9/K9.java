@@ -80,6 +80,7 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
+import security.pEp.sync.KeySyncCleaner;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
@@ -765,6 +766,8 @@ public class K9 extends MultiDexApplication {
     }
 
     public void pEpInitSyncEnvironment() {
+        KeySyncCleaner.queueAutoConsumeMessages();
+
         if (Preferences.getPreferences(this.getApplicationContext()).getAccounts().size() > 0) {
             if (pEpSyncEnabled) {
                 initSync();
