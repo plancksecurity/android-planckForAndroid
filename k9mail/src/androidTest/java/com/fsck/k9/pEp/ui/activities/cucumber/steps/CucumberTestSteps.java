@@ -440,6 +440,14 @@ public class CucumberTestSteps {
         confirmAllTrustWords(TestUtils.jsonArray);
     }
 
+    @When("^I mistrust partner$")
+    public void I_mistrust_partner() {
+        timeRequiredForThisMethod(30);
+        testUtils.goToHandshakeDialog();
+        onView(withId(R.id.wrongTrustwords)).perform(click());
+        device.waitForIdle();
+    }
+
     @Then("^I check there is an extra key$")
     public void I_check_there_is_an_extra_key() {
         timeRequiredForThisMethod(80);
