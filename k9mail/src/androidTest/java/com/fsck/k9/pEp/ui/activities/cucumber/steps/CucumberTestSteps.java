@@ -439,8 +439,8 @@ public class CucumberTestSteps {
         confirmAllTrustWords(TestUtils.jsonArray);
     }
 
-    @When("^I mistrust partner$")
-    public void I_mistrust_partner() {
+    @When("^I click mistrust words$")
+    public void I_click_mistrust_words() {
         timeRequiredForThisMethod(30);
         testUtils.goToHandshakeDialog();
         onView(withId(R.id.wrongTrustwords)).perform(click());
