@@ -769,8 +769,8 @@
         <outgoing uri="smtp+tls+://dragon.pibit.ch" username="$user" />
     </provider>
     <provider id="pepTestExchange" label="pEp Excxhange" domain="exchange.peptest.ch">
-        <incoming uri="imap+ssl+://exchange.peptest.ch" username="$user" />
-        <outgoing uri="smtp+tls+://exchange.peptest.ch" username="$user" />
+        <incoming uri="imap+ssl+://testnet.peptest.ch" username="$user" />
+        <outgoing uri="smtp+tls+://testnet.peptest.ch" username="$user" />
     </provider>
     <provider id="1und1-onlinede" label="1und1 Online.de" domain="online.de">
         <incoming uri="imap+ssl+://imap.1und1.de" username="$email" />
