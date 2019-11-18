@@ -26,7 +26,6 @@ import androidx.test.uiautomator.UiObject2;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageList;
-import com.fsck.k9.activity.NotificationDeleteConfirmation;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 import com.fsck.k9.pEp.ui.activities.TestUtils;
 
@@ -451,7 +450,7 @@ public class CucumberTestSteps {
     @When("^I reset handshake$")
     public void I_reset_handshake() {
         timeRequiredForThisMethod(30);
-        testUtils.resetData();
+        testUtils.resetHandshake();
     }
 
     @Then("^I check there is an extra key$")
