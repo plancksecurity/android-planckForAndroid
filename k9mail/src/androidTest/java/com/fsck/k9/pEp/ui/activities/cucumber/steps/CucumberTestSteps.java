@@ -448,6 +448,12 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
+    @When("^I reset handshake$")
+    public void I_reset_handshake() {
+        timeRequiredForThisMethod(30);
+        testUtils.resetData();
+    }
+
     @Then("^I check there is an extra key$")
     public void I_check_there_is_an_extra_key() {
         timeRequiredForThisMethod(80);
