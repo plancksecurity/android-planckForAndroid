@@ -558,6 +558,17 @@ public class TestUtils {
         clickHandShakeButton();
     }
 
+    public void resetHandshake(){
+        device.waitForIdle();
+        try {
+           onView(withId(R.id.recipientContainer)).perform(ViewActions.longClick());
+            device.waitForIdle();
+            UiObject2 scroll = device.findObject(By.clazz("android.widget.ListView"));
+            scroll.click();
+        } catch (Exception ex) {
+            Timber.e("Fail: " + ex.getMessage());
+        }
+    }
 
     private void createNAccounts (int n) {
         try {
