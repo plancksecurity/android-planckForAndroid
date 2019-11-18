@@ -1834,6 +1834,7 @@ public class K9 extends MultiDexApplication {
                 case SyncNotifySole:
                     break;
                 case SyncNotifyInGroup:
+                    needsFastPoll = false;
                     break;
             }
 
