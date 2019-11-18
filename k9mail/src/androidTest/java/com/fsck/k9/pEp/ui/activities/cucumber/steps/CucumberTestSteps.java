@@ -436,20 +436,7 @@ public class CucumberTestSteps {
     public void I_confirm_trust_words_match() {
         timeRequiredForThisMethod(80);
         TestUtils.getJSONObject("trustwords");
-        device.waitForIdle();
-        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
-        if (viewIsDisplayed(R.id.tvPep)) {
-            device.waitForIdle();
-            onView(withId(R.id.tvPep)).check(matches(isDisplayed()));
-            onView(withId(R.id.tvPep)).perform(click());
-        } else {
-            device.waitForIdle();
-            onView(withId(R.id.pEp_indicator)).check(matches(isDisplayed()));
-            onView(withId(R.id.pEp_indicator)).perform(click());
-        }
-        device.waitForIdle();
-        testUtils.doWaitForResource(R.id.toolbar);
-        testUtils.clickHandShakeButton();
+        testUtils.goToHandshakeDialog();
         confirmAllTrustWords(TestUtils.jsonArray);
     }
 
