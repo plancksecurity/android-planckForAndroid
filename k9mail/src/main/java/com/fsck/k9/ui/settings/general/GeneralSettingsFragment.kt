@@ -94,7 +94,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeExtraKeysManagement() {
-        findPreference(PEP_EXTRA_KEYS)?.apply {
+        findPreference(PREFERENCE_PEP_EXTRA_KEYS)?.apply {
             setOnPreferenceClickListener {
                 PepExtraKeys.actionStart(context)
                 true
@@ -183,7 +183,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_LOCK_SCREEN_NOTIFICATION_VISIBILITY = "lock_screen_notification_visibility"
         private const val PREFERENCE_NOTIFICATION_QUICK_DELETE = "notification_quick_delete"
         private const val CONFIRM_ACTION_DELETE_FROM_NOTIFICATION = "delete_notif"
-        private const val PEP_EXTRA_KEYS = "pep_extra_keys"
+        private const val PREFERENCE_PEP_EXTRA_KEYS = "pep_extra_keys"
         private const val PREFERENCE_PEP_OWN_IDS_KEY_RESET = "pep_key_reset"
 
 
