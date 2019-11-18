@@ -5,6 +5,7 @@ import android.os.Environment;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.SortType;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
 import com.fsck.k9.K9.NotificationHideSubject;
@@ -300,7 +301,8 @@ public class GlobalSettings {
                 new V(47, new BooleanSetting(false))
         ));
         s.put("pEpEnableSync", Settings.versions(
-                new V(49, new BooleanSetting(true))
+                new V(49, new EnumSetting<>(K9.SyncpEpStatus.class,
+                        BuildConfig.WITH_KEY_SYNC? K9.SyncpEpStatus.ENABLED_SOLE: K9.SyncpEpStatus.DISABLED))
         ));
         SETTINGS = Collections.unmodifiableMap(s);
 

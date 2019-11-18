@@ -126,6 +126,7 @@ class GeneralSettingsDataStore(
             "attachment_default_path" -> K9.getAttachmentDefaultPath()
             "quiet_time_starts" -> K9.getQuietTimeStarts()
             "quiet_time_ends" -> K9.getQuietTimeEnds()
+            "pep_enable_sync" -> K9.getpEpSyncEnabled().name //TODO: CHECK
             else -> defValue
         }
     }
@@ -148,6 +149,7 @@ class GeneralSettingsDataStore(
             "attachment_default_path" -> K9.setAttachmentDefaultPath(value)
             "quiet_time_starts" -> K9.setQuietTimeStarts(value)
             "quiet_time_ends" -> K9.setQuietTimeEnds(value)
+        "pep_enable_sync" -> K9.setpEpSyncState(K9.SyncpEpStatus.valueOf(value)) //TODO: CHECK
             else -> return
         }
 
