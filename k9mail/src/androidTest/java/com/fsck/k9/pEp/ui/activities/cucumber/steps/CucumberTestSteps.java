@@ -665,32 +665,7 @@ public class CucumberTestSteps {
     @When("^I click confirm trust words$")
     public void I_click_confirm_trust_words() {
         timeRequiredForThisMethod(10);
-        testUtils.doWaitForResource(R.id.toolbar);
-        device.waitForIdle();
-        waitUntilIdle();
-        testUtils.doWaitForResource(R.id.toolbar);
-        while (!exists(onView(withId(R.id.toolbar)))) {
-            device.waitForIdle();
-            waitUntilIdle();
-        }
-        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
-        if (!exists(onView(withId(R.id.reply_message)))) {
-            device.waitForIdle();
-            testUtils.doWaitForResource(R.id.pEp_indicator);
-            waitUntilIdle();
-            while (exists(onView(withId(R.id.pEp_indicator)))) {
-                device.waitForIdle();
-                testUtils.clickView(R.id.pEp_indicator);
-                Timber.i("Hecho click en indicator");
-            }
-        } else {
-            while (exists(onView(withId(R.id.tvPep)))) {
-                device.waitForIdle();
-                testUtils.clickView(R.id.tvPep);
-                Timber.i("Hecho click en tvPep");
-            }
-        }
-        testUtils.clickHandShakeButton();
+        testUtils.goToHandshakeDialog();
         while (!viewIsDisplayed(R.id.confirmTrustWords)) {
             device.waitForIdle();
             UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
