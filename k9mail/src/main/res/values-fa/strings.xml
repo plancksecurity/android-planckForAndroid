@@ -62,7 +62,7 @@
   <string name="compose_action">نوشتن</string>
   <string name="search_action">جستجو</string>
   <string name="search_results">نتایج جستجو</string>
-  <string name="preferences_action">تنظیمات</string>
+  <string name="action_settings">تنظیمات</string>
   <string name="account_settings_action">تنظیمات حساب</string>
   <string name="folder_settings_action">تنظیمات پوشه</string>
   <string name="global_settings_action">تنظیمات عمومی</string>

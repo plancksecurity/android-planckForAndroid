@@ -1,3 +1,5 @@
+import com.android.build.OutputFile
+
 def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
 def pEpTestEmailPassword = "\"$System.env.PEP_TEST_EMAIL_PASSWORD\""
 def pEpTestEmailServer = "\"$System.env.PEP_TEST_EMAIL_SERVER\""
@@ -67,7 +69,6 @@ dependencies {
     implementation "com.github.paolorotolo:appintro:${versions.appIntro}"
     implementation "com.daimajia.swipelayout:library:${versions.swipeLayout}@aar"
     implementation "com.karumi:dexter:${versions.dexter}"
-    implementation "com.hudomju:swipe-to-dismiss-undo:${versions.swipeToDismiss}"
     implementation "ch.acra:acra:${versions.acra}"
     implementation "de.cketti.safecontentresolver:safe-content-resolver-v14:${versions.safeContentResolver}"
     implementation "de.hdodenhof:circleimageview:${versions.circleImageView}"
@@ -259,9 +260,19 @@ android {
         abi {
             enable true
             reset()
-            include "armeabi-v7a"
+            include 'arm64-v8a', 'armeabi-v7a', "x86"
+//            include 'arm64-v8a', 'armeabi-v7a', "x86"
 //            include "x86"
             universalApk false
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def baseAbiVersionCode = abiCodes.get(output.getFilter(OutputFile.ABI))
+            if (baseAbiVersionCode != null) {
+                output.versionCodeOverride = baseAbiVersionCode * 10000000 + variant.versionCode
+            }
         }
     }
 

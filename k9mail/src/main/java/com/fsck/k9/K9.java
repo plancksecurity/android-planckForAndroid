@@ -31,6 +31,7 @@ import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.UpgradeDatabases;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.SimpleMessagingListener;
+import com.fsck.k9.helper.NamedThreadFactory;
 import com.fsck.k9.job.K9JobCreator;
 import com.fsck.k9.job.K9JobManager;
 import com.fsck.k9.job.MailSyncJobManager;
@@ -61,6 +62,7 @@ import com.fsck.k9.widget.list.MessageListWidgetProvider;
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
+import org.jetbrains.annotations.NotNull;
 
 import foundation.pEp.jniadapter.AndroidHelper;
 import foundation.pEp.jniadapter.Identity;
@@ -78,8 +80,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
 
+import security.pEp.sync.KeySyncCleaner;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
@@ -127,6 +131,11 @@ public class K9 extends MultiDexApplication {
 
 
     public static final int VERSION_MIGRATE_OPENPGP_TO_ACCOUNTS = 63;
+
+    public static void setpEpSyncState(@NotNull SyncpEpStatus state) {
+        pEpSyncEnabled = state;
+    }
+
 
     /**
      * Components that are interested in knowing when the K9 instance is
@@ -179,7 +188,7 @@ public class K9 extends MultiDexApplication {
      * This will be {@code true} once the initialization is complete and {@link #notifyObservers()}
      * was called.
      * Afterwards calls to {@link #registerApplicationAware(com.fsck.k9.K9.ApplicationAware)} will
-     * immediately call {@link com.fsck.k9.K9.ApplicationAware#initializeComponent(K9)} for the
+     * immediately call {@link com.fsck.k9.K9.ApplicationAware#initializeComponent(Application)} for the
      * supplied argument.
      */
     private static boolean sInitialized = false;
@@ -286,6 +295,16 @@ public class K9 extends MultiDexApplication {
         WHEN_IN_LANDSCAPE
     }
 
+    public enum SyncpEpStatus {
+        DISABLED,
+        ENABLED_SOLE,
+        ENABLED_GROUPED;
+
+        boolean isEnabled() {
+            return !this.equals(DISABLED);
+        }
+
+    }
     private static boolean mMessageListCheckboxes = true;
     private static boolean mMessageListStars = true;
     private static int mMessageListPreviewLines = 2;
@@ -334,7 +353,9 @@ public class K9 extends MultiDexApplication {
     private static boolean pEpPassiveMode = false;
     private static boolean pEpSubjectUnprotected = false;
     private static boolean pEpForwardWarningEnabled = false;
-    private static boolean pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
+    //private static boolean pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
+    private static SyncpEpStatus pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC ? SyncpEpStatus.ENABLED_SOLE : SyncpEpStatus.DISABLED;
+    private static boolean grouped = false;
     private static Set<String> pEpExtraKeys = Collections.emptySet();
 
 
@@ -604,7 +625,7 @@ public class K9 extends MultiDexApplication {
         editor.putBoolean("pEpPassiveMode", pEpPassiveMode);
         editor.putBoolean("pEpSubjectUnprotected", pEpSubjectUnprotected);
         editor.putBoolean("pEpForwardWarningEnabled", pEpForwardWarningEnabled);
-        editor.putBoolean("pEpEnableSync", pEpSyncEnabled);
+        editor.putString("pEpEnableSync", pEpSyncEnabled.toString());
 
         fontSizes.save(editor);
     }
@@ -765,15 +786,17 @@ public class K9 extends MultiDexApplication {
     }
 
     public void pEpInitSyncEnvironment() {
+        KeySyncCleaner.queueAutoConsumeMessages();
+
         if (Preferences.getPreferences(this.getApplicationContext()).getAccounts().size() > 0) {
-            if (pEpSyncEnabled) {
+            if (pEpSyncEnabled.isEnabled()) {
                 initSync();
             }
         }
     }
 
     public PEpProvider getpEpSyncProvider() {
-        if (pEpSyncEnabled) return pEpSyncProvider;
+        if (pEpSyncEnabled.isEnabled()) return pEpSyncProvider;
         else return pEpProvider;
     }
 
@@ -958,7 +981,13 @@ public class K9 extends MultiDexApplication {
         pEpPassiveMode = storage.getBoolean("pEpPassiveMode", false);
         pEpSubjectUnprotected = storage.getBoolean("pEpSubjectUnprotected", false);
         pEpForwardWarningEnabled = storage.getBoolean("pEpForwardWarningEnabled", false);
-        pEpSyncEnabled = storage.getBoolean("pEpEnableSync", BuildConfig.WITH_KEY_SYNC);
+        String spEpSyncEnabled = storage.getString("pEpEnableSync",null);
+
+        if (spEpSyncEnabled != null) {
+            pEpSyncEnabled = SyncpEpStatus.valueOf(spEpSyncEnabled);
+        } else {
+            pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC ? SyncpEpStatus.ENABLED_SOLE : SyncpEpStatus.DISABLED;
+        }
 
         mAttachmentDefaultPath = storage.getString("attachmentdefaultpath",
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString());
@@ -1776,12 +1805,19 @@ public class K9 extends MultiDexApplication {
         }
     }
 
-    public boolean ispEpSyncEnabled() {
+    public static boolean ispEpSyncEnabled() {
+        return pEpSyncEnabled.isEnabled();
+    }
+
+    public static SyncpEpStatus getpEpSyncEnabled() {
         return pEpSyncEnabled;
     }
 
-    public void setpEpSyncEnabled(boolean ispEpSyncEnabled) {
+    public void setpEpSyncEnabled(SyncpEpStatus ispEpSyncEnabled) {
         pEpSyncEnabled = ispEpSyncEnabled;
+        StorageEditor editor = Preferences.getPreferences(this).getStorage().edit();
+        save(editor);
+        Executors.newSingleThreadExecutor(new NamedThreadFactory("SaveSettings")).execute(editor::commit);
     }
 
     public boolean needsFastPoll() {
@@ -1828,6 +1864,14 @@ public class K9 extends MultiDexApplication {
                     needsFastPoll = false;
                     new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_LONG).show());
                     break;
+                case SyncNotifySole:
+                    grouped = false;
+                    break;
+                case SyncNotifyInGroup:
+                    needsFastPoll = false;
+                    grouped = true;
+                    pEpSyncEnabled = SyncpEpStatus.ENABLED_GROUPED;
+                    break;
             }
 
 
@@ -1837,4 +1881,15 @@ public class K9 extends MultiDexApplication {
     public Sync.NotifyHandshakeCallback getNotifyHandshakeCallback() {
         return this.notifyHandshakeCallback;
     }
+
+    public static void setGrouped(boolean value) {
+        grouped = value;
+    }
+    public void leaveDeviceGroup() {
+       grouped = false;
+       pEpSyncProvider.leaveDeviceGroup();
+       pEpSyncEnabled = SyncpEpStatus.DISABLED;
+    }
+
+
 }

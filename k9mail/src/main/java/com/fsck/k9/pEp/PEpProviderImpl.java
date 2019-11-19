@@ -1162,6 +1162,12 @@ public class PEpProviderImpl implements PEpProvider {
         engine.key_reset_all_own_keys();
     }
 
+    @Override
+    public void leaveDeviceGroup() {
+        createEngineInstanceIfNeeded();
+        engine.leave_device_group();
+    }
+
 
     private String getElementAtPosition(String chain) {
         return chain.substring(1, chain.length() - 1);

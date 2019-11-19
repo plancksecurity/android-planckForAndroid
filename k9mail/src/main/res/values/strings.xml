@@ -143,7 +143,7 @@
     <string name="compose_action">Compose</string>
     <string name="search_action">Search</string>
     <string name="search_results">Search results</string>
-    <string name="preferences_action">Settings</string>
+    <string name="action_settings">Settings</string>
     <string name="account_settings_action">Account settings</string>
     <string name="folder_settings_action">Folder settings</string>
     <string name="global_settings_action">Global settings</string>
@@ -1247,7 +1247,7 @@
     <string name="xoauth2_account_doesnt_exist">Account doesn\'t exist</string>
 
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+
     <string name="decrypt_message_explanation">This email is encrypted and it may take a few seconds to decrypt it. Do you want to continue?</string>
     <string name="pep_menu_long_trustwords">Show long trustwords</string>
     <string name="pep_menu_short_trustwords">Show short trustwords</string>

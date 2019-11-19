@@ -82,7 +82,7 @@
   <string name="compose_action">작성</string>
   <string name="search_action">검색</string>
   <string name="search_results">검색 결과</string>
-  <string name="preferences_action">설정</string>
+  <string name="action_settings">설정</string>
   <string name="account_settings_action">계정 설정</string>
   <string name="folder_settings_action">폴더 설정</string>
   <string name="global_settings_action">환경 설정</string>

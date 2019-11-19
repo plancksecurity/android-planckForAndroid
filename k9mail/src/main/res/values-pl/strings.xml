@@ -112,7 +112,7 @@
   <string name="compose_action">Nowa wiadomość</string>
   <string name="search_action">Szukaj</string>
   <string name="search_results">Wyniki</string>
-  <string name="preferences_action">Ustawienia</string>
+  <string name="action_settings">Ustawienia</string>
   <string name="account_settings_action">Ustawienia konta</string>
   <string name="folder_settings_action">Ustawienia folderu</string>
   <string name="global_settings_action">Ustawienia globalne</string>

@@ -1378,6 +1378,7 @@ public class LocalFolder extends Folder<LocalMessage> implements Serializable {
             cv.put("mime_type", message.getMimeType());
             cv.put("empty", 0);
             putLatestRating(message, cv);
+            putAutoConsume(message, cv);
             cv.put("preview_type", databasePreviewType.getDatabaseValue());
             if (previewResult.isPreviewTextAvailable()) {
                 cv.put("preview", previewResult.getPreviewText());
@@ -1435,6 +1436,13 @@ public class LocalFolder extends Folder<LocalMessage> implements Serializable {
         else if (pEpRating == null) {
             cv.put("pep_rating", Rating.pEpRatingUndefined.toString());
         }
+    }
+
+    private void putAutoConsume(Message message, ContentValues cv) {
+        Set<String> headerNames = message.getHeaderNames();
+        boolean autoconsume = headerNames.contains(MimeHeader.HEADER_PEP_AUTOCONSUME)
+                || headerNames.contains(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY);
+        cv.put("auto_consume", autoconsume ? 1 : 0);
     }
 
     private long saveMessageParts(SQLiteDatabase db, Message message) throws IOException, MessagingException {

@@ -349,6 +349,14 @@
             </Preference>
 
             <PreferenceCategory
+                android:key="pep_sync"
+                android:title="@string/pep_sync">
+                <Preference
+                    android:key="pep_enable_sync"
+                    android:title="@string/pep_sync_disable_global" />
+            </PreferenceCategory>
+
+            <PreferenceCategory
                 android:key="pep_gpg_compatibility"
                 android:title="@string/pep_gpg_compatibility">
 
@@ -358,6 +366,9 @@
                 <CheckBoxPreference
                     android:key="pep_subject_unprotected"
                     android:title="@string/pep_subject_unprotected" />
+
+
+
                 <Preference
                     android:key="pep_gpg_blacklist"
                     android:title="Blacklist">
@@ -406,16 +417,10 @@
                 <!--android:dialogTitle="@string/pep_remove_key_from_blacklist"-->
                 <!--/>-->
 
-                <!--PreferenceCategory
-                    android:key="pep_keysync"
-                    android:title="PEP KEYSYNC" />
 
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="pep_enable_sync"
-                    android:persistent="false"
-                    android:title="ENABLE PEP SYNC GLOBALLY" />
-                <Preference
+
+
+                <!--Preference
                     android:key="pep_manage_keysync"
                     android:persistent="false"
                     android:singleLine="true"

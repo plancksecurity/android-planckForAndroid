@@ -112,7 +112,7 @@
   <string name="compose_action">Componi</string>
   <string name="search_action">Cerca</string>
   <string name="search_results">Risultati della ricerca</string>
-  <string name="preferences_action">Impostazioni</string>
+  <string name="action_settings">Impostazioni</string>
   <string name="account_settings_action">Impostazioni account</string>
   <string name="folder_settings_action">Impostazioni cartella</string>
   <string name="global_settings_action">Impostazioni globali</string>

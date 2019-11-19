@@ -39,6 +39,8 @@ import android.os.Process;
 import android.os.SystemClock;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
+
 import android.util.Log;
 
 import com.fsck.k9.Account;
@@ -1552,7 +1554,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                     }
                 }
             }
-        } else if (!localMessage.isSet(Flag.DELETED)) {
+        } else if (!localMessage.isSet(Flag.DELETED)) { //TODO: Look for jorg issue
             Timber.v("Message with uid %s is present in the local store", message.getUid());
 
             if (!localMessage.isSet(Flag.X_DOWNLOADED_FULL) && !localMessage.isSet(Flag.X_DOWNLOADED_PARTIAL)) {
@@ -1707,7 +1709,8 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                                     store = false;
                                     break;
                             }
-                        */
+                                    */
+/*
                                     if ((tempResult.flags & DecryptFlags.pEpDecryptFlagConsumed.value) == DecryptFlags.pEpDecryptFlagConsumed.value) {
                                         Timber.v("pEpJNI %s", "messageFinished: Deleting");
                                         tempResult = null;
@@ -1716,6 +1719,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                                         tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null, -1);
                                         store = false;
                                     }
+                                    */
                                 }
                                 result = tempResult;
                                 Timber.d("pEp", "messageDecrypted: " + (System.currentTimeMillis() - time));
@@ -4081,6 +4085,8 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
 
         account.setRingNotified(false);
 
+        deleteConsumedMessages();
+
         sendPendingMessages(account, listener);
 
         try {
@@ -4973,5 +4979,25 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                 return (sequence - other.sequence);
             }
         }
+    }
+
+    @WorkerThread
+    public void consumeMessages(final Context context) throws MessagingException {
+        List<Account> accounts = Preferences.getPreferences(context).getAccounts();
+        for (Account account : accounts) {
+            List<MessageReference> refs = account.getLocalStore().getAutoConsumeMessageReferences();
+            deleteMessages(refs, null);
+            expunge(account, account.getInboxFolderName());
+        }
+    }
+
+    public void deleteConsumedMessages() {
+        putBackground("deleteConsumedMessages", null, () -> {
+            try {
+                consumeMessages(context);
+            } catch (MessagingException e) {
+                Timber.e(e);
+            }
+        });
     }
 }

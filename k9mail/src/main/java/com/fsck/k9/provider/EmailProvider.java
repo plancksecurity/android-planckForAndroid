@@ -158,6 +158,7 @@ public class EmailProvider extends ContentProvider {
         String DELETED = "deleted";
         String EMPTY = "empty";
         String MIME_TYPE = "mime_type";
+        String AUTO_CONSUME = "auto_consume";
     }
 
     public interface FolderColumns {
@@ -305,6 +306,8 @@ public class EmailProvider extends ContentProvider {
                                 InternalMessageColumns.DELETED + " = 0 AND " + InternalMessageColumns.EMPTY + " = 0";
                     }
 
+                    where += " AND (" + InternalMessageColumns.AUTO_CONSUME + " = 0)";
+
                     final Cursor cursor;
                     if (Utility.arrayContainsAny(projection, (Object[]) FOLDERS_COLUMNS)) {
                         StringBuilder query = new StringBuilder();
@@ -399,6 +402,7 @@ public class EmailProvider extends ContentProvider {
                             "ON (m." + MessageColumns.ID + " = t." + ThreadColumns.MESSAGE_ID + " AND " +
                             "m." + InternalMessageColumns.EMPTY + "=0 AND " +
                             "m." + InternalMessageColumns.DELETED + "=0 AND " +
+                            "m." + InternalMessageColumns.AUTO_CONSUME + " = 0 AND " +
                             "m." + MessageColumns.DATE + " = a." + MessageColumns.DATE +
                             ") ");
 
@@ -461,7 +465,8 @@ public class EmailProvider extends ContentProvider {
                 "ON (t." + ThreadColumns.MESSAGE_ID + " = m." + MessageColumns.ID + ") " +
                 "WHERE " +
                 "m." + InternalMessageColumns.EMPTY + " = 0 AND " +
-                "m." + InternalMessageColumns.DELETED + " = 0)");
+                "m." + InternalMessageColumns.DELETED + " = 0 AND " +
+                "m." + InternalMessageColumns.AUTO_CONSUME + " = 0)");
 
 
         if (!TextUtils.isEmpty(selection)) {
@@ -472,7 +477,9 @@ public class EmailProvider extends ContentProvider {
 
         query.append(
                 ") AND " +
-                InternalMessageColumns.DELETED + " = 0 AND " + InternalMessageColumns.EMPTY + " = 0");
+                InternalMessageColumns.DELETED + " = 0 " +
+                        "AND " + InternalMessageColumns.EMPTY + " = 0 " +
+                        "AND " + InternalMessageColumns.AUTO_CONSUME + " = 0");
 
         query.append(" GROUP BY t." + ThreadColumns.ROOT);
     }
@@ -516,7 +523,9 @@ public class EmailProvider extends ContentProvider {
 
                     query.append("WHERE " +
                             ThreadColumns.ROOT + " = ? AND " +
-                            InternalMessageColumns.DELETED + " = 0 AND " + InternalMessageColumns.EMPTY + " = 0");
+                            InternalMessageColumns.DELETED + " = 0 " +
+                            "AND " + InternalMessageColumns.EMPTY + " = 0 " +
+                            "AND " + InternalMessageColumns.AUTO_CONSUME + " = 0");
 
                     query.append(" ORDER BY ");
                     query.append(SqlQueryBuilder.addPrefixToSelection(FIXUP_MESSAGES_COLUMNS, "m.", sortOrder));
@@ -571,7 +580,9 @@ public class EmailProvider extends ContentProvider {
         }
 
         // WHERE clause
-        sql.append(" WHERE (deleted = 0 AND empty = 0)");
+        sql.append(" WHERE ("+ InternalMessageColumns.DELETED + " = 0 " +
+                "AND " + InternalMessageColumns.EMPTY + " = 0  " +
+                "AND " + InternalMessageColumns.AUTO_CONSUME + " = 0 )");
         if (!TextUtils.isEmpty(selection)) {
             sql.append(" AND (");
             sql.append(selection);

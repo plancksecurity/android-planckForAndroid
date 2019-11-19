@@ -80,7 +80,7 @@
   <string name="compose_action">Redactar</string>
   <string name="search_action">Procurar</string>
   <string name="search_results">Resultados da procura</string>
-  <string name="preferences_action">Axustes</string>
+  <string name="action_settings">Axustes</string>
   <string name="account_settings_action">Axustes da conta</string>
   <string name="folder_settings_action">Axustes dos cartafoles</string>
   <string name="global_settings_action">Configuración xeral</string>

@@ -80,7 +80,7 @@
   <string name="compose_action">Sukurti</string>
   <string name="search_action">Ieškoti</string>
   <string name="search_results">Paieškos rezultatai</string>
-  <string name="preferences_action">Nustatymai</string>
+  <string name="action_settings">Nustatymai</string>
   <string name="account_settings_action">Paskyros nustatymai</string>
   <string name="folder_settings_action">Aplanko nustatymai</string>
   <string name="global_settings_action">Bendrieji nustatymai</string>

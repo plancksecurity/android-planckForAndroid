@@ -80,6 +80,8 @@ public class Migrations {
                 MigrationTo61.renameK9Tables(db);
             case 61:
                 MigrationTo62.removeErrorsFolder(db);
+            case 62:
+                MigrationTo63.addAutoConsumeMessageColumn(db);
         }
     }
 }

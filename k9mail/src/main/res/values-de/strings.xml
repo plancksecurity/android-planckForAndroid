@@ -112,7 +112,7 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
   <string name="compose_action">Verfassen</string>
   <string name="search_action">Suchen</string>
   <string name="search_results">Suchergebnisse</string>
-  <string name="preferences_action">Einstellungen</string>
+  <string name="action_settings">Einstellungen</string>
   <string name="account_settings_action">Kontoeinstellungen</string>
   <string name="folder_settings_action">Ordnereinstellungen</string>
   <string name="global_settings_action">Globale Einstellungen</string>
