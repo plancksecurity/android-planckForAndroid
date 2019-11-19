@@ -653,6 +653,15 @@ public class CucumberTestSteps {
         onView(withId(R.id.wrongTrustwords)).perform(click());
     }
 
+    @When("^I click stop trusting words$")
+    public void I_click_stop_trusting_words() {
+        timeRequiredForThisMethod(10);
+        testUtils.goToHandshakeDialog();
+        onView(withId(R.id.buttonHandshake)).perform(click());
+        device.waitForIdle();
+        testUtils.pressBack();
+    }
+
     @When("^I click confirm trust words$")
     public void I_click_confirm_trust_words() {
         timeRequiredForThisMethod(10);
@@ -700,27 +709,7 @@ public class CucumberTestSteps {
     @When("^I click wrong trust words$")
     public void I_click_wrong_trust_words() {
         timeRequiredForThisMethod(10);
-        testUtils.doWaitForResource(R.id.toolbar);
-        while (!exists(onView(withId(R.id.toolbar)))) {
-            device.waitForIdle();
-            waitUntilIdle();
-        }
-        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
-        if (!exists(onView(withId(R.id.reply_message)))) {
-            device.waitForIdle();
-            testUtils.doWaitForResource(R.id.pEp_indicator);
-            waitUntilIdle();
-            while (exists(onView(withId(R.id.pEp_indicator)))) {
-                device.waitForIdle();
-                testUtils.clickView(R.id.pEp_indicator);
-            }
-        } else {
-            while (exists(onView(withId(R.id.tvPep)))) {
-                device.waitForIdle();
-                testUtils.clickView(R.id.tvPep);
-            }
-        }
-        testUtils.clickHandShakeButton();
+        testUtils.goToHandshakeDialog();
         testUtils.doWaitForResource(R.id.wrongTrustwords);
         while (!exists(onView(withId(R.id.wrongTrustwords)))) {
             device.waitForIdle();
