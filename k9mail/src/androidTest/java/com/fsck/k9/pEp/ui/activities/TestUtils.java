@@ -40,7 +40,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 
-import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 import org.json.JSONArray;
@@ -84,6 +83,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import androidx.test.platform.app.InstrumentationRegistry ;
+import androidx.test.uiautomator.v18.BuildConfig;
+
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static androidx.test.runner.lifecycle.Stage.RESUMED;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.appendTextInTextView;
