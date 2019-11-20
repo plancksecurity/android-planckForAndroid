@@ -91,7 +91,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
 
     private void storeMessagesSecurely() {
         testUtils.openOptionsMenu();
-        testUtils.selectFromScreen(R.string.preferences_action);
+        //testUtils.selectFromScreen(R.string.preferences_action);
         testUtils.selectFromScreen(R.string.account_settings_action);
         testUtils.selectFromScreen(R.string.app_name);
         selectFromScreen(R.string.pep_mistrust_server_and_store_mails_encrypted);
