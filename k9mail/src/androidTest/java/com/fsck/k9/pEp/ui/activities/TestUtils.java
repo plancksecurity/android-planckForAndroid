@@ -1184,6 +1184,7 @@ public class TestUtils {
         while (!viewIsDisplayed(R.id.pEpTitle)) {
             device.waitForIdle();
         }
+        waitForTooblar();
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
         if (!exists(onView(withId(R.id.send)))) {
             goBack(false);
@@ -1304,12 +1305,27 @@ public class TestUtils {
                 onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
                 device.waitForIdle();
                 waitUntilIdle();
+                waitForTooblar();
                 onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(color)));
                 checkUpperToolbar(color);
                 return;
             }
         }
     }
+
+    public void waitForTooblar () {
+        for (int waitLoop = 0; waitLoop < 10; waitLoop++) {
+            device.waitForIdle();
+            while (!viewIsDisplayed(R.id.toolbar) || !viewIsDisplayed(R.id.toolbar_container)) {
+                device.waitForIdle();
+            }
+            device.waitForIdle();
+            waitUntilIdle();
+            onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
+            onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
+            device.waitForIdle();
+            waitUntilIdle();
+        }}
 
     private void checkUpperToolbar (int color){
         int colorFromResource = (ContextCompat.getColor(InstrumentationRegistry.getInstrumentation().getTargetContext(), color) & 0x00FFFFFF);
