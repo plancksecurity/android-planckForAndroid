@@ -549,7 +549,7 @@ public class TestUtils {
             device.waitForIdle();
             onView(withId(R.id.tvPep)).check(matches(isDisplayed()));
             onView(withId(R.id.tvPep)).perform(click());
-        } else {
+        } else if (viewIsDisplayed(R.id.pEp_indicator)) {
             device.waitForIdle();
             onView(withId(R.id.pEp_indicator)).check(matches(isDisplayed()));
             onView(withId(R.id.pEp_indicator)).perform(click());
