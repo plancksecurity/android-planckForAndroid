@@ -178,7 +178,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                     K9.SyncpEpStatus.ENABLED_SOLE -> {
                         this.setTitle(R.string.pep_sync_disable_global)
                         app.setpEpSyncEnabled(K9.SyncpEpStatus.DISABLED)
-
+                        app.shutdownSync()
                     }
                     else -> {}
 

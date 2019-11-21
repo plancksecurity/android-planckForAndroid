@@ -1885,10 +1885,16 @@ public class K9 extends MultiDexApplication {
     public static void setGrouped(boolean value) {
         grouped = value;
     }
+
     public void leaveDeviceGroup() {
        grouped = false;
        pEpSyncProvider.leaveDeviceGroup();
        pEpSyncEnabled = SyncpEpStatus.DISABLED;
+    }
+
+    public void shutdownSync() {
+        pEpSyncProvider.stopSync();
+        pEpSyncEnabled = SyncpEpStatus.DISABLED;
     }
 
 

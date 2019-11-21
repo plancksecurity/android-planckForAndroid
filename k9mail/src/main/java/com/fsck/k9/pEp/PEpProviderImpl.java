@@ -1166,6 +1166,12 @@ public class PEpProviderImpl implements PEpProvider {
         engine.leave_device_group();
     }
 
+    @Override
+    public void stopSync() {
+        createEngineInstanceIfNeeded();
+        engine.stopSync();
+    }
+
 
     private String getElementAtPosition(String chain) {
         return chain.substring(1, chain.length() - 1);
