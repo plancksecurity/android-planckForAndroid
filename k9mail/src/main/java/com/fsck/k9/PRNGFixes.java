@@ -32,7 +32,10 @@ import java.security.Security;
  * The fixes need to be applied via {@link #apply()} before any use of Java
  * Cryptography Architecture primitives. A good place to invoke them is in the
  * application's {@code onCreate}.
+ *
+ * @Deprecated as minSdkVersion is > 18 and therefore this code is just dummy
  */
+@Deprecated
 public final class PRNGFixes {
 
     private static final int VERSION_CODE_JELLY_BEAN = 16;
@@ -48,6 +51,7 @@ public final class PRNGFixes {
      *
      * @throws SecurityException if a fix is needed but could not be applied.
      */
+    @Deprecated
     public static void apply() {
         applyOpenSSLFix();
         installLinuxPRNGSecureRandom();
@@ -265,7 +269,7 @@ public final class PRNGFixes {
      * @return serial number or {@code null} if not available.
      */
     private static String getDeviceSerialNumber() {
-        // We're using the Reflection API because Build.SERIAL is only available
+        // We're using the Reflection API becau2se Build.SERIAL is only available
         // since API Level 9 (Gingerbread, Android 2.3).
         try {
             return (String) Build.class.getField("SERIAL").get(null);

@@ -638,8 +638,6 @@ public class K9 extends MultiDexApplication {
             StrictMode.enableDefaults();
         }
 
-        PRNGFixes.apply();
-
         super.onCreate();
 
         initializeInjector();
