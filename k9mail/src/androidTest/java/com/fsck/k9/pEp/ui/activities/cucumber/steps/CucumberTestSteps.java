@@ -450,6 +450,7 @@ public class CucumberTestSteps {
     @When("^I reset handshake$")
     public void I_reset_handshake() {
         timeRequiredForThisMethod(30);
+        testUtils.clickStatus();
         testUtils.resetHandshake();
     }
 
