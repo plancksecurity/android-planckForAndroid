@@ -544,17 +544,7 @@ public class TestUtils {
 
     public void goToHandshakeDialog (){
         device.waitForIdle();
-        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
-        if (viewIsDisplayed(R.id.tvPep)) {
-            device.waitForIdle();
-            onView(withId(R.id.tvPep)).check(matches(isDisplayed()));
-            onView(withId(R.id.tvPep)).perform(click());
-        } else if (viewIsDisplayed(R.id.pEp_indicator)) {
-            device.waitForIdle();
-            onView(withId(R.id.pEp_indicator)).check(matches(isDisplayed()));
-            onView(withId(R.id.pEp_indicator)).perform(click());
-        }
-        device.waitForIdle();
+        clickStatus();
         doWaitForResource(R.id.toolbar);
         clickHandShakeButton();
     }
@@ -1192,14 +1182,17 @@ public class TestUtils {
         }
     }
 
-    private void clickStatus() {
+    public void clickStatus() {
         device.waitForIdle();
-        if (!exists(onView(withId(R.id.reply_message)))) {
+        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
+        if (viewIsDisplayed(R.id.tvPep)) {
             device.waitForIdle();
-            clickView(R.id.pEp_indicator);
+            onView(withId(R.id.tvPep)).check(matches(isDisplayed()));
+            onView(withId(R.id.tvPep)).perform(click());
+        } else if (viewIsDisplayed(R.id.pEp_indicator)) {
             device.waitForIdle();
-        } else {
-            clickView(R.id.tvPep);
+            onView(withId(R.id.pEp_indicator)).check(matches(isDisplayed()));
+            onView(withId(R.id.pEp_indicator)).perform(click());
         }
         device.waitForIdle();
     }
