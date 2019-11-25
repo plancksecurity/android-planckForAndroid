@@ -1,13 +1,10 @@
 package com.fsck.k9.ui.settings.general
 
 import android.content.Context
-import androidx.fragment.app.FragmentActivity
 import androidx.preference.PreferenceDataStore
 import com.fsck.k9.K9
 import com.fsck.k9.K9.Theme
 import com.fsck.k9.Preferences
-import com.fsck.k9.pEp.ui.blacklist.PepBlacklist
-import com.fsck.k9.service.MailServiceLegacy
 import java.util.concurrent.ExecutorService
 
 class GeneralSettingsDataStore(
@@ -50,6 +47,7 @@ class GeneralSettingsDataStore(
             "pep_passive_mode" -> K9.getPEpPassiveMode()
             "pep_subject_unprotected" -> K9.ispEpSubjectUnprotected()
             "pep_forward_warning" -> K9.ispEpForwardWarningEnabled()
+            "pep_enable_sync" -> K9.ispEpSyncEnabled()
             else -> defValue
         }
     }
@@ -88,6 +86,7 @@ class GeneralSettingsDataStore(
             "pep_passive_mode" -> app.setPEpPassiveMode(value)
             "pep_subject_unprotected" -> app.setpEpSubjectUnprotected(value)
             "pep_forward_warning" -> app.setpEpForwardWarningEnabled(value)
+            "pep_enable_sync" -> app.setpEpSyncEnabled(value) //TODO: CHECK
             else -> return
         }
 
@@ -126,7 +125,6 @@ class GeneralSettingsDataStore(
             "attachment_default_path" -> K9.getAttachmentDefaultPath()
             "quiet_time_starts" -> K9.getQuietTimeStarts()
             "quiet_time_ends" -> K9.getQuietTimeEnds()
-            "pep_enable_sync" -> K9.getpEpSyncEnabled().name //TODO: CHECK
             else -> defValue
         }
     }
@@ -149,7 +147,6 @@ class GeneralSettingsDataStore(
             "attachment_default_path" -> K9.setAttachmentDefaultPath(value)
             "quiet_time_starts" -> K9.setQuietTimeStarts(value)
             "quiet_time_ends" -> K9.setQuietTimeEnds(value)
-        "pep_enable_sync" -> K9.setpEpSyncState(K9.SyncpEpStatus.valueOf(value)) //TODO: CHECK
             else -> return
         }
 

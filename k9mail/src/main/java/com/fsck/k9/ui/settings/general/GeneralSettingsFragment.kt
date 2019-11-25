@@ -155,18 +155,16 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private fun initializeGlobalpEpSync() {
         findPreference(PREFERENCE_PEP_ENABLE_SYNC)?.apply {
 
-            when (K9.getpEpSyncEnabled()) {
-                K9.SyncpEpStatus.DISABLED -> this.setTitle(R.string.pep_sync_enable_global)
-                K9.SyncpEpStatus.ENABLED_GROUPED -> this.setTitle(R.string.pep_sync_leave_device_group)
-                K9.SyncpEpStatus.ENABLED_SOLE -> this.setTitle(R.string.pep_sync_disable_global)
-                else -> {}
+            when (K9.ispEpSyncEnabled()) {
+                true-> this.setTitle(R.string.pep_sync_enable_global)
+                false -> this.setTitle(R.string.pep_sync_disable_global)
             }
 
             setOnPreferenceClickListener {
                 val app = context.applicationContext as K9
                 K9.setGrouped(false)
 
-                when (K9.getpEpSyncEnabled()) {
+                /*    when (K9.getpEpSyncEnabled()) {
 
                     K9.SyncpEpStatus.DISABLED -> {
                         app.setpEpSyncEnabled(K9.SyncpEpStatus.ENABLED_SOLE)
@@ -182,7 +180,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                     }
                     else -> {}
 
-                }
+                }*/
                 initializeGlobalpEpSync()
 
                 true
