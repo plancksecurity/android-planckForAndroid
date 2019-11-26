@@ -63,6 +63,7 @@ import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.action.ViewActions.typeTextIntoFocusedView;
@@ -943,7 +944,40 @@ public class CucumberTestSteps {
             skipTest("No more accounts");
         }
         startTest(accountSelected);
+    }
+
+    @When("^I remove account (\\S+)$")
+        public void I_remove_account (String account) {
+        int accountToRemove = Integer.parseInt(account);
+        testUtils.openOptionsMenu();
+        testUtils.selectFromMenu(R.string.action_settings);
+        device.waitForIdle();
+        while (true) {
+            try {
+                device.waitForIdle();
+                if (exists(onView(withId(R.id.accounts_list)))) {
+                    onView(withId(R.id.accounts_list)).check(matches(isCompletelyDisplayed()));
+                    while (exists(onView(withId(R.id.accounts_list)))) {
+                        device.waitForIdle();
+                        onData(anything()).inAdapterView(withId(R.id.accounts_list)).atPosition(accountToRemove).perform(longClick());
+                        device.waitForIdle();
+                        BySelector selector = By.clazz("android.widget.TextView");
+                        for (UiObject2 object : device.findObjects(selector)) {
+                            if (object.getText().equals(resources.getString(R.string.remove_account_action))) {
+                                object.click();
+                                device.waitForIdle();
+                                testUtils.clickAcceptButton();
+                                return;
+                            }
+                        }
+
+                    }
+                }
+            } catch (Exception ex) {
+                Timber.i("Cannot remove account: " + ex);
+            }
         }
+    }
 
     private void skipTest (String text) {
         throw new cucumber.api.PendingException(text);
