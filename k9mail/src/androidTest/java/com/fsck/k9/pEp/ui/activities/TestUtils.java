@@ -1954,7 +1954,7 @@ public class TestUtils {
                 } else {
                     device.waitForIdle();
                     onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
-                    assertFailWithMessage("Error: body text != text to compare");
+                    assertFailWithMessage("Error: BODY TEXT=" + text[0] + " ---*****--- TEXT TO COMPARE=" + cucumberBody);
                 }
             }
         }
