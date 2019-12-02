@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.helper.FileBrowserHelper
 import com.fsck.k9.notification.NotificationController
@@ -42,6 +43,14 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeNotificationQuickDelete()
         initializeExtraKeysManagement()
         initializeGlobalpEpKeyReset()
+
+        if (!BuildConfig.WITH_KEY_SYNC) {
+            hideKeySyncOptions()
+        }
+    }
+
+    private fun hideKeySyncOptions() {
+        findPreference(PREFERENCE_PEP_ENABLE_SYNC)?.remove()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
