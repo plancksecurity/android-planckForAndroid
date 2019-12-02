@@ -1308,7 +1308,7 @@ public class TestUtils {
     }
 
     public void waitForTooblar () {
-        for (int waitLoop = 0; waitLoop < 100; waitLoop++) {
+        for (int waitLoop = 0; waitLoop < 1000; waitLoop++) {
             device.waitForIdle();
             while (!viewIsDisplayed(R.id.toolbar) || !viewIsDisplayed(R.id.toolbar_container)) {
                 device.waitForIdle();
