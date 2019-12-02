@@ -339,7 +339,7 @@ public class K9 extends MultiDexApplication {
     private static boolean pEpSubjectUnprotected = false;
     private static boolean pEpForwardWarningEnabled = false;
     private static boolean pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
-    private static boolean grouped = false;
+    private boolean grouped = false;
     private static Set<String> pEpExtraKeys = Collections.emptySet();
 
 
@@ -963,7 +963,7 @@ public class K9 extends MultiDexApplication {
         pEpPassiveMode = storage.getBoolean("pEpPassiveMode", false);
         pEpSubjectUnprotected = storage.getBoolean("pEpSubjectUnprotected", false);
         pEpForwardWarningEnabled = storage.getBoolean("pEpForwardWarningEnabled", false);
-        boolean pEpSyncEnabled = storage.getBoolean("pEpEnableSync",BuildConfig.WITH_KEY_SYNC);
+        pEpSyncEnabled = storage.getBoolean("pEpEnableSync", BuildConfig.WITH_KEY_SYNC);
 
 
         mAttachmentDefaultPath = storage.getString("attachmentdefaultpath",
@@ -1787,8 +1787,16 @@ public class K9 extends MultiDexApplication {
     }
 
 
-    public void setpEpSyncEnabled(boolean ispEpSyncEnabled) {
-        pEpSyncEnabled = ispEpSyncEnabled;
+    public void setpEpSyncEnabled(boolean enabled) {
+        pEpSyncEnabled = enabled;
+
+        if (enabled) {
+            pEpInitSyncEnvironment();
+        } else if (grouped) {
+            leaveDeviceGroup();
+        } else {
+            shutdownSync();
+        }
     }
 
     public boolean needsFastPoll() {
@@ -1853,18 +1861,26 @@ public class K9 extends MultiDexApplication {
         return this.notifyHandshakeCallback;
     }
 
-    public static void setGrouped(boolean value) {
-        grouped = value;
+    public void setGrouped(boolean value) {
+        this.grouped = value;
+    }
+
+    public boolean getGrouped() {
+        return this.grouped;
     }
 
     public void leaveDeviceGroup() {
        grouped = false;
-       pEpSyncProvider.leaveDeviceGroup();
+        if (pEpSyncProvider.isSyncRunning()) {
+            pEpSyncProvider.leaveDeviceGroup();
+        }
        pEpSyncEnabled = false;
     }
 
     public void shutdownSync() {
-        pEpSyncProvider.stopSync();
+        if (pEpSyncProvider.isSyncRunning()) {
+            pEpSyncProvider.stopSync();
+        }
         pEpSyncEnabled = false;
     }
 

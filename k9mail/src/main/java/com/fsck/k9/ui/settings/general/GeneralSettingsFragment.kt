@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
-import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.helper.FileBrowserHelper
 import com.fsck.k9.notification.NotificationController
@@ -43,7 +42,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeNotificationQuickDelete()
         initializeExtraKeysManagement()
         initializeGlobalpEpKeyReset()
-        initializeGlobalpEpSync()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -149,42 +147,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         pEpProvider.apply {
             keyResetAllOwnKeys()
             close()
-        }
-    }
-
-    private fun initializeGlobalpEpSync() {
-        findPreference(PREFERENCE_PEP_ENABLE_SYNC)?.apply {
-
-            when (K9.ispEpSyncEnabled()) {
-                true-> this.setTitle(R.string.pep_sync_enable_global)
-                false -> this.setTitle(R.string.pep_sync_disable_global)
-            }
-
-            setOnPreferenceClickListener {
-                val app = context.applicationContext as K9
-                K9.setGrouped(false)
-
-                /*    when (K9.getpEpSyncEnabled()) {
-
-                    K9.SyncpEpStatus.DISABLED -> {
-                        app.setpEpSyncEnabled(K9.SyncpEpStatus.ENABLED_SOLE)
-                        app.pEpInitSyncEnvironment()
-                    }
-                    K9.SyncpEpStatus.ENABLED_GROUPED -> {
-                        app.leaveDeviceGroup()
-                    }
-                    K9.SyncpEpStatus.ENABLED_SOLE -> {
-                        this.setTitle(R.string.pep_sync_disable_global)
-                        app.setpEpSyncEnabled(K9.SyncpEpStatus.DISABLED)
-                        app.shutdownSync()
-                    }
-                    else -> {}
-
-                }*/
-                initializeGlobalpEpSync()
-
-                true
-            }
         }
     }
 
