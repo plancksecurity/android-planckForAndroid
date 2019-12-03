@@ -132,11 +132,6 @@ public class K9 extends MultiDexApplication {
 
     public static final int VERSION_MIGRATE_OPENPGP_TO_ACCOUNTS = 63;
 
-    public static void setpEpSyncState(@NotNull SyncpEpStatus state) {
-        pEpSyncEnabled = state;
-    }
-
-
     /**
      * Components that are interested in knowing when the K9 instance is
      * available and ready (Android invokes Application.onCreate() after other
@@ -295,16 +290,6 @@ public class K9 extends MultiDexApplication {
         WHEN_IN_LANDSCAPE
     }
 
-    public enum SyncpEpStatus {
-        DISABLED,
-        ENABLED_SOLE,
-        ENABLED_GROUPED;
-
-        boolean isEnabled() {
-            return !this.equals(DISABLED);
-        }
-
-    }
     private static boolean mMessageListCheckboxes = true;
     private static boolean mMessageListStars = true;
     private static int mMessageListPreviewLines = 2;
@@ -353,9 +338,8 @@ public class K9 extends MultiDexApplication {
     private static boolean pEpPassiveMode = false;
     private static boolean pEpSubjectUnprotected = false;
     private static boolean pEpForwardWarningEnabled = false;
-    //private static boolean pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
-    private static SyncpEpStatus pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC ? SyncpEpStatus.ENABLED_SOLE : SyncpEpStatus.DISABLED;
-    private static boolean grouped = false;
+    private static boolean pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
+    private boolean grouped = false;
     private static Set<String> pEpExtraKeys = Collections.emptySet();
 
 
@@ -625,7 +609,7 @@ public class K9 extends MultiDexApplication {
         editor.putBoolean("pEpPassiveMode", pEpPassiveMode);
         editor.putBoolean("pEpSubjectUnprotected", pEpSubjectUnprotected);
         editor.putBoolean("pEpForwardWarningEnabled", pEpForwardWarningEnabled);
-        editor.putString("pEpEnableSync", pEpSyncEnabled.toString());
+        editor.putBoolean("pEpEnableSync", pEpSyncEnabled);
 
         fontSizes.save(editor);
     }
@@ -637,8 +621,6 @@ public class K9 extends MultiDexApplication {
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
         }
-
-        PRNGFixes.apply();
 
         super.onCreate();
 
@@ -789,14 +771,14 @@ public class K9 extends MultiDexApplication {
         KeySyncCleaner.queueAutoConsumeMessages();
 
         if (Preferences.getPreferences(this.getApplicationContext()).getAccounts().size() > 0) {
-            if (pEpSyncEnabled.isEnabled()) {
+            if (pEpSyncEnabled) {
                 initSync();
             }
         }
     }
 
     public PEpProvider getpEpSyncProvider() {
-        if (pEpSyncEnabled.isEnabled()) return pEpSyncProvider;
+        if (pEpSyncEnabled) return pEpSyncProvider;
         else return pEpProvider;
     }
 
@@ -981,13 +963,8 @@ public class K9 extends MultiDexApplication {
         pEpPassiveMode = storage.getBoolean("pEpPassiveMode", false);
         pEpSubjectUnprotected = storage.getBoolean("pEpSubjectUnprotected", false);
         pEpForwardWarningEnabled = storage.getBoolean("pEpForwardWarningEnabled", false);
-        String spEpSyncEnabled = storage.getString("pEpEnableSync",null);
+        pEpSyncEnabled = storage.getBoolean("pEpEnableSync", BuildConfig.WITH_KEY_SYNC);
 
-        if (spEpSyncEnabled != null) {
-            pEpSyncEnabled = SyncpEpStatus.valueOf(spEpSyncEnabled);
-        } else {
-            pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC ? SyncpEpStatus.ENABLED_SOLE : SyncpEpStatus.DISABLED;
-        }
 
         mAttachmentDefaultPath = storage.getString("attachmentdefaultpath",
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString());
@@ -1806,18 +1783,20 @@ public class K9 extends MultiDexApplication {
     }
 
     public static boolean ispEpSyncEnabled() {
-        return pEpSyncEnabled.isEnabled();
-    }
-
-    public static SyncpEpStatus getpEpSyncEnabled() {
         return pEpSyncEnabled;
     }
 
-    public void setpEpSyncEnabled(SyncpEpStatus ispEpSyncEnabled) {
-        pEpSyncEnabled = ispEpSyncEnabled;
-        StorageEditor editor = Preferences.getPreferences(this).getStorage().edit();
-        save(editor);
-        Executors.newSingleThreadExecutor(new NamedThreadFactory("SaveSettings")).execute(editor::commit);
+
+    public void setpEpSyncEnabled(boolean enabled) {
+        pEpSyncEnabled = enabled;
+
+        if (enabled) {
+            pEpInitSyncEnvironment();
+        } else if (grouped) {
+            leaveDeviceGroup();
+        } else {
+            shutdownSync();
+        }
     }
 
     public boolean needsFastPoll() {
@@ -1870,7 +1849,7 @@ public class K9 extends MultiDexApplication {
                 case SyncNotifyInGroup:
                     needsFastPoll = false;
                     grouped = true;
-                    pEpSyncEnabled = SyncpEpStatus.ENABLED_GROUPED;
+                    pEpSyncEnabled = true;
                     break;
             }
 
@@ -1882,13 +1861,27 @@ public class K9 extends MultiDexApplication {
         return this.notifyHandshakeCallback;
     }
 
-    public static void setGrouped(boolean value) {
-        grouped = value;
+    public void setGrouped(boolean value) {
+        this.grouped = value;
     }
+
+    public boolean getGrouped() {
+        return this.grouped;
+    }
+
     public void leaveDeviceGroup() {
        grouped = false;
-       pEpSyncProvider.leaveDeviceGroup();
-       pEpSyncEnabled = SyncpEpStatus.DISABLED;
+        if (pEpSyncProvider.isSyncRunning()) {
+            pEpSyncProvider.leaveDeviceGroup();
+        }
+       pEpSyncEnabled = false;
+    }
+
+    public void shutdownSync() {
+        if (pEpSyncProvider.isSyncRunning()) {
+            pEpSyncProvider.stopSync();
+        }
+        pEpSyncEnabled = false;
     }
 
 

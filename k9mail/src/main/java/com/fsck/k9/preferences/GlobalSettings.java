@@ -301,8 +301,7 @@ public class GlobalSettings {
                 new V(47, new BooleanSetting(false))
         ));
         s.put("pEpEnableSync", Settings.versions(
-                new V(49, new EnumSetting<>(K9.SyncpEpStatus.class,
-                        BuildConfig.WITH_KEY_SYNC? K9.SyncpEpStatus.ENABLED_SOLE: K9.SyncpEpStatus.DISABLED))
+                new V(49, new BooleanSetting(true))
         ));
         SETTINGS = Collections.unmodifiableMap(s);
 

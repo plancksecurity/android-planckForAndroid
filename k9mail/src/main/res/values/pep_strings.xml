@@ -201,8 +201,8 @@
 
     <string name="pep_sync">p≡p sync</string>
     <string name="pep_sync_enable_account">Synchronize this account</string>
-    <string name="pep_sync_enable_global">Enable p≡p sync</string>
-    <string name="pep_sync_disable_global">Disable p≡p sync</string>
+    <string name="pep_sync_is_enabled_global">p≡p sync is enabled</string>
+    <string name="pep_sync_is_disabled_global"> p≡p sync is disabled</string>
     <string name="pep_sync_leave_device_group">Leave Device group</string>
 
     <string name="open_pgp">OpenPGP</string>

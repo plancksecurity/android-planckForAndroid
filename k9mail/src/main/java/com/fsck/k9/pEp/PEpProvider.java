@@ -179,12 +179,6 @@ public interface PEpProvider extends AutoCloseable {
 
     //com.fsck.k9.mail.Message getMimeMessage(Message message);
 
-    void setSyncSendMessageCallback(Sync.MessageToSendCallback callback);
-
-    void setSyncHandshakeCallback(Sync.NotifyHandshakeCallback callback);
-
-    void startSync();
-
     void acceptHandshake(Identity identity);
 
     void rejectHandshake(Identity identity);
@@ -230,6 +224,14 @@ public interface PEpProvider extends AutoCloseable {
     void keyResetAllOwnKeys();
 
     void leaveDeviceGroup();
+
+    void startSync();
+    void stopSync();
+    boolean isSyncRunning();
+
+    void setSyncSendMessageCallback(Sync.MessageToSendCallback callback);
+
+    void setSyncHandshakeCallback(Sync.NotifyHandshakeCallback callback);
 
     class KeyDetail {
         private final Address address;

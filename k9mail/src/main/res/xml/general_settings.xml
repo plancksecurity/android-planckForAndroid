@@ -348,13 +348,12 @@
                 android:summary="Encrypt messages with additional keys.">
             </Preference>
 
-            <PreferenceCategory
-                android:key="pep_sync"
-                android:title="@string/pep_sync">
-                <Preference
-                    android:key="pep_enable_sync"
-                    android:title="@string/pep_sync_disable_global" />
-            </PreferenceCategory>
+
+            <SwitchPreferenceCompat
+                android:key="pep_enable_sync"
+                android:title="@string/pep_sync"
+                android:summaryOn="@string/pep_sync_is_enabled_global"
+                android:summaryOff="@string/pep_sync_is_disabled_global" />
 
             <PreferenceCategory
                 android:key="pep_gpg_compatibility"

@@ -1168,6 +1168,18 @@ public class PEpProviderImpl implements PEpProvider {
         engine.leave_device_group();
     }
 
+    @Override
+    public void stopSync() {
+        createEngineInstanceIfNeeded();
+        engine.stopSync();
+    }
+
+    @Override
+    public boolean isSyncRunning() {
+        createEngineInstanceIfNeeded();
+        return engine.isSyncRunning();
+    }
+
 
     private String getElementAtPosition(String chain) {
         return chain.substring(1, chain.length() - 1);
