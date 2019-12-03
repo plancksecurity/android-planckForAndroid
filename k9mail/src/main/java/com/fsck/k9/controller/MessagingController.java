@@ -4868,6 +4868,11 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
     public void messageToSend(foundation.pEp.jniadapter.Message pEpMessage) {
         try {
             Account currentAccount = loadMessageAccount(pEpMessage);
+            if (currentAccount == null) {
+                Timber.e("%s account not found", pEpMessage.getFrom().address);
+                return;
+            }
+
             Message message = PEpProviderImpl.getMimeMessage(pEpMessage);
             message.setFlag(Flag.X_PEP_SYNC_MESSAGE_TO_SEND, true);
             new Thread(() -> {
