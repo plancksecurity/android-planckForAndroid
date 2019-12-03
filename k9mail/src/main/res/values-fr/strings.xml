@@ -1042,4 +1042,5 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="app_license">Sous Licence Apache, Version 2.0.</string>
     <string name="global_settings_confirm_menu_mark_all_read">Marquer tous les messages comme lus</string>
     <string name="account_setup_auth_type_xoauth2">Jeton OAuth 2.0</string>
+    <string name="status_no_network">Sync désactivé - Pas de réseau</string>
 </resources>
