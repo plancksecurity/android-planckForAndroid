@@ -1414,6 +1414,9 @@ public class TestUtils {
     public void openOptionsMenu() {
         while (true) {
             try {
+                device.waitForIdle();
+                onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
+                device.waitForIdle();
                 openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
                 device.waitForIdle();
             } catch (Exception ex) {
