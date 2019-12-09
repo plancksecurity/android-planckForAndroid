@@ -61,6 +61,7 @@ import timber.log.Timber;
 import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.longClick;
@@ -949,7 +950,16 @@ public class CucumberTestSteps {
     @When("^I remove account (\\S+)$")
         public void I_remove_account (String account) {
         int accountToRemove = Integer.parseInt(account);
-        testUtils.openOptionsMenu();
+        while (true) {
+            try {
+                device.waitForIdle();
+                openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
+                device.waitForIdle();
+            } catch (Exception ex) {
+                Timber.i("Cannot open menu");
+                break;
+            }
+        }
         testUtils.selectFromMenu(R.string.action_settings);
         device.waitForIdle();
         while (true) {
