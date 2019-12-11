@@ -281,11 +281,7 @@ public class CucumberTestSteps {
             }
         }
         try {
-            onView(withId(R.id.subject)).perform(click(), closeSoftKeyboard());
-            onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
-            device.waitForIdle();
-            device.pressKeyCode(KeyEvent.KEYCODE_DEL);
-            device.waitForIdle();
+            testUtils.typeTextToForceRatingCaltulation(R.id.subject);
             onView(withId(R.id.message_content)).perform(click(), closeSoftKeyboard());
             onView(withId(R.id.to)).check(matches(isDisplayed()));
         } catch (Exception ex) {
@@ -748,7 +744,7 @@ public class CucumberTestSteps {
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         device.waitForIdle();
             try {
-                onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
+                testUtils.typeTextToForceRatingCaltulation(R.id.subject);
             } catch (Exception ex) {
                 for (UiObject2 object : device.findObjects(selector)) {
                     boolean actionPerformed = false;
@@ -762,7 +758,7 @@ public class CucumberTestSteps {
                     }
                 }
                 try {
-                    onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
+                    testUtils.typeTextToForceRatingCaltulation(R.id.subject);
                 } catch (Exception e) {
                     Timber.i("Cannot find subject");
                 }
@@ -1102,7 +1098,7 @@ public class CucumberTestSteps {
         while (!viewIsDisplayed(R.id.message_content)) {
             device.waitForIdle();
         }
-        onView(withId(R.id.message_content)).perform(typeText(" "));
+        testUtils.typeTextToForceRatingCaltulation(R.id.message_content);
     }
 
     @Then("^I send (\\d+) (?:message|messages) to (\\S+) with subject (\\S+) and body (\\S+)$")
@@ -1277,8 +1273,7 @@ public class CucumberTestSteps {
                     device.waitForIdle();
                     scroll.swipe(Direction.DOWN, 1.0f);
                     device.waitForIdle();
-                    onView(withId(R.id.subject)).perform(closeSoftKeyboard());
-                    onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
+                    testUtils.typeTextToForceRatingCaltulation(R.id.subject);
                 } catch (Exception ex) {
                     Timber.i("Cannot do scroll down");
                 }
