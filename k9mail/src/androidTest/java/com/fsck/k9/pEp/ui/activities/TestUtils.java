@@ -1145,18 +1145,14 @@ public class TestUtils {
 
     void testStatusMail(BasicMessage inputMessage, BasicIdentity expectedIdentity) {
         fillMessage(inputMessage, false);
-        device.waitForIdle();
-        onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
-        device.waitForIdle();
+        typeTextToForceRatingCaltulation(R.id.subject);
         checkStatus(expectedIdentity.getRating());
         pressBack();
     }
 
     void testStatusMailAndListMail(BasicMessage inputMessage, BasicIdentity expectedIdentity) {
         fillMessage(inputMessage, false);
-        device.waitForIdle();
-        onView(withId(R.id.subject)).perform(typeText(" "), closeSoftKeyboard());
-        device.waitForIdle();
+        typeTextToForceRatingCaltulation(R.id.subject);
         checkStatus(expectedIdentity.getRating());
         onView(withText(expectedIdentity.getAddress())).check(doesNotExist());
         pressBack();
@@ -1305,6 +1301,19 @@ public class TestUtils {
                 return;
             }
         }
+    }
+
+    public void typeTextToForceRatingCaltulation (int view) {
+        device.waitForIdle();
+        onView(withId(view)).perform(click(), closeSoftKeyboard());
+        onView(withId(view)).perform(typeText(" "), closeSoftKeyboard());
+        device.waitForIdle();
+        if (getTextFromView(onView(withId(view))).contains(" ")) {
+            Timber.i("Estoy en pre Key");
+            device.pressKeyCode(KeyEvent.KEYCODE_DEL);
+            Timber.i("Estoy en post Key");
+        }
+        device.waitForIdle();
     }
 
     public void waitForTooblar () {
