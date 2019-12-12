@@ -1423,6 +1423,10 @@ public class CucumberTestSteps {
         }
     }
 
+    @Then("^I open Hamburger Menu$")
+    public void I_open_hamburger_menu() {
+        testUtils.openHamburgerMenu();
+    }
 
     @Then("^I set checkbox (\\S+) to (true|false)$")
     public void I_set_checkbox_to(String resource, boolean checked){
