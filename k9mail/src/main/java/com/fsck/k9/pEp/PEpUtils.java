@@ -43,6 +43,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -626,6 +627,12 @@ public class PEpUtils {
     public static String sanitizeFpr(String fpr) {
         if (fpr != null) return fpr.toUpperCase().replaceAll("\\P{XDigit}", "");
         return "";
+    }
+
+    public static <MSG extends Message> boolean isAutoConsumeMessage(MSG message) {
+        final Set<String> headerNames = message.getHeaderNames();
+        return headerNames.contains(MimeHeader.HEADER_PEP_AUTOCONSUME.toUpperCase(Locale.ROOT))
+                || headerNames.contains(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY.toUpperCase(Locale.ROOT));
     }
 }
 

@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
 
@@ -209,8 +210,7 @@ public class PEpProviderImpl implements PEpProvider {
                         || decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY)) {
                     Log.d(TAG, "pEpdecryptMessage() after decrypt has usable pEp key (import)");
                     return new DecryptResult(decMsg, decReturn.rating, new KeyDetail("", null), decReturn.flags);
-                } else if (!decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_AUTOCONSUME) &&
-                        !decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY)) {
+                } else if (!PEpUtils.isAutoConsumeMessage(decMsg)) {
                     Log.d(TAG, "pEpdecryptMessage() after decrypt has usable PGP key (import)");
                     return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg), decReturn.flags);
                 } else return new DecryptResult(decMsg, decReturn.rating, null, 0x2);
@@ -243,8 +243,7 @@ public class PEpProviderImpl implements PEpProvider {
                 return new DecryptResult(decryptedMimeMessage, decReturn.rating, null, flags);
             }
         }
-        else if (decryptedMimeMessage.getHeaderNames().contains(MimeHeader.HEADER_PEP_AUTOCONSUME)
-                || decryptedMimeMessage.getHeaderNames().contains(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY)) {
+        else if (PEpUtils.isAutoConsumeMessage(decryptedMimeMessage)) {
             if (lastValidDate.after(decryptedMimeMessage.getSentDate())) {
                 flags = DecryptFlags.pEpDecryptFlagConsumed.value;
                 return new DecryptResult(decryptedMimeMessage, decReturn.rating, null, flags);
@@ -260,8 +259,10 @@ public class PEpProviderImpl implements PEpProvider {
         Vector<Address> replyTo = new Vector<>();
         for (Address address : decMsg.getReplyTo()) {
             if (address.getHostname().contains("peptunnel")) {
-                decMsg.addHeader(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY, address.getPersonal());
-                decMsg.addHeader(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY, "true");
+                decMsg.addHeader(MimeHeader.HEADER_PEP_KEY_IMPORT, address.getPersonal());
+                decMsg.addHeader(MimeHeader.HEADER_PEP_AUTOCONSUME, "true");
+            } else if (address.getAddress().contains(MimeHeader.HEADER_PEP_AUTOCONSUME.toUpperCase(Locale.ROOT))) {
+                decMsg.addHeader(MimeHeader.HEADER_PEP_AUTOCONSUME, "true");
             } else {
                 replyTo.add(address);
             }

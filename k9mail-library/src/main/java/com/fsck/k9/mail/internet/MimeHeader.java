@@ -74,7 +74,7 @@ public class MimeHeader implements Cloneable {
     public Set<String> getHeaderNames() {
         Set<String> names = new LinkedHashSet<String>();
         for (Field field : mFields) {
-            names.add(field.getName());
+            names.add(field.getName().toUpperCase());
         }
         return names;
     }
