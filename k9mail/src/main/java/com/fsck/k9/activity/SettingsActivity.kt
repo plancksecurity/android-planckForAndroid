@@ -383,7 +383,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
             override fun onClick(position: Int?) {
                 val account = accountsList!!.getItemAtPosition(position!!) as BaseAccount
-                onOpenAccount(account)
+                onEditAccount(account as Account)
             }
         }, OnBaseAccountClickListener { baseAccount -> AccountSettingsActivity.start(this@SettingsActivity, baseAccount.uuid) })
         accountsList!!.adapter = adapter
@@ -852,7 +852,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 holder.activeIcons = view.findViewById<View>(R.id.active_icons) as RelativeLayout
 
                 holder.folders = view.findViewById<View>(R.id.folders) as ImageButton
-                holder.deviceGroup = view.findViewById<View>(R.id.account_leave_device_group) as ImageButton
                 holder.settings = view.findViewById<View>(R.id.account_settings) as ImageButton
                 holder.accountsItemLayout = view.findViewById<View>(R.id.accounts_item_layout) as LinearLayout
                 val accountsDescriptionLayout = view.findViewById<View>(R.id.accounts_description_layout) as LinearLayout
@@ -925,14 +924,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                     it.drawable.alpha = 255
                     it.setOnClickListener { onEditAccount(account as Account) }
                 }
-                holder.deviceGroup?.visibility = View.GONE
-                holder.deviceGroup?.let {
-                    it.setOnClickListener {
-                        Toast.makeText(this@SettingsActivity,
-                                "Leave Sync group: Option not implemented yet", Toast.LENGTH_LONG)
-                                .show()
-                    }
-                }
             }
 
             return view
@@ -978,7 +969,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             var activeIcons: RelativeLayout? = null
             var chip: View? = null
             var folders: ImageButton? = null
-            var deviceGroup: ImageButton? = null
             var settings: ImageButton? = null
             var accountsItemLayout: LinearLayout? = null
             var descriptionUnreadMessages: TextView? = null
