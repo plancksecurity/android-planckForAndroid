@@ -81,6 +81,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import androidx.test.platform.app.InstrumentationRegistry ;
@@ -1301,6 +1302,12 @@ public class TestUtils {
                 return;
             }
         }
+    }
+
+    public void openHamburgerMenu () {
+        device.waitForIdle();
+        onView(withContentDescription("Open navigation drawer")).perform(click());
+        device.waitForIdle();
     }
 
     public void typeTextToForceRatingCaltulation (int view) {
