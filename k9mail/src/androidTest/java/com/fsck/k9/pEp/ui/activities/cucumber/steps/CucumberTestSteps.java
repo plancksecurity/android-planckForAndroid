@@ -1023,11 +1023,18 @@ public class CucumberTestSteps {
                         return;
                     }
                 } else {
-                    while (!exists(onView(withId(R.id.accounts_list)))) {
-                        testUtils.openOptionsMenu();
-                        testUtils.selectFromMenu(R.string.action_settings);
-                        device.waitForIdle();
+                    if (accountToStart != 0) {
+                        accountToStart = accountToStart - 1;
                     }
+                    device.waitForIdle();
+                    testUtils.openHamburgerMenu();
+                    testUtils.clickView(R.id.nav_header_accounts);
+                    onData(anything()).inAdapterView(withId(R.id.navigation_accounts)).atPosition(accountToStart).perform(click());
+                    testUtils.swipeDownMessageList();
+                    device.waitForIdle();
+                    testUtils.getMessageListSize();
+                    time[0] = 350;
+                    return;
                 }
             } catch (Exception ex) {
                 while (!exists(onView(withId(R.id.accounts_list)))) {
