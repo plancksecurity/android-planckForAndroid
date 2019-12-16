@@ -338,13 +338,13 @@ public class CucumberTestSteps {
                     }
                 }
                 while (!viewIsDisplayed(R.id.subject)) {
-                    device.waitForIdle();
                     try {
+                        device.waitForIdle();
                         scroll.swipe(Direction.DOWN, 1.0f);
+                        device.waitForIdle();
                     } catch (Exception e) {
                         testUtils.pressBack();
                     }
-                    waitUntilIdle();
                 }
                 onView(withId(R.id.subject)).check(matches(isCompletelyDisplayed()));
                 return;
