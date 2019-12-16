@@ -321,19 +321,23 @@ public class CucumberTestSteps {
                 for (UiObject2 object : device.findObjects(selector)) {
                     if (object.getResourceName().equals(uiObject.getResourceName())) {
                         while (!object.getText().contains(testUtils.longText())) {
-                            device.waitForIdle();
-                            object.click();
-                            testUtils.setClipboard(testUtils.longText());
-                            for (int i = 0; i < 61; i++) {
+                            try {
                                 device.waitForIdle();
-                                text1 = text1 + testUtils.longText();
+                                object.click();
+                                testUtils.setClipboard(testUtils.longText());
+                                for (int i = 0; i < 61; i++) {
+                                    device.waitForIdle();
+                                    text1 = text1 + testUtils.longText();
+                                }
+                                while (!object.getText().contains(text1)) {
+                                    device.waitForIdle();
+                                    testUtils.setClipboard(text1);
+                                    testUtils.pasteClipboard();
+                                }
+                                object.click();
+                            } catch (Exception ex) {
+                                Timber.i("Cannot fill long text: " + ex.getMessage());
                             }
-                            while (!object.getText().contains(text1)) {
-                                device.waitForIdle();
-                                testUtils.setClipboard(text1);
-                                testUtils.pasteClipboard();
-                            }
-                            object.click();
                         }
                     }
                 }
