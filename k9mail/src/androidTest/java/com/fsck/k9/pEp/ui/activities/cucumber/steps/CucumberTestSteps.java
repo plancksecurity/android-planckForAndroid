@@ -315,7 +315,7 @@ public class CucumberTestSteps {
             case "longText":
                 timeRequiredForThisMethod(3000);
                 device.waitForIdle();
-                String text1 = "";
+                String longText = "";
                 BySelector selector = By.clazz("android.widget.EditText");
                 UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/message_content"));
                 for (UiObject2 object : device.findObjects(selector)) {
@@ -327,11 +327,11 @@ public class CucumberTestSteps {
                                 testUtils.setClipboard(testUtils.longText());
                                 for (int i = 0; i < 61; i++) {
                                     device.waitForIdle();
-                                    text1 = text1 + testUtils.longText();
+                                    longText = longText + testUtils.longText();
                                 }
-                                while (!object.getText().contains(text1)) {
+                                while (!object.getText().contains(longText)) {
                                     device.waitForIdle();
-                                    testUtils.setClipboard(text1);
+                                    testUtils.setClipboard(longText);
                                     testUtils.pasteClipboard();
                                 }
                                 object.click();
