@@ -565,7 +565,7 @@ public class TestUtils {
 
     private void createNAccounts (int n) {
         try {
-            for (; account < n; account++) {
+            for (; account <= n; account++) {
                 device.waitForIdle();
                 while(exists(onView(withId(R.id.message_list)))) {
                     openOptionsMenu();
