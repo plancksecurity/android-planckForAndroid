@@ -1069,9 +1069,7 @@ public class CucumberTestSteps {
             device.waitForIdle();
             testUtils.pressBack();
         }
-        device.waitForIdle();
-        onView(withId(R.id.search)).perform(click());
-        device.waitForIdle();
+        testUtils.clickSearch();
         if (exists(onView(withId(R.id.search_clear)))) {
             try {
                 onView(withId(R.id.search_clear)).perform(click());
