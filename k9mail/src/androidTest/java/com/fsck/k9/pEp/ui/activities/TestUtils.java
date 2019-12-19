@@ -527,7 +527,8 @@ public class TestUtils {
                         Timber.i("Ignored", "Ignored exception");
                     }
                 }
-                createNAccounts(1);
+                Timber.i("Cuentas: " +getTotalAccounts());
+                createNAccounts(getTotalAccounts());
         } catch (Exception ex) {
             if (!exists(onView(withId(R.id.accounts_list)))) {
                 readConfigFile();
@@ -571,6 +572,8 @@ public class TestUtils {
                     selectFromMenu(R.string.action_settings);
                     device.waitForIdle();
                     try {
+                        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+                        scroll.swipe(Direction.UP, 1.0f);
                         onView(withId(R.id.add_account_container)).perform(click());
                         device.waitForIdle();
                     } catch (Exception list) {
