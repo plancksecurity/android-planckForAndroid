@@ -343,6 +343,7 @@ public class CucumberTestSteps {
                 }
                 while (!viewIsDisplayed(R.id.subject)) {
                     try {
+                        scroll = device.findObject(By.clazz("android.widget.ScrollView"));
                         device.waitForIdle();
                         scroll.swipe(Direction.DOWN, 1.0f);
                         device.waitForIdle();
