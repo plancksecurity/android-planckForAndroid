@@ -597,7 +597,12 @@ public class TestUtils {
         } catch (Exception ex) {
             Timber.i("Ignored", "Exists account");
         }
+    }
 
+    public void clickSearch() {
+        device.waitForIdle();
+        onView(withId(R.id.search)).perform(click());
+        device.waitForIdle();
     }
 
     private void fillAccountPassword() {
