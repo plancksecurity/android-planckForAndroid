@@ -1091,6 +1091,11 @@ public class CucumberTestSteps {
         }
     }
 
+    @And("^I click search button$")
+    public void I_click_search_button(){
+        testUtils.clickSearch();
+    }
+
     @And("^I click reply message$")
     public void I_click_reply_message(){
         timeRequiredForThisMethod(10);
