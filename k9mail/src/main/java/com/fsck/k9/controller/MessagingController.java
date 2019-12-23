@@ -116,12 +116,12 @@ import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification;
 import com.fsck.k9.search.SqlQueryBuilder;
 
-import foundation.pEp.jniadapter.DecryptFlags;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import foundation.pEp.jniadapter.pEpException;
 import timber.log.Timber;
 
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
@@ -4864,31 +4864,86 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
         pEpProvider.setSubjectUnprotected(subjectUnprotected);
     }
 
+    public Message appendToInboxpEpSyncMessage(final Account account, final Message message) {
+        Message localMessage = null;
+        try {
+            LocalStore localStore = account.getLocalStore();
+            LocalFolder localFolder = localStore.getFolder(account.getInboxFolderName());
+            localFolder.open(Folder.OPEN_MODE_RW);
+
+
+            // Save the message to the store.
+            localFolder.appendMessages(Collections.singletonList(message));
+            // Fetch the message back from the store.  This is the Message that's returned to the caller.
+            localMessage = localFolder.getMessage(message.getUid());
+            localMessage.setFlag(Flag.X_DOWNLOADED_FULL, true);
+
+            PendingCommand command = PendingAppend.create(localFolder.getName(), localMessage.getUid());
+            queuePendingCommand(account, command);
+            processPendingCommands(account);
+
+
+        } catch (MessagingException e) {
+            Timber.e(e, "Unable to save message as draft.");
+        }
+        return localMessage;
+    }
+
     @Override
     public void messageToSend(foundation.pEp.jniadapter.Message pEpMessage) {
-        try {
-            Account currentAccount = loadMessageAccount(pEpMessage);
-            if (currentAccount == null) {
-                Timber.e("%s account not found", pEpMessage.getFrom().address);
-                return;
+        threadPool.execute(() -> {
+            try {
+                Account fromAccount = loadAddressAccount(pEpMessage.getFrom().address);
+                if (fromAccount == null) {
+                    Timber.e("messageToSend: %s account not found", pEpMessage.getFrom().address);
+                    return;
+                }
+
+                Message message = PEpProviderImpl.getMimeMessage(pEpMessage);
+
+                if (message == null) {
+                    Timber.e("messageToSend: Cannot convert pEpMessage into K9Message");
+                    return;
+                }
+
+                message.setFlag(Flag.X_PEP_SYNC_MESSAGE_TO_SEND, true);
+
+                final List<Address> toRecipients = Arrays.asList(message.getRecipients(RecipientType.TO));
+                final List<Address> ccRecipients = Arrays.asList(message.getRecipients(RecipientType.CC));
+                Set<Address> recipients = new HashSet<>(toRecipients);
+                recipients.addAll(ccRecipients);
+
+                List<Account> accountsToAppend = getAccountsToAppend(recipients);
+                if (accountsToAppend != null) {
+                    for (Account account : accountsToAppend) {
+                        appendToInboxpEpSyncMessage(account, message);
+                    }
+
+                } else {
+                    sendpEpSyncMessage(fromAccount, message);
+                }
+
+            } catch (pEpException | MessagingException e) {
+                Timber.e(e, "messageToSend: Cannot send message");
             }
 
-            Message message = PEpProviderImpl.getMimeMessage(pEpMessage);
-            message.setFlag(Flag.X_PEP_SYNC_MESSAGE_TO_SEND, true);
-            new Thread(() -> {
-                try {
-                    sendpEpSyncMessage(currentAccount, message);
-                    //importKeyController.next();
-                } catch (MessagingException e) {
-                    Timber.e("pEp", "messageToSend: ", e);
-                }
-            }).start();
+        });
 
-//            Timber.e("PEPJNI", "messageToSend: " + pEpMessage.getShortmsg());
-//            Timber.e("PEPJNIm", "messageToSend: " + pEpMessage.getLongmsg());
-        } catch (MessagingException e) {
-            e.printStackTrace();
+    }
+
+    private List<Account> getAccountsToAppend(final Set<Address> recipients) {
+
+        List <Account> result = new ArrayList<>();
+
+        for (Address recipient : recipients) {
+            Account account = loadAddressAccount(recipient.getAddress());
+            if (account == null) {
+                return null;
+            } else {
+                result.add(account);
+            }
         }
+        return result;
     }
 
     private void sendpEpSyncMessage(Account account, Message message) throws MessagingException {
@@ -4896,20 +4951,20 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
         sendMessage(transport, message);
     }
 
-    Account checkAccount(foundation.pEp.jniadapter.Message message, Account account) {
+    Account checkAccount(String address, Account account) {
         for (Identity identity : account.getIdentities()) {
-            if (identity.getEmail().equals(message.getFrom().address)) {
+            if (identity.getEmail().equals(address)) {
                 return account;
             }
         }
-        return Preferences.getPreferences(context).getDefaultAccount();
+        return null;
     }
 
-    private Account loadMessageAccount(foundation.pEp.jniadapter.Message pEpMessage) {
+    private Account loadAddressAccount(String address) {
         List<Account> accounts = Preferences.getPreferences(context).getAccounts();
         Account currentAccount = null;
         for (Account account : accounts) {
-            currentAccount = checkAccount(pEpMessage, account);
+            currentAccount = checkAccount(address, account);
             if (currentAccount != null) {
                 break;
             }
