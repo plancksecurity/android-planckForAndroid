@@ -605,6 +605,58 @@ public class TestUtils {
         }
     }
 
+    public void selectAccount (int accountToSelect) {
+        while (true) {
+            try {
+                device.waitForIdle();
+                if (exists(onView(withId(R.id.accounts_list)))) {
+                    while (!viewIsDisplayed(R.id.accounts_list)) {
+                        device.waitForIdle();
+                        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+                        scroll.swipe(Direction.UP, 1.0f);
+                        device.waitForIdle();
+                    }
+                    onView(withId(R.id.accounts_list)).check(matches(isCompletelyDisplayed()));
+                    while (exists(onView(withId(R.id.accounts_list)))) {
+                        device.waitForIdle();
+                        onData(anything()).inAdapterView(withId(R.id.accounts_list)).atPosition(accountToSelect).perform(click());
+                        device.waitForIdle();
+                        if (!exists(onView(withId(R.id.actionbar_title_first)))) {
+                            pressBack();
+                            device.waitForIdle();
+                        }
+                    }
+                    if (!exists(onView(withId(R.id.accounts_list)))) {
+                        swipeDownMessageList();
+                        device.waitForIdle();
+                        getMessageListSize();
+                        return;
+                    }
+                } else {
+                    if (accountToSelect != 0) {
+                        accountToSelect = accountToSelect - 1;
+                    }
+                    device.waitForIdle();
+                    //testUtils.openHamburgerMenu();
+                    //clickView(R.id.nav_header_accounts);
+
+                    openOptionsMenu();
+                    selectFromMenu(R.string.action_settings);
+                    onData(anything()).inAdapterView(withId(R.id.navigation_accounts)).atPosition(accountToSelect).perform(click());
+                    swipeDownMessageList();
+                    device.waitForIdle();
+                    getMessageListSize();
+                    return;
+                }
+            } catch (Exception ex) {
+                while (!exists(onView(withId(R.id.accounts_list)))) {
+                    pressBack();
+                    device.waitForIdle();
+                }
+                Timber.i("View not found. Start test: " + ex);
+            }
+        }
+    }
 
     public void clickSearch() {
         device.waitForIdle();
