@@ -244,7 +244,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
 
     private void runInBackground() {
         Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-        Timber.d("createIfNeeded", "messaging controller");
+        Timber.d("createIfNeeded messaging controller");
         pEpProvider = PEpProviderFactory.createAndSetupProvider(context);
         while (!stopped) {
             String commandDescription = null;
@@ -1045,8 +1045,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
         Folder remoteFolder = null;
         LocalFolder tLocalFolder = null;
 
-        if (K9.isDebug())
-            Timber.i(K9.LOG_TAG, "Synchronizing folder " + account.getDescription() + ":" + folder);
+        Timber.i("pEp Synchronizing folder %s:%s", account.getDescription(), folder);
 
 //        for (MessagingListener l : getListeners(listener)) {
 //            l.synchronizeMailboxStarted(account, folder);
@@ -1064,13 +1063,13 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
 
         Exception commandException = null;
         try {
-            if (K9.isDebug())
-                Timber.d(K9.LOG_TAG, "SYNC: About to process pending commands for account " + account.getDescription());
+            Timber.d("pEp SYNC: About to process pending commands for account %s",
+                    account.getDescription());
 
             try {
                 processPendingCommandsSynchronous(account);
             } catch (Exception e) {
-                Timber.e(K9.LOG_TAG, "Failure processing command, but allow message sync attempt", e);
+                Timber.e(e, "Failure processing command, but allow message sync attempt");
                 commandException = e;
             }
 
@@ -1078,8 +1077,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
              * Get the message list from the local store and create an index of
              * the uids within the list.
              */
-            if (K9.isDebug())
-                Timber.v(K9.LOG_TAG, "SYNC: About to get local folder " + folder);
+            Timber.v("pEp SYNC: About to get local folder %s", folder);
 
             final LocalStore localStore = account.getLocalStore();
             tLocalFolder = localStore.getFolder(folder);
@@ -1093,14 +1091,12 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
             }
 
             if (providedRemoteFolder != null) {
-                if (K9.isDebug())
-                    Timber.v(K9.LOG_TAG, "SYNC: using providedRemoteFolder " + folder);
+                Timber.v("pEp SYNC: using providedRemoteFolder %s", folder);
                 remoteFolder = providedRemoteFolder;
             } else {
                 Store remoteStore = account.getRemoteStore();
 
-                if (K9.isDebug())
-                    Timber.v(K9.LOG_TAG, "SYNC: About to get remote folder " + folder);
+                Timber.v("pEp SYNC: About to get remote folder %s", folder);
                 remoteFolder = remoteStore.getFolder(folder);
 
                 if (!verifyOrCreateRemoteSpecialFolder(account, folder, remoteFolder, listener)) {
@@ -1129,13 +1125,12 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                 /*
                  * Open the remote folder. This pre-loads certain metadata like message count.
                  */
-                if (K9.isDebug())
-                    Timber.v(K9.LOG_TAG, "SYNC: About to open remote folder " + folder);
+                Timber.v("pEp SYNC: About to open remote folder %s", folder);
 
                 remoteFolder.open(Folder.OPEN_MODE_RW);
                 if (Expunge.EXPUNGE_ON_POLL == account.getExpungePolicy()) {
-                    if (K9.isDebug())
-                        Timber.d(K9.LOG_TAG, "SYNC: Expunging folder " + account.getDescription() + ":" + folder);
+                    Timber.d("pEp SYNC: Expunging folder %s:%s",
+                            account.getDescription(), folder);
                     remoteFolder.expunge();
                 }
 
@@ -1157,8 +1152,8 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
             final List<Message> remoteMessages = new ArrayList<>();
             Map<String, Message> remoteUidMap = new HashMap<>();
 
-            if (K9.isDebug())
-                Timber.v(K9.LOG_TAG, "SYNC: Remote message count for folder " + folder + " is " + remoteMessageCount);
+            Timber.v("pEp SYNC: Remote message count for folder %s is %d",
+                    folder, remoteMessageCount);
             final Date earliestDate = account.getEarliestPollDate();
 
 
@@ -1171,8 +1166,8 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                     remoteStart = 1;
                 }
 
-                if (K9.isDebug())
-                    Timber.v(K9.LOG_TAG, "SYNC: About to get messages " + remoteStart + " through " + remoteMessageCount + " for folder " + folder);
+                Timber.v("pEp SYNC: About to get messages %d through %d for folder %s",
+                        remoteStart, remoteMessageCount, folder);
 
                 final AtomicInteger headerProgress = new AtomicInteger(0);
                 for (MessagingListener l : getListeners(listener)) {
@@ -1195,8 +1190,8 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                         remoteUidMap.put(thisMess.getUid(), thisMess);
                     }
                 }
-                if (K9.isDebug())
-                    Timber.v(K9.LOG_TAG, "SYNC: Got " + remoteUidMap.size() + " messages for folder " + folder);
+                Timber.v("pEp SYNC: Got %d messages for folder %s",
+                        remoteUidMap.size(), folder);
 
                 for (MessagingListener l : getListeners(listener)) {
                     l.synchronizeMailboxHeadersFinished(account, folder, headerProgress.get(), remoteUidMap.size());
@@ -1252,9 +1247,8 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
             localFolder.setLastChecked(System.currentTimeMillis());
             localFolder.setStatus(null);
 
-            if (K9.isDebug())
-                Timber.d(K9.LOG_TAG, "Done synchronizing folder " + account.getDescription() + ":" + folder +
-                        " @ " + new Date() + " with " + newMessages + " new messages");
+            Timber.d("pEp Done synchronizing folder %s:%s @ %s with %d new messages",
+                    account.getDescription(), folder, new Date(), newMessages);
 
             for (MessagingListener l : getListeners(listener)) {
                 l.synchronizeMailboxFinished(account, folder, remoteMessageCount, newMessages);
@@ -1263,16 +1257,16 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
 
             if (commandException != null) {
                 String rootMessage = getRootCauseMessage(commandException);
-                Timber.e(K9.LOG_TAG, "Root cause failure in " + account.getDescription() + ":" +
-                        tLocalFolder.getName() + " was '" + rootMessage + "'");
+                Timber.e(commandException, "pEp Root cause failure in %s:%s was '%s'",
+                        account.getDescription(), tLocalFolder.getName(), rootMessage);
                 localFolder.setStatus(rootMessage);
                 for (MessagingListener l : getListeners(listener)) {
                     l.synchronizeMailboxFailed(account, folder, rootMessage);
                 }
             }
 
-            if (K9.isDebug())
-                Timber.i(K9.LOG_TAG, "Done synchronizing folder " + account.getDescription() + ":" + folder);
+            Timber.i("pEp Done synchronizing folder %s:%s",
+                    account.getDescription(), folder);
 
         } catch (AuthenticationFailedException e) {
             handleAuthenticationFailure(account, true);
@@ -1281,7 +1275,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                 l.synchronizeMailboxFailed(account, folder, "Authentication failure");
             }
         } catch (Exception e) {
-            Timber.e(K9.LOG_TAG, "synchronizeMailbox", e);
+            Timber.e(e, "synchronizeMailbox");
             // If we don't set the last checked, it can try too often during
             // failure conditions
             String rootMessage = getRootCauseMessage(e);
@@ -1290,8 +1284,8 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                     tLocalFolder.setStatus(rootMessage);
                     tLocalFolder.setLastChecked(System.currentTimeMillis());
                 } catch (MessagingException me) {
-                    Timber.e(K9.LOG_TAG, "Could not set last checked on folder " + account.getDescription() + ":" +
-                            tLocalFolder.getName(), e);
+                    Timber.e(e, "pEp Could not set last checked on folder %s:%s",
+                            account.getDescription(), tLocalFolder.getName());
                 }
             }
 
@@ -1299,7 +1293,8 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                 l.synchronizeMailboxFailed(account, folder, rootMessage);
             }
             notifyUserIfCertificateProblem(account, e, true);
-            Timber.e(K9.LOG_TAG, "Failed synchronizing folder " + account.getDescription() + ":" + folder + " @ " + new Date(), e);
+            Timber.e(e, "pEp Failed synchronizing folder %s:%s @ %s",
+                    account.getDescription(), folder, new Date());
 
         } finally {
             if (providedRemoteFolder == null) {
@@ -4032,8 +4027,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
             @Override
             public void run() {
                 try {
-                    if (K9.isDebug())
-                        Timber.i(K9.LOG_TAG, "Starting mail check");
+                    Timber.i("pEp Starting mail check");
                     Preferences prefs = Preferences.getPreferences(context);
 
                     Collection<Account> accounts = prefs.getAvailableAccounts();
@@ -4043,15 +4037,14 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                     }
 
                 } catch (Exception e) {
-                    Timber.e(K9.LOG_TAG, "Unable to synchronize mail", e);
+                    Timber.e(e, "pEp Unable to synchronize mail");
                     completedCallback.onError(e);
                 }
                 putBackground("finalize sync", null, new Runnable() {
                             @Override
                             public void run() {
 
-                                if (K9.isDebug())
-                                    Timber.i(K9.LOG_TAG, "Finished mail sync");
+                                Timber.i( "pEp Finished mail sync");
 
                                 if (wakeLock != null) {
                                     wakeLock.release();
@@ -4156,8 +4149,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
         final long accountInterval = account.getAutomaticCheckIntervalMinutes() * 60 * 1000;
 
 
-        if (K9.isDebug())
-            Timber.i(K9.LOG_TAG, "Synchronizing account " + account.getDescription());
+        Timber.i("pEp Synchronizing account %s", account.getDescription());
 
         account.setRingNotified(false);
 // on pEp Sync send is bypassed
@@ -4201,7 +4193,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                 }
             }
         } catch (MessagingException e) {
-            Timber.e(K9.LOG_TAG, "Unable to synchronize account " + account.getName(), e);
+            Timber.e(e, "pEp Unable to synchronize account %s", account.getName());
         } finally {
             //pEpSync should be silent without notification
 //            putBackground("clear notification flag for " + account.getDescription(), null, new Runnable() {
@@ -4256,10 +4248,9 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
 
                             if (!ignoreLastCheckedTime && tLocalFolder.getLastChecked() >
                                     (System.currentTimeMillis() - accountInterval)) {
-                                if (K9.isDebug())
-                                    Timber.v(K9.LOG_TAG, "Not running Command for folder " + folder.getName()
-                                            + ", previously synced @ " + new Date(folder.getLastChecked())
-                                            + " which would be too recent for the account period");
+                                Timber.v("pEp Not running Command for folder %s, " +
+                                                "previously synced @ %s which would be too recent for the account period",
+                                        folder.getName(), new Date(folder.getLastChecked()));
                                 return;
                             }
                             //showFetchingMailNotificationIfNecessary(account, folder);
@@ -4270,8 +4261,8 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                             }
                         } catch (Exception e) {
 
-                            Timber.e(K9.LOG_TAG, "Exception while processing folder " +
-                                    account.getDescription() + ":" + folder.getName(), e);
+                            Timber.e(e, "pEp Exception while processing folder %s:%s",
+                                    account.getDescription(), folder.getName());
                         } finally {
                             closeFolder(tLocalFolder);
                         }
@@ -4290,16 +4281,13 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
             final MessagingListener listener) {
 
 
-        if (K9.isDebug())
-            Timber.v(K9.LOG_TAG, "Folder " + folder.getName() + " was last synced @ " +
-                    new Date(folder.getLastChecked()));
+        Timber.v("pEp Folder %s was last synced @ %s", folder.getName(), new Date(folder.getLastChecked()));
 
         if (!ignoreLastCheckedTime && folder.getLastChecked() >
                 (System.currentTimeMillis() - accountInterval)) {
-            if (K9.isDebug())
-                Timber.v(K9.LOG_TAG, "Not syncing folder " + folder.getName()
-                        + ", previously synced @ " + new Date(folder.getLastChecked())
-                        + " which would be too recent for the account period");
+            Timber.v("pEp Not syncing folder %s, " +
+                    "previously synced @ %s which would be too recent for the account period",
+                    folder.getName(), new Date(folder.getLastChecked()));
 
             return;
         }
