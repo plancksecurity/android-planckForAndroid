@@ -211,9 +211,11 @@ public class TestUtils {
         while (getTextFromView(onView(withId(R.id.account_email))).equals("")) {
             try {
                 device.waitForIdle();
+                onView(withId(R.id.account_email)).perform(click());
+                device.waitForIdle();
                 onView(withId(R.id.account_email)).perform(typeText(testConfig.getMail(account)), closeSoftKeyboard());
             } catch (Exception ex) {
-                Timber.i("Cannot fill account email");
+                Timber.i("Cannot fill account email: " + ex.getMessage());
             }
         }
     }
