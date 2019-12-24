@@ -1006,49 +1006,7 @@ public class CucumberTestSteps {
             }
         }
         bot = testUtils.botList;
-        while (true) {
-            try {
-                device.waitForIdle();
-                if (exists(onView(withId(R.id.accounts_list)))) {
-                    onView(withId(R.id.accounts_list)).check(matches(isCompletelyDisplayed()));
-                    while (exists(onView(withId(R.id.accounts_list)))) {
-                        device.waitForIdle();
-                        onData(anything()).inAdapterView(withId(R.id.accounts_list)).atPosition(accountToStart).perform(click());
-                        device.waitForIdle();
-                        if (!exists(onView(withId(R.id.actionbar_title_first)))) {
-                            testUtils.pressBack();
-                            device.waitForIdle();
-                        }
-                    }
-                    if (!exists(onView(withId(R.id.accounts_list)))) {
-                        testUtils.swipeDownMessageList();
-                        device.waitForIdle();
-                        testUtils.getMessageListSize();
-                        time[0] = 350;
-                        return;
-                    }
-                } else {
-                    if (accountToStart != 0) {
-                        accountToStart = accountToStart - 1;
-                    }
-                    device.waitForIdle();
-                    testUtils.openHamburgerMenu();
-                    testUtils.clickView(R.id.nav_header_accounts);
-                    onData(anything()).inAdapterView(withId(R.id.navigation_accounts)).atPosition(accountToStart).perform(click());
-                    testUtils.swipeDownMessageList();
-                    device.waitForIdle();
-                    testUtils.getMessageListSize();
-                    time[0] = 350;
-                    return;
-                }
-            } catch (Exception ex) {
-                while (!exists(onView(withId(R.id.accounts_list)))) {
-                    testUtils.pressBack();
-                    device.waitForIdle();
-                }
-                Timber.i("View not found. Start test: " + ex);
-            }
-        }
+        testUtils.selectAccount(accountToStart);
     }
 
     @And("^I click view (\\S+)$")
