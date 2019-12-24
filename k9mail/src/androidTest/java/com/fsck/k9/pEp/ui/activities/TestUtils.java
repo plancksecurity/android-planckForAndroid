@@ -565,23 +565,16 @@ public class TestUtils {
         }
     }
 
-    private void createNAccounts (int n) {
+    public void createNAccounts (int n) {
         try {
-            for (; account <= n; account++) {
+            for (; account < n; account++) {
                 device.waitForIdle();
                 while(exists(onView(withId(R.id.message_list)))) {
                     openOptionsMenu();
                     selectFromMenu(R.string.action_settings);
                     device.waitForIdle();
-                    try {
-                        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-                        scroll.swipe(Direction.UP, 1.0f);
-                        onView(withId(R.id.add_account_container)).perform(click());
-                        device.waitForIdle();
-                    } catch (Exception list) {
-                        Timber.i("Cannot add a new account");
-                    }
                 }
+                addAccount();
                 fillAccountAddress();
                 fillAccountPassword();
                 if (!(testConfig.getImap_server(account) == null) && !(testConfig.getSmtp_server(account) == null)) {
@@ -600,6 +593,18 @@ public class TestUtils {
             Timber.i("Ignored", "Exists account");
         }
     }
+
+    public void addAccount () {
+        try {
+            UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+            scroll.swipe(Direction.UP, 1.0f);
+            onView(withId(R.id.add_account_container)).perform(click());
+            device.waitForIdle();
+        } catch (Exception list) {
+            Timber.i("Cannot add a new account");
+        }
+    }
+
 
     public void clickSearch() {
         device.waitForIdle();
