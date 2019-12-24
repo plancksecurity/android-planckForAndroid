@@ -195,11 +195,24 @@ public class CucumberTestSteps {
     @When(value = "^I created an account$")
     public void I_create_account() {
         device.waitForIdle();
+        testUtils.readConfigFile();
         if (!exists(onView(withId(R.id.accounts_list)))) {
             testUtils.createAccount();
-        }
-        if (testUtils.getTotalAccounts() == -1) {
-            testUtils.readConfigFile();
+        } else if (exists(onView(withId(R.id.add_account_container)))){
+            if (exists(onView(withId(R.id.accounts_list)))) {
+                int[] accounts = new int[1];
+                accounts[0] = -1;
+                try {
+                    onView(withId(R.id.accounts_list)).perform(saveSizeInInt(accounts, 0));
+                } catch (Exception ex) {
+                    Timber.i("Cannot get accounts list size: " + ex.getMessage());
+                }
+                if (accounts[0] == 0) {
+                    testUtils.createNAccounts(testUtils.getTotalAccounts());
+                } else {
+                    testUtils.selectAccount(0);
+                }
+            }
         }
     }
 
