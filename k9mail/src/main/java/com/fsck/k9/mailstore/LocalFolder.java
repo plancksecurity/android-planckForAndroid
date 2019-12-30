@@ -1439,9 +1439,7 @@ public class LocalFolder extends Folder<LocalMessage> implements Serializable {
     }
 
     private void putAutoConsume(Message message, ContentValues cv) {
-        Set<String> headerNames = message.getHeaderNames();
-        boolean autoconsume = headerNames.contains(MimeHeader.HEADER_PEP_AUTOCONSUME)
-                || headerNames.contains(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY);
+        boolean autoconsume = PEpUtils.isAutoConsumeMessage(message);
         cv.put("auto_consume", autoconsume ? 1 : 0);
     }
 
