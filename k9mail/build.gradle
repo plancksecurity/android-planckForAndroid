@@ -91,7 +91,6 @@ dependencies {
     testImplementation "junit:junit:${versions.junit}"
     testImplementation "org.mockito:mockito-core:${versions.mockito}"
     testImplementation "org.jdom:jdom2:${versions.jdom}"
-
     // Arch dependencies
     kapt "com.google.dagger:dagger-compiler:${versions.dagger}"
     implementation "com.google.dagger:dagger:${versions.dagger}"
@@ -118,6 +117,7 @@ dependencies {
     testImplementation "com.nhaarman:mockito-kotlin:${versions.mockitoKotlin}"
     testImplementation "org.jdom:jdom2:2.0.6"
     testImplementation "org.koin:koin-test:${versions.koin}"
+    testImplementation "org.robolectric:shadows-multidex:${versions.robolectric}"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.kotlinCoroutines}"

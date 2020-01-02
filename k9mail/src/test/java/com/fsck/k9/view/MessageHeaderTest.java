@@ -16,7 +16,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 
-@RunWith(K9RobolectricTestRunner.class)
 public class MessageHeaderTest {
 
     private static final Address FROM_ADDRESS = Address.parse("from@example1.com")[0];

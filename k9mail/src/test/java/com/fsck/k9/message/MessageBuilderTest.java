@@ -15,7 +15,6 @@ import android.app.Application;
 
 import com.fsck.k9.Account.QuoteStyle;
 import com.fsck.k9.Identity;
-import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.activity.misc.Attachment;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.BodyPart;
@@ -28,6 +27,7 @@ import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.message.MessageBuilder.Callback;
 import com.fsck.k9.message.quote.InsertableHtmlContent;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -44,19 +44,19 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 
-public class MessageBuilderTest extends RobolectricTest {
+public class MessageBuilderTest {
     private static final String TEST_MESSAGE_TEXT = "soviet message\r\ntext ☭";
     private static final String TEST_ATTACHMENT_TEXT = "text data in attachment";
     private static final String TEST_SUBJECT = "test_subject";
     private static final Address TEST_IDENTITY_ADDRESS = new Address("test@example.org", "tester");
-    private static final Address[] TEST_TO = new Address[] {
+    private static final Address[] TEST_TO = new Address[]{
             new Address("to1@example.org", "recip 1"),
             new Address("to2@example.org", "recip 2")
     };
-    private static final Address[] TEST_CC = new Address[] {
-            new Address("cc@example.org", "cc recip") };
-    private static final Address[] TEST_BCC = new Address[] {
-            new Address("bcc@example.org", "bcc recip") };
+    private static final Address[] TEST_CC = new Address[]{
+            new Address("cc@example.org", "cc recip")};
+    private static final Address[] TEST_BCC = new Address[]{
+            new Address("bcc@example.org", "bcc recip")};
     private static final String TEST_MESSAGE_ID = "<00000000-0000-007B-0000-0000000000EA@pretty.Easy.privacy>";
     private static final Date SENT_DATE = new Date(10000000000L);
 
@@ -110,28 +110,28 @@ public class MessageBuilderTest extends RobolectricTest {
 
     private static final String MESSAGE_CONTENT_WITH_LONG_FILE_NAME =
             "Content-Type: multipart/mixed; boundary=\"" + BOUNDARY_1 + "\"\r\n" +
-            "Content-Transfer-Encoding: 7bit\r\n" +
-            "\r\n" +
-            "--" + BOUNDARY_1 + "\r\n" +
-            "Content-Type: text/plain;\r\n" +
-            " charset=utf-8\r\n" +
-            "Content-Transfer-Encoding: quoted-printable\r\n" +
-            "\r\n" +
-            "soviet message\r\n" +
-            "text =E2=98=AD\r\n" +
-            "--" + BOUNDARY_1 + "\r\n" +
-            "Content-Type: text/plain;\r\n" +
-            " name*0*=UTF-8''~~~~~~~~~1~~~~~~~~~2~~~~~~~~~3~~~~~~~~~4~~~~~~~~~5~~~~~~~~~6~;\r\n" +
-            " name*1*=~~~~~~~~7.txt\r\n" +
-            "Content-Transfer-Encoding: base64\r\n" +
-            "Content-Disposition: attachment;\r\n" +
-            " filename*0*=UTF-8''~~~~~~~~~1~~~~~~~~~2~~~~~~~~~3~~~~~~~~~4~~~~~~~~~5~~~~~~~;\r\n" +
-            " filename*1*=~~6~~~~~~~~~7.txt;\r\n" +
-            " size=23\r\n" +
-            "\r\n" +
-            "dGV4dCBkYXRhIGluIGF0dGFjaG1lbnQ=\r\n" +
-            "\r\n" +
-            "--" + BOUNDARY_1 + "--\r\n";
+                    "Content-Transfer-Encoding: 7bit\r\n" +
+                    "\r\n" +
+                    "--" + BOUNDARY_1 + "\r\n" +
+                    "Content-Type: text/plain;\r\n" +
+                    " charset=utf-8\r\n" +
+                    "Content-Transfer-Encoding: quoted-printable\r\n" +
+                    "\r\n" +
+                    "soviet message\r\n" +
+                    "text =E2=98=AD\r\n" +
+                    "--" + BOUNDARY_1 + "\r\n" +
+                    "Content-Type: text/plain;\r\n" +
+                    " name*0*=UTF-8''~~~~~~~~~1~~~~~~~~~2~~~~~~~~~3~~~~~~~~~4~~~~~~~~~5~~~~~~~~~6~;\r\n" +
+                    " name*1*=~~~~~~~~7.txt\r\n" +
+                    "Content-Transfer-Encoding: base64\r\n" +
+                    "Content-Disposition: attachment;\r\n" +
+                    " filename*0*=UTF-8''~~~~~~~~~1~~~~~~~~~2~~~~~~~~~3~~~~~~~~~4~~~~~~~~~5~~~~~~~;\r\n" +
+                    " filename*1*=~~6~~~~~~~~~7.txt;\r\n" +
+                    " size=23\r\n" +
+                    "\r\n" +
+                    "dGV4dCBkYXRhIGluIGF0dGFjaG1lbnQ=\r\n" +
+                    "\r\n" +
+                    "--" + BOUNDARY_1 + "--\r\n";
 
     private static final String ATTACHMENT_FILENAME_NON_ASCII = "テスト文書.txt";
     private static final String MESSAGE_CONTENT_WITH_ATTACH_NON_ASCII_FILENAME = "" +
@@ -195,7 +195,7 @@ public class MessageBuilderTest extends RobolectricTest {
         when(boundaryGenerator.generateBoundary()).thenReturn(BOUNDARY_1, BOUNDARY_2, BOUNDARY_3);
 
         callback = mock(Callback.class);
-        context =  RuntimeEnvironment.application;
+        context = RuntimeEnvironment.application;
     }
 
     @Test
@@ -266,7 +266,7 @@ public class MessageBuilderTest extends RobolectricTest {
         MimeMessage message = getMessageFromCallback();
         assertEquals(MimeMultipart.class, message.getBody().getClass());
         assertEquals("multipart/alternative", ((MimeMultipart) message.getBody()).getMimeType());
-        List<BodyPart> parts =  ((MimeMultipart) message.getBody()).getBodyParts();
+        List<BodyPart> parts = ((MimeMultipart) message.getBody()).getBodyParts();
         //RFC 2046 - 5.1.4. - Best type is last displayable
         assertEquals("text/plain", parts.get(0).getMimeType());
         assertEquals("text/html", parts.get(1).getMimeType());
@@ -360,7 +360,7 @@ public class MessageBuilderTest extends RobolectricTest {
         fileOutputStream.write(bytes);
         fileOutputStream.close();
 
-        return Attachment.createAttachment(null, 0, mimeType, true)
+        return Attachment.createAttachment(null, 0, mimeType)
                 .deriveWithMetadataLoaded(mimeType, filename, bytes.length)
                 .deriveWithLoadComplete(tempFile.getAbsolutePath());
     }
