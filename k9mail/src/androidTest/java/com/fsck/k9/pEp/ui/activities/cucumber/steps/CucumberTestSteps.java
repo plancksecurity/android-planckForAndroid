@@ -201,7 +201,6 @@ public class CucumberTestSteps {
         } else if (exists(onView(withId(R.id.add_account_container)))){
             if (exists(onView(withId(R.id.accounts_list)))) {
                 int[] accounts = new int[1];
-                accounts[0] = -1;
                 try {
                     onView(withId(R.id.accounts_list)).perform(saveSizeInInt(accounts, 0));
                 } catch (Exception ex) {
