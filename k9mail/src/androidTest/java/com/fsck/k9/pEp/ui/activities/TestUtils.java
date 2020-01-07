@@ -25,6 +25,7 @@ import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.action.ViewActions;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import androidx.test.uiautomator.By;
@@ -637,18 +638,18 @@ public class TestUtils {
                         accountToSelect = accountToSelect - 1;
                     }
                     device.waitForIdle();
-                    //testUtils.openHamburgerMenu();
-                    //clickView(R.id.nav_header_accounts);
-
-                    openOptionsMenu();
-                    selectFromMenu(R.string.action_settings);
-                    onData(anything()).inAdapterView(withId(R.id.navigation_accounts)).atPosition(accountToSelect).perform(click());
+                    openHamburgerMenu();
+                    clickView(R.id.nav_header_accounts);
+                    device.waitForIdle();
+                    onView(withId(R.id.navigation_accounts)).perform(RecyclerViewActions.actionOnItemAtPosition(accountToSelect, click()));
+                    device.waitForIdle();
                     swipeDownMessageList();
                     device.waitForIdle();
                     getMessageListSize();
                     return;
                 }
             } catch (Exception ex) {
+                Timber.i("Cannot click account " +accountToSelect +": " + ex.getMessage());
                 while (!exists(onView(withId(R.id.accounts_list)))) {
                     pressBack();
                     device.waitForIdle();
