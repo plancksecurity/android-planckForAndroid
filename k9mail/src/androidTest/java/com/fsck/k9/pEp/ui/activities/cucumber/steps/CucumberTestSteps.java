@@ -208,8 +208,6 @@ public class CucumberTestSteps {
                 }
                 if (accounts[0] == 0) {
                     testUtils.createNAccounts(testUtils.getTotalAccounts());
-                } else {
-                    testUtils.selectAccount(0);
                 }
             }
         }
