@@ -1,10 +1,11 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Instrumentation;
-import androidx.test.platform.app.InstrumentationRegistry;
+
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.rule.ActivityTestRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
@@ -15,7 +16,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import pEp.jniadapter.Rating;
+
+import foundation.pEp.jniadapter.Rating;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.typeText;
@@ -63,7 +65,7 @@ public class InboxActionBarChangingColorTest {
     @Test (timeout = TIMEOUT_TEST)
     public void assertActionBarColorIsNotChanging() {
         testUtils.increaseTimeoutWait();
-        testUtils.createAccount(false);
+        testUtils.createAccount();
         assertSelfMessageColor();
         assertBotMessageColor();
         testUtils.goBackAndRemoveAccount();
@@ -78,7 +80,7 @@ public class InboxActionBarChangingColorTest {
         testUtils.sendMessage();
         device.waitForIdle();
         testUtils.waitForNewMessage();
-        testUtils.clickLastMessageReceived();
+        //testUtils.clickLastMessageReceived();
         testUtils.clickView(R.id.tvPep);
         testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
         device.waitForIdle();
@@ -107,7 +109,7 @@ public class InboxActionBarChangingColorTest {
         testUtils.sendMessage();
         device.waitForIdle();
         testUtils.waitForNewMessage();
-        testUtils.clickLastMessageReceived();
+        //testUtils.clickLastMessageReceived();
         checkToolbarColor(R.color.pep_yellow);
         device.waitForIdle();
         testUtils.pressBack();

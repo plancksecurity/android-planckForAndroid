@@ -1,7 +1,8 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Instrumentation;
-import androidx.test.platform.app.InstrumentationRegistry;
+
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.uiautomator.UiDevice;
@@ -13,7 +14,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import pEp.jniadapter.Rating;
+
+import foundation.pEp.jniadapter.Rating;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -21,7 +23,6 @@ import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
@@ -66,14 +67,14 @@ public class StatusIncomingMessageTest {
     }
 
     private void assertPartnerStatusIsTrusted() {
-        testUtils.createAccount(false);
+        testUtils.createAccount();
         testUtils.composeMessageButton();
         device.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         testUtils.sendMessage();
         device.waitForIdle();
         testUtils.waitForNewMessage();
-        testUtils.clickLastMessageReceived();
+        //testUtils.clickLastMessageReceived();
         testUtils.clickMessageStatus();
         testUtils.clickView(R.id.confirmTrustWords);
         testUtils.clickView(R.id.tvPep);

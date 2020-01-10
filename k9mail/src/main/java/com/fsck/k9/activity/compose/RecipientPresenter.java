@@ -67,7 +67,7 @@ public class RecipientPresenter {
     private static final int CONTACT_PICKER_CC = 2;
     private static final int CONTACT_PICKER_BCC = 3;
     private static final int OPENPGP_USER_INTERACTION = 4;
-    public static final int POLLING_INTERVAL = 200;
+    public static final int POLLING_INTERVAL = 1200;
     public static final String STATE_RATING = "rating";
 
     private static final int PGP_DIALOG_DISPLAY_THRESHOLD = 2;

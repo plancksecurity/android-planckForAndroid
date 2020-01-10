@@ -14,6 +14,7 @@ import android.widget.ViewSwitcher;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 import com.fsck.k9.pEp.PEpLanguage;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
@@ -200,16 +201,25 @@ public class PEpTrustwords extends PepColoredActivity {
     }
 
     private void loadPartnerRating() {
+        Timber.i("Contador de PEpTrustwords+1");
+        EspressoTestingIdlingResource.increment();
         getpEp().getRating(partner, new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
+                Timber.i("Contador de PEpTrustwords onLoaded");
                 setpEpRating(rating);
+                Timber.i("Contador de PEpTrustwords antes de colorActionBar");
                 colorActionBar();
+                Timber.i("Contador de PEpTrustwords onLoaded -1");
+                EspressoTestingIdlingResource.decrement();
             }
 
             @Override
             public void onError(Throwable throwable) {
+                Timber.i("Contador de PEpTrustwords onError");
                 setpEpRating(Rating.pEpRatingUndefined);
+                Timber.i("Contador de PEpTrustwords onError -1");
+                EspressoTestingIdlingResource.decrement();
             }
         });
     }

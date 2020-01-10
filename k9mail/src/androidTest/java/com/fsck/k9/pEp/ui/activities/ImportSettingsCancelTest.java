@@ -1,6 +1,6 @@
 package com.fsck.k9.pEp.ui.activities;
 
-import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.uiautomator.UiDevice;
@@ -54,8 +54,8 @@ public class ImportSettingsCancelTest {
 
     private void importSettingsTest(boolean isGmail) {
         testUtils.increaseTimeoutWait();
-        testUtils.externalAppRespondWithFile(R.raw.settings);
-        testUtils.createAccount(isGmail);
+        testUtils.externalAppRespondWithFile(R.raw.settingsthemedark);
+        testUtils.createAccount();
         testUtils.pressBack();
         device.waitForIdle();
         testUtils.pressBack();

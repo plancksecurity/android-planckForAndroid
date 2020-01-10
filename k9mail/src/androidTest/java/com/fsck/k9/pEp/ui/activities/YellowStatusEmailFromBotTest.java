@@ -2,11 +2,11 @@ package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Activity;
 import android.app.Instrumentation;
-import androidx.test.platform.app.InstrumentationRegistry;
+
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.IdlingRegistry;
-import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
@@ -30,7 +30,6 @@ import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.core.internal.deps.guava.base.Preconditions.checkNotNull;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
@@ -79,7 +78,7 @@ public class YellowStatusEmailFromBotTest {
 
     }
     public void sendMessageAndAssertYellowStatusMessage() {
-        testUtils.createAccount(false);
+        testUtils.createAccount();
         testUtils.composeMessageButton();
         device.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
@@ -87,7 +86,7 @@ public class YellowStatusEmailFromBotTest {
         testUtils.sendMessage();
         device.waitForIdle();
         testUtils.waitForNewMessage();
-        testUtils.clickLastMessageReceived();
+        //testUtils.clickLastMessageReceived();
         testUtils.clickView(R.id.reply_message);
         onView(withId(R.id.subject)).perform(typeText(" "));
         onView(withId(R.id.message_content)).perform(typeText(" "));

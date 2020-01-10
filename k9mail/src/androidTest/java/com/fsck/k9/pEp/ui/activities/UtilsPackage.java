@@ -3,7 +3,6 @@ package com.fsck.k9.pEp.ui.activities;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import androidx.test.espresso.AmbiguousViewMatcherException;
-import androidx.test.espresso.FailureHandler;
 import androidx.test.espresso.NoMatchingRootException;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.UiController;
@@ -17,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.Checkable;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -26,13 +24,17 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-import static androidx.test.platform.app.InstrumentationRegistry.getTargetContext;
+import timber.log.Timber;
+
+import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.isA;
 
@@ -46,7 +48,7 @@ public class UtilsPackage {
             this.recyclerViewId = recyclerViewId;
         }
 
-        Matcher<View> atPosition(final int position) {
+        public Matcher<View> atPosition(final int position) {
             return atPositionOnView(position, -1);
         }
 
@@ -94,6 +96,11 @@ public class UtilsPackage {
                 }
             };
         }
+    }
+
+    public static RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
+
+        return new RecyclerViewMatcher(recyclerViewId);
     }
 
     private static Matcher<View> getElementFromMatchAtPosition(final Matcher<View> matcher, final int position) {
@@ -150,6 +157,28 @@ public class UtilsPackage {
         };
     }
 
+    public static int getViewColorHSV(ViewInteraction interaction) {
+        final int[] color = new int[1];
+        interaction.perform(new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return isAssignableFrom(View.class);
+            }
+
+            @Override
+            public String getDescription() {
+                return "getting color from View";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                color[0] = 0;
+                color[0] = ((ColorDrawable) view.getBackground()).getColor();
+            }
+        });
+        return color[0];
+    }
+
     public static Matcher<View> childAtPosition(final Matcher<View> parentMatcher, final int position) {
         return new TypeSafeMatcher<View>() {
             @Override
@@ -182,35 +211,60 @@ public class UtilsPackage {
         };
     }
 
-    public static Matcher<View> hasValueEqualTo(final String content) {
-
-        return new TypeSafeMatcher<View>() {
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Has EditText/TextView the value:  " + content);
-            }
-
-            @Override
-            public boolean matchesSafely(View view) {
-                if (!(view instanceof TextView) && !(view instanceof EditText)) {
-                    return false;
-                }
-                if (view != null) {
-                    String text;
-                    if (view instanceof TextView) {
-                        text = ((TextView) view).getText().toString();
-                    } else {
-                        text = ((EditText) view).getText().toString();
+    public static boolean hasValueEqualTo(ViewInteraction interaction, final String content) {
+        final boolean[] value = {false};
+        try {
+            if (interaction != null) {
+                interaction.perform(new ViewAction() {
+                    @Override
+                    public Matcher<View> getConstraints() {
+                        return isAssignableFrom(TextView.class);
                     }
 
-                    return (text.equalsIgnoreCase(content));
-                }
-                return false;
+                    @Override
+                    public String getDescription() {
+                        return "check for existence";
+                    }
+
+                    @Override
+                    public void perform(UiController uiController, View view) {
+                        value[0] = ((TextView) view).getText().toString().equals(content);
+                    }
+                });
             }
-        };
+        } catch (Exception ex){
+            Timber.e("Can not compare TextView with " + content);
+        }
+        return value[0];
     }
-    public static Matcher<View> valuesAreEqual(final String firstValue, final String secondValue) {
+    public static boolean containstText(ViewInteraction interaction, final String content) {
+        final boolean[] value = {false};
+        try {
+            if (interaction != null) {
+                interaction.perform(new ViewAction() {
+                    @Override
+                    public Matcher<View> getConstraints() {
+                        return isAssignableFrom(TextView.class);
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return "check for existence";
+                    }
+
+                    @Override
+                    public void perform(UiController uiController, View view) {
+                        value[0] = ((TextView) view).getText().toString().toLowerCase().contains(content.toLowerCase());
+                    }
+                });
+            }
+        } catch (Exception ex){
+            Timber.e("Can not compare TextView with " + content);
+        }
+        return value[0];
+    }
+
+    static Matcher<View> valuesAreEqual(final String firstValue, final String secondValue) {
 
         return new TypeSafeMatcher<View>() {
 
@@ -221,10 +275,23 @@ public class UtilsPackage {
 
             @Override
             public boolean matchesSafely(View view) {
-                if (firstValue.equals(secondValue)) {
-                    return true;
-                }
-                return false;
+                return firstValue.equals(secondValue);
+            }
+        };
+    }
+
+    public static Matcher<View> containsText(final String firstValue, final String secondValue) {
+
+        return new TypeSafeMatcher<View>() {
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Assert text contains string: " + firstValue + "  and  " + secondValue);
+            }
+
+            @Override
+            public boolean matchesSafely(View view) {
+                return firstValue.contains(secondValue);
             }
         };
     }
@@ -251,9 +318,9 @@ public class UtilsPackage {
         };
     }
 
-    String getText(final Matcher<View> matcher) {
+    public static String getTextFromView(ViewInteraction interaction) {
         final String[] stringHolder = {null};
-        onView(matcher).perform(new ViewAction() {
+        interaction.perform(new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
                 return isAssignableFrom(TextView.class);
@@ -273,7 +340,7 @@ public class UtilsPackage {
         return stringHolder[0];
     }
 
-    static ViewAction saveSizeInInt(int size[], int position) {
+    public static ViewAction saveSizeInInt(int size[], int position) {
         return new ViewAction() {
 
             @Override
@@ -293,8 +360,8 @@ public class UtilsPackage {
         };
     }
 
-    public static ViewAction waitUntilIdle() {
-        return new ViewAction() {
+    public static void waitUntilIdle() {
+        new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
                 return isRoot();
@@ -337,10 +404,7 @@ public class UtilsPackage {
         } catch (AmbiguousViewMatcherException ex) {
             // if there's any interaction later with the same matcher, that'll fail anyway
             return true; // we found more than one
-        } catch (NoMatchingViewException ex) {
-            return false;
-        } catch (NoMatchingRootException ex) {
-            // optional depending on what you think "exists" means
+        } catch (NoMatchingViewException | NoMatchingRootException ex) {
             return false;
         }
     }
@@ -348,15 +412,17 @@ public class UtilsPackage {
     public static boolean viewIsDisplayed(int viewId)
     {
         final boolean[] isDisplayed = {true};
-        onView(withId(viewId)).withFailureHandler(new FailureHandler() {
-            @Override
-            public void handle(Throwable error, Matcher<View> viewMatcher)
-            {
-                isDisplayed[0] = false;
-            }
-        }).check(matches(isDisplayed()));
+        onView(withId(viewId)).withFailureHandler((error, viewMatcher) -> isDisplayed[0] = false).check(matches(isCompletelyDisplayed()));
         return isDisplayed[0];
     }
+
+    static boolean viewWithTextIsDisplayed(String viewText)
+    {
+        final boolean[] isDisplayed = {true};
+        onView(withText(viewText)).withFailureHandler((error, viewMatcher) -> isDisplayed[0] = false).check(matches(isDisplayed()));
+        return isDisplayed[0];
+    }
+
     public static ViewAction setChecked(final boolean checked) {
         return new ViewAction() {
             @Override
@@ -384,6 +450,46 @@ public class UtilsPackage {
             public void perform(UiController uiController, View view) {
                 Checkable checkableView = (Checkable) view;
                 checkableView.setChecked(checked);
+            }
+        };
+    }
+
+    public static ViewAction setTextInTextView(final String value){
+        return new ViewAction() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Matcher<View> getConstraints() {
+                return allOf(isDisplayed(), isAssignableFrom(TextView.class));
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                ((TextView) view).setText(value);
+            }
+
+            @Override
+            public String getDescription() {
+                return "replace text";
+            }
+        };
+    }
+
+    public static ViewAction appendTextInTextView(final String value){
+        return new ViewAction() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Matcher<View> getConstraints() {
+                return allOf(isDisplayed(), isAssignableFrom(TextView.class));
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                ((TextView) view).append(value);
+            }
+
+            @Override
+            public String getDescription() {
+                return "replace text";
             }
         };
     }

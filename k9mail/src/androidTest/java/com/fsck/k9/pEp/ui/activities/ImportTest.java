@@ -5,9 +5,10 @@ import android.app.Instrumentation;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.ContactsContract;
+
+import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import android.test.suitebuilder.annotation.LargeTest;
+import androidx.test.runner.AndroidJUnit4;
 
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 
@@ -18,7 +19,7 @@ import org.junit.runner.RunWith;
 import java.io.File;
 import java.io.IOException;
 
-import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
+import static androidx.test.InstrumentationRegistry.getInstrumentation;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;

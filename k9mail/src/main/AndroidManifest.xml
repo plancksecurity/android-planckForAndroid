@@ -65,7 +65,8 @@
         android:label="@string/delete_messages_label"
         android:permissionGroup="android.permission-group.MESSAGES"
         android:protectionLevel="dangerous" />
-
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="${applicationId}.permission.DELETE_MESSAGES" />
 
     <application

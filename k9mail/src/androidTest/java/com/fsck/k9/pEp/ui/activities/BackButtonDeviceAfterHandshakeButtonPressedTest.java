@@ -2,10 +2,11 @@ package com.fsck.k9.pEp.ui.activities;
 
 
 import android.app.Instrumentation;
-import androidx.test.platform.app.InstrumentationRegistry;
+
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.rule.ActivityTestRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
@@ -60,10 +61,10 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
 
     @Test (timeout = TIMEOUT_TEST)
     public void backButtonDeviceAfterHandshakeButtonPressed() {
-        testUtils.createAccount(false);
+        testUtils.createAccount();
         sendMessages(3);
         device.waitForIdle();
-        testUtils.clickLastMessageReceived();
+        testUtils.waitForMessageAndClickIt();
         testUtils.clickMessageStatus();
         device.waitForIdle();
         onView(withId(R.id.confirmTrustWords)).perform(click());
