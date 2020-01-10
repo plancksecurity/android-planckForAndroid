@@ -611,40 +611,13 @@ public class TestUtils {
             try {
                 device.waitForIdle();
                 if (exists(onView(withId(R.id.accounts_list)))) {
-                    while (!viewIsDisplayed(R.id.accounts_list)) {
-                        device.waitForIdle();
-                        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-                        scroll.swipe(Direction.UP, 1.0f);
-                        device.waitForIdle();
-                    }
-                    onView(withId(R.id.accounts_list)).check(matches(isCompletelyDisplayed()));
-                    while (exists(onView(withId(R.id.accounts_list)))) {
-                        device.waitForIdle();
-                        onData(anything()).inAdapterView(withId(R.id.accounts_list)).atPosition(accountToSelect).perform(click());
-                        device.waitForIdle();
-                        if (!exists(onView(withId(R.id.actionbar_title_first)))) {
-                            pressBack();
-                            device.waitForIdle();
-                        }
-                    }
-                    if (!exists(onView(withId(R.id.accounts_list)))) {
-                        swipeDownMessageList();
-                        device.waitForIdle();
-                        getMessageListSize();
-                        return;
-                    }
+                    selectAccountFromList(accountToSelect);
+                } else if (exists(onView(withId(android.R.id.list)))) {
+                    clickInbox();
                 } else {
-                    if (accountToSelect != 0) {
-                        accountToSelect = accountToSelect - 1;
-                    }
-                    device.waitForIdle();
-                    openHamburgerMenu();
-                    clickView(R.id.nav_header_accounts);
-                    device.waitForIdle();
-                    onView(withId(R.id.navigation_accounts)).perform(RecyclerViewActions.actionOnItemAtPosition(accountToSelect, click()));
-                    device.waitForIdle();
-                    swipeDownMessageList();
-                    device.waitForIdle();
+                    openOptionsMenu();
+                    selectFromMenu(R.string.prefs_title);
+                    selectAccountFromList(accountToSelect);
                     getMessageListSize();
                     return;
                 }
@@ -654,7 +627,52 @@ public class TestUtils {
                     pressBack();
                     device.waitForIdle();
                 }
-                Timber.i("View not found. Start test: " + ex);
+            }
+        }
+    }
+
+    private void selectAccountFromHamburgerMenu (int accountToSelect) {
+        device.waitForIdle();
+        openHamburgerMenu();
+        clickView(R.id.nav_header_accounts);
+        device.waitForIdle();
+        onView(withId(R.id.navigation_accounts)).perform(RecyclerViewActions.actionOnItemAtPosition(accountToSelect, click()));
+    }
+
+    private void selectAccountFromList (int accountToSelect) {
+        while (!viewIsDisplayed(R.id.accounts_list)) {
+            device.waitForIdle();
+            UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+            scroll.swipe(Direction.UP, 1.0f);
+            device.waitForIdle();
+        }
+        onView(withId(R.id.accounts_list)).check(matches(isCompletelyDisplayed()));
+        while (exists(onView(withId(R.id.accounts_list)))) {
+            device.waitForIdle();
+            try {
+                UiObject2 wb;
+                wb = device.findObject(By.clazz("android.widget.ListView"));
+                device.waitForIdle();
+                wb.getChildren().get(accountToSelect).getChildren().get(1).click();
+                clickInbox();
+            } catch (Exception e) {
+                Timber.i("Cannot click account from list: " + e.getMessage());
+            }
+            device.waitForIdle();
+        }
+        if (exists(onView(withId(R.id.message_list)))) {
+            getMessageListSize();
+        }
+    }
+
+    private void clickInbox () {
+        while (!exists(onView(withId(R.id.actionbar_title_first)))) {
+            try {
+                device.waitForIdle();
+                onView(withText(resources.getString(R.string.special_mailbox_name_inbox))).perform(click());
+                device.waitForIdle();
+            } catch (Exception noInbox) {
+                Timber.i("No inbox to click: " + noInbox.getMessage());
             }
         }
     }
