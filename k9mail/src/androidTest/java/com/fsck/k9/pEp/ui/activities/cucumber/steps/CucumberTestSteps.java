@@ -196,7 +196,7 @@ public class CucumberTestSteps {
     public void I_create_account() {
         device.waitForIdle();
         testUtils.readConfigFile();
-        if (!exists(onView(withId(R.id.accounts_list)))) {
+        if (!exists(onView(withId(R.id.accounts_list))) && !exists(onView(withId(android.R.id.list)))) {
             testUtils.createAccount();
         } else if (exists(onView(withId(R.id.add_account_container)))){
             if (exists(onView(withId(R.id.accounts_list)))) {
