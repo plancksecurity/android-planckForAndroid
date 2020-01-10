@@ -1897,6 +1897,9 @@ public class TestUtils {
     }
 
     public void getMessageListSize() {
+        device.waitForIdle();
+        swipeDownMessageList();
+        device.waitForIdle();
         while (exists(onView(withId(R.id.message_list)))) {
             try {
                 onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
