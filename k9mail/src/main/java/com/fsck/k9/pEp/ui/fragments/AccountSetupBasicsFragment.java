@@ -145,6 +145,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
             mEmailView.setText(email);
             mPasswordView.setText(password);
         }
+        setHasOptionsMenu(true);
         return rootView;
     }
 
