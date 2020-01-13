@@ -16,6 +16,8 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -144,6 +146,12 @@ public class AccountSetupBasicsFragment extends PEpFragment
             mPasswordView.setText(password);
         }
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.account_setup_basic_option, menu);
     }
 
     private void setupToolbar() {

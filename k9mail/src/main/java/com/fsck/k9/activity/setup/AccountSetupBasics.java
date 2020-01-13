@@ -127,13 +127,6 @@ public class AccountSetupBasics extends PEpImporterActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.account_setup_basic_option, menu);
-        return true;
-    }
-
-    @Override
     protected void refresh() {
     }
 
