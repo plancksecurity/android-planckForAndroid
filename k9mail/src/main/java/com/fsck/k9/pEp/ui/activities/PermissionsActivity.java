@@ -2,7 +2,6 @@ package com.fsck.k9.pEp.ui.activities;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -91,12 +90,7 @@ public class PermissionsActivity extends PepPermissionActivity {
                     intent.setData(uri);
                     startActivity(intent);
                 })
-                .setNegativeButton(R.string.cancel_action, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        goToSetupAccount();
-                    }
-                })
+                .setNegativeButton(R.string.cancel_action, (dialog, which) -> goToSetupAccount())
                 .show();
     }
 
