@@ -98,9 +98,6 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.kotlinCoroutines}"
     implementation "androidx.multidex:multidex:${versions.multidex}"
 
-    implementation 'com.google.code.gson:gson:2.8.2'
-
-
     androidTestImplementation "androidx.test.espresso:espresso-intents:${versions.espresso}"
     androidTestImplementation ("androidx.test.espresso:espresso-core:${versions.espresso}") {
         exclude module: 'support-annotations'
