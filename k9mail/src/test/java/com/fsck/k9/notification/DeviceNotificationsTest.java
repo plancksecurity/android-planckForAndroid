@@ -1,39 +1,6 @@
 package com.fsck.k9.notification;
 
 
-import java.util.Arrays;
-import java.util.List;
-
-import android.app.Application;
-import android.app.Notification;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationCompat.BigTextStyle;
-import androidx.core.app.NotificationCompat.Builder;
-import androidx.core.app.NotificationCompat.InboxStyle;
-
-import com.fsck.k9.Account;
-import com.fsck.k9.K9;
-import com.fsck.k9.K9.NotificationHideSubject;
-import com.fsck.k9.K9.NotificationQuickDelete;
-import com.fsck.k9.K9RobolectricTestRunner;
-import com.fsck.k9.NotificationSetting;
-import com.fsck.k9.R;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.robolectric.RuntimeEnvironment;
-
-import static com.fsck.k9.MockHelper.mockBuilder;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-
 //@RunWith(K9RobolectricTestRunner.class)
 public class DeviceNotificationsTest {
 //    private static final int UNREAD_MESSAGE_COUNT = 42;
@@ -220,7 +187,7 @@ public class DeviceNotificationsTest {
 //    }
 //
 //    private NotificationController createFakeNotificationController(final Builder builder) {
-//        Application context = RuntimeEnvironment.application;
+//        Application context = ApplicationProvider.getApplicationContext();
 //
 //        NotificationController controller = mock(NotificationController.class);
 //        when(controller.getContext()).thenReturn(context);

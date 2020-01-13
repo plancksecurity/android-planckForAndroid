@@ -3,25 +3,24 @@ package com.fsck.k9.helper;
 
 import android.content.Context;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.Identity;
 import com.fsck.k9.K9RobolectricTestRunner;
-import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.internet.MimeMessage;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(K9RobolectricTestRunner.class)
@@ -33,7 +32,7 @@ public class IdentityHelperTest {
 
     @Before
     public void setUp() throws Exception {
-        Context context = RuntimeEnvironment.application;
+        Context context = ApplicationProvider.getApplicationContext();
         createDummyAccount(context);
         msg = parseWithoutRecurse(toStream(
                 "From: <adam@example.org>\r\n" +

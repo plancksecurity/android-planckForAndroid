@@ -1,29 +1,6 @@
 package com.fsck.k9.notification;
 
 
-import android.app.Notification;
-import android.app.PendingIntent;
-import android.content.Context;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationCompat.Builder;
-import androidx.core.app.NotificationManagerCompat;
-
-import com.fsck.k9.Account;
-import com.fsck.k9.K9RobolectricTestRunner;
-import com.fsck.k9.MockHelper;
-import com.fsck.k9.R;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-
 //@RunWith(K9RobolectricTestRunner.class)
 public class CertificateErrorNotificationsTest {
 //    private static final boolean INCOMING = true;
@@ -109,7 +86,7 @@ public class CertificateErrorNotificationsTest {
 //    private NotificationController createFakeNotificationController(NotificationManagerCompat notificationManager,
 //            NotificationCompat.Builder builder) {
 //        NotificationController controller = mock(NotificationController.class);
-//        when(controller.getContext()).thenReturn(RuntimeEnvironment.application);
+//        when(controller.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
 //        when(controller.getNotificationManager()).thenReturn(notificationManager);
 //        when(controller.createNotificationBuilder()).thenReturn(builder);
 //        return controller;

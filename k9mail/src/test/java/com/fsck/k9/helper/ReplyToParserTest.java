@@ -1,20 +1,18 @@
 package com.fsck.k9.helper;
 
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-
 import com.fsck.k9.Account;
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.helper.ReplyToParser.ReplyToAddresses;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mail.internet.ListHeaders;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -26,8 +24,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(K9RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ReplyToParserTest {
     private static final Address[] REPLY_TO_ADDRESSES = Address.parse("replyTo1@example.com, replyTo2@example.com");
     private static final Address[] LIST_POST_ADDRESSES = Address.parse("listPost@example.com");

@@ -1,53 +1,6 @@
 package com.fsck.k9.mailstore;
 
 
-import android.app.Application;
-
-import androidx.annotation.NonNull;
-
-import com.fsck.k9.GlobalsHelper;
-import com.fsck.k9.K9RobolectricTestRunner;
-import com.fsck.k9.mail.Address;
-import com.fsck.k9.mail.BodyPart;
-import com.fsck.k9.mail.Message.RecipientType;
-import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.Part;
-import com.fsck.k9.mail.internet.MessageExtractor;
-import com.fsck.k9.mail.internet.MimeBodyPart;
-import com.fsck.k9.mail.internet.MimeHeader;
-import com.fsck.k9.mail.internet.MimeMessage;
-import com.fsck.k9.mail.internet.MimeMessageHelper;
-import com.fsck.k9.mail.internet.MimeMultipart;
-import com.fsck.k9.mail.internet.TextBody;
-import com.fsck.k9.mail.internet.Viewable;
-import com.fsck.k9.mail.internet.Viewable.MessageHeader;
-import com.fsck.k9.mailstore.MessageViewInfoExtractor.ViewableExtractedText;
-import com.fsck.k9.message.html.HtmlProcessor;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.robolectric.RuntimeEnvironment;
-
-import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-
 //@RunWith(K9RobolectricTestRunner.class)
 public class MessageViewInfoExtractorTest {
 //    public static final String BODY_TEXT = "K-9 Mail rocks :>";
@@ -61,7 +14,7 @@ public class MessageViewInfoExtractorTest {
 //
 //    @Before
 //    public void setUp() throws Exception {
-//        context = RuntimeEnvironment.application;
+//        context = ApplicationProvider.getApplicationContext();
 //
 //        GlobalsHelper.setContext(context);
 //

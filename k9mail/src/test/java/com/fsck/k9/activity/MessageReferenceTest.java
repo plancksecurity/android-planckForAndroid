@@ -1,11 +1,9 @@
 package com.fsck.k9.activity;
 
 
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.mail.Flag;
+
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -14,8 +12,6 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
 
-@RunWith(K9RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class MessageReferenceTest {
 
     @Test
@@ -59,7 +55,7 @@ public class MessageReferenceTest {
     public void checkMessageReferenceWithChangedUid() {
         MessageReference messageReferenceOne = createMessageReferenceWithFlag(
                 "account", "folder", "uid", Flag.ANSWERED);
-        
+
         MessageReference messageReferenceTwo = messageReferenceOne.withModifiedUid("---");
 
         assertEquals("account", messageReferenceTwo.getAccountUuid());
@@ -72,7 +68,7 @@ public class MessageReferenceTest {
     public void checkMessageReferenceWithChangedFlag() {
         MessageReference messageReferenceOne = createMessageReferenceWithFlag(
                 "account", "folder", "uid", Flag.ANSWERED);
-        
+
         MessageReference messageReferenceTwo = messageReferenceOne.withModifiedFlag(Flag.DELETED);
 
         assertEquals("account", messageReferenceTwo.getAccountUuid());
@@ -214,7 +210,7 @@ public class MessageReferenceTest {
     }
 
     private MessageReference createMessageReferenceWithFlag(String accountUuid, String folderName, String uid,
-            Flag flag) {
+                                                            Flag flag) {
         return new MessageReference(accountUuid, folderName, uid, flag);
     }
 

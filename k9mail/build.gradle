@@ -82,15 +82,6 @@ dependencies {
     implementation "com.evernote:android-job:${versions.androidJob}"
     implementation "androidx.work:work-runtime:${versions.workRuntime}"
 
-//TODO: SWITCH TO ANDROID-X
-    androidTestImplementation "androidx.test.espresso:espresso-intents:${versions.espresso}"
-    androidTestImplementation ("androidx.test.espresso:espresso-core:${versions.espresso}") {
-        exclude module: 'support-annotations'
-    }
-    testImplementation "org.robolectric:robolectric:${versions.robolectric}"
-    testImplementation "junit:junit:${versions.junit}"
-    testImplementation "org.mockito:mockito-core:${versions.mockito}"
-    testImplementation "org.jdom:jdom2:${versions.jdom}"
     // Arch dependencies
     kapt "com.google.dagger:dagger-compiler:${versions.dagger}"
     implementation "com.google.dagger:dagger:${versions.dagger}"
@@ -102,12 +93,32 @@ dependencies {
     implementation "org.koin:koin-android-architecture:${versions.koin}"
     implementation "androidx.core:core-ktx:${versions.androidX}"
 
-    //androidTestImplementation "androidx.test.uiautomator:uiautomator:${versions.uiAutomator}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.kotlinCoroutines}"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.kotlinCoroutines}"
+    implementation "androidx.multidex:multidex:${versions.multidex}"
 
-    //TODO: SWITCH TO ANDROID-X
-    implementation "androidx.test.espresso:espresso-idling-resource:3.2.0"
+    implementation 'com.google.code.gson:gson:2.8.2'
+
+
+    androidTestImplementation "androidx.test.espresso:espresso-intents:${versions.espresso}"
+    androidTestImplementation ("androidx.test.espresso:espresso-core:${versions.espresso}") {
+        exclude module: 'support-annotations'
+    }
+    androidTestImplementation "androidx.test.uiautomator:uiautomator:${versions.uiAutomator}"
+
+    testImplementation "org.robolectric:robolectric:${versions.robolectric}"
+    testImplementation "junit:junit:${versions.junit}"
+    testImplementation "org.mockito:mockito-core:${versions.mockito}"
+    testImplementation "org.jdom:jdom2:${versions.jdom}"
+
+    implementation "androidx.test.espresso:espresso-idling-resource:${versions.espresso}"
     androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:${versions.espresso}"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:${versions.espresso}"
+    testImplementation "androidx.test:core:${versions.androidX}"
+    testImplementation "androidx.test.ext:junit:${versions.androidX}"
+    testImplementation "androidx.test:rules:${versions.runner_rules}"
+    testImplementation "androidx.test:runner:${versions.runner_rules}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
     testImplementation "org.robolectric:robolectric:${versions.robolectric}"
@@ -118,14 +129,6 @@ dependencies {
     testImplementation "org.jdom:jdom2:2.0.6"
     testImplementation "org.koin:koin-test:${versions.koin}"
     testImplementation "org.robolectric:shadows-multidex:${versions.robolectric}"
-
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.kotlinCoroutines}"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.kotlinCoroutines}"
-    implementation "androidx.multidex:multidex:${versions.multidex}"
-
-    implementation 'com.google.code.gson:gson:2.8.2'
-
 
     // Cucumber
     androidTestImplementation('info.cukes:cucumber-android:1.2.4') {
@@ -138,24 +141,13 @@ dependencies {
     androidTestImplementation 'info.cukes:cucumber-jvm-deps:1.0.5'
     // Screenshots
     androidTestImplementation 'com.squareup.spoon:spoon-client:1.7.1'
-
-    androidTestImplementation 'androidx.test:rules:1.2.0'
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test:core:1.2.1-alpha02'
     androidTestImplementation('com.schibsted.spain:barista:2.8.0') {
         exclude group: 'com.android.support'
         //exclude group: 'org.jetbrains.kotlin' // Only if you already use Kotlin in your project
     }
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
 }
 
 android {
-
-    sourceSets {
-        androidTest {
-            assets.srcDirs = ['src/androidTest/assets']
-        }
-    }
     compileSdkVersion buildConfig.compileSdk
 
     defaultConfig {
@@ -169,7 +161,7 @@ android {
         setProperty("archivesBaseName", "$buildConfig.versionName-$versionCode")
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]
 
-        //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+       //        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testApplicationId "com.fsck.k9.pEp.ui.activities.test"
         testInstrumentationRunner "com.fsck.k9.pEp.ui.activities.runner.CucumberTestRunner"
 
@@ -273,6 +265,20 @@ android {
             if (baseAbiVersionCode != null) {
                 output.versionCodeOverride = baseAbiVersionCode * 10000000 + variant.versionCode
             }
+        }
+    }
+
+    testOptions{
+        unitTests{
+            includeAndroidResources = true
+        }
+    }
+
+    sourceSets {
+        test.manifest.srcFile "src/test/AndroidManifest.xml"
+        androidTest {
+            manifest.srcFile "src/androidTest/AndroidManifest.xml"
+            assets.srcDirs = ['src/androidTest/assets']
         }
     }
 

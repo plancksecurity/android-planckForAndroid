@@ -55,6 +55,7 @@ buildscript {
 
                 'junit'              : '4.12',
                 'robolectric'        : '4.3.1',
+                'runner_rules'        : '1.1.0',
                 'mockito'            : '2.18.0',
                 'mockitoKotlin'      : '1.5.0',
                 'truth'              : '0.35',

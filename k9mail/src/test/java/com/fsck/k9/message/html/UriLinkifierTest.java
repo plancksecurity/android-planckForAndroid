@@ -1,17 +1,12 @@
 package com.fsck.k9.message.html;
 
 
-import com.fsck.k9.K9RobolectricTestRunner;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import static com.fsck.k9.message.html.UriParserTestHelper.assertLinkOnly;
 import static junit.framework.Assert.assertEquals;
 
 
-@RunWith(K9RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class UriLinkifierTest {
     private StringBuffer outputBuffer = new StringBuffer();
 

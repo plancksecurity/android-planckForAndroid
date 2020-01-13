@@ -3,6 +3,8 @@ package com.fsck.k9.notification;
 
 import android.content.Context;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.activity.MessageReference;
@@ -11,10 +13,10 @@ import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.message.extractors.PreviewResult.PreviewType;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -153,7 +155,7 @@ public class NotificationContentCreatorTest {
     }
 
     private NotificationContentCreator createNotificationContentCreator() {
-        Context context = RuntimeEnvironment.application;
+        Context context = ApplicationProvider.getApplicationContext();
         return new NotificationContentCreator(context);
     }
 
@@ -172,9 +174,9 @@ public class NotificationContentCreatorTest {
         when(message.getPreviewType()).thenReturn(PreviewType.TEXT);
         when(message.getPreview()).thenReturn(PREVIEW);
         when(message.getSubject()).thenReturn(SUBJECT);
-        when(message.getFrom()).thenReturn(new Address[] { new Address(SENDER_ADDRESS, SENDER_NAME) });
+        when(message.getFrom()).thenReturn(new Address[]{new Address(SENDER_ADDRESS, SENDER_NAME)});
         when(message.getRecipients(RecipientType.TO))
-                .thenReturn(new Address[] { new Address(RECIPIENT_ADDRESS, RECIPIENT_NAME) });
+                .thenReturn(new Address[]{new Address(RECIPIENT_ADDRESS, RECIPIENT_NAME)});
 
         return message;
     }

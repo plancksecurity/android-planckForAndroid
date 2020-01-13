@@ -1,39 +1,6 @@
 package com.fsck.k9.notification;
 
 
-import java.util.ArrayList;
-
-import android.app.Notification;
-import android.app.PendingIntent;
-import android.content.Context;
-import androidx.core.app.NotificationCompat.Action;
-import androidx.core.app.NotificationCompat.Builder;
-import androidx.core.app.NotificationCompat.Extender;
-import androidx.core.app.NotificationCompat.WearableExtender;
-
-import com.fsck.k9.Account;
-import com.fsck.k9.K9;
-import com.fsck.k9.K9.NotificationQuickDelete;
-import com.fsck.k9.K9RobolectricTestRunner;
-import com.fsck.k9.MockHelper;
-import com.fsck.k9.R;
-import com.fsck.k9.activity.MessageReference;
-import com.fsck.k9.controller.MessagingController;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatcher;
-import org.robolectric.RuntimeEnvironment;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-
 //@RunWith(K9RobolectricTestRunner.class)
 public class WearNotificationsTest {
 //    private static final int ACCOUNT_NUMBER = 42;
@@ -51,7 +18,7 @@ public class WearNotificationsTest {
 //        notification = createNotification();
 //        builder = createNotificationBuilder(notification);
 //        actionCreator = createNotificationActionCreator();
-//        NotificationController controller = createNotificationController(RuntimeEnvironment.application, builder);
+//        NotificationController controller = createNotificationController(ApplicationProvider.getApplicationContext(), builder);
 //        MessagingController messagingController = createMessagingController();
 //
 //        wearNotifications = new TestWearNotifications(controller, actionCreator, messagingController);
@@ -269,7 +236,7 @@ public class WearNotificationsTest {
 //    }
 //
 //    private PendingIntent createFakePendingIntent(int requestCode) {
-//        return PendingIntent.getActivity(RuntimeEnvironment.application, requestCode, null, 0);
+//        return PendingIntent.getActivity(ApplicationProvider.getApplicationContext(), requestCode, null, 0);
 //    }
 //
 //    private ArrayList<MessageReference> createMessageReferenceList() {
