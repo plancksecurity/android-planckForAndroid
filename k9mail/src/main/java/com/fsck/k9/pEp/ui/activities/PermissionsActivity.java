@@ -8,9 +8,10 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 
 import com.fsck.k9.R;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
@@ -104,22 +105,12 @@ public class PermissionsActivity extends PepPermissionActivity {
         return new PEpProvider.CompletedCallback() {
             @Override
             public void onComplete() {
-                if(!askBatteryPermissionShowed) {
-                    askForBatteryOptimizationWhiteListing();
-                    askBatteryPermissionShowed = !askBatteryPermissionShowed;
-                } else {
-                    goToSetupAccount();
-                }
+                goToSetupAccount();
             }
 
             @Override
             public void onError(Throwable throwable) {
-                if(!askBatteryPermissionShowed) {
-                    askForBatteryOptimizationWhiteListing();
-                    askBatteryPermissionShowed = !askBatteryPermissionShowed;
-                } else {
-                    goToSetupAccount();
-                }
+                goToSetupAccount();
             }
         };
     }
