@@ -416,6 +416,20 @@ public abstract class PEpImporterActivity extends PepPermissionActivity {
         }
     }
 
+    /*
+    We are having a problem: The accounts we can select in the import selection dialog will duplicate. The real issue here is,
+    what we are checking is the uuid of the account instead of its email. So then, even if we set rewrite to true, that would just
+    fix one part of the problem.
+
+    So, what we would like to do is, instead of using a uuis list, we could use a mail address list!
+    And since in the K9 it is possible to duplicate accounts, we are going to check for duplicate emails instead of uuids.
+    In this way rewrite variable will have no effect.
+
+
+    So now I wonder
+    abount the current meaning of the uuids. We can keep them since we want compatibility with K9. But its use is going to be decreasing.
+     */
+
     public static class ImportSelectionDialog implements NonConfigurationInstance {
         private SettingsImporter.ImportContents mImportContents;
         private Uri mUri;
