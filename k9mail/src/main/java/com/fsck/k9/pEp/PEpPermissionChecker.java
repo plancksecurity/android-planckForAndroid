@@ -26,21 +26,6 @@ public class PEpPermissionChecker implements PermissionChecker {
         return (res == PackageManager.PERMISSION_GRANTED);
     }
 
-    public static Boolean hasReadContactsPermission(Context context) {
-        int res = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS);
-        return (res == PackageManager.PERMISSION_GRANTED);
-    }
-
-    public static Boolean doesntHaveWriteExternalPermission(Context context) {
-        int res = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        return (res == PackageManager.PERMISSION_DENIED);
-    }
-
-    public static Boolean doesntHaveReadContactsPermission(Context context) {
-        int res = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS);
-        return (res == PackageManager.PERMISSION_DENIED);
-    }
-
     @Override
     public boolean hasBasicPermission() {
         return hasWriteContactsPermission() && hasWriteExternalPermission();
@@ -53,9 +38,21 @@ public class PEpPermissionChecker implements PermissionChecker {
     }
 
     @Override
+    public boolean doesntHaveWriteExternalPermission() {
+        int res = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        return (res == PackageManager.PERMISSION_DENIED);
+    }
+
+    @Override
     public boolean hasWriteContactsPermission() {
         int res = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS);
         return (res == PackageManager.PERMISSION_GRANTED);
+    }
+
+    @Override
+    public boolean doesntHaveWriteContactsPermission() {
+        int res = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS);
+        return (res == PackageManager.PERMISSION_DENIED);
     }
 
     @Override
@@ -65,17 +62,9 @@ public class PEpPermissionChecker implements PermissionChecker {
     }
 
     @Override
-    public boolean doesntHaveWriteExternalPermission() {
-        int res = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        return (res == PackageManager.PERMISSION_DENIED);
-    }
-
-    @Override
     public boolean doesntHaveReadContactsPermission() {
         int res = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS);
         return (res == PackageManager.PERMISSION_DENIED);
     }
-
-
 
 }

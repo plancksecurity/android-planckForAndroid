@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
-import com.google.android.material.snackbar.Snackbar;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
@@ -20,6 +19,7 @@ import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.ui.PermissionErrorListener;
 import com.fsck.k9.pEp.ui.listeners.ActivityPermissionListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -126,6 +126,21 @@ public abstract class PepPermissionActivity extends K9Activity {
             }
         }).check();
     }
+
+    /*
+    private void showNeedPermissionsDialog() {
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.permissions_needed_message)
+                .setPositiveButton(R.string.okay_action, (dialog, which) -> {
+                    Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", getPackageName(), null);
+                    intent.setData(uri);
+                    startActivity(intent);
+                })
+                .setNegativeButton(R.string.cancel_action, (dialog, which) -> goToSetupAccount())
+                .show();
+     */
 
     public abstract void inject();
 

@@ -2,19 +2,18 @@ package com.fsck.k9.pEp.ui.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 
+import com.fsck.k9.K9;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
-import com.fsck.k9.pEp.PEpPermissionChecker;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PepPermissionActivity;
 import com.fsck.k9.pEp.ui.PEpPermissionView;
+import com.fsck.k9.preferences.StorageEditor;
 
 import javax.inject.Inject;
 
@@ -31,7 +30,6 @@ public class PermissionsActivity extends PepPermissionActivity {
     PEpPermissionView storagePermissionView;
     @Bind(R.id.permission_battery)
     PEpPermissionView batteryPermissionView;
-    private boolean shouldAskPermissions;
 
     @Inject
     PermissionChecker permissionChecker;
@@ -46,7 +44,6 @@ public class PermissionsActivity extends PepPermissionActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_permissions);
         ButterKnife.bind(this);
-        shouldAskPermissions = true;
         contactsPermissionView.initialize(getResources().getString(R.string.read_permission_rationale_title),
                 getResources().getString(R.string.read_permission_first_explanation)
         );
@@ -75,29 +72,12 @@ public class PermissionsActivity extends PepPermissionActivity {
 
     @OnClick(R.id.action_continue)
     public void onContinueClicked() {
-        if (noPermissionGrantedOrDenied()) {
+        if (K9.isShallRequestPermissions()) {
+            disableRequestPermissions();
             createBasicPermissionsActivity(permissionsCompletedCallback());
-        } else if (!PEpPermissionChecker.hasReadContactsPermission(this) ||
-                !PEpPermissionChecker.hasWriteExternalPermission(this)) {
-            showNeedPermissionsDialog();
         } else {
             goToSetupAccount();
         }
-        shouldAskPermissions = false;
-    }
-
-    private void showNeedPermissionsDialog() {
-        new AlertDialog.Builder(this)
-                .setMessage(R.string.permissions_needed_message)
-                .setPositiveButton(R.string.okay_action, (dialog, which) -> {
-                    Intent intent = new Intent();
-                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                    Uri uri = Uri.fromParts("package", getPackageName(), null);
-                    intent.setData(uri);
-                    startActivity(intent);
-                })
-                .setNegativeButton(R.string.cancel_action, (dialog, which) -> goToSetupAccount())
-                .show();
     }
 
     @NonNull
@@ -120,10 +100,16 @@ public class PermissionsActivity extends PepPermissionActivity {
         finish();
     }
 
-    private boolean noPermissionGrantedOrDenied() {
-        return PEpPermissionChecker.doesntHaveReadContactsPermission(this) &&
-                PEpPermissionChecker.doesntHaveWriteExternalPermission(this) &&
-                shouldAskPermissions;
+    private void disableRequestPermissions() {
+        K9.setShallRequestPermissions(false);
+
+        new Thread(() -> {
+            Preferences prefs = Preferences.getPreferences(getApplicationContext());
+            StorageEditor editor = prefs.getStorage().edit();
+            K9.save(editor);
+            editor.commit();
+        }).start();
     }
+
 
 }

@@ -1,4 +1,3 @@
-
 package com.fsck.k9;
 
 
@@ -20,11 +19,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.StrictMode;
-
-import androidx.multidex.MultiDexApplication;
-
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.multidex.MultiDexApplication;
 
 import com.evernote.android.job.JobManager;
 import com.fsck.k9.Account.SortType;
@@ -33,7 +31,6 @@ import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.UpgradeDatabases;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.SimpleMessagingListener;
-import com.fsck.k9.helper.NamedThreadFactory;
 import com.fsck.k9.job.K9JobCreator;
 import com.fsck.k9.job.K9JobManager;
 import com.fsck.k9.job.MailSyncJobManager;
@@ -64,12 +61,6 @@ import com.fsck.k9.widget.list.MessageListWidgetProvider;
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
-import org.jetbrains.annotations.NotNull;
-
-import foundation.pEp.jniadapter.AndroidHelper;
-import foundation.pEp.jniadapter.Identity;
-import foundation.pEp.jniadapter.Sync;
-import foundation.pEp.jniadapter.SyncHandshakeSignal;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -82,9 +73,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
 
+import foundation.pEp.jniadapter.AndroidHelper;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Sync;
+import foundation.pEp.jniadapter.SyncHandshakeSignal;
 import security.pEp.sync.KeySyncCleaner;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
@@ -140,7 +134,7 @@ public class K9 extends MultiDexApplication {
      * components') should implement this interface and register using
      * {@link K9#registerApplicationAware(ApplicationAware)}.
      */
-    public static interface ApplicationAware {
+    public interface ApplicationAware {
         /**
          * Called when the Application instance is available and ready.
          *
@@ -340,6 +334,8 @@ public class K9 extends MultiDexApplication {
     private static boolean pEpSubjectUnprotected = false;
     private static boolean pEpForwardWarningEnabled = false;
     private static boolean pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
+    private static boolean shallRequestPermissions = true;
+
     private boolean grouped = false;
     private static Set<String> pEpExtraKeys = Collections.emptySet();
 
@@ -610,6 +606,7 @@ public class K9 extends MultiDexApplication {
         editor.putBoolean("pEpSubjectUnprotected", pEpSubjectUnprotected);
         editor.putBoolean("pEpForwardWarningEnabled", pEpForwardWarningEnabled);
         editor.putBoolean("pEpEnableSync", pEpSyncEnabled);
+        editor.putBoolean("shallRequestPermissions", shallRequestPermissions);
 
         fontSizes.save(editor);
     }
@@ -992,6 +989,7 @@ public class K9 extends MultiDexApplication {
 
         sPgpInlineDialogCounter = storage.getInt("pgpInlineDialogCounter", 0);
         sPgpSignOnlyDialogCounter = storage.getInt("pgpSignOnlyDialogCounter", 0);
+        shallRequestPermissions = storage.getBoolean("shallRequestPermissions", true);
 
         K9.setK9Language(storage.getString("language", ""));
 
@@ -1243,21 +1241,16 @@ public class K9 extends MultiDexApplication {
         // 21:00 - 05:00 means we want to be quiet if it's after 9 or before 5
         if (quietStarts > quietEnds) {
             // if it's 22:00 or 03:00 but not 8:00
-            if (now >= quietStarts || now <= quietEnds) {
-                return true;
-            }
+            return now >= quietStarts || now <= quietEnds;
         }
 
         // 01:00 - 05:00
         else {
 
             // if it' 2:00 or 4:00 but not 8:00 or 0:00
-            if (now >= quietStarts && now <= quietEnds) {
-                return true;
-            }
+            return now >= quietStarts && now <= quietEnds;
         }
 
-        return false;
     }
 
     public static void setDebug(boolean debug) {
@@ -1657,6 +1650,13 @@ public class K9 extends MultiDexApplication {
         }
     }
 
+    public static boolean isShallRequestPermissions() {
+        return shallRequestPermissions;
+    }
+
+    public static void setShallRequestPermissions(boolean shallRequestPermissions) {
+        K9.shallRequestPermissions = shallRequestPermissions;
+    }
 
     private ActivityLifecycleCallbacks activityLifecycleCallbacks = new ActivityLifecycleCallbacks() {
         int activityCount = 0;

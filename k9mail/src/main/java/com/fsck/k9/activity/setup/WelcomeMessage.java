@@ -7,19 +7,16 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.fsck.k9.pEp.PEpPermissionChecker;
+import com.fsck.k9.K9;
 import com.fsck.k9.pEp.ui.activities.PermissionsActivity;
 import com.fsck.k9.pEp.ui.fragments.intro.IntroFirstFragment;
 import com.fsck.k9.pEp.ui.fragments.intro.IntroSecondFragment;
 import com.fsck.k9.pEp.ui.fragments.intro.IntroThirdFragment;
 import com.github.paolorotolo.appintro.AppIntro;
 
-import security.pEp.sync.permissions.PermissionChecker;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class WelcomeMessage extends AppIntro {
-
-    private PermissionChecker pEpPermissionChecker;
 
     public static void showWelcomeMessage(Context context) {
         Intent intent = new Intent(context, WelcomeMessage.class);
@@ -36,7 +33,6 @@ public class WelcomeMessage extends AppIntro {
 
         showSkipButton(true);
         setProgressButtonEnabled(true);
-        pEpPermissionChecker = new PEpPermissionChecker(getApplicationContext());
     }
 
     @Override
@@ -52,10 +48,10 @@ public class WelcomeMessage extends AppIntro {
     }
 
     private void nextAction() {
-        if (pEpPermissionChecker.hasBasicPermission()) {
-            AccountSetupBasics.actionNewAccount(this);
-        } else {
+        if (K9.isShallRequestPermissions()) {
             PermissionsActivity.actionAskPermissions(this);
+        } else {
+            AccountSetupBasics.actionNewAccount(this);
         }
         finish();
     }
