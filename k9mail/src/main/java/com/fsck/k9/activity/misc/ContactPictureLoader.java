@@ -15,10 +15,11 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import androidx.annotation.VisibleForTesting;
-import androidx.collection.LruCache;
 import android.text.TextUtils;
 import android.widget.ImageView;
+
+import androidx.annotation.VisibleForTesting;
+import androidx.collection.LruCache;
 
 import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.mail.Address;
@@ -105,7 +106,7 @@ public class ContactPictureLoader {
     public ContactPictureLoader(Context context, int defaultBackgroundColor) {
         Context appContext = context.getApplicationContext();
         mDefaultBackgroundColor = defaultBackgroundColor;
-        if (PEpPermissionChecker.hasContactsPermission(context)) {
+        if (PEpPermissionChecker.hasWriteContactsPermission(context)) {
             mContentResolver = appContext.getContentResolver();
             mContactsHelper = Contacts.getInstance(appContext);
         }

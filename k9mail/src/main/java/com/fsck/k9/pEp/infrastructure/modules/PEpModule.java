@@ -2,12 +2,14 @@ package com.fsck.k9.pEp.infrastructure.modules;
 
 
 import android.content.Context;
+
 import androidx.fragment.app.FragmentManager;
 import androidx.loader.app.LoaderManager;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.controller.MessagingController;
+import com.fsck.k9.pEp.PEpPermissionChecker;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.manualsync.ImportKeyController;
 import com.fsck.k9.pEp.manualsync.ImportKeyControllerFactory;
@@ -19,6 +21,7 @@ import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
+import security.pEp.sync.permissions.PermissionChecker;
 
 @Module
 public class PEpModule {
@@ -38,13 +41,18 @@ public class PEpModule {
     }
 
     @Provides
-    public PEpSettingsChecker providePEpSettingsCheck() {
+    public PEpSettingsChecker providepEpSettingsCheck() {
         return new PEpSettingsCheck(context.getApplicationContext());
     }
 
     @Provides
+    public PermissionChecker providepEpPermissionChecker() {
+        return new PEpPermissionChecker(context.getApplicationContext());
+    }
+
+    @Provides
     @Named("MainUI")
-    public PEpProvider providepEpProvide() {
+    public PEpProvider providepEpProvider() {
         return ((K9) context.getApplicationContext()).getpEpProvider();
     }
 
@@ -60,7 +68,7 @@ public class PEpModule {
     }
 
     @Provides
-    public ImportKeyController provideImportkeyController(@Named("Background") PEpProvider  pEp) {
+    public ImportKeyController provideImportkeyController(@Named("Background") PEpProvider pEp) {
         return ImportKeyControllerFactory.getInstance().getImportKeyController(context, pEp);
     }
 
