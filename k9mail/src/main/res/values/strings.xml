@@ -1310,4 +1310,6 @@ You can keep this message and use it as a backup for your secret key. If you wan
 
     <string name="switch_on">On</string>
     <string name="switch_off">Off</string>
+
+    <string name="settings_overwrite_warning">Attention:\nCurrent settings will be overwritten.</string>
 </resources>
