@@ -1913,6 +1913,8 @@ public class TestUtils {
         device.waitForIdle();
         while (exists(onView(withId(R.id.message_list)))) {
             try {
+                device.waitForIdle();
+                onView(withId(R.id.message_list)).check(matches(isDisplayed()));
                 onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
                 return;
             } catch (Exception ex) {
