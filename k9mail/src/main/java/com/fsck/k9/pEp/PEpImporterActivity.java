@@ -19,6 +19,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.SparseBooleanArray;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -485,6 +486,7 @@ public abstract class PEpImporterActivity extends PepPermissionActivity {
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setMultiChoiceItems(contents.toArray(new String[0]), checkedItems, listener);
+            builder.setView(LayoutInflater.from(builder.getContext()).inflate(R.layout.import_selection_footer,null));
             builder.setTitle(activity.getString(R.string.settings_import_selection));
             builder.setInverseBackgroundForced(true);
             builder.setPositiveButton(R.string.okay_action,
