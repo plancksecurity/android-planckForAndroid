@@ -20,7 +20,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.StrictMode;
+
 import androidx.multidex.MultiDexApplication;
+
 import android.util.Log;
 import android.widget.Toast;
 
@@ -142,8 +144,7 @@ public class K9 extends MultiDexApplication {
         /**
          * Called when the Application instance is available and ready.
          *
-         * @param application
-         *            The application instance. Never <code>null</code>.
+         * @param application The application instance. Never <code>null</code>.
          * @throws Exception
          */
         void initializeComponent(Application application);
@@ -271,7 +272,7 @@ public class K9 extends MultiDexApplication {
     }
 
     private static LockScreenNotificationVisibility sLockScreenNotificationVisibility =
-        LockScreenNotificationVisibility.MESSAGE_COUNT;
+            LockScreenNotificationVisibility.MESSAGE_COUNT;
 
     public enum LockScreenNotificationVisibility {
         EVERYTHING,
@@ -302,7 +303,7 @@ public class K9 extends MultiDexApplication {
     private static boolean sShowContactPicture = true;
     private static boolean mMessageViewFixedWidthFont = false;
     private static boolean mMessageViewReturnToList = false;
-    private static boolean mMessageViewShowNext = false;
+    private static boolean mMessageViewShowNext = true;
 
     private static boolean mGesturesEnabled = true;
     private static boolean mUseVolumeKeysForNavigation = false;
@@ -341,7 +342,6 @@ public class K9 extends MultiDexApplication {
     private static boolean pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
     private boolean grouped = false;
     private static Set<String> pEpExtraKeys = Collections.emptySet();
-
 
 
     private static int sPgpInlineDialogCounter;
@@ -463,19 +463,19 @@ public class K9 extends MultiDexApplication {
 //            MailService.actionReset(context, wakeLockId);
 //        }
 
-        Class<?>[] classes = { MessageCompose.class, BootReceiver.class, MailServiceLegacy.class };
+        Class<?>[] classes = {MessageCompose.class, BootReceiver.class, MailServiceLegacy.class};
 
         for (Class<?> clazz : classes) {
 
             boolean alreadyEnabled = pm.getComponentEnabledSetting(new ComponentName(context, clazz)) ==
-                                     PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
 
             if (enabled != alreadyEnabled) {
                 pm.setComponentEnabledSetting(
-                    new ComponentName(context, clazz),
-                    enabled ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED :
-                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                    PackageManager.DONT_KILL_APP);
+                        new ComponentName(context, clazz),
+                        enabled ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED :
+                                PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                        PackageManager.DONT_KILL_APP);
             }
         }
 
@@ -633,11 +633,13 @@ public class K9 extends MultiDexApplication {
         Globals.setContext(this);
         oAuth2TokenStore = new AndroidAccountOAuth2TokenStore(this);
         K9MailLib.setDebugStatus(new K9MailLib.DebugStatus() {
-            @Override public boolean enabled() {
+            @Override
+            public boolean enabled() {
                 return DEBUG;
             }
 
-            @Override public boolean debugSensitive() {
+            @Override
+            public boolean debugSensitive() {
                 return DEBUG_SENSITIVE;
             }
         });
@@ -730,7 +732,7 @@ public class K9 extends MultiDexApplication {
 
             @Override
             public void folderStatusChanged(Account account, String folderName,
-                    int unreadMessageCount) {
+                                            int unreadMessageCount) {
 
                 updateUnreadWidget();
                 updateMailListWidget();
@@ -801,7 +803,7 @@ public class K9 extends MultiDexApplication {
             }
         });
 //        if (Preferences.getPreferences(this).getAccounts().size() > 0) {
-            pEpSyncProvider.startSync();
+        pEpSyncProvider.startSync();
 //        }
     }
 
@@ -816,8 +818,7 @@ public class K9 extends MultiDexApplication {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 22, syncTrustowordsActivity, 0);
         try {
             pendingIntent.send();
-        }
-        catch (PendingIntent.CanceledException e) {
+        } catch (PendingIntent.CanceledException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -876,7 +877,7 @@ public class K9 extends MultiDexApplication {
 
     /**
      * Load preferences into our statics.
-     *
+     * <p>
      * If you're adding a preference here, odds are you'll need to add it to
      * {@link com.fsck.k9.preferences.GlobalSettings}, too.
      *
@@ -911,8 +912,9 @@ public class K9 extends MultiDexApplication {
         mChangeContactNameColor = storage.getBoolean("changeRegisteredNameColor", false);
         mContactNameColor = storage.getInt("registeredNameColor", 0xff00008f);
         mMessageViewFixedWidthFont = storage.getBoolean("messageViewFixedWidthFont", false);
-        mMessageViewReturnToList = storage.getBoolean("messageViewReturnToList", false);
-        mMessageViewShowNext = storage.getBoolean("messageViewShowNext", false);
+        boolean returnToList = storage.getBoolean("messageViewReturnToList", false);
+        boolean showNext = storage.getBoolean("messageViewShowNext", true);
+        setAfterMessageDeleteBehavior(returnToList, showNext);
         mWrapFolderNames = storage.getBoolean("wrapFolderNames", false);
         mHideUserAgent = storage.getBoolean("hideUserAgent", true);
         mHideTimeZone = storage.getBoolean("hideTimeZone", false);
@@ -950,7 +952,7 @@ public class K9 extends MultiDexApplication {
         }
 
         String lockScreenNotificationVisibility = storage.getString("lockScreenNotificationVisibility", null);
-        if(lockScreenNotificationVisibility != null) {
+        if (lockScreenNotificationVisibility != null) {
             sLockScreenNotificationVisibility = LockScreenNotificationVisibility.valueOf(lockScreenNotificationVisibility);
         }
 
@@ -1011,6 +1013,22 @@ public class K9 extends MultiDexApplication {
     }
 
     /**
+     * Mutually excluyent setter for the behavior after a message is deleted.
+     *
+     * @param returnToList
+     * @param showNext
+     */
+    private static void setAfterMessageDeleteBehavior(boolean returnToList, boolean showNext) {
+        if (!showNext && returnToList) {
+            mMessageViewReturnToList = true;
+            mMessageViewShowNext = false;
+        } else {
+            mMessageViewReturnToList = false;
+            mMessageViewShowNext = true;
+        }
+    }
+
+    /**
      * since Android invokes Application.onCreate() only after invoking all
      * other components' onCreate(), here is a way to notify interested
      * component that the application is available and ready
@@ -1035,8 +1053,7 @@ public class K9 extends MultiDexApplication {
     /**
      * Register a component to be notified when the {@link K9} instance is ready.
      *
-     * @param component
-     *            Never <code>null</code>.
+     * @param component Never <code>null</code>.
      */
     public static void registerApplicationAware(final ApplicationAware component) {
         synchronized (observers) {
@@ -1215,7 +1232,7 @@ public class K9 extends MultiDexApplication {
 
         Integer now = (gregorianCalendar.get(Calendar.HOUR) * 60) + gregorianCalendar.get(Calendar.MINUTE);
         Integer quietStarts = startHour * 60 + startMinute;
-        Integer quietEnds =  endHour * 60 + endMinute;
+        Integer quietEnds = endHour * 60 + endMinute;
 
         // If start and end times are the same, we're never quiet
         if (quietStarts.equals(quietEnds)) {
@@ -1296,13 +1313,14 @@ public class K9 extends MultiDexApplication {
         return mShowCorrespondentNames;
     }
 
-     public static boolean messageListSenderAboveSubject() {
-         return mMessageListSenderAboveSubject;
-     }
+    public static boolean messageListSenderAboveSubject() {
+        return mMessageListSenderAboveSubject;
+    }
 
     public static void setMessageListSenderAboveSubject(boolean sender) {
-         mMessageListSenderAboveSubject = sender;
+        mMessageListSenderAboveSubject = sender;
     }
+
     public static void setShowCorrespondentNames(boolean showCorrespondentNames) {
         mShowCorrespondentNames = showCorrespondentNames;
     }
@@ -1454,6 +1472,7 @@ public class K9 extends MultiDexApplication {
     public static boolean wrapFolderNames() {
         return mWrapFolderNames;
     }
+
     public static void setWrapFolderNames(final boolean state) {
         mWrapFolderNames = state;
     }
@@ -1461,6 +1480,7 @@ public class K9 extends MultiDexApplication {
     public static boolean hideUserAgent() {
         return mHideUserAgent;
     }
+
     public static void setHideUserAgent(final boolean state) {
         mHideUserAgent = state;
     }
@@ -1468,6 +1488,7 @@ public class K9 extends MultiDexApplication {
     public static boolean hideTimeZone() {
         return mHideTimeZone;
     }
+
     public static void setHideTimeZone(final boolean state) {
         mHideTimeZone = state;
     }
@@ -1604,21 +1625,18 @@ public class K9 extends MultiDexApplication {
      * </p>
      *
      * @return {@code true}, if we know that all databases are using the current database schema.
-     *         {@code false}, otherwise.
+     * {@code false}, otherwise.
      */
     public static synchronized boolean areDatabasesUpToDate() {
         return sDatabasesUpToDate;
     }
 
 
-
     /**
      * Remember that all account databases are using the most recent database schema.
      *
-     * @param save
-     *         Whether or not to write the current database version to the
-     *         {@code SharedPreferences} {@link #DATABASE_VERSION_CACHE}.
-
+     * @param save Whether or not to write the current database version to the
+     *             {@code SharedPreferences} {@link #DATABASE_VERSION_CACHE}.
      * @see #areDatabasesUpToDate()
      */
     public static synchronized void setDatabasesUpToDate(boolean save) {
@@ -1642,6 +1660,7 @@ public class K9 extends MultiDexApplication {
 
     private ActivityLifecycleCallbacks activityLifecycleCallbacks = new ActivityLifecycleCallbacks() {
         int activityCount = 0;
+
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
             if (activityCount == 0) {
@@ -1686,7 +1705,10 @@ public class K9 extends MultiDexApplication {
         }
     };
 
-    public PEpProvider getpEpProvider() { return pEpProvider;}
+    public PEpProvider getpEpProvider() {
+        return pEpProvider;
+    }
+
     public static void setPEpExtraAccounts(String text) {
         pEpExtraAccounts = text;
     }
@@ -1707,7 +1729,7 @@ public class K9 extends MultiDexApplication {
     }
 
     public static boolean getPEpUseKeyserver() {
-       // return pEpUseKeyserver;
+        // return pEpUseKeyserver;
         return false;
     }
 
@@ -1737,6 +1759,7 @@ public class K9 extends MultiDexApplication {
     public static boolean ispEpForwardWarningEnabled() {
         return pEpForwardWarningEnabled;
     }
+
     public void setpEpForwardWarningEnabled(boolean pEpForwardWarningEnabled) {
         K9.pEpForwardWarningEnabled = pEpForwardWarningEnabled;
     }
@@ -1773,8 +1796,7 @@ public class K9 extends MultiDexApplication {
                 }
 
                 @Override
-                public void onError(Throwable throwable)
-                {
+                public void onError(Throwable throwable) {
                     Log.e("pEpSync", "onError: ", throwable);
                     isPollingMessages = false;
                 }
@@ -1814,8 +1836,8 @@ public class K9 extends MultiDexApplication {
     Sync.NotifyHandshakeCallback notifyHandshakeCallback = new Sync.NotifyHandshakeCallback() {
 
         @Override
-        public void  notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
-            System.out.println("pEpSync" +"notifyHandshakeCallFromC: " + notifyHandshakeCallback + " :: " + signal.name());
+        public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
+            System.out.println("pEpSync" + "notifyHandshakeCallFromC: " + notifyHandshakeCallback + " :: " + signal.name());
             new Handler(Looper.getMainLooper()).post(()
                     -> Toast.makeText(K9.this, signal.name(), Toast.LENGTH_SHORT).show());
             Log.e("pEpEngine", String.format("pEp notifyHandshake: %s", signal.name()));
@@ -1870,11 +1892,11 @@ public class K9 extends MultiDexApplication {
     }
 
     public void leaveDeviceGroup() {
-       grouped = false;
+        grouped = false;
         if (pEpSyncProvider.isSyncRunning()) {
             pEpSyncProvider.leaveDeviceGroup();
         }
-       pEpSyncEnabled = false;
+        pEpSyncEnabled = false;
     }
 
     public void shutdownSync() {
