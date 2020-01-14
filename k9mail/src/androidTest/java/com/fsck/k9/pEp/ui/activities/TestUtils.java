@@ -1901,6 +1901,10 @@ public class TestUtils {
             device.waitForIdle();
         }
         getMessageListSize();
+        if (viewIsDisplayed(R.id.delete)) {
+            pressBack();
+            device.waitForIdle();
+        }
     }
 
     public void getMessageListSize() {
