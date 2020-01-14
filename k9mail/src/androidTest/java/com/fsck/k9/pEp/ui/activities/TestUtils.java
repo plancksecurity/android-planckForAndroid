@@ -71,6 +71,7 @@ import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.swipeDown;
+import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -1711,6 +1712,12 @@ public class TestUtils {
         }
         device.waitForIdle();
         onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
+        device.waitForIdle();
+        try {
+            onView(withId(R.id.message_list)).perform(swipeUp());
+        } catch (Exception noSwipe) {
+            Timber.i("Cannot SwipeUp");
+        }
         device.waitForIdle();
     }
 
