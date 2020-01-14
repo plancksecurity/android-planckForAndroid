@@ -312,7 +312,11 @@ public class CucumberTestSteps {
         int viewId = testUtils.intToID(viewName);
         device.waitForIdle();
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-        scroll.swipe(Direction.DOWN, 1.0f);
+        try {
+            scroll.swipe(Direction.DOWN, 1.0f);
+        } catch (Exception scrollDown) {
+            Timber.i("Cannot scroll");
+        }
         device.waitForIdle();
         switch (text) {
             case "empty":
