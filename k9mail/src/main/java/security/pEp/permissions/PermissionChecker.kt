@@ -1,4 +1,4 @@
-package security.pEp.sync.permissions
+package security.pEp.permissions
 
 
 interface PermissionChecker {

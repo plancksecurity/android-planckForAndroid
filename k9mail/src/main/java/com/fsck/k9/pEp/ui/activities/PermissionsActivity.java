@@ -20,7 +20,7 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import security.pEp.sync.permissions.PermissionChecker;
+import security.pEp.permissions.PermissionChecker;
 
 public class PermissionsActivity extends PepPermissionActivity {
 

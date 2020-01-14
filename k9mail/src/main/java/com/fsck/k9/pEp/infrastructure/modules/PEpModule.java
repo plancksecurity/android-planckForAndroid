@@ -21,7 +21,7 @@ import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
-import security.pEp.sync.permissions.PermissionChecker;
+import security.pEp.permissions.PermissionChecker;
 
 @Module
 public class PEpModule {

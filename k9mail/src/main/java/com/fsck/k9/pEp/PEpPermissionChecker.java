@@ -6,7 +6,7 @@ import android.content.pm.PackageManager;
 
 import androidx.core.content.ContextCompat;
 
-import security.pEp.sync.permissions.PermissionChecker;
+import security.pEp.permissions.PermissionChecker;
 
 public class PEpPermissionChecker implements PermissionChecker {
 
