@@ -8,12 +8,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.fsck.k9.K9;
-import com.fsck.k9.pEp.ui.activities.PermissionsActivity;
 import com.fsck.k9.pEp.ui.fragments.intro.IntroFirstFragment;
 import com.fsck.k9.pEp.ui.fragments.intro.IntroSecondFragment;
 import com.fsck.k9.pEp.ui.fragments.intro.IntroThirdFragment;
 import com.github.paolorotolo.appintro.AppIntro;
 
+import security.pEp.ui.permissions.PermissionsActivity;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class WelcomeMessage extends AppIntro {

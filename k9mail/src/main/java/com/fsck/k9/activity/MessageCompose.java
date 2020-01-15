@@ -20,8 +20,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.TypedValue;
@@ -37,6 +35,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
@@ -89,14 +90,13 @@ import com.fsck.k9.message.SimpleMessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.PepPermissionActivity;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
 import com.karumi.dexter.listener.single.CompositePermissionListener;
 
-import foundation.pEp.jniadapter.Rating;
+import org.openintents.openpgp.OpenPgpApiManager;
 
 import java.util.Collections;
 import java.util.Date;
@@ -106,8 +106,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.openintents.openpgp.OpenPgpApiManager;
-
+import foundation.pEp.jniadapter.Rating;
+import security.pEp.ui.permissions.PepPermissionActivity;
 import timber.log.Timber;
 
 

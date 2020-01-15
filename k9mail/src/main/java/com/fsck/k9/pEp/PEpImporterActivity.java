@@ -14,7 +14,6 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import androidx.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -27,6 +26,8 @@ import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -47,8 +48,6 @@ import com.fsck.k9.preferences.SettingsImportExportException;
 import com.fsck.k9.preferences.SettingsImporter;
 
 import org.apache.commons.io.IOUtils;
-import foundation.pEp.jniadapter.Identity;
-import foundation.pEp.jniadapter.pEpException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -58,6 +57,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.pEpException;
+import security.pEp.ui.permissions.PepPermissionActivity;
 import timber.log.Timber;
 
 public abstract class PEpImporterActivity extends PepPermissionActivity {

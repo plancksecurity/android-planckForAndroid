@@ -1,11 +1,12 @@
 package com.fsck.k9.pEp.ui.listeners;
 
-import com.fsck.k9.pEp.PepPermissionActivity;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
+
+import security.pEp.ui.permissions.PepPermissionActivity;
 
 public class ActivityPermissionListener implements PermissionListener {
 

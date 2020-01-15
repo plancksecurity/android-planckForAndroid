@@ -23,7 +23,6 @@ import androidx.collection.LruCache;
 
 import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.mail.Address;
-import com.fsck.k9.pEp.PEpPermissionChecker;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,6 +34,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import security.pEp.permissions.PermissionChecker;
+import security.pEp.ui.permissions.PEpPermissionChecker;
 
 public class ContactPictureLoader {
     /**

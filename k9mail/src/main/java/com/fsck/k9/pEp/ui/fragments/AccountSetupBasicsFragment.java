@@ -48,7 +48,6 @@ import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.filter.Hex;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.PepPermissionActivity;
 import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpCertificateException;
 import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpSetupException;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
@@ -72,6 +71,7 @@ import javax.inject.Inject;
 
 import butterknife.OnTextChanged;
 import security.pEp.permissions.PermissionChecker;
+import security.pEp.ui.permissions.PepPermissionActivity;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_CANCELED;

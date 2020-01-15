@@ -8,7 +8,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context="com.fsck.k9.pEp.ui.activities.PermissionsActivity"
+        tools:context="com.fsck.k9.security.pEp.ui.permissions.PermissionsActivity"
         android:layout_gravity="center"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"

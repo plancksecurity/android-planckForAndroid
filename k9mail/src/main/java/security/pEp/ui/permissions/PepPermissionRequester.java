@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp;
+package security.pEp.ui.permissions;
 
 import android.Manifest;
 import android.app.Activity;

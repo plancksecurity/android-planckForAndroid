@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp;
+package security.pEp.ui.permissions;
 
 import android.Manifest;
 import android.content.Context;
@@ -12,6 +12,7 @@ import android.provider.Settings;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
+import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
 import com.fsck.k9.pEp.infrastructure.components.PEpComponent;

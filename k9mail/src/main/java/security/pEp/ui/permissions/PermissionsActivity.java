@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp.ui.activities;
+package security.pEp.ui.permissions;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +11,6 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PepPermissionActivity;
 import com.fsck.k9.pEp.ui.PEpPermissionView;
 import com.fsck.k9.preferences.StorageEditor;
 
