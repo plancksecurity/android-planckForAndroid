@@ -28,7 +28,7 @@ public class PEpPermissionChecker implements PermissionChecker {
 
     @Override
     public boolean hasBasicPermission() {
-        return hasWriteContactsPermission() && hasWriteExternalPermission();
+        return hasContactsPermission() && hasWriteExternalPermission();
     }
 
     @Override
@@ -44,27 +44,22 @@ public class PEpPermissionChecker implements PermissionChecker {
     }
 
     @Override
-    public boolean hasWriteContactsPermission() {
-        int res = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS);
-        return (res == PackageManager.PERMISSION_GRANTED);
+    public boolean doesntHaveContactsPermission() {
+        int readRes = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS);
+        int writeRes = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS);
+        return (readRes == PackageManager.PERMISSION_DENIED &&
+                writeRes == PackageManager.PERMISSION_DENIED
+        );
     }
 
     @Override
-    public boolean doesntHaveWriteContactsPermission() {
-        int res = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS);
-        return (res == PackageManager.PERMISSION_DENIED);
+    public boolean hasContactsPermission() {
+        int readRes = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS);
+        int writeRes = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS);
+        return (readRes == PackageManager.PERMISSION_GRANTED &&
+                writeRes == PackageManager.PERMISSION_GRANTED
+        );
     }
 
-    @Override
-    public boolean hasReadContactsPermission() {
-        int res = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS);
-        return (res == PackageManager.PERMISSION_GRANTED);
-    }
-
-    @Override
-    public boolean doesntHaveReadContactsPermission() {
-        int res = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS);
-        return (res == PackageManager.PERMISSION_DENIED);
-    }
 
 }

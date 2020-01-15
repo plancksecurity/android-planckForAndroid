@@ -8,10 +8,6 @@ interface PermissionChecker {
     fun hasWriteExternalPermission(): Boolean
     fun doesntHaveWriteExternalPermission(): Boolean
 
-    fun hasWriteContactsPermission(): Boolean
-    fun doesntHaveWriteContactsPermission(): Boolean
-
-    fun hasReadContactsPermission(): Boolean
-    fun doesntHaveReadContactsPermission(): Boolean
-
+    fun doesntHaveContactsPermission(): Boolean
+    fun hasContactsPermission(): Boolean
 }

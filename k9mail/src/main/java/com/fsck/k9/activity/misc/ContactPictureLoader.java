@@ -34,6 +34,8 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import security.pEp.permissions.PermissionChecker;
+
 public class ContactPictureLoader {
     /**
      * Resize the pictures to the following value (device-independent pixels).
@@ -57,6 +59,7 @@ public class ContactPictureLoader {
     private int mPictureSizeInPx;
 
     private int mDefaultBackgroundColor;
+    private PermissionChecker permissionChecker;
 
     /**
      * LRU cache of contact pictures.
@@ -105,8 +108,9 @@ public class ContactPictureLoader {
      */
     public ContactPictureLoader(Context context, int defaultBackgroundColor) {
         Context appContext = context.getApplicationContext();
+        permissionChecker = new PEpPermissionChecker(context);
         mDefaultBackgroundColor = defaultBackgroundColor;
-        if (PEpPermissionChecker.hasWriteContactsPermission(context)) {
+        if (permissionChecker.hasContactsPermission()) {
             mContentResolver = appContext.getContentResolver();
             mContactsHelper = Contacts.getInstance(appContext);
         }

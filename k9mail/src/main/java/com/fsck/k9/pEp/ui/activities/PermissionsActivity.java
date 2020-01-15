@@ -15,12 +15,9 @@ import com.fsck.k9.pEp.PepPermissionActivity;
 import com.fsck.k9.pEp.ui.PEpPermissionView;
 import com.fsck.k9.preferences.StorageEditor;
 
-import javax.inject.Inject;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import security.pEp.permissions.PermissionChecker;
 
 public class PermissionsActivity extends PepPermissionActivity {
 
@@ -31,8 +28,6 @@ public class PermissionsActivity extends PepPermissionActivity {
     @Bind(R.id.permission_battery)
     PEpPermissionView batteryPermissionView;
 
-    @Inject
-    PermissionChecker permissionChecker;
 
     public static void actionAskPermissions(Context context) {
         Intent i = new Intent(context, PermissionsActivity.class);
