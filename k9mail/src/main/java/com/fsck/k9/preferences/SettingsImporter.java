@@ -317,17 +317,24 @@ public class SettingsImporter {
         List<Account> accounts = prefs.getAccounts();
 
         String uuid = account.uuid;
-        Account existingAccount = prefs.getAccount(uuid);
-        boolean mergeImportedAccount = (overwrite && existingAccount != null);
+        String email = account.identities.get(0).email;
+        Account existingAccount = prefs.getAccontByEmail(email);
+        boolean mergeImportedAccount = (existingAccount != null);
 
-        if (!overwrite && existingAccount != null) {
+        // In case account exists, we need to use the already existent uuid in order to write the settings.
+        if(mergeImportedAccount) {
+            uuid = existingAccount.getUuid();
+        }
+
+        String accountName = account.name;
+        /*if (!overwrite && existingAccount != null) {
             // An account with this UUID already exists, but we're not allowed to overwrite it.
             // So generate a new UUID.
             uuid = UUID.randomUUID().toString();
         }
 
         // Make sure the account name is unique
-        String accountName = account.name;
+
         if (isAccountNameUsed(accountName, accounts)) {
             // Account name is already in use. So generate a new one by appending " (x)", where x is the first
             // number >= 1 that results in an unused account name.
@@ -337,7 +344,7 @@ public class SettingsImporter {
                     break;
                 }
             }
-        }
+        }*/
 
         // Write account name
         String accountKeyPrefix = uuid + ".";
@@ -815,7 +822,13 @@ public class SettingsImporter {
         Map<String, ImportedAccount> accounts = null;
 
         int eventType = xpp.next();
-        while (!(eventType == XmlPullParser.END_TAG && SettingsExporter.ACCOUNTS_ELEMENT.equals(xpp.getName()))) {
+        /*
+        When we are in the second pass, we want to check if(accountuuids not finish and the next element matches next uuid. If if doesnt, we need to skip the
+        element from parsing.)
+         */
+        int uuidIndex = 0;
+        // limit the parsed elements to the number of accountuuids we have.
+        while ((overview || uuidIndex < accountUuids.size()-1) &&!(eventType == XmlPullParser.END_TAG && SettingsExporter.ACCOUNTS_ELEMENT.equals(xpp.getName()))) {
             if (eventType == XmlPullParser.START_TAG) {
                 String element = xpp.getName();
                 if (SettingsExporter.ACCOUNT_ELEMENT.equals(element)) {
@@ -823,10 +836,12 @@ public class SettingsImporter {
                         accounts = new HashMap<>();
                     }
 
-                    ImportedAccount account = parseAccount(xpp, accountUuids, overview);
+                    ImportedAccount account = parseAccount(xpp, accountUuids, overview, uuidIndex++);
+                    // return null if the account uuid does not match the uuid
 
-                    if (account == null) {
-                        // Do nothing - parseAccount() already logged a message
+                    if (!overview && account == null) {
+                        // skip the element: this was a repeated account in the settings import file.
+                        continue;
                     } else if (!accountListContainsAccountEmail(accounts.values(), account)) { // here we used to check the key is unique. Now we check the email is unique instead.
                         accounts.put(account.uuid, account);
                     } else {
@@ -851,13 +866,18 @@ public class SettingsImporter {
         return false;
     }
 
-    private static ImportedAccount parseAccount(XmlPullParser xpp, List<String> accountUuids, boolean overview)
+    private static ImportedAccount parseAccount(XmlPullParser xpp, List<String> accountUuids, boolean overview, int uuidIndex)
             throws XmlPullParserException, IOException {
 
         String uuid = xpp.getAttributeValue(null, SettingsExporter.UUID_ATTRIBUTE);
 
         try {
             UUID.fromString(uuid);
+            if(!overview && !uuid.equals(accountUuids.get(uuidIndex))) {
+                // its a duplicate account, return null.
+                return null;
+            }
+
         } catch (Exception e) {
             skipToEndTag(xpp, SettingsExporter.ACCOUNT_ELEMENT);
             Timber.w("Skipping account with invalid UUID %s", uuid);
@@ -866,8 +886,12 @@ public class SettingsImporter {
 
         ImportedAccount account = new ImportedAccount();
         account.uuid = uuid;
-
-        if (overview || accountUuids.contains(uuid)) {
+        /*
+        We have a uuid list which can be shorter than the number of accounts in the settings import file. But we have no way of knowing the position of the
+        bad accounts beforehand, so I think we could write a fake uuid in those cases if possible.
+        If we insert dummy values then we
+         */
+        if (overview/* || accountUuids.contains(uuid)*/) {
             int eventType = xpp.next();
             while (!(eventType == XmlPullParser.END_TAG && SettingsExporter.ACCOUNT_ELEMENT.equals(xpp.getName()))) {
                 if (eventType == XmlPullParser.START_TAG) {
@@ -1114,6 +1138,10 @@ public class SettingsImporter {
         public ImportedSettings settings;
         public List<ImportedIdentity> identities;
         public List<ImportedFolder> folders;
+
+        public void setUuid(String uuid) {
+            this.uuid = uuid;
+        }
 
         public boolean hasSameEmail(ImportedAccount account) {
             return identities.get(0).email.equals(account.identities.get(0).email);

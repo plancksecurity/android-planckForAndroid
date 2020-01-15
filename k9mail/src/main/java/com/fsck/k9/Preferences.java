@@ -116,6 +116,7 @@ public class Preferences {
         if (accounts == null) {
             loadAccounts();
         }
+
         if(accounts != null && !accounts.isEmpty()) {
             Set<String> keys = accounts.keySet();
             for(String key : keys) {
@@ -125,6 +126,7 @@ public class Preferences {
                 }
             }
         }
+
         return null;
     }
 
