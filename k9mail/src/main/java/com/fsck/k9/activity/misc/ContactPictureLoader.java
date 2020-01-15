@@ -69,17 +69,17 @@ public class ContactPictureLoader {
     /**
      * @see <a href="http://developer.android.com/design/style/color.html">Color palette used</a>
      */
-    private final static int CONTACT_DUMMY_COLORS_ARGB[] = {
-        0xff33B5E5,
-        0xffAA66CC,
-        0xff99CC00,
-        0xffFFBB33,
-        0xffFF4444,
-        0xff0099CC,
-        0xff9933CC,
-        0xff669900,
-        0xffFF8800,
-        0xffCC0000
+    private final static int[] CONTACT_DUMMY_COLORS_ARGB = {
+            0xff33B5E5,
+            0xffAA66CC,
+            0xff99CC00,
+            0xffFFBB33,
+            0xffFF4444,
+            0xff0099CC,
+            0xff9933CC,
+            0xff669900,
+            0xffFF8800,
+            0xffCC0000
     };
 
     @VisibleForTesting
@@ -100,11 +100,9 @@ public class ContactPictureLoader {
     /**
      * Constructor.
      *
-     * @param context
-     *         A {@link Context} instance.
-     * @param defaultBackgroundColor
-     *         The ARGB value to be used as background color for the fallback picture. {@code 0} to
-     *         use a dynamically calculated background color.
+     * @param context                A {@link Context} instance.
+     * @param defaultBackgroundColor The ARGB value to be used as background color for the fallback picture. {@code 0} to
+     *                               use a dynamically calculated background color.
      */
     public ContactPictureLoader(Context context, int defaultBackgroundColor) {
         Context appContext = context.getApplicationContext();
@@ -143,12 +141,9 @@ public class ContactPictureLoader {
      * fallback picture is then stored in the bitmap cache.
      * </p>
      *
-     * @param address
-     *         The {@link Address} instance holding the email address that is used to search the
-     *         contacts database.
-     * @param imageView
-     *         The {@code QuickContactBadge} instance to receive the picture.
-     *
+     * @param address   The {@link Address} instance holding the email address that is used to search the
+     *                  contacts database.
+     * @param imageView The {@code QuickContactBadge} instance to receive the picture.
      * @see #mBitmapCache
      * @see #calculateFallbackBitmap(Address)
      */
@@ -249,15 +244,12 @@ public class ContactPictureLoader {
      * Checks if a {@code ContactPictureRetrievalTask} was already created to load the contact
      * picture for the supplied {@code Address}.
      *
-     * @param address
-     *         The {@link Address} instance holding the email address that is used to search the
-     *         contacts database.
-     * @param imageView
-     *         The {@link ImageView} instance that will receive the picture.
-     *
+     * @param address   The {@link Address} instance holding the email address that is used to search the
+     *                  contacts database.
+     * @param imageView The {@link ImageView} instance that will receive the picture.
      * @return {@code true}, if the contact picture should be loaded in a background thread.
-     *         {@code false}, if another {@link ContactPictureRetrievalTask} was already scheduled
-     *         to load that contact picture.
+     * {@code false}, if another {@link ContactPictureRetrievalTask} was already scheduled
+     * to load that contact picture.
      */
     private boolean cancelPotentialWork(Address address, ImageView imageView) {
         final ContactPictureRetrievalTask task = getContactPictureRetrievalTask(imageView);
@@ -278,11 +270,11 @@ public class ContactPictureLoader {
 
     private ContactPictureRetrievalTask getContactPictureRetrievalTask(ImageView imageView) {
         if (imageView != null) {
-           Drawable drawable = imageView.getDrawable();
-           if (drawable instanceof AsyncDrawable) {
-               AsyncDrawable asyncDrawable = (AsyncDrawable) drawable;
-               return asyncDrawable.getContactPictureRetrievalTask();
-           }
+            Drawable drawable = imageView.getDrawable();
+            if (drawable instanceof AsyncDrawable) {
+                AsyncDrawable asyncDrawable = (AsyncDrawable) drawable;
+                return asyncDrawable.getContactPictureRetrievalTask();
+            }
         }
 
         return null;
@@ -327,7 +319,9 @@ public class ContactPictureLoader {
                                 }
                             }
                         } finally {
-                            try { stream.close(); } catch (IOException e) { /* ignore */ }
+                            try {
+                                stream.close();
+                            } catch (IOException e) { /* ignore */ }
                         }
                     }
                 } catch (FileNotFoundException e) {
