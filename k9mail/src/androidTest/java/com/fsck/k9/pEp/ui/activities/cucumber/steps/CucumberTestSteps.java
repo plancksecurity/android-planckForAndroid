@@ -148,7 +148,10 @@ public class CucumberTestSteps {
             device.waitForIdle();
         }
         if (!exists(onView(withId(R.id.available_accounts_title)))) {
-            while (exists(onView(withId(R.id.reply))) || exists(onView(withId(R.id.reply_message))) || exists(onView(withId(R.id.attachment_container)))) {
+            while (exists(onView(withId(R.id.reply)))
+                    || exists(onView(withId(R.id.reply_message)))
+                    || exists(onView(withId(R.id.attachment_container)))
+                    || exists(onView(withId(R.id.send)))) {
                 device.waitForIdle();
                 if (exists(onView(withText(R.string.discard_action)))) {
                     device.waitForIdle();
