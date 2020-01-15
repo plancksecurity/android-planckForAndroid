@@ -47,7 +47,6 @@ import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.filter.Hex;
 import com.fsck.k9.mail.store.RemoteStore;
-import com.fsck.k9.pEp.PEpPermissionChecker;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepPermissionActivity;
 import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpCertificateException;
@@ -72,6 +71,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import butterknife.OnTextChanged;
+import security.pEp.permissions.PermissionChecker;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -119,6 +119,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
     PEpSettingsChecker pEpSettingsChecker;
     @Inject
     SetupAccountType setupAccountType;
+    @Inject
+    PermissionChecker permissionChecker;
 
     @Nullable
     @Override
@@ -235,8 +237,10 @@ public class AccountSetupBasicsFragment extends PEpFragment
      */
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (!PEpPermissionChecker.hasWriteContactsPermission(getActivity())) {
-            ((PepPermissionActivity) getActivity()).createContactsPermissionListeners();
+        if (!permissionChecker.hasContactsPermission()) {
+            if (isChecked) {
+                ((PepPermissionActivity) getActivity()).createContactsPermissionListeners();
+            }
         } else {
             updateViewVisibility(mClientCertificateCheckBox.isChecked(), mOAuth2CheckBox.isChecked());
             validateFields();
@@ -246,6 +250,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
                 mClientCertificateSpinner.chooseCertificate();
             }
         }
+
     }
 
     private void updateViewVisibility(boolean usingCertificates, boolean usingXoauth) {

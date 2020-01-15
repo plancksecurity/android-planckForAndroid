@@ -109,21 +109,6 @@ public abstract class PepPermissionActivity extends K9Activity {
         }).check();
     }
 
-    /*
-    private void showNeedPermissionsDialog() {
-        new AlertDialog.Builder(this)
-                .setMessage(R.string.permissions_needed_message)
-                .setPositiveButton(R.string.okay_action, (dialog, which) -> {
-                    Intent intent = new Intent();
-                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                    Uri uri = Uri.fromParts("package", getPackageName(), null);
-                    intent.setData(uri);
-                    startActivity(intent);
-                })
-                .setNegativeButton(R.string.cancel_action, (dialog, which) -> goToSetupAccount())
-                .show();
-     */
-
     public abstract void inject();
 
     public PEpComponent getpEpComponent() {

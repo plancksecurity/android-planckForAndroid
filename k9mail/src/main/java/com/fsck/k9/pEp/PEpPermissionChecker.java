@@ -21,11 +21,6 @@ public class PEpPermissionChecker implements PermissionChecker {
         return (res == PackageManager.PERMISSION_GRANTED);
     }
 
-    public static Boolean hasWriteContactsPermission(Context context) {
-        int res = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS);
-        return (res == PackageManager.PERMISSION_GRANTED);
-    }
-
     @Override
     public boolean hasBasicPermission() {
         return hasContactsPermission() && hasWriteExternalPermission();
