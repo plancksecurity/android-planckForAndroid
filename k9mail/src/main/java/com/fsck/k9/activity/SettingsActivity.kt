@@ -44,12 +44,18 @@ import com.fsck.k9.ui.fragmentTransaction
 import com.fsck.k9.ui.settings.account.AccountSettingsActivity
 import com.fsck.k9.ui.settings.general.GeneralSettingsActivity
 import com.fsck.k9.ui.settings.general.GeneralSettingsFragment
-import com.karumi.dexter.listener.single.CompositePermissionListener
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionDeniedResponse
+import com.karumi.dexter.listener.PermissionGrantedResponse
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.single.PermissionListener
 import kotlinx.android.synthetic.main.accounts.*
 import kotlinx.coroutines.*
+import security.pEp.permissions.PermissionRequester
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Inject
 
 
 class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
@@ -84,8 +90,9 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     private var nonConfigurationInstance: NonConfigurationInstance? = null
     private var accountsList: NestedListView? = null
     private var addAccountButton: View? = null
-    private val storagePermissionListener: CompositePermissionListener? = null
 
+    @Inject
+    lateinit var permissionRequester: PermissionRequester
 
     private val storageListener = object : StorageManager.StorageListener {
 
@@ -205,6 +212,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             return
         }
 
+        permissionRequester.requestBatteryOptimizationPermission()
+
         val startup = intent.getBooleanExtra(EXTRA_STARTUP, true)
         if (startup && K9.startIntegratedInbox() && !K9.isHideSpecialAccounts()) {
             onOpenAccount(unifiedInboxAccount)
@@ -242,24 +251,14 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
 
         setupAddAccountButton()
-        askForBatteryOptimizationWhiteListing()
     }
 
     override fun search(query: String) {
         triggerSearch(query, null)
     }
 
-    override fun showPermissionGranted(permissionName: String) {
-
-    }
-
-    override fun showPermissionDenied(permissionName: String, permanentlyDenied: Boolean) {
-        val permissionDenied = resources.getString(R.string.download_snackbar_permission_permanently_denied)
-        FeedbackTools.showLongFeedback(rootView, permissionDenied)
-    }
-
     override fun inject() {
-
+        getpEpComponent().inject(this)
     }
 
     private fun setupAddAccountButton() {
@@ -783,7 +782,24 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
     fun onExport(includeGlobals: Boolean, account: Account?) {
 
-        createStoragePermissionListeners()
+        permissionRequester.requestStoragePermission(
+                rootView,
+                object : PermissionListener {
+                    override fun onPermissionGranted(response: PermissionGrantedResponse?) {
+
+                    }
+
+                    override fun onPermissionRationaleShouldBeShown(permission: PermissionRequest?, token: PermissionToken?) {
+                    }
+
+                    override fun onPermissionDenied(response: PermissionDeniedResponse?) {
+                        val permissionDenied = resources.getString(R.string.download_snackbar_permission_permanently_denied)
+                        FeedbackTools.showLongFeedback(rootView, permissionDenied)
+                    }
+
+                }
+        )
+
         if (hasWriteExternalPermission()) {        // TODO, prompt to allow a user to choose which accounts to export
             var accountUuids: ArrayList<String>? = null
             if (account != null) {

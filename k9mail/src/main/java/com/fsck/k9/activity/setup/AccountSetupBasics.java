@@ -1,4 +1,3 @@
-
 package com.fsck.k9.activity.setup;
 
 
@@ -7,9 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.fragment.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import androidx.fragment.app.FragmentTransaction;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
@@ -23,6 +23,8 @@ import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 
 import javax.inject.Inject;
+
+import security.pEp.permissions.PermissionRequester;
 
 /**
  * Prompts the user for the email address and password.
@@ -45,8 +47,12 @@ public class AccountSetupBasics extends PEpImporterActivity {
     public boolean isEditingOutgoingSettings;
     public boolean isBackOutgoingSettings;
     private NonConfigurationInstance nonConfigurationInstance;
-    @Inject AccountSetupNavigator accountSetupNavigator;
+    @Inject
+    AccountSetupNavigator accountSetupNavigator;
     private boolean isGoingBack = false;
+
+    @Inject
+    PermissionRequester permissionRequester;
 
     public static void actionNewAccount(Context context) {
         Intent i = new Intent(context, AccountSetupBasics.class);
@@ -110,14 +116,13 @@ public class AccountSetupBasics extends PEpImporterActivity {
             ft.addToBackStack("AccountSetupIncomingFragment");
             String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
             ft.add(R.id.account_setup_container, AccountSetupOutgoingFragment.intentBackToOutgoingSettings(accountUuid)).commit();
-        }
-        else if (savedInstanceState == null) {
+        } else if (savedInstanceState == null) {
             accountSetupBasicsFragment = new AccountSetupBasicsFragment();
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.addToBackStack("AccountSetupBasicsFragment");
             ft.add(R.id.account_setup_container, accountSetupBasicsFragment).commit();
         }
-        askForBatteryOptimizationWhiteListing();
+        permissionRequester.requestBatteryOptimizationPermission();
 
         // Handle activity restarts because of a configuration change (e.g. rotating the screen)
         nonConfigurationInstance = (NonConfigurationInstance) getLastNonConfigurationInstance();
@@ -154,16 +159,6 @@ public class AccountSetupBasics extends PEpImporterActivity {
     }
 
     @Override
-    public void showPermissionGranted(String permissionName) {
-        accountSetupBasicsFragment.contactsPermissionGranted();
-    }
-
-    @Override
-    public void showPermissionDenied(String permissionName, boolean permanentlyDenied) {
-        accountSetupBasicsFragment.contactsPermissionDenied();
-    }
-
-    @Override
     public void inject() {
         getpEpComponent().inject(this);
     }
@@ -171,7 +166,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        AccountSetupIncomingFragment accountSetupIncomingFragment = (AccountSetupIncomingFragment)getSupportFragmentManager().findFragmentByTag("accountSetupIncomingFragment");
+        AccountSetupIncomingFragment accountSetupIncomingFragment = (AccountSetupIncomingFragment) getSupportFragmentManager().findFragmentByTag("accountSetupIncomingFragment");
         if (accountSetupIncomingFragment != null && accountSetupIncomingFragment.isVisible()) {
             accountSetupIncomingFragment.onActivityResult(requestCode, resultCode, data);
         } else {

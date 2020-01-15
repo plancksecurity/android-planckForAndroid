@@ -4,21 +4,27 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
-import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.ui.PEpPermissionView;
 import com.fsck.k9.preferences.StorageEditor;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import security.pEp.permissions.PermissionRequester;
 
-public class PermissionsActivity extends PepPermissionActivity {
+public class PermissionsActivity extends PepActivity {
 
     @Bind(R.id.permission_contacts)
     PEpPermissionView contactsPermissionView;
@@ -27,6 +33,8 @@ public class PermissionsActivity extends PepPermissionActivity {
     @Bind(R.id.permission_battery)
     PEpPermissionView batteryPermissionView;
 
+    @Inject
+    PermissionRequester permissionRequester;
 
     public static void actionAskPermissions(Context context) {
         Intent i = new Intent(context, PermissionsActivity.class);
@@ -51,42 +59,33 @@ public class PermissionsActivity extends PepPermissionActivity {
     }
 
     @Override
-    public void showPermissionGranted(String permissionName) {
-    }
-
-    @Override
-    public void showPermissionDenied(String permissionName, boolean permanentlyDenied) {
-    }
-
-    @Override
     public void inject() {
         getpEpComponent().inject(this);
     }
-
 
     @OnClick(R.id.action_continue)
     public void onContinueClicked() {
         if (K9.isShallRequestPermissions()) {
             disableRequestPermissions();
-            createBasicPermissionsActivity(permissionsCompletedCallback());
+            permissionRequester.requestAllPermissions(new PermissionListener() {
+                @Override
+                public void onPermissionGranted(PermissionGrantedResponse response) {
+                    goToSetupAccount();
+                }
+
+                @Override
+                public void onPermissionDenied(PermissionDeniedResponse response) {
+                    goToSetupAccount();
+                }
+
+                @Override
+                public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+                    goToSetupAccount();
+                }
+            });
         } else {
             goToSetupAccount();
         }
-    }
-
-    @NonNull
-    private PEpProvider.CompletedCallback permissionsCompletedCallback() {
-        return new PEpProvider.CompletedCallback() {
-            @Override
-            public void onComplete() {
-                goToSetupAccount();
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                goToSetupAccount();
-            }
-        };
     }
 
     private void goToSetupAccount() {
@@ -104,6 +103,4 @@ public class PermissionsActivity extends PepPermissionActivity {
             editor.commit();
         }).start();
     }
-
-
 }

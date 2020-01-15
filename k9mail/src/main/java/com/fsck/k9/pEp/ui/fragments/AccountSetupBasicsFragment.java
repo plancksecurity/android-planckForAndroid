@@ -54,6 +54,11 @@ import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.tools.SetupAccountType;
 import com.fsck.k9.view.ClientCertificateSpinner;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -71,7 +76,7 @@ import javax.inject.Inject;
 
 import butterknife.OnTextChanged;
 import security.pEp.permissions.PermissionChecker;
-import security.pEp.ui.permissions.PepPermissionActivity;
+import security.pEp.permissions.PermissionRequester;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -121,6 +126,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
     SetupAccountType setupAccountType;
     @Inject
     PermissionChecker permissionChecker;
+    @Inject
+    PermissionRequester permissionRequester;
 
     @Nullable
     @Override
@@ -239,7 +246,22 @@ public class AccountSetupBasicsFragment extends PEpFragment
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (!permissionChecker.hasContactsPermission()) {
             if (isChecked) {
-                ((PepPermissionActivity) getActivity()).createContactsPermissionListeners();
+                permissionRequester.requestContactsPermission(rootView, new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse response) {
+                        contactsPermissionGranted();
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse response) {
+                        contactsPermissionDenied();
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+                        //NOP
+                    }
+                });
             }
         } else {
             updateViewVisibility(mClientCertificateCheckBox.isChecked(), mOAuth2CheckBox.isChecked());

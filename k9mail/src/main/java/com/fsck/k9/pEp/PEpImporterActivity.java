@@ -59,10 +59,9 @@ import java.util.Set;
 
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.pEpException;
-import security.pEp.ui.permissions.PepPermissionActivity;
 import timber.log.Timber;
 
-public abstract class PEpImporterActivity extends PepPermissionActivity {
+public abstract class PEpImporterActivity extends PepActivity {
 
     protected static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
     private static final int DIALOG_NO_FILE_MANAGER = 4;

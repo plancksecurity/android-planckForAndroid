@@ -1,6 +1,8 @@
 package com.fsck.k9.pEp.infrastructure.components;
 
+import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.MessageList;
+import com.fsck.k9.activity.SettingsActivity;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.pEp.filepicker.SelectPathFragment;
 import com.fsck.k9.pEp.infrastructure.PerActivity;
@@ -20,6 +22,7 @@ import com.fsck.k9.pEp.ui.keysync.KeysyncManagement;
 import com.fsck.k9.pEp.ui.keysync.PEpAddDevice;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
+import com.fsck.k9.ui.messageview.MessageViewFragment;
 
 import dagger.Component;
 import security.pEp.ui.permissions.PermissionsActivity;
@@ -27,7 +30,8 @@ import security.pEp.ui.permissions.PermissionsActivity;
 @PerActivity
 @Component(dependencies = ApplicationComponent.class, modules = {
         ActivityModule.class, PEpModule.class
-}) public interface PEpComponent extends ActivityComponent {
+})
+public interface PEpComponent extends ActivityComponent {
 
     void inject(PEpStatus activity);
 
@@ -49,6 +53,8 @@ import security.pEp.ui.permissions.PermissionsActivity;
 
     void inject(AccountSetupIncomingFragment accountSetupIncomingFragment);
 
+    void inject(MessageViewFragment fragment);
+
     void inject(AccountSetupIncomingFragmentLegacy accountSetupIncomingFragment);
 
     void inject(AccountSetupOutgoingFragment accountSetupOutgoingFragment);
@@ -64,4 +70,8 @@ import security.pEp.ui.permissions.PermissionsActivity;
     void inject(KeyImportActivity activity);
 
     void inject(ImportWizardFrompEp activity);
+
+    void inject(MessageCompose messageCompose);
+
+    void inject(SettingsActivity activity);
 }

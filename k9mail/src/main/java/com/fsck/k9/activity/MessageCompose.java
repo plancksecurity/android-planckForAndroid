@@ -90,11 +90,16 @@ import com.fsck.k9.message.SimpleMessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
-import com.karumi.dexter.listener.single.CompositePermissionListener;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
 
 import org.openintents.openpgp.OpenPgpApiManager;
 
@@ -106,13 +111,15 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+
 import foundation.pEp.jniadapter.Rating;
-import security.pEp.ui.permissions.PepPermissionActivity;
+import security.pEp.permissions.PermissionRequester;
 import timber.log.Timber;
 
 
 @SuppressWarnings("deprecation") // TODO get rid of activity dialogs and indeterminate progress bars
-public class MessageCompose extends PepPermissionActivity implements OnClickListener,
+public class MessageCompose extends PepActivity implements OnClickListener,
         CancelListener, OnFocusChangeListener, OnCryptoModeChangedListener,
         OnOpenPgpInlineChangeListener, PgpSignOnlyDialog.OnOpenPgpSignOnlyChangeListener, MessageBuilder.Callback,
         AttachmentPresenter.AttachmentsChangedListener, RecipientPresenter.RecipientsChangedListener {
@@ -175,7 +182,6 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     private MessageLoaderHelper messageLoaderHelper;
     private AttachmentPresenter attachmentPresenter;
     private boolean encrypted = true;
-    private CompositePermissionListener contactPermissionListener;
     private LinearLayout rootView;
     private MenuItem alwaysSecureMenuItem;
     private PePUIArtefactCache uiCache;
@@ -246,6 +252,14 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     private SimpleMessageFormat currentMessageFormat;
 
     private boolean isInSubActivity = false;
+
+    @Inject
+    PermissionRequester permissionRequester;
+
+    @Override
+    public void inject() {
+        getpEpComponent().inject(this);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -1931,22 +1945,25 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     public void askForPermissions() {
         if(!permissionAsked) {
             permissionAsked = true;
-            createContactsPermissionListeners();
+            permissionRequester.requestContactsPermission(getRootView(), new PermissionListener() {
+                @Override
+                public void onPermissionGranted(PermissionGrantedResponse response) {
+                }
+
+                @Override
+                public void onPermissionDenied(PermissionDeniedResponse response) {
+                    String permissionDenied = getResources().getString(R.string.read_snackbar_permission_permanently_denied);
+                    FeedbackTools.showLongFeedback(getRootView(),  permissionDenied);
+                }
+
+                @Override
+                public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+
+                }
+            });
         }
     }
 
-    public void showPermissionGranted(String permissionName) {
-    }
-
-    public void showPermissionDenied(String permissionName, boolean permanentlyDenied) {
-        String permissionDenied = getResources().getString(R.string.read_snackbar_permission_permanently_denied);
-        FeedbackTools.showLongFeedback(getRootView(),  permissionDenied);
-    }
-
-    @Override
-    public void inject() {
-
-    }
     public void lockSendButton() {
         isSendButtonLocked = true;
     }

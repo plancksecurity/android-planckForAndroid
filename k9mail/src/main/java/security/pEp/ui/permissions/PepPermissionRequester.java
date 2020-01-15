@@ -42,23 +42,26 @@ public class PepPermissionRequester implements PermissionRequester {
 
     @Override
     public void requestStoragePermission(@NotNull View view, @NotNull PermissionListener listener) {
+        String explanation = activity.getString(R.string.download_permission_first_explanation);
         startDexterActivity(
                 view,
+                explanation,
                 listener,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
     @Override
     public void requestContactsPermission(@NotNull View view, @NotNull PermissionListener listener) {
+        String explanation = activity.getString(R.string.read_permission_first_explanation);
         startDexterActivity(
                 view,
+                explanation,
                 listener,
                 Manifest.permission.READ_CONTACTS,
                 Manifest.permission.WRITE_CONTACTS);
     }
 
-    private void startDexterActivity(@NotNull View view, @NotNull PermissionListener listener, String... permissions) {
-        String explanation = activity.getString(R.string.read_permission_first_explanation);
+    private void startDexterActivity(@NotNull View view, @NotNull String explanation, @NotNull PermissionListener listener, String... permissions) {
         MultiplePermissionsListener compositePermissionsListener =
                 getMultiplePermissionListener(view, listener, explanation);
 
@@ -71,7 +74,6 @@ public class PepPermissionRequester implements PermissionRequester {
     }
 
     private MultiplePermissionsListener getMultiplePermissionListener(View view, PermissionListener listener, String explanation) {
-
         MultiplePermissionsListener snackbarMultiplePermissionsListener =
                 SnackbarOnAnyDeniedMultiplePermissionsListener.Builder.with(view, explanation)
                         .withOpenSettingsButton(R.string.button_settings)
