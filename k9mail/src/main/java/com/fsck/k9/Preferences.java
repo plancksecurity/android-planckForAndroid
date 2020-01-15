@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import timber.log.Timber;
 
@@ -109,6 +110,22 @@ public class Preferences {
         }
 
         return accounts.get(uuid);
+    }
+
+    public synchronized Account getAccontByEmail(String email) {
+        if (accounts == null) {
+            loadAccounts();
+        }
+        if(accounts != null && !accounts.isEmpty()) {
+            Set<String> keys = accounts.keySet();
+            for(String key : keys) {
+                Account account = accounts.get(key);
+                if(account.getIdentity(0).getEmail().equals(email)) {
+                    return account;
+                }
+            }
+        }
+        return null;
     }
 
     public synchronized Account newAccount() {

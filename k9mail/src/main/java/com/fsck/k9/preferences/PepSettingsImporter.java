@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -62,10 +63,12 @@ public class PepSettingsImporter {
     public static class AccountDescription {
         public final String name;
         public final String uuid;
+        public final String email;
 
-        private AccountDescription(String name, String uuid) {
+        private AccountDescription(String name, String uuid, String email) {
             this.name = name;
             this.uuid = uuid;
+            this.email = email;
         }
     }
 
@@ -124,7 +127,7 @@ public class PepSettingsImporter {
             if (imported.accounts != null) {
                 for (ImportedAccount account : imported.accounts.values()) {
                     String accountName = getAccountDisplayName(account);
-                    accounts.add(new AccountDescription(accountName, account.uuid));
+                    accounts.add(new AccountDescription(accountName, account.uuid, account.identities.get(0).email));
                 }
             }
 
@@ -138,6 +141,8 @@ public class PepSettingsImporter {
             throw new SettingsImportExportException(e);
         }
     }
+
+    //private void addIfNotPresent()
 
     /**
      * Reads an import {@link InputStream} and imports the global settings and/or account
@@ -241,10 +246,10 @@ public class PepSettingsImporter {
                                 Timber.e(e, "Encountered invalid setting while importing account \"%s\"",
                                         account.name);
 
-                                erroneousAccounts.add(new AccountDescription(account.name, account.uuid));
+                                erroneousAccounts.add(new AccountDescription(account.name, account.uuid, account.identities.get(0).email));
                             } catch (Exception e) {
                                 Timber.e(e, "Exception while importing account \"%s\"", account.name);
-                                erroneousAccounts.add(new AccountDescription(account.name, account.uuid));
+                                erroneousAccounts.add(new AccountDescription(account.name, account.uuid, account.identities.get(0).email));
                             }
                         } else {
                             Timber.w("Was asked to import account with UUID %s. But this account wasn't found.",
@@ -311,24 +316,25 @@ public class PepSettingsImporter {
     private static AccountDescriptionPair importAccount(Context context, StorageEditor editor, int contentVersion,
             ImportedAccount account, boolean overwrite) throws InvalidSettingValueException {
 
-        AccountDescription original = new AccountDescription(account.name, account.uuid);
+        AccountDescription original = new AccountDescription(account.name, account.uuid, account.identities.get(0).email);
 
         Preferences prefs = Preferences.getPreferences(context);
         List<Account> accounts = prefs.getAccounts();
 
         String uuid = account.uuid;
-        Account existingAccount = prefs.getAccount(uuid);
-        boolean mergeImportedAccount = (overwrite && existingAccount != null);
+        String email = account.identities.get(0).email;
+        Account existingAccount = prefs.getAccontByEmail(email);//prefs.getAccount(uuid);
+        boolean mergeImportedAccount = (existingAccount != null);
 
-        if (!overwrite && existingAccount != null) {
+        /*if (!overwrite && existingAccount != null) {
             // An account with this UUID already exists, but we're not allowed to overwrite it.
             // So generate a new UUID.
             uuid = UUID.randomUUID().toString();
-        }
+        }*/
 
         // Make sure the account name is unique
         String accountName = account.name;
-        if (isAccountNameUsed(accountName, accounts)) {
+        /*if (isAccountNameUsed(accountName, accounts)) {
             // Account name is already in use. So generate a new one by appending " (x)", where x is the first
             // number >= 1 that results in an unused account name.
             for (int i = 1; i <= accounts.size(); i++) {
@@ -337,7 +343,7 @@ public class PepSettingsImporter {
                     break;
                 }
             }
-        }
+        }*/
 
         // Write account name
         String accountKeyPrefix = uuid + ".";
@@ -412,6 +418,20 @@ public class PepSettingsImporter {
             writeSettings = stringSettings;
         }
 
+        /*
+        I started to find a contradiction here. So we want to prevent the email account duplication since it is not possible in pep, but the concept from
+        K9 allowed duplicating accounts. That means the user could have the same email in several accounts at his will and the only disctintion of the uuid.
+        This does not pose a problem since all mails for same address are on the network. But when we import the settings, we need to write the settings.
+        The real problem is: we are now trying to overwrite accounts with same email address. But they can perfectly have different uuid.
+        In that case this function is only checking the name of the account is same to make a new one.
+        When we store the settings for that account, we access them making a key from the uuid!
+        Entonces el no permitir cuentas duplicadas supondría que :
+        - We need to check for duplicated email addresses in the import settings file. (We will take only the first one)
+        - We will need to store the account settings using as prefix the account email. Or else we will have to check the email address we are looking for
+        in each account imported from the file, and when we find the right uuid we can use the uuid.
+
+         */
+
         // Write account settings
         for (Map.Entry<String, String> setting : writeSettings.entrySet()) {
             //TODO if map key identity and find map signature, then change k9 for pepe
@@ -450,7 +470,7 @@ public class PepSettingsImporter {
 
         //TODO: sync folder settings with localstore?
 
-        AccountDescription imported = new AccountDescription(accountName, uuid);
+        AccountDescription imported = new AccountDescription(accountName, uuid, email);
         return new AccountDescriptionPair(original, imported, mergeImportedAccount);
     }
 
@@ -831,13 +851,13 @@ public class PepSettingsImporter {
                     }
 
                     ImportedAccount account = parseAccount(xpp, accountUuids, overview);
-
                     if (account == null) {
+                        // Do nothing - parseAccount() already logged a message
+                    } else if (!accountListContainsAccountEmail(accounts.values(), account)) { // here we used to check the key is unique. Now we check the email is unique instead.
+                        accounts.put(account.uuid, account);
                         Timber.d("==============================================\n");
                         Timber.d("The account is: "+ account.name+", "+ account.identities.get(0).email+", "+account.identities.get(0).description);
-                        // Do nothing - parseAccount() already logged a message
-                    } else if (!accounts.containsKey(account.uuid)) {
-                        accounts.put(account.uuid, account);
+
                     } else {
                         Timber.w("Duplicate account entries with UUID %s. Ignoring!", account.uuid);
                     }
@@ -850,6 +870,16 @@ public class PepSettingsImporter {
 
         return accounts;
     }
+
+    private static boolean accountListContainsAccountEmail(Collection<ImportedAccount> list, ImportedAccount newAccount) {
+        for(ImportedAccount account : list) {
+           if(account.hasSameEmail(newAccount)) {
+               return true;
+           }
+        }
+        return false;
+    }
+
 
     private static ImportedAccount parseAccount(XmlPullParser xpp, List<String> accountUuids, boolean overview)
             throws XmlPullParserException, IOException {
@@ -906,7 +936,7 @@ public class PepSettingsImporter {
                 }
                 eventType = xpp.next();
             }
-        } else {
+        } else { // doesnt bring account for showing if the uuid is already in the list.
             skipToEndTag(xpp, SettingsExporter.ACCOUNT_ELEMENT);
             Timber.i("Skipping account with UUID %s", uuid);
         }
@@ -1114,6 +1144,10 @@ public class PepSettingsImporter {
         public ImportedSettings settings;
         public List<ImportedIdentity> identities;
         public List<ImportedFolder> folders;
+
+        public boolean hasSameEmail(ImportedAccount account) {
+            return identities.get(0).email.equals(account.identities.get(0).email);
+        }
     }
 
     @VisibleForTesting

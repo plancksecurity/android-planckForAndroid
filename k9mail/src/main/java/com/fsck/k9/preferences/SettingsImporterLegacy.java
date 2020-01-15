@@ -2,9 +2,9 @@ package com.fsck.k9.preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import androidx.annotation.VisibleForTesting;
 import android.text.TextUtils;
-import timber.log.Timber;
+
+import androidx.annotation.VisibleForTesting;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Identity;
@@ -18,28 +18,29 @@ import com.fsck.k9.mail.filter.Base64;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.preferences.Settings.InvalidSettingValueException;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
-
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class SettingsImporter {
+import timber.log.Timber;
+
+public class SettingsImporterLegacy {
 
     /**
      * Class to list the contents of an import file/stream.
      *
-     * @see SettingsImporter#getImportStreamContents(InputStream)
+     * @see SettingsImporterLegacy#getImportStreamContents(InputStream)
      */
     public static class ImportContents {
         /**
@@ -373,7 +374,7 @@ public class SettingsImporter {
 
             /*
              * Mark account as disabled if the settings file contained a username but no password. However, no password
-             * is required for the outgoing server for WebDAV accounts, because incoming and outgoing servers are 
+             * is required for the outgoing server for WebDAV accounts, because incoming and outgoing servers are
              * identical for this account type. Nor is a password required if the AuthType is EXTERNAL.
              */
             boolean outgoingPasswordNeeded =
@@ -827,7 +828,7 @@ public class SettingsImporter {
 
                     if (account == null) {
                         // Do nothing - parseAccount() already logged a message
-                    } else if (!accountListContainsAccountEmail(accounts.values(), account)) { // here we used to check the key is unique. Now we check the email is unique instead.
+                    } else if (!accounts.containsKey(account.uuid)) {
                         accounts.put(account.uuid, account);
                     } else {
                         Timber.w("Duplicate account entries with UUID %s. Ignoring!", account.uuid);
@@ -840,15 +841,6 @@ public class SettingsImporter {
         }
 
         return accounts;
-    }
-
-    private static boolean accountListContainsAccountEmail(Collection<ImportedAccount> list, ImportedAccount newAccount) {
-        for(ImportedAccount account : list) {
-            if(account.hasSameEmail(newAccount)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private static ImportedAccount parseAccount(XmlPullParser xpp, List<String> accountUuids, boolean overview)
@@ -1054,7 +1046,7 @@ public class SettingsImporter {
         private final ImportedServer importedServer;
 
         public ImportedServerSettings(ImportedServer server) {
-            super(ServerSettings.Type.valueOf(server.type), server.host, convertPort(server.port),
+            super(Type.valueOf(server.type), server.host, convertPort(server.port),
                     convertConnectionSecurity(server.connectionSecurity),
                     server.authenticationType, server.username, server.password,
                     server.clientCertificateAlias);
@@ -1114,10 +1106,6 @@ public class SettingsImporter {
         public ImportedSettings settings;
         public List<ImportedIdentity> identities;
         public List<ImportedFolder> folders;
-
-        public boolean hasSameEmail(ImportedAccount account) {
-            return identities.get(0).email.equals(account.identities.get(0).email);
-        }
     }
 
     @VisibleForTesting
