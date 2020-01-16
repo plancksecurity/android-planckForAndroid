@@ -16,11 +16,6 @@ public class PEpPermissionChecker implements PermissionChecker {
         this.context = context;
     }
 
-    public static Boolean hasWriteExternalPermission(Context context) {
-        int res = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        return (res == PackageManager.PERMISSION_GRANTED);
-    }
-
     @Override
     public boolean hasBasicPermission() {
         return hasContactsPermission() && hasWriteExternalPermission();

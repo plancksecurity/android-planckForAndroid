@@ -81,8 +81,8 @@ import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
+import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
-import security.pEp.ui.permissions.PEpPermissionChecker;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -147,6 +147,8 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     @Inject
     PermissionRequester permissionRequester;
+    @Inject
+    PermissionChecker permissionChecker;
 
     @Override
     protected void inject() {
@@ -1020,7 +1022,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     public void onSaveAttachment(AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
         createPermissionListeners();
-        if (PEpPermissionChecker.hasWriteExternalPermission(getActivity())) {
+        if (permissionChecker.hasWriteExternalPermission()) {
             getAttachmentController(attachment).saveAttachment();
         }
     }
