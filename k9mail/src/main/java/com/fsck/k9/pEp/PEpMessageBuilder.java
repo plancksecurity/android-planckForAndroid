@@ -80,7 +80,7 @@ class PEpMessageBuilder {
 
             String charset =  MimeUtility.getHeaderParameter(mm.getContentType(), "charset");
 
-            if (!Charset.isSupported(charset)) {
+            if (charset == null || !Charset.isSupported(charset)) {
                 // failback when the header doesn't have charset parameter or it is invalid, defaults to UTF-8
                 // FIXME: charset, trate non text bod4y types like application/pgp-keys
                 charset = Charset.defaultCharset().name();
