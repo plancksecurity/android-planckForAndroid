@@ -147,40 +147,14 @@ public class CucumberTestSteps {
             testUtils.pressBack();
             device.waitForIdle();
         }
-        if (!exists(onView(withId(R.id.available_accounts_title)))) {
-            while (exists(onView(withId(R.id.reply)))
-                    || exists(onView(withId(R.id.reply_message)))
-                    || exists(onView(withId(R.id.attachment_container)))
-                    || exists(onView(withId(R.id.send)))) {
-                device.waitForIdle();
-                if (exists(onView(withText(R.string.discard_action)))) {
-                    device.waitForIdle();
-                    onView(withText(R.string.discard_action)).perform(click());
-                }
-                testUtils.pressBack();
-                device.waitForIdle();
-            }
-            if (exists(onView(withId(R.id.fab_button_compose_message)))
-                    && (exists(onView(withId(R.id.actionbar_title_first))) &&
-                    !getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.special_mailbox_name_inbox)))) {
-                device.waitForIdle();
-                testUtils.pressBack();
-                device.waitForIdle();
-            }
+        while (!exists(onView(withId(R.id.available_accounts_title)))) {
             device.waitForIdle();
             if (exists(onView(withText(R.string.discard_action)))) {
                 device.waitForIdle();
                 onView(withText(R.string.discard_action)).perform(click());
-                device.waitForIdle();
             }
-            if (exists(onView(withId(R.id.send)))) {
-                testUtils.pressBack();
-                device.waitForIdle();
-            }
-            if (exists(onView(withId(R.id.filter_folders)))) {
-                testUtils.pressBack();
-                device.waitForIdle();
-            }
+            testUtils.pressBack();
+            device.waitForIdle();
         }
         device.waitForIdle();
         activityTestRule.finishActivity();
