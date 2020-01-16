@@ -1,14 +1,12 @@
 package com.fsck.k9.activity
 
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -51,6 +49,7 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
 import kotlinx.android.synthetic.main.accounts.*
 import kotlinx.coroutines.*
+import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
 import timber.log.Timber
 import java.util.*
@@ -93,6 +92,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
     @Inject
     lateinit var permissionRequester: PermissionRequester
+    @Inject
+    lateinit var permissionChecker: PermissionChecker
 
     private val storageListener = object : StorageManager.StorageListener {
 
@@ -800,7 +801,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 }
         )
 
-        if (hasWriteExternalPermission()) {        // TODO, prompt to allow a user to choose which accounts to export
+        if (permissionChecker.hasWriteExternalPermission()) {
+            // TODO, prompt to allow a user to choose which accounts to export
             var accountUuids: ArrayList<String>? = null
             if (account != null) {
                 accountUuids = ArrayList()
@@ -837,10 +839,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         asyncTask.execute()
     }
 
-    private fun hasWriteExternalPermission(): Boolean {
-        val res = applicationContext.checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        return res == PackageManager.PERMISSION_GRANTED
-    }
 
     internal inner class AccountListAdapter(accounts: List<BaseAccount>, private val onFolderClickListener: OnFolderClickListener, private val onBaseAccountClickListener: OnBaseAccountClickListener) : ArrayAdapter<BaseAccount>(this@SettingsActivity, 0, accounts) {
 
