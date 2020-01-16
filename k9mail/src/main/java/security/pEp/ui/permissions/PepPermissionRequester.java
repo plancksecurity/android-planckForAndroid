@@ -97,7 +97,7 @@ public class PepPermissionRequester implements PermissionRequester {
                             listener.onPermissionRationaleShouldBeShown(permissions.get(0), token);
                     }
                 };
-        return new CompositeMultiplePermissionsListener(snackbarMultiplePermissionsListener, dialogMultiplePermissionsListener);
+        return new CompositeMultiplePermissionsListener(dialogMultiplePermissionsListener, snackbarMultiplePermissionsListener);
     }
 
     @Override
