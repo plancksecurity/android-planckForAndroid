@@ -1,6 +1,7 @@
 package security.pEp.ui.permissions;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -10,9 +11,12 @@ import android.os.PowerManager;
 import android.provider.Settings;
 import android.view.View;
 
+import androidx.core.app.ActivityCompat;
+
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.ui.PermissionErrorListener;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -32,12 +36,12 @@ import security.pEp.permissions.PermissionRequester;
 
 public class PepPermissionRequester implements PermissionRequester {
 
-    private K9 k9;
-    private Activity activity;
+    private final K9 app;
+    private final Activity activity;
 
     public PepPermissionRequester(Activity activity) {
-        this.k9 = ((K9) activity.getApplicationContext());
         this.activity = activity;
+        this.app = ((K9) activity.getApplicationContext());
     }
 
     @Override
@@ -74,7 +78,7 @@ public class PepPermissionRequester implements PermissionRequester {
     }
 
     private MultiplePermissionsListener getMultiplePermissionListener(View view, PermissionListener listener, String explanation) {
-        MultiplePermissionsListener snackbarMultiplePermissionsListener =
+        MultiplePermissionsListener snackBarMultiplePermissionsListener =
                 SnackbarOnAnyDeniedMultiplePermissionsListener.Builder.with(view, explanation)
                         .withOpenSettingsButton(R.string.button_settings)
                         .build();
@@ -97,15 +101,16 @@ public class PepPermissionRequester implements PermissionRequester {
                             listener.onPermissionRationaleShouldBeShown(permissions.get(0), token);
                     }
                 };
-        return new CompositeMultiplePermissionsListener(dialogMultiplePermissionsListener, snackbarMultiplePermissionsListener);
+        return new CompositeMultiplePermissionsListener(dialogMultiplePermissionsListener, snackBarMultiplePermissionsListener);
     }
 
+    @SuppressLint("BatteryLife")
     @Override
     public void requestBatteryOptimizationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !k9.isBatteryOptimizationAsked()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !app.isBatteryOptimizationAsked()) {
             Intent intent = new Intent();
             String packageName = activity.getPackageName();
-            PowerManager pm = (PowerManager) k9.getSystemService(Context.POWER_SERVICE);
+            PowerManager pm = (PowerManager) app.getSystemService(Context.POWER_SERVICE);
             if (pm != null && pm.isIgnoringBatteryOptimizations(packageName)) {
                 intent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
             } else {
@@ -113,7 +118,7 @@ public class PepPermissionRequester implements PermissionRequester {
                 intent.setData(Uri.parse("package:" + packageName));
             }
             activity.startActivity(intent);
-            k9.batteryOptimizationAsked();
+            app.batteryOptimizationAsked();
         }
     }
 
