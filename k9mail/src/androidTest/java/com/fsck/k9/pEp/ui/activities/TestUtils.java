@@ -616,7 +616,6 @@ public class TestUtils {
                 } else if (exists(onView(withId(android.R.id.list)))) {
                     clickInbox();
                 } else {
-                    openOptionsMenu();
                     selectFromMenu(R.string.prefs_title);
                     selectAccountFromList(accountToSelect);
                     getMessageListSize();
