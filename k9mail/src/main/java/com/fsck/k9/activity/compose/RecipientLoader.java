@@ -3,7 +3,6 @@ package com.fsck.k9.activity.compose;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
@@ -12,7 +11,6 @@ import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.Contacts.Data;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.loader.content.AsyncTaskLoader;
 
 import com.fsck.k9.R;
@@ -25,9 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static android.Manifest.permission.READ_CONTACTS;
-import static android.Manifest.permission.WRITE_CONTACTS;
-
+import security.pEp.permissions.PermissionChecker;
+import security.pEp.ui.permissions.PEpPermissionChecker;
 
 public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
     /*
@@ -84,7 +81,7 @@ public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
 
     private List<Recipient> cachedRecipients;
     private ForceLoadContentObserver observerContact, observerKey;
-
+    private PermissionChecker permissionChecker;
 
     public RecipientLoader(Context context, String cryptoProvider, String query) {
         super(context);
@@ -93,6 +90,7 @@ public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
         this.addresses = null;
         this.contactUri = null;
         this.cryptoProvider = cryptoProvider;
+        this.permissionChecker = new PEpPermissionChecker(context);
     }
 
     public RecipientLoader(Context context, String cryptoProvider, Address... addresses) {
@@ -102,6 +100,7 @@ public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
         this.contactUri = null;
         this.cryptoProvider = cryptoProvider;
         this.lookupKeyUri = null;
+        this.permissionChecker = new PEpPermissionChecker(context);
     }
 
     public RecipientLoader(Context context, String cryptoProvider, Uri contactUri, boolean isLookupKey) {
@@ -111,6 +110,7 @@ public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
         this.contactUri = isLookupKey ? null : contactUri;
         this.lookupKeyUri = isLookupKey ? contactUri : null;
         this.cryptoProvider = cryptoProvider;
+        this.permissionChecker = new PEpPermissionChecker(context);
     }
 
     @Override
@@ -118,10 +118,7 @@ public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
 
         List<Recipient> recipients = new ArrayList<>();
 
-        int writeContactsPermission = ContextCompat.checkSelfPermission(getContext(), WRITE_CONTACTS);
-        int readContactsPermission = ContextCompat.checkSelfPermission(getContext(), READ_CONTACTS);
-        if (writeContactsPermission == PackageManager.PERMISSION_GRANTED &&
-                readContactsPermission == PackageManager.PERMISSION_GRANTED) {
+        if (permissionChecker.hasContactsPermission()) {
             Map<String, Recipient> recipientMap = new HashMap<>();
 
             if (addresses != null) {
