@@ -1444,9 +1444,7 @@ public class TestUtils {
                 openOptionsMenu();
                 selectFromScreen(viewId);
                 device.waitForIdle();
-                if (!viewIsDisplayed(R.id.text1)) {
-                    return;
-                }
+                return;
             } catch (Exception ex) {
                 Timber.i("Toolbar is not closed yet");
             }
