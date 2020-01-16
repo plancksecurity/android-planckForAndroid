@@ -69,6 +69,13 @@ public class PepPermissionRequester implements PermissionRequester {
         MultiplePermissionsListener compositePermissionsListener =
                 getMultiplePermissionListener(view, listener, explanation);
 
+        for (String permission : permissions) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
+                showRationaleSnackBar(view, explanation);
+                return;
+            }
+        }
+
         Dexter.withActivity(activity)
                 .withPermissions(permissions)
                 .withListener(compositePermissionsListener)
@@ -147,5 +154,17 @@ public class PepPermissionRequester implements PermissionRequester {
                         })
                 .withErrorListener(new PermissionErrorListener())
                 .check();
+    }
+
+
+    private void showRationaleSnackBar(@NotNull View view, String explanation) {
+        FeedbackTools.showLongFeedback(view, explanation, activity.getString(R.string.button_settings), v -> {
+            Context context = v.getContext();
+            Intent myAppSettings = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.parse("package:" + context.getPackageName()));
+            myAppSettings.addCategory(Intent.CATEGORY_DEFAULT);
+            myAppSettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(myAppSettings);
+        });
     }
 }
