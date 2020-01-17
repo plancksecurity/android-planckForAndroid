@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class FolderRenderer : Renderer<FolderModel>() {
 
@@ -44,8 +45,7 @@ class FolderRenderer : Renderer<FolderModel>() {
         try {
             renderUnreadMessagesAsync()
         } catch (e: MessagingException) {
-            //TODO do a proper log
-            e.printStackTrace()
+            Timber.e(e)
         }
 
     }
