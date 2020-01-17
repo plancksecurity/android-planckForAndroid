@@ -639,7 +639,9 @@ public class TestUtils {
     public void swipeDown () {
         try {
             UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+            device.waitForIdle();
             scroll.swipe(Direction.DOWN, 1.0f);
+            device.waitForIdle();
         } catch (Exception swipe) {
             Timber.i("Cannot do swipeDown");
         }
@@ -648,7 +650,9 @@ public class TestUtils {
     public void swipeUp () {
         try {
             UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+            device.waitForIdle();
             scroll.swipe(Direction.UP, 1.0f);
+            device.waitForIdle();
         } catch (Exception swipe) {
             Timber.i("Cannot do swipeUp");
         }
