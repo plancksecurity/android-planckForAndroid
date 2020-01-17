@@ -598,8 +598,7 @@ public class TestUtils {
 
     public void addAccount () {
         try {
-            UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-            scroll.swipe(Direction.UP, 1.0f);
+            swipeUpScreen();
             onView(withId(R.id.add_account_container)).perform(click());
             device.waitForIdle();
         } catch (Exception list) {
@@ -1185,8 +1184,7 @@ public class TestUtils {
         BySelector selector = By.clazz("android.widget.FrameLayout");
         Activity sentFolderActivity = getCurrentActivity();
         int position;
-        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-        scroll.swipe(Direction.UP, 1.0f);
+        swipeUpScreen();
         for (int start = 0; start < total; start++) {
             int size = device.findObjects(selector).size();
             while (size == 0) {
@@ -1817,7 +1815,6 @@ public class TestUtils {
     }
 
     private void downloadJSon() {
-        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         device.waitForIdle();
         waitUntilIdle();
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
@@ -1825,8 +1822,7 @@ public class TestUtils {
             device.waitForIdle();
             waitUntilIdle();
             onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
-            scroll.swipe(Direction.UP, 1.0f);
-            device.waitForIdle();
+            swipeUpScreen();
         }
         json = null;
         device.waitForIdle();
@@ -1846,9 +1842,7 @@ public class TestUtils {
                             String js = readJsonFile("results.json");
                             json = new JSONObject(js);
                         } catch (Exception ex) {
-                            device.waitForIdle();
-                            scroll.swipe(Direction.UP, 1.0f);
-                            device.waitForIdle();
+                            swipeUpScreen();
                             boolean jsonExists = false;
                                 try {
                                     device.waitForIdle();
@@ -1866,7 +1860,7 @@ public class TestUtils {
                     }
                     return;
                 } else {
-                    scroll.swipe(Direction.UP, 1.0f);
+                    swipeUpScreen();
                 }
             } catch (Exception ex){
                 Timber.i("Cannot find text on screen: " + ex);
@@ -2069,9 +2063,7 @@ public class TestUtils {
 
     public void compareMessageBody(String cucumberBody) {
         String [] body;
-        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-        scroll.swipe(Direction.UP, 1.0f);
-        device.waitForIdle();
+        swipeUpScreen();
         waitUntilIdle();
         while (!viewIsDisplayed(R.id.message_content) || !viewIsDisplayed(R.id.message_container)) {
             device.waitForIdle();
@@ -2107,9 +2099,7 @@ public class TestUtils {
 
     public void compareMessageBodyLongText(String cucumberBody) {
         onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
-        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-        scroll.swipe(Direction.UP, 1.0f);
-        device.waitForIdle();
+        swipeUpScreen();
         waitUntilIdle();
         BySelector selector = By.clazz("android.widget.EditText");
         UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/message_content"));
@@ -2141,9 +2131,7 @@ public class TestUtils {
                 waitUntilIdle();
                 wb = device.findObject(By.clazz("android.webkit.WebView"));
                 wb.click();
-                UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-                scroll.swipe(Direction.UP, 1.0f);
-                device.waitForIdle();
+                swipeUpScreen();
                 webViewText = wb.getChildren().get(0).getText().split("\n");
             } catch (Exception ex) {
                 Timber.i("Cannot find webView: " + ex.getMessage());
@@ -2286,11 +2274,10 @@ public class TestUtils {
     }
 
     private static String readJsonFile(String fileName) {
-        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         File directory = new File(Environment.getExternalStorageDirectory().toString());
         File newFile = new File(directory, "Download/" + fileName);
         while (!newFile.exists()) {
-            scroll.swipe(Direction.UP, 1.0f);
+            swipeUpScreen();
             downloadAttachedFile(fileName);
             waitUntilIdle();
             device.waitForIdle();

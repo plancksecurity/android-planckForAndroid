@@ -191,11 +191,9 @@ public class CucumberTestSteps {
     @When("^I enter (\\S+) in the messageTo field")
     public void I_fill_messageTo_field(String cucumberMessageTo) {
         timeRequiredForThisMethod(15);
-        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         device.waitForIdle();
         while (!exists(onView(withId(R.id.to)))) {
-            device.waitForIdle();
-            scroll.swipe(Direction.UP, 1.0f);
+            testUtils.swipeUpScreen();
         }
         switch (cucumberMessageTo) {
             case "empty":
@@ -287,14 +285,7 @@ public class CucumberTestSteps {
 
     private void textViewEditor (String text, String viewName) {
         int viewId = testUtils.intToID(viewName);
-        device.waitForIdle();
-        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-        try {
-            scroll.swipe(Direction.DOWN, 1.0f);
-        } catch (Exception scrollDown) {
-            Timber.i("Cannot scroll");
-        }
-        device.waitForIdle();
+        testUtils.swipeDownScreen();
         switch (text) {
             case "empty":
                 timeRequiredForThisMethod(30);
@@ -329,6 +320,7 @@ public class CucumberTestSteps {
                         }
                     }
                 }
+                UiObject2 scroll;
                 while (!viewIsDisplayed(R.id.subject)) {
                     try {
                         scroll = device.findObject(By.clazz("android.widget.ScrollView"));
@@ -612,9 +604,7 @@ public class CucumberTestSteps {
                 waitUntilIdle();
                 wb = device.findObject(By.clazz("android.webkit.WebView"));
                 wb.click();
-                UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-                scroll.swipe(Direction.UP, 1.0f);
-                device.waitForIdle();
+                testUtils.swipeUpScreen();
                 UiObject2 webViewTemporal;
                 webViewTemporal = wb.getChildren().get(0);
                 while (true) {
@@ -659,9 +649,7 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(10);
         testUtils.goToHandshakeDialog();
         while (!viewIsDisplayed(R.id.confirmTrustWords)) {
-            device.waitForIdle();
-            UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-            scroll.swipe(Direction.UP, 1.0f);
+            testUtils.swipeUpScreen();
         }
         testUtils.doWaitForResource(R.id.confirmTrustWords);
         while (!exists(onView(withId(R.id.confirmTrustWords)))) {
@@ -686,8 +674,7 @@ public class CucumberTestSteps {
         while (!viewIsDisplayed(R.id.trustwords)) {
             device.waitForIdle();
         }
-        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-        scroll.swipe(Direction.UP, 1.0f);
+        testUtils.swipeUpScreen();
         onView(withId(R.id.wrongTrustwords)).perform(click());
         device.waitForIdle();
         testUtils.pressBack();
@@ -703,8 +690,7 @@ public class CucumberTestSteps {
         while (!viewIsDisplayed(R.id.trustwords)) {
             device.waitForIdle();
         }
-        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-        scroll.swipe(Direction.UP, 1.0f);
+        testUtils.swipeUpScreen();
         while (exists(onView(withId(R.id.wrongTrustwords)))) {
             device.waitForIdle();
             try {
@@ -1050,8 +1036,7 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(10);
         device.waitForIdle();
         if (!viewIsDisplayed(testUtils.intToID("reply_message"))) {
-            UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-            scroll.swipe(Direction.DOWN, 1.0f);
+            testUtils.swipeDownScreen();
         }
         while (!viewIsDisplayed(R.id.reply_message)) {
             device.waitForIdle();
@@ -1228,24 +1213,15 @@ public class CucumberTestSteps {
         boolean wait = false;
         while (!wait) {
             try {
-                device.waitForIdle();
-                try {
-                    UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-                    scroll.swipe(Direction.UP, 1.0f);
-                    device.waitForIdle();
-                    scroll.swipe(Direction.DOWN, 1.0f);
-                    device.waitForIdle();
-                    scroll.swipe(Direction.DOWN, 1.0f);
-                    device.waitForIdle();
-                    testUtils.typeTextToForceRatingCaltulation(R.id.subject);
-                } catch (Exception ex) {
-                    Timber.i("Cannot do scroll down");
-                }
+                testUtils.swipeUpScreen();
+                testUtils.swipeDownScreen();
+                testUtils.swipeDownScreen();
+                testUtils.typeTextToForceRatingCaltulation(R.id.subject);
                 device.waitForIdle();
                 waitUntilIdle();
                 wait = true;
             } catch (Exception ex) {
-                Timber.i("Cannot find toolbar");
+                Timber.i("Cannot find subject field");
             }
         }
         device.waitForIdle();
@@ -1329,21 +1305,16 @@ public class CucumberTestSteps {
     }
 
     private void openAttached () {
-        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         while (true) {
             try {
                 while (!exists(onView(withId(R.id.attachments)))) {
-                    device.waitForIdle();
-                    scroll.swipe(Direction.UP, 1.0f);
-                    device.waitForIdle();
+                    testUtils.swipeUpScreen();
                 }
                 onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
                 while (!viewIsDisplayed(R.id.attachments)) {
-                    scroll.swipe(Direction.UP, 1.0f);
-                    device.waitForIdle();
+                    testUtils.swipeUpScreen();
                 }
-                scroll.swipe(Direction.UP, 1.0f);
-                device.waitForIdle();
+                testUtils.swipeUpScreen();
                 BySelector layout = By.clazz("android.widget.LinearLayout");
                 onView(withId(R.id.attachments)).check(matches(isCompletelyDisplayed()));
                 for (UiObject2 object : device.findObjects(layout)) {
@@ -1365,15 +1336,11 @@ public class CucumberTestSteps {
     }
 
     private void openAttachedMasterKey () {
-        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         while (true) {
             try {
-                device.waitForIdle();
-                scroll.swipe(Direction.UP, 1.0f);
-                device.waitForIdle();
+                testUtils.swipeUpScreen();
                 onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
-                scroll.swipe(Direction.UP, 1.0f);
-                device.waitForIdle();
+                testUtils.swipeUpScreen();
                 BySelector layout = By.clazz("android.widget.LinearLayout");
                 for (UiObject2 object : device.findObjects(layout)) {
                     if (object.getResourceName() != null && object.getResourceName().equals("security.pEp.debug:id/attachments") && object.getChildren().get(0).getChildren().get(0).getChildren().get(0).getChildren().get(1).getText().contains("masterkey")) {
