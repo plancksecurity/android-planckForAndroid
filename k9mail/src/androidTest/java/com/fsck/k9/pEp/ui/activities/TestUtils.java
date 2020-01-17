@@ -1531,9 +1531,9 @@ public class TestUtils {
         while (true) {
             for (UiObject2 object : device.findObjects(selector)) {
                 try {
-                    if (object.getText().contains(resources.getString(resource))) {
+                    if (object.getText().equals(resources.getString(resource))) {
                         try {
-                            while (object.getText().contains(resources.getString(resource))) {
+                            while (object.getText().equals(resources.getString(resource))) {
                                 device.waitForIdle();
                                 object.longClick();
                             }
