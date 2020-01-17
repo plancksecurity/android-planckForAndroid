@@ -635,7 +635,7 @@ public class TestUtils {
         }
     }
 
-    public void swipeDown () {
+    public static void swipeDownScreen () {
         try {
             UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
             device.waitForIdle();
@@ -646,7 +646,7 @@ public class TestUtils {
         }
     }
 
-    public void swipeUp () {
+    public static void swipeUpScreen () {
         try {
             UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
             device.waitForIdle();
