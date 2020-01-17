@@ -11,17 +11,14 @@ import com.fsck.k9.pEp.models.FolderModel
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener
 import com.pedrogomez.renderers.Renderer
 import kotlinx.android.synthetic.main.folder_navigation_list_item.view.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import timber.log.Timber
 
 class FolderRenderer : Renderer<FolderModel>() {
 
     lateinit var folderName: TextView
     lateinit var folderNewMessages: TextView
-    private var onFolderClickListener: OnFolderClickListener? = null
+    private lateinit var onFolderClickListener: OnFolderClickListener
 
     override fun setUpView(rootView: View) {
 
@@ -43,21 +40,23 @@ class FolderRenderer : Renderer<FolderModel>() {
         folderName.text =
                 FolderInfoHolder.getDisplayName(context, content.account, content.localFolder.name)
         try {
-            renderUnreadMessagesAsync()
+            val uiScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+            uiScope.launch {
+                val unreadMessageCount = getUnreadMessageCount()
+                renderUnreadMessages(unreadMessageCount)
+            }
         } catch (e: MessagingException) {
             Timber.e(e)
         }
 
     }
 
-    private fun renderUnreadMessagesAsync() = GlobalScope.launch(Dispatchers.IO) {
-        val unreadMessageCount = content.localFolder.unreadMessageCount
-        withContext(Dispatchers.Main) {
-            renderUnreadMessages(unreadMessageCount)
-        }
+    private suspend fun getUnreadMessageCount(): Int = withContext(Dispatchers.IO) {
+        content.localFolder.unreadMessageCount
     }
 
-    private fun renderUnreadMessages(unreadMessageCount: Int) {
+    private suspend fun renderUnreadMessages(unreadMessageCount: Int) = withContext(Dispatchers.Main) {
         when {
             unreadMessageCount == 0 -> {
                 folderNewMessages.visibility = View.VISIBLE
@@ -72,6 +71,6 @@ class FolderRenderer : Renderer<FolderModel>() {
     }
 
     internal fun onFolderClicked() {
-        onFolderClickListener!!.onClick(content.localFolder)
+        onFolderClickListener.onClick(content.localFolder)
     }
 }
