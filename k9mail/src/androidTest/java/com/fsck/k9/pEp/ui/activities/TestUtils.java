@@ -620,6 +620,10 @@ public class TestUtils {
                     selectAccountFromList(accountToSelect);
                     getMessageListSize();
                     return;
+                } else {
+                    device.waitForIdle();
+                    onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
+                    device.waitForIdle();
                 }
             } catch (Exception ex) {
                 Timber.i("Cannot click account " +accountToSelect +": " + ex.getMessage());
