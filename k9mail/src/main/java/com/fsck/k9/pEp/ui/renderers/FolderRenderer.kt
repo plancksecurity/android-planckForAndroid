@@ -20,6 +20,7 @@ class FolderRenderer : Renderer<FolderModel>() {
     lateinit var folderNewMessages: TextView
     private lateinit var onFolderClickListener: OnFolderClickListener
 
+
     override fun setUpView(rootView: View) {
 
     }
@@ -40,7 +41,7 @@ class FolderRenderer : Renderer<FolderModel>() {
         folderName.text =
                 FolderInfoHolder.getDisplayName(context, content.account, content.localFolder.name)
         try {
-            val uiScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+            val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
             uiScope.launch {
                 val unreadMessageCount = getUnreadMessageCount()
@@ -56,7 +57,7 @@ class FolderRenderer : Renderer<FolderModel>() {
         content.localFolder.unreadMessageCount
     }
 
-    private suspend fun renderUnreadMessages(unreadMessageCount: Int) = withContext(Dispatchers.Main) {
+    private fun renderUnreadMessages(unreadMessageCount: Int) {
         when {
             unreadMessageCount == 0 -> {
                 folderNewMessages.visibility = View.VISIBLE
@@ -70,7 +71,7 @@ class FolderRenderer : Renderer<FolderModel>() {
         this.onFolderClickListener = onFolderClickListener
     }
 
-    internal fun onFolderClicked() {
+    private fun onFolderClicked() {
         onFolderClickListener.onClick(content.localFolder)
     }
 }
