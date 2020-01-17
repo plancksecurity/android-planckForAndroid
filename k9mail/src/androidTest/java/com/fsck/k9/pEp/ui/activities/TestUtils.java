@@ -636,6 +636,24 @@ public class TestUtils {
         }
     }
 
+    public void swipeDown () {
+        try {
+            UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+            scroll.swipe(Direction.DOWN, 1.0f);
+        } catch (Exception swipe) {
+            Timber.i("Cannot do swipeDown");
+        }
+    }
+
+    public void swipeUp () {
+        try {
+            UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+            scroll.swipe(Direction.UP, 1.0f);
+        } catch (Exception swipe) {
+            Timber.i("Cannot do swipeUp");
+        }
+    }
+
     private void selectAccountFromHamburgerMenu (int accountToSelect) {
         device.waitForIdle();
         openHamburgerMenu();
