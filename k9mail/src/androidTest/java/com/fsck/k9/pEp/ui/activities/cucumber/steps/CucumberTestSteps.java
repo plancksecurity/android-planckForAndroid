@@ -1212,17 +1212,17 @@ public class CucumberTestSteps {
         testUtils.waitForTooblar();
         boolean wait = false;
         while (!wait) {
+            TestUtils.swipeUpScreen();
+            TestUtils.swipeDownScreen();
+            TestUtils.swipeDownScreen();
             try {
-                testUtils.swipeUpScreen();
-                testUtils.swipeDownScreen();
-                testUtils.swipeDownScreen();
                 testUtils.typeTextToForceRatingCaltulation(R.id.subject);
-                device.waitForIdle();
-                waitUntilIdle();
-                wait = true;
             } catch (Exception ex) {
                 Timber.i("Cannot find subject field");
             }
+            device.waitForIdle();
+            waitUntilIdle();
+            wait = true;
         }
         device.waitForIdle();
         waitUntilIdle();
