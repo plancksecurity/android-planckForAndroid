@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.fragment.app.FragmentTransaction;
@@ -125,7 +124,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
         permissionRequester.requestBatteryOptimizationPermission();
 
         // Handle activity restarts because of a configuration change (e.g. rotating the screen)
-        nonConfigurationInstance = (NonConfigurationInstance) getLastNonConfigurationInstance();
+        nonConfigurationInstance = (NonConfigurationInstance) getLastCustomNonConfigurationInstance();
         if (nonConfigurationInstance != null) {
             nonConfigurationInstance.restore(this);
         }
