@@ -84,7 +84,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     /**
      * Contains information about objects that need to be retained on configuration changes.
      *
-     * @see .onRetainNonConfigurationInstance
+     * @see .onRetainCustomNonConfigurationInstance
      */
     private var nonConfigurationInstance: NonConfigurationInstance? = null
     private var accountsList: NestedListView? = null
@@ -109,15 +109,14 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     /**
      * Save the reference to a currently displayed dialog or a running AsyncTask (if available).
      */
-    // TODO: 28/9/16 Fix this
-    //    @Override
-    //    public Object onRetainNonConfigurationInstance() {
-    //        Object retain = null;
-    //        if (nonConfigurationInstance != null && nonConfigurationInstance.retain()) {
-    //            retain = nonConfigurationInstance;
-    //        }
-    //        return retain;
-    //    }
+
+    override fun onRetainCustomNonConfigurationInstance(): Any? {
+        var retain: Any? = null
+        if (nonConfigurationInstance?.retain() == true) {
+            retain = nonConfigurationInstance
+        }
+        return retain
+    }
 
     private val accounts = ArrayList<BaseAccount>()
 
@@ -766,7 +765,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
      * changes.
      *
      * @param inst The [NonConfigurationInstance] that should be retained when
-     * [SettingsActivity.onRetainNonConfigurationInstance] is called.
+     * [SettingsActivity.onRetainCustomNonConfigurationInstance] is called.
      */
     override fun setNonConfigurationInstance(inst: NonConfigurationInstance?) {
         nonConfigurationInstance = inst

@@ -1,12 +1,6 @@
 package com.fsck.k9.activity;
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
-import androidx.appcompat.widget.SearchView;
 import android.text.Editable;
 import android.text.TextUtils.TruncateAt;
 import android.text.TextWatcher;
@@ -40,6 +33,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.appcompat.widget.SearchView;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.FolderMode;
@@ -67,6 +62,12 @@ import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 
 import timber.log.Timber;
 
@@ -430,10 +431,9 @@ public class FolderList extends K9ListActivity {
         }
     }
 
-// TODO: 28/9/16 fix this
-//    @Override public Object onRetainNonConfigurationInstance() {
-//        return (mAdapter == null) ? null : mAdapter.mFolders;
-//    }
+    @Override public Object onRetainCustomNonConfigurationInstance() {
+        return (mAdapter == null) ? null : mAdapter.mFolders;
+    }
 
     @Override public void onPause() {
         super.onPause();
