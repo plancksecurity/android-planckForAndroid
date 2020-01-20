@@ -667,10 +667,7 @@ public class TestUtils {
 
     private void selectAccountFromList (int accountToSelect) {
         while (!viewIsDisplayed(R.id.accounts_list)) {
-            device.waitForIdle();
-            UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-            scroll.swipe(Direction.UP, 1.0f);
-            device.waitForIdle();
+            swipeUpScreen();
         }
         onView(withId(R.id.accounts_list)).check(matches(isCompletelyDisplayed()));
         while (exists(onView(withId(R.id.accounts_list)))) {
