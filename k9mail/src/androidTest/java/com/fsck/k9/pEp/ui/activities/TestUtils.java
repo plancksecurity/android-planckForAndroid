@@ -1424,9 +1424,7 @@ public class TestUtils {
         onView(withId(view)).perform(typeText(" "), closeSoftKeyboard());
         device.waitForIdle();
         if (getTextFromView(onView(withId(view))).contains(" ")) {
-            Timber.i("Estoy en pre Key");
             device.pressKeyCode(KeyEvent.KEYCODE_DEL);
-            Timber.i("Estoy en post Key");
         }
         device.waitForIdle();
     }
