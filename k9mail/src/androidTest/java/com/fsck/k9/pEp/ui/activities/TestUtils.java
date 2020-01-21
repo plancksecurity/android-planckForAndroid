@@ -610,6 +610,8 @@ public class TestUtils {
         while (true) {
             try {
                 device.waitForIdle();
+                onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
+                device.waitForIdle();
                 if (exists(onView(withId(R.id.accounts_list)))) {
                     selectAccountFromList(accountToSelect);
                 } else if (exists(onView(withId(android.R.id.list)))) {
