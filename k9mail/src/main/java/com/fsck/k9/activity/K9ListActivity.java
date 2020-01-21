@@ -3,15 +3,17 @@ package com.fsck.k9.activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
@@ -116,6 +118,13 @@ public abstract class K9ListActivity extends AppCompatActivity implements K9Acti
         }
     }
 
+    public void initializeToolbar(Boolean showUpButton, @StringRes int stringResource) {
+        setUpToolbar(showUpButton);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(true);
+            getSupportActionBar().setTitle(getResources().getString(stringResource));
+        }
+    }
     public Toolbar getToolbar() {
         return toolbar;
     }
