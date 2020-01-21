@@ -114,6 +114,7 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Rating;
+import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
 import timber.log.Timber;
 
@@ -255,6 +256,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     @Inject
     PermissionRequester permissionRequester;
+    @Inject
+    PermissionChecker permissionChecker;
 
     @Override
     public void inject() {
@@ -991,6 +994,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     public void onOpenPgpSignOnlyChange(boolean enabled) {
         recipientPresenter.onCryptoPgpSignOnlyDisabled();
     }
+
     @Override
     public void onAttachmentAdded() {
         changesMadeSinceLastSave = true;
@@ -1943,7 +1947,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
 
     public void askForPermissions() {
-        if(!permissionAsked) {
+        if (!permissionAsked && permissionChecker.doesntHaveContactsPermission()) {
             permissionAsked = true;
             permissionRequester.requestContactsPermission(getRootView(), new PermissionListener() {
                 @Override
@@ -1953,7 +1957,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                 @Override
                 public void onPermissionDenied(PermissionDeniedResponse response) {
                     String permissionDenied = getResources().getString(R.string.read_snackbar_permission_permanently_denied);
-                    FeedbackTools.showLongFeedback(getRootView(),  permissionDenied);
+                    FeedbackTools.showLongFeedback(getRootView(), permissionDenied);
                 }
 
                 @Override
