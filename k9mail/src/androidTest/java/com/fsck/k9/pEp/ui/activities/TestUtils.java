@@ -612,7 +612,11 @@ public class TestUtils {
                 device.waitForIdle();
                 onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
                 device.waitForIdle();
-                if (exists(onView(withId(R.id.accounts_list)))) {
+                if (exists(onView(withId(R.id.available_accounts_title)))) {
+                    selectAccountFromList(accountToSelect);
+                    getMessageListSize();
+                    return;
+                } else if (exists(onView(withId(R.id.accounts_list)))) {
                     selectAccountFromList(accountToSelect);
                 } else if (exists(onView(withId(android.R.id.list)))) {
                     clickInbox();
