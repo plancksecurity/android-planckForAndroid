@@ -59,7 +59,7 @@ class FolderRenderer : Renderer<FolderModel>() {
 
     private fun renderUnreadMessages(unreadMessageCount: Int) {
         when {
-            unreadMessageCount == 0 -> {
+            unreadMessageCount > 0 -> {
                 folderNewMessages.visibility = View.VISIBLE
                 folderNewMessages.text = unreadMessageCount.toString()
             }
