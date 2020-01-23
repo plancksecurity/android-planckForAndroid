@@ -193,7 +193,7 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(15);
         device.waitForIdle();
         while (!exists(onView(withId(R.id.to)))) {
-            testUtils.swipeUpScreen();
+            TestUtils.swipeUpScreen();
         }
         switch (cucumberMessageTo) {
             case "empty":
@@ -285,7 +285,7 @@ public class CucumberTestSteps {
 
     private void textViewEditor (String text, String viewName) {
         int viewId = testUtils.intToID(viewName);
-        testUtils.swipeDownScreen();
+        TestUtils.swipeDownScreen();
         switch (text) {
             case "empty":
                 timeRequiredForThisMethod(30);
@@ -604,7 +604,7 @@ public class CucumberTestSteps {
                 waitUntilIdle();
                 wb = device.findObject(By.clazz("android.webkit.WebView"));
                 wb.click();
-                testUtils.swipeUpScreen();
+                TestUtils.swipeUpScreen();
                 UiObject2 webViewTemporal;
                 webViewTemporal = wb.getChildren().get(0);
                 while (true) {
@@ -649,7 +649,7 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(10);
         testUtils.goToHandshakeDialog();
         while (!viewIsDisplayed(R.id.confirmTrustWords)) {
-            testUtils.swipeUpScreen();
+            TestUtils.swipeUpScreen();
         }
         testUtils.doWaitForResource(R.id.confirmTrustWords);
         while (!exists(onView(withId(R.id.confirmTrustWords)))) {
@@ -674,7 +674,7 @@ public class CucumberTestSteps {
         while (!viewIsDisplayed(R.id.trustwords)) {
             device.waitForIdle();
         }
-        testUtils.swipeUpScreen();
+        TestUtils.swipeUpScreen();
         onView(withId(R.id.wrongTrustwords)).perform(click());
         device.waitForIdle();
         testUtils.pressBack();
@@ -690,7 +690,7 @@ public class CucumberTestSteps {
         while (!viewIsDisplayed(R.id.trustwords)) {
             device.waitForIdle();
         }
-        testUtils.swipeUpScreen();
+        TestUtils.swipeUpScreen();
         while (exists(onView(withId(R.id.wrongTrustwords)))) {
             device.waitForIdle();
             try {
@@ -1036,7 +1036,7 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(10);
         device.waitForIdle();
         if (!viewIsDisplayed(testUtils.intToID("reply_message"))) {
-            testUtils.swipeDownScreen();
+            TestUtils.swipeDownScreen();
         }
         while (!viewIsDisplayed(R.id.reply_message)) {
             device.waitForIdle();
@@ -1293,7 +1293,7 @@ public class CucumberTestSteps {
         TestUtils.createFile("masterkeyfile.asc", R.raw.masterkeypro);
         masterKeyText2 = testUtils.readFile("", "masterkeyfile.asc").toString();
         if (!masterKeyText.equals(masterKeyText2)) {
-            testUtils.assertFailWithMessage("Wrong Master key file");
+            TestUtils.assertFailWithMessage("Wrong Master key file");
         }
         testUtils.emptyFolder("Download");
         testUtils.emptyFolder("");
@@ -1303,13 +1303,13 @@ public class CucumberTestSteps {
         while (true) {
             try {
                 while (!exists(onView(withId(R.id.attachments)))) {
-                    testUtils.swipeUpScreen();
+                    TestUtils.swipeUpScreen();
                 }
                 onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
                 while (!viewIsDisplayed(R.id.attachments)) {
-                    testUtils.swipeUpScreen();
+                    TestUtils.swipeUpScreen();
                 }
-                testUtils.swipeUpScreen();
+                TestUtils.swipeUpScreen();
                 BySelector layout = By.clazz("android.widget.LinearLayout");
                 onView(withId(R.id.attachments)).check(matches(isCompletelyDisplayed()));
                 for (UiObject2 object : device.findObjects(layout)) {
@@ -1333,9 +1333,9 @@ public class CucumberTestSteps {
     private void openAttachedMasterKey () {
         while (true) {
             try {
-                testUtils.swipeUpScreen();
+                TestUtils.swipeUpScreen();
                 onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
-                testUtils.swipeUpScreen();
+                TestUtils.swipeUpScreen();
                 BySelector layout = By.clazz("android.widget.LinearLayout");
                 for (UiObject2 object : device.findObjects(layout)) {
                     if (object.getResourceName() != null && object.getResourceName().equals("security.pEp.debug:id/attachments") && object.getChildren().get(0).getChildren().get(0).getChildren().get(0).getChildren().get(1).getText().contains("masterkey")) {
