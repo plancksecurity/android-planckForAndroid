@@ -13,10 +13,11 @@ import android.widget.RemoteViews;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.MessageList;
+import com.fsck.k9.search.SearchAccount;
 
 
 public class MessageListWidgetProvider extends AppWidgetProvider {
-    private static String ACTION_UPDATE_MESSAGE_LIST = "UPDATE_MESSAGE_LIST";
+    private static final String ACTION_UPDATE_MESSAGE_LIST = "UPDATE_MESSAGE_LIST";
 
 
     public static void triggerMessageListWidgetUpdate(Context context) {
@@ -39,6 +40,7 @@ public class MessageListWidgetProvider extends AppWidgetProvider {
     }
 
     private void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.message_list_widget_layout);
 
         views.setTextViewText(R.id.folder, context.getString(R.string.integrated_inbox_title));
@@ -53,6 +55,9 @@ public class MessageListWidgetProvider extends AppWidgetProvider {
 
         PendingIntent composeAction = composeActionPendingIntent(context);
         views.setOnClickPendingIntent(R.id.new_message, composeAction);
+
+        PendingIntent headerClickAction = viewUnifiedInboxPendingIntent(context);
+        views.setOnClickPendingIntent(R.id.top_controls, headerClickAction);
 
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
@@ -74,6 +79,14 @@ public class MessageListWidgetProvider extends AppWidgetProvider {
         intent.setAction(Intent.ACTION_VIEW);
 
         return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    private PendingIntent viewUnifiedInboxPendingIntent(Context context) {
+        SearchAccount unifiedInboxAccount = SearchAccount.createUnifiedInboxAccount(context);
+        Intent intent = MessageList.intentDisplaySearch(
+                context, unifiedInboxAccount.getRelatedSearch(), true, true, true);
+
+        return PendingIntent.getActivity(context, -1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private PendingIntent composeActionPendingIntent(Context context) {
