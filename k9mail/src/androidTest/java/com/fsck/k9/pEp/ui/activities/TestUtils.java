@@ -2110,7 +2110,7 @@ public class TestUtils {
                 onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
                 device.waitForIdle();
                 if (!object.getText().contains(cucumberBody)) {
-                    assertFailWithMessage("Error: body text = " + object.getText() + " ///// Text = " +cucumberBody);
+                    assertFailWithMessage("Error: body text != textToCompare --> bodyText = " + object.getText() + " ************  !=  *********** textToCompare = " +cucumberBody);
                 }
                 return;
             } else {
