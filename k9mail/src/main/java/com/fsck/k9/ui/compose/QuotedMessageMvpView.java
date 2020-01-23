@@ -17,6 +17,7 @@ import com.fsck.k9.mailstore.AttachmentResolver;
 import com.fsck.k9.message.QuotedTextMode;
 import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.ui.EolConvertingEditText;
+import com.fsck.k9.ui.ImageRefusingEditText;
 import com.fsck.k9.view.MessageWebView;
 
 
@@ -26,7 +27,7 @@ public class QuotedMessageMvpView {
     private final ImageButton mQuotedTextEdit;
     private final EolConvertingEditText mQuotedText;
     private final MessageWebView mQuotedHTML;
-    private final EolConvertingEditText mMessageContentView;
+    private final ImageRefusingEditText mMessageContentView;
     private final ImageButton mQuotedTextDelete;
 
 
@@ -49,7 +50,7 @@ public class QuotedMessageMvpView {
             }
         });
 
-        mMessageContentView = (EolConvertingEditText) messageCompose.findViewById(R.id.message_content);
+        mMessageContentView = messageCompose.findViewById(R.id.message_content);
     }
 
     public void setOnClickPresenter(final QuotedMessagePresenter presenter) {

@@ -2,14 +2,14 @@ package com.fsck.k9.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.EditText;
+
+import androidx.appcompat.widget.AppCompatEditText;
 
 /**
  * An {@link android.widget.EditText} extension with methods that convert line endings from
  * {@code \r\n} to {@code \n} and back again when setting and getting text.
- *
  */
-public class EolConvertingEditText extends EditText {
+public class EolConvertingEditText extends AppCompatEditText {
 
     public EolConvertingEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -30,7 +30,7 @@ public class EolConvertingEditText extends EditText {
      *
      * @param text
      */
-    public void  setCharacters(CharSequence text) {
+    public void setCharacters(CharSequence text) {
         setText(text.toString().replace("\r\n", "\n"));
     }
 
