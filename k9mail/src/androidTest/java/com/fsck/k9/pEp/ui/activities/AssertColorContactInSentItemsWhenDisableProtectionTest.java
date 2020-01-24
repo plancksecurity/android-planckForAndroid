@@ -1,13 +1,11 @@
 package com.fsck.k9.pEp.ui.activities;
 
-import android.app.Instrumentation;
-import android.content.Context;
 import android.content.res.Resources;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.IdlingRegistry;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
-import androidx.test.runner.AndroidJUnit4;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.BySelector;
 import androidx.test.uiautomator.UiDevice;
@@ -21,8 +19,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import foundation.pEp.jniadapter.Rating;
 
+import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -34,14 +32,10 @@ import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
 public class AssertColorContactInSentItemsWhenDisableProtectionTest {
     private UiDevice device;
     private TestUtils testUtils;
-    private String messageTo = "";
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
     private BySelector textViewSelector;
     private Resources resources;
-    private Context context;
-    private Instrumentation instrumentation;
-    private EspressoTestingIdlingResource espressoTestingIdlingResource;
 
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
@@ -49,23 +43,20 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
     @Before
     public void startActivity() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        instrumentation = InstrumentationRegistry.getInstrumentation();
-        testUtils = new TestUtils(device, instrumentation);
+        testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
         testUtils.increaseTimeoutWait();
-        espressoTestingIdlingResource = new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         textViewSelector = By.clazz("android.widget.TextView");
-        context = InstrumentationRegistry.getTargetContext();
-        resources = context.getResources();
+        resources = InstrumentationRegistry.getInstrumentation().getTargetContext().getResources();
         testUtils.startActivity();
     }
 
     @After
     public void unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
-    @Test (timeout = TIMEOUT_TEST)
+    @Test(timeout = TIMEOUT_TEST)
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
         testUtils.createAccount();
         composeMessage();
@@ -98,7 +89,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
     private void composeMessage() {
         testUtils.composeMessageButton();
         device.waitForIdle();
-        messageTo = testUtils.getTextFromTextViewThatContainsText("@");
+        String messageTo = testUtils.getTextFromTextViewThatContainsText("@");
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
     }
 

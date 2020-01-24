@@ -2,11 +2,11 @@ package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Instrumentation;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingRegistry;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
-import androidx.test.runner.AndroidJUnit4;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.UiDevice;
 
@@ -40,25 +40,22 @@ public class RemoveContactsFromMessageAndKeepOriginalToolbarColor {
     private TestUtils testUtils;
     private UiDevice device;
     private String messageFrom;
-    private Instrumentation instrumentation;
-    private EspressoTestingIdlingResource espressoTestingIdlingResource;
 
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
 
     @Before
     public void startpEpApp() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        instrumentation = InstrumentationRegistry.getInstrumentation();
-        espressoTestingIdlingResource = new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        device = UiDevice.getInstance(instrumentation);
+        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         testUtils = new TestUtils(device, instrumentation);
         testUtils.startActivity();
     }
 
     @After
     public void unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
     @Test (timeout = TIMEOUT_TEST)

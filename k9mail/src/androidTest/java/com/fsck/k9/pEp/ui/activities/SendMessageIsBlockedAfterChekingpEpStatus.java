@@ -2,10 +2,10 @@ package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Instrumentation;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.IdlingRegistry;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
-import androidx.test.runner.AndroidJUnit4;
 import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
@@ -32,19 +32,16 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
     private String messageTo = "";
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
-    private Instrumentation instrumentation;
-    private EspressoTestingIdlingResource espressoTestingIdlingResource;
 
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
 
     @Before
     public void startActivity() {
-        uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        instrumentation = InstrumentationRegistry.getInstrumentation();
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        uiDevice = UiDevice.getInstance(instrumentation);
         testUtils = new TestUtils(uiDevice, instrumentation);
         testUtils.increaseTimeoutWait();
-        espressoTestingIdlingResource = new EspressoTestingIdlingResource();
         IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         testUtils.startActivity();
     }

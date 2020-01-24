@@ -1,8 +1,8 @@
 package com.fsck.k9.pEp.ui.activities;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
@@ -27,7 +27,6 @@ public class ImportSettingsCancelTest {
 
     private TestUtils testUtils;
     private UiDevice device;
-    private EspressoTestingIdlingResource espressoTestingIdlingResource;
 
     @Rule
     public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
@@ -36,18 +35,17 @@ public class ImportSettingsCancelTest {
     public void startpEpApp() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
-        espressoTestingIdlingResource = new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         testUtils.increaseTimeoutWait();
         testUtils.startActivity();
     }
 
     @After
     public void unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
-    @Test (timeout = TIMEOUT_TEST)
+    @Test(timeout = TIMEOUT_TEST)
     public void importSettings() {
         importSettingsTest(false);
     }
@@ -83,7 +81,7 @@ public class ImportSettingsCancelTest {
         assertThereAreNoAccounts();
     }
 
-    private void assertExistsTest(){
+    private void assertExistsTest() {
         onData(anything())
                 .inAdapterView(withId(R.id.accounts_list))
                 .atPosition(0)
@@ -91,7 +89,7 @@ public class ImportSettingsCancelTest {
                 .check(matches(withText(testUtils.getAccountDescription())));
     }
 
-    private void assertThereAreNoAccounts(){
+    private void assertThereAreNoAccounts() {
         onView(withId(R.id.skip))
                 .check(matches(isDisplayed()));
     }

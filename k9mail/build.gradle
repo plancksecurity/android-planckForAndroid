@@ -102,7 +102,7 @@ dependencies {
     androidTestImplementation ("androidx.test.espresso:espresso-core:${versions.espresso}") {
         exclude module: 'support-annotations'
     }
-    androidTestImplementation "androidx.test.uiautomator:uiautomator:${versions.uiAutomator}"
+    // androidTestImplementation "androidx.test.uiautomator:uiautomator:${versions.uiAutomator}"
 
     testImplementation "org.robolectric:robolectric:${versions.robolectric}"
     testImplementation "junit:junit:${versions.junit}"
@@ -114,6 +114,7 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-contrib:${versions.espresso}"
     testImplementation "androidx.test:core:${versions.androidX}"
     testImplementation "androidx.test.ext:junit:${versions.androidX}"
+    androidTestImplementation "androidx.test.ext:junit:${versions.androidX}"
     testImplementation "androidx.test:rules:${versions.runner_rules}"
     testImplementation "androidx.test:runner:${versions.runner_rules}"
 

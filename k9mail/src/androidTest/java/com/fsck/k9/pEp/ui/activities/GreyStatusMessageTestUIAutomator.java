@@ -1,9 +1,9 @@
 package com.fsck.k9.pEp.ui.activities;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import foundation.pEp.jniadapter.Rating;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -27,7 +28,6 @@ public class GreyStatusMessageTestUIAutomator {
     private static final String EMAIL = "newemail@mail.es";
 
     private TestUtils testUtils;
-    private EspressoTestingIdlingResource espressoTestingIdlingResource;
 
     @Rule
     public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
@@ -35,18 +35,17 @@ public class GreyStatusMessageTestUIAutomator {
     @Before
     public void startpEpApp() {
         testUtils = new TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()), InstrumentationRegistry.getInstrumentation());
-        espressoTestingIdlingResource = new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         testUtils.startActivity();
     }
 
     @After
     public void unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
-    @Test (timeout = TIMEOUT_TEST)
-    public void greyStatusMessage(){
+    @Test(timeout = TIMEOUT_TEST)
+    public void greyStatusMessage() {
         greyStatusMessageTest(false);
     }
 
@@ -56,9 +55,9 @@ public class GreyStatusMessageTestUIAutomator {
         testUtils.composeMessageButton();
         testUtils.testStatusEmpty();
         testUtils.testStatusMail(new TestUtils.BasicMessage("", "Subject", "Message", EMAIL),
-                 new TestUtils.BasicIdentity(Rating.pEpRatingUnencrypted, ""));
+                new TestUtils.BasicIdentity(Rating.pEpRatingUnencrypted, ""));
         testUtils.testStatusMail(new TestUtils.BasicMessage("", "", "", ""),
-                 new TestUtils.BasicIdentity(Rating.pEpRatingUndefined, ""));
+                new TestUtils.BasicIdentity(Rating.pEpRatingUndefined, ""));
         testUtils.testStatusMail(new TestUtils.BasicMessage("", "Subject", "Message", EMAIL),
                 new TestUtils.BasicIdentity(Rating.pEpRatingUnencrypted, ""));
         testUtils.pressBack();

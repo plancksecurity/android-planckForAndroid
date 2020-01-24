@@ -2,9 +2,9 @@ package com.fsck.k9.pEp.ui.activities;
 
 
 import androidx.annotation.NonNull;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
-import androidx.test.runner.AndroidJUnit4;
 
 import android.view.View;
 import android.view.ViewGroup;

@@ -2,10 +2,10 @@ package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Instrumentation;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.IdlingRegistry;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
-import androidx.test.runner.AndroidJUnit4;
 import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
@@ -34,32 +34,27 @@ public class InboxActionBarChangingColorTest {
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
 
-    private String selfMessage = "";
-
     private UiDevice device;
     private TestUtils testUtils;
     private String messageTo = "random@test.pep-security.net";
-    private Instrumentation instrumentation;
-    private EspressoTestingIdlingResource espressoTestingIdlingResource;
 
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
 
     @Before
     public void startpEpApp() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        instrumentation = InstrumentationRegistry.getInstrumentation();
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        device = UiDevice.getInstance(instrumentation);
         testUtils = new TestUtils(device, instrumentation);
-        espressoTestingIdlingResource = new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         testUtils.increaseTimeoutWait();
-        messageTo = Long.toString(System.currentTimeMillis()) + "@" + HOST;
+        messageTo = System.currentTimeMillis() + "@" + HOST;
         testUtils.startActivity();
     }
 
     @After
     public void unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
     @Test (timeout = TIMEOUT_TEST)
@@ -74,7 +69,7 @@ public class InboxActionBarChangingColorTest {
     private void assertSelfMessageColor(){
         device.waitForIdle();
         testUtils.composeMessageButton();
-        selfMessage = testUtils.getTextFromTextViewThatContainsText("@");
+        String selfMessage = testUtils.getTextFromTextViewThatContainsText("@");
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, selfMessage), false);
         onView(withId(R.id.subject)).perform(typeText(" "));
         testUtils.sendMessage();

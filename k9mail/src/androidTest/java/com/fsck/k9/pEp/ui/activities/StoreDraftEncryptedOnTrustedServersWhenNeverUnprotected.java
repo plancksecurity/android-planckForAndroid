@@ -4,10 +4,10 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.res.Resources;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.BySelector;
 import androidx.test.uiautomator.UiDevice;
@@ -52,8 +52,8 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
         instrumentation = InstrumentationRegistry.getInstrumentation();
         device = UiDevice.getInstance(instrumentation);
         espressoTestingIdlingResource = new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
-        resources = InstrumentationRegistry.getTargetContext().getResources();
+        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
+        resources = instrumentation.getTargetContext().getResources();
         testUtils = new TestUtils(device, instrumentation);
         testUtils.increaseTimeoutWait();
         testUtils.startActivity();
@@ -61,7 +61,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
 
     @After
     public void unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
     @Test

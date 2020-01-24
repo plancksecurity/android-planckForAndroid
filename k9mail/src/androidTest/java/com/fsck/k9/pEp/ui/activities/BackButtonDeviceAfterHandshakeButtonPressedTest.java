@@ -3,10 +3,10 @@ package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Instrumentation;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.IdlingRegistry;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
-import androidx.test.runner.AndroidJUnit4;
 import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
@@ -36,8 +36,6 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
     private UiDevice device;
     private TestUtils testUtils;
     private String messageTo;
-    private Instrumentation instrumentation;
-    private EspressoTestingIdlingResource espressoTestingIdlingResource;
 
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
@@ -45,21 +43,20 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
     @Before
     public void startpEpApp() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        instrumentation = InstrumentationRegistry.getInstrumentation();
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
         testUtils = new TestUtils(device, instrumentation);
         testUtils.increaseTimeoutWait();
-        espressoTestingIdlingResource = new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
-        messageTo = Long.toString(System.currentTimeMillis()) + "@" + HOST;
+        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
+        messageTo = System.currentTimeMillis() + "@" + HOST;
         testUtils.startActivity();
     }
 
     @After
     public void unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
-    @Test (timeout = TIMEOUT_TEST)
+    @Test(timeout = TIMEOUT_TEST)
     public void backButtonDeviceAfterHandshakeButtonPressed() {
         testUtils.createAccount();
         sendMessages(3);

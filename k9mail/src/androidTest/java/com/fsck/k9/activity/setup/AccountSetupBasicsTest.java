@@ -1,17 +1,18 @@
 package com.fsck.k9.activity.setup;
 
 import android.content.Intent;
-import androidx.test.espresso.ViewAssertion;
-import androidx.test.espresso.ViewInteraction;
-import androidx.test.filters.LargeTest;
-import androidx.test.rule.ActivityTestRule;
-import androidx.appcompat.widget.Toolbar;
-import androidx.test.runner.AndroidJUnit4;
-
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.TextView;
+
+import androidx.appcompat.widget.Toolbar;
+import androidx.test.espresso.ViewAssertion;
+import androidx.test.espresso.ViewInteraction;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.rule.ActivityTestRule;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
@@ -24,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static androidx.test.InstrumentationRegistry.getInstrumentation;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -86,7 +86,7 @@ public class AccountSetupBasicsTest {
         //sonView(allOf(withId(R.id.import_settings), withParent(withId(R.id.toolbar)))).perform(click());
         //openActionBarOverflowOrOptionsMenu(getInstrumentation().getContext());
         //onView(withText(R.string.action_settings)).perform(click());
-        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
 
         ViewInteraction appCompatTextView = onView(
                 allOf(withId(R.id.title), withText("Import settings"),
