@@ -196,7 +196,7 @@ public class SettingsImporterTest {
 
         SettingsImporter.ImportContents results = SettingsImporter.getImportStreamContents(inputStream);
 
-        assertEquals(false, results.globalSettings);
+        assertFalse(results.globalSettings);
         assertEquals(1, results.accounts.size());
         assertEquals("Account", results.accounts.get(0).name);
         assertEquals(validUUID, results.accounts.get(0).uuid);
@@ -219,7 +219,7 @@ public class SettingsImporterTest {
 
         SettingsImporter.ImportContents results = SettingsImporter.getImportStreamContents(inputStream);
 
-        assertEquals(false, results.globalSettings);
+        assertFalse(results.globalSettings);
         assertEquals(1, results.accounts.size());
         assertEquals("user@gmail.com", results.accounts.get(0).name);
         assertEquals(validUUID, results.accounts.get(0).uuid);

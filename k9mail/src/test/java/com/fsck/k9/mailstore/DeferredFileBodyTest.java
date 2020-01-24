@@ -34,14 +34,11 @@ public class DeferredFileBodyTest {
 
     @Before
     public void setUp() {
-        FileFactory fileFactory = new FileFactory() {
-            @Override
-            public File createFile() throws IOException {
-                assertNull("only a single file should be created", createdFile);
-                createdFile = File.createTempFile("test", "tmp");
-                createdFile.deleteOnExit();
-                return createdFile;
-            }
+        FileFactory fileFactory = () -> {
+            assertNull("only a single file should be created", createdFile);
+            createdFile = File.createTempFile("test", "tmp");
+            createdFile.deleteOnExit();
+            return createdFile;
         };
 
         deferredFileBody = new DeferredFileBody(TEST_THRESHOLD, fileFactory, TEST_ENCODING);

@@ -9,6 +9,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 
@@ -104,7 +105,7 @@ public class MessageReferenceTest {
         MessageReference messageReference = new MessageReference("a", "b", "c", null);
         Object object = new Object();
 
-        assertFalse(messageReference.equals(object));
+        assertNotEquals(messageReference, object);
     }
 
     @SuppressWarnings("ObjectEqualsNull")
@@ -112,14 +113,14 @@ public class MessageReferenceTest {
     public void equalsWithNullShouldReturnFalse() {
         MessageReference messageReference = createMessageReference("account", "folder", "uid");
 
-        assertFalse(messageReference.equals(null));
+        assertNotEquals(null, messageReference);
     }
 
     @Test
     public void equalsWithSameMessageReferenceShouldReturnTrue() {
         MessageReference messageReference = createMessageReference("account", "folder", "uid");
 
-        assertTrue(messageReference.equals(messageReference));
+        assertEquals(messageReference, messageReference);
     }
 
     @Test
@@ -215,12 +216,12 @@ public class MessageReferenceTest {
     }
 
     private void assertEqualsReturnsTrueSymmetrically(MessageReference referenceOne, MessageReference referenceTwo) {
-        assertTrue(referenceOne.equals(referenceTwo));
-        assertTrue(referenceTwo.equals(referenceOne));
+        assertEquals(referenceOne, referenceTwo);
+        assertEquals(referenceTwo, referenceOne);
     }
 
     private void assertEqualsReturnsFalseSymmetrically(MessageReference referenceOne, MessageReference referenceTwo) {
-        assertFalse(referenceOne.equals(referenceTwo));
-        assertFalse(referenceTwo.equals(referenceOne));
+        assertNotEquals(referenceOne, referenceTwo);
+        assertNotEquals(referenceTwo, referenceOne);
     }
 }
