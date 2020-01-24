@@ -1,8 +1,6 @@
 package com.fsck.k9.notification;
 
 
-import java.util.List;
-
 import com.fsck.k9.Account;
 import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.activity.MessageReference;
@@ -11,6 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -39,7 +39,7 @@ public class NotificationDataTest {
     }
 
     @Test
-    public void testAddNotificationContent() throws Exception {
+    public void testAddNotificationContent() {
         NotificationContent content = createNotificationContent("1");
 
         AddNotificationResult result = notificationData.addNotificationContent(content);
@@ -52,7 +52,7 @@ public class NotificationDataTest {
     }
 
     @Test
-    public void testAddNotificationContentWithReplacingNotification() throws Exception {
+    public void testAddNotificationContentWithReplacingNotification() {
         notificationData.addNotificationContent(createNotificationContent("1"));
         notificationData.addNotificationContent(createNotificationContent("2"));
         notificationData.addNotificationContent(createNotificationContent("3"));
@@ -69,7 +69,7 @@ public class NotificationDataTest {
     }
 
     @Test
-    public void testRemoveNotificationForMessage() throws Exception {
+    public void testRemoveNotificationForMessage() {
         NotificationContent content = createNotificationContent("1");
         notificationData.addNotificationContent(content);
 
@@ -81,7 +81,7 @@ public class NotificationDataTest {
     }
 
     @Test
-    public void testRemoveNotificationForMessageWithRecreatingNotification() throws Exception {
+    public void testRemoveNotificationForMessageWithRecreatingNotification() {
         notificationData.addNotificationContent(createNotificationContent("1"));
         NotificationContent content = createNotificationContent("2");
         notificationData.addNotificationContent(content);
@@ -117,7 +117,7 @@ public class NotificationDataTest {
     }
 
     @Test
-    public void testNewMessagesCount() throws Exception {
+    public void testNewMessagesCount() {
         assertEquals(0, notificationData.getNewMessagesCount());
 
         NotificationContent contentOne = createNotificationContent("1");
@@ -130,7 +130,7 @@ public class NotificationDataTest {
     }
 
     @Test
-    public void testUnreadMessagesCount() throws Exception {
+    public void testUnreadMessagesCount() {
         notificationData.setUnreadMessageCount(42);
         assertEquals(42, notificationData.getUnreadMessageCount());
 
@@ -144,7 +144,7 @@ public class NotificationDataTest {
     }
 
     @Test
-    public void testContainsStarredMessages() throws Exception {
+    public void testContainsStarredMessages() {
         assertFalse(notificationData.containsStarredMessages());
 
         notificationData.addNotificationContent(createNotificationContentForStarredMessage());
@@ -153,7 +153,7 @@ public class NotificationDataTest {
     }
 
     @Test
-    public void testContainsStarredMessagesWithAdditionalMessages() throws Exception {
+    public void testContainsStarredMessagesWithAdditionalMessages() {
         notificationData.addNotificationContent(createNotificationContent("1"));
         notificationData.addNotificationContent(createNotificationContent("2"));
         notificationData.addNotificationContent(createNotificationContent("3"));
@@ -171,7 +171,7 @@ public class NotificationDataTest {
     }
 
     @Test
-    public void testIsSingleMessageNotification() throws Exception {
+    public void testIsSingleMessageNotification() {
         assertFalse(notificationData.isSingleMessageNotification());
 
         notificationData.addNotificationContent(createNotificationContent("1"));
@@ -182,7 +182,7 @@ public class NotificationDataTest {
     }
 
     @Test
-    public void testGetHolderForLatestNotification() throws Exception {
+    public void testGetHolderForLatestNotification() {
         NotificationContent content = createNotificationContent("1");
         AddNotificationResult addResult = notificationData.addNotificationContent(content);
 
@@ -192,7 +192,7 @@ public class NotificationDataTest {
     }
 
     @Test
-    public void testGetContentForSummaryNotification() throws Exception {
+    public void testGetContentForSummaryNotification() {
         notificationData.addNotificationContent(createNotificationContent("1"));
         NotificationContent content4 = createNotificationContent("2");
         notificationData.addNotificationContent(content4);
@@ -216,7 +216,7 @@ public class NotificationDataTest {
     }
 
     @Test
-    public void testGetActiveNotificationIds() throws Exception {
+    public void testGetActiveNotificationIds() {
         notificationData.addNotificationContent(createNotificationContent("1"));
         notificationData.addNotificationContent(createNotificationContent("2"));
 
@@ -228,12 +228,12 @@ public class NotificationDataTest {
     }
 
     @Test
-    public void testGetAccount() throws Exception {
+    public void testGetAccount() {
         assertEquals(account, notificationData.getAccount());
     }
 
     @Test
-    public void testGetAllMessageReferences() throws Exception {
+    public void testGetAllMessageReferences() {
         MessageReference messageReference0 = createMessageReference("1");
         MessageReference messageReference1 = createMessageReference("2");
         MessageReference messageReference2 = createMessageReference("3");
@@ -278,7 +278,7 @@ public class NotificationDataTest {
         MessageReference messageReference6 = createMessageReference("7");
         MessageReference messageReference7 = createMessageReference("8");
         MessageReference messageReference8 = createMessageReference("9");
-        
+
         notificationData.addNotificationContent(createNotificationContent(messageReference8));
         notificationData.addNotificationContent(createNotificationContent(messageReference7));
         notificationData.addNotificationContent(createNotificationContent(messageReference6));

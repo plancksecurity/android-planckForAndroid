@@ -19,6 +19,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -52,7 +54,7 @@ public class NotificationContentCreatorTest {
     }
 
     @Test
-    public void createFromMessage_withRegularMessage() throws Exception {
+    public void createFromMessage_withRegularMessage() {
         NotificationContent content = contentCreator.createFromMessage(account, message);
 
         assertEquals(messageReference, content.messageReference);
@@ -60,11 +62,11 @@ public class NotificationContentCreatorTest {
         assertEquals(SUBJECT, content.subject);
         assertEquals(SUBJECT + "\n" + PREVIEW, content.preview.toString());
         assertEquals(SENDER_NAME + " " + SUBJECT, content.summary.toString());
-        assertEquals(false, content.starred);
+        assertFalse(content.starred);
     }
 
     @Test
-    public void createFromMessage_withoutSubject() throws Exception {
+    public void createFromMessage_withoutSubject() {
         when(message.getSubject()).thenReturn(null);
 
         NotificationContent content = contentCreator.createFromMessage(account, message);
@@ -76,7 +78,7 @@ public class NotificationContentCreatorTest {
     }
 
     @Test
-    public void createFromMessage_withoutPreview() throws Exception {
+    public void createFromMessage_withoutPreview() {
         when(message.getPreviewType()).thenReturn(PreviewType.NONE);
         when(message.getPreview()).thenReturn(null);
 
@@ -87,7 +89,7 @@ public class NotificationContentCreatorTest {
     }
 
     @Test
-    public void createFromMessage_withErrorPreview() throws Exception {
+    public void createFromMessage_withErrorPreview() {
         when(message.getPreviewType()).thenReturn(PreviewType.ERROR);
         when(message.getPreview()).thenReturn(null);
 
@@ -98,7 +100,7 @@ public class NotificationContentCreatorTest {
     }
 
     @Test
-    public void createFromMessage_withEncryptedMessage() throws Exception {
+    public void createFromMessage_withEncryptedMessage() {
         when(message.getPreviewType()).thenReturn(PreviewType.ENCRYPTED);
         when(message.getPreview()).thenReturn(null);
 
@@ -110,7 +112,7 @@ public class NotificationContentCreatorTest {
     }
 
     @Test
-    public void createFromMessage_withoutSender() throws Exception {
+    public void createFromMessage_withoutSender() {
         when(message.getFrom()).thenReturn(null);
 
         NotificationContent content = contentCreator.createFromMessage(account, message);
@@ -120,7 +122,7 @@ public class NotificationContentCreatorTest {
     }
 
     @Test
-    public void createFromMessage_withMessageFromSelf() throws Exception {
+    public void createFromMessage_withMessageFromSelf() {
         when(account.isAnIdentity(any(Address[].class))).thenReturn(true);
 
         NotificationContent content = contentCreator.createFromMessage(account, message);
@@ -131,16 +133,16 @@ public class NotificationContentCreatorTest {
     }
 
     @Test
-    public void createFromMessage_withStarredMessage() throws Exception {
+    public void createFromMessage_withStarredMessage() {
         when(message.isSet(Flag.FLAGGED)).thenReturn(true);
 
         NotificationContent content = contentCreator.createFromMessage(account, message);
 
-        assertEquals(true, content.starred);
+        assertTrue(content.starred);
     }
 
     @Test
-    public void createFromMessage_withoutEmptyMessage() throws Exception {
+    public void createFromMessage_withoutEmptyMessage() {
         when(message.getFrom()).thenReturn(null);
         when(message.getSubject()).thenReturn(null);
         when(message.getPreviewType()).thenReturn(PreviewType.NONE);
@@ -167,7 +169,7 @@ public class NotificationContentCreatorTest {
         return new MessageReference(ACCOUNT_UUID, FOLDER_NAME, UID, null);
     }
 
-    private LocalMessage createFakeLocalMessage(MessageReference messageReference) throws Exception {
+    private LocalMessage createFakeLocalMessage(MessageReference messageReference) {
         LocalMessage message = mock(LocalMessage.class);
 
         when(message.makeMessageReference()).thenReturn(messageReference);

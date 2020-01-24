@@ -52,7 +52,7 @@ public class NewMailNotificationsTest {
     }
 
     @Test
-    public void testAddNewMailNotification() throws Exception {
+    public void testAddNewMailNotification(){
         int notificationIndex = 0;
         LocalMessage message = createLocalMessage();
         NotificationContent content = createNotificationContent();
@@ -73,7 +73,7 @@ public class NewMailNotificationsTest {
     }
 
     @Test
-    public void testAddNewMailNotificationWithCancelingExistingNotification() throws Exception {
+    public void testAddNewMailNotificationWithCancelingExistingNotification(){
         int notificationIndex = 0;
         LocalMessage message = createLocalMessage();
         NotificationContent content = createNotificationContent();
@@ -95,7 +95,7 @@ public class NewMailNotificationsTest {
     }
 
     @Test
-    public void testAddNewMailNotificationWithPrivacyModeEnabled() throws Exception {
+    public void testAddNewMailNotificationWithPrivacyModeEnabled(){
         enablePrivacyMode();
         int notificationIndex = 0;
         LocalMessage message = createLocalMessage();
@@ -115,7 +115,7 @@ public class NewMailNotificationsTest {
     }
 
     @Test
-    public void testAddNewMailNotificationTwice() throws Exception {
+    public void testAddNewMailNotificationTwice(){
         int notificationIndexOne = 0;
         int notificationIndexTwo = 1;
         LocalMessage messageOne = createLocalMessage();
@@ -147,7 +147,7 @@ public class NewMailNotificationsTest {
     }
 
     @Test
-    public void testRemoveNewMailNotificationWithoutNotificationData() throws Exception {
+    public void testRemoveNewMailNotificationWithoutNotificationData(){
         MessageReference messageReference = createMessageReference(1);
 
         newMailNotifications.removeNewMailNotification(account, messageReference);
@@ -156,7 +156,7 @@ public class NewMailNotificationsTest {
     }
 
     @Test
-    public void testRemoveNewMailNotificationWithUnknownMessageReference() throws Exception {
+    public void testRemoveNewMailNotificationWithUnknownMessageReference(){
         enablePrivacyMode();
         MessageReference messageReference = createMessageReference(1);
         int notificationIndex = 0;
@@ -176,7 +176,7 @@ public class NewMailNotificationsTest {
     }
 
     @Test
-    public void testRemoveNewMailNotification() throws Exception {
+    public void testRemoveNewMailNotification(){
         enablePrivacyMode();
         MessageReference messageReference = createMessageReference(1);
         int notificationIndex = 0;
@@ -199,7 +199,7 @@ public class NewMailNotificationsTest {
     }
 
     @Test
-    public void testRemoveNewMailNotificationClearingAllNotifications() throws Exception {
+    public void testRemoveNewMailNotificationClearingAllNotifications(){
         MessageReference messageReference = createMessageReference(1);
         int notificationIndex = 0;
         int notificationId = NotificationIds.getNewMailStackedNotificationId(account, notificationIndex);
@@ -223,7 +223,7 @@ public class NewMailNotificationsTest {
     }
 
     @Test
-    public void testRemoveNewMailNotificationWithCreateNotification() throws Exception {
+    public void testRemoveNewMailNotificationWithCreateNotification(){
         MessageReference messageReference = createMessageReference(1);
         int notificationIndex = 0;
         int notificationId = NotificationIds.getNewMailStackedNotificationId(account, notificationIndex);
@@ -252,14 +252,14 @@ public class NewMailNotificationsTest {
     }
 
     @Test
-    public void testClearNewMailNotificationsWithoutNotificationData() throws Exception {
+    public void testClearNewMailNotificationsWithoutNotificationData(){
         newMailNotifications.clearNewMailNotifications(account);
 
         verify(notificationManager, never()).cancel(anyInt());
     }
 
     @Test
-    public void testClearNewMailNotifications() throws Exception {
+    public void testClearNewMailNotifications(){
         int notificationIndex = 0;
         int notificationId = NotificationIds.getNewMailStackedNotificationId(account, notificationIndex);
         LocalMessage message = createLocalMessage();

@@ -15,7 +15,7 @@ public class NotificationIdsTest {
     private static final boolean OUTGOING = false;
 
     @Test
-    public void getNewMailSummaryNotificationId_withDefaultAccount() throws Exception {
+    public void getNewMailSummaryNotificationId_withDefaultAccount() {
         Account account = createMockAccountWithAccountNumber(0);
 
         int notificationId = NotificationIds.getNewMailSummaryNotificationId(account);
@@ -24,7 +24,7 @@ public class NotificationIdsTest {
     }
 
     @Test
-    public void getNewMailStackedNotificationId_withDefaultAccount() throws Exception {
+    public void getNewMailStackedNotificationId_withDefaultAccount() {
         Account account = createMockAccountWithAccountNumber(0);
         int notificationIndex = 0;
 
@@ -34,21 +34,21 @@ public class NotificationIdsTest {
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void getNewMailStackedNotificationId_withTooLowIndex() throws Exception {
+    public void getNewMailStackedNotificationId_withTooLowIndex() {
         Account account = createMockAccountWithAccountNumber(0);
 
         NotificationIds.getNewMailStackedNotificationId(account, -1);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void getNewMailStackedNotificationId_withTooLargeIndex() throws Exception {
+    public void getNewMailStackedNotificationId_withTooLargeIndex() {
         Account account = createMockAccountWithAccountNumber(0);
 
         NotificationIds.getNewMailStackedNotificationId(account, 8);
     }
 
     @Test
-    public void getNewMailSummaryNotificationId_withSecondAccount() throws Exception {
+    public void getNewMailSummaryNotificationId_withSecondAccount() {
         Account account = createMockAccountWithAccountNumber(1);
 
         int notificationId = NotificationIds.getNewMailSummaryNotificationId(account);
@@ -57,7 +57,7 @@ public class NotificationIdsTest {
     }
 
     @Test
-    public void getNewMailStackedNotificationId_withSecondAccount() throws Exception {
+    public void getNewMailStackedNotificationId_withSecondAccount() {
         Account account = createMockAccountWithAccountNumber(1);
         int notificationIndex = 7;
 
@@ -67,7 +67,7 @@ public class NotificationIdsTest {
     }
 
     @Test
-    public void getFetchingMailNotificationId_withDefaultAccount() throws Exception {
+    public void getFetchingMailNotificationId_withDefaultAccount() {
         Account account = createMockAccountWithAccountNumber(0);
 
         int notificationId = NotificationIds.getFetchingMailNotificationId(account);
@@ -76,7 +76,7 @@ public class NotificationIdsTest {
     }
 
     @Test
-    public void getFetchingMailNotificationId_withSecondAccount() throws Exception {
+    public void getFetchingMailNotificationId_withSecondAccount() {
         Account account = createMockAccountWithAccountNumber(1);
 
         int notificationId = NotificationIds.getFetchingMailNotificationId(account);
@@ -85,7 +85,7 @@ public class NotificationIdsTest {
     }
 
     @Test
-    public void getSendFailedNotificationId_withDefaultAccount() throws Exception {
+    public void getSendFailedNotificationId_withDefaultAccount() {
         Account account = createMockAccountWithAccountNumber(0);
 
         int notificationId = NotificationIds.getSendFailedNotificationId(account);
@@ -94,7 +94,7 @@ public class NotificationIdsTest {
     }
 
     @Test
-    public void getSendFailedNotificationId_withSecondAccount() throws Exception {
+    public void getSendFailedNotificationId_withSecondAccount() {
         Account account = createMockAccountWithAccountNumber(1);
 
         int notificationId = NotificationIds.getSendFailedNotificationId(account);
@@ -103,7 +103,7 @@ public class NotificationIdsTest {
     }
 
     @Test
-    public void getCertificateErrorNotificationId_forIncomingServerWithDefaultAccount() throws Exception {
+    public void getCertificateErrorNotificationId_forIncomingServerWithDefaultAccount() {
         Account account = createMockAccountWithAccountNumber(0);
 
         int notificationId = NotificationIds.getCertificateErrorNotificationId(account, INCOMING);
@@ -112,7 +112,7 @@ public class NotificationIdsTest {
     }
 
     @Test
-    public void getCertificateErrorNotificationId_forIncomingServerWithSecondAccount() throws Exception {
+    public void getCertificateErrorNotificationId_forIncomingServerWithSecondAccount() {
         Account account = createMockAccountWithAccountNumber(1);
 
         int notificationId = NotificationIds.getCertificateErrorNotificationId(account, INCOMING);
@@ -121,7 +121,7 @@ public class NotificationIdsTest {
     }
 
     @Test
-    public void getCertificateErrorNotificationId_forOutgoingServerWithDefaultAccount() throws Exception {
+    public void getCertificateErrorNotificationId_forOutgoingServerWithDefaultAccount() {
         Account account = createMockAccountWithAccountNumber(0);
 
         int notificationId = NotificationIds.getCertificateErrorNotificationId(account, OUTGOING);
@@ -130,7 +130,7 @@ public class NotificationIdsTest {
     }
 
     @Test
-    public void getCertificateErrorNotificationId_forOutgoingServerWithSecondAccount() throws Exception {
+    public void getCertificateErrorNotificationId_forOutgoingServerWithSecondAccount() {
         Account account = createMockAccountWithAccountNumber(1);
 
         int notificationId = NotificationIds.getCertificateErrorNotificationId(account, OUTGOING);
@@ -139,7 +139,7 @@ public class NotificationIdsTest {
     }
 
     @Test
-    public void getAuthenticationErrorNotificationId_forIncomingServerWithDefaultAccount() throws Exception {
+    public void getAuthenticationErrorNotificationId_forIncomingServerWithDefaultAccount() {
         Account account = createMockAccountWithAccountNumber(0);
 
         int notificationId = NotificationIds.getAuthenticationErrorNotificationId(account, INCOMING);
@@ -148,7 +148,7 @@ public class NotificationIdsTest {
     }
 
     @Test
-    public void getAuthenticationErrorNotificationId_forIncomingServerWithSecondAccount() throws Exception {
+    public void getAuthenticationErrorNotificationId_forIncomingServerWithSecondAccount() {
         Account account = createMockAccountWithAccountNumber(1);
 
         int notificationId = NotificationIds.getAuthenticationErrorNotificationId(account, INCOMING);
@@ -157,7 +157,7 @@ public class NotificationIdsTest {
     }
 
     @Test
-    public void getAuthenticationErrorNotificationId_forOutgoingServerWithDefaultAccount() throws Exception {
+    public void getAuthenticationErrorNotificationId_forOutgoingServerWithDefaultAccount() {
         Account account = createMockAccountWithAccountNumber(0);
 
         int notificationId = NotificationIds.getAuthenticationErrorNotificationId(account, OUTGOING);
@@ -166,7 +166,7 @@ public class NotificationIdsTest {
     }
 
     @Test
-    public void getAuthenticationErrorNotificationId_forOutgoingServerWithSecondAccount() throws Exception {
+    public void getAuthenticationErrorNotificationId_forOutgoingServerWithSecondAccount() {
         Account account = createMockAccountWithAccountNumber(1);
 
         int notificationId = NotificationIds.getAuthenticationErrorNotificationId(account, OUTGOING);
