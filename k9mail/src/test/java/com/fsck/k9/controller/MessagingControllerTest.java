@@ -22,6 +22,7 @@ import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.TransportProvider;
+import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalStore;
@@ -926,7 +927,7 @@ public class MessagingControllerTest {
     }
 
     private void configureRemoteStoreWithFolder() throws MessagingException {
-        when(account.getRemoteStore()).thenReturn(remoteStore);
+        when(account.getRemoteStore()).thenReturn((RemoteStore) remoteStore);
         when(remoteStore.getFolder(FOLDER_NAME)).thenReturn(remoteFolder);
         when(remoteFolder.getName()).thenReturn(FOLDER_NAME);
     }
