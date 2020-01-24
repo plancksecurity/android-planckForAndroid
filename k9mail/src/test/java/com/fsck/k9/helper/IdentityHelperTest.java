@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +52,7 @@ public class IdentityHelperTest {
     }
 
     private static ByteArrayInputStream toStream(String rawMailData) throws Exception {
-        return new ByteArrayInputStream(rawMailData.getBytes("ISO-8859-1"));
+        return new ByteArrayInputStream(rawMailData.getBytes(StandardCharsets.ISO_8859_1));
     }
 
     private void createDummyAccount(Context context) {
