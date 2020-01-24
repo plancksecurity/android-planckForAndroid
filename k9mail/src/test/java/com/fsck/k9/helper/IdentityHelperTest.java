@@ -51,7 +51,7 @@ public class IdentityHelperTest {
         return MimeMessage.parseMimeMessage(data, false);
     }
 
-    private static ByteArrayInputStream toStream(String rawMailData) throws Exception {
+    private static ByteArrayInputStream toStream(String rawMailData) {
         return new ByteArrayInputStream(rawMailData.getBytes(StandardCharsets.ISO_8859_1));
     }
 

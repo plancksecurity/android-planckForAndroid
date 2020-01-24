@@ -1,14 +1,9 @@
 package org.openintents.openpgp.util;
 
 
-import java.util.concurrent.Executor;
-
 import android.content.Intent;
-import android.os.AsyncTask;
 
-import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
-import org.robolectric.annotation.RealObject;
 import org.robolectric.shadows.ShadowAsyncTask;
 
 

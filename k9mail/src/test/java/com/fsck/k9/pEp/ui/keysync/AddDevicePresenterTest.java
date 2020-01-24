@@ -1,16 +1,13 @@
 package com.fsck.k9.pEp.ui.keysync;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.pEp.PEpProvider;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import foundation.pEp.jniadapter.Identity;
-import org.robolectric.annotation.Config;
 
 import java.util.Collections;
 import java.util.List;
