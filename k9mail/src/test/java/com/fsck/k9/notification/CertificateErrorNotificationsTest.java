@@ -8,6 +8,7 @@ import android.content.Context;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.Builder;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.test.core.app.ApplicationProvider;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9RobolectricTestRunner;
@@ -17,7 +18,6 @@ import com.fsck.k9.R;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -111,7 +111,7 @@ public class CertificateErrorNotificationsTest {
     private NotificationController createFakeNotificationController(NotificationManagerCompat notificationManager,
                                                                     NotificationCompat.Builder builder) {
         NotificationController controller = mock(NotificationController.class);
-        when(controller.getContext()).thenReturn(RuntimeEnvironment.application);
+        when(controller.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
         when(controller.getNotificationManager()).thenReturn(notificationManager);
         when(controller
                 .createNotificationBuilder(any(Account.class), any(NotificationChannelManager.ChannelType.class)))

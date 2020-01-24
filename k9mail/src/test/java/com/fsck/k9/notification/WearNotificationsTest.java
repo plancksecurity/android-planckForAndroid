@@ -24,7 +24,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
-import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
 
@@ -273,7 +272,7 @@ public class WearNotificationsTest {
     }
 
     private PendingIntent createFakePendingIntent(int requestCode) {
-        return PendingIntent.getActivity(RuntimeEnvironment.application, requestCode, null, 0);
+        return PendingIntent.getActivity(ApplicationProvider.getApplicationContext(), requestCode, null, 0);
     }
 
     private ArrayList<MessageReference> createMessageReferenceList() {
