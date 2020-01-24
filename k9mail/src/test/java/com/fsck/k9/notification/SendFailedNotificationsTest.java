@@ -41,7 +41,7 @@ public class SendFailedNotificationsTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         notificationManager = createFakeNotificationManager();
         builder = createFakeNotificationBuilder();
         NotificationController controller = createFakeNotificationController(notificationManager, builder);

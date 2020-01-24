@@ -25,7 +25,7 @@ public class MessagePreviewCreatorTest {
     private MessagePreviewCreator previewCreator;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         textPartFinder = mock(TextPartFinder.class);
         previewTextExtractor = mock(PreviewTextExtractor.class);
         encryptionDetector = mock(EncryptionDetector.class);
@@ -34,7 +34,7 @@ public class MessagePreviewCreatorTest {
     }
 
     @Test
-    public void createPreview_withEncryptedMessage() throws Exception {
+    public void createPreview_withEncryptedMessage() {
         Message message = createDummyMessage();
         when(encryptionDetector.isEncrypted(message)).thenReturn(true);
 
@@ -47,7 +47,7 @@ public class MessagePreviewCreatorTest {
     }
 
     @Test
-    public void createPreview_withoutTextPart() throws Exception {
+    public void createPreview_withoutTextPart() {
         Message message = createDummyMessage();
         when(encryptionDetector.isEncrypted(message)).thenReturn(false);
         when(textPartFinder.findFirstTextPart(message)).thenReturn(null);

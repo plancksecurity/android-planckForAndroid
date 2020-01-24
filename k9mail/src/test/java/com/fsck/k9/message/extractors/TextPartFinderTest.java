@@ -19,7 +19,7 @@ public class TextPartFinderTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         textPartFinder = new TextPartFinder();
     }
 

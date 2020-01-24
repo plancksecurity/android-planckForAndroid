@@ -17,7 +17,7 @@ public class RemoveNotificationResultTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         notificationHolder = new NotificationHolder(NOTIFICATION_ID, null);
     }
 

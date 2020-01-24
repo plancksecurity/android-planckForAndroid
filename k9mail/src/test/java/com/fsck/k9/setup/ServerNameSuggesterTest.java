@@ -14,7 +14,7 @@ public class ServerNameSuggesterTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         serverNameSuggester = new ServerNameSuggester();
     }
 

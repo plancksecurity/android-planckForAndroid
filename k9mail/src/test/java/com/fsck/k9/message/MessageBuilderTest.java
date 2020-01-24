@@ -191,7 +191,7 @@ public class MessageBuilderTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         messageIdGenerator = mock(MessageIdGenerator.class);
         when(messageIdGenerator.generateMessageId()).thenReturn(TEST_MESSAGE_ID);
 
@@ -291,7 +291,7 @@ public class MessageBuilderTest {
     }
 
     @Test
-    public void build_detachAndReattach_shouldSucceed() throws MessagingException {
+    public void build_detachAndReattach_shouldSucceed() {
         MessageBuilder messageBuilder = createSimpleMessageBuilder();
         Callback anotherCallback = mock(Callback.class);
 
@@ -307,7 +307,7 @@ public class MessageBuilderTest {
     }
 
     @Test
-    public void buildWithException_shouldThrow() throws MessagingException {
+    public void buildWithException_shouldThrow() {
         MessageBuilder messageBuilder = new SimpleMessageBuilder(context, messageIdGenerator, boundaryGenerator) {
             @Override
             protected void buildMessageInternal() {
@@ -322,7 +322,7 @@ public class MessageBuilderTest {
     }
 
     @Test
-    public void buildWithException_detachAndReattach_shouldThrow() throws MessagingException {
+    public void buildWithException_detachAndReattach_shouldThrow() {
         Callback anotherCallback = mock(Callback.class);
         MessageBuilder messageBuilder = new SimpleMessageBuilder(context, messageIdGenerator, boundaryGenerator) {
             @Override
@@ -384,7 +384,7 @@ public class MessageBuilderTest {
                 .setIdentity(identity)
                 .setMessageFormat(SimpleMessageFormat.TEXT)
                 .setText(TEST_MESSAGE_TEXT)
-                .setAttachments(new ArrayList<Attachment>())
+                .setAttachments(new ArrayList<>())
                 .setSignature("signature")
                 .setQuoteStyle(QuoteStyle.PREFIX)
                 .setQuotedTextMode(QuotedTextMode.NONE)

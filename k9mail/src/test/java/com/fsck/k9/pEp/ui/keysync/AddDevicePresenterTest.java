@@ -28,49 +28,49 @@ public class AddDevicePresenterTest {
     @Mock private PEpProvider pEpProvider;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         addDevicePresenter = new AddDevicePresenter();
         addDevicePresenter.initialize(view, pEpProvider, identity(), identity(), accounts(),false, "");
     }
 
     @Test
-    public void shouldAcceptHandshakeOnEngineWhenAccepting() throws Exception {
+    public void shouldAcceptHandshakeOnEngineWhenAccepting() {
         addDevicePresenter.acceptHandshake();
 
         verify(pEpProvider).acceptHandshake(any(Identity.class));
     }
 
     @Test
-    public void shouldCancelHandshakeOnEngineWhenCancelling() throws Exception {
+    public void shouldCancelHandshakeOnEngineWhenCancelling() {
         addDevicePresenter.cancelHandshake();
 
         verify(pEpProvider).cancelHandshake(any(Identity.class));
     }
 
     @Test
-    public void shouldRejectHandshakeOnEngineWhenRejecting() throws Exception {
+    public void shouldRejectHandshakeOnEngineWhenRejecting() {
         addDevicePresenter.rejectHandshake();
 
         verify(pEpProvider).rejectHandshake(any(Identity.class));
     }
 
     @Test
-    public void shouldCloseViewWhenAccepting() throws Exception {
+    public void shouldCloseViewWhenAccepting() {
         addDevicePresenter.acceptHandshake();
 
         verify(view).close(true);
     }
 
     @Test
-    public void shouldCloseViewWhenRejecting() throws Exception {
+    public void shouldCloseViewWhenRejecting() {
         addDevicePresenter.rejectHandshake();
 
         verify(view).close(false);
     }
 
     @Test
-    public void shouldCloseViewWhenCancelling() throws Exception {
+    public void shouldCloseViewWhenCancelling() {
         addDevicePresenter.cancelHandshake();
 
         verify(view).goBack();

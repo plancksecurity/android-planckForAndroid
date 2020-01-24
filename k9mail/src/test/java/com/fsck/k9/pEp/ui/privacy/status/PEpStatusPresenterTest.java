@@ -34,7 +34,7 @@ public class PEpStatusPresenterTest {
     @Mock Address senderAddress;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         PEpIdentityMapper pEpIdentityMapper = new PEpIdentityMapper();
         presenter = new PEpStatusPresenter(simpleMessageLoaderHelper,
@@ -42,7 +42,7 @@ public class PEpStatusPresenterTest {
     }
 
     @Test
-    public void shouldStartMessageLoaderWhenLoadMessage() throws Exception {
+    public void shouldStartMessageLoaderWhenLoadMessage() {
         presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
 
         presenter.loadMessage(new MessageReference("","","", null));
@@ -53,7 +53,7 @@ public class PEpStatusPresenterTest {
     }
 
     @Test
-    public void shouldGetRecipientsFromCacheWhenLoadRecipients() throws Exception {
+    public void shouldGetRecipientsFromCacheWhenLoadRecipients() {
         when(uiCache.getRecipients()).thenReturn(recipients());
         presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
 
@@ -63,7 +63,7 @@ public class PEpStatusPresenterTest {
     }
 
     @Test
-    public void shouldShowPEpTextsWhenLoadRating() throws Exception {
+    public void shouldShowPEpTextsWhenLoadRating() {
         presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
 
         presenter.loadRating(Rating.pEpRatingReliable);
@@ -72,7 +72,7 @@ public class PEpStatusPresenterTest {
     }
 
     @Test
-    public void shouldHideBadgeWhenLoadNullRating() throws Exception {
+    public void shouldHideBadgeWhenLoadNullRating() {
         presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
 
         presenter.loadRating(null);
@@ -81,7 +81,7 @@ public class PEpStatusPresenterTest {
     }
 
     @Test
-    public void shouldExtractRatingWhenOnResult() throws Exception {
+    public void shouldExtractRatingWhenOnResult() {
         presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
 
         presenter.onResult(new Intent());
@@ -90,7 +90,7 @@ public class PEpStatusPresenterTest {
     }
 
     @Test
-    public void shouldGetRecipientsWhenOnResult() throws Exception {
+    public void shouldGetRecipientsWhenOnResult() {
         presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
 
         presenter.onResult(new Intent());
@@ -99,7 +99,7 @@ public class PEpStatusPresenterTest {
     }
 
     @Test
-    public void shouldUpdateViewOnResult() throws Exception {
+    public void shouldUpdateViewOnResult() {
         presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
         when(uiCache.getRecipients()).thenReturn(recipients());
 
@@ -109,7 +109,7 @@ public class PEpStatusPresenterTest {
     }
 
     @Test
-    public void shouldGetRatingWhenSetupOutgoingMessageRating() throws Exception {
+    public void shouldGetRatingWhenSetupOutgoingMessageRating() {
         presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
         when(uiCache.getRecipients()).thenReturn(recipients());
 

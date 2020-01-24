@@ -38,7 +38,7 @@ public class NewMailNotificationsTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         account = createAccount();
 
         notificationManager = createNotificationManager();

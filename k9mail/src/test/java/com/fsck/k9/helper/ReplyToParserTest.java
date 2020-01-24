@@ -40,7 +40,7 @@ public class ReplyToParserTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         message = mock(Message.class);
         account = mock(Account.class);
 
@@ -48,7 +48,7 @@ public class ReplyToParserTest {
     }
 
     @Test
-    public void getRecipientsToReplyTo_should_prefer_replyTo_over_any_other_field() throws Exception {
+    public void getRecipientsToReplyTo_should_prefer_replyTo_over_any_other_field() {
         when(message.getReplyTo()).thenReturn(REPLY_TO_ADDRESSES);
         when(message.getHeader(ListHeaders.LIST_POST_HEADER)).thenReturn(LIST_POST_HEADER_VALUES);
         when(message.getFrom()).thenReturn(FROM_ADDRESSES);
@@ -61,7 +61,7 @@ public class ReplyToParserTest {
     }
 
     @Test
-    public void getRecipientsToReplyTo_should_prefer_from_ifOtherIsIdentity() throws Exception {
+    public void getRecipientsToReplyTo_should_prefer_from_ifOtherIsIdentity() {
         when(message.getReplyTo()).thenReturn(REPLY_TO_ADDRESSES);
         when(message.getHeader(ListHeaders.LIST_POST_HEADER)).thenReturn(LIST_POST_HEADER_VALUES);
         when(message.getFrom()).thenReturn(FROM_ADDRESSES);
@@ -75,7 +75,7 @@ public class ReplyToParserTest {
     }
 
     @Test
-    public void getRecipientsToReplyTo_should_prefer_listPost_over_from_field() throws Exception {
+    public void getRecipientsToReplyTo_should_prefer_listPost_over_from_field() {
         when(message.getReplyTo()).thenReturn(EMPTY_ADDRESSES);
         when(message.getHeader(ListHeaders.LIST_POST_HEADER)).thenReturn(LIST_POST_HEADER_VALUES);
         when(message.getFrom()).thenReturn(FROM_ADDRESSES);
@@ -88,7 +88,7 @@ public class ReplyToParserTest {
     }
 
     @Test
-    public void getRecipientsToReplyTo_should_return_from_otherwise() throws Exception {
+    public void getRecipientsToReplyTo_should_return_from_otherwise() {
         when(message.getReplyTo()).thenReturn(EMPTY_ADDRESSES);
         when(message.getHeader(ListHeaders.LIST_POST_HEADER)).thenReturn(new String[0]);
         when(message.getFrom()).thenReturn(FROM_ADDRESSES);
@@ -101,7 +101,7 @@ public class ReplyToParserTest {
     }
 
     @Test
-    public void getRecipientsToReplyAllTo_should_returnFromAndToAndCcRecipients() throws Exception {
+    public void getRecipientsToReplyAllTo_should_returnFromAndToAndCcRecipients() {
         when(message.getReplyTo()).thenReturn(EMPTY_ADDRESSES);
         when(message.getHeader(ListHeaders.LIST_POST_HEADER)).thenReturn(new String[0]);
         when(message.getFrom()).thenReturn(FROM_ADDRESSES);
@@ -115,7 +115,7 @@ public class ReplyToParserTest {
     }
 
     @Test
-    public void getRecipientsToReplyAllTo_should_excludeIdentityAddresses() throws Exception {
+    public void getRecipientsToReplyAllTo_should_excludeIdentityAddresses() {
         when(message.getReplyTo()).thenReturn(EMPTY_ADDRESSES);
         when(message.getHeader(ListHeaders.LIST_POST_HEADER)).thenReturn(new String[0]);
         when(message.getFrom()).thenReturn(EMPTY_ADDRESSES);
@@ -136,7 +136,7 @@ public class ReplyToParserTest {
     }
 
     @Test
-    public void getRecipientsToReplyAllTo_should_excludeDuplicates() throws Exception {
+    public void getRecipientsToReplyAllTo_should_excludeDuplicates() {
         when(message.getReplyTo()).thenReturn(REPLY_TO_ADDRESSES);
         when(message.getFrom()).thenReturn(arrayConcatenate(FROM_ADDRESSES, REPLY_TO_ADDRESSES, Address.class));
         when(message.getRecipients(RecipientType.TO)).thenReturn(arrayConcatenate(FROM_ADDRESSES, TO_ADDRESSES, Address.class));

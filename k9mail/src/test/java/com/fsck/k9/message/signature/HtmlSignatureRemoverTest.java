@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 
 public class HtmlSignatureRemoverTest {
     @Test
-    public void shouldStripSignatureFromK9StyleHtml() throws Exception {
+    public void shouldStripSignatureFromK9StyleHtml() {
         String html = "This is the body text" +
                 "<br>" +
                 "-- <br>" +
@@ -21,7 +21,7 @@ public class HtmlSignatureRemoverTest {
     }
 
     @Test
-    public void shouldStripSignatureFromThunderbirdStyleHtml() throws Exception {
+    public void shouldStripSignatureFromThunderbirdStyleHtml() {
         String html = "<html>\r\n" +
                 "  <head>\r\n" +
                 "    <meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\r\n" +
@@ -41,7 +41,7 @@ public class HtmlSignatureRemoverTest {
     }
 
     @Test
-    public void shouldStripSignatureBeforeBlockquoteTag() throws Exception {
+    public void shouldStripSignatureBeforeBlockquoteTag() {
         String html = "<html><head></head><body>" +
                 "<div>" +
                 "This is the body text" +
@@ -62,7 +62,7 @@ public class HtmlSignatureRemoverTest {
     }
 
     @Test
-    public void shouldNotStripSignatureInsideBlockquoteTags() throws Exception {
+    public void shouldNotStripSignatureInsideBlockquoteTags() {
         String html = "<html><head></head><body>" +
                 "<blockquote>" +
                 "This is some quoted text" +
@@ -90,7 +90,7 @@ public class HtmlSignatureRemoverTest {
     }
 
     @Test
-    public void shouldStripSignatureBetweenBlockquoteTags() throws Exception {
+    public void shouldStripSignatureBetweenBlockquoteTags() {
         String html = "<html><head></head><body>" +
                 "<blockquote>" +
                 "Some quote" +
@@ -118,7 +118,7 @@ public class HtmlSignatureRemoverTest {
     }
 
     @Test
-    public void shouldStripSignatureAfterLastBlockquoteTags() throws Exception {
+    public void shouldStripSignatureAfterLastBlockquoteTags() {
         String html = "<html><head></head><body>" +
                 "This is the body text" +
                 "<br>" +

@@ -37,21 +37,21 @@ public class MessageCreationHelper {
         return new MimeBodyPart(multipart, mimeType);
     }
 
-    public static Message createTextMessage(String mimeType, String text) throws MessagingException {
+    public static Message createTextMessage(String mimeType, String text) {
         TextBody body = new TextBody(text);
         return createMessage(mimeType, body);
     }
 
-    public static Message createMultipartMessage(String mimeType, BodyPart... parts) throws MessagingException {
+    public static Message createMultipartMessage(String mimeType, BodyPart... parts) {
         MimeMultipart body = createMultipartBody(mimeType, parts);
         return createMessage(mimeType, body);
     }
 
-    public static Message createMessage(String mimeType) throws MessagingException {
+    public static Message createMessage(String mimeType) {
         return createMessage(mimeType, null);
     }
 
-    private static Message createMessage(String mimeType, Body body) throws MessagingException {
+    private static Message createMessage(String mimeType, Body body) {
         MimeMessage message = new MimeMessage();
         message.setBody(body);
         message.setHeader(MimeHeader.HEADER_CONTENT_TYPE, mimeType);
@@ -59,7 +59,7 @@ public class MessageCreationHelper {
         return message;
     }
 
-    private static MimeMultipart createMultipartBody(String mimeType, BodyPart[] parts) throws MessagingException {
+    private static MimeMultipart createMultipartBody(String mimeType, BodyPart[] parts) {
         MimeMultipart multipart = new MimeMultipart(mimeType, "boundary");
         for (BodyPart part : parts) {
             multipart.addBodyPart(part);

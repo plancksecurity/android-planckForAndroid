@@ -42,7 +42,7 @@ public class SyncNotificationsTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         notificationManager = createFakeNotificationManager();
         builder = createFakeNotificationBuilder();
         NotificationController controller = createFakeNotificationController(notificationManager, builder);

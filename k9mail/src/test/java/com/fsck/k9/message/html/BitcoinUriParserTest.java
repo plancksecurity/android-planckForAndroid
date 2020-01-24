@@ -13,23 +13,23 @@ public class BitcoinUriParserTest {
 
 
     @Test
-    public void basicBitcoinUri() throws Exception {
+    public void basicBitcoinUri() {
         assertLinkify("bitcoin:19W6QZkx8SYPG7BBCS7odmWGRxqRph5jFU");
     }
 
     @Test
-    public void bitcoinUriWithAmount() throws Exception {
+    public void bitcoinUriWithAmount() {
         assertLinkify("bitcoin:12A1MyfXbW6RhdRAZEqofac5jCQQjwEPBu?amount=1.2");
     }
 
     @Test
-    public void bitcoinUriWithQueryParameters() throws Exception {
+    public void bitcoinUriWithQueryParameters() {
         assertLinkify("bitcoin:12A1MyfXbW6RhdRAZEqofac5jCQQjwEPBu?amount=1.2" +
                 "&message=Payment&label=Satoshi&extra=other-param");
     }
 
     @Test
-    public void uriInMiddleOfInput() throws Exception {
+    public void uriInMiddleOfInput() {
         String prefix = "prefix ";
         String uri = "bitcoin:12A1MyfXbW6RhdRAZEqofac5jCQQjwEPBu?amount=1.2";
         String text = prefix + uri;
@@ -40,17 +40,17 @@ public class BitcoinUriParserTest {
     }
 
     @Test
-    public void invalidScheme() throws Exception {
+    public void invalidScheme() {
         assertNotLinkify("bitcion:19W6QZkx8SYPG7BBCS7odmWGRxqRph5jFU");
     }
 
     @Test
-    public void invalidAddress() throws Exception {
+    public void invalidAddress() {
         assertNotLinkify("bitcoin:[invalid]");
     }
 
     @Test
-    public void invalidBitcoinUri_shouldReturnStartingPosition() throws Exception {
+    public void invalidBitcoinUri_shouldReturnStartingPosition() {
         String uri = "bitcoin:[invalid]";
 
         int newPos = linkify(uri);
@@ -59,7 +59,7 @@ public class BitcoinUriParserTest {
     }
 
     @Test
-    public void invalidBitcoinUri_shouldNotWriteToOutputBuffer() throws Exception {
+    public void invalidBitcoinUri_shouldNotWriteToOutputBuffer() {
         String uri = "bitcoin:[invalid]";
 
         linkify(uri);
@@ -68,16 +68,16 @@ public class BitcoinUriParserTest {
     }
 
 
-    int linkify(String uri) {
+    private int linkify(String uri) {
         return parser.linkifyUri(uri, 0, outputBuffer);
     }
 
-    void assertLinkify(String uri) {
+    private void assertLinkify(String uri) {
         linkify(uri);
         assertLinkOnly(uri, outputBuffer);
     }
 
-    void assertNotLinkify(String text) {
+    private void assertNotLinkify(String text) {
         int newPos = linkify(text);
         assertEquals(0, newPos);
     }

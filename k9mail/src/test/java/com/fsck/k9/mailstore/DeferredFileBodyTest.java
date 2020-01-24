@@ -33,7 +33,7 @@ public class DeferredFileBodyTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         FileFactory fileFactory = new FileFactory() {
             @Override
             public File createFile() throws IOException {
@@ -124,7 +124,7 @@ public class DeferredFileBodyTest {
     }
 
     @Test
-    public void getEncoding__shouldReturnEncoding() throws Exception {
+    public void getEncoding__shouldReturnEncoding() {
         assertEquals(TEST_ENCODING, deferredFileBody.getEncoding());
     }
 

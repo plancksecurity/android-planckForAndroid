@@ -42,7 +42,7 @@ public class LockScreenNotificationTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Context context = ApplicationProvider.getApplicationContext();
         builder = createFakeNotificationBuilder();
         publicBuilder = createFakeNotificationBuilder();

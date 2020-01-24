@@ -37,7 +37,7 @@ public class AttachmentResolverTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         attachmentInfoExtractor = mock(AttachmentInfoExtractor.class);
     }
 

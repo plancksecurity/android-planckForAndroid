@@ -33,7 +33,7 @@ public class NotificationDataTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         account = createFakeAccount();
         notificationData = new NotificationData(account);
     }

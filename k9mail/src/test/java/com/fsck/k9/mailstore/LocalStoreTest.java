@@ -22,7 +22,7 @@ public class LocalStoreTest {
     }
 
     @Test
-    public void findPartById__withRootLocalMessage() throws Exception {
+    public void findPartById__withRootLocalMessage() {
         LocalMessage searchRoot = new LocalMessage(null, "uid", null);
         searchRoot.setMessagePartId(123L);
 

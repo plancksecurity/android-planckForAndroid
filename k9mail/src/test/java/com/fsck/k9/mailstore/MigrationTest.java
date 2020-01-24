@@ -43,7 +43,7 @@ public class MigrationTest {
     File attachmentDir;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         K9.setDebug(true);
         ShadowLog.stream = System.out;
         ShadowSQLiteConnection.reset();

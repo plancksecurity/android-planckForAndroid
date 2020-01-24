@@ -12,23 +12,23 @@ public class EthereumUriParserTest {
 
 
     @Test
-    public void basicEthereumUri() throws Exception {
+    public void basicEthereumUri() {
         assertLinkify("ethereum:0xfdf1210fc262c73d0436236a0e07be419babbbc4");
     }
 
     @Test
-    public void ethereumUriWithValue() throws Exception {
+    public void ethereumUriWithValue() {
         assertLinkify("ethereum:0xfdf1210fc262c73d0436236a0e07be419babbbc4?value=42");
     }
 
     @Test
-    public void ethereumUriWithQueryParameters() throws Exception {
+    public void ethereumUriWithQueryParameters() {
         assertLinkify("ethereum:0xfdf1210fc262c73d0436236a0e07be419babbbc4?value=42" +
                 "&gas=100000&bytecode=0xa9059cbb0000000000000000000000000000000dead");
     }
 
     @Test
-    public void uriInMiddleOfInput() throws Exception {
+    public void uriInMiddleOfInput() {
         String prefix = "prefix ";
         String uri = "ethereum:0xfdf1210fc262c73d0436236a0e07be419babbbc4?value=42";
         String text = prefix + uri;
@@ -39,17 +39,17 @@ public class EthereumUriParserTest {
     }
 
     @Test
-    public void invalidScheme() throws Exception {
+    public void invalidScheme() {
         assertNotLinkify("ethereMU:0xfdf1210fc262c73d0436236a0e07be419babbbc4");
     }
 
     @Test
-    public void invalidAddress() throws Exception {
+    public void invalidAddress() {
         assertNotLinkify("ethereum:[invalid]");
     }
 
     @Test
-    public void invalidEthereumUri_shouldReturnStartingPosition() throws Exception {
+    public void invalidEthereumUri_shouldReturnStartingPosition() {
         String uri = "ethereum:[invalid]";
 
         int newPos = linkify(uri);
@@ -58,7 +58,7 @@ public class EthereumUriParserTest {
     }
 
     @Test
-    public void invalidEthereumUri_shouldNotWriteToOutputBuffer() throws Exception {
+    public void invalidEthereumUri_shouldNotWriteToOutputBuffer() {
         String uri = "ethereum:[invalid]";
 
         linkify(uri);

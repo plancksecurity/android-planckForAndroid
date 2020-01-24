@@ -64,7 +64,7 @@ public class DeviceNotificationsTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         account = createFakeAccount();
         notificationData = createFakeNotificationData(account);
 

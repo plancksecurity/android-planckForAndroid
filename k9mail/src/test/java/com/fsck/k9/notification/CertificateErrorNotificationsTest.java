@@ -43,7 +43,7 @@ public class CertificateErrorNotificationsTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         notificationManager = createFakeNotificationManager();
         builder = createFakeNotificationBuilder();
         controller = createFakeNotificationController(notificationManager, builder);

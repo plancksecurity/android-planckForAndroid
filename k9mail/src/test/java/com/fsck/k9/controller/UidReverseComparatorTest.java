@@ -24,7 +24,7 @@ public class UidReverseComparatorTest {
     }
 
     @Test
-    public void compare_withTwoNullArguments_shouldReturnZero() throws Exception {
+    public void compare_withTwoNullArguments_shouldReturnZero() {
         Message messageLeft = null;
         Message messageRight = null;
 
@@ -34,7 +34,7 @@ public class UidReverseComparatorTest {
     }
 
     @Test
-    public void compare_withNullArgumentAndMessageWithNullUid_shouldReturnZero() throws Exception {
+    public void compare_withNullArgumentAndMessageWithNullUid_shouldReturnZero() {
         Message messageLeft = null;
         Message messageRight = createMessageWithNullUid();
 
@@ -44,7 +44,7 @@ public class UidReverseComparatorTest {
     }
 
     @Test
-    public void compare_withMessageWithNullUidAndNullArgument_shouldReturnZero() throws Exception {
+    public void compare_withMessageWithNullUidAndNullArgument_shouldReturnZero() {
         Message messageLeft = createMessageWithNullUid();
         Message messageRight = null;
 
@@ -54,7 +54,7 @@ public class UidReverseComparatorTest {
     }
 
     @Test
-    public void compare_withTwoMessagesWithNullUid_shouldReturnZero() throws Exception {
+    public void compare_withTwoMessagesWithNullUid_shouldReturnZero() {
         Message messageLeft = createMessageWithNullUid();
         Message messageRight = createMessageWithNullUid();
 
@@ -64,7 +64,7 @@ public class UidReverseComparatorTest {
     }
 
     @Test
-    public void compare_withNullArgumentAndMessageWithInvalidUid_shouldReturnZero() throws Exception {
+    public void compare_withNullArgumentAndMessageWithInvalidUid_shouldReturnZero() {
         Message messageLeft = null;
         Message messageRight = createMessageWithInvalidUid();
 
@@ -74,7 +74,7 @@ public class UidReverseComparatorTest {
     }
 
     @Test
-    public void compare_withMessageWithInvalidUidAndNullArgument_shouldReturnZero() throws Exception {
+    public void compare_withMessageWithInvalidUidAndNullArgument_shouldReturnZero() {
         Message messageLeft = createMessageWithInvalidUid();
         Message messageRight = null;
 
@@ -84,7 +84,7 @@ public class UidReverseComparatorTest {
     }
 
     @Test
-    public void compare_withTwoMessagesWithInvalidUid_shouldReturnZero() throws Exception {
+    public void compare_withTwoMessagesWithInvalidUid_shouldReturnZero() {
         Message messageLeft = createMessageWithInvalidUid();
         Message messageRight = createMessageWithInvalidUid();
 
@@ -94,7 +94,7 @@ public class UidReverseComparatorTest {
     }
 
     @Test
-    public void compare_withMessageWithNullUidAndMessageWithInvalidUid_shouldReturnZero() throws Exception {
+    public void compare_withMessageWithNullUidAndMessageWithInvalidUid_shouldReturnZero() {
         Message messageLeft = createMessageWithNullUid();
         Message messageRight = createMessageWithInvalidUid();
 
@@ -104,7 +104,7 @@ public class UidReverseComparatorTest {
     }
 
     @Test
-    public void compare_withMessageWithInvalidUidAndMessageWithNullUid_shouldReturnZero() throws Exception {
+    public void compare_withMessageWithInvalidUidAndMessageWithNullUid_shouldReturnZero() {
         Message messageLeft = createMessageWithInvalidUid();
         Message messageRight = createMessageWithNullUid();
 
@@ -114,7 +114,7 @@ public class UidReverseComparatorTest {
     }
 
     @Test
-    public void compare_withLeftNullArgument_shouldReturnPositive() throws Exception {
+    public void compare_withLeftNullArgument_shouldReturnPositive() {
         Message messageLeft = null;
         Message messageRight = createMessageWithUid(1);
 
@@ -124,7 +124,7 @@ public class UidReverseComparatorTest {
     }
 
     @Test
-    public void compare_withLeftMessageWithNullUid_shouldReturnPositive() throws Exception {
+    public void compare_withLeftMessageWithNullUid_shouldReturnPositive() {
         Message messageLeft = createMessageWithNullUid();
         Message messageRight = createMessageWithUid(1);
 
@@ -134,7 +134,7 @@ public class UidReverseComparatorTest {
     }
 
     @Test
-    public void compare_withLeftMessageWithInvalidUid_shouldReturnPositive() throws Exception {
+    public void compare_withLeftMessageWithInvalidUid_shouldReturnPositive() {
         Message messageLeft = createMessageWithInvalidUid();
         Message messageRight = createMessageWithUid(1);
 
@@ -144,7 +144,7 @@ public class UidReverseComparatorTest {
     }
 
     @Test
-    public void compare_withRightNullArgument_shouldReturnNegative() throws Exception {
+    public void compare_withRightNullArgument_shouldReturnNegative() {
         Message messageLeft = createMessageWithUid(1);
         Message messageRight = null;
 
@@ -154,7 +154,7 @@ public class UidReverseComparatorTest {
     }
 
     @Test
-    public void compare_withRightMessageWithNullUid_shouldReturnNegative() throws Exception {
+    public void compare_withRightMessageWithNullUid_shouldReturnNegative() {
         Message messageLeft = createMessageWithUid(1);
         Message messageRight = createMessageWithNullUid();
 
@@ -164,7 +164,7 @@ public class UidReverseComparatorTest {
     }
 
     @Test
-    public void compare_withRightMessageWithInvalidUid_shouldReturnNegative() throws Exception {
+    public void compare_withRightMessageWithInvalidUid_shouldReturnNegative() {
         Message messageLeft = createMessageWithUid(1);
         Message messageRight = createMessageWithInvalidUid();
 
@@ -174,7 +174,7 @@ public class UidReverseComparatorTest {
     }
 
     @Test
-    public void compare_twoMessages_shouldReturnOrderByUid() throws Exception {
+    public void compare_twoMessages_shouldReturnOrderByUid() {
         Message messageSmall = createMessageWithUid(5);
         Message messageLarge = createMessageWithUid(15);
 

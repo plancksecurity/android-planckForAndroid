@@ -26,7 +26,7 @@ public class MessageHelperTest {
     private Contacts mockContacts;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Context context = ApplicationProvider.getApplicationContext();
         contacts = new Contacts(context);
         mockContacts = new Contacts(context) {
@@ -41,19 +41,19 @@ public class MessageHelperTest {
     }
 
     @Test
-    public void testToFriendlyShowsPersonalPartIfItExists() throws Exception {
+    public void testToFriendlyShowsPersonalPartIfItExists() {
         Address address = new Address("test@testor.com", "Tim Testor");
         assertEquals("Tim Testor", MessageHelper.toFriendly(address, contacts));
     }
 
     @Test
-    public void testToFriendlyShowsEmailPartIfNoPersonalPartExists() throws Exception {
+    public void testToFriendlyShowsEmailPartIfNoPersonalPartExists() {
         Address address = new Address("test@testor.com");
         assertEquals("test@testor.com", MessageHelper.toFriendly(address, contacts));
     }
 
     @Test
-    public void testToFriendlyArray() throws Exception {
+    public void testToFriendlyArray() {
         Address address1 = new Address("test@testor.com", "Tim Testor");
         Address address2 = new Address("foo@bar.com", "Foo Bar");
         Address[] addresses = new Address[] { address1, address2 };
@@ -61,13 +61,13 @@ public class MessageHelperTest {
     }
 
     @Test
-    public void testToFriendlyWithContactLookup() throws Exception {
+    public void testToFriendlyWithContactLookup() {
         Address address = new Address("test@testor.com");
         assertEquals("Tim Testor", MessageHelper.toFriendly(address, mockContacts).toString());
     }
 
     @Test
-    public void testToFriendlyWithChangeContactColor() throws Exception {
+    public void testToFriendlyWithChangeContactColor() {
         Address address = new Address("test@testor.com");
         CharSequence friendly = MessageHelper.toFriendly(address, mockContacts, true, true, Color.RED);
         assertTrue(friendly instanceof SpannableString);
@@ -75,7 +75,7 @@ public class MessageHelperTest {
     }
 
     @Test
-    public void testToFriendlyWithoutCorrespondentNames() throws Exception {
+    public void testToFriendlyWithoutCorrespondentNames() {
         Address address = new Address("test@testor.com", "Tim Testor");
         CharSequence friendly = MessageHelper.toFriendly(address, mockContacts, false, false, 0);
         assertEquals("test@testor.com", friendly.toString());

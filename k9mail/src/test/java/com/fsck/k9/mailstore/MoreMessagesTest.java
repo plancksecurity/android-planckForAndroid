@@ -13,17 +13,17 @@ public class MoreMessagesTest {
 
 
     @Test
-    public void UNKNOWN_getDatabaseName_shouldReturnUnknown() throws Exception {
+    public void UNKNOWN_getDatabaseName_shouldReturnUnknown() {
         assertEquals(ERROR_MESSAGE, "unknown", MoreMessages.UNKNOWN.getDatabaseName());
     }
 
     @Test
-    public void TRUE_getDatabaseName_shouldReturnTrue() throws Exception {
+    public void TRUE_getDatabaseName_shouldReturnTrue() {
         assertEquals(ERROR_MESSAGE, "true", MoreMessages.TRUE.getDatabaseName());
     }
 
     @Test
-    public void FALSE_getDatabaseName_shouldReturnFalse() throws Exception {
+    public void FALSE_getDatabaseName_shouldReturnFalse() {
         assertEquals(ERROR_MESSAGE, "false", MoreMessages.FALSE.getDatabaseName());
     }
 }

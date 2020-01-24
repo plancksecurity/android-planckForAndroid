@@ -24,13 +24,13 @@ public class KeysyncManagerPresenterTest {
     @Mock PEpProvider provider;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         presenter = new KeysyncManagerPresenter();
     }
 
     @Test
-    public void shouldGetMasterKeysInfoWhenSetupMasterKeys() throws Exception {
+    public void shouldGetMasterKeysInfoWhenSetupMasterKeys() {
         setupResultCallback();
 
         presenter.initialize(view, provider, accounts());
@@ -39,7 +39,7 @@ public class KeysyncManagerPresenterTest {
     }
 
     @Test
-    public void shouldShowErrorWhenEngineReturnsError() throws Exception {
+    public void shouldShowErrorWhenEngineReturnsError() {
         setupErrorCallback();
 
         presenter.initialize(view, provider, accounts());

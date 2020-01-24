@@ -64,7 +64,7 @@ public class RecipientPresenterTest extends K9RobolectricTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Context context = ApplicationProvider.getApplicationContext();
 
         recipientMvpView = mock(RecipientMvpView.class);

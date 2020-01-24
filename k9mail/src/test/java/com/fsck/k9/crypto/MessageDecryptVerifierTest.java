@@ -148,7 +148,7 @@ public class MessageDecryptVerifierTest {
     }
 
     @Test
-    public void findEncryptedPartsShouldReturnEmptyListForEmptyMessage() throws Exception {
+    public void findEncryptedPartsShouldReturnEmptyListForEmptyMessage() {
         MimeMessage emptyMessage = new MimeMessage();
 
         List<Part> encryptedParts = MessageDecryptVerifier.findEncryptedParts(emptyMessage);
@@ -157,7 +157,7 @@ public class MessageDecryptVerifierTest {
     }
 
     @Test
-    public void findEncryptedPartsShouldReturnEmptyListForSimpleMessage() throws Exception {
+    public void findEncryptedPartsShouldReturnEmptyListForSimpleMessage() {
         MimeMessage message = new MimeMessage();
         message.setBody(new TextBody("message text"));
 
@@ -387,7 +387,7 @@ public class MessageDecryptVerifierTest {
     }
 
     @Test
-    public void isPgpInlineMethods__withPgpInlineData__shouldReturnTrue() throws Exception {
+    public void isPgpInlineMethods__withPgpInlineData__shouldReturnTrue() {
         String pgpInlineData = "-----BEGIN PGP MESSAGE-----\n" +
                 "Header: Value\n" +
                 "\n" +
@@ -401,7 +401,7 @@ public class MessageDecryptVerifierTest {
     }
 
     @Test
-    public void isPgpInlineMethods__withEncryptedDataAndLeadingWhitespace__shouldReturnTrue() throws Exception {
+    public void isPgpInlineMethods__withEncryptedDataAndLeadingWhitespace__shouldReturnTrue() {
         String pgpInlineData = "\n   \n \n" +
                 "-----BEGIN PGP MESSAGE-----\n" +
                 "Header: Value\n" +
@@ -417,7 +417,7 @@ public class MessageDecryptVerifierTest {
     }
 
     @Test
-    public void isPgpInlineMethods__withEncryptedDataAndLeadingGarbage__shouldReturnFalse() throws Exception {
+    public void isPgpInlineMethods__withEncryptedDataAndLeadingGarbage__shouldReturnFalse() {
         String pgpInlineData = "garbage!" +
                 "-----BEGIN PGP MESSAGE-----\n" +
                 "Header: Value\n" +
@@ -433,7 +433,7 @@ public class MessageDecryptVerifierTest {
     }
 
     @Test
-    public void isPartPgpInlineEncryptedOrSigned__withSignedData__shouldReturnTrue() throws Exception {
+    public void isPartPgpInlineEncryptedOrSigned__withSignedData__shouldReturnTrue() {
         String pgpInlineData = "-----BEGIN PGP SIGNED MESSAGE-----\n" +
                 "Header: Value\n" +
                 "\n" +
@@ -450,7 +450,7 @@ public class MessageDecryptVerifierTest {
     }
 
     @Test
-    public void isPartPgpInlineEncrypted__withSignedData__shouldReturnFalse() throws Exception {
+    public void isPartPgpInlineEncrypted__withSignedData__shouldReturnFalse() {
         String pgpInlineData = "-----BEGIN PGP SIGNED MESSAGE-----\n" +
                 "Header: Value\n" +
                 "\n" +
@@ -499,8 +499,7 @@ public class MessageDecryptVerifierTest {
     }
 
     //TODO: Find a cleaner way to do this
-    private static void setContentTypeWithProtocol(Part part, String mimeType, String protocol)
-            throws MessagingException {
+    private static void setContentTypeWithProtocol(Part part, String mimeType, String protocol) {
         part.setHeader(MimeHeader.HEADER_CONTENT_TYPE, mimeType + "; protocol=\"" + protocol + "\"");
     }
 }

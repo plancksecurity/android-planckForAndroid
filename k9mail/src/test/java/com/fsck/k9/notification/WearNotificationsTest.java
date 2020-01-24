@@ -49,7 +49,7 @@ public class WearNotificationsTest {
     private Notification notification;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         account = createAccount();
         notification = createNotification();
         builder = createNotificationBuilder(notification);

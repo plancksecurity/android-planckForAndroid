@@ -46,7 +46,7 @@ public class NotificationContentCreatorTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         contentCreator = createNotificationContentCreator();
         messageReference = createMessageReference();
         account = createFakeAccount();

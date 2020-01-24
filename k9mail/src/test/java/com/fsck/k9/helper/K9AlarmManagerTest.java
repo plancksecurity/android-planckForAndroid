@@ -30,13 +30,13 @@ public class K9AlarmManagerTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         alarmManager = new K9AlarmManager(systemAlarmManager, dozeChecker);
     }
 
     @Test
-    public void set_withoutDozeSupport_shouldCallSetOnAlarmManager() throws Exception {
+    public void set_withoutDozeSupport_shouldCallSetOnAlarmManager() {
         configureDozeSupport(false);
 
         alarmManager.set(TIMER_TYPE, TIMEOUT, PENDING_INTENT);
@@ -45,7 +45,7 @@ public class K9AlarmManagerTest {
     }
 
     @Test
-    public void set_withDozeSupportAndNotWhiteListed_shouldCallSetOnAlarmManager() throws Exception {
+    public void set_withDozeSupportAndNotWhiteListed_shouldCallSetOnAlarmManager() {
         configureDozeSupport(true);
 
         alarmManager.set(TIMER_TYPE, TIMEOUT, PENDING_INTENT);
@@ -54,7 +54,7 @@ public class K9AlarmManagerTest {
     }
 
     @Test
-    public void set_withDozeSupportAndWhiteListed_shouldCallSetAndAllowWhileIdleOnAlarmManager() throws Exception {
+    public void set_withDozeSupportAndWhiteListed_shouldCallSetAndAllowWhileIdleOnAlarmManager() {
         configureDozeSupport(true);
         addAppToBatteryOptimizationWhitelist();
 
@@ -64,7 +64,7 @@ public class K9AlarmManagerTest {
     }
 
     @Test
-    public void cancel_shouldCallCancelOnAlarmManager() throws Exception {
+    public void cancel_shouldCallCancelOnAlarmManager() {
         configureDozeSupport(true);
         addAppToBatteryOptimizationWhitelist();
 

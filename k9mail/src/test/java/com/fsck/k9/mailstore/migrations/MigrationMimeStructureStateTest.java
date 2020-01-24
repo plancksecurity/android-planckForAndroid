@@ -14,14 +14,14 @@ import org.junit.runner.RunWith;
 public class MigrationMimeStructureStateTest {
 
     @Test(expected = IllegalStateException.class)
-    public void init_popParent_shouldCrash() throws Exception {
+    public void init_popParent_shouldCrash() {
         MimeStructureState state = MimeStructureState.getNewRootState();
 
         state.popParent();
     }
 
     @Test(expected = IllegalStateException.class)
-    public void init_apply_apply_shouldCrash() throws Exception {
+    public void init_apply_apply_shouldCrash() {
         MimeStructureState state = MimeStructureState.getNewRootState();
 
         ContentValues cv = new ContentValues();
@@ -31,21 +31,21 @@ public class MigrationMimeStructureStateTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void init_nextchild_shouldCrash() throws Exception {
+    public void init_nextchild_shouldCrash() {
         MimeStructureState state = MimeStructureState.getNewRootState();
 
         state.nextChild(1);
     }
 
     @Test(expected = IllegalStateException.class)
-    public void init_nextmulti_shouldCrash() throws Exception {
+    public void init_nextmulti_shouldCrash() {
         MimeStructureState state = MimeStructureState.getNewRootState();
 
         state.nextMultipartChild(1);
     }
 
     @Test(expected = IllegalStateException.class)
-    public void init_apply_nextmulti_nextchild_shouldCrash() throws Exception {
+    public void init_apply_nextmulti_nextchild_shouldCrash() {
         MimeStructureState state = MimeStructureState.getNewRootState();
 
         ContentValues cv = new ContentValues();
@@ -56,7 +56,7 @@ public class MigrationMimeStructureStateTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void init_apply_nextchild_nextmulti_shouldCrash() throws Exception {
+    public void init_apply_nextchild_nextmulti_shouldCrash() {
         MimeStructureState state = MimeStructureState.getNewRootState();
 
         ContentValues cv = new ContentValues();
@@ -67,7 +67,7 @@ public class MigrationMimeStructureStateTest {
     }
 
     @Test
-    public void init_apply_shouldYieldStartValues() throws Exception {
+    public void init_apply_shouldYieldStartValues() {
         MimeStructureState state = MimeStructureState.getNewRootState();
 
         ContentValues cv = new ContentValues();
@@ -79,7 +79,7 @@ public class MigrationMimeStructureStateTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void init_apply_nextchild_apply_shouldCrash() throws Exception {
+    public void init_apply_nextchild_apply_shouldCrash() {
         MimeStructureState state = MimeStructureState.getNewRootState();
 
         ContentValues cv = new ContentValues();
@@ -91,7 +91,7 @@ public class MigrationMimeStructureStateTest {
     }
 
     @Test
-    public void init_apply_nextmulti_apply_shouldYieldMultipartChildValues() throws Exception {
+    public void init_apply_nextmulti_apply_shouldYieldMultipartChildValues() {
         MimeStructureState state = MimeStructureState.getNewRootState();
 
         ContentValues cv = new ContentValues();
@@ -107,7 +107,7 @@ public class MigrationMimeStructureStateTest {
     }
 
     @Test
-    public void init_apply_nextmulti_apply_nextmulti_apply_shouldYieldSecondMultipartChildValues() throws Exception {
+    public void init_apply_nextmulti_apply_nextmulti_apply_shouldYieldSecondMultipartChildValues() {
         MimeStructureState state = MimeStructureState.getNewRootState();
 
         ContentValues cv = new ContentValues();
@@ -126,7 +126,7 @@ public class MigrationMimeStructureStateTest {
     }
 
     @Test
-    public void init_apply_nextmulti_apply_pop_apply_shouldYieldFirstParentIdValues() throws Exception {
+    public void init_apply_nextmulti_apply_pop_apply_shouldYieldFirstParentIdValues() {
         MimeStructureState state = MimeStructureState.getNewRootState();
 
         ContentValues cv = new ContentValues();

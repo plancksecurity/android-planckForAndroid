@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 
 public class TextSignatureRemoverTest {
     @Test
-    public void shouldStripSignature() throws Exception {
+    public void shouldStripSignature() {
         String text = "This is the body text\r\n" +
                 "\r\n" +
                 "-- \r\n" +

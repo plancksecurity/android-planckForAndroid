@@ -160,7 +160,7 @@ public class HtmlSanitizerTest {
     }
 
     @Test
-    public void shouldKeepHrTags() throws Exception {
+    public void shouldKeepHrTags() {
         String html = "<html><head></head><body>one<hr>two<hr />three</body></html>";
 
         Document result = htmlSanitizer.sanitize(html);

@@ -59,7 +59,7 @@ public class MailToTest {
     }
 
     @Test
-    public void parse_withNullArgument_shouldThrow() throws Exception {
+    public void parse_withNullArgument_shouldThrow() {
         exception.expect(NullPointerException.class);
         exception.expectMessage("Argument 'uri' must not be null");
 
@@ -67,7 +67,7 @@ public class MailToTest {
     }
 
     @Test
-    public void parse_withoutMailtoUri_shouldThrow() throws Exception {
+    public void parse_withoutMailtoUri_shouldThrow() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Not a mailto scheme");
 

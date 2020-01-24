@@ -191,17 +191,17 @@ public class MessageReferenceTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void constructor_withNullAccount_shouldThrow() throws Exception {
+    public void constructor_withNullAccount_shouldThrow() {
         createMessageReference(null, "folder", "uid");
     }
 
     @Test(expected = NullPointerException.class)
-    public void constructor_withNullFolder_shouldThrow() throws Exception {
+    public void constructor_withNullFolder_shouldThrow() {
         createMessageReference("account", null, "uid");
     }
 
     @Test(expected = NullPointerException.class)
-    public void constructor_withNullUid_shouldThrow() throws Exception {
+    public void constructor_withNullUid_shouldThrow() {
         createMessageReference("account", "folder", null);
     }
 

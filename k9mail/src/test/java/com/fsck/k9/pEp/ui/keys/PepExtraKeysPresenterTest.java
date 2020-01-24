@@ -21,20 +21,20 @@ public class PepExtraKeysPresenterTest {
     @Mock PEpProvider provider;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         presenter = new PepExtraKeysPresenter();
     }
 
     @Test
-    public void shouldGetMasterKeysInfoWhenSetupMasterKeys() throws Exception {
+    public void shouldGetMasterKeysInfoWhenSetupMasterKeys() {
         presenter.initialize(view, provider, keys());
 
         verify(provider).getMasterKeysInfo();
     }
 
     @Test
-    public void shouldShowKeysInfoWhenSetupMasterKeys() throws Exception {
+    public void shouldShowKeysInfoWhenSetupMasterKeys() {
         presenter.initialize(view, provider, keys());
 
         verify(view).showKeys(any());

@@ -20,7 +20,7 @@ public class PreviewTextExtractorTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         previewTextExtractor = new PreviewTextExtractor();
     }
 

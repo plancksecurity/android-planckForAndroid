@@ -40,7 +40,7 @@ public class BaseNotificationsTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         notifications = createTestNotifications();
     }
 

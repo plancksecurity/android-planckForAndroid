@@ -45,7 +45,7 @@ public class AttachmentInfoExtractorTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         context = ApplicationProvider.getApplicationContext();
         attachmentInfoExtractor = new AttachmentInfoExtractor(context);
     }
