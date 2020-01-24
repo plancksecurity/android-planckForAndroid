@@ -61,7 +61,7 @@ import org.openintents.openpgp.OpenPgpDecryptionResult;
  * will typically load by starting the decode message loader, retrieving the
  * already cached LocalMessage. This message will be passed to the retained
  * CryptoMessageHelper instance, returning the already cached
- * MessageCryptoAnnotations. These two objects will be checked against the
+ * {@link MessageCryptoAnnotations}. These two objects will be checked against the
  * retained DecodeMessageLoader, returning the final result. At each
  * intermediate step, the input of the respective loaders will be checked for
  * consistency, reloading if there is a mismatch.

@@ -2,7 +2,6 @@ package com.fsck.k9.mailstore;
 
 import android.app.Application;
 
-import androidx.annotation.NonNull;
 import androidx.test.core.app.ApplicationProvider;
 
 import com.fsck.k9.GlobalsHelper;
@@ -25,6 +24,7 @@ import com.fsck.k9.mail.internet.Viewable.MessageHeader;
 import com.fsck.k9.mailstore.MessageViewInfoExtractor.ViewableExtractedText;
 import com.fsck.k9.message.extractors.AttachmentInfoExtractor;
 import com.fsck.k9.message.html.HtmlProcessor;
+import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -395,7 +395,7 @@ public class MessageViewInfoExtractorTest {
         MimeBodyPart replacementPart = bodypart("text/plain", "replacement text");
         CryptoResultAnnotation annotation = CryptoResultAnnotation.createOpenPgpResultAnnotation(
                 null, null, null, null, replacementPart, false);
-        MessageCryptoAnnotations messageCryptoAnnotations = createAnnotations(message, annotation);
+        MessageCryptoAnnotations messageCryptoAnnotations = new MessageCryptoAnnotations(message, annotation);
 
 
         MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, messageCryptoAnnotations,
@@ -423,11 +423,10 @@ public class MessageViewInfoExtractorTest {
         ));
         CryptoResultAnnotation annotation = CryptoResultAnnotation.createOpenPgpResultAnnotation(
                 null, null, null, null, null, false);
-        MessageCryptoAnnotations messageCryptoAnnotations = createAnnotations(signedPart, annotation);
+        MessageCryptoAnnotations messageCryptoAnnotations = new MessageCryptoAnnotations(signedPart, annotation);
 
 
-        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, messageCryptoAnnotations,
-                false);
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, messageCryptoAnnotations, false);
 
 
         assertEquals("<pre class=\"k9mail\">text</pre>", messageViewInfo.text);
@@ -450,14 +449,13 @@ public class MessageViewInfoExtractorTest {
         ));
         CryptoResultAnnotation annotation = CryptoResultAnnotation.createOpenPgpResultAnnotation(
                 null, null, null, null, null, false);
-        MessageCryptoAnnotations messageCryptoAnnotations = createAnnotations(signedPart, annotation);
+        MessageCryptoAnnotations messageCryptoAnnotations = new MessageCryptoAnnotations(signedPart, annotation);
 
         AttachmentViewInfo attachmentViewInfo = mock(AttachmentViewInfo.class);
         setupAttachmentInfoForPart(extraAttachment, attachmentViewInfo);
 
 
-        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, messageCryptoAnnotations,
-                false);
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, messageCryptoAnnotations, false);
 
 
         assertEquals("<pre class=\"k9mail\">text</pre>", messageViewInfo.text);
@@ -475,8 +473,7 @@ public class MessageViewInfoExtractorTest {
                 )
         );
 
-        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, null,
-                false);
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, null, false);
 
         assertEquals(CryptoResultAnnotation.CryptoError.OPENPGP_ENCRYPTED_NO_PROVIDER, messageViewInfo.cryptoResultAnnotation.getErrorType());
         assertNull(messageViewInfo.text);
@@ -493,8 +490,7 @@ public class MessageViewInfoExtractorTest {
                 )
         );
 
-        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, null,
-                false);
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, null, false);
 
         assertEquals("<pre class=\"k9mail\">text</pre>", messageViewInfo.text);
         assertNull(messageViewInfo.cryptoResultAnnotation);
@@ -517,8 +513,7 @@ public class MessageViewInfoExtractorTest {
         AttachmentViewInfo mock = mock(AttachmentViewInfo.class);
         setupAttachmentInfoForPart(extraAttachment, mock);
 
-        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, null,
-                false);
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, null, false);
 
         assertEquals("<pre class=\"k9mail\">text</pre>", messageViewInfo.text);
         assertNull(messageViewInfo.cryptoResultAnnotation);
@@ -529,13 +524,6 @@ public class MessageViewInfoExtractorTest {
     private void setupAttachmentInfoForPart(BodyPart extraAttachment, AttachmentViewInfo attachmentViewInfo)
             throws MessagingException {
         doReturn(attachmentViewInfo).when(attachmentInfoExtractor).extractAttachmentInfo(extraAttachment);
-    }
-
-    @NonNull
-    private MessageCryptoAnnotations createAnnotations(Part part, CryptoResultAnnotation annotation) {
-        MessageCryptoAnnotations messageCryptoAnnotations = new MessageCryptoAnnotations();
-        messageCryptoAnnotations.put(part, annotation);
-        return messageCryptoAnnotations;
     }
 
     private HtmlProcessor createFakeHtmlProcessor() {

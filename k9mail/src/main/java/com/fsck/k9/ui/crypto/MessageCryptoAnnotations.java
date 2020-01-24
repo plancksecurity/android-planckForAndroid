@@ -1,20 +1,27 @@
 package com.fsck.k9.ui.crypto;
 
 
-import java.util.HashMap;
-
+import androidx.annotation.VisibleForTesting;
 
 import com.fsck.k9.mail.Part;
 import com.fsck.k9.mailstore.CryptoResultAnnotation;
+
+import java.util.HashMap;
 
 
 public class MessageCryptoAnnotations {
     private HashMap<Part, CryptoResultAnnotation> annotations = new HashMap<>();
 
+    @VisibleForTesting
     MessageCryptoAnnotations() {
         // Package-private constructor
     }
 
+    public MessageCryptoAnnotations(Part part, CryptoResultAnnotation annotation){
+        annotations.put(part, annotation);
+    }
+
+    @VisibleForTesting
     void put(Part part, CryptoResultAnnotation annotation) {
         annotations.put(part, annotation);
     }
