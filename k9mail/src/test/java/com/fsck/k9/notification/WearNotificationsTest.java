@@ -317,7 +317,7 @@ public class WearNotificationsTest {
         private String title;
         private PendingIntent pendingIntent;
 
-        public ActionMatcher(int icon, String title, PendingIntent pendingIntent) {
+        ActionMatcher(int icon, String title, PendingIntent pendingIntent) {
             this.icon = icon;
             this.title = title;
             this.pendingIntent = pendingIntent;
@@ -343,7 +343,7 @@ public class WearNotificationsTest {
     static class NumberOfActionsMatcher implements ArgumentMatcher<WearableExtender> {
         private final int expectedNumberOfActions;
 
-        public NumberOfActionsMatcher(int expectedNumberOfActions) {
+        NumberOfActionsMatcher(int expectedNumberOfActions) {
             this.expectedNumberOfActions = expectedNumberOfActions;
         }
 
@@ -360,8 +360,8 @@ public class WearNotificationsTest {
     static class TestWearNotifications extends WearNotifications {
         private final MessagingController messagingController;
 
-        public TestWearNotifications(NotificationController controller, NotificationActionCreator actionCreator,
-                                     MessagingController messagingController) {
+        TestWearNotifications(NotificationController controller, NotificationActionCreator actionCreator,
+                              MessagingController messagingController) {
             super(controller, actionCreator);
             this.messagingController = messagingController;
         }

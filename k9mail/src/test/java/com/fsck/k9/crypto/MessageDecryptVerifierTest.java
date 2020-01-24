@@ -466,13 +466,13 @@ public class MessageDecryptVerifierTest {
         assertFalse(MessageDecryptVerifier.isPartPgpInlineEncrypted(message));
     }
 
-    MimeMessage messageFromBody(BodyPart bodyPart) throws MessagingException {
+    private MimeMessage messageFromBody(BodyPart bodyPart) throws MessagingException {
         MimeMessage message = new MimeMessage();
         MimeMessageHelper.setBody(message, bodyPart.getBody());
         return message;
     }
 
-    MimeBodyPart multipart(String type, BodyPart... subParts) throws MessagingException {
+    private MimeBodyPart multipart(String type, BodyPart... subParts) throws MessagingException {
         MimeMultipart multiPart = MimeMultipart.newInstance();
         multiPart.setSubType(type);
         for (BodyPart subPart : subParts) {
@@ -481,11 +481,11 @@ public class MessageDecryptVerifierTest {
         return new MimeBodyPart(multiPart);
     }
 
-    BodyPart bodypart(String type) throws MessagingException {
+    private BodyPart bodypart(String type) throws MessagingException {
         return new MimeBodyPart(null, type);
     }
 
-    BodyPart bodypart(String type, String text) throws MessagingException {
+    private BodyPart bodypart(String type, String text) throws MessagingException {
         TextBody textBody = new TextBody(text);
         return new MimeBodyPart(textBody, type);
     }

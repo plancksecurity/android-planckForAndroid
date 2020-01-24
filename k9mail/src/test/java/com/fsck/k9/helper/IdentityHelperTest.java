@@ -128,7 +128,7 @@ public class IdentityHelperTest {
 
     static class DummyAccount extends Account {
 
-        protected DummyAccount(Context context) {
+        DummyAccount(Context context) {
             super(context);
         }
     }

@@ -133,7 +133,7 @@ public class CertificateErrorNotificationsTest {
 
 
     class TestCertificateErrorNotifications extends CertificateErrorNotifications {
-        public TestCertificateErrorNotifications() {
+        TestCertificateErrorNotifications() {
             super(controller);
         }
 

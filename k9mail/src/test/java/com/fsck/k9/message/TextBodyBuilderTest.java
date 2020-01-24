@@ -295,14 +295,14 @@ public class TextBodyBuilderTest {
 
     static class TestingTextBodyBuilder extends TextBodyBuilder {
 
-        public TestingTextBodyBuilder(boolean includeQuotedText,
-                                      boolean isDraft,
-                                      QuoteStyle quoteStyle,
-                                      boolean replyAfterQuote,
-                                      boolean signatureBeforeQuotedText,
-                                      boolean useSignature,
-                                      String messageText,
-                                      String signatureText) {
+        TestingTextBodyBuilder(boolean includeQuotedText,
+                               boolean isDraft,
+                               QuoteStyle quoteStyle,
+                               boolean replyAfterQuote,
+                               boolean signatureBeforeQuotedText,
+                               boolean useSignature,
+                               String messageText,
+                               String signatureText) {
             super(messageText);
 
             includeQuotedText = (isDraft || includeQuotedText);

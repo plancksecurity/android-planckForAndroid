@@ -2,7 +2,7 @@ package com.fsck.k9.mailstore;
 
 
 //@RunWith(K9RobolectricTestRunner.class)
-public class MessageViewInfoExtractorTest {
+class MessageViewInfoExtractorTest {
 //    public static final String BODY_TEXT = "K-9 Mail rocks :>";
 //    public static final String BODY_TEXT_HTML = "K-9 Mail rocks :&gt;";
 //    public static final String BODY_TEXT_FLOWED = "K-9 Mail rocks :> \r\nflowed line\r\nnot flowed line";

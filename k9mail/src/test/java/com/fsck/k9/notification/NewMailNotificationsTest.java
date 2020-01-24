@@ -363,7 +363,7 @@ public class NewMailNotificationsTest {
 
     static class TestNewMailNotifications extends NewMailNotifications {
 
-        public final NotificationData notificationData;
+        final NotificationData notificationData;
 
         TestNewMailNotifications(NotificationController controller, NotificationContentCreator contentCreator,
                 DeviceNotifications deviceNotifications, WearNotifications wearNotifications) {

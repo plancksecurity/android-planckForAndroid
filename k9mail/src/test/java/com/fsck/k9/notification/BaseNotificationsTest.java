@@ -137,7 +137,7 @@ public class BaseNotificationsTest {
 
         BigTextStyle bigTextStyle;
 
-        protected TestNotifications(NotificationController controller, NotificationActionCreator actionCreator) {
+        TestNotifications(NotificationController controller, NotificationActionCreator actionCreator) {
             super(controller, actionCreator);
             bigTextStyle = mock(BigTextStyle.class);
         }

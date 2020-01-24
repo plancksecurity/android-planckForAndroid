@@ -133,7 +133,7 @@ public class AuthenticationErrorNotificationsTest {
 
 
     class TestAuthenticationErrorNotifications extends AuthenticationErrorNotifications {
-        public TestAuthenticationErrorNotifications() {
+        TestAuthenticationErrorNotifications() {
             super(controller);
         }
 

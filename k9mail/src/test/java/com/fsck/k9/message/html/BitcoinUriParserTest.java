@@ -8,8 +8,8 @@ import static org.junit.Assert.assertEquals;
 
 
 public class BitcoinUriParserTest {
-    BitcoinUriParser parser = new BitcoinUriParser();
-    StringBuffer outputBuffer = new StringBuffer();
+    private final BitcoinUriParser parser = new BitcoinUriParser();
+    private final StringBuffer outputBuffer = new StringBuffer();
 
 
     @Test

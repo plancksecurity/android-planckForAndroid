@@ -38,9 +38,9 @@ import java.util.Collections;
 @RunWith(K9RobolectricTestRunner.class)
 public class MigrationTest {
 
-    Account account;
-    File databaseFile;
-    File attachmentDir;
+    private Account account;
+    private File databaseFile;
+    private File attachmentDir;
 
     @Before
     public void setUp() {

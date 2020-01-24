@@ -31,7 +31,7 @@ public class ReplyToParserTest {
     private static final Address[] TO_ADDRESSES = Address.parse("to1@example.com, to2@example.com");
     private static final Address[] CC_ADDRESSES = Address.parse("cc1@example.com, cc2@example.com");
     private static final String[] LIST_POST_HEADER_VALUES = new String[] { "<mailto:listPost@example.com>" };
-    public static final Address[] EMPTY_ADDRESSES = new Address[0];
+    private static final Address[] EMPTY_ADDRESSES = new Address[0];
 
 
     private ReplyToParser replyToParser;
@@ -153,13 +153,13 @@ public class ReplyToParserTest {
         assertArrayEquals(CC_ADDRESSES, recipientsToReplyAllTo.cc);
     }
 
-    public <T> void assertArrayContainsAll(T[] expecteds, T[] actual) {
+    private <T> void assertArrayContainsAll(T[] expecteds, T[] actual) {
         for (T expected : expecteds) {
             assertTrue("Element must be in array (" + expected + ")", Utility.arrayContains(actual, expected));
         }
     }
 
-    public <T> T[] arrayConcatenate(T[] first, T[] second, Class<T> cls) {
+    private <T> T[] arrayConcatenate(T[] first, T[] second, Class<T> cls) {
         // noinspection unchecked
         T[] result = (T[]) Array.newInstance(cls, first.length + second.length);
 
@@ -169,7 +169,7 @@ public class ReplyToParserTest {
         return result;
     }
 
-    public <T> T[] arrayExcept(T[] in, T except) {
+    private <T> T[] arrayExcept(T[] in, T except) {
         ArrayList<T> result = new ArrayList<>();
         for (T element : in) {
             if (!element.equals(except)) {

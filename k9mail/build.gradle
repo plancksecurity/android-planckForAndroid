@@ -159,9 +159,9 @@ android {
         setProperty("archivesBaseName", "$buildConfig.versionName-$versionCode")
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]
 
-     //   testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testApplicationId "com.fsck.k9.pEp.ui.activities.test"
-        testInstrumentationRunner "com.fsck.k9.pEp.ui.activities.runner.CucumberTestRunner"
+      //  testInstrumentationRunner "com.fsck.k9.pEp.ui.activities.runner.CucumberTestRunner"
 
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true

@@ -22,10 +22,10 @@ import static org.junit.Assert.assertSame;
 
 
 public class DeferredFileBodyTest {
-    public static final String TEST_ENCODING = "test-encoding";
-    public static final byte[] TEST_DATA_SHORT = "test data".getBytes();
-    public static final byte[] TEST_DATA_LONG = "test data long enough to be file backed".getBytes();
-    public static final int TEST_THRESHOLD = 15;
+    private static final String TEST_ENCODING = "test-encoding";
+    private static final byte[] TEST_DATA_SHORT = "test data".getBytes();
+    private static final byte[] TEST_DATA_LONG = "test data long enough to be file backed".getBytes();
+    private static final int TEST_THRESHOLD = 15;
 
 
     private File createdFile;
