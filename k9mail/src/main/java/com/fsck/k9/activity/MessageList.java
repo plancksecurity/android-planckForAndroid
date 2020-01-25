@@ -1475,7 +1475,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void initializeActionBar() {
-        setUpToolbar(true, v -> setDrawerEnabled(true));
+        if(!isThreadDisplayed) {
+            setUpToolbar(true, v -> setDrawerEnabled(true));
+        }
         customView = getToolbar().findViewById(R.id.actionbar_custom);
         mActionBarMessageList = customView.findViewById(R.id.actionbar_message_list);
         mActionBarMessageView = customView.findViewById(R.id.actionbar_message_view);
@@ -2055,6 +2057,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 menu.findItem(R.id.send_messages).setVisible(mMessageListFragment.isOutbox());
                 menu.findItem(R.id.show_folder_list).setVisible(true);
                 setDrawerEnabled(true);
+            }
+            if(isThreadDisplayed) {
+                setDrawerEnabled(false);
             }
 
             menu.findItem(R.id.check_mail).setVisible(mMessageListFragment.isCheckMailSupported());
