@@ -747,7 +747,9 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
         senderAboveSubject = K9.messageListSenderAboveSubject();
         if (!loaderJustInitialized) {
-            restartLoader();
+            if(accountExists()) {
+                restartLoader();
+            }
         } else {
             loaderJustInitialized = false;
         }
@@ -791,6 +793,10 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         } else {
             fab.show();
         }
+    }
+
+    private boolean accountExists() {
+        return preferences.getAccounts().contains(account);
     }
 
     private void restartLoader() {
