@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils.TruncateAt;
 import android.text.TextWatcher;
 import android.text.format.DateUtils;
@@ -687,12 +688,17 @@ public class FolderList extends K9ListActivity {
             }
         });
 
-        folderSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
+        folderMenuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                return true;
+            }
 
             @Override
-            public boolean onClose() {
+            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                folderSearchView.setInputType(InputType.TYPE_NULL);
                 getToolbar().setTitle(R.string.folders_title);
-                return false;
+                return true;
             }
         });
     }
