@@ -1796,7 +1796,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             }
             case R.id.search: {
                 PePUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
-                setDrawerEnabled(false);
+                setDrawerEnabled(isAndroidLollipop());
                 showSearchView();
                 return true;
             }
