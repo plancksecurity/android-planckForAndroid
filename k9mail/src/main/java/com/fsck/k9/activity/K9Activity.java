@@ -192,6 +192,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
                 toolbarSearchContainer.setVisibility(View.VISIBLE);
                 toolbar.setVisibility(View.GONE);
                 setFocusOnKeyboard();
+                searchInput.setError(null);
             }
         }
     }
@@ -230,6 +231,9 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
                 if (!searchedText.trim().isEmpty()) {
                     search(searchInput.getText().toString());
                     return true;
+                }
+                else {
+                    searchInput.setError(getString(R.string.search_empty_error));
                 }
             }
         }
