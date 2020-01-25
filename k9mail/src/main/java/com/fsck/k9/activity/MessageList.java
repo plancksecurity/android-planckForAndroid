@@ -636,12 +636,16 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     private void changeAccount(View fromView, Account accountClicked) {
         fromView.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.scale_up));
-        mAccount = accountClicked;
         drawerLayout.closeDrawers();
+        setAccount(accountClicked);
+    }
+
+    public void setAccount(Account account) {
+        mAccount = account;
         setupNavigationHeader();
-        String folder = accountClicked.getAutoExpandFolderName();
+        String folder = account.getAutoExpandFolderName();
         LocalSearch search = new LocalSearch(folder);
-        search.addAccountUuid(mAccount.getUuid());
+        search.addAccountUuid(account.getUuid());
         search.addAllowedFolder(folder);
         refreshMessages(search);
         changeAccountsOrder();
@@ -1378,6 +1382,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         StorageManager.getInstance(getApplication()).removeListener(mStorageListener);
     }
 
+    private boolean currentAccountWasJustDeleted() {
+        List<Account> accounts = Preferences.getPreferences(this).getAccounts();
+        return accounts != null && !accounts.isEmpty() && !accounts.contains(mAccount);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -1388,6 +1397,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             Search.setActive(false);
         }
         hideSearchView();
+
+        if(currentAccountWasJustDeleted()) {
+            setAccount(Preferences.getPreferences(this).getDefaultAccount());
+        }
+
         if (mAccount != null && !mAccount.isAvailable(this)) {
             onAccountUnavailable();
             return;
