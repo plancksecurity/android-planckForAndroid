@@ -2043,7 +2043,14 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             }
 
             menu.findItem(R.id.check_mail).setVisible(mMessageListFragment.isCheckMailSupported());
-
+            // configure action bar in search screen
+            if(mMessageListFragment.isManualSearch()) {
+                setDrawerEnabled(false);
+                menu.findItem(R.id.check_mail).setVisible(false);
+                menu.findItem(R.id.compose).setVisible(false);
+                menu.findItem(R.id.show_folder_list).setVisible(false);
+                menu.findItem(R.id.settings).setVisible(false);
+            }
             // If this is an explicit local search, show the option to search on the server
             if (!mMessageListFragment.isRemoteSearch() &&
                     mMessageListFragment.isRemoteSearchAllowed()) {
