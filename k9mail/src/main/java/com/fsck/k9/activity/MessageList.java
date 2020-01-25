@@ -1499,7 +1499,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
         if (isSearchViewVisible()) {
             hideSearchView();
-            setDrawerEnabled(true);
         }
         else {
             goBack();
