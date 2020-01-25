@@ -46,6 +46,8 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
     private K9ActivityCommon mBase;
     private View.OnClickListener onCloseSearchClickListener;
+    private boolean isAndroidLollipop = Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP ||
+            Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -173,9 +175,12 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         return (ViewGroup) ((ViewGroup) this.findViewById(android.R.id.content)).getChildAt(0);
     }
 
+    public boolean isAndroidLollipop() {
+        return isAndroidLollipop;
+    }
+
     public void showSearchView() {
-        if(Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP ||
-                Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1) {
+        if (isAndroidLollipop) {
             onSearchRequested();
         } else {
             if (toolbarSearchContainer != null && toolbar != null) {
