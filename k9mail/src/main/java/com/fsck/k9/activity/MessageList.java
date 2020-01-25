@@ -249,8 +249,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void updateMessagesForSpecificInbox(SearchAccount searchAccount) {
-        MessageListFragment fragment = MessageListFragment.newInstance(searchAccount.getRelatedSearch(), false, false);
-        addMessageListFragment(fragment, true);
+        LocalSearch search = searchAccount.getRelatedSearch();
+        MessageListFragment fragment = MessageListFragment.newInstance(search, false, false);
+        addMessageListFragment(fragment, !isHomeScreen(search));
         drawerLayout.closeDrawers();
     }
 
@@ -1063,6 +1064,20 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         return foldersFiltered;
     }
 
+    private  boolean isInboxFolder(LocalSearch search) {
+        String inbox = mAccount.getIdentity(0).getEmail() +":"+ mAccount.getInboxFolderName();
+        return search.getName().equals(inbox)
+                || search.getName().equals(inbox + " - Starred");
+    }
+
+    private boolean isUnifiedInbox(LocalSearch search) {
+        return search.getName().equals(getString(R.string.integrated_inbox_title));
+    }
+
+    private boolean isHomeScreen(LocalSearch search) {
+        return (K9.startIntegratedInbox() && isUnifiedInbox(search)) || (!K9.startIntegratedInbox() && isInboxFolder(search));
+    }
+
     private void changeFolder(final LocalFolder folder) {
         mFolderName = folder.getName();
         mMessageListFragment.showLoadingMessages();
@@ -1081,7 +1096,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             public void onDrawerClosed(View drawerView) {
                 LocalSearch search = getLocalSearch(mAccount, folder);
                 MessageListFragment fragment = MessageListFragment.newInstance(search, false, false);
-                addMessageListFragment(fragment, true);
+                addMessageListFragment(fragment, !isHomeScreen(search));
                 drawerLayout.removeDrawerListener(drawerCloseListener);
             }
 
@@ -2200,7 +2215,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
         MessageListFragment fragment = MessageListFragment.newInstance(tmpSearch, false, false);
 
-        addMessageListFragment(fragment, true);
+        addMessageListFragment(fragment, !isHomeScreen(tmpSearch));
     }
 
     @Override
@@ -2234,9 +2249,13 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void addMessageListFragment(MessageListFragment fragment, boolean addToBackStack) {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
 
         ft.replace(R.id.message_list_container, fragment);
+
+        fm.popBackStack();
+
         if (addToBackStack)
             ft.addToBackStack(null);
 
