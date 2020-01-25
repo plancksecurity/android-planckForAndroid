@@ -341,6 +341,9 @@ public class FolderList extends K9ListActivity {
                     if (searchInput != null && !searchInput.getText().toString().isEmpty()) {
                         search(searchInput.getText().toString());
                     }
+                    else {
+                        searchInput.setError(getString(R.string.search_empty_error));
+                    }
                 }
                 return true;
             }
@@ -373,6 +376,7 @@ public class FolderList extends K9ListActivity {
                 getToolbar().setVisibility(View.GONE);
                 searchLayout.setVisibility(View.VISIBLE);
                 setFocusOnKeyboard();
+                searchInput.setError(null);
             }
         }
     }
