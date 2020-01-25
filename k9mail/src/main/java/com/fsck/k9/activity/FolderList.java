@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -336,8 +337,10 @@ public class FolderList extends K9ListActivity {
         searchInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (searchInput!= null && !searchInput.getText().toString().isEmpty()) {
-                    search(searchInput.getText().toString());
+                if (actionId == EditorInfo.IME_ACTION_SEARCH || (event != null && event.getAction() == KeyEvent.ACTION_DOWN)) {
+                    if (searchInput != null && !searchInput.getText().toString().isEmpty()) {
+                        search(searchInput.getText().toString());
+                    }
                 }
                 return true;
             }

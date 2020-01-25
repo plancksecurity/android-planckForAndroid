@@ -225,10 +225,12 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     @Nullable @OnEditorAction(R.id.search_input)
     boolean onSearchInputSubmitted(KeyEvent keyEvent) {
         if (searchInput != null) {
-            String searchedText = searchInput.getText().toString();
-            if (!searchedText.trim().isEmpty()) {
-                search(searchInput.getText().toString());
-                return true;
+            if (keyEvent != null && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                String searchedText = searchInput.getText().toString();
+                if (!searchedText.trim().isEmpty()) {
+                    search(searchInput.getText().toString());
+                    return true;
+                }
             }
         }
         return false;
