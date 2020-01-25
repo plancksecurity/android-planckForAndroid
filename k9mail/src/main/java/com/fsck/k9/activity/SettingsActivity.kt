@@ -353,11 +353,10 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         accounts.clear()
         accounts.addAll(Preferences.getPreferences(this).accounts)
 
-        // see if we should show the welcome message
-        //        if (accounts.length < 1) {
-        //            WelcomeMessage.showWelcomeMessage(this);
-        //            finish();
-        //        }
+        if (accounts.size < 1) {
+            AccountSetupBasics.actionNewAccount(this)
+            finishAffinity()
+        }
 
         val newAccounts: MutableList<BaseAccount>
         if (!K9.isHideSpecialAccounts() && accounts.size > 0) {
