@@ -268,10 +268,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void handleDrawerState() {
-        if(drawerLayout.isDrawerOpen(Gravity.START))
-            drawerLayout.closeDrawer(Gravity.END);
+        if(drawerLayout.isDrawerOpen(GravityCompat.START))
+            drawerLayout.closeDrawer(GravityCompat.END);
         else
-            drawerLayout.openDrawer(Gravity.START);
+            drawerLayout.openDrawer(GravityCompat.START);
     }
 
     public void setMessageViewVisible(Boolean visible) {
