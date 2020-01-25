@@ -99,16 +99,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         this.onCloseSearchClickListener = onCloseSearchClickListener;
     }
 
-    @Nullable @OnClick(R.id.search_clear)
-    void onClearSeachClicked() {
-        hideSearchView();
-        if (onCloseSearchClickListener != null) {
-            onCloseSearchClickListener.onClick(null);
-        }
-        searchInput.setText(null);
-        KeyboardUtils.hideKeyboard(searchInput);
-    }
-
     public Toolbar getToolbar() {
         return toolbar;
     }
@@ -191,6 +181,9 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             if (toolbarSearchContainer != null && toolbar != null) {
                 toolbarSearchContainer.setVisibility(View.VISIBLE);
                 toolbar.setVisibility(View.GONE);
+                if(searchInput != null) {
+                    searchInput.setEnabled(true);
+                }
                 setFocusOnKeyboard();
                 searchInput.setError(null);
             }
@@ -205,10 +198,22 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         }
     }
 
+    protected boolean isSearchViewVisible() {
+        return toolbarSearchContainer != null && toolbarSearchContainer.getVisibility() == View.VISIBLE;
+    }
+
+    @Nullable @OnClick(R.id.search_clear)
     public void hideSearchView() {
-        if (toolbarSearchContainer != null && toolbar != null) {
+        if (searchInput != null &&
+            toolbarSearchContainer != null && toolbar != null) {
             toolbarSearchContainer.setVisibility(View.GONE);
             toolbar.setVisibility(View.VISIBLE);
+            searchInput.setEnabled(false);
+            searchInput.setText(null);
+            KeyboardUtils.hideKeyboard(searchInput);
+            if (onCloseSearchClickListener != null) {
+                onCloseSearchClickListener.onClick(null);
+            }
         }
     }
 
@@ -238,15 +243,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             }
         }
         return false;
-    }
-
-    @Nullable @OnClick(R.id.search_clear)
-    public void onClearText() {
-        if (searchInput != null) {
-            searchInput.setText(null);
-            hideSearchView();
-            KeyboardUtils.hideKeyboard(searchInput);
-        }
     }
 
     public void bindViews(@LayoutRes int layoutId) {

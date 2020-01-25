@@ -1497,7 +1497,13 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         if (isMessageViewVisible()) {
             setMessageViewVisible(false);
         }
-        goBack();
+        if (isSearchViewVisible()) {
+            hideSearchView();
+            setDrawerEnabled(true);
+        }
+        else {
+            goBack();
+        }
     }
 
     private void updateToolbarColorToOriginal() {
