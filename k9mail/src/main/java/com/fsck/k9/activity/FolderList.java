@@ -352,9 +352,7 @@ public class FolderList extends K9ListActivity {
         clearSearchIcon.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchInput.setText(null);
                 hideSearchView();
-                KeyboardUtils.hideKeyboard(searchInput);
             }
         });
     }
@@ -375,6 +373,7 @@ public class FolderList extends K9ListActivity {
             if (searchLayout != null) {
                 getToolbar().setVisibility(View.GONE);
                 searchLayout.setVisibility(View.VISIBLE);
+                searchInput.setEnabled(true);
                 setFocusOnKeyboard();
                 searchInput.setError(null);
             }
@@ -383,8 +382,11 @@ public class FolderList extends K9ListActivity {
 
     public void hideSearchView() {
         if (searchLayout != null) {
-            getToolbar().setVisibility(View.VISIBLE);
             searchLayout.setVisibility(View.GONE);
+            getToolbar().setVisibility(View.VISIBLE);
+            searchInput.setEnabled(false);
+            searchInput.setText(null);
+            KeyboardUtils.hideKeyboard(searchInput);
         }
     }
 
@@ -455,7 +457,7 @@ public class FolderList extends K9ListActivity {
      */
     @Override public void onResume() {
         super.onResume();
-
+        hideSearchView();
         if (!mAccount.isAvailable(this)) {
             Timber.i("account unavaliabale, not showing folder-list but account-list");
             SettingsActivity.Companion.listAccounts(this);
@@ -1297,6 +1299,16 @@ public class FolderList extends K9ListActivity {
         @Override
         public void onClick(View v) {
             MessageList.actionDisplaySearch(FolderList.this, search, true, false, true);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(searchLayout != null && searchLayout.getVisibility() == View.VISIBLE) {
+            hideSearchView();
+        }
+        else {
+            super.onBackPressed();
         }
     }
 }
