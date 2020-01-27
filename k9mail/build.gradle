@@ -107,6 +107,8 @@ dependencies {
     testImplementation "org.robolectric:robolectric:${versions.robolectric}"
     testImplementation "junit:junit:${versions.junit}"
     testImplementation "org.mockito:mockito-core:${versions.mockito}"
+    testImplementation "org.mockito:mockito-inline:${versions.mockito}"
+    testImplementation "com.nhaarman:mockito-kotlin:${versions.mockitoKotlin}"
     testImplementation "org.jdom:jdom2:${versions.jdom}"
 
     implementation "androidx.test.espresso:espresso-idling-resource:${versions.espresso}"
@@ -122,8 +124,6 @@ dependencies {
     testImplementation "org.robolectric:robolectric:${versions.robolectric}"
     testImplementation "junit:junit:${versions.junit}"
     testImplementation "com.google.truth:truth:${versions.truth}"
-    testImplementation "org.mockito:mockito-core:${versions.mockito}"
-    testImplementation "com.nhaarman:mockito-kotlin:${versions.mockitoKotlin}"
     testImplementation "org.jdom:jdom2:2.0.6"
     testImplementation "org.koin:koin-test:${versions.koin}"
     testImplementation "org.robolectric:shadows-multidex:${versions.robolectric}"
@@ -269,6 +269,7 @@ android {
     testOptions{
         unitTests{
             includeAndroidResources = true
+            returnDefaultValues = true
         }
     }
 
