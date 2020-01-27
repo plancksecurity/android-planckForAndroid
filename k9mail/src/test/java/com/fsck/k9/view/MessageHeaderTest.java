@@ -1,13 +1,17 @@
 package com.fsck.k9.view;
 
+import android.text.TextUtils;
+
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.internet.MimeMessage;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
 
 public class MessageHeaderTest {
 
