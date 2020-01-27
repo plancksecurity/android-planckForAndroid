@@ -7,10 +7,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import foundation.pEp.jniadapter.Identity;
 
 import java.util.Collections;
 import java.util.List;
+
+import foundation.pEp.jniadapter.Identity;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -21,16 +22,19 @@ public class AddDevicePresenterTest {
     private static final String PARTNER_USER_ID = "partner_user_id";
     private static final String PARTNER_ADDRESS = "partner@address";
     private AddDevicePresenter addDevicePresenter;
-    @Mock private AddDeviceView view;
-    @Mock private PEpProvider pEpProvider;
+    @Mock
+    private AddDeviceView view;
+    @Mock
+    private PEpProvider pEpProvider;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         addDevicePresenter = new AddDevicePresenter();
-        addDevicePresenter.initialize(view, pEpProvider, identity(), identity(), accounts(),false, "");
+        addDevicePresenter.initialize(view, pEpProvider, identity(), identity(), accounts(), false, "");
     }
 
+    // TODO FIX test
     @Test
     public void shouldAcceptHandshakeOnEngineWhenAccepting() {
         addDevicePresenter.acceptHandshake();

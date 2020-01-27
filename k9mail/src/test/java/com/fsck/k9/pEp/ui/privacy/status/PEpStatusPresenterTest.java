@@ -14,24 +14,35 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import foundation.pEp.jniadapter.Identity;
-import foundation.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
 
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Rating;
+
+import static com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords.PARTNER_ACTION;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+//TODO FIX TESTS
 public class PEpStatusPresenterTest {
 
-    @Mock SimpleMessageLoaderHelper simpleMessageLoaderHelper;
-    @Mock PEpStatusView pEpStatusView;
+    @Mock
+    SimpleMessageLoaderHelper simpleMessageLoaderHelper;
+    @Mock
+    PEpStatusView pEpStatusView;
     private PEpStatusPresenter presenter;
-    @Mock PePUIArtefactCache uiCache;
-    @Mock PEpProvider provider;
-    @Mock Address senderAddress;
+    @Mock
+    PePUIArtefactCache uiCache;
+    @Mock
+    PEpProvider provider;
+    @Mock
+    Address senderAddress;
+    @Mock
+    Intent intent;
 
     @Before
     public void setUp() {
@@ -39,13 +50,15 @@ public class PEpStatusPresenterTest {
         PEpIdentityMapper pEpIdentityMapper = new PEpIdentityMapper();
         presenter = new PEpStatusPresenter(simpleMessageLoaderHelper,
                 pEpIdentityMapper);
+        intent = mock(Intent.class);
+        intent.putExtra(PARTNER_ACTION, PEpProvider.TrustAction.TRUST);
     }
 
     @Test
     public void shouldStartMessageLoaderWhenLoadMessage() {
         presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
 
-        presenter.loadMessage(new MessageReference("","","", null));
+        presenter.loadMessage(new MessageReference("", "", "", null));
 
         verify(simpleMessageLoaderHelper).asyncStartOrResumeLoadingMessage(
                 any(MessageReference.class), any(MessageLoaderHelper.MessageLoaderCallbacks.class)
@@ -84,7 +97,9 @@ public class PEpStatusPresenterTest {
     public void shouldExtractRatingWhenOnResult() {
         presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
 
-        presenter.onResult(new Intent());
+        Intent data = new Intent();
+        data.putExtra(PARTNER_ACTION, PEpProvider.TrustAction.TRUST);
+        presenter.onResult(data);
 
         verify(provider).incomingMessageRating(any());
     }

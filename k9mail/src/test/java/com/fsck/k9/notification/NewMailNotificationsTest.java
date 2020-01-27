@@ -2,17 +2,17 @@ package com.fsck.k9.notification;
 
 
 import android.app.Notification;
+
 import androidx.core.app.NotificationManagerCompat;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.K9.NotificationHideSubject;
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mailstore.LocalMessage;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
@@ -25,7 +25,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(K9RobolectricTestRunner.class)
 public class NewMailNotificationsTest {
     private static final int ACCOUNT_NUMBER = 23;
 
@@ -52,7 +51,7 @@ public class NewMailNotificationsTest {
     }
 
     @Test
-    public void testAddNewMailNotification(){
+    public void testAddNewMailNotification() {
         int notificationIndex = 0;
         LocalMessage message = createLocalMessage();
         NotificationContent content = createNotificationContent();
@@ -73,7 +72,7 @@ public class NewMailNotificationsTest {
     }
 
     @Test
-    public void testAddNewMailNotificationWithCancelingExistingNotification(){
+    public void testAddNewMailNotificationWithCancelingExistingNotification() {
         int notificationIndex = 0;
         LocalMessage message = createLocalMessage();
         NotificationContent content = createNotificationContent();
@@ -95,7 +94,7 @@ public class NewMailNotificationsTest {
     }
 
     @Test
-    public void testAddNewMailNotificationWithPrivacyModeEnabled(){
+    public void testAddNewMailNotificationWithPrivacyModeEnabled() {
         enablePrivacyMode();
         int notificationIndex = 0;
         LocalMessage message = createLocalMessage();
@@ -115,7 +114,7 @@ public class NewMailNotificationsTest {
     }
 
     @Test
-    public void testAddNewMailNotificationTwice(){
+    public void testAddNewMailNotificationTwice() {
         int notificationIndexOne = 0;
         int notificationIndexTwo = 1;
         LocalMessage messageOne = createLocalMessage();
@@ -147,7 +146,7 @@ public class NewMailNotificationsTest {
     }
 
     @Test
-    public void testRemoveNewMailNotificationWithoutNotificationData(){
+    public void testRemoveNewMailNotificationWithoutNotificationData() {
         MessageReference messageReference = createMessageReference(1);
 
         newMailNotifications.removeNewMailNotification(account, messageReference);
@@ -156,7 +155,7 @@ public class NewMailNotificationsTest {
     }
 
     @Test
-    public void testRemoveNewMailNotificationWithUnknownMessageReference(){
+    public void testRemoveNewMailNotificationWithUnknownMessageReference() {
         enablePrivacyMode();
         MessageReference messageReference = createMessageReference(1);
         int notificationIndex = 0;
@@ -176,7 +175,7 @@ public class NewMailNotificationsTest {
     }
 
     @Test
-    public void testRemoveNewMailNotification(){
+    public void testRemoveNewMailNotification() {
         enablePrivacyMode();
         MessageReference messageReference = createMessageReference(1);
         int notificationIndex = 0;
@@ -199,7 +198,7 @@ public class NewMailNotificationsTest {
     }
 
     @Test
-    public void testRemoveNewMailNotificationClearingAllNotifications(){
+    public void testRemoveNewMailNotificationClearingAllNotifications() {
         MessageReference messageReference = createMessageReference(1);
         int notificationIndex = 0;
         int notificationId = NotificationIds.getNewMailStackedNotificationId(account, notificationIndex);
@@ -223,7 +222,7 @@ public class NewMailNotificationsTest {
     }
 
     @Test
-    public void testRemoveNewMailNotificationWithCreateNotification(){
+    public void testRemoveNewMailNotificationWithCreateNotification() {
         MessageReference messageReference = createMessageReference(1);
         int notificationIndex = 0;
         int notificationId = NotificationIds.getNewMailStackedNotificationId(account, notificationIndex);
@@ -252,14 +251,14 @@ public class NewMailNotificationsTest {
     }
 
     @Test
-    public void testClearNewMailNotificationsWithoutNotificationData(){
+    public void testClearNewMailNotificationsWithoutNotificationData() {
         newMailNotifications.clearNewMailNotifications(account);
 
         verify(notificationManager, never()).cancel(anyInt());
     }
 
     @Test
-    public void testClearNewMailNotifications(){
+    public void testClearNewMailNotifications() {
         int notificationIndex = 0;
         int notificationId = NotificationIds.getNewMailStackedNotificationId(account, notificationIndex);
         LocalMessage message = createLocalMessage();
@@ -319,7 +318,7 @@ public class NewMailNotificationsTest {
 
     private void addToDeviceNotifications(Notification notificationToReturn) {
         when(deviceNotifications.buildSummaryNotification(
-                        eq(account), eq(newMailNotifications.notificationData), anyBoolean())
+                eq(account), eq(newMailNotifications.notificationData), anyBoolean())
         ).thenReturn(notificationToReturn);
     }
 
@@ -366,7 +365,7 @@ public class NewMailNotificationsTest {
         final NotificationData notificationData;
 
         TestNewMailNotifications(NotificationController controller, NotificationContentCreator contentCreator,
-                DeviceNotifications deviceNotifications, WearNotifications wearNotifications) {
+                                 DeviceNotifications deviceNotifications, WearNotifications wearNotifications) {
             super(controller, contentCreator, deviceNotifications, wearNotifications);
             notificationData = mock(NotificationData.class);
         }

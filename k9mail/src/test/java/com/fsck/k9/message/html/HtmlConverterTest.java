@@ -1,22 +1,16 @@
 package com.fsck.k9.message.html;
 
 
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import com.fsck.k9.K9RobolectricTestRunner;
-import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
-
 import static junit.framework.Assert.assertEquals;
 
-
-@RunWith(K9RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class HtmlConverterTest {
     // Useful if you want to write stuff to a file for debugging in a browser.
     private static final boolean WRITE_TO_FILE = Boolean.parseBoolean(System.getProperty("k9.htmlConverterTest.writeToFile", "false"));
@@ -81,11 +75,11 @@ public class HtmlConverterTest {
                 + "<br />"
                 + "Bob Barker &lt;bob@aol.com&gt; wrote:<br />"
                 + "<blockquote class=\"gmail_quote\" style=\"margin: 0pt 0pt 1ex 0.8ex; border-left: 1px solid #729fcf; padding-left: 1ex;\">"
-                +   " A wise man once said...<br />"
-                +   "<br />"
-                +   "     LOL F1RST!!!!!<br />"
-                +   "<br />"
-                +   " :)"
+                + " A wise man once said...<br />"
+                + "<br />"
+                + "     LOL F1RST!!!!!<br />"
+                + "<br />"
+                + " :)"
                 + "</blockquote></pre>", result);
 
     }
@@ -114,22 +108,22 @@ public class HtmlConverterTest {
         assertEquals("<pre class=\"k9mail\">"
                 + "zero<br />"
                 + "<blockquote class=\"gmail_quote\" style=\"margin: 0pt 0pt 1ex 0.8ex; border-left: 1px solid #729fcf; padding-left: 1ex;\">"
-                +   " one<br />"
-                +   "<blockquote class=\"gmail_quote\" style=\"margin: 0pt 0pt 1ex 0.8ex; border-left: 1px solid #ad7fa8; padding-left: 1ex;\">"
-                +     " two<br />"
-                +     "<blockquote class=\"gmail_quote\" style=\"margin: 0pt 0pt 1ex 0.8ex; border-left: 1px solid #8ae234; padding-left: 1ex;\">"
-                +       " three<br />"
-                +       "<blockquote class=\"gmail_quote\" style=\"margin: 0pt 0pt 1ex 0.8ex; border-left: 1px solid #fcaf3e; padding-left: 1ex;\">"
-                +         " four<br />"
-                +         "<blockquote class=\"gmail_quote\" style=\"margin: 0pt 0pt 1ex 0.8ex; border-left: 1px solid #e9b96e; padding-left: 1ex;\">"
-                +           " five<br />"
-                +           "<blockquote class=\"gmail_quote\" style=\"margin: 0pt 0pt 1ex 0.8ex; border-left: 1px solid #ccc; padding-left: 1ex;\">"
-                +             " six"
-                +           "</blockquote>"
-                +         "</blockquote>"
-                +       "</blockquote>"
-                +     "</blockquote>"
-                +   "</blockquote>"
+                + " one<br />"
+                + "<blockquote class=\"gmail_quote\" style=\"margin: 0pt 0pt 1ex 0.8ex; border-left: 1px solid #ad7fa8; padding-left: 1ex;\">"
+                + " two<br />"
+                + "<blockquote class=\"gmail_quote\" style=\"margin: 0pt 0pt 1ex 0.8ex; border-left: 1px solid #8ae234; padding-left: 1ex;\">"
+                + " three<br />"
+                + "<blockquote class=\"gmail_quote\" style=\"margin: 0pt 0pt 1ex 0.8ex; border-left: 1px solid #fcaf3e; padding-left: 1ex;\">"
+                + " four<br />"
+                + "<blockquote class=\"gmail_quote\" style=\"margin: 0pt 0pt 1ex 0.8ex; border-left: 1px solid #e9b96e; padding-left: 1ex;\">"
+                + " five<br />"
+                + "<blockquote class=\"gmail_quote\" style=\"margin: 0pt 0pt 1ex 0.8ex; border-left: 1px solid #ccc; padding-left: 1ex;\">"
+                + " six"
+                + "</blockquote>"
+                + "</blockquote>"
+                + "</blockquote>"
+                + "</blockquote>"
+                + "</blockquote>"
                 + "</blockquote>"
                 + "</pre>", result);
     }
@@ -208,11 +202,11 @@ public class HtmlConverterTest {
                 "end";
         String result = HtmlConverter.textToHtml(text);
         assertEquals("<pre class=\"k9mail\">text<hr>" +
-                "some other text<hr>" +
-                "more text<hr>" +
-                "scissors below<hr>" +
-                "other direction<hr>" +
-                "end</pre>",
+                        "some other text<hr>" +
+                        "more text<hr>" +
+                        "scissors below<hr>" +
+                        "other direction<hr>" +
+                        "end</pre>",
                 result);
     }
 

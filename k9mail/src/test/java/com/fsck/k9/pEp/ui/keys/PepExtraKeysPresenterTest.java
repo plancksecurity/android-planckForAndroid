@@ -16,8 +16,10 @@ import static org.mockito.Mockito.verify;
 public class PepExtraKeysPresenterTest {
 
     private PepExtraKeysPresenter presenter;
-    @Mock private PepExtraKeysView view;
-    @Mock PEpProvider provider;
+    @Mock
+    private PepExtraKeysView view;
+    @Mock
+    PEpProvider provider;
 
     @Before
     public void setUp() {

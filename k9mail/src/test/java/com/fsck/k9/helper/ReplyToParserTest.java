@@ -24,13 +24,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
+//TODO Method parseColor in android.graphics.Color not mocked
 public class ReplyToParserTest {
     private static final Address[] REPLY_TO_ADDRESSES = Address.parse("replyTo1@example.com, replyTo2@example.com");
     private static final Address[] LIST_POST_ADDRESSES = Address.parse("listPost@example.com");
     private static final Address[] FROM_ADDRESSES = Address.parse("from@example.com");
     private static final Address[] TO_ADDRESSES = Address.parse("to1@example.com, to2@example.com");
     private static final Address[] CC_ADDRESSES = Address.parse("cc1@example.com, cc2@example.com");
-    private static final String[] LIST_POST_HEADER_VALUES = new String[] { "<mailto:listPost@example.com>" };
+    private static final String[] LIST_POST_HEADER_VALUES = new String[]{"<mailto:listPost@example.com>"};
     private static final Address[] EMPTY_ADDRESSES = new Address[0];
 
 
