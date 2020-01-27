@@ -286,7 +286,11 @@ public class CucumberTestSteps {
 
     private void textViewEditor (String text, String viewName) {
         int viewId = testUtils.intToID(viewName);
-        TestUtils.swipeDownScreen();
+        while (!exists(onView(withId(viewId)))) {
+            device.waitForIdle();
+            TestUtils.swipeDownScreen();
+            device.waitForIdle();
+        }
         switch (text) {
             case "empty":
                 timeRequiredForThisMethod(30);
