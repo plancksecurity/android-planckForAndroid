@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
 
+//TODO remove AndroidJUnit4
 @RunWith(AndroidJUnit4.class)
 public class ContactPictureLoaderTest {
 

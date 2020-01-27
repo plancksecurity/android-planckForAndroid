@@ -4,10 +4,10 @@ package com.fsck.k9.message;
 import android.app.Application;
 
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.fsck.k9.Account.QuoteStyle;
 import com.fsck.k9.Identity;
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.activity.misc.Attachment;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.BodyPart;
@@ -46,7 +46,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@RunWith(K9RobolectricTestRunner.class)
+//TODO remove AndroidJUnit4
+@RunWith(AndroidJUnit4.class)
 @Config(manifest = Config.NONE)
 public class MessageBuilderTest {
     private static final String TEST_MESSAGE_TEXT = "soviet message\r\ntext ☭";

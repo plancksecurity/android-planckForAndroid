@@ -3,9 +3,9 @@ package com.fsck.k9.mailstore;
 import android.app.Application;
 
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.fsck.k9.GlobalsHelper;
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.BodyPart;
 import com.fsck.k9.mail.Message;
@@ -52,7 +52,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(K9RobolectricTestRunner.class)
+//TODO remove AndroidJUnit4
+@RunWith(AndroidJUnit4.class)
 public class MessageViewInfoExtractorTest {
     private static final String BODY_TEXT = "K-9 Mail rocks :>";
     private static final String BODY_TEXT_HTML = "K-9 Mail rocks :&gt;";

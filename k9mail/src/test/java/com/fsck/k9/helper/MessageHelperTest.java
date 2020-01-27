@@ -6,21 +6,19 @@ import android.graphics.Color;
 import android.text.SpannableString;
 
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.mail.Address;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
-
-@RunWith(K9RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+//TODO remove AndroidJUnit4
+@RunWith(AndroidJUnit4.class)
 public class MessageHelperTest {
     private Contacts contacts;
     private Contacts mockContacts;
@@ -30,7 +28,8 @@ public class MessageHelperTest {
         Context context = ApplicationProvider.getApplicationContext();
         contacts = new Contacts(context);
         mockContacts = new Contacts(context) {
-            @Override public String getNameForAddress(String address) {
+            @Override
+            public String getNameForAddress(String address) {
                 if ("test@testor.com".equals(address)) {
                     return "Tim Testor";
                 } else {
@@ -56,7 +55,7 @@ public class MessageHelperTest {
     public void testToFriendlyArray() {
         Address address1 = new Address("test@testor.com", "Tim Testor");
         Address address2 = new Address("foo@bar.com", "Foo Bar");
-        Address[] addresses = new Address[] { address1, address2 };
+        Address[] addresses = new Address[]{address1, address2};
         assertEquals("Tim Testor,Foo Bar", MessageHelper.toFriendly(addresses, contacts).toString());
     }
 

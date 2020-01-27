@@ -4,9 +4,9 @@ package com.fsck.k9.notification;
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Flag;
@@ -26,7 +26,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(K9RobolectricTestRunner.class)
+//TODO remove AndroidJUnit4
+@RunWith(AndroidJUnit4.class)
 public class NotificationContentCreatorTest {
     private static final String ACCOUNT_UUID = "1-2-3";
     private static final String FOLDER_NAME = "INBOX";

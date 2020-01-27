@@ -18,7 +18,6 @@ import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +30,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 
+//TODO remove AndroidJUnit4
 @RunWith(AndroidJUnit4.class)
-@Config(manifest = Config.NONE)
 public class MessageDecryptVerifierTest {
     private static final String MIME_TYPE_MULTIPART_ENCRYPTED = "multipart/encrypted";
     private MessageCryptoAnnotations messageCryptoAnnotations = mock(MessageCryptoAnnotations.class);

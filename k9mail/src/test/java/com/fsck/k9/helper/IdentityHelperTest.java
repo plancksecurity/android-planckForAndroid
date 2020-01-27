@@ -4,10 +4,10 @@ package com.fsck.k9.helper;
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Identity;
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.internet.MimeMessage;
@@ -24,7 +24,8 @@ import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
-@RunWith(K9RobolectricTestRunner.class)
+//TODO remove AndroidJUnit4
+@RunWith(AndroidJUnit4.class)
 public class IdentityHelperTest {
 
     private Account account;

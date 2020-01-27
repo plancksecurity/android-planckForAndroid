@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+//TODO remove AndroidJUnit4
 @RunWith(AndroidJUnit4.class)
 public class SettingsExporterTest {
 

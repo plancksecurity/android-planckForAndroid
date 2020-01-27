@@ -13,15 +13,14 @@ import com.fsck.k9.mail.Message;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
+//TODO remove AndroidJUnit4
 @RunWith(AndroidJUnit4.class)
-@Config(sdk = 22)
 public class ActivityListenerTest {
     private static final String FOLDER = "folder";
     private static final String ERROR_MESSAGE = "errorMessage";

@@ -8,9 +8,9 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.Builder;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.MockHelper;
 import com.fsck.k9.R;
 
@@ -26,7 +26,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(K9RobolectricTestRunner.class)
+//TODO remove AndroidJUnit4
+@RunWith(AndroidJUnit4.class)
 public class SendFailedNotificationsTest {
     private static final int ACCOUNT_NUMBER = 1;
     private static final String ACCOUNT_NAME = "TestAccount";

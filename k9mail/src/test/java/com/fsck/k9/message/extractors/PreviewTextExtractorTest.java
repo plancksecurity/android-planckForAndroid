@@ -1,20 +1,21 @@
 package com.fsck.k9.message.extractors;
 
 
-import com.fsck.k9.K9RobolectricTestRunner;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.fsck.k9.mail.Part;
 import com.fsck.k9.mail.internet.MimeBodyPart;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import static com.fsck.k9.message.MessageCreationHelper.createTextPart;
 import static org.junit.Assert.assertEquals;
 
 
-@RunWith(K9RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+//TODO remove AndroidJUnit4
+@RunWith(AndroidJUnit4.class)
 public class PreviewTextExtractorTest {
     private PreviewTextExtractor previewTextExtractor;
 

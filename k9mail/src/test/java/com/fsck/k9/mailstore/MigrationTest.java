@@ -5,10 +5,10 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.mail.BodyPart;
 import com.fsck.k9.mail.FetchProfile;
@@ -35,7 +35,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 
-@RunWith(K9RobolectricTestRunner.class)
+
+//TODO remove AndroidJUnit4
+@RunWith(AndroidJUnit4.class)
 public class MigrationTest {
 
     private Account account;
@@ -64,7 +66,7 @@ public class MigrationTest {
         SQLiteDatabase db = ApplicationProvider.getApplicationContext().openOrCreateDatabase(databaseFile.getName(),
                 Context.MODE_PRIVATE, null);
 
-        String[] v50SchemaSql = new String[] {
+        String[] v50SchemaSql = new String[]{
                 "CREATE TABLE folders (id INTEGER PRIMARY KEY, name TEXT, last_updated INTEGER, unread_count INTEGER," +
                         "visible_limit INTEGER, status TEXT, push_state TEXT, last_pushed INTEGER," +
                         "flagged_count INTEGER default 0, integrate INTEGER, top_group INTEGER, poll_class TEXT," +
@@ -105,7 +107,7 @@ public class MigrationTest {
         }
         db.setVersion(50);
 
-        String[] folderSql = new String[] {
+        String[] folderSql = new String[]{
                 "INSERT INTO folders VALUES (1,'Trash',0,NULL,25,NULL,NULL,0,0,0,1,'NO_CLASS','INHERITED','FIRST_CLASS','INHERITED')",
                 "INSERT INTO folders VALUES (2,'Sent',1448975758597,NULL,25,NULL,'uidNext=552',NULL,0,0,1,'NO_CLASS','INHERITED','FIRST_CLASS','INHERITED')",
                 "INSERT INTO folders VALUES (8,'Drafts',0,NULL,25,NULL,NULL,0,0,0,1,'FIRST_CLASS','INHERITED','FIRST_CLASS','INHERITED')",
@@ -122,7 +124,7 @@ public class MigrationTest {
     }
 
     private void insertSimplePlaintextMessage(SQLiteDatabase db) {
-        String[] statements = new String[] {
+        String[] statements = new String[]{
                 "INSERT INTO messages VALUES(2,0,16,'3','regular mail',1453380493000," +
                         "'X_GOT_ALL_HEADERS,X_DOWNLOADED_FULL','look@my.amazin.horse;','valodim@mugenguild.com'," +
                         "'','','','<pre class=\"k9mail\">nothing special here.<br /></pre>','nothing special here.\n'," +
@@ -184,7 +186,7 @@ public class MigrationTest {
     }
 
     private void insertMixedWithAttachments(SQLiteDatabase db) throws Exception {
-        String[] statements = new String[] {
+        String[] statements = new String[]{
                 "INSERT INTO messages VALUES(3,0,16,'4','mail with attach',1453380649000," +
                         "'X_GOT_ALL_HEADERS,X_DOWNLOADED_PARTIAL','look@my.amazin.horse;','valodim@mugenguild.com'," +
                         "'','','','<pre class=\"k9mail\">ooohh, an attachment!<br /></pre>','ooohh, an attachment!\n'," +
@@ -261,7 +263,7 @@ public class MigrationTest {
     }
 
     private void insertPgpMimeSignedMessage(SQLiteDatabase db) {
-        String[] statements = new String[] {
+        String[] statements = new String[]{
                 "INSERT INTO messages VALUES(4,0,16,'5','signed mail with attach',1453380687000," +
                         "'X_GOT_ALL_HEADERS,X_DOWNLOADED_PARTIAL','look@my.amazin.horse;','valodim@mugenguild.com'," +
                         "'','','','<pre class=\"k9mail\">attached AND signed!<br /><br /> - V<br /></pre>','attached AND signed!\n" +
@@ -318,7 +320,7 @@ public class MigrationTest {
 
 
     private void insertPgpMimeEncryptedMessage(SQLiteDatabase db) {
-        String[] statements = new String[] {
+        String[] statements = new String[]{
                 "INSERT INTO messages VALUES(5,0,16,'6','pgp/mime encrypted text',1453380734000," +
                         "'X_GOT_ALL_HEADERS,X_DOWNLOADED_FULL','look@my.amazin.horse;','valodim@mugenguild.com'," +
                         "'','','',NULL,NULL,2,1453380737000,'<20160121125214.GD31046@littlepip>',NULL," +
@@ -381,7 +383,7 @@ public class MigrationTest {
     }
 
     private void insertPgpInlineEncryptedMessage(SQLiteDatabase db) {
-        String[] statements = new String[] {
+        String[] statements = new String[]{
                 "INSERT INTO messages VALUES(6,0,16,'7','pgp/inline encrypted',1453380759000," +
                         "'X_GOT_ALL_HEADERS,X_DOWNLOADED_FULL','look@my.amazin.horse;','valodim@mugenguild.com'," +
                         "'','','','<pre class=\"k9mail\">-----BEGIN PGP MESSAGE-----<br />Version: GnuPG v1<br /><br />" +
@@ -491,7 +493,7 @@ public class MigrationTest {
     }
 
     private void insertPgpInlineClearsignedMessage(SQLiteDatabase db) {
-        String[] statements = new String[] {
+        String[] statements = new String[]{
                 "INSERT INTO messages VALUES(7,0,16,'8','pgp/inline clearsigned',1453380782000," +
                         "'X_GOT_ALL_HEADERS,X_DOWNLOADED_FULL','look@my.amazin.horse;','valodim@mugenguild.com'," +
                         "'','','','<pre class=\"k9mail\">-----BEGIN PGP SIGNED MESSAGE-----<br />Hash: SHA1<br /><br />" +
@@ -578,7 +580,7 @@ public class MigrationTest {
     }
 
     private void insertMultipartAlternativeMessage(SQLiteDatabase db) {
-        String[] statements = new String[] {
+        String[] statements = new String[]{
                 "INSERT INTO messages VALUES(8,0,16,'9','mail with html multipart',1453922449000," +
                         "'X_GOT_ALL_HEADERS,X_DOWNLOADED_FULL','jh@example.org;','look@my.amazin.horse'," +
                         "'','','','<html>\n" +
@@ -635,7 +637,7 @@ public class MigrationTest {
     }
 
     private void insertHtmlWithRelatedMessage(SQLiteDatabase db) {
-        String[] statements = new String[] {
+        String[] statements = new String[]{
                 "INSERT INTO messages VALUES(9,0,16,'10','html with multipart/related content',1453922845000," +
                         "'X_GOT_ALL_HEADERS,X_DOWNLOADED_FULL','jh@example.org;','look@my.amazin.horse'," +
                         "'','','','<html>\n" +

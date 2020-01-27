@@ -9,19 +9,18 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.GlobalsHelper;
 import com.fsck.k9.K9;
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.MessagingException;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
 import java.util.ArrayList;
@@ -39,8 +38,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(K9RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+//TODO remove AndroidJUnit4
+@RunWith(AndroidJUnit4.class)
 public class StoreSchemaDefinitionTest {
     private StoreSchemaDefinition storeSchemaDefinition;
 

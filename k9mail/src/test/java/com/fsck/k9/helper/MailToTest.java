@@ -1,20 +1,21 @@
 package com.fsck.k9.helper;
 
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import android.net.Uri;
 
-import com.fsck.k9.K9RobolectricTestRunner;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.fsck.k9.helper.MailTo.CaseInsensitiveParamWrapper;
 import com.fsck.k9.mail.Address;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -23,8 +24,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 
-@RunWith(K9RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+//TODO remove AndroidJUnit4
+@RunWith(AndroidJUnit4.class)
 public class MailToTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();

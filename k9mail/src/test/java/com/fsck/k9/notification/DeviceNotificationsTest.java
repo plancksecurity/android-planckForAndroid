@@ -9,12 +9,12 @@ import androidx.core.app.NotificationCompat.BigTextStyle;
 import androidx.core.app.NotificationCompat.Builder;
 import androidx.core.app.NotificationCompat.InboxStyle;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.K9.NotificationHideSubject;
 import com.fsck.k9.K9.NotificationQuickDelete;
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.NotificationSetting;
 import com.fsck.k9.R;
 
@@ -35,8 +35,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
-@RunWith(K9RobolectricTestRunner.class)
+//TODO remove AndroidJUnit4
+@RunWith(AndroidJUnit4.class)
 public class DeviceNotificationsTest {
     private static final int UNREAD_MESSAGE_COUNT = 42;
     private static final int NEW_MESSAGE_COUNT = 2;

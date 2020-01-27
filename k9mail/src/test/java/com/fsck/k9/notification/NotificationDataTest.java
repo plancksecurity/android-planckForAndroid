@@ -1,8 +1,9 @@
 package com.fsck.k9.notification;
 
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.fsck.k9.Account;
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.activity.MessageReference;
 
 import org.junit.Before;
@@ -19,8 +20,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
-@RunWith(K9RobolectricTestRunner.class)
+//TODO remove AndroidJUnit4
+@RunWith(AndroidJUnit4.class)
 @Config(manifest = Config.NONE)
 public class NotificationDataTest {
     private static final String ACCOUNT_UUID = "1-2-3";

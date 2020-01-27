@@ -3,14 +3,17 @@ package com.fsck.k9.mailstore.migrations;
 
 import android.content.ContentValues;
 
-import com.fsck.k9.K9RobolectricTestRunner;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.fsck.k9.mailstore.migrations.MigrationTo51.MimeStructureState;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 
-@RunWith(K9RobolectricTestRunner.class) // required for ContentValues
+//TODO remove AndroidJUnit4
+@RunWith(AndroidJUnit4.class) // required for ContentValues
 public class MigrationMimeStructureStateTest {
 
     @Test(expected = IllegalStateException.class)

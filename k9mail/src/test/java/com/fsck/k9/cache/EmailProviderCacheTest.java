@@ -2,8 +2,8 @@ package com.fsck.k9.cache;
 
 
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 
@@ -25,7 +25,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(K9RobolectricTestRunner.class)
+//TODO remove AndroidJUnit4
+@RunWith(AndroidJUnit4.class)
 public class EmailProviderCacheTest {
 
     private EmailProviderCache cache;
