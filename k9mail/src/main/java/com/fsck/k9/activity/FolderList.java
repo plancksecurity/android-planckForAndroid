@@ -691,6 +691,7 @@ public class FolderList extends K9ListActivity {
         folderMenuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                menu.findItem(R.id.search).setVisible(false);
                 return true;
             }
 
