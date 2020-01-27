@@ -183,12 +183,11 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         if (isAndroidLollipop) {
             onSearchRequested();
         } else {
-            if (toolbarSearchContainer != null && toolbar != null) {
+            if (toolbarSearchContainer != null && toolbar != null
+                    && searchInput != null) {
                 toolbarSearchContainer.setVisibility(View.VISIBLE);
                 toolbar.setVisibility(View.GONE);
-                if(searchInput != null) {
-                    searchInput.setEnabled(true);
-                }
+                searchInput.setEnabled(true);
                 setFocusOnKeyboard();
                 searchInput.setError(null);
             }
@@ -196,11 +195,9 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     }
 
     private void setFocusOnKeyboard() {
-        if (searchInput != null) {
-            searchInput.requestFocus();
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(searchInput, InputMethodManager.SHOW_IMPLICIT);
-        }
+        searchInput.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(searchInput, InputMethodManager.SHOW_IMPLICIT);
     }
 
     protected boolean isSearchViewVisible() {
