@@ -1512,7 +1512,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         boolean ret = false;
-        if (KeyEvent.ACTION_DOWN == event.getAction()) {
+        if (KeyEvent.ACTION_DOWN == event.getAction()
+                && !isSearchViewVisible()) {
             ret = onCustomKeyDown(event.getKeyCode(), event);
         }
         if (!ret) {
