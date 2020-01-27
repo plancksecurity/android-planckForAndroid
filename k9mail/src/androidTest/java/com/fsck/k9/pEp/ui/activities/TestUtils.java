@@ -291,6 +291,9 @@ public class TestUtils {
             device.waitForIdle();
         }
         doWaitForResource(viewId);
+        if (exists(onView(withId(R.id.toolbar)))) {
+            onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
+        }
         while (!buttonClicked) {
             if (exists(onView(withId(viewId))) || viewIsDisplayed(viewId)){
                 device.waitForIdle();
@@ -546,6 +549,9 @@ public class TestUtils {
             onView(withId(R.id.buttonHandshake)).perform(click());
             device.waitForIdle();
         }
+        if (exists(onView(withId(R.id.toolbar)))) {
+            onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
+        }
     }
 
     public void goToHandshakeDialog (){
@@ -564,6 +570,9 @@ public class TestUtils {
             scroll.click();
         } catch (Exception ex) {
             Timber.e("Fail: " + ex.getMessage());
+        }
+        if (exists(onView(withId(R.id.toolbar)))) {
+            onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
         }
     }
 
@@ -1099,6 +1108,9 @@ public class TestUtils {
     public void pressBack() {
         device.waitForIdle();
         waitUntilIdle();
+        if (exists(onView(withId(R.id.toolbar)))) {
+            onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
+        }
         onView(isRoot()).perform(ViewActions.pressBack());
         device.waitForIdle();
     }
