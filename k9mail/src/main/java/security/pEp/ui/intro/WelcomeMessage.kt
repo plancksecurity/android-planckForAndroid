@@ -16,6 +16,10 @@ import com.github.paolorotolo.appintro.AppIntro
 import security.pEp.ui.permissions.PermissionsActivity
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
+
+fun Context.startWelcomeActivity(context: Context) =
+        Intent(context, WelcomeMessage::class.java).let(this::startActivity)
+
 class WelcomeMessage : AppIntro() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,46 +57,42 @@ class WelcomeMessage : AppIntro() {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
     }
 
-    companion object {
 
-        fun showWelcomeMessage(context: Context) {
-            val intent = Intent(context, WelcomeMessage::class.java)
-            context.startActivity(intent)
-        }
+}
+
+
+class IntroFirstFragment : Fragment() {
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_intro_first, container, false)
+    }
+}
+
+class IntroSecondFragment : Fragment() {
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_intro_second, container, false)
     }
 
-    class IntroFirstFragment : Fragment() {
+}
 
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                                  savedInstanceState: Bundle?): View? {
-            return inflater.inflate(R.layout.fragment_intro_first, container, false)
-        }
+class IntroThirdFragment : Fragment() {
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_intro_third, container, false)
     }
 
-    class IntroSecondFragment : Fragment() {
+}
 
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                                  savedInstanceState: Bundle?): View? {
-            return inflater.inflate(R.layout.fragment_intro_second, container, false)
-        }
+class IntroFourthFragment : Fragment() {
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_intro_fourth, container, false)
     }
 
-    class IntroThirdFragment : Fragment() {
-
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                                  savedInstanceState: Bundle?): View? {
-            return inflater.inflate(R.layout.fragment_intro_third, container, false)
-        }
-
-    }
-
-    class IntroFourthFragment : Fragment() {
-
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                                  savedInstanceState: Bundle?): View? {
-            return inflater.inflate(R.layout.fragment_intro_fourth, container, false)
-        }
-
-    }
+}
 

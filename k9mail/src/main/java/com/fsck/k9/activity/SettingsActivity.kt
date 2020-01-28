@@ -51,6 +51,7 @@ import kotlinx.android.synthetic.main.accounts.*
 import kotlinx.coroutines.*
 import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
+import security.pEp.ui.intro.startWelcomeActivity
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -202,7 +203,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         if (ACTION_IMPORT_SETTINGS == intent.action) {
             onSettingsImport()
         } else if (accounts.size < 1) {
-            WelcomeMessage.showWelcomeMessage(this)
+
+            startWelcomeActivity(this)
             finish()
             return
         }
