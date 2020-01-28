@@ -57,22 +57,18 @@ class WelcomeMessage : AppIntro() {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
     }
 
-
 }
-
 
 class IntroFirstFragment : Fragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_intro_first, container, false)
     }
 }
 
 class IntroSecondFragment : Fragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_intro_second, container, false)
     }
 
@@ -80,8 +76,7 @@ class IntroSecondFragment : Fragment() {
 
 class IntroThirdFragment : Fragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_intro_third, container, false)
     }
 
@@ -89,8 +84,7 @@ class IntroThirdFragment : Fragment() {
 
 class IntroFourthFragment : Fragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_intro_fourth, container, false)
     }
 
