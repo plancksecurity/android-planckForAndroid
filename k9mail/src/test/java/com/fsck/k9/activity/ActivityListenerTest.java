@@ -3,21 +3,25 @@ package com.fsck.k9.activity;
 
 import android.content.Context;
 
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.mail.Message;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(K9RobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
+@Config(sdk = 22)
 public class ActivityListenerTest {
     private static final String FOLDER = "folder";
     private static final String ERROR_MESSAGE = "errorMessage";
@@ -29,13 +33,13 @@ public class ActivityListenerTest {
     private Message message;
     private ActivityListener activityListener;
 
-    
+
     @Before
     public void before() {
-        context = RuntimeEnvironment.application;
+        context = ApplicationProvider.getApplicationContext();
         account = createAccount();
         message = mock(Message.class);
-        
+
         activityListener = new ActivityListener();
     }
 

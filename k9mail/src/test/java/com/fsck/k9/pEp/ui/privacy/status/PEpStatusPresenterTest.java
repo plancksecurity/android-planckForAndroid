@@ -1,5 +1,7 @@
 package com.fsck.k9.pEp.ui.privacy.status;
 
+import android.content.Intent;
+
 import com.fsck.k9.activity.MessageLoaderHelper;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
@@ -82,7 +84,7 @@ public class PEpStatusPresenterTest {
     public void shouldExtractRatingWhenOnResult() throws Exception {
         presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
 
-        presenter.onResult();
+        presenter.onResult(new Intent());
 
         verify(provider).incomingMessageRating(any());
     }
@@ -91,7 +93,7 @@ public class PEpStatusPresenterTest {
     public void shouldGetRecipientsWhenOnResult() throws Exception {
         presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
 
-        presenter.onResult();
+        presenter.onResult(new Intent());
 
         verify(uiCache).getRecipients();
     }
@@ -101,7 +103,7 @@ public class PEpStatusPresenterTest {
         presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
         when(uiCache.getRecipients()).thenReturn(recipients());
 
-        presenter.onResult();
+        presenter.onResult(new Intent());
 
         verify(pEpStatusView).updateIdentities(any());
     }
@@ -111,7 +113,7 @@ public class PEpStatusPresenterTest {
         presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
         when(uiCache.getRecipients()).thenReturn(recipients());
 
-        presenter.onResult();
+        presenter.onResult(new Intent());
 
         verify(provider).getRating(any(), any(), any(), any(), any());
     }

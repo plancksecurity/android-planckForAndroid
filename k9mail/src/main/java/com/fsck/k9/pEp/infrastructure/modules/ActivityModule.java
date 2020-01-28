@@ -9,6 +9,8 @@ import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
+import security.pEp.permissions.PermissionRequester;
+import security.pEp.ui.permissions.PepPermissionRequester;
 
 @Module
 public class ActivityModule {
@@ -29,5 +31,10 @@ public class ActivityModule {
     @Named("ActivityContext")
     Context provideActivityContext() {
         return this.activity;
+    }
+
+    @Provides
+    public PermissionRequester providepEpPermissionRequestProvider() {
+        return new PepPermissionRequester(activity);
     }
 }

@@ -1,14 +1,12 @@
 package com.fsck.k9.activity
 
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -44,12 +42,19 @@ import com.fsck.k9.ui.fragmentTransaction
 import com.fsck.k9.ui.settings.account.AccountSettingsActivity
 import com.fsck.k9.ui.settings.general.GeneralSettingsActivity
 import com.fsck.k9.ui.settings.general.GeneralSettingsFragment
-import com.karumi.dexter.listener.single.CompositePermissionListener
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionDeniedResponse
+import com.karumi.dexter.listener.PermissionGrantedResponse
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.single.PermissionListener
 import kotlinx.android.synthetic.main.accounts.*
 import kotlinx.coroutines.*
+import security.pEp.permissions.PermissionChecker
+import security.pEp.permissions.PermissionRequester
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Inject
 
 
 class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
@@ -79,13 +84,16 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     /**
      * Contains information about objects that need to be retained on configuration changes.
      *
-     * @see .onRetainNonConfigurationInstance
+     * @see .onRetainCustomNonConfigurationInstance
      */
     private var nonConfigurationInstance: NonConfigurationInstance? = null
     private var accountsList: NestedListView? = null
     private var addAccountButton: View? = null
-    private val storagePermissionListener: CompositePermissionListener? = null
 
+    @Inject
+    lateinit var permissionRequester: PermissionRequester
+    @Inject
+    lateinit var permissionChecker: PermissionChecker
 
     private val storageListener = object : StorageManager.StorageListener {
 
@@ -101,15 +109,14 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     /**
      * Save the reference to a currently displayed dialog or a running AsyncTask (if available).
      */
-    // TODO: 28/9/16 Fix this
-    //    @Override
-    //    public Object onRetainNonConfigurationInstance() {
-    //        Object retain = null;
-    //        if (nonConfigurationInstance != null && nonConfigurationInstance.retain()) {
-    //            retain = nonConfigurationInstance;
-    //        }
-    //        return retain;
-    //    }
+
+    override fun onRetainCustomNonConfigurationInstance(): Any? {
+        var retain: Any? = null
+        if (nonConfigurationInstance?.retain() == true) {
+            retain = nonConfigurationInstance
+        }
+        return retain
+    }
 
     private val accounts = ArrayList<BaseAccount>()
 
@@ -205,6 +212,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             return
         }
 
+
         val startup = intent.getBooleanExtra(EXTRA_STARTUP, true)
         if (startup && K9.startIntegratedInbox() && !K9.isHideSpecialAccounts()) {
             onOpenAccount(unifiedInboxAccount)
@@ -242,24 +250,14 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
 
         setupAddAccountButton()
-        askForBatteryOptimizationWhiteListing()
     }
 
     override fun search(query: String) {
         triggerSearch(query, null)
     }
 
-    override fun showPermissionGranted(permissionName: String) {
-
-    }
-
-    override fun showPermissionDenied(permissionName: String, permanentlyDenied: Boolean) {
-        val permissionDenied = resources.getString(R.string.download_snackbar_permission_permanently_denied)
-        FeedbackTools.showLongFeedback(rootView, permissionDenied)
-    }
-
     override fun inject() {
-
+        getpEpComponent().inject(this)
     }
 
     private fun setupAddAccountButton() {
@@ -767,7 +765,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
      * changes.
      *
      * @param inst The [NonConfigurationInstance] that should be retained when
-     * [SettingsActivity.onRetainNonConfigurationInstance] is called.
+     * [SettingsActivity.onRetainCustomNonConfigurationInstance] is called.
      */
     override fun setNonConfigurationInstance(inst: NonConfigurationInstance?) {
         nonConfigurationInstance = inst
@@ -783,8 +781,26 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
     fun onExport(includeGlobals: Boolean, account: Account?) {
 
-        createStoragePermissionListeners()
-        if (hasWriteExternalPermission()) {        // TODO, prompt to allow a user to choose which accounts to export
+        permissionRequester.requestStoragePermission(
+                rootView,
+                object : PermissionListener {
+                    override fun onPermissionGranted(response: PermissionGrantedResponse?) {
+
+                    }
+
+                    override fun onPermissionRationaleShouldBeShown(permission: PermissionRequest?, token: PermissionToken?) {
+                    }
+
+                    override fun onPermissionDenied(response: PermissionDeniedResponse?) {
+                        val permissionDenied = resources.getString(R.string.download_snackbar_permission_permanently_denied)
+                        FeedbackTools.showLongFeedback(rootView, permissionDenied)
+                    }
+
+                }
+        )
+
+        if (permissionChecker.hasWriteExternalPermission()) {
+            // TODO, prompt to allow a user to choose which accounts to export
             var accountUuids: ArrayList<String>? = null
             if (account != null) {
                 accountUuids = ArrayList()
@@ -821,10 +837,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         asyncTask.execute()
     }
 
-    private fun hasWriteExternalPermission(): Boolean {
-        val res = applicationContext.checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        return res == PackageManager.PERMISSION_GRANTED
-    }
 
     internal inner class AccountListAdapter(accounts: List<BaseAccount>, private val onFolderClickListener: OnFolderClickListener, private val onBaseAccountClickListener: OnBaseAccountClickListener) : ArrayAdapter<BaseAccount>(this@SettingsActivity, 0, accounts) {
 

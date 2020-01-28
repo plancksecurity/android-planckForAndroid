@@ -1,16 +1,10 @@
 package com.fsck.k9.mailstore;
 
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Collections;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -22,6 +16,7 @@ import com.fsck.k9.mail.Multipart;
 import com.fsck.k9.mail.internet.MessageExtractor;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeUtility;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.james.mime4j.util.MimeUtil;
 import org.junit.Assert;
@@ -29,9 +24,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openintents.openpgp.util.OpenPgpUtils;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowSQLiteConnection;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Collections;
 
 @RunWith(K9RobolectricTestRunner.class)
 public class MigrationTest {
@@ -48,18 +50,18 @@ public class MigrationTest {
 
         account = getNewAccount();
 
-        StorageManager storageManager = StorageManager.getInstance(RuntimeEnvironment.application);
+        StorageManager storageManager = StorageManager.getInstance(ApplicationProvider.getApplicationContext());
         databaseFile = storageManager.getDatabase(account.getUuid(), account.getLocalStorageProviderId());
         Assert.assertTrue(databaseFile.getParentFile().isDirectory() || databaseFile.getParentFile().mkdir());
 
-        attachmentDir = StorageManager.getInstance(RuntimeEnvironment.application).getAttachmentDirectory(
+        attachmentDir = StorageManager.getInstance(ApplicationProvider.getApplicationContext()).getAttachmentDirectory(
                 account.getUuid(), account.getLocalStorageProviderId());
         Assert.assertTrue(attachmentDir.isDirectory() || attachmentDir.mkdir());
     }
 
     private SQLiteDatabase createV50Database() {
 
-        SQLiteDatabase db = RuntimeEnvironment.application.openOrCreateDatabase(databaseFile.getName(),
+        SQLiteDatabase db = ApplicationProvider.getApplicationContext().openOrCreateDatabase(databaseFile.getName(),
                 Context.MODE_PRIVATE, null);
 
         String[] v50SchemaSql = new String[] {
@@ -155,7 +157,7 @@ public class MigrationTest {
         insertSimplePlaintextMessage(db);
         db.close();
 
-        LocalStore localStore = LocalStore.getInstance(account, RuntimeEnvironment.application);
+        LocalStore localStore = LocalStore.getInstance(account, ApplicationProvider.getApplicationContext());
 
         LocalMessage msg = localStore.getFolder("dev").getMessage("3");
         FetchProfile fp = new FetchProfile();
@@ -222,7 +224,7 @@ public class MigrationTest {
         insertMixedWithAttachments(db);
         db.close();
 
-        LocalStore localStore = LocalStore.getInstance(account, RuntimeEnvironment.application);
+        LocalStore localStore = LocalStore.getInstance(account, ApplicationProvider.getApplicationContext());
 
         LocalMessage msg = localStore.getFolder("dev").getMessage("4");
         FetchProfile fp = new FetchProfile();
@@ -294,7 +296,7 @@ public class MigrationTest {
         insertPgpMimeSignedMessage(db);
         db.close();
 
-        LocalStore localStore = LocalStore.getInstance(account, RuntimeEnvironment.application);
+        LocalStore localStore = LocalStore.getInstance(account, ApplicationProvider.getApplicationContext());
 
         LocalMessage msg = localStore.getFolder("dev").getMessage("5");
         FetchProfile fp = new FetchProfile();
@@ -353,7 +355,7 @@ public class MigrationTest {
         insertPgpMimeEncryptedMessage(db);
         db.close();
 
-        LocalStore localStore = LocalStore.getInstance(account, RuntimeEnvironment.application);
+        LocalStore localStore = LocalStore.getInstance(account, ApplicationProvider.getApplicationContext());
 
         LocalMessage msg = localStore.getFolder("dev").getMessage("6");
         FetchProfile fp = new FetchProfile();
@@ -471,7 +473,7 @@ public class MigrationTest {
         insertPgpInlineEncryptedMessage(db);
         db.close();
 
-        LocalStore localStore = LocalStore.getInstance(account, RuntimeEnvironment.application);
+        LocalStore localStore = LocalStore.getInstance(account, ApplicationProvider.getApplicationContext());
 
         LocalMessage msg = localStore.getFolder("dev").getMessage("7");
         FetchProfile fp = new FetchProfile();
@@ -558,7 +560,7 @@ public class MigrationTest {
         insertPgpInlineClearsignedMessage(db);
         db.close();
 
-        LocalStore localStore = LocalStore.getInstance(account, RuntimeEnvironment.application);
+        LocalStore localStore = LocalStore.getInstance(account, ApplicationProvider.getApplicationContext());
 
         LocalMessage msg = localStore.getFolder("dev").getMessage("8");
         FetchProfile fp = new FetchProfile();
@@ -616,7 +618,7 @@ public class MigrationTest {
         insertMultipartAlternativeMessage(db);
         db.close();
 
-        LocalStore localStore = LocalStore.getInstance(account, RuntimeEnvironment.application);
+        LocalStore localStore = LocalStore.getInstance(account, ApplicationProvider.getApplicationContext());
 
         LocalMessage msg = localStore.getFolder("dev").getMessage("9");
         FetchProfile fp = new FetchProfile();
@@ -681,7 +683,7 @@ public class MigrationTest {
         insertHtmlWithRelatedMessage(db);
         db.close();
 
-        LocalStore localStore = LocalStore.getInstance(account, RuntimeEnvironment.application);
+        LocalStore localStore = LocalStore.getInstance(account, ApplicationProvider.getApplicationContext());
 
         LocalMessage msg = localStore.getFolder("dev").getMessage("10");
         FetchProfile fp = new FetchProfile();
@@ -717,7 +719,7 @@ public class MigrationTest {
     }
 
     private Account getNewAccount() {
-        Preferences preferences = Preferences.getPreferences(RuntimeEnvironment.application);
+        Preferences preferences = Preferences.getPreferences(ApplicationProvider.getApplicationContext());
 
         //FIXME: This is a hack to get Preferences into a state where it's safe to call newAccount()
         preferences.loadAccounts();

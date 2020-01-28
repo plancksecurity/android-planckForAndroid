@@ -328,6 +328,7 @@
     <string name="global_settings_messageview_return_to_list_summary">Return to message list after message deletion</string>
     <string name="global_settings_messageview_show_next_label">Show next message after delete</string>
     <string name="global_settings_messageview_show_next_summary">Show next message by default after message deletion</string>
+    <string name="global_settings_messageiew_after_delete_behavior_title">After message deleted behavior</string>
 
     <string name="global_settings_confirm_actions_title">Confirm actions</string>
     <string name="global_settings_confirm_actions_summary">Show a dialog whenever you perform selected actions</string>

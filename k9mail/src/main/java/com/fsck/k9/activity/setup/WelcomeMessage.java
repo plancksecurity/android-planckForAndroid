@@ -3,16 +3,17 @@ package com.fsck.k9.activity.setup;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.fsck.k9.pEp.PEpPermissionChecker;
-import com.fsck.k9.pEp.ui.activities.PermissionsActivity;
+import com.fsck.k9.K9;
 import com.fsck.k9.pEp.ui.fragments.intro.IntroFirstFragment;
 import com.fsck.k9.pEp.ui.fragments.intro.IntroSecondFragment;
 import com.fsck.k9.pEp.ui.fragments.intro.IntroThirdFragment;
 import com.github.paolorotolo.appintro.AppIntro;
 
+import security.pEp.ui.permissions.PermissionsActivity;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class WelcomeMessage extends AppIntro {
@@ -37,24 +38,24 @@ public class WelcomeMessage extends AppIntro {
     @Override
     public void onSkipPressed(Fragment currentFragment) {
         super.onSkipPressed(currentFragment);
-        if (PEpPermissionChecker.hasBasicPermission(this)) {
-            AccountSetupBasics.actionNewAccount(this);
-        } else {
-            PermissionsActivity.actionAskPermissions(this);
-        }
-        finish();
+        nextAction();
     }
 
     @Override
     public void onDonePressed(Fragment currentFragment) {
         super.onDonePressed(currentFragment);
-        if (PEpPermissionChecker.hasBasicPermission(this)) {
-            AccountSetupBasics.actionNewAccount(this);
-        } else {
+        nextAction();
+    }
+
+    private void nextAction() {
+        if (K9.isShallRequestPermissions()) {
             PermissionsActivity.actionAskPermissions(this);
+        } else {
+            AccountSetupBasics.actionNewAccount(this);
         }
         finish();
     }
+
 
     @Override
     public void onSlideChanged(@Nullable Fragment oldFragment, @Nullable Fragment newFragment) {

@@ -1,17 +1,14 @@
 package com.fsck.k9.mailstore;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import android.app.Application;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.BuildConfig;
@@ -20,12 +17,17 @@ import com.fsck.k9.K9;
 import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.MessagingException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -47,7 +49,7 @@ public class StoreSchemaDefinitionTest {
     public void setUp() throws MessagingException {
         ShadowLog.stream = System.out;
 
-        Application application = RuntimeEnvironment.application;
+        Application application = ApplicationProvider.getApplicationContext();
         K9.app = application;
         GlobalsHelper.setContext(application);
         StorageManager.getInstance(application);
@@ -244,7 +246,7 @@ public class StoreSchemaDefinitionTest {
     }
 
     private void assertMessageWithSubjectExists(SQLiteDatabase database, String subject) {
-        Cursor cursor = database.query("messages", new String[] { "subject" }, null, null, null, null, null);
+        Cursor cursor = database.query("messages", new String[]{"subject"}, null, null, null, null, null);
         try {
             assertTrue(cursor.moveToFirst());
             assertEquals(subject, cursor.getString(0));
@@ -298,7 +300,7 @@ public class StoreSchemaDefinitionTest {
     private List<String> objectsInDatabase(SQLiteDatabase db, String type) {
         List<String> databaseObjects = new ArrayList<>();
         Cursor cursor = db.rawQuery("SELECT sql FROM sqlite_master WHERE type = ? AND sql IS NOT NULL",
-                new String[] { type });
+                new String[]{type});
         try {
             while (cursor.moveToNext()) {
                 String sql = cursor.getString(cursor.getColumnIndex("sql"));

@@ -4427,8 +4427,9 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
         }
 
         // Do not notify if the user does not have notifications enabled or if the message has
-        // been read.
-        if (!account.isNotifyNewMail() || message.isSet(Flag.SEEN)) {
+        // been read or it is an pep-autoconsume-message.
+        if (!account.isNotifyNewMail() || message.isSet(Flag.SEEN)
+                || PEpUtils.isAutoConsumeMessage(message)) {
             return false;
         }
 

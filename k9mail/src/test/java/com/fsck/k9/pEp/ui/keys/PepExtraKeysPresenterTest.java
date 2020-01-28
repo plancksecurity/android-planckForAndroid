@@ -9,6 +9,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
@@ -39,7 +40,7 @@ public class PepExtraKeysPresenterTest {
         verify(view).showKeys(any());
     }
 
-    private List<String> keys() {
-        return Collections.emptyList();
+    private Set<String> keys() {
+        return Collections.emptySet();
     }
 }

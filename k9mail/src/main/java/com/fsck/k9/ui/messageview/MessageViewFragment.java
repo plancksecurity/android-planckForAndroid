@@ -1,6 +1,5 @@
 package com.fsck.k9.ui.messageview;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
@@ -12,10 +11,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -23,6 +18,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -52,15 +51,13 @@ import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.message.extractors.EncryptionVerifier;
-import com.fsck.k9.pEp.PEpPermissionChecker;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.ui.PermissionErrorListener;
+import com.fsck.k9.pEp.ui.fragments.PEpFragment;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
-import com.fsck.k9.pEp.ui.listeners.FragmentPermissionListener;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -68,13 +65,11 @@ import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
 import com.fsck.k9.view.MessageHeader;
-import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.single.CompositePermissionListener;
-import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener;
-
-import foundation.pEp.jniadapter.Identity;
-import foundation.pEp.jniadapter.Rating;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,12 +77,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Rating;
+import security.pEp.permissions.PermissionChecker;
+import security.pEp.permissions.PermissionRequester;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
-public class MessageViewFragment extends Fragment implements ConfirmationDialogFragmentListener,
+public class MessageViewFragment extends PEpFragment implements ConfirmationDialogFragmentListener,
         AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener {
 
     private static final String ARG_REFERENCE = "reference";
@@ -103,7 +104,6 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private Rating pEpRating;
     private PePUIArtefactCache pePUIArtefactCache;
     private boolean isMessageFullDownloaded;
-    private CompositePermissionListener storagePermissionListener;
 
     public static MessageViewFragment newInstance(MessageReference reference) {
         MessageViewFragment fragment = new MessageViewFragment();
@@ -144,6 +144,16 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     private Context mContext;
 
     private AttachmentViewInfo currentAttachmentViewInfo;
+
+    @Inject
+    PermissionRequester permissionRequester;
+    @Inject
+    PermissionChecker permissionChecker;
+
+    @Override
+    protected void inject() {
+        getpEpComponent().inject(this);
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -297,10 +307,9 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
         }
 
         if (resultCode == RESULT_OK && requestCode == PEpStatus.REQUEST_STATUS || requestCode == PEpTrustwords.REQUEST_HANDSHAKE) {
-            if (requestCode == PEpStatus.REQUEST_STATUS)  {
+            if (requestCode == PEpStatus.REQUEST_STATUS) {
                 pEpRating = (Rating) data.getSerializableExtra(PEpStatus.CURRENT_RATING);
-            }
-            else {
+            } else {
                 pEpRating = ((K9) getApplicationContext()).getpEpProvider().incomingMessageRating(mMessage);
             }
 
@@ -757,7 +766,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
 
         @Override
         public void startPendingIntentForCryptoPresenter(IntentSender si, Integer requestCode, Intent fillIntent,
-                int flagsMask, int flagValues, int extraFlags) throws SendIntentException {
+                                                         int flagsMask, int flagValues, int extraFlags) throws SendIntentException {
             if (requestCode == null) {
                 getActivity().startIntentSender(si, fillIntent, flagsMask, flagValues, extraFlags);
                 return;
@@ -1013,7 +1022,7 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     public void onSaveAttachment(AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
         createPermissionListeners();
-        if (PEpPermissionChecker.hasWriteExternalPermission(getActivity())) {
+        if (permissionChecker.hasWriteExternalPermission()) {
             getAttachmentController(attachment).saveAttachment();
         }
     }
@@ -1042,27 +1051,23 @@ public class MessageViewFragment extends Fragment implements ConfirmationDialogF
     }
 
     private void createPermissionListeners() {
-        FragmentPermissionListener feedbackViewPermissionListener = new FragmentPermissionListener(this);
+        permissionRequester.requestStoragePermission(getRootView(), new PermissionListener() {
+            @Override
+            public void onPermissionGranted(PermissionGrantedResponse response) {
 
-        String explanation = getResources().getString(R.string.download_permission_first_explanation);
-        storagePermissionListener = new CompositePermissionListener(feedbackViewPermissionListener,
-                SnackbarOnDeniedPermissionListener.Builder.with(mMessageView, explanation)
-                        .withOpenSettingsButton(R.string.button_settings)
-                        .build());
-        Dexter.withActivity(getActivity())
-                .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .withListener(storagePermissionListener)
-                .withErrorListener(new PermissionErrorListener())
-                .onSameThread()
-                .check();
-    }
+            }
 
-    public void showPermissionGranted(String permissionName) {
-    }
+            @Override
+            public void onPermissionDenied(PermissionDeniedResponse response) {
+                String permissionDenied = getResources().getString(R.string.download_snackbar_permission_permanently_denied);
+                FeedbackTools.showLongFeedback(mMessageView, permissionDenied);
+            }
 
-    public void showPermissionDenied(String permissionName, boolean permanentlyDenied) {
-        String permissionDenied = getResources().getString(R.string.download_snackbar_permission_permanently_denied);
-        FeedbackTools.showLongFeedback(mMessageView,  permissionDenied);
+            @Override
+            public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+
+            }
+        });
     }
 
     public void showPermissionRationale(PermissionToken token) {

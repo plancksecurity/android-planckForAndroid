@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--suppress AndroidElementNotAllowed -->
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><!--suppress AndroidElementNotAllowed -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:title="@string/general_settings_title">
 
@@ -198,8 +196,8 @@
                 android:title="@string/global_settings_messageview_autofit_width_label" />
             <PreferenceCategory
                 android:key="message_view_advanced"
-                app:initialExpandedChildrenCount="0"
-                app:allowDividerAbove="false">
+                app:allowDividerAbove="false"
+                app:initialExpandedChildrenCount="0">
                 <CheckBoxPreference
                     android:key="messageview_fixedwidth_font"
                     android:summary="@string/global_settings_messageview_fixedwidth_summary"
@@ -228,28 +226,32 @@
             android:key="volume_navigation"
             android:title="@string/volume_navigation_title" />
 
-        <CheckBoxPreference
-            android:key="messageview_return_to_list"
-            android:summary="@string/global_settings_messageview_return_to_list_summary"
-            android:title="@string/global_settings_messageview_return_to_list_label" />
+        <PreferenceCategory android:title="@string/global_settings_messageiew_after_delete_behavior_title">
+            <CheckBoxPreference
+                android:key="messageview_return_to_list"
+                android:summary="@string/global_settings_messageview_return_to_list_summary"
+                android:title="@string/global_settings_messageview_return_to_list_label" />
 
-        <CheckBoxPreference
-            android:key="messageview_show_next"
-            android:summary="@string/global_settings_messageview_show_next_summary"
-            android:title="@string/global_settings_messageview_show_next_label" />
+            <CheckBoxPreference
+                android:key="messageview_show_next"
+                android:summary="@string/global_settings_messageview_show_next_summary"
+                android:title="@string/global_settings_messageview_show_next_label" />
+        </PreferenceCategory>
 
-        <MultiSelectListPreference
-            android:dialogTitle="@string/global_settings_confirm_actions_title"
-            android:entries="@array/confirm_action_entries"
-            android:entryValues="@array/confirm_action_values"
-            android:key="confirm_actions"
-            android:summary="@string/global_settings_confirm_actions_summary"
-            android:title="@string/global_settings_confirm_actions_title" />
+        <PreferenceCategory>
+            <MultiSelectListPreference
+                android:dialogTitle="@string/global_settings_confirm_actions_title"
+                android:entries="@array/confirm_action_entries"
+                android:entryValues="@array/confirm_action_values"
+                android:key="confirm_actions"
+                android:summary="@string/global_settings_confirm_actions_summary"
+                android:title="@string/global_settings_confirm_actions_title" />
+        </PreferenceCategory>
 
         <PreferenceCategory
             android:key="advanced_interaction_preferences"
-            app:initialExpandedChildrenCount="0"
-            app:allowDividerAbove="false">
+            app:allowDividerAbove="false"
+            app:initialExpandedChildrenCount="0">
             <CheckBoxPreference
                 android:key="start_integrated_inbox"
                 android:title="@string/start_integrated_inbox_title" />
@@ -258,9 +260,9 @@
     </PreferenceScreen>
 
     <PreferenceScreen
-        android:title="@string/notifications_title"
         android:icon="?attr/iconPreferencesNotifications"
-        android:key="notification_preferences">
+        android:key="notification_preferences"
+        android:title="@string/notifications_title">
 
         <CheckBoxPreference
             android:key="quiet_time_enabled"
@@ -306,8 +308,8 @@
     </PreferenceScreen>
 
     <PreferenceScreen
-        android:key="pep_global"
         android:icon="?attr/iconpEpShield"
+        android:key="pep_global"
         android:title="@string/privacy_preferences">
 
         <!--<EditTextPreference-->
@@ -337,23 +339,22 @@
 
             <Preference
                 android:key="pep_key_reset"
-                android:title="@string/reset"
-                android:summary="@string/pep_key_reset_all_own_ids_summary"/>
+                android:summary="@string/pep_key_reset_all_own_ids_summary"
+                android:title="@string/reset" />
 
             <Preference
-                android:persistent="false"
                 android:key="pep_extra_keys"
+                android:persistent="false"
                 android:singleLine="true"
-                android:title="@string/master_key_management"
-                android:summary="Encrypt messages with additional keys.">
-            </Preference>
+                android:summary="Encrypt messages with additional keys."
+                android:title="@string/master_key_management"/>
 
 
             <SwitchPreferenceCompat
                 android:key="pep_enable_sync"
-                android:title="@string/pep_sync"
+                android:summaryOff="@string/pep_sync_is_disabled_global"
                 android:summaryOn="@string/pep_sync_is_enabled_global"
-                android:summaryOff="@string/pep_sync_is_disabled_global" />
+                android:title="@string/pep_sync" />
 
             <PreferenceCategory
                 android:key="pep_gpg_compatibility"
@@ -365,7 +366,6 @@
                 <CheckBoxPreference
                     android:key="pep_subject_unprotected"
                     android:title="@string/pep_subject_unprotected" />
-
 
 
                 <Preference
@@ -417,8 +417,6 @@
                 <!--/>-->
 
 
-
-
                 <!--Preference
                     android:key="pep_manage_keysync"
                     android:persistent="false"
@@ -441,12 +439,12 @@
     </PreferenceScreen>
 
     <PreferenceScreen
+        android:icon="@drawable/ic_advanced_light"
         android:key="advanced_preferences"
-        android:title="@string/advanced"
-        android:icon="@drawable/ic_advanced_light">
+        android:title="@string/advanced">
         <PreferenceCategory
-            android:title="@string/miscellaneous_preferences"
-            android:key="misc_preferences">
+            android:key="misc_preferences"
+            android:title="@string/miscellaneous_preferences">
 
             <Preference
                 android:key="attachment_default_path"
@@ -468,8 +466,8 @@
             android:title="@string/debug_preferences">
 
             <CheckBoxPreference
-                android:key="debug_logging"
                 android:icon="?attr/iconPreferencesDebug"
+                android:key="debug_logging"
                 android:summary="@string/debug_enable_debug_logging_summary"
                 android:title="@string/debug_enable_debug_logging_title" />
 

@@ -5,12 +5,14 @@ import android.content.Context;
 import android.graphics.Color;
 import android.text.SpannableString;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.mail.Address;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
@@ -25,7 +27,7 @@ public class MessageHelperTest {
 
     @Before
     public void setUp() throws Exception {
-        Context context = RuntimeEnvironment.application;
+        Context context = ApplicationProvider.getApplicationContext();
         contacts = new Contacts(context);
         mockContacts = new Contacts(context) {
             @Override public String getNameForAddress(String address) {

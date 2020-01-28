@@ -3,7 +3,9 @@ package com.fsck.k9.message.extractors;
 
 import android.content.Context;
 import android.net.Uri;
+
 import androidx.annotation.Nullable;
+import androidx.test.core.app.ApplicationProvider;
 
 import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.mail.Part;
@@ -11,13 +13,13 @@ import com.fsck.k9.mail.internet.MimeBodyPart;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
-import com.fsck.k9.mailstore.LocalBodyPart;
 import com.fsck.k9.mailstore.DeferredFileBody;
+import com.fsck.k9.mailstore.LocalBodyPart;
 import com.fsck.k9.provider.AttachmentProvider;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.assertEquals;
@@ -44,7 +46,7 @@ public class AttachmentInfoExtractorTest {
 
     @Before
     public void setUp() throws Exception {
-        context = RuntimeEnvironment.application;
+        context = ApplicationProvider.getApplicationContext();
         attachmentInfoExtractor = new AttachmentInfoExtractor(context);
     }
 
@@ -109,7 +111,7 @@ public class AttachmentInfoExtractorTest {
     public void extractInfoForDb__withContentTypeAndEncodedWordName__shouldReturnDecodedName() throws Exception {
         Part part = new MimeBodyPart();
         part.addRawHeader(MimeHeader.HEADER_CONTENT_TYPE,
-                MimeHeader.HEADER_CONTENT_TYPE + ": " +TEST_MIME_TYPE + "; name=\"=?ISO-8859-1?Q?Sm=F8rrebr=F8d?=\"");
+                MimeHeader.HEADER_CONTENT_TYPE + ": " + TEST_MIME_TYPE + "; name=\"=?ISO-8859-1?Q?Sm=F8rrebr=F8d?=\"");
 
         AttachmentViewInfo attachmentViewInfo = attachmentInfoExtractor.extractAttachmentInfoForDatabase(part);
 
