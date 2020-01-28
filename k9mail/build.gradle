@@ -66,7 +66,7 @@ dependencies {
     implementation "com.jakewharton:butterknife:${versions.butterKnife}"
     implementation "com.github.pedrovgs:renderers:${versions.renderers}"
     implementation "com.github.bumptech.glide:glide:${versions.glide}"
-    implementation "com.github.paolorotolo:appintro:${versions.appIntro}"
+    implementation "com.github.AppIntro:AppIntro:${versions.appIntro}"
     implementation "com.daimajia.swipelayout:library:${versions.swipeLayout}@aar"
     implementation "com.karumi:dexter:${versions.dexter}"
     implementation "ch.acra:acra:${versions.acra}"
