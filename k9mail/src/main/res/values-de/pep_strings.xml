@@ -133,9 +133,6 @@
     <string name="is_not_always_secure">Nachrichten auf Server ungeschützt speichern</string>
     <string name="master_key_management">Hauptschlüsselverwaltung</string>
     <string name="message_saving_error">Fehler beim Speichern der Nachricht</string>
-    <string name="intro_first_text">Verschlüsselt und anonymisiert Ihre Nachrichten automatisch</string>
-    <string name="intro_second_text">Verhindert Identitätsdiebstahl. Stoppt Spam und Phishing.</string>
-    <string name="intro_third_text">Zeigt Ihnen die Sicherheit Ihrer Kommunikation mit Ampelfarben an.</string>
     <string name="action_continue">Weiter</string>
     <string name="battery_optimization_rationale_title">Energiesparmodus deaktivieren</string>
     <string name="battery_optimiazation_explanation">Um Ihre Nachrichten im Hintergrund synchronisieren zu können, muss der Energiesparmodus deaktiviert werden</string>
