@@ -49,14 +49,8 @@ class WelcomeMessage : AppIntro() {
         finish()
     }
 
-
-    override fun onSlideChanged(oldFragment: Fragment?, newFragment: Fragment?) {
-        super.onSlideChanged(oldFragment, newFragment)
-    }
-
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
-
     }
 
     companion object {
@@ -101,4 +95,4 @@ class WelcomeMessage : AppIntro() {
         }
 
     }
-}
+
