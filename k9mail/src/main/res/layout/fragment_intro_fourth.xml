@@ -4,25 +4,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/pep_red"
-    tools:context="com.fsck.k9.security.pEp.ui.intro.IntroThirdFragment">
+    tools:context="com.fsck.k9.security.pEp.ui.intro.IntroFourthFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center">
-        <ImageView android:id="@+id/intro_image"
+
+        <ImageView
+            android:id="@+id/intro_image"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:padding="32dp"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/intro_faces"/>
+            android:src="@drawable/intro_faces" />
+
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="24dp"
             android:layout_marginTop="16dp"
             android:tint="@color/white"
             app:srcCompat="@drawable/ic_peplogo" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -32,7 +36,7 @@
             android:textSize="16sp"
             android:textColor="@color/white"
             android:gravity="center"
-            android:fontFamily="fonts/UniversLTStd.otf"
+            android:fontFamily="@font/univers_lts_sd"
             android:text="@string/intro_third_text" />
     </LinearLayout>
 

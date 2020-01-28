@@ -11,24 +11,29 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:gravity="center"
             android:orientation="horizontal">
-            <ImageView android:id="@+id/intro_image"
+
+            <ImageView
+                android:id="@+id/intro_image"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:padding="16dp"
                 android:layout_gravity="center_horizontal"
-                android:src="@drawable/intro_second_slide"/>
+                android:src="@drawable/intro_second_slide" />
         </LinearLayout>
+
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="24dp"
             android:layout_marginTop="16dp"
             android:tint="@color/white"
             app:srcCompat="@drawable/ic_peplogo" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -38,7 +43,7 @@
             android:textSize="16sp"
             android:textColor="@color/white"
             android:gravity="center"
-            android:fontFamily="fonts/UniversLTStd.otf"
+            android:fontFamily="@font/univers_lts_sd"
             android:text="@string/intro_second_text" />
     </LinearLayout>
 
