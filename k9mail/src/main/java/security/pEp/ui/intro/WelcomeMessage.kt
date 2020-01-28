@@ -6,13 +6,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-
 import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.github.paolorotolo.appintro.AppIntro
-
 import security.pEp.ui.permissions.PermissionsActivity
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
@@ -31,7 +30,19 @@ class WelcomeMessage : AppIntro() {
         addSlide(IntroFourthFragment())
 
         showSkipButton(true)
+        setAppIntroColors()
         isProgressButtonEnabled = true
+    }
+
+    private fun setAppIntroColors() {
+        val primaryColor = ContextCompat.getColor(this, R.color.colorPrimary)
+        val white = ContextCompat.getColor(this, R.color.white)
+        val lightGray = ContextCompat.getColor(this, R.color.light_gray)
+        setIndicatorColor(primaryColor, lightGray)
+        setSeparatorColor(white)
+        setColorSkipButton(primaryColor)
+        setColorDoneText(primaryColor)
+        setNextArrowColor(primaryColor)
     }
 
     override fun onSkipPressed(currentFragment: Fragment?) {
