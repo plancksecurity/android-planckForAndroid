@@ -1,0 +1,39 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/pep_red"
+    tools:context="com.fsck.k9.pEp.ui.fragments.intro.IntroThirdFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+        <ImageView android:id="@+id/intro_image"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:padding="32dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/intro_faces"/>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_marginTop="16dp"
+            android:tint="@color/white"
+            app:srcCompat="@drawable/ic_peplogo" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingRight="16dp"
+            android:paddingLeft="16dp"
+            android:paddingTop="8dp"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:fontFamily="fonts/UniversLTStd.otf"
+            android:text="@string/intro_third_text" />
+    </LinearLayout>
+
+</FrameLayout>

@@ -16,10 +16,10 @@ import com.github.paolorotolo.appintro.AppIntro;
 import security.pEp.ui.permissions.PermissionsActivity;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class WelcomeMessage extends AppIntro {
+public class WelcomeMessageOld extends AppIntro {
 
     public static void showWelcomeMessage(Context context) {
-        Intent intent = new Intent(context, WelcomeMessage.class);
+        Intent intent = new Intent(context, WelcomeMessageOld.class);
         context.startActivity(intent);
     }
 
