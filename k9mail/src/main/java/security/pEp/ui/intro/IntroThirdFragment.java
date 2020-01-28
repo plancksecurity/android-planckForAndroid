@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp.ui.fragments.intro;
+package security.pEp.ui.intro;
 
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
@@ -8,12 +8,12 @@ import android.view.ViewGroup;
 
 import com.fsck.k9.R;
 
-public class IntroSecondFragment extends Fragment {
+public class IntroThirdFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_intro_second, container, false);
+        return inflater.inflate(R.layout.fragment_intro_third, container, false);
     }
 
 }

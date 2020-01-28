@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/pep_green"
-    tools:context="com.fsck.k9.pEp.ui.fragments.intro.IntroFirstFragment">
+    tools:context="com.fsck.k9.security.pEp.ui.intro.IntroFirstFragment">
 
         <LinearLayout
             android:layout_width="match_parent"

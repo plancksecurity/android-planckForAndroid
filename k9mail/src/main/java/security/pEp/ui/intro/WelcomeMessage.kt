@@ -1,4 +1,4 @@
-package com.fsck.k9.activity.setup
+package security.pEp.ui.intro
 
 import android.content.Context
 import android.content.Intent
@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 
 import com.fsck.k9.K9
 import com.fsck.k9.R
+import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.github.paolorotolo.appintro.AppIntro
 
 import security.pEp.ui.permissions.PermissionsActivity

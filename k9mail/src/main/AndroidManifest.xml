@@ -129,7 +129,7 @@
 
 
         <activity
-            android:name=".activity.setup.WelcomeMessage"
+            android:name="security.pEp.ui.intro.WelcomeMessage"
             android:configChanges="locale"
             android:label="@string/welcome_message_title"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />

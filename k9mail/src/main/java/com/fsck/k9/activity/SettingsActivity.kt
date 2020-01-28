@@ -22,7 +22,7 @@ import androidx.preference.PreferenceScreen
 import com.fsck.k9.*
 import com.fsck.k9.activity.misc.NonConfigurationInstance
 import com.fsck.k9.activity.setup.AccountSetupBasics
-import com.fsck.k9.activity.setup.WelcomeMessage
+import security.pEp.ui.intro.WelcomeMessage
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.helper.SizeFormatter
 import com.fsck.k9.mailstore.LocalFolder
