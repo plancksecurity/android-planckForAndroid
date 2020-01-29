@@ -2354,7 +2354,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             }
 
         } else if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
-            updateToolbarColorToOriginal();
+            if(!isThreadDisplayed) {
+                updateToolbarColorToOriginal();
+            }
             showMessageList();
         } else if (isThreadDisplayed) {
             actionDisplaySearch(this, mSearch, false, false);
