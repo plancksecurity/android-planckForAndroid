@@ -473,7 +473,6 @@ public class FolderList extends K9ListActivity {
         MessagingController.getInstance(getApplication()).addListener(mAdapter.mListener);
         //mAccount.refresh(Preferences.getPreferences(this));
         MessagingController.getInstance(getApplication()).getAccountStats(this, mAccount, mAdapter.mListener);
-        mListView.setFocusable(false);
         onRefresh(!REFRESH_REMOTE);
 
         MessagingController.getInstance(getApplication()).cancelNotificationsForAccount(mAccount);
@@ -697,7 +696,6 @@ public class FolderList extends K9ListActivity {
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                folderSearchView.setInputType(InputType.TYPE_NULL);
                 getToolbar().setTitle(R.string.folders_title);
                 return true;
             }
