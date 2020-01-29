@@ -186,6 +186,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private Account lastUsedAccount;
     private SearchAccount unifiedInboxAccount;
     private SearchAccount allMessagesAccount;
+    private String specialAccountUuid;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
             boolean noThreading, boolean newTask, boolean isFolder) {
@@ -261,6 +262,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void updateMessagesForSpecificInbox(SearchAccount searchAccount) {
+        specialAccountUuid = searchAccount.getUuid();
         LocalSearch search = searchAccount.getRelatedSearch();
         MessageListFragment fragment = MessageListFragment.newInstance(search, false, false);
         addMessageListFragment(fragment, !isHomeScreen(search));
@@ -420,8 +422,13 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     public void search(String query) {
         if (mAccount != null && query != null) {
             final Bundle appData = new Bundle();
-            appData.putString(EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
-            appData.putString(EXTRA_SEARCH_FOLDER, mFolderName);
+            if(specialAccountUuid != null) {
+                appData.putString(EXTRA_SEARCH_ACCOUNT, specialAccountUuid);
+            }
+            else {
+                appData.putString(EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
+                appData.putString(EXTRA_SEARCH_FOLDER, mFolderName);
+            }
             triggerSearch(query, appData);
         }
     }
@@ -1191,8 +1198,19 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
         if (!hasMessageListFragment) {
             FragmentTransaction ft = fragmentManager.beginTransaction();
-            mMessageListFragment = MessageListFragment.newInstance(mSearch, false,
-                    (K9.isThreadedViewEnabled() && !mNoThreading));
+            if(mSearch.searchAllAccounts()) {
+                if(specialAccountUuid.equals(SearchAccount.UNIFIED_INBOX)) {
+                    mMessageListFragment = MessageListFragment.newInstance(mSearch, false, false);
+                }
+                else if(specialAccountUuid.equals(SearchAccount.ALL_MESSAGES)) {
+                    mMessageListFragment = MessageListFragment.newInstance(mSearch, false, false);
+                }
+                specialAccountUuid = null;
+            }
+            else {
+                mMessageListFragment = MessageListFragment.newInstance(mSearch, false,
+                        (K9.isThreadedViewEnabled() && !mNoThreading));
+            }
             ft.add(R.id.message_list_container, mMessageListFragment);
             ft.commit();
         }
@@ -1324,25 +1342,31 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
                 //Query was received from Search Dialog
                 String query = intent.getStringExtra(SearchManager.QUERY).trim();
-                mSearch = new LocalSearch(getString(R.string.search_results));
+                Bundle appData = intent.getBundleExtra(SearchManager.APP_DATA);
+                if (appData != null) {
+                    String accountExtra = appData.getString(EXTRA_SEARCH_ACCOUNT);
+                    mSearch = new LocalSearch(getString(R.string.search_results));
+                    if(accountExtra.equals(SearchAccount.UNIFIED_INBOX)) {
+                        prepareSpecialManualSearch(accountExtra, query, SearchField.INTEGRATE);
+                    }
+                    else if(accountExtra.equals(SearchAccount.ALL_MESSAGES)) {
+                        prepareSpecialManualSearch(accountExtra, query,SearchField.SEARCHABLE);
+                    }
+                    else {
+                        mSearch.addAccountUuid(appData.getString(EXTRA_SEARCH_ACCOUNT));
+                        addManualSearchConditions(query);
+                        if (appData.getString(EXTRA_SEARCH_FOLDER) != null) {
+                            mSearch.addAllowedFolder(appData.getString(EXTRA_SEARCH_FOLDER));
+                        }
+                    }
+                }
+                else {
+                    mSearch.addAccountUuid(LocalSearch.ALL_ACCOUNTS);
+                }
+
                 mSearch.setManualSearch(true);
                 mNoThreading = true;
 
-                mSearch.or(new SearchCondition(SearchField.SENDER, Attribute.CONTAINS, query));
-                mSearch.or(new SearchCondition(SearchField.SUBJECT, Attribute.CONTAINS, query));
-                mSearch.or(new SearchCondition(SearchField.MESSAGE_CONTENTS, Attribute.CONTAINS, query));
-                mSearch.or(new SearchCondition(SearchField.TO, Attribute.CONTAINS, query));
-
-                Bundle appData = intent.getBundleExtra(SearchManager.APP_DATA);
-                if (appData != null) {
-                    mSearch.addAccountUuid(appData.getString(EXTRA_SEARCH_ACCOUNT));
-                    // searches started from a folder list activity will provide an account, but no folder
-                    if (appData.getString(EXTRA_SEARCH_FOLDER) != null) {
-                        mSearch.addAllowedFolder(appData.getString(EXTRA_SEARCH_FOLDER));
-                    }
-                } else {
-                    mSearch.addAccountUuid(LocalSearch.ALL_ACCOUNTS);
-                }
             }
         } else if (intent.hasExtra(EXTRA_SEARCH_OLD)) {
             mSearch = intent.getParcelableExtra(EXTRA_SEARCH_OLD);
@@ -1406,6 +1430,21 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
         mActionBarSubTitle.setVisibility(Intent.ACTION_SEARCH.equals(intent.getAction()) || !mSingleFolderMode  ? View.GONE : View.VISIBLE);
         return true;
+    }
+
+    private void prepareSpecialManualSearch(String accountExtra, String query, SearchField searchField) {
+        specialAccountUuid = accountExtra;
+        mSearch.addAccountUuid(LocalSearch.ALL_ACCOUNTS);
+        addManualSearchConditions(query);
+        mSearch.and(searchField, "1", Attribute.EQUALS);
+    }
+
+    private void addManualSearchConditions(String query) {
+        mSearch.or(new SearchCondition(SearchField.SENDER, Attribute.CONTAINS, query));
+        mSearch.or(new SearchCondition(SearchField.SUBJECT, Attribute.CONTAINS, query));
+        mSearch.or(new SearchCondition(SearchField.MESSAGE_CONTENTS, Attribute.CONTAINS, query));
+        mSearch.or(new SearchCondition(SearchField.TO, Attribute.CONTAINS, query));
+
     }
 
     @Override
