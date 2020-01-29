@@ -11,7 +11,12 @@ import androidx.fragment.app.Fragment
 import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.setup.AccountSetupBasics
+import com.fsck.k9.helper.ContactPicture
+import com.fsck.k9.mail.Address
 import com.github.paolorotolo.appintro.AppIntro
+import foundation.pEp.jniadapter.Rating
+import kotlinx.android.synthetic.main.fragment_intro_first.*
+import kotlinx.android.synthetic.main.fragment_intro_fourth.*
 import security.pEp.ui.permissions.PermissionsActivity
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
@@ -75,6 +80,22 @@ class IntroFirstFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_intro_first, container, false)
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        startImage()
+        startTexts();
+    }
+
+    private fun startTexts() {
+
+    }
+
+    private fun startImage() {
+        val address = Address("A")
+        contactBadge.setPepRating(Rating.pEpRatingReliable, true)
+        ContactPicture.getGrayPictureLoader(context).loadContactPicture(address, contactBadge)
+    }
 }
 
 class IntroSecondFragment : Fragment() {
@@ -97,6 +118,20 @@ class IntroFourthFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_intro_fourth, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        startImage()
+    }
+
+    private fun startImage() {
+        var address = Address("A")
+        secureBadge.setPepRating(Rating.pEpRatingReliable, true)
+        ContactPicture.getGrayPictureLoader(context).loadContactPicture(address, secureBadge)
+        address = Address("B")
+        secureTrustedBadge.setPepRating(Rating.pEpRatingTrusted, true)
+        ContactPicture.getGrayPictureLoader(context).loadContactPicture(address, secureTrustedBadge)
     }
 
 }
