@@ -184,6 +184,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         messageLoaderHelper = new MessageLoaderHelper(
                 context, getLoaderManager(), getFragmentManager(), messageLoaderCallbacks);
         mInitialized = true;
+        ((MessageList) getActivity()).hideSearchView();
     }
 
     @Override

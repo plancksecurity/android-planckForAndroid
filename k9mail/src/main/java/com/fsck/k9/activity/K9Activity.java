@@ -46,6 +46,8 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
     private K9ActivityCommon mBase;
     private View.OnClickListener onCloseSearchClickListener;
+    private boolean isAndroidLollipop = Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP ||
+            Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -97,16 +99,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     public void setUpToolbar(boolean showUpButton, View.OnClickListener onCloseSearchClickListener) {
         setUpToolbar(showUpButton);
         this.onCloseSearchClickListener = onCloseSearchClickListener;
-    }
-
-    @Nullable @OnClick(R.id.search_clear)
-    void onClearSeachClicked() {
-        hideSearchView();
-        if (onCloseSearchClickListener != null) {
-            onCloseSearchClickListener.onClick(null);
-        }
-        searchInput.setText(null);
-        KeyboardUtils.hideKeyboard(searchInput);
     }
 
     public Toolbar getToolbar() {
@@ -183,31 +175,47 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         return (ViewGroup) ((ViewGroup) this.findViewById(android.R.id.content)).getChildAt(0);
     }
 
+    public boolean isAndroidLollipop() {
+        return isAndroidLollipop;
+    }
+
     public void showSearchView() {
-        if(Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP ||
-                Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1) {
+        if (isAndroidLollipop) {
             onSearchRequested();
         } else {
-            if (toolbarSearchContainer != null && toolbar != null) {
+            if (toolbarSearchContainer != null && toolbar != null
+                    && searchInput != null) {
                 toolbarSearchContainer.setVisibility(View.VISIBLE);
                 toolbar.setVisibility(View.GONE);
+                searchInput.setEnabled(true);
                 setFocusOnKeyboard();
+                searchInput.setError(null);
             }
         }
     }
 
     private void setFocusOnKeyboard() {
-        if (searchInput != null) {
-            searchInput.requestFocus();
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(searchInput, InputMethodManager.SHOW_IMPLICIT);
-        }
+        searchInput.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(searchInput, InputMethodManager.SHOW_IMPLICIT);
     }
 
+    protected boolean isSearchViewVisible() {
+        return toolbarSearchContainer != null && toolbarSearchContainer.getVisibility() == View.VISIBLE;
+    }
+
+    @Nullable @OnClick(R.id.search_clear)
     public void hideSearchView() {
-        if (toolbarSearchContainer != null && toolbar != null) {
+        if (searchInput != null &&
+            toolbarSearchContainer != null && toolbar != null) {
             toolbarSearchContainer.setVisibility(View.GONE);
             toolbar.setVisibility(View.VISIBLE);
+            searchInput.setEnabled(false);
+            searchInput.setText(null);
+            KeyboardUtils.hideKeyboard(searchInput);
+            if (onCloseSearchClickListener != null) {
+                onCloseSearchClickListener.onClick(null);
+            }
         }
     }
 
@@ -225,22 +233,18 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     @Nullable @OnEditorAction(R.id.search_input)
     boolean onSearchInputSubmitted(KeyEvent keyEvent) {
         if (searchInput != null) {
-            String searchedText = searchInput.getText().toString();
-            if (!searchedText.trim().isEmpty()) {
-                search(searchInput.getText().toString());
-                return true;
+            if (keyEvent != null && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                String searchedText = searchInput.getText().toString();
+                if (!searchedText.trim().isEmpty()) {
+                    search(searchInput.getText().toString());
+                    return true;
+                }
+                else {
+                    searchInput.setError(getString(R.string.search_empty_error));
+                }
             }
         }
         return false;
-    }
-
-    @Nullable @OnClick(R.id.search_clear)
-    public void onClearText() {
-        if (searchInput != null) {
-            searchInput.setText(null);
-            hideSearchView();
-            KeyboardUtils.hideKeyboard(searchInput);
-        }
     }
 
     public void bindViews(@LayoutRes int layoutId) {

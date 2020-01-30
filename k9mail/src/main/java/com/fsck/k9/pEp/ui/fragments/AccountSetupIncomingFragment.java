@@ -273,7 +273,6 @@ public class AccountSetupIncomingFragment extends PEpFragment {
 
                 if (!editSettings) {
                     rootView.findViewById(R.id.imap_folder_setup_section).setVisibility(View.GONE);
-                    ((K9Activity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 }
             } else if (ServerSettings.Type.WebDAV == settings.type) {
                 serverLabelView.setText(R.string.account_setup_incoming_webdav_server_label);

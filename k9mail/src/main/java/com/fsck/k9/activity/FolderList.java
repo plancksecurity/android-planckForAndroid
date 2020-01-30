@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils.TruncateAt;
 import android.text.TextWatcher;
 import android.text.format.DateUtils;
@@ -21,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -336,8 +338,13 @@ public class FolderList extends K9ListActivity {
         searchInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (searchInput!= null && !searchInput.getText().toString().isEmpty()) {
-                    search(searchInput.getText().toString());
+                if (actionId == EditorInfo.IME_ACTION_SEARCH || (event != null && event.getAction() == KeyEvent.ACTION_DOWN)) {
+                    if (searchInput != null && !searchInput.getText().toString().isEmpty()) {
+                        search(searchInput.getText().toString());
+                    }
+                    else {
+                        searchInput.setError(getString(R.string.search_empty_error));
+                    }
                 }
                 return true;
             }
@@ -346,9 +353,7 @@ public class FolderList extends K9ListActivity {
         clearSearchIcon.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchInput.setText(null);
                 hideSearchView();
-                KeyboardUtils.hideKeyboard(searchInput);
             }
         });
     }
@@ -369,15 +374,20 @@ public class FolderList extends K9ListActivity {
             if (searchLayout != null) {
                 getToolbar().setVisibility(View.GONE);
                 searchLayout.setVisibility(View.VISIBLE);
+                searchInput.setEnabled(true);
                 setFocusOnKeyboard();
+                searchInput.setError(null);
             }
         }
     }
 
     public void hideSearchView() {
         if (searchLayout != null) {
-            getToolbar().setVisibility(View.VISIBLE);
             searchLayout.setVisibility(View.GONE);
+            getToolbar().setVisibility(View.VISIBLE);
+            searchInput.setEnabled(false);
+            searchInput.setText(null);
+            KeyboardUtils.hideKeyboard(searchInput);
         }
     }
 
@@ -448,7 +458,7 @@ public class FolderList extends K9ListActivity {
      */
     @Override public void onResume() {
         super.onResume();
-
+        hideSearchView();
         if (!mAccount.isAvailable(this)) {
             Timber.i("account unavaliabale, not showing folder-list but account-list");
             SettingsActivity.Companion.listAccounts(this);
@@ -463,7 +473,6 @@ public class FolderList extends K9ListActivity {
         MessagingController.getInstance(getApplication()).addListener(mAdapter.mListener);
         //mAccount.refresh(Preferences.getPreferences(this));
         MessagingController.getInstance(getApplication()).getAccountStats(this, mAccount, mAdapter.mListener);
-
         onRefresh(!REFRESH_REMOTE);
 
         MessagingController.getInstance(getApplication()).cancelNotificationsForAccount(mAccount);
@@ -474,37 +483,37 @@ public class FolderList extends K9ListActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         //Shortcuts that work no matter what is selected
         switch (keyCode) {
-        case KeyEvent.KEYCODE_Q: {
-            onAccounts();
-            return true;
-        }
+            case KeyEvent.KEYCODE_Q: {
+                onAccounts();
+                return true;
+            }
 
-        case KeyEvent.KEYCODE_S: {
-            onEditSettings();
-            return true;
-        }
+            case KeyEvent.KEYCODE_S: {
+                onEditSettings();
+                return true;
+            }
 
-        case KeyEvent.KEYCODE_H: {
-            FeedbackTools.showLongFeedback(getListView(), getString(R.string.folder_list_help_key));
-            return true;
-        }
+            case KeyEvent.KEYCODE_H: {
+                FeedbackTools.showLongFeedback(getListView(), getString(R.string.folder_list_help_key));
+                return true;
+            }
 
-        case KeyEvent.KEYCODE_1: {
-            setDisplayMode(FolderMode.FIRST_CLASS);
-            return true;
-        }
-        case KeyEvent.KEYCODE_2: {
-            setDisplayMode(FolderMode.FIRST_AND_SECOND_CLASS);
-            return true;
-        }
-        case KeyEvent.KEYCODE_3: {
-            setDisplayMode(FolderMode.NOT_SECOND_CLASS);
-            return true;
-        }
-        case KeyEvent.KEYCODE_4: {
-            setDisplayMode(FolderMode.ALL);
-            return true;
-        }
+            case KeyEvent.KEYCODE_1: {
+                setDisplayMode(FolderMode.FIRST_CLASS);
+                return true;
+            }
+            case KeyEvent.KEYCODE_2: {
+                setDisplayMode(FolderMode.FIRST_AND_SECOND_CLASS);
+                return true;
+            }
+            case KeyEvent.KEYCODE_3: {
+                setDisplayMode(FolderMode.NOT_SECOND_CLASS);
+                return true;
+            }
+            case KeyEvent.KEYCODE_4: {
+                setDisplayMode(FolderMode.ALL);
+                return true;
+            }
         }//switch
 
 
@@ -533,8 +542,7 @@ public class FolderList extends K9ListActivity {
     }
 
     private void onAccounts() {
-        SettingsActivity.Companion.listAccounts(this);
-        finish();
+        SettingsActivity.launch(this);
     }
 
     private void onEmptyTrash(final Account account) {
@@ -678,12 +686,17 @@ public class FolderList extends K9ListActivity {
             }
         });
 
-        folderSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
+        folderMenuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                menu.findItem(R.id.search).setVisible(false);
+                return true;
+            }
 
             @Override
-            public boolean onClose() {
+            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
                 getToolbar().setTitle(R.string.folders_title);
-                return false;
+                return true;
             }
         });
     }
@@ -1290,6 +1303,16 @@ public class FolderList extends K9ListActivity {
         @Override
         public void onClick(View v) {
             MessageList.actionDisplaySearch(FolderList.this, search, true, false, true);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(searchLayout != null && searchLayout.getVisibility() == View.VISIBLE) {
+            hideSearchView();
+        }
+        else {
+            super.onBackPressed();
         }
     }
 }

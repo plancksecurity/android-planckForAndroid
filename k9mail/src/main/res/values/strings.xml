@@ -1311,4 +1311,5 @@ You can keep this message and use it as a backup for your secret key. If you wan
 
     <string name="switch_on">On</string>
     <string name="switch_off">Off</string>
+    <string name="search_empty_error">Please write text to search</string>
 </resources>
