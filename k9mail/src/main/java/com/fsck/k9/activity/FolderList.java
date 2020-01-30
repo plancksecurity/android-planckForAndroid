@@ -542,8 +542,7 @@ public class FolderList extends K9ListActivity {
     }
 
     private void onAccounts() {
-        SettingsActivity.Companion.listAccounts(this);
-        finish();
+        SettingsActivity.launch(this);
     }
 
     private void onEmptyTrash(final Account account) {
