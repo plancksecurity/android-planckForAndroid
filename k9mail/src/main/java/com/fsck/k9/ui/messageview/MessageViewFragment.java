@@ -695,7 +695,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     }
 
     public boolean isMessageRead() {
-        return (mMessage != null) ? mMessage.isSet(Flag.SEEN) : false;
+        return (mMessage != null) && mMessage.isSet(Flag.SEEN);
     }
 
     public boolean isCopyCapable() {
