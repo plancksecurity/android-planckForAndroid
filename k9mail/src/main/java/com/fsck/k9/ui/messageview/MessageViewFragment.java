@@ -22,6 +22,7 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.loader.app.LoaderManager;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -181,8 +182,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         mController = MessagingController.getInstance(context);
         downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         messageCryptoPresenter = new MessageCryptoPresenter(savedInstanceState, messageCryptoMvpView);
-        messageLoaderHelper = new MessageLoaderHelper(
-                context, getLoaderManager(), getFragmentManager(), messageLoaderCallbacks);
+        messageLoaderHelper = new MessageLoaderHelper(context,  LoaderManager.getInstance(this), getFragmentManager(), messageLoaderCallbacks);
         mInitialized = true;
         ((MessageList) getActivity()).hideSearchView();
     }
@@ -192,8 +192,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         super.onResume();
         ((DrawerLocker) getActivity()).setDrawerEnabled(false);
         Context context = getActivity().getApplicationContext();
-        messageLoaderHelper =
-                new MessageLoaderHelper(context, getLoaderManager(), getFragmentManager(), messageLoaderCallbacks);
+        messageLoaderHelper = new MessageLoaderHelper(context,  LoaderManager.getInstance(this), getFragmentManager(), messageLoaderCallbacks);
 
         Bundle arguments = getArguments();
         String messageReferenceString = arguments.getString(ARG_REFERENCE);
