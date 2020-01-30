@@ -1,5 +1,6 @@
 package com.fsck.k9.activity;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
@@ -179,9 +180,16 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         return isAndroidLollipop;
     }
 
+    protected void showComposeFab(boolean showornot) {
+        findViewById(R.id.fab_button_compose_message).setVisibility(showornot? View.VISIBLE : View.GONE);
+    }
+
     public void showSearchView() {
         if (isAndroidLollipop) {
             onSearchRequested();
+            showComposeFab(false);
+            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+            searchManager.setOnDismissListener(() -> showComposeFab(true));
         } else {
             if (toolbarSearchContainer != null && toolbar != null
                     && searchInput != null) {
@@ -190,6 +198,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
                 searchInput.setEnabled(true);
                 setFocusOnKeyboard();
                 searchInput.setError(null);
+                showComposeFab(false);
             }
         }
     }
@@ -216,6 +225,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             if (onCloseSearchClickListener != null) {
                 onCloseSearchClickListener.onClick(null);
             }
+            showComposeFab(true);
         }
     }
 
