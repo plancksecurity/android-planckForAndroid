@@ -188,60 +188,8 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        ((DrawerLocker) getActivity()).setDrawerEnabled(false);
-        Context context = getActivity().getApplicationContext();
-        messageLoaderHelper = new MessageLoaderHelper(context,  LoaderManager.getInstance(this), getFragmentManager(), messageLoaderCallbacks);
-
-        Bundle arguments = getArguments();
-        String messageReferenceString = arguments.getString(ARG_REFERENCE);
-        MessageReference messageReference = MessageReference.parse(messageReferenceString);
-
-        displayMessage(messageReference);
-        mMessageView.setPrivacyProtected(mAccount.ispEpPrivacyProtected());
-    }
-
-    private void setupSwipeDetector() {
-        ((MessageList) getActivity()).setupGestureDetector(this);
-    }
-
-    @Override
-    public void onSwipeRightToLeft(MotionEvent e1, MotionEvent e2) {
-        ((MessageList) getActivity()).showNextMessage();
-    }
-
-    @Override
-    public void onSwipeLeftToRight(MotionEvent e1, MotionEvent e2) {
-        ((MessageList) getActivity()).showPreviousMessage();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        messageCryptoPresenter.onSaveInstanceState(outState);
-
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        Activity activity = getActivity();
-        boolean isChangingConfigurations = activity != null && activity.isChangingConfigurations();
-        if (isChangingConfigurations) {
-            messageLoaderHelper.onDestroyChangingConfigurations();
-            return;
-        }
-        if (messageLoaderHelper != null) {
-            messageLoaderHelper.onDestroy();
-        }
-        getActivity().setResult(RESULT_CANCELED);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService
                 (Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.message, container, false);
@@ -263,6 +211,58 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
         pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((DrawerLocker) getActivity()).setDrawerEnabled(false);
+        Context context = getActivity().getApplicationContext();
+        messageLoaderHelper = new MessageLoaderHelper(context,  LoaderManager.getInstance(this), getFragmentManager(), messageLoaderCallbacks);
+
+        Bundle arguments = getArguments();
+        String messageReferenceString = arguments.getString(ARG_REFERENCE);
+        MessageReference messageReference = MessageReference.parse(messageReferenceString);
+
+        displayMessage(messageReference);
+        mMessageView.setPrivacyProtected(mAccount.ispEpPrivacyProtected());
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        Activity activity = getActivity();
+        boolean isChangingConfigurations = activity != null && activity.isChangingConfigurations();
+        if (isChangingConfigurations) {
+            messageLoaderHelper.onDestroyChangingConfigurations();
+            return;
+        }
+        if (messageLoaderHelper != null) {
+            messageLoaderHelper.onDestroy();
+        }
+        getActivity().setResult(RESULT_CANCELED);
+    }
+
+    private void setupSwipeDetector() {
+        ((MessageList) getActivity()).setupGestureDetector(this);
+    }
+
+    @Override
+    public void onSwipeRightToLeft(MotionEvent e1, MotionEvent e2) {
+        ((MessageList) getActivity()).showNextMessage();
+    }
+
+    @Override
+    public void onSwipeLeftToRight(MotionEvent e1, MotionEvent e2) {
+        ((MessageList) getActivity()).showPreviousMessage();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        messageCryptoPresenter.onSaveInstanceState(outState);
+
+        super.onSaveInstanceState(outState);
     }
 
     private void setMessageOptionsListener() {
