@@ -1866,6 +1866,7 @@ public class K9 extends MultiDexApplication {
                     new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_LONG).show());
                     break;
                 case SyncNotifySole:
+                    needsFastPoll = false;
                     grouped = false;
                     break;
                 case SyncNotifyInGroup:
