@@ -280,11 +280,6 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         });
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
     private void displayMessage(MessageReference messageReference) {
         mMessageReference = messageReference;
         Timber.d("MessageView displaying message %s", mMessageReference);
