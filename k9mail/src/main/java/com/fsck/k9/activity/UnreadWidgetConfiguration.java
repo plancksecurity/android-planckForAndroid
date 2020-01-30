@@ -51,7 +51,7 @@ public class UnreadWidgetConfiguration extends AccountList {
             return;
         }
 
-        setTitle(R.string.unread_widget_select_account);
+        initializeToolbar(false, R.string.unread_widget_select_account);
     }
 
     @Override
