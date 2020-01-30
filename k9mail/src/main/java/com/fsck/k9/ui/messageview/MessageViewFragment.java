@@ -247,7 +247,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
                 (Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.message, container, false);
 
-        mMessageView = (MessageTopView) view.findViewById(R.id.message_view);
+        mMessageView = view.findViewById(R.id.message_view);
         mMessageView.setAttachmentCallback(this);
         mMessageView.setMessageCryptoPresenter(messageCryptoPresenter);
 
