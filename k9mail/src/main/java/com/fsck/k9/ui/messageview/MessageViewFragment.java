@@ -62,6 +62,7 @@ import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
@@ -326,24 +327,12 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         }
     }
 
-    private void hideKeyboard() {
-        Activity activity = getActivity();
-        if (activity == null) {
-            return;
-        }
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-        View decorView = activity.getWindow().getDecorView();
-        if (decorView != null && imm != null) {
-            imm.hideSoftInputFromWindow(decorView.getApplicationWindowToken(), 0);
-        }
-    }
-
     private void showUnableToDecodeError() {
         FeedbackTools.showShortFeedback(getView(), getString(R.string.message_view_toast_unable_to_display_message));
     }
 
     private void showMessage(MessageViewInfo messageViewInfo) {
-        hideKeyboard();
+        KeyboardUtils.hideKeyboard(getActivity());
         boolean handledByCryptoPresenter = messageCryptoPresenter.maybeHandleShowMessage(
                 mMessageView, mAccount, messageViewInfo);
         if (!handledByCryptoPresenter) {
