@@ -483,37 +483,37 @@ public class FolderList extends K9ListActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         //Shortcuts that work no matter what is selected
         switch (keyCode) {
-        case KeyEvent.KEYCODE_Q: {
-            onAccounts();
-            return true;
-        }
+            case KeyEvent.KEYCODE_Q: {
+                onAccounts();
+                return true;
+            }
 
-        case KeyEvent.KEYCODE_S: {
-            onEditSettings();
-            return true;
-        }
+            case KeyEvent.KEYCODE_S: {
+                onEditSettings();
+                return true;
+            }
 
-        case KeyEvent.KEYCODE_H: {
-            FeedbackTools.showLongFeedback(getListView(), getString(R.string.folder_list_help_key));
-            return true;
-        }
+            case KeyEvent.KEYCODE_H: {
+                FeedbackTools.showLongFeedback(getListView(), getString(R.string.folder_list_help_key));
+                return true;
+            }
 
-        case KeyEvent.KEYCODE_1: {
-            setDisplayMode(FolderMode.FIRST_CLASS);
-            return true;
-        }
-        case KeyEvent.KEYCODE_2: {
-            setDisplayMode(FolderMode.FIRST_AND_SECOND_CLASS);
-            return true;
-        }
-        case KeyEvent.KEYCODE_3: {
-            setDisplayMode(FolderMode.NOT_SECOND_CLASS);
-            return true;
-        }
-        case KeyEvent.KEYCODE_4: {
-            setDisplayMode(FolderMode.ALL);
-            return true;
-        }
+            case KeyEvent.KEYCODE_1: {
+                setDisplayMode(FolderMode.FIRST_CLASS);
+                return true;
+            }
+            case KeyEvent.KEYCODE_2: {
+                setDisplayMode(FolderMode.FIRST_AND_SECOND_CLASS);
+                return true;
+            }
+            case KeyEvent.KEYCODE_3: {
+                setDisplayMode(FolderMode.NOT_SECOND_CLASS);
+                return true;
+            }
+            case KeyEvent.KEYCODE_4: {
+                setDisplayMode(FolderMode.ALL);
+                return true;
+            }
         }//switch
 
 
