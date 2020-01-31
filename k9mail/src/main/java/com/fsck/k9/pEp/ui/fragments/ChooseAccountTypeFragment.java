@@ -81,7 +81,7 @@ public class ChooseAccountTypeFragment extends PEpFragment {
         mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
         mMakeDefault = getArguments().getBoolean(EXTRA_MAKE_DEFAULT, false);
         ((AccountSetupBasics) getActivity()).initializeToolbar(true, R.string.account_setup_account_type_title);
-        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.pep_green));
+        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.colorPrimary));
         return rootView;
     }
 

@@ -753,8 +753,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     public void onResume() {
         super.onResume();
 
-        Context appContext = getActivity().getApplicationContext();
-
         senderAboveSubject = K9.messageListSenderAboveSubject();
         if (!loaderJustInitialized) {
             if(accountExists()) {
@@ -794,8 +792,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         updateTitle();
         MessageList activity = (MessageList) getActivity();
         if (!activity.isMessageViewVisible() && activity.isThreadDisplayed()) {
-            Toolbar toolbar = ((K9Activity) getActivity()).getToolbar();
-            PEpUtils.colorToolbar(toolbar, PEpUtils.getRatingColor(worstThreadRating, getActivity()));
+            toolBarCustomizer.setToolbarColor(PEpUtils.getRatingColor(worstThreadRating, getActivity()));
             toolBarCustomizer.setStatusBarPepColor(worstThreadRating);
         }
         if (isThreadDisplay) {
@@ -2996,8 +2993,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             cursor.moveToNext();
         }
         if (!((MessageList) getActivity()).isMessageViewVisible()) {
-            Toolbar toolbar = ((K9Activity) getActivity()).getToolbar();
-            PEpUtils.colorToolbar(toolbar, PEpUtils.getRatingColor(worstThreadRating, getActivity()));
+            toolBarCustomizer.setToolbarColor(PEpUtils.getRatingColor(worstThreadRating, getActivity()));
             toolBarCustomizer.setStatusBarPepColor(worstThreadRating);
         }
     }

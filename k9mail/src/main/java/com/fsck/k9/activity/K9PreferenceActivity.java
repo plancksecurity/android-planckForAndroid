@@ -2,33 +2,30 @@ package com.fsck.k9.activity;
 
 import android.app.Dialog;
 import android.os.Build;
-
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.Lifecycle.State;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LifecycleRegistry;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle.State;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LifecycleRegistry;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 
-import javax.inject.Inject;
-
+import security.pEp.ui.toolbar.PEpToolbarCustomizer;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 
 
@@ -38,7 +35,6 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
     private AppCompatDelegate mDelegate;
     private Toolbar toolbar;
 
-    @Inject
     ToolBarCustomizer toolBarCustomizer;
 
     @Override
@@ -46,6 +42,7 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
         K9ActivityCommon.setLanguage(this, K9.getK9Language());
         setTheme(K9.getK9ThemeResourceId());
         super.onCreate(icicle);
+        toolBarCustomizer = new PEpToolbarCustomizer(this);
         lifecycleRegistry = new LifecycleRegistry(this);
         lifecycleRegistry.markState(State.CREATED);
     }
@@ -98,60 +95,29 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
         super.onPostCreate(savedInstanceState);
         LinearLayout bar;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            ListView list = (ListView) findViewById(android.R.id.list);
-            ListView.MarginLayoutParams layoutParams = (ListView.MarginLayoutParams) list.getLayoutParams();
-            ViewGroup root = (ViewGroup) list.getParent().getParent().getParent();
-            bar = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
-            layoutParams.setMargins(0, bar.getHeight(), 0, 0);
-            root.addView(bar, 0); // insert at top
-        } else {
-            ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
-            ListView content = (ListView) root.getChildAt(0);
+        ListView list = findViewById(android.R.id.list);
+        ListView.MarginLayoutParams layoutParams = (ListView.MarginLayoutParams) list.getLayoutParams();
+        ViewGroup root = (ViewGroup) list.getParent().getParent().getParent();
+        bar = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
+        layoutParams.setMargins(0, bar.getHeight(), 0, 0);
+        root.addView(bar, 0); // insert at top
 
-            root.removeAllViews();
-
-            bar = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
-
-
-            int height;
-            TypedValue tv = new TypedValue();
-            if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
-                height = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
-            }else{
-                height = bar.getHeight();
-            }
-
-            content.setPadding(0, height, 0, 0);
-
-            root.addView(content);
-            root.addView(bar);
-        }
-        Toolbar toolbar = (Toolbar) bar.getChildAt(0);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
-        toolbar.setBackgroundColor(getResources().getColor(R.color.pep_green));
-        setStatusBarPepColor();
-        this.toolbar = toolbar;
+        this.toolbar = (Toolbar) bar.getChildAt(0);
+        this.toolbar.setNavigationOnClickListener(v -> finish());
+        setStatusBar();
     }
 
-    public void setStatusBarPepColor() {
-        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.pep_green));
+    public void setStatusBar() {
+        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
+        toolBarCustomizer.setToolbarColor(getResources().getColor(R.color.colorPrimary));
+        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.colorPrimary));
     }
 
     /**
      * Set up the {@link ListPreference} instance identified by {@code key}.
      *
-     * @param key
-     *         The key of the {@link ListPreference} object.
-     * @param value
-     *         Initial value for the {@link ListPreference} object.
-     *
+     * @param key   The key of the {@link ListPreference} object.
+     * @param value Initial value for the {@link ListPreference} object.
      * @return The {@link ListPreference} instance identified by {@code key}.
      */
     protected ListPreference setupListPreference(final String key, final String value) {
@@ -165,15 +131,11 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
     /**
      * Initialize a given {@link ListPreference} instance.
      *
-     * @param prefView
-     *         The {@link ListPreference} instance to initialize.
-     * @param value
-     *         Initial value for the {@link ListPreference} object.
-     * @param entries
-     *         Sets the human-readable entries to be shown in the list.
-     * @param entryValues
-     *         The array to find the value to save for a preference when an
-     *         entry from entries is selected.
+     * @param prefView    The {@link ListPreference} instance to initialize.
+     * @param value       Initial value for the {@link ListPreference} object.
+     * @param entries     Sets the human-readable entries to be shown in the list.
+     * @param entryValues The array to find the value to save for a preference when an
+     *                    entry from entries is selected.
      */
     protected void initListPreference(final ListPreference prefView, final String value,
                                       final CharSequence[] entries, final CharSequence[] entryValues) {
@@ -190,6 +152,7 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
     private static class PreferenceChangeListener implements Preference.OnPreferenceChangeListener {
 
         private ListPreference mPrefView;
+
         private PreferenceChangeListener(final ListPreference prefView) {
             this.mPrefView = prefView;
         }
@@ -207,6 +170,7 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
         }
 
     }
+
     public ActionBar getSupportActionBar() {
         return getDelegate().getSupportActionBar();
     }
@@ -242,8 +206,8 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
 
         LinearLayout bar;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH && Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-            ListView content = (ListView) dialog.findViewById(android.R.id.list);
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            ListView content = dialog.findViewById(android.R.id.list);
             ViewGroup root = (ViewGroup) content.getParent().getParent();
             bar = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
 
@@ -251,7 +215,7 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
             TypedValue tv = new TypedValue();
             if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
                 height = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
-            }else{
+            } else {
                 height = bar.getHeight();
             }
             content.setPadding(0, height, 0, 0);
@@ -262,16 +226,8 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
             root.addView(bar, 0); // insert at top
         }
         toolbar = (Toolbar) bar.getChildAt(0);
-
         toolbar.setTitle(preferenceScreen.getTitle());
-        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
-        toolbar.setBackgroundColor(getResources().getColor(R.color.pep_green));
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-        setStatusBarPepColor();
+        setStatusBar();
+        toolbar.setNavigationOnClickListener(v -> dialog.dismiss());
     }
 }

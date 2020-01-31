@@ -29,7 +29,7 @@ class ToolBarCustomizerTest {
         val beforeColour = mActivityRule.activity.window.statusBarColor
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
 
-        mActivityRule.activity.toolBarCustomizer.setStatusBarPepColor(R.color.green)
+        mActivityRule.activity.toolBarCustomizer.setStatusBarPepColor(R.color.colorPrimary)
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
 
         Espresso.onView(withId(android.R.id.statusBarBackground))

@@ -313,10 +313,10 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
             K9Activity activity = (K9Activity) getActivity();
             if (mAccount.ispEpPrivacyProtected()) {
-                PEpUtils.colorToolbar(activity.getToolbar(), PEpUtils.getRatingColor(pEpRating, activity));
+                toolBarCustomizer.setToolbarColor(PEpUtils.getRatingColor(pEpRating, activity));
                 mMessage.setpEpRating(pEpRating);
             } else {
-                PEpUtils.colorToolbar(activity.getToolbar(), PEpUtils.getRatingColor(Rating.pEpRatingUndefined, activity));
+                toolBarCustomizer.setToolbarColor(PEpUtils.getRatingColor(Rating.pEpRatingUndefined, activity));
                 mMessage.setpEpRating(Rating.pEpRatingUndefined);
             }
             toolBarCustomizer.setStatusBarPepColor(pEpRating);
@@ -852,12 +852,11 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
                 showNeedsDecryptionFeedback(message);
             }
 
-            if (mAccount.ispEpPrivacyProtected()) {
-                PEpUtils.colorToolbar(pePUIArtefactCache, ((MessageList) getActivity()).getToolbar(), pEpRating);
-            } else {
-                PEpUtils.colorToolbar(pePUIArtefactCache, ((MessageList) getActivity()).getToolbar(), Rating.pEpRatingUndefined);
+            if(!mAccount.ispEpPrivacyProtected()){
                 pEpRating = Rating.pEpRatingUndefined;
             }
+
+            toolBarCustomizer.setToolbarColor(pePUIArtefactCache.getColor(pEpRating));
             toolBarCustomizer.setStatusBarPepColor(pEpRating);
         }
 

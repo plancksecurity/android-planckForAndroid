@@ -173,7 +173,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
     private void setupToolbar() {
         ((AccountSetupBasics) getActivity()).initializeToolbar(!getActivity().isTaskRoot(), R.string.account_setup_basics_title);
-        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.pep_green));
+        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.colorPrimary));
     }
 
     private void initializeViewListeners() {

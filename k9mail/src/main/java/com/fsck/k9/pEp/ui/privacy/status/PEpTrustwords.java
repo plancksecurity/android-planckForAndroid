@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
+import androidx.core.content.ContextCompat;
+
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
@@ -21,9 +23,6 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.HandshakeData;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.ui.keysync.languages.PEpLanguageSelector;
-
-import foundation.pEp.jniadapter.Identity;
-import foundation.pEp.jniadapter.Rating;
 
 import java.util.List;
 import java.util.Locale;
@@ -37,6 +36,8 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Rating;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
@@ -132,7 +133,7 @@ public class PEpTrustwords extends PepColoredActivity {
         flipper.setVisibility(View.INVISIBLE);
 
         setUpToolbar(true);
-        PEpUtils.colorToolbar(getToolbar(), getResources().getColor(R.color.light_primary_color));
+        toolBarCustomizer.setToolbarColor(ContextCompat.getColor(this, R.color.light_primary_color));
         context = getApplicationContext();
 
         //TODO> View threadfactory to use only one engine
@@ -448,7 +449,7 @@ public class PEpTrustwords extends PepColoredActivity {
     @Override
     protected void loadPepRating() {
         super.loadPepRating();
-        PEpUtils.colorToolbar(getUiCache(), getSupportActionBar(), pEpRating);
+        toolBarCustomizer.setToolbarColor(getUiCache().getColor(pEpRating));
         toolBarCustomizer.setStatusBarPepColor(getUiCache().getColor(pEpRating));
     }
 }

@@ -7,6 +7,7 @@ import android.view.WindowManager
 import androidx.annotation.ColorInt
 import com.fsck.k9.pEp.PePUIArtefactCache
 import foundation.pEp.jniadapter.Rating
+import kotlinx.android.synthetic.main.toolbar.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -17,6 +18,9 @@ interface ToolBarCustomizer {
     fun setStatusBarPepColor(pEpRating: Rating)
 
     fun setStatusBarPepColor(@ColorInt colorReference: Int)
+
+    fun setToolbarColor(@ColorInt colorReference: Int)
+
 }
 
 class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
@@ -39,6 +43,14 @@ class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
         uiScope.launch {
             val color = colorReference and 0x00FFFFFF
             setColor(color)
+        }
+    }
+
+    override fun setToolbarColor(colorReference: Int) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
+        uiScope.launch {
+            activity.toolbar?.setBackgroundColor(colorReference)
         }
     }
 
