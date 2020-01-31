@@ -22,12 +22,16 @@ import com.fsck.k9.setup.ServerNameSuggester;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.inject.Inject;
+
+import security.pEp.ui.toolbar.ToolBarCustomizer;
+
 import static com.fsck.k9.mail.ServerSettings.Type.IMAP;
 import static com.fsck.k9.mail.ServerSettings.Type.POP3;
 import static com.fsck.k9.mail.ServerSettings.Type.SMTP;
 import static com.fsck.k9.mail.ServerSettings.Type.WebDAV;
 
-public class ChooseAccountTypeFragment extends Fragment {
+public class ChooseAccountTypeFragment extends PEpFragment {
 
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_MAKE_DEFAULT = "makeDefault";
@@ -37,6 +41,9 @@ public class ChooseAccountTypeFragment extends Fragment {
     private boolean mMakeDefault;
     private View rootView;
     private AccountSetupNavigator accountSetupNavigator;
+
+    @Inject
+    ToolBarCustomizer toolBarCustomizer;
 
     public static ChooseAccountTypeFragment actionSelectAccountType(Account account, boolean makeDefault) {
         ChooseAccountTypeFragment fragment = new ChooseAccountTypeFragment();
@@ -74,7 +81,7 @@ public class ChooseAccountTypeFragment extends Fragment {
         mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
         mMakeDefault = getArguments().getBoolean(EXTRA_MAKE_DEFAULT, false);
         ((AccountSetupBasics) getActivity()).initializeToolbar(true, R.string.account_setup_account_type_title);
-        ((AccountSetupBasics) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.pep_green));
+        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.pep_green));
         return rootView;
     }
 
@@ -181,4 +188,8 @@ public class ChooseAccountTypeFragment extends Fragment {
         FeedbackTools.showLongFeedback(rootView, toastText);
     }
 
+    @Override
+    protected void inject() {
+        getpEpComponent().inject(this);
+    }
 }

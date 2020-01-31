@@ -10,9 +10,10 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+
+import com.fsck.k9.pEp.ui.fragments.PEpFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.CursorLoader;
@@ -106,6 +107,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Future;
 
+import javax.inject.Inject;
+
+import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
 import static android.view.View.GONE;
@@ -125,7 +129,7 @@ import static com.fsck.k9.fragment.MLFProjectionInfo.THREAD_ROOT_COLUMN;
 import static com.fsck.k9.fragment.MLFProjectionInfo.UID_COLUMN;
 
 
-public class MessageListFragment extends Fragment implements ConfirmationDialogFragmentListener, LoaderCallbacks<Cursor> {
+public class MessageListFragment extends PEpFragment implements ConfirmationDialogFragmentListener, LoaderCallbacks<Cursor> {
 
     private FloatingActionButton fab;
     private ProgressBar loadingView;
@@ -277,7 +281,8 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
 
     private SelectedItemActionModeCallback selectedMessageActionModeCallback = new SelectedItemActionModeCallback();
-
+    @Inject
+    ToolBarCustomizer toolBarCustomizer;
 
     private void enableSwipeToRefresh(boolean enable) {
         if (!isFastPolling()) {
@@ -496,6 +501,11 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         createCacheBroadcastReceiver(appContext);
 
         initialized = true;
+    }
+
+    @Override
+    protected void inject() {
+        getpEpComponent().inject(this);
     }
 
     @Override
@@ -786,7 +796,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         if (!activity.isMessageViewVisible() && activity.isThreadDisplayed()) {
             Toolbar toolbar = ((K9Activity) getActivity()).getToolbar();
             PEpUtils.colorToolbar(toolbar, PEpUtils.getRatingColor(worstThreadRating, getActivity()));
-            ((K9Activity) getActivity()).setStatusBarPepColor(worstThreadRating);
+            toolBarCustomizer.setStatusBarPepColor(worstThreadRating);
         }
         if (isThreadDisplay) {
             fab.hide();
@@ -2988,7 +2998,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         if (!((MessageList) getActivity()).isMessageViewVisible()) {
             Toolbar toolbar = ((K9Activity) getActivity()).getToolbar();
             PEpUtils.colorToolbar(toolbar, PEpUtils.getRatingColor(worstThreadRating, getActivity()));
-            ((K9Activity) getActivity()).setStatusBarPepColor(worstThreadRating);
+            toolBarCustomizer.setStatusBarPepColor(worstThreadRating);
         }
     }
 

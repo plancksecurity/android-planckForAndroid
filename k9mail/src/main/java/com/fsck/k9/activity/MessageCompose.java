@@ -116,6 +116,7 @@ import javax.inject.Inject;
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
+import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
 
@@ -258,6 +259,9 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     PermissionRequester permissionRequester;
     @Inject
     PermissionChecker permissionChecker;
+    @Inject
+    public
+    ToolBarCustomizer toolBarCustomizer;
 
     @Override
     public void inject() {

@@ -32,9 +32,12 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
 public class PEpTrustwords extends PepColoredActivity {
@@ -83,6 +86,8 @@ public class PEpTrustwords extends PepColoredActivity {
     private String fullTrustwords = "";
     private String shortTrustwords = "";
     private boolean includeIdentityData = false;
+    @Inject
+    ToolBarCustomizer toolBarCustomizer;
 
 
     public static void actionRequestMultipleOwnAccountIdsHandshake(Activity context, String myself, List<String> keys, int partnerPosition, Rating pEpRating) {
@@ -444,6 +449,6 @@ public class PEpTrustwords extends PepColoredActivity {
     protected void loadPepRating() {
         super.loadPepRating();
         PEpUtils.colorToolbar(getUiCache(), getSupportActionBar(), pEpRating);
-        setStatusBarPepColor();
+        toolBarCustomizer.setStatusBarPepColor(getUiCache().getColor(pEpRating));
     }
 }

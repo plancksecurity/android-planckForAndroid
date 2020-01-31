@@ -27,8 +27,13 @@ import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.PepActivity;
 
-public class AccountSetupNames extends K9Activity implements OnClickListener {
+import javax.inject.Inject;
+
+import security.pEp.ui.toolbar.ToolBarCustomizer;
+
+public class AccountSetupNames extends PepActivity implements OnClickListener {
     private static final String EXTRA_ACCOUNT = "account";
 
     private EditText mDescription;
@@ -40,6 +45,10 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
     private Button mDoneButton;
     private CheckBox pepSyncAccount;
     private PePUIArtefactCache pePUIArtefactCache;
+
+    @Inject
+    ToolBarCustomizer toolBarCustomizer;
+
 
     public static void actionSetNames(Context context, Account account) {
         Intent i = new Intent(context, AccountSetupNames.class);
@@ -54,7 +63,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
         bindViews(R.layout.account_setup_names);
 
         initializeToolbar(true, R.string.account_setup_names_title);
-        setStatusBarPepColor(getResources().getColor(R.color.pep_green));
+        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.pep_green));
 
         mDescription = (EditText)findViewById(R.id.account_description);
         mName = (EditText)findViewById(R.id.account_name);
@@ -104,6 +113,11 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
     @Override
     public void search(String query) {
 
+    }
+
+    @Override
+    public void inject() {
+        getpEpComponent().inject(this);
     }
 
     @Override

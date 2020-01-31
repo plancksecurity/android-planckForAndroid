@@ -1,7 +1,6 @@
 package com.fsck.k9.activity;
 
 import android.app.Dialog;
-import android.graphics.Color;
 import android.os.Build;
 
 import androidx.lifecycle.Lifecycle;
@@ -20,14 +19,17 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+
 import androidx.annotation.NonNull;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
+
+import javax.inject.Inject;
+
+import security.pEp.ui.toolbar.ToolBarCustomizer;
 
 
 public abstract class K9PreferenceActivity extends PreferenceActivity implements LifecycleOwner {
@@ -35,6 +37,9 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
 
     private AppCompatDelegate mDelegate;
     private Toolbar toolbar;
+
+    @Inject
+    ToolBarCustomizer toolBarCustomizer;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -136,27 +141,9 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
     }
 
     public void setStatusBarPepColor() {
-        Window window = this.getWindow();
-
-        // clear FLAG_TRANSLUCENT_STATUS flag:
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-        // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
-        // finally change the color
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int color = (getResources().getColor(R.color.pep_green) & 0x00FFFFFF);
-            int red = Color.red(color);
-            int green = Color.green(color);
-            int blue = Color.blue(color);
-            float[] hsv = new float[3];
-            Color.RGBToHSV(red, green, blue, hsv);
-            hsv[2] = hsv[2]*0.9f;
-            color = Color.HSVToColor(hsv);
-            window.setStatusBarColor(color);
-        }
+        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.pep_green));
     }
+
     /**
      * Set up the {@link ListPreference} instance identified by {@code key}.
      *

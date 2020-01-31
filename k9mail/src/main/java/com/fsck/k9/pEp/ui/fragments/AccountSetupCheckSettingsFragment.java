@@ -47,11 +47,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
+import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
 
-public class AccountSetupCheckSettingsFragment extends Fragment implements ConfirmationDialogFragment.ConfirmationDialogFragmentListener {
+public class AccountSetupCheckSettingsFragment extends PEpFragment implements ConfirmationDialogFragment.ConfirmationDialogFragmentListener {
 
     public static final int ACTIVITY_REQUEST_CODE = 1;
 
@@ -82,6 +85,9 @@ public class AccountSetupCheckSettingsFragment extends Fragment implements Confi
     private boolean mMakeDefault;
     private String mProcedence;
 
+    @Inject
+    ToolBarCustomizer toolBarCustomizer;
+
     public static AccountSetupCheckSettingsFragment actionCheckSettings(Account account,
                                                                         AccountSetupCheckSettings.CheckDirection direction, Boolean makeDefault, String procedence) {
         AccountSetupCheckSettingsFragment fragment = new AccountSetupCheckSettingsFragment();
@@ -100,7 +106,7 @@ public class AccountSetupCheckSettingsFragment extends Fragment implements Confi
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_account_setup_check_settings, container, false);
         ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_setup_check_settings_title);
-        ((K9Activity) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.pep_green));
+        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.pep_green));
         mMessageView = (TextView)rootView.findViewById(R.id.message);
         mProgressBar = (ProgressBar)rootView.findViewById(R.id.progress);
         rootView.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
@@ -441,6 +447,11 @@ public class AccountSetupCheckSettingsFragment extends Fragment implements Confi
     @Override
     public void dialogCancelled(int dialogId) {
         // nothing to do here...
+    }
+
+    @Override
+    protected void inject() {
+        getpEpComponent().inject(this);
     }
 
     /**

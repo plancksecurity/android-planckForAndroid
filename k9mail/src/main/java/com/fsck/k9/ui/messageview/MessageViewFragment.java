@@ -17,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
@@ -85,6 +84,7 @@ import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
+import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -151,6 +151,8 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     PermissionRequester permissionRequester;
     @Inject
     PermissionChecker permissionChecker;
+    @Inject
+    ToolBarCustomizer toolBarCustomizer;
 
     @Override
     protected void inject() {
@@ -317,7 +319,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
                 PEpUtils.colorToolbar(activity.getToolbar(), PEpUtils.getRatingColor(Rating.pEpRatingUndefined, activity));
                 mMessage.setpEpRating(Rating.pEpRatingUndefined);
             }
-            activity.setStatusBarPepColor(pEpRating);
+            toolBarCustomizer.setStatusBarPepColor(pEpRating);
             mMessageView.setHeaders(mMessage, mAccount);
         }
     }
@@ -856,7 +858,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
                 PEpUtils.colorToolbar(pePUIArtefactCache, ((MessageList) getActivity()).getToolbar(), Rating.pEpRatingUndefined);
                 pEpRating = Rating.pEpRatingUndefined;
             }
-            ((MessageList) getActivity()).setStatusBarPepColor(pEpRating);
+            toolBarCustomizer.setStatusBarPepColor(pEpRating);
         }
 
         @Override

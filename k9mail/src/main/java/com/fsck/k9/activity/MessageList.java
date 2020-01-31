@@ -97,6 +97,7 @@ import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionRequester;
+import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
 
@@ -114,6 +115,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     NotificationChannelManager channelUtils;
     @Inject
     PermissionRequester permissionRequester;
+    @Inject
+    public ToolBarCustomizer toolBarCustomizer;
     @Inject
     Preferences preferences;
 
@@ -1431,7 +1434,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
         if (!isThreadDisplayed) {
             PEpUtils.colorToolbar(PePUIArtefactCache.getInstance(getApplicationContext()), getToolbar(), Rating.pEpRatingTrustedAndAnonymized);
-            setStatusBarPepColor(Rating.pEpRatingTrustedAndAnonymized);
+            toolBarCustomizer.setStatusBarPepColor(Rating.pEpRatingTrustedAndAnonymized);
         }
 
         if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
@@ -1541,7 +1544,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     private void updateToolbarColorToOriginal() {
         PEpUtils.colorToolbar(getToolbar(), PEpUtils.getRatingColor(Rating.pEpRatingFullyAnonymous, this));
-        setStatusBarPepColor(Rating.pEpRatingFullyAnonymous);
+        toolBarCustomizer.setStatusBarPepColor(Rating.pEpRatingFullyAnonymous);
     }
 
     /**

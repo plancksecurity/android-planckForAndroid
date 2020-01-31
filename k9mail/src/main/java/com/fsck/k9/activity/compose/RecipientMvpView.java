@@ -514,7 +514,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         } else {
             PEpUtils.colorToolbar(pEpUiCache, activity.getToolbar(), Rating.pEpRatingUndefined);
         }
-        activity.setStatusBarPepColor(pEpRating);
+        activity.toolBarCustomizer.setStatusBarPepColor(pEpRating);
 
     }
 

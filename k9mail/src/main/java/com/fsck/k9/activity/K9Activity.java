@@ -2,11 +2,9 @@ package com.fsck.k9.activity;
 
 import android.app.SearchManager;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -16,8 +14,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -28,8 +24,6 @@ import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
-
-import foundation.pEp.jniadapter.Rating;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -122,56 +116,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         }
     }
 
-    public void setStatusBarPepColor(Rating pEpRating) {
-        Window window = this.getWindow();
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                // clear FLAG_TRANSLUCENT_STATUS flag:
-                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
-                // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                // finally change the color
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    PePUIArtefactCache uiCache = PePUIArtefactCache.getInstance(getApplicationContext());
-                    int color = (uiCache.getColor(pEpRating) & 0x00FFFFFF);
-                    int red = Color.red(color);
-                    int green = Color.green(color);
-                    int blue = Color.blue(color);
-                    float[] hsv = new float[3];
-                    Color.RGBToHSV(red, green, blue, hsv);
-                    hsv[2] = hsv[2]*0.9f;
-                    color = Color.HSVToColor(hsv);
-                    window.setStatusBarColor(color);
-                }
-            }
-        });
-    }
-
-    public void setStatusBarPepColor(Integer colorReference) {
-        Window window = this.getWindow();
-
-        // clear FLAG_TRANSLUCENT_STATUS flag:
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-        // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
-        // finally change the color
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            PePUIArtefactCache uiCache = PePUIArtefactCache.getInstance(getApplicationContext());
-            int color = (colorReference & 0x00FFFFFF);
-            int red = Color.red(color);
-            int green = Color.green(color);
-            int blue = Color.blue(color);
-            float[] hsv = new float[3];
-            Color.RGBToHSV(red, green, blue, hsv);
-            hsv[2] = hsv[2]*0.9f;
-            color = Color.HSVToColor(hsv);
-            window.setStatusBarColor(color);
-        }
-    }
     public ViewGroup getRootView() {
         return (ViewGroup) ((ViewGroup) this.findViewById(android.R.id.content)).getChildAt(0);
     }
