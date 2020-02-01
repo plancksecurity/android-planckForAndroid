@@ -43,6 +43,7 @@ import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.Poller;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
@@ -743,6 +744,9 @@ public class K9 extends MultiDexApplication {
             }
 
         });
+        for (Account account : prefs.getAccounts()) {
+            pEpProvider.myself(PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), this));
+        }
         pEpInitSyncEnvironment();
         setupFastPoller();
 
