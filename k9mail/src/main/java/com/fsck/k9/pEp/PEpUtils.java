@@ -374,11 +374,7 @@ public class PEpUtils {
     }
 
     private static void updateSyncFlag(Account account, PEpProvider pEp, Identity myIdentity) {
-        if (!account.isPepSyncEnabled()) {
-            pEp.setIdentityFlag(myIdentity, IdentityFlags.pEpIdfNotForSync.value);
-        } else {
-            pEp.unsetIdentityFlag(myIdentity, IdentityFlags.pEpIdfNotForSync.value);
-        }
+        pEp.setIdentityFlag(myIdentity, account.isPepSyncEnabled());
     }
 
     public static ArrayList<Identity> filterRecipients(Account account, ArrayList<Identity> recipients) {

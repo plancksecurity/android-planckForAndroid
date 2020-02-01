@@ -197,7 +197,7 @@ public interface PEpProvider extends AutoCloseable {
 
     void unsetIdentityFlag(Identity identity, Integer flags, CompletedCallback completedCallback);
 
-    void setIdentityFlag(Identity identity, Integer flags);
+    void setIdentityFlag(Identity identity, boolean sync);
 
     void unsetIdentityFlag(Identity identity, Integer flags);
 

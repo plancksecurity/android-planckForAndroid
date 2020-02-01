@@ -970,9 +970,14 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void setIdentityFlag(Identity identity, Integer flags) {
+    public void setIdentityFlag(Identity identity, boolean sync) {
         try {
-            engine.set_identity_flags(identity, flags);
+            if (sync) {
+                engine.enable_identity_for_sync(identity);
+            } else {
+                engine.disable_identity_for_sync(identity);
+            }
+            engine.enable_identity_for_sync(identity);
         } catch (pEpException e) {
             Log.e(TAG, "setIdentityFlag: ", e);
         }
