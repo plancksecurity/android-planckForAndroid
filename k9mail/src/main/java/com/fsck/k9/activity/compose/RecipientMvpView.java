@@ -500,7 +500,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
             boolean reallyWithToast = true;
             if(withToast.length>0) reallyWithToast = withToast[0];
             updatePePState();
-            activity.toolBarCustomizer.setToolbarColor(pEpUiCache.getColor(Rating.pEpRatingUndefined));
+            activity.setToolbarColor(pEpUiCache.getColor(Rating.pEpRatingUndefined));
 
             if(pEpIndicator!=null) {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -512,9 +512,9 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
                 String msg = pEpUiCache.getTitle(pEpRating);
             }
         } else {
-            activity.toolBarCustomizer.setToolbarColor(pEpUiCache.getColor(Rating.pEpRatingUndefined));
+            activity.setToolbarColor(pEpUiCache.getColor(Rating.pEpRatingUndefined));
         }
-        activity.toolBarCustomizer.setStatusBarPepColor(pEpRating);
+        activity.setStatusBarPepColor(pEpRating);
 
     }
 

@@ -36,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
@@ -260,7 +261,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     @Inject
     PermissionChecker permissionChecker;
     @Inject
-    public
     ToolBarCustomizer toolBarCustomizer;
 
     @Override
@@ -1978,6 +1978,14 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     public void unlockSendButton() {
         isSendButtonLocked = false;
+    }
+
+    public void setToolbarColor(@ColorInt int color){
+        toolBarCustomizer.setToolbarColor(color);
+    }
+
+    public void setStatusBarPepColor(Rating rating){
+        toolBarCustomizer.setStatusBarPepColor(rating);
     }
 
     private Handler internalMessageHandler = new Handler() {

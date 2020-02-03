@@ -116,7 +116,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     @Inject
     PermissionRequester permissionRequester;
     @Inject
-    public ToolBarCustomizer toolBarCustomizer;
+    ToolBarCustomizer toolBarCustomizer;
     @Inject
     Preferences preferences;
 
