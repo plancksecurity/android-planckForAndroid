@@ -1271,6 +1271,7 @@ public class TestUtils {
                 device.click(bounds.left - 1, bounds.centerY());
                 return;
             } catch (Exception ex) {
+                device.waitForIdle();
                 Timber.i("Cannot click " + viewId + ": " + ex.getMessage());
             }
         }
