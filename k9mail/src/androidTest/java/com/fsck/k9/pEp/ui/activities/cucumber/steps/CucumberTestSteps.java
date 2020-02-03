@@ -301,15 +301,18 @@ public class CucumberTestSteps {
                 device.waitForIdle();
                 BySelector selector = By.clazz("android.widget.EditText");
                 UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/message_content"));
+                UiObject2 scroll;
                 for (UiObject2 object : device.findObjects(selector)) {
                     if (object.getResourceName().equals(uiObject.getResourceName())) {
                         while (!object.getText().contains(testUtils.longText())) {
                             try {
+                                scroll = device.findObject(By.clazz("android.widget.ScrollView"));
                                 device.waitForIdle();
                                 object.click();
                                 testUtils.setClipboard(testUtils.longText());
                                 for (int i = 0; i < 80; i++) {
                                     device.waitForIdle();
+                                    scroll.swipe(Direction.UP, 1.0f);
                                     testUtils.pasteClipboard();
                                     device.waitForIdle();
                                 }
@@ -320,7 +323,6 @@ public class CucumberTestSteps {
                         }
                     }
                 }
-                UiObject2 scroll;
                 do {
                     try {
                         scroll = device.findObject(By.clazz("android.widget.ScrollView"));
