@@ -1247,9 +1247,7 @@ public class TestUtils {
         }
         onView(withId(view)).perform(closeSoftKeyboard());
         onView(withId(view)).perform(click());
-        UiObject2 list = device.findObject(By.res(APP_ID, viewId));
-        Rect bounds = list.getVisibleBounds();
-        device.click(bounds.left - 1, bounds.centerY());
+        clickTextView(viewId);
         while (!(hasValueEqualTo(onView(withId(view)), " ")
                 || hasValueEqualTo(onView(withId(view)), ""))) {
             try {
@@ -1261,6 +1259,19 @@ public class TestUtils {
             } catch (Exception ex) {
                 pressBack();
                 Timber.i("Cannot remove text from field " + viewId + ": " + ex.getMessage());
+            }
+        }
+    }
+
+    private void clickTextView (String viewId) {
+        while (true) {
+            try {
+                UiObject2 list = device.findObject(By.res(APP_ID, viewId));
+                Rect bounds = list.getVisibleBounds();
+                device.click(bounds.left - 1, bounds.centerY());
+                return;
+            } catch (Exception ex) {
+                Timber.i("Cannot click " + viewId + ": " + ex.getMessage());
             }
         }
     }
