@@ -299,7 +299,6 @@ public class CucumberTestSteps {
             case "longText":
                 timeRequiredForThisMethod(3000);
                 device.waitForIdle();
-                String longText = "";
                 BySelector selector = By.clazz("android.widget.EditText");
                 UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/message_content"));
                 for (UiObject2 object : device.findObjects(selector)) {
@@ -309,14 +308,10 @@ public class CucumberTestSteps {
                                 device.waitForIdle();
                                 object.click();
                                 testUtils.setClipboard(testUtils.longText());
-                                for (int i = 0; i < 61; i++) {
+                                for (int i = 0; i < 80; i++) {
                                     device.waitForIdle();
-                                    longText = longText + testUtils.longText();
-                                }
-                                while (!object.getText().contains(longText)) {
-                                    device.waitForIdle();
-                                    testUtils.setClipboard(longText);
                                     testUtils.pasteClipboard();
+                                    device.waitForIdle();
                                 }
                                 object.click();
                             } catch (Exception ex) {
@@ -326,7 +321,7 @@ public class CucumberTestSteps {
                     }
                 }
                 UiObject2 scroll;
-                while (!viewIsDisplayed(R.id.subject)) {
+                do {
                     try {
                         scroll = device.findObject(By.clazz("android.widget.ScrollView"));
                         device.waitForIdle();
@@ -335,7 +330,7 @@ public class CucumberTestSteps {
                     } catch (Exception e) {
                         testUtils.pressBack();
                     }
-                }
+                } while (!viewIsDisplayed(R.id.subject));
                 onView(withId(R.id.subject)).check(matches(isCompletelyDisplayed()));
                 return;
             default:
