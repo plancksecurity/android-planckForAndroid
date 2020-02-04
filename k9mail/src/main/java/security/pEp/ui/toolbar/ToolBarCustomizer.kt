@@ -12,12 +12,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import security.pEp.ui.PEpUIUtils
 
 interface ToolBarCustomizer {
 
-    fun setStatusBarPepColor(pEpRating: Rating)
+    fun setStatusBarPepColor(pEpRating: Rating?)
 
     fun setStatusBarPepColor(@ColorInt colorReference: Int)
+
+    fun setToolbarColor(pEpRating: Rating?)
 
     fun setToolbarColor(@ColorInt colorReference: Int)
 
@@ -26,12 +29,11 @@ interface ToolBarCustomizer {
 class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
 
 
-    override fun setStatusBarPepColor(pEpRating: Rating) {
+    override fun setStatusBarPepColor(pEpRating: Rating?) {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
         uiScope.launch {
-            val uiCache = PePUIArtefactCache.getInstance(activity.applicationContext)
-            val color = uiCache.getColor(pEpRating) and 0x00FFFFFF
+            val color = PEpUIUtils.getRatingColor(activity.applicationContext, pEpRating) and 0x00FFFFFF
             setColor(color)
         }
 
@@ -46,7 +48,17 @@ class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
         }
     }
 
-    override fun setToolbarColor(colorReference: Int) {
+    override fun setToolbarColor(pEpRating: Rating?) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
+        uiScope.launch {
+            val color = PEpUIUtils.getRatingColor(activity.applicationContext, pEpRating)
+            activity.toolbar?.setBackgroundColor(color)
+        }
+
+    }
+
+    override fun setToolbarColor(@ColorInt colorReference: Int) {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
         uiScope.launch {

@@ -57,7 +57,6 @@ import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.notification.NotificationChannelManager;
 import com.fsck.k9.pEp.AccountUtils;
-import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.models.FolderModel;
@@ -1433,7 +1432,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
 
         if (!isThreadDisplayed) {
-            toolBarCustomizer.setToolbarColor(PePUIArtefactCache.getInstance(getApplicationContext()).getColor(Rating.pEpRatingTrustedAndAnonymized));
+            toolBarCustomizer.setToolbarColor(Rating.pEpRatingTrustedAndAnonymized);
             toolBarCustomizer.setStatusBarPepColor(Rating.pEpRatingTrustedAndAnonymized);
         }
 
@@ -1543,7 +1542,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void updateToolbarColorToOriginal() {
-        toolBarCustomizer.setToolbarColor(PEpUtils.getRatingColor(Rating.pEpRatingFullyAnonymous, this));
+        toolBarCustomizer.setToolbarColor(Rating.pEpRatingFullyAnonymous);
         toolBarCustomizer.setStatusBarPepColor(Rating.pEpRatingFullyAnonymous);
     }
 

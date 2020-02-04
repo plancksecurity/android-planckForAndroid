@@ -449,7 +449,7 @@ public class PEpTrustwords extends PepColoredActivity {
     @Override
     protected void loadPepRating() {
         super.loadPepRating();
-        toolBarCustomizer.setToolbarColor(getUiCache().getColor(pEpRating));
-        toolBarCustomizer.setStatusBarPepColor(getUiCache().getColor(pEpRating));
+        toolBarCustomizer.setToolbarColor(pEpRating);
+        toolBarCustomizer.setStatusBarPepColor(pEpRating);
     }
 }

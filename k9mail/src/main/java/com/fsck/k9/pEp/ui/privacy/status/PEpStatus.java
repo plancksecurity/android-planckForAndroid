@@ -21,7 +21,6 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
-import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.models.PEpIdentity;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.ui.adapters.PEpIdentitiesAdapter;
@@ -35,6 +34,7 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import security.pEp.ui.PEpUIUtils;
 
 public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
@@ -202,7 +202,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     @Override
     public void showBadge(Rating rating) {
         statusBadge.setVisibility(View.VISIBLE);
-        statusBadge.setImageDrawable(PEpUtils.getDrawableForRating(PEpStatus.this, rating));
+        statusBadge.setImageDrawable(PEpUIUtils.getDrawableForRating(PEpStatus.this, rating));
     }
 
     @Override

@@ -1984,6 +1984,14 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         toolBarCustomizer.setToolbarColor(color);
     }
 
+    public void setToolbarColor(Rating rating){
+        toolBarCustomizer.setToolbarColor(rating);
+    }
+
+    public void setStatusBarPepColor(@ColorInt int color){
+        toolBarCustomizer.setStatusBarPepColor(color);
+    }
+
     public void setStatusBarPepColor(Rating rating){
         toolBarCustomizer.setStatusBarPepColor(rating);
     }

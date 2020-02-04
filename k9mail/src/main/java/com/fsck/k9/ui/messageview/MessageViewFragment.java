@@ -311,14 +311,8 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
                 pEpRating = ((K9) getApplicationContext()).getpEpProvider().incomingMessageRating(mMessage);
             }
 
-            K9Activity activity = (K9Activity) getActivity();
-            if (mAccount.ispEpPrivacyProtected()) {
-                toolBarCustomizer.setToolbarColor(PEpUtils.getRatingColor(pEpRating, activity));
-                mMessage.setpEpRating(pEpRating);
-            } else {
-                toolBarCustomizer.setToolbarColor(PEpUtils.getRatingColor(Rating.pEpRatingUndefined, activity));
-                mMessage.setpEpRating(Rating.pEpRatingUndefined);
-            }
+            toolBarCustomizer.setToolbarColor(mAccount.ispEpPrivacyProtected() ? pEpRating: Rating.pEpRatingUndefined);
+            mMessage.setpEpRating(mAccount.ispEpPrivacyProtected() ? pEpRating: Rating.pEpRatingUndefined);
             toolBarCustomizer.setStatusBarPepColor(pEpRating);
             mMessageView.setHeaders(mMessage, mAccount);
         }
@@ -856,7 +850,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
                 pEpRating = Rating.pEpRatingUndefined;
             }
 
-            toolBarCustomizer.setToolbarColor(pePUIArtefactCache.getColor(pEpRating));
+            toolBarCustomizer.setToolbarColor(pEpRating);
             toolBarCustomizer.setStatusBarPepColor(pEpRating);
         }
 

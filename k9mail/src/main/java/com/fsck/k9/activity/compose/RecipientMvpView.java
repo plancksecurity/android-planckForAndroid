@@ -1,11 +1,7 @@
 package com.fsck.k9.activity.compose;
 
 
-import java.util.Arrays;
-import java.util.List;
-
 import android.app.PendingIntent;
-import androidx.loader.app.LoaderManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -19,6 +15,8 @@ import android.view.View.OnFocusChangeListener;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
+import androidx.loader.app.LoaderManager;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.R;
@@ -31,15 +29,16 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.ActionRecipientSelectView;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
-import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.RecipientSelectView.TokenListener;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
-
-import java.util.ArrayList;
 
 
 public class RecipientMvpView implements OnFocusChangeListener, OnClickListener {
@@ -495,24 +494,20 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     public Rating getpEpRating() {
         return pEpRating;
     }
+
     public void handlepEpState(boolean... withToast) {
         if (mAccount.ispEpPrivacyProtected()) {
             boolean reallyWithToast = true;
-            if(withToast.length>0) reallyWithToast = withToast[0];
+            if (withToast.length > 0) reallyWithToast = withToast[0];
             updatePePState();
-            activity.setToolbarColor(pEpUiCache.getColor(Rating.pEpRatingUndefined));
+            activity.setToolbarColor(pEpRating);
 
-            if(pEpIndicator!=null) {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    pEpIndicator.setIcon(pEpUiCache.getIcon());
-                }
-            });
+            if (pEpIndicator != null) {
+                new Handler(Looper.getMainLooper()).post(() -> pEpIndicator.setIcon(pEpUiCache.getIcon()));
                 String msg = pEpUiCache.getTitle(pEpRating);
             }
         } else {
-            activity.setToolbarColor(pEpUiCache.getColor(Rating.pEpRatingUndefined));
+            activity.setToolbarColor(Rating.pEpRatingUndefined);
         }
         activity.setStatusBarPepColor(pEpRating);
 

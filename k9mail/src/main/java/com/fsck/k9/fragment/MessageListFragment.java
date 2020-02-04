@@ -792,7 +792,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         updateTitle();
         MessageList activity = (MessageList) getActivity();
         if (!activity.isMessageViewVisible() && activity.isThreadDisplayed()) {
-            toolBarCustomizer.setToolbarColor(PEpUtils.getRatingColor(worstThreadRating, getActivity()));
+            toolBarCustomizer.setToolbarColor(worstThreadRating);
             toolBarCustomizer.setStatusBarPepColor(worstThreadRating);
         }
         if (isThreadDisplay) {
@@ -2993,7 +2993,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             cursor.moveToNext();
         }
         if (!((MessageList) getActivity()).isMessageViewVisible()) {
-            toolBarCustomizer.setToolbarColor(PEpUtils.getRatingColor(worstThreadRating, getActivity()));
+            toolBarCustomizer.setToolbarColor(worstThreadRating);
             toolBarCustomizer.setStatusBarPepColor(worstThreadRating);
         }
     }
