@@ -91,10 +91,9 @@
         <TextView
             android:id="@+id/tvPep"
             android:text="@string/pep"
-            fontPath="fonts/UniversLTStd.otf"
             style="@style/pEpIndicatorTVActionBarStyle"
             android:textColor="@color/white"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentEnd="true"/>
     </RelativeLayout>
 
 
