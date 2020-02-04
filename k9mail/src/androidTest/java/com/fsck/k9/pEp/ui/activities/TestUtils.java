@@ -2225,6 +2225,22 @@ public class TestUtils {
         }
     }
 
+    public void scrollUpToSubject (){
+        UiObject2 scroll;
+        do {
+            try {
+                scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+                device.waitForIdle();
+                scroll.swipe(Direction.DOWN, 1.0f);
+                device.waitForIdle();
+            } catch (Exception e) {
+                pressBack();
+            }
+        } while (!viewIsDisplayed(R.id.subject));
+        onView(withId(R.id.subject)).check(matches(isCompletelyDisplayed()));
+        onView(withId(R.id.subject)).perform(click());
+    }
+
     private void setCheckBox(String resourceText, boolean checked) {
         BySelector selector = By.clazz("android.widget.CheckBox");
         while (true) {
