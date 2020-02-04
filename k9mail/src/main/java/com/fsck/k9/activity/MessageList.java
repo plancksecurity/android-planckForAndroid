@@ -26,6 +26,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -467,7 +468,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void setupNavigationHeader() {
-        mainAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
+        mainAccountText.setText(PEpUIUtils.accountNameSummary(mAccount.getName()));
         mainAccountName.setText(mAccount.getName());
         mainAccountEmail.setText(mAccount.getEmail());
         setupNavigationHeaderListeners();
@@ -536,13 +537,13 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         final Account firstAccount = accounts.get(accounts.size() - 1);
         firstAccountLayout.setVisibility(View.VISIBLE);
         secondAccountLayout.setVisibility(View.GONE);
-        firstAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
+        firstAccountText.setText(PEpUIUtils.accountNameSummary(firstAccount.getName()));
         firstAccountLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mMessageListFragment.showLoadingMessages();
-                mainAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
-                firstAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
+                mainAccountText.setText(PEpUIUtils.accountNameSummary(firstAccount.getName()));
+                firstAccountText.setText(PEpUIUtils.accountNameSummary(mAccount.getName()));
                 mainAccountEmail.setText(firstAccount.getEmail());
                 mainAccountName.setText(firstAccount.getName());
                 changeAccountAnimation(mainAccountLayout, firstAccountLayout, firstAccount);
@@ -555,17 +556,17 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         final Account lastAccount = accounts.get(accounts.size() - 2);
         firstAccountLayout.setVisibility(View.VISIBLE);
         secondAccountLayout.setVisibility(View.VISIBLE);
-        firstAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
-        secondAccountText.setText(PEpUIUtils.firstLetterOf(lastAccount.getName()));
+        firstAccountText.setText(PEpUIUtils.accountNameSummary(firstAccount.getName()));
+        secondAccountText.setText(PEpUIUtils.accountNameSummary(lastAccount.getName()));
         firstAccountLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mMessageListFragment.showLoadingMessages();
-                mainAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
+                mainAccountText.setText(PEpUIUtils.accountNameSummary(firstAccount.getName()));
                 mainAccountEmail.setText(firstAccount.getEmail());
                 mainAccountName.setText(firstAccount.getName());
-                firstAccountText.setText(PEpUIUtils.firstLetterOf(lastAccount.getName()));
-                secondAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
+                firstAccountText.setText(PEpUIUtils.accountNameSummary(lastAccount.getName()));
+                secondAccountText.setText(PEpUIUtils.accountNameSummary(mAccount.getName()));
                 changeAccountAnimation(mainAccountLayout, firstAccountLayout, firstAccount);
             }
         });
@@ -573,10 +574,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             @Override
             public void onClick(View v) {
                 mMessageListFragment.showLoadingMessages();
-                mainAccountText.setText(PEpUIUtils.firstLetterOf(lastAccount.getName()));
+                mainAccountText.setText(PEpUIUtils.accountNameSummary(lastAccount.getName()));
                 mainAccountEmail.setText(lastAccount.getEmail());
                 mainAccountName.setText(lastAccount.getName());
-                secondAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
+                secondAccountText.setText(PEpUIUtils.accountNameSummary(mAccount.getName()));
                 changeAccountAnimation(mainAccountLayout, secondAccountLayout, lastAccount);
             }
         });
