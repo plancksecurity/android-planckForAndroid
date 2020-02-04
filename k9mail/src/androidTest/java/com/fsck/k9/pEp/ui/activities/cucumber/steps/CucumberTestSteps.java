@@ -1248,7 +1248,7 @@ public class CucumberTestSteps {
     @Then("^I check if the privacy status is (\\S+)$")
     public void I_check_toolBar_color_is(String color) {
         timeRequiredForThisMethod(10);
-        testUtils.waitForTooblar();
+        testUtils.waitForToolbar();
         boolean wait = false;
         while (!wait) {
             try {

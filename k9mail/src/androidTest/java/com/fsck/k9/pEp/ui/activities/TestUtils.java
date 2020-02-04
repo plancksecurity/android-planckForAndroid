@@ -1240,7 +1240,7 @@ public class TestUtils {
         while (!viewIsDisplayed(R.id.pEpTitle)) {
             device.waitForIdle();
         }
-        waitForTooblar();
+        waitForToolbar();
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
         if (!exists(onView(withId(R.id.send)))) {
             goBack(false);
@@ -1364,7 +1364,7 @@ public class TestUtils {
                 onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
                 device.waitForIdle();
                 waitUntilIdle();
-                waitForTooblar();
+                waitForToolbar();
                 onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(color)));
                 checkUpperToolbar(color);
                 return;
@@ -1391,7 +1391,7 @@ public class TestUtils {
         device.waitForIdle();
     }
 
-    public void waitForTooblar () {
+    public void waitForToolbar() {
         for (int waitLoop = 0; waitLoop < 1000; waitLoop++) {
             device.waitForIdle();
             while (!viewIsDisplayed(R.id.toolbar) || !viewIsDisplayed(R.id.toolbar_container)) {
