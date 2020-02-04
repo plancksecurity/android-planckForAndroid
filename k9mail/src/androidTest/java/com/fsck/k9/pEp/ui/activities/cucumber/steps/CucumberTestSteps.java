@@ -323,20 +323,11 @@ public class CucumberTestSteps {
                         }
                     }
                 }
-                do {
-                    try {
-                        scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-                        device.waitForIdle();
-                        scroll.swipe(Direction.DOWN, 1.0f);
-                        device.waitForIdle();
-                    } catch (Exception e) {
-                        testUtils.pressBack();
-                    }
-                } while (!viewIsDisplayed(R.id.subject));
-                onView(withId(R.id.subject)).check(matches(isCompletelyDisplayed()));
+                testUtils.scrollUpToSubject();
                 return;
             default:
                 timeRequiredForThisMethod(10);
+                testUtils.scrollUpToSubject();
                 while (!(containstText(onView(withId(viewId)), text))) {
                     try {
                         onView(withId(viewId)).perform(closeSoftKeyboard());
@@ -384,11 +375,7 @@ public class CucumberTestSteps {
                 break;
             case "longText":
                 device.waitForIdle();
-                String text1 = "";
-                for (int i = 0; i < 61; i++) {
-                    text1 = text1 + testUtils.longText();
-                }
-                cucumberBody = text1;
+                cucumberBody = testUtils.longText();
                 testUtils.compareMessageBodyLongText(cucumberBody);
                 break;
             default:
