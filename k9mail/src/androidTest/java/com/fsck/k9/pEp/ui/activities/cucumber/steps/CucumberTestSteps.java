@@ -157,14 +157,9 @@ public class CucumberTestSteps {
             device.waitForIdle();
         }
         device.waitForIdle();
+        onView(withId(R.id.available_accounts_title)).check(matches(isDisplayed()));
         activityTestRule.finishActivity();
         device.waitForIdle();
-        try {
-            waitUntilIdle();
-            Espresso.pressBackUnconditionally();
-        } catch (Exception backException) {
-            Timber.i("Cannot pressBackUnconditionally: " + backException.getMessage());
-        }
     }
 
     @When(value = "^I created an account$")
