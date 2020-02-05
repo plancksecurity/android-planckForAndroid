@@ -35,6 +35,7 @@ import junit.framework.AssertionFailedError;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
@@ -1433,6 +1434,9 @@ public class CucumberTestSteps {
             try {
                 String extStorageDirectory = Environment.getExternalStorageDirectory().getAbsolutePath().toString();
                 File file = new File("/data/data/security.pEp.debug/cucumber-reports/", "cucumber.json");
+                if (!file.exists()) {
+                    Assume.assumeTrue("File cucumber.json doesn't exist",false);
+                }
                 File file2 = new File(extStorageDirectory + "/cucumber.json");
                 FileInputStream in = new FileInputStream(file);
                 file2.createNewFile();
