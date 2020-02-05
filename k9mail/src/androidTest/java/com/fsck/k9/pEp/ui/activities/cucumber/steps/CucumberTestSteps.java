@@ -1431,12 +1431,10 @@ public class CucumberTestSteps {
     }
 
     private void CopyAssets() {
+        File file = null;
             try {
                 String extStorageDirectory = Environment.getExternalStorageDirectory().getAbsolutePath().toString();
-                File file = new File("/data/data/security.pEp.debug/cucumber-reports/", "cucumber.json");
-                if (!file.exists()) {
-                    Assume.assumeTrue("File cucumber.json doesn't exist",false);
-                }
+                file = new File("/data/data/security.pEp.debug/cucumber-reports/", "cucumber.json");
                 File file2 = new File(extStorageDirectory + "/cucumber.json");
                 FileInputStream in = new FileInputStream(file);
                 file2.createNewFile();
@@ -1449,6 +1447,9 @@ public class CucumberTestSteps {
             } catch (Exception e) {
                 Log.e("tag", e.getMessage());
             }
+        if (!file.exists()) {
+            Assume.assumeTrue("File cucumber.json doesn't exist",false);
+        }
     }
 
     private void copyFile(InputStream in, OutputStream out) {
