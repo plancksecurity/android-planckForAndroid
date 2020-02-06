@@ -1661,6 +1661,7 @@ public class TestUtils {
         while (!backToMessageCompose){
             pressBack();
             device.waitForIdle();
+            waitForTooblar();
             if (viewIsDisplayed(R.id.fab_button_compose_message)){
                 backToMessageCompose = true;
             }
