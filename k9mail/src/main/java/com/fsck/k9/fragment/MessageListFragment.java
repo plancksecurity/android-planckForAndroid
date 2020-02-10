@@ -759,9 +759,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         super.onResume();
 
         if (!loaderJustInitialized) {
-            if(accountExists()) {
-                restartLoader();
-            }
+            restartLoader();
         } else {
             loaderJustInitialized = false;
         }
@@ -804,10 +802,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         } else {
             fab.show();
         }
-    }
-
-    private boolean accountExists() {
-        return preferences.getAccounts().contains(account);
     }
 
     private void restartLoader() {
