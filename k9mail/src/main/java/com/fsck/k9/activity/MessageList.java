@@ -1146,6 +1146,14 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         initializeDisplayMode(null);
         initializeFragments();
         displayViews();
+
+        channelUtils.updateChannels();
+        if (mAccount != null && mAccount.ispEpPrivacyProtected()) initializePepStatus();
+        toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, getToolbar(), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.setDrawerListener(toggle);
+        toggle.syncState();
+
     }
 
     /**
