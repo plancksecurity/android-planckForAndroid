@@ -79,21 +79,8 @@ class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
             val colorFilter = PorterDuffColorFilter(colorReference, PorterDuff.Mode.MULTIPLY)
 
             activity.toolbar?.children?.forEach { v ->
-                when (v) {
-                    is ImageButton ->
+                if(v is ImageButton)
                         v.drawable.mutate().colorFilter = colorFilter
-                    is ActionMenuView ->
-                        v.children.forEach { innerView ->
-                            if (innerView is ActionMenuItemView) {
-                                innerView.compoundDrawables.forEach { drawable ->
-                                    innerView.post {
-                                        drawable?.mutate()?.colorFilter = colorFilter
-                                    }
-                                }
-                            }
-                        }
-                }
-
             }
             activity.toolbar?.overflowIcon?.colorFilter = colorFilter
         }

@@ -64,7 +64,7 @@
     <item
         android:id="@+id/delete"
         android:alphabeticShortcut="q"
-        android:icon="@drawable/ic_action_delete"
+        android:icon="@drawable/ic_delete_white_24dp"
         app:showAsAction="always"
         android:title="@string/delete_action"/>
     <!-- MessageView -->

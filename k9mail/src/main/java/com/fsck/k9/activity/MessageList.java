@@ -1944,6 +1944,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
         } else {
             toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(ContextCompat.getColor(this,R.color.light_black));
+            menu.findItem(R.id.delete).setIcon(R.drawable.ic_delete_black_24dp);
             // hide prev/next buttons in split mode
             if (mDisplayMode != DisplayMode.MESSAGE_VIEW) {
                 menu.findItem(R.id.next_message).setVisible(false);
