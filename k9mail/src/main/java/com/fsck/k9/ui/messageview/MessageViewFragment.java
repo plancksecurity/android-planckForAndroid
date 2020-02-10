@@ -239,7 +239,6 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     @Override
     public void onDestroy() {
         super.onDestroy();
-        pEpSecurityStatusLayout.setRating(pEpRatingUndefined);
         Activity activity = getActivity();
         boolean isChangingConfigurations = activity != null && activity.isChangingConfigurations();
         if (isChangingConfigurations) {
