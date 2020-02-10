@@ -1467,9 +1467,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void initializeActionBar() {
-        if(!isThreadDisplayed) {
-            setUpToolbar(true, v -> setDrawerEnabled(true));
-        }
+        setUpToolbar(true, v -> setDrawerEnabled(true));
         customView = getToolbar().findViewById(R.id.actionbar_custom);
         mActionBarMessageList = customView.findViewById(R.id.actionbar_message_list);
         mActionBarMessageView = customView.findViewById(R.id.actionbar_message_view);
@@ -2367,6 +2365,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 finish();
             }
         } else {
+            if(isThreadDisplayed) {
+                updateToolbarColorToOriginal();
+                isThreadDisplayed = false;
+            }
             super.onBackPressed();
         }
     }
