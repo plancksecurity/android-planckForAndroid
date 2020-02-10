@@ -1,58 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.fsck.k9.ui.messageview.MessageTopView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<com.fsck.k9.ui.messageview.MessageTopView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/message_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:layout_weight="1">
 
-    <Button android:id="@+id/download_remainder"
-        android:text="@string/message_view_download_remainder"
+    <Button
+        android:id="@+id/download_remainder"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="@string/message_view_download_remainder"
         android:visibility="gone"
-        android:layout_width="fill_parent"/>
+        tools:visibility="visible" />
 
     <com.fsck.k9.view.NonLockingScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:padding="8dp"
+        android:id="@+id/scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/download_remainder"
         android:clipToPadding="false"
-        android:layout_weight="1">
+        android:padding="8dp">
 
         <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <!-- Header area -->
-            <include layout="@layout/message_view_header"/>
+            <include layout="@layout/message_view_header" />
 
-            <FrameLayout android:id="@+id/show_pictures"
+            <FrameLayout
+                android:id="@+id/show_pictures"
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
-                android:layout_gravity="right"
-                android:layout_marginBottom="4dp"
+                android:layout_gravity="end"
                 android:layout_marginLeft="6dp"
-                android:layout_marginRight="6dp"
                 android:layout_marginTop="4dp"
+                android:layout_marginRight="6dp"
+                android:layout_marginBottom="4dp"
                 android:visibility="gone"
                 tools:visibility="visible">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
                     android:text="@string/message_view_show_pictures_action"
                     android:textAllCaps="true"
-                    android:textStyle="bold"
                     android:textColor="@color/light_black"
-                    />
+                    android:textStyle="bold" />
             </FrameLayout>
 
             <com.fsck.k9.view.ToolableViewAnimator
@@ -73,33 +74,31 @@
                     android:layout_margin="8dp">
 
                     <ProgressBar
+                        android:id="@+id/message_progress"
+                        style="@android:style/Widget.Holo.ProgressBar.Horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:indeterminate="false"
+                        android:max="1000"
                         android:paddingTop="30dp"
                         android:paddingBottom="30dp"
-                        android:indeterminate="false"
-                        android:id="@+id/message_progress"
-                        android:max="1000"
-                        tools:progress="300"
-                        style="@android:style/Widget.Holo.ProgressBar.Horizontal"
-                        />
+                        tools:progress="300" />
 
                     <TextView
+                        android:id="@+id/message_progress_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/message_progress"
                         android:layout_centerInParent="true"
-                        android:id="@+id/message_progress_text"
-                        android:text="@string/message_progress_text"
-                        />
+                        android:text="@string/message_progress_text" />
 
                 </RelativeLayout>
 
                 <FrameLayout
-                    android:orientation="vertical"
                     android:id="@+id/message_container"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
 
             </com.fsck.k9.view.ToolableViewAnimator>
 
