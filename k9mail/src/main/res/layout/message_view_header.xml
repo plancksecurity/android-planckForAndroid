@@ -31,12 +31,14 @@
                 android:id="@+id/subject"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
                 android:ellipsize="end"
                 android:fontFamily="sans-serif-medium"
+                android:textStyle="bold"
                 android:textColor="?android:attr/textColorPrimary"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:padding="8dp"
-                tools:text="(no subject)" />
+                tools:text="Subject" />
 
             </RelativeLayout>
             <View
