@@ -23,9 +23,11 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.TypedValue;
+import android.view.ContextMenu;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -39,6 +41,7 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
@@ -117,6 +120,7 @@ import javax.inject.Inject;
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
+import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
@@ -145,7 +149,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     public static final String EXTRA_PEP_RATING = "pEpRating";
     public static final String EXTRA_MESSAGE_DECRYPTION_RESULT = "message_decryption_result";
-    public static final String EXTRA_MESSAGE_BODY  = "messageBody";
+    public static final String EXTRA_MESSAGE_BODY = "messageBody";
 
     private static final String STATE_KEY_SOURCE_MESSAGE_PROCED =
             "com.fsck.k9.activity.MessageCompose.stateKeySourceMessageProced";
@@ -263,6 +267,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     @Inject
     ToolBarCustomizer toolBarCustomizer;
 
+    private PEpSecurityStatusLayout pEpSecurityStatusLayout;
+
     @Override
     public void inject() {
         getpEpComponent().inject(this);
@@ -294,6 +300,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         } else {
             bindViews(R.layout.message_compose);
         }
+
+        startToolbar();
 
         // on api level 15, setContentView() shows the progress bar for some reason...
         setProgressBarIndeterminateVisibility(false);
@@ -502,7 +510,17 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
         recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.ACCOUNT, account.ispEpPrivacyProtected());
 
+    }
+
+    private void startToolbar() {
         setUpToolbar(true);
+        if (getToolbar() != null) {
+            pEpSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
+            pEpSecurityStatusLayout.setOnClickListener(v -> onPEpIndicator());
+            registerForContextMenu(pEpSecurityStatusLayout);
+        }
+        toolBarCustomizer.setToolbarColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
+        toolBarCustomizer.setStatusBarPepColor(ContextCompat.getColor(getApplicationContext(), R.color.light_black));
     }
 
     private void createDynamicShortcut() {
@@ -1073,30 +1091,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             case R.id.add_attachment:
                 attachmentPresenter.onClickAddAttachment(recipientPresenter);
                 break;
-            case R.id.pEp_indicator:
-//                TODO> Review after rebase
-                onPEpIndicator();
-                break;
             case R.id.read_receipt:
                 onReadReceipt();
-                break;
-            case R.id.force_unencrypted:
-                if (encrypted) {
-                    item.setTitle(R.string.pep_force_protected);
-                } else {
-                    item.setTitle(R.string.pep_force_unprotected);
-                }
-                encrypted = !encrypted;
-                forceUnencrypted();
-                break;
-            case R.id.is_always_secure:
-                if (alwaysSecureMenuItem.getTitle().toString().equals(getString(R.string.is_always_secure))) {
-                    recipientPresenter.setAlwaysSecure(true);
-                    alwaysSecureMenuItem.setTitle(R.string.is_not_always_secure);
-                } else {
-                    recipientPresenter.setAlwaysSecure(false);
-                    alwaysSecureMenuItem.setTitle(R.string.is_always_secure);
-                }
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -1138,6 +1134,47 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         }
     }
 
+    // Context Menu
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.pep_security_badge_options_menu, menu);
+
+        menu.findItem(R.id.force_unencrypted)
+                .setTitle(encrypted ? R.string.pep_force_unprotected : R.string.pep_force_protected);
+
+        menu.findItem(R.id.force_unencrypted).setVisible(account.ispEpPrivacyProtected());
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.force_unencrypted:
+                if (encrypted) {
+                    item.setTitle(R.string.pep_force_protected);
+                } else {
+                    item.setTitle(R.string.pep_force_unprotected);
+                }
+                encrypted = !encrypted;
+                forceUnencrypted();
+                break;
+            case R.id.is_always_secure:
+                if (alwaysSecureMenuItem.getTitle().toString().equals(getString(R.string.is_always_secure))) {
+                    recipientPresenter.setAlwaysSecure(true);
+                    alwaysSecureMenuItem.setTitle(R.string.is_not_always_secure);
+                } else {
+                    recipientPresenter.setAlwaysSecure(false);
+                    alwaysSecureMenuItem.setTitle(R.string.is_always_secure);
+                }
+                break;
+            default:
+                return false;
+        }
+        return true;
+    }
+
+    // Options Menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -1154,15 +1191,10 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         }
 
         // grab our icon and set it to the wanted color.
-        recipientPresenter.setpEpIndicator(menu.findItem(R.id.pEp_indicator));
-//  TODO> Review after rebase
+        //    recipientPresenter.setpEpIndicator(menu.findItem(R.id.pEp_indicator));
+        //  TODO> Review after rebase
         handlePEpState(false);       // fire once to get everything set up.
 
-        if (encrypted) {
-            menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_unprotected);
-        } else {
-            menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_protected);
-        }
         alwaysSecureMenuItem = menu.findItem(R.id.is_always_secure);
         return true;
     }
@@ -1172,6 +1204,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         super.onPrepareOptionsMenu(menu);
 
         recipientPresenter.onPrepareOptionsMenu(menu);
+        toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(ContextCompat.getColor(this, R.color.light_black));
 
         return true;
     }
@@ -1204,12 +1237,9 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         if (subjectView.getText().length() != 0) {
             return true;
         }
-        if (!recipientPresenter.getToAddresses().isEmpty() ||
+        return !recipientPresenter.getToAddresses().isEmpty() ||
                 !recipientPresenter.getCcAddresses().isEmpty() ||
-                !recipientPresenter.getBccAddresses().isEmpty()) {
-            return true;
-        }
-        return false;
+                !recipientPresenter.getBccAddresses().isEmpty();
     }
 
 
@@ -1980,20 +2010,17 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         isSendButtonLocked = false;
     }
 
-    public void setToolbarColor(@ColorInt int color){
+    public void setToolbarColor(@ColorInt int color) {
         toolBarCustomizer.setToolbarColor(color);
     }
 
-    public void setToolbarColor(Rating rating){
-        toolBarCustomizer.setToolbarColor(rating);
-    }
-
-    public void setStatusBarPepColor(@ColorInt int color){
+    public void setStatusBarPepColor(@ColorInt int color) {
         toolBarCustomizer.setStatusBarPepColor(color);
     }
 
-    public void setStatusBarPepColor(Rating rating){
-        toolBarCustomizer.setStatusBarPepColor(rating);
+    public void setToolbarRating(Rating rating) {
+        pEpSecurityStatusLayout.setEncrypt(encrypted);
+        pEpSecurityStatusLayout.setRating(rating);
     }
 
     private Handler internalMessageHandler = new Handler() {

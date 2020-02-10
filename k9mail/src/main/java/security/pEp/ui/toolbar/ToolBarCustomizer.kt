@@ -2,10 +2,15 @@ package security.pEp.ui.toolbar
 
 import android.app.Activity
 import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.os.Build
 import android.view.WindowManager
+import android.widget.ImageButton
 import androidx.annotation.ColorInt
-import com.fsck.k9.pEp.PePUIArtefactCache
+import androidx.appcompat.view.menu.ActionMenuItemView
+import androidx.appcompat.widget.ActionMenuView
+import androidx.core.view.children
 import foundation.pEp.jniadapter.Rating
 import kotlinx.android.synthetic.main.toolbar.*
 import kotlinx.coroutines.CoroutineScope
@@ -24,10 +29,10 @@ interface ToolBarCustomizer {
 
     fun setToolbarColor(@ColorInt colorReference: Int)
 
+    fun colorizeToolbarActionItemsAndNavButton(@ColorInt colorReference: Int)
 }
 
 class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
-
 
     override fun setStatusBarPepColor(pEpRating: Rating?) {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -63,6 +68,34 @@ class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
 
         uiScope.launch {
             activity.toolbar?.setBackgroundColor(colorReference)
+        }
+    }
+
+    override fun colorizeToolbarActionItemsAndNavButton(@ColorInt colorReference: Int) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
+        uiScope.launch {
+
+            val colorFilter = PorterDuffColorFilter(colorReference, PorterDuff.Mode.MULTIPLY)
+
+            activity.toolbar?.children?.forEach { v ->
+                when (v) {
+                    is ImageButton ->
+                        v.drawable.mutate().colorFilter = colorFilter
+                    is ActionMenuView ->
+                        v.children.forEach { innerView ->
+                            if (innerView is ActionMenuItemView) {
+                                innerView.compoundDrawables.forEach { drawable ->
+                                    innerView.post {
+                                        drawable?.mutate()?.colorFilter = colorFilter
+                                    }
+                                }
+                            }
+                        }
+                }
+
+            }
+            activity.toolbar?.overflowIcon?.colorFilter = colorFilter
         }
     }
 

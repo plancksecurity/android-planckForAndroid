@@ -1312,4 +1312,9 @@ You can keep this message and use it as a backup for your secret key. If you wan
     <string name="switch_on">On</string>
     <string name="switch_off">Off</string>
     <string name="search_empty_error">Please write text to search</string>
+    <string name="pep_rating_secure_trusted">Secure &amp;\n Trusted</string>
+    <string name="pep_rating_secure">Secure</string>
+    <string name="pep_rating_mistrusted">Mistrusted</string>
+    <string name="pep_rating_forced_unencrypt">Disabled</string>
+    <string name="pep_rating_none"></string>
 </resources>

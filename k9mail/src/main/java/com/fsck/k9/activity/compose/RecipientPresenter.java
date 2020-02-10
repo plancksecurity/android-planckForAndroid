@@ -321,8 +321,6 @@ public class RecipientPresenter {
             menu.findItem(R.id.add_from_contacts).setVisible(false);
         }
 
-        menu.findItem(R.id.pEp_indicator).setVisible(account.ispEpPrivacyProtected());
-        menu.findItem(R.id.force_unencrypted).setVisible(account.ispEpPrivacyProtected());
 
     }
 
@@ -874,9 +872,9 @@ public class RecipientPresenter {
     }
 
     private void loadPEpStatus() {
-        if (forceUnencrypted) {
-            showRatingFeedback(Rating.pEpRatingUnencrypted);
-        } else {
+   //     if (forceUnencrypted) {
+   //         showRatingFeedback(Rating.pEpRatingUnencrypted);
+   //     } else {
             Address fromAddress = recipientMvpView.getFromAddress();
             List<Address> newToAdresses = recipientMvpView.getToAddresses();
             List<Address> newCcAdresses = recipientMvpView.getCcAddresses();
@@ -920,7 +918,7 @@ public class RecipientPresenter {
                 });
             }
             recipientMvpView.unlockSendButton();
-        }
+     //   }
     }
 
     private void showDefaultStatus() {

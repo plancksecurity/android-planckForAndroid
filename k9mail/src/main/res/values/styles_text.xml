@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="PEpSecurityStatusTextView">
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/univers_lts_sd</item>
+        <item name="android:textColor">@color/light_black</item>
+    </style>
+</resources>
+

@@ -11,11 +11,15 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/colorPrimary"
+        android:contentInsetStart="0dp"
+        android:contentInsetLeft="0dp"
         android:elevation="4dp"
-        tools:title="title"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        tools:backgroundTint="@color/colorPrimary">
+        tools:backgroundTint="@color/colorPrimary"
+        tools:title="title">
 
         <include layout="@layout/actionbar_custom" />
     </androidx.appcompat.widget.Toolbar>
@@ -24,9 +28,9 @@
         android:id="@+id/toolbar_search_container"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
         android:clipChildren="false"
-        android:visibility="gone"
-        android:background="@color/colorPrimary">
+        android:visibility="gone">
 
         <include layout="@layout/include_search_bar" />
     </FrameLayout>

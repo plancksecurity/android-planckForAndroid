@@ -40,14 +40,14 @@ public class PEpContactBadge extends QuickContactBadge {
     }
 
     public void setPepRating(Rating pEpRating, boolean ispEpEnabled) {
-        if (ispEpEnabled && pEpRating!= null) {
+        if (ispEpEnabled && pEpRating != null) {
             this.pEpRating = pEpRating;
         } else {
             this.pEpRating = Rating.pEpRatingUndefined;
         }
         color = PEpUIUtils.getRatingColor(context, this.pEpRating);
         paint.setColor(color);
-        currentStatus = PEpUIUtils.getDrawableForRating(context, this.pEpRating);
+        currentStatus = PEpUIUtils.getDrawableForRatingBordered(context, this.pEpRating);
         invalidate();
     }
 
@@ -78,14 +78,16 @@ public class PEpContactBadge extends QuickContactBadge {
         int contactTop = Math.round(height * additionalPaddingPercent);
         int contactRight = Math.round(width * (1f - additionalPaddingPercent * 2));
         int contactBottom = Math.round(height * (1f - additionalPaddingPercent));
-        int pEpBadgeLeft = Math.round(width * .60f);
-        int pEpBadgeTop = Math.round(height * .60f);
+
+        int pepBadgeSize = Math.round(width * .35f);
+        int pepBadgePadding = Math.round(width * .10f);
+        int pEpBadgeLeft = width - pepBadgeSize - pepBadgePadding;
+        int pEpBadgeRight = width - pepBadgePadding;
+        int pEpBadgeTop = height - pepBadgeSize;
+
         contactBoundsBadgeRect = new Rect(contactLeft, contactTop, contactRight, contactBottom);
-        pEpBadgeRect = new Rect(pEpBadgeLeft, pEpBadgeTop, width, height);
-
+        pEpBadgeRect = new Rect(pEpBadgeLeft, pEpBadgeTop, pEpBadgeRight, height);
     }
-
-
 
 
 }

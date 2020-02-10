@@ -26,8 +26,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
@@ -60,7 +60,6 @@ import com.fsck.k9.pEp.AccountUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.models.FolderModel;
-import security.pEp.ui.PEpUIUtils;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageSwipeDirection;
 import com.fsck.k9.pEp.ui.infrastructure.Router;
@@ -96,6 +95,7 @@ import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionRequester;
+import security.pEp.ui.PEpUIUtils;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
@@ -385,7 +385,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         initializeFragments();
         displayViews();
         channelUtils.updateChannels();
-        if (mAccount != null && mAccount.ispEpPrivacyProtected()) initializePepStatus();
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
@@ -1427,10 +1426,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
         StorageManager.getInstance(getApplication()).addListener(mStorageListener);
 
-        if (mAccount != null) {
-            initializePepStatus();
-        }
-
         if (!isThreadDisplayed) {
             toolBarCustomizer.setToolbarColor(Rating.pEpRatingTrustedAndAnonymized);
             toolBarCustomizer.setStatusBarPepColor(Rating.pEpRatingTrustedAndAnonymized);
@@ -1489,21 +1484,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         mActionBarUnread = (TextView) customView.findViewById(R.id.actionbar_unread_count);
         mActionBarProgress = (ProgressBar) customView.findViewById(R.id.actionbar_progress);
         mActionButtonIndeterminateProgress = getActionButtonIndeterminateProgress();
-    }
-
-    private void initializePepStatus() {
-        mActionBarPepStatus = (TextView) customView.findViewById(R.id.tvPep);
-        if (mAccount.ispEpPrivacyProtected()) {
-            mActionBarPepStatus.setVisibility(View.VISIBLE);
-            mActionBarPepStatus.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mMessageViewFragment.onPepStatus(MessageList.this);
-                }
-            });
-        } else {
-            mActionBarPepStatus.setVisibility(View.GONE);
-        }
     }
 
     @SuppressLint("InflateParams")
@@ -1878,10 +1858,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 updateMenu();
                 return true;
             }
-            case R.id.pEp_indicator: {
-                mMessageViewFragment.onPepStatus(MessageList.this);
-
-            }
         }
 
         if (!mSingleFolderMode) {
@@ -1940,6 +1916,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         if (mDisplayMode == DisplayMode.MESSAGE_LIST
                 || mMessageViewFragment == null
                 || !mMessageViewFragment.isInitialized()) {
+            toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(ContextCompat.getColor(this,R.color.white));
             menu.findItem(R.id.next_message).setVisible(false);
             menu.findItem(R.id.previous_message).setVisible(false);
             menu.findItem(R.id.single_message_options).setVisible(false);
@@ -1956,6 +1933,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             menu.findItem(R.id.hide_headers).setVisible(false);
 
         } else {
+            toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(ContextCompat.getColor(this,R.color.light_black));
             // hide prev/next buttons in split mode
             if (mDisplayMode != DisplayMode.MESSAGE_VIEW) {
                 menu.findItem(R.id.next_message).setVisible(false);
