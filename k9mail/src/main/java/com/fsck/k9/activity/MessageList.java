@@ -405,6 +405,12 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+        mMessageListFragment.destroyAllLoadersIfNeeded();
+    }
+
+    @Override
     public void search(String query) {
         if (mAccount != null && query != null) {
             final Bundle appData = new Bundle();

@@ -136,6 +136,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     private FloatingActionButton fab;
     private ProgressBar loadingView;
     private Rating worstThreadRating;
+    private boolean loadersDestroyed;
 
     public static MessageListFragment newInstance(LocalSearch search, boolean isThreadDisplay, boolean threadedList) {
         MessageListFragment fragment = new MessageListFragment();
@@ -513,6 +514,25 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         getpEpComponent().inject(this);
     }
 
+    public void destroyAllLoadersIfNeeded() {
+        if(anyAccountWasDeleted()) {
+            LoaderManager manager = LoaderManager.getInstance(this);
+            for (int i = 0, len = accountUuids.length; i < len; i++) {
+                manager.destroyLoader(i);
+            }
+            loadersDestroyed = true;
+        }
+    }
+
+    private boolean anyAccountWasDeleted() {
+        for(String uuid : accountUuids) {
+            if(preferences.getAccount(uuid) == null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
@@ -758,10 +778,12 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     public void onResume() {
         super.onResume();
 
-        if (!loaderJustInitialized) {
+        if (!loaderJustInitialized
+                && !loadersDestroyed) {
             restartLoader();
         } else {
             loaderJustInitialized = false;
+            loadersDestroyed = false;
         }
 
         // Check if we have connectivity.  Cache the value.
