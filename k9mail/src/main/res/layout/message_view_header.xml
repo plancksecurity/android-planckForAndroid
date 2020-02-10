@@ -35,29 +35,14 @@
                 android:fontFamily="sans-serif-medium"
                 android:textColor="?android:attr/textColorPrimary"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_toLeftOf="@+id/flagged"
                 android:padding="8dp"
-                tools:text="(no subject)"
-                />
+                tools:text="(no subject)" />
 
-                <CheckBox
-                    android:id="@+id/flagged"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:focusable="false"
-                    android:button="@xml/read_message_favorite_checkbox"
-                    android:gravity="center_vertical"
-                    android:checked="false"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:paddingRight="8dp"
-                    android:layout_alignBottom="@+id/subject" />
             </RelativeLayout>
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1px"
-                android:background="?android:attr/dividerHorizontal"
-                />
+                android:background="?android:attr/dividerHorizontal" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -76,8 +61,7 @@
                         android:layout_width="52dp"
                         android:layout_height="52dp"
                         android:layout_marginTop="8dp"
-                        android:layout_marginLeft="8dp"
-                        />
+                        android:layout_marginLeft="8dp" />
 
                     <!-- State icons -->
                     <LinearLayout

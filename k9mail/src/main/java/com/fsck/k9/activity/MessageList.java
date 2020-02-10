@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -325,6 +326,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     private ProgressBar mActionBarProgress;
     private MenuItem mMenuButtonCheckMail;
+    private CheckBox flaggedCheckbox;
     private View mActionButtonIndeterminateProgress;
     private int mLastDirection = (K9.messageViewShowNext()) ? NEXT : PREVIOUS;
 
@@ -1881,7 +1883,14 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.message_list_option, menu);
         mMenu = menu;
-        mMenuButtonCheckMail= menu.findItem(R.id.check_mail);
+        mMenuButtonCheckMail = menu.findItem(R.id.check_mail);
+        flaggedCheckbox = (CheckBox) menu.findItem(R.id.flag).getActionView();
+        flaggedCheckbox.setButtonDrawable(R.drawable.read_message_favorite_checkbox);
+        flaggedCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    if (buttonView.isPressed())
+                        mMessageViewFragment.onToggleFlagged();
+                }
+        );
         return true;
     }
 
@@ -1931,6 +1940,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             menu.findItem(R.id.select_text).setVisible(false);
             menu.findItem(R.id.show_headers).setVisible(false);
             menu.findItem(R.id.hide_headers).setVisible(false);
+            menu.findItem(R.id.flag).setVisible(false);
 
         } else {
             toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(ContextCompat.getColor(this,R.color.light_black));
@@ -1953,6 +1963,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 next.setEnabled(canDoNext);
                 next.getIcon().setAlpha(canDoNext ? 255 : 127);
             }
+
+
+            flaggedCheckbox.setChecked(mMessageViewFragment.isMessageFlagged());
 
             // Set title of menu item to toggle the read state of the currently displayed message
             if (mMessageViewFragment.isMessageRead()) {

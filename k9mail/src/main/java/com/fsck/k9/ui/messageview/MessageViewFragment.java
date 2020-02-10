@@ -207,8 +207,6 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         mMessageView.setAttachmentCallback(this);
         mMessageView.setMessageCryptoPresenter(messageCryptoPresenter);
 
-        mMessageView.setOnToggleFlagClickListener(v -> onToggleFlagged());
-
         mMessageView.setOnDownloadButtonClickListener(v -> {
             mMessageView.disableDownloadButton();
             messageLoaderHelper.downloadCompleteMessage();

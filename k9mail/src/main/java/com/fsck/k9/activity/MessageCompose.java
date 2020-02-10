@@ -1811,7 +1811,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
         @Override
         public void startIntentSenderForMessageLoaderHelper(IntentSender si, int requestCode, Intent fillIntent,
-                int flagsMask, int flagValues, int extraFlags) {
+                                                            int flagsMask, int flagValues, int extraFlags) {
             try {
                 requestCode |= REQUEST_MASK_LOADER_HELPER;
                 startIntentSenderForResult(si, requestCode, fillIntent, flagsMask, flagValues, extraFlags);
@@ -1919,7 +1919,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             View view = getLayoutInflater().inflate(R.layout.message_compose_attachment, attachmentsView, false);
             attachmentViews.put(attachment.uri, view);
 
-            ImageView deleteButton = (ImageView) view.findViewById(R.id.attachment_delete);
+            ImageView deleteButton = view.findViewById(R.id.attachment_delete);
             deleteButton.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -1938,7 +1938,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                 throw new IllegalArgumentException();
             }
 
-            TextView nameView = (TextView) view.findViewById(R.id.attachment_name);
+            TextView nameView = view.findViewById(R.id.attachment_name);
             boolean hasMetadata = (attachment.state != Attachment.LoadingState.URI_ONLY);
             if (hasMetadata) {
                 nameView.setText(attachment.name);

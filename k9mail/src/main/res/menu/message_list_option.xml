@@ -13,6 +13,15 @@
 
     <!-- MessageView -->
     <item
+        android:id="@+id/flag"
+        android:icon="@drawable/read_message_favorite_checkbox"
+        android:title="@string/flag_action"
+        app:actionViewClass="android.widget.CheckBox"
+        android:checkable="true"
+        app:showAsAction="always" />
+
+    <!-- MessageView -->
+    <item
         android:id="@+id/previous_message"
         android:title="@string/previous_action"
         android:icon="?attr/iconActionPreviousMessage"

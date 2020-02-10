@@ -69,7 +69,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     private MessageCryptoStatusView mCryptoStatusIcon;
 
     private View mChip;
-    private CheckBox mFlagged;
     private int defaultSubjectColor;
     private TextView mAdditionalHeadersView;
     private View mAnsweredIcon;
@@ -175,7 +174,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         mAdditionalHeadersView = (TextView) findViewById(R.id.additional_headers_view);
         mChip = findViewById(R.id.chip);
         mDateView = (TextView) findViewById(R.id.date);
-        mFlagged = (CheckBox) findViewById(R.id.flagged);
 
         defaultSubjectColor = mSubjectView.getCurrentTextColor();
         mFontSizes.setViewTextSize(mSubjectView, mFontSizes.getMessageViewSubject());
@@ -266,10 +264,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     private void onAddRecipientsToClipboard(Message.RecipientType recipientType) {
         onAddAddressesToClipboard(mMessage.getRecipients(recipientType));
-    }
-
-    public void setOnFlagListener(OnClickListener listener) {
-        mFlagged.setOnClickListener(listener);
     }
 
     public boolean additionalHeadersVisible() {
@@ -402,7 +396,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         updateAddressField(mCcView, cc, mCcLabel);
         mAnsweredIcon.setVisibility(message.isSet(Flag.ANSWERED) ? View.VISIBLE : View.GONE);
         mForwardedIcon.setVisibility(message.isSet(Flag.FORWARDED) ? View.VISIBLE : View.GONE);
-        mFlagged.setChecked(message.isSet(Flag.FLAGGED));
 
         if (Preferences.getPreferences(getContext()).getAccounts().size() > 1) mChip.setBackgroundColor(mAccount.getChipColor());
 

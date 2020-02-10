@@ -197,10 +197,6 @@ public class MessageTopView extends LinearLayout {
         mHeaderContainer.setVisibility(View.VISIBLE);
     }
 
-    public void setOnToggleFlagClickListener(OnClickListener listener) {
-        mHeaderContainer.setOnFlagListener(listener);
-    }
-
     public void showAllHeaders() {
         mHeaderContainer.onShowAdditionalHeaders(false);
     }
