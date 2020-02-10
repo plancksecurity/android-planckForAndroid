@@ -26,6 +26,8 @@ import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.ui.adapters.PEpIdentitiesAdapter;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
+import org.jetbrains.annotations.NotNull;
+
 import foundation.pEp.jniadapter.Rating;
 
 import java.util.List;
@@ -65,10 +67,20 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     private MessageReference messageReference;
     private String myself = "";
 
-    public static void actionShowStatus(Activity context, Rating currentRating, String sender, MessageReference messageReference, Boolean isMessageIncoming, String myself) {
+    public static void actionShowStatus(Activity context, Rating currentRating, String sender,
+                                        MessageReference messageReference, Boolean isMessageIncoming, String myself,
+                                        boolean forceUnencrypted) {
+        Intent intent = createShowStatusIntent(context, currentRating, sender, messageReference,
+                isMessageIncoming, myself, forceUnencrypted);
+        context.startActivityForResult(intent, REQUEST_STATUS);
+    }
+
+    @NotNull
+    private static Intent createShowStatusIntent(Activity context, Rating currentRating, String sender, MessageReference messageReference, Boolean isMessageIncoming, String myself, boolean forceUnencrypted) {
         Intent i = new Intent(context, PEpStatus.class);
         i.setAction(ACTION_SHOW_PEP_STATUS);
-        i.putExtra(CURRENT_RATING, currentRating.toString());
+        String ratingName = forceUnencrypted?Rating.pEpRatingUnencrypted.toString():currentRating.toString();
+        i.putExtra(CURRENT_RATING, ratingName);
         i.putExtra(SENDER, sender);
         i.putExtra(MYSELF, myself);
         if (messageReference != null) {
@@ -77,7 +89,12 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
             i.putExtra(MESSAGE_REFERENCE, "");
         }
         i.putExtra(MESSAGE_DIRECTION, isMessageIncoming);
-        context.startActivityForResult(i, REQUEST_STATUS);
+        return i;
+    }
+
+    public static void actionShowStatus(Activity context, Rating currentRating, String sender,
+                                        MessageReference messageReference, Boolean isMessageIncoming, String myself) {
+        actionShowStatus(context, currentRating, sender, messageReference, isMessageIncoming, myself, false);
     }
 
     @Override

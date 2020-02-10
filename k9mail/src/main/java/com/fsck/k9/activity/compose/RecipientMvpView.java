@@ -527,7 +527,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 //        mIgnoreOnPause = true;  // do *not* save state
         pEpUiCache.setRecipients(mAccount, recipients);
 
-        PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom());
+        PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom(), presenter.isForceUnencrypted());
     }
 
     public void setMessageReference(MessageReference reference) {
