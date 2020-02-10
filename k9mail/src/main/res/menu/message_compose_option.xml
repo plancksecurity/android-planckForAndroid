@@ -5,14 +5,14 @@
         android:id="@+id/add_attachment"
         android:alphabeticShortcut="n"
         android:title="@string/add_attachment_action"
-        android:icon="@drawable/ic_file_attachment"
+        android:icon="?attr/iconActionAddAttachment"
         app:showAsAction="always"
     />
     <item
         android:id="@+id/send"
         android:alphabeticShortcut="s"
         android:title="@string/send_action"
-        android:icon="@drawable/ic_content_send"
+        android:icon="?attr/iconActionSend"
         app:showAsAction="always"
     />
     <item

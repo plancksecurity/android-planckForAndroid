@@ -29,7 +29,9 @@
         <item name="iconActionSearchFolder">@drawable/ic_folder_magnify_light</item>
         <item name="iconActionSend">@drawable/ic_send_light</item>
         <item name="iconActionSettings">@drawable/ic_cog_light</item>
+        <item name="iconActionReply">@drawable/ic_reply_light</item>
         <item name="iconActionSingleMessageOptions">@drawable/ic_reply_all_light</item>
+        <item name="iconActionForward">@drawable/ic_forward_light</item>
         <item name="iconActionSort">@drawable/ic_sort_light</item>
         <item name="iconActionSpam">@drawable/ic_alert_octagon_light</item>
         <item name="iconActionFlag">@drawable/ic_star_light</item>
@@ -116,7 +118,9 @@
         <item name="iconActionSearchFolder">@drawable/ic_folder_magnify_dark</item>
         <item name="iconActionSend">@drawable/ic_send_dark</item>
         <item name="iconActionSettings">@drawable/ic_cog_dark</item>
+        <item name="iconActionReply">@drawable/ic_reply_dark</item>
         <item name="iconActionSingleMessageOptions">@drawable/ic_reply_all_dark</item>
+        <item name="iconActionForward">@drawable/ic_forward_dark</item>
         <item name="iconActionSort">@drawable/ic_sort_dark</item>
         <item name="iconActionSpam">@drawable/ic_alert_octagon_dark</item>
         <item name="iconActionFlag">@drawable/ic_star_dark</item>
@@ -154,7 +158,7 @@
         <item name="messageListCheckbox">@drawable/btn_check_message_list_light</item>
         <item name="messageViewBackgroundColor">?android:attr/colorBackground</item>
         <item name="messageViewAttachmentBackground">@color/attachment_background_dark</item>
-        <item name="messageComposeAddContactImage">@drawable/ic_person_plus_light</item>
+        <item name="messageComposeAddContactImage">@drawable/ic_person_plus_dark</item>
         <item name="contactPictureFallbackDefaultBackgroundColor">#ffababab</item>
         <item name="contactTokenBackgroundColor">#ccc</item>
         <item name="composerBackgroundColor">@android:color/background_dark</item>
@@ -239,7 +243,9 @@
         <item name="iconActionSearchFolder">@drawable/ic_folder_magnify_light</item>
         <item name="iconActionSend">@drawable/ic_send_light</item>
         <item name="iconActionSettings">@drawable/ic_cog_light</item>
+        <item name="iconActionReply">@drawable/ic_reply_light</item>
         <item name="iconActionSingleMessageOptions">@drawable/ic_reply_all_light</item>
+        <item name="iconActionForward">@drawable/ic_forward_light</item>
         <item name="iconActionSort">@drawable/ic_sort_light</item>
         <item name="iconActionSpam">@drawable/ic_alert_octagon_light</item>
         <item name="iconActionFlag">@drawable/ic_star_light</item>
@@ -316,7 +322,9 @@
         <item name="iconActionSearchFolder">@drawable/ic_folder_magnify_dark</item>
         <item name="iconActionSend">@drawable/ic_send_dark</item>
         <item name="iconActionSettings">@drawable/ic_cog_dark</item>
+        <item name="iconActionReply">@drawable/ic_reply_dark</item>
         <item name="iconActionSingleMessageOptions">@drawable/ic_reply_all_dark</item>
+        <item name="iconActionForward">@drawable/ic_forward_dark</item>
         <item name="iconActionSort">@drawable/ic_sort_dark</item>
         <item name="iconActionSpam">@drawable/ic_alert_octagon_dark</item>
         <item name="iconActionFlag">@drawable/ic_star_dark</item>
