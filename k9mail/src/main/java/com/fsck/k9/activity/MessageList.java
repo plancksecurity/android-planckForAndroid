@@ -1377,6 +1377,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             if (mSingleAccountMode) {
                 mAccount = accounts.get(0);
             }
+            else {
+                mAccount = preferences.getDefaultAccount();
+            }
         } else {
             mSingleAccountMode = (accountUuids.length == 1);
             if (mSingleAccountMode) {
