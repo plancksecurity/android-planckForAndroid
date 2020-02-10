@@ -509,7 +509,7 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
         if (hasPermission(nextPath)) {
             mCurrentPath = nextPath;
             isLoading = true;
-            getLoaderManager()
+            LoaderManager.getInstance(this)
                     .restartLoader(0, null, AbstractFilePickerFragment.this);
         } else {
             handlePermission(nextPath);
@@ -569,7 +569,7 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
             mCurrentDirView.setText(getFullPath(mCurrentPath));
         }
         // Stop loading now to avoid a refresh clearing the user's selections
-        getLoaderManager().destroyLoader( 0 );
+        LoaderManager.getInstance(this).destroyLoader( 0 );
     }
 
     /**

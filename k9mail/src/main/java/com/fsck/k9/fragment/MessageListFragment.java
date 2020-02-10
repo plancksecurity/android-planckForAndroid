@@ -572,7 +572,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         initializeSortSettings();
 
         loaderJustInitialized = true;
-        LoaderManager loaderManager = getLoaderManager();
+        LoaderManager loaderManager = LoaderManager.getInstance(this);
         int len = accountUuids.length;
         cursors = new Cursor[len];
         cursorValid = new boolean[len];
@@ -832,7 +832,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         }
 
         // Refresh the message list
-        LoaderManager loaderManager = getLoaderManager();
+        LoaderManager loaderManager = LoaderManager.getInstance(this);
         for (int i = 0; i < accountUuids.length; i++) {
             loaderManager.restartLoader(i, null, this);
             cursorValid[i] = false;
@@ -1137,7 +1137,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         int toastString = sortType.getToast(sortAscending);
         FeedbackTools.showShortFeedback(getView(), getString(toastString));
 
-        LoaderManager loaderManager = getLoaderManager();
+        LoaderManager loaderManager = LoaderManager.getInstance(this);
         for (int i = 0, len = accountUuids.length; i < len; i++) {
             loaderManager.restartLoader(i, null, this);
         }
