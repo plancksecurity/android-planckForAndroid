@@ -80,6 +80,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
     private var exportGlobalSettings: Boolean = false
     private var exportAccountUuids: ArrayList<String>? = null
+    private var currentAccountDeleted = false
 
     /**
      * Contains information about objects that need to be retained on configuration changes.
@@ -514,7 +515,9 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                             // Ignore, this may lead to localStores on sd-cards that
                             // are currently not inserted to be left
                         }
-
+                        if(Preferences.getPreferences(this).accounts.indexOf(realAccount) == 0) {
+                            currentAccountDeleted = true
+                        }
                         MessagingController.getInstance(application)
                                 .deleteAccount(realAccount)
                         Preferences.getPreferences(this@SettingsActivity)
@@ -1077,6 +1080,18 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         GeneralSettingsActivity.start(this, preferenceScreen.key)
 
         return true
+    }
+
+    override fun onBackPressed() {
+        if(currentAccountDeleted) {
+            if(onOpenAccount(Preferences.getPreferences(this).defaultAccount)) {
+                currentAccountDeleted = false
+                finish()
+            }
+        }
+        else {
+            super.onBackPressed()
+        }
     }
 
 }
