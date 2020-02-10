@@ -500,34 +500,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             DIALOG_REMOVE_ACCOUNT -> {
                 return if (selectedContextAccount == null) {
                     null
-                } else ConfirmationDialog.create(this, id,
-                        R.string.account_delete_dlg_title,
-                        getString(R.string.account_delete_dlg_instructions_fmt,
-                                selectedContextAccount!!.description),
-                        R.string.okay_action,
-                        R.string.cancel_action
-                ) {
-                    if (selectedContextAccount is Account) {
-                        val realAccount = selectedContextAccount as Account?
-                        try {
-                            realAccount!!.localStore.delete()
-                        } catch (e: Exception) {
-                            // Ignore, this may lead to localStores on sd-cards that
-                            // are currently not inserted to be left
-                        }
-                        if(Preferences.getPreferences(this).accounts.indexOf(realAccount) == 0) {
-                            currentAccountDeleted = true
-                        }
-                        MessagingController.getInstance(application)
-                                .deleteAccount(realAccount)
-                        Preferences.getPreferences(this@SettingsActivity)
-                                .deleteAccount(realAccount)
-                        K9.setServicesEnabled(this@SettingsActivity)
-                        refresh()
-
-                    }
-                    selectedContextAccount = null
-                }
+                } else ConfirmationDialog.create(this, id, R.string.account_delete_dlg_title, getString(R.string.account_delete_dlg_instructions_fmt,
+                        selectedContextAccount!!.description), R.string.okay_action, R.string.cancel_action, this@SettingsActivity::deleteAccountWork)
 
             }
             DIALOG_CLEAR_ACCOUNT -> {
@@ -593,6 +567,33 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
 
         return super.onCreateDialog(id)
+    }
+
+    private fun deleteAccountWork() {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+
+            if (selectedContextAccount is Account) {
+                val realAccount = selectedContextAccount as Account?
+                try {
+                    realAccount!!.localStore.delete()
+                } catch (e: Exception) {
+                    // Ignore, this may lead to localStores on sd-cards that
+                    // are currently not inserted to be left
+                }
+                if(Preferences.getPreferences(this@SettingsActivity).accounts.indexOf(realAccount) == 0) {
+                    currentAccountDeleted = true
+                }
+                MessagingController.getInstance(application)
+                        .deleteAccount(realAccount)
+                Preferences.getPreferences(this@SettingsActivity)
+                        .deleteAccount(realAccount)
+                K9.setServicesEnabled(this@SettingsActivity)
+                refresh()
+
+            }
+            selectedContextAccount = null
+        }
     }
 
     public override fun onPrepareDialog(id: Int, d: Dialog) {
