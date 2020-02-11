@@ -24,6 +24,7 @@ import androidx.test.espresso.IdlingPolicies;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.NoMatchingViewException;
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
@@ -704,11 +705,14 @@ public class TestUtils {
     }
 
     private void clickInbox () {
-        while (!exists(onView(withId(R.id.actionbar_title_first)))) {
+        waitForTooblar();
+        device.waitForIdle();
+        while (true) {
             try {
+                selectFromScreen(R.string.special_mailbox_name_inbox);
                 device.waitForIdle();
-                onView(withText(resources.getString(R.string.special_mailbox_name_inbox))).perform(click());
-                device.waitForIdle();
+                waitForTooblar();
+                return;
             } catch (Exception noInbox) {
                 Timber.i("No inbox to click: " + noInbox.getMessage());
             }
