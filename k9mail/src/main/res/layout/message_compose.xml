@@ -47,11 +47,6 @@
                     />
             </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?android:attr/listDivider" />
-
             <!--
                 Empty container for storing attachments. We'll stick
                 instances of message_compose_attachment.xml in here.
