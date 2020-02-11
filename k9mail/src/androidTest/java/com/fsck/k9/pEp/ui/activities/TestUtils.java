@@ -686,7 +686,14 @@ public class TestUtils {
             swipeUpScreen();
         }
         onView(withId(R.id.accounts_list)).check(matches(isCompletelyDisplayed()));
-        while (exists(onView(withId(R.id.accounts_list)))) {
+        goToTheInbox(accountToSelect);
+        if (exists(onView(withId(R.id.message_list)))) {
+            getMessageListSize();
+        }
+    }
+
+    private void goToTheInbox (int accountToSelect){
+        while (true) {
             device.waitForIdle();
             try {
                 UiObject2 wb;
@@ -694,13 +701,11 @@ public class TestUtils {
                 device.waitForIdle();
                 wb.getChildren().get(accountToSelect).getChildren().get(1).click();
                 clickInbox();
+                return;
             } catch (Exception e) {
                 Timber.i("Cannot click account from list: " + e.getMessage());
             }
             device.waitForIdle();
-        }
-        if (exists(onView(withId(R.id.message_list)))) {
-            getMessageListSize();
         }
     }
 
