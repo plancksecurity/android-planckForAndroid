@@ -168,12 +168,12 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
             }
         });
 
-        mContactBadge = (PEpContactBadge) findViewById(R.id.contact_badge);
+        mContactBadge = findViewById(R.id.contact_badge);
 
-        mSubjectView = (TextView) findViewById(R.id.subject);
-        mAdditionalHeadersView = (TextView) findViewById(R.id.additional_headers_view);
+        mSubjectView = findViewById(R.id.subject);
+        mAdditionalHeadersView = findViewById(R.id.additional_headers_view);
         mChip = findViewById(R.id.chip);
-        mDateView = (TextView) findViewById(R.id.date);
+        mDateView = findViewById(R.id.date);
 
         defaultSubjectColor = mSubjectView.getCurrentTextColor();
         mFontSizes.setViewTextSize(mSubjectView, mFontSizes.getMessageViewSubject());

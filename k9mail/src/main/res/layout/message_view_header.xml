@@ -198,35 +198,26 @@
                         tools:text="15:50"/>
 
                     <LinearLayout
+                        android:id="@+id/status_icon_strip"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:id="@+id/status_icon_strip"
-                        >
+                        android:layout_centerVertical="true">
 
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="start|center_vertical"
-                            android:clickable="true"
-                            android:background="?android:selectableItemBackground"
-                            android:id="@+id/reply_message"
-                            android:src="@drawable/ic_content_reply"
-                            />
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="start|center_vertical"
-                            android:clickable="true"
-                            android:background="?android:selectableItemBackground"
                             android:id="@+id/message_more_options"
-                            android:src="@drawable/ic_navigation_more_vert"
-                            />
-                        <include layout="@layout/message_crypto_status_view"
-                            android:visibility="gone"/>
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start|center_vertical"
+                            android:background="?android:selectableItemBackground"
+                            android:clickable="true"
+                            android:padding="8dp"
+                            android:src="@drawable/ic_navigation_more_vert" />
+
+                        <include
+                            layout="@layout/message_crypto_status_view"
+                            android:visibility="gone" />
 
                     </LinearLayout>
 

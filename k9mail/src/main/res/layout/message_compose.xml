@@ -34,6 +34,7 @@
                 <com.fsck.k9.ui.ImageRefusingEditText
                     android:id="@+id/subject"
                     android:layout_width="fill_parent"
+                    android:textStyle="bold"
                     android:layout_height="wrap_content"
                     android:hint="@string/message_compose_subject_hint"
                     android:inputType="textEmailSubject|textAutoCorrect|textCapSentences"
