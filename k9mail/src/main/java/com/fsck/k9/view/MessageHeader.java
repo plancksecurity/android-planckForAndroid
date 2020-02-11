@@ -134,38 +134,28 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         replyMessage = findViewById(R.id.reply_message);
         moreOptions = findViewById(R.id.message_more_options);
 
-        replyMessage.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onMessageOptionsListener.OnMessageOptionsListener(MessageAction.REPLY);
-            }
-        });
+        replyMessage.setOnClickListener(v -> onMessageOptionsListener.OnMessageOptionsListener(MessageAction.REPLY));
 
-        moreOptions.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PopupMenu popupMenu = new PopupMenu(getContext(), view);
-                popupMenu.getMenuInflater().inflate(R.menu.message_more_options_menu, popupMenu.getMenu());
+        moreOptions.setOnClickListener(view -> {
+            PopupMenu popupMenu = new PopupMenu(getContext(), view);
+            popupMenu.getMenuInflater().inflate(R.menu.message_more_options_menu, popupMenu.getMenu());
 
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.reply_all:
-                                onMessageOptionsListener.OnMessageOptionsListener(MessageAction.REPLY_ALL);
-                                break;
-                            case R.id.forward:
-                                onMessageOptionsListener.OnMessageOptionsListener(MessageAction.FORWARD);
-                                break;
-                            case R.id.share:
-                                onMessageOptionsListener.OnMessageOptionsListener(MessageAction.SHARE);
-                                break;
-                        }
-                        return true;
-                    }
-                });
+            popupMenu.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()) {
+                    case R.id.reply_all:
+                        onMessageOptionsListener.OnMessageOptionsListener(MessageAction.REPLY_ALL);
+                        break;
+                    case R.id.forward:
+                        onMessageOptionsListener.OnMessageOptionsListener(MessageAction.FORWARD);
+                        break;
+                    case R.id.share:
+                        onMessageOptionsListener.OnMessageOptionsListener(MessageAction.SHARE);
+                        break;
+                }
+                return true;
+            });
 
-                popupMenu.show();
-            }
+            popupMenu.show();
         });
 
         mContactBadge = findViewById(R.id.contact_badge);
