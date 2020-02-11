@@ -124,15 +124,15 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
         mAnsweredIcon = findViewById(R.id.answered);
         mForwardedIcon = findViewById(R.id.forwarded);
-        mFromView = (TextView) findViewById(R.id.from);
-        mSenderView = (TextView) findViewById(R.id.sender);
-        mToView = (TextView) findViewById(R.id.to);
-        mToLabel = (TextView) findViewById(R.id.to_label);
-        mCcView = (TextView) findViewById(R.id.cc);
-        mCcLabel = (TextView) findViewById(R.id.cc_label);
+        mFromView = findViewById(R.id.from);
+        mSenderView = findViewById(R.id.sender);
+        mToView = findViewById(R.id.to);
+        mToLabel = findViewById(R.id.to_label);
+        mCcView = findViewById(R.id.cc);
+        mCcLabel = findViewById(R.id.cc_label);
 
-        replyMessage = (ImageView) findViewById(R.id.reply_message);
-        moreOptions = (ImageView) findViewById(R.id.message_more_options);
+        replyMessage = findViewById(R.id.reply_message);
+        moreOptions = findViewById(R.id.message_more_options);
 
         replyMessage.setOnClickListener(new OnClickListener() {
             @Override
