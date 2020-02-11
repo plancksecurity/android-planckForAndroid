@@ -10,12 +10,9 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.style.StyleSpan;
 import android.util.AttributeSet;
-import timber.log.Timber;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -39,21 +36,21 @@ import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
 import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
-import com.fsck.k9.pEp.PePUIArtefactCache;
-
 import com.fsck.k9.ui.messageview.OnCryptoClickListener;
-
-import foundation.pEp.jniadapter.Rating;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import foundation.pEp.jniadapter.Rating;
+import timber.log.Timber;
 
 
 public class MessageHeader extends LinearLayout implements OnClickListener, OnLongClickListener {
@@ -87,10 +84,8 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     private OnCryptoClickListener onCryptoClickListener;
 
     private Rating pEpRating;
-    private PePUIArtefactCache pePUIArtefactCache;
 
     private OnMessageOptionsListener onMessageOptionsListener;
-    private ImageView replyMessage;
     private ImageView moreOptions;
 
     public void setOnMessageOptionsListener(OnMessageOptionsListener onMessageOptionsListener) {
@@ -115,7 +110,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         super(context, attrs);
         mContext = context;
         mContacts = Contacts.getInstance(mContext);
-        pePUIArtefactCache = PePUIArtefactCache.getInstance(context);
     }
 
     @Override
@@ -131,10 +125,8 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         mCcView = findViewById(R.id.cc);
         mCcLabel = findViewById(R.id.cc_label);
 
-        replyMessage = findViewById(R.id.reply_message);
         moreOptions = findViewById(R.id.message_more_options);
 
-        replyMessage.setOnClickListener(v -> onMessageOptionsListener.OnMessageOptionsListener(MessageAction.REPLY));
 
         moreOptions.setOnClickListener(view -> {
             PopupMenu popupMenu = new PopupMenu(getContext(), view);
@@ -142,6 +134,9 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
             popupMenu.setOnMenuItemClickListener(item -> {
                 switch (item.getItemId()) {
+                    case R.id.reply:
+                        onMessageOptionsListener.OnMessageOptionsListener(MessageAction.REPLY);
+                        break;
                     case R.id.reply_all:
                         onMessageOptionsListener.OnMessageOptionsListener(MessageAction.REPLY_ALL);
                         break;
