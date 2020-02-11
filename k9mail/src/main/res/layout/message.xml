@@ -106,4 +106,5 @@
 
     </com.fsck.k9.view.NonLockingScrollView>
 
+    <include layout="@layout/fab_menu_layout" />
 </com.fsck.k9.ui.messageview.MessageTopView>

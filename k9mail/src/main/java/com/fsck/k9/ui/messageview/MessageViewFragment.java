@@ -59,6 +59,7 @@ import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.fragments.PEpFragment;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
+import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -85,6 +86,7 @@ import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
+import security.pEp.ui.message_compose.PEpFabMenu;
 import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
@@ -122,6 +124,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     }
 
     private MessageTopView mMessageView;
+    private PEpFabMenu pEpFabMenu;
     private Account mAccount;
     private MessageReference mMessageReference;
     private LocalMessage mMessage;
@@ -149,6 +152,18 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     private Context mContext;
 
     private AttachmentViewInfo currentAttachmentViewInfo;
+
+    private OnMessageOptionsListener messageOptionsListener = action -> {
+        if (action.equals(MessageAction.REPLY)) {
+            onReply();
+        } else if (action.equals(MessageAction.REPLY_ALL)) {
+            onReplyAll();
+        } else if (action.equals(MessageAction.FORWARD)) {
+            onForward();
+        } else if (action.equals(MessageAction.SHARE)) {
+            onSendAlternate();
+        }
+    };
 
     @Inject
     PermissionRequester permissionRequester;
@@ -204,6 +219,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         }
 
         mMessageView = view.findViewById(R.id.message_view);
+        pEpFabMenu = view.findViewById(R.id.fab_menu);
         mMessageView.setAttachmentCallback(this);
         mMessageView.setMessageCryptoPresenter(messageCryptoPresenter);
 
@@ -273,17 +289,8 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void setMessageOptionsListener() {
-        mMessageView.getMessageHeader().setOnMessageOptionsListener(action -> {
-            if (action.equals(MessageAction.REPLY)) {
-                onReply();
-            } else if (action.equals(MessageAction.REPLY_ALL)) {
-                onReplyAll();
-            } else if (action.equals(MessageAction.FORWARD)) {
-                onForward();
-            } else if (action.equals(MessageAction.SHARE)) {
-                onSendAlternate();
-            }
-        });
+        mMessageView.getMessageHeader().setOnMessageOptionsListener(messageOptionsListener);
+        pEpFabMenu.setClickListeners(messageOptionsListener);
     }
 
     private void displayMessage(MessageReference messageReference) {
