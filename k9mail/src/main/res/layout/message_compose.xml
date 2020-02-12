@@ -44,7 +44,7 @@
                     android:paddingTop="16dp"
                     android:privateImeOptions="disableSticker=true;disableGifKeyboard=true"
                     android:paddingBottom="16dp"
-                    style="@style/ComposeEditTextLarge"
+                    style="@style/ComposeTextLarge"
                     />
             </LinearLayout>
 
@@ -75,7 +75,7 @@
                 android:paddingTop="8dp"
                 android:privateImeOptions="disableSticker=true;disableGifKeyboard=true"
                 android:background="@android:color/transparent"
-                style="@style/ComposeEditTextLarge"
+                style="@style/ComposeTextLarge"
                 />
 
             <com.fsck.k9.ui.EolConvertingEditText
