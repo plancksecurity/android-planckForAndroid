@@ -21,29 +21,21 @@
 
             <include layout="@layout/message_compose_recipients" />
 
-            <LinearLayout
+            <com.fsck.k9.ui.ImageRefusingEditText
+                android:id="@+id/subject"
+                style="@style/ComposeTextLarge"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <com.fsck.k9.ui.ImageRefusingEditText
-                    android:id="@+id/subject"
-                    style="@style/ComposeTextLarge"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
-                    android:hint="@string/message_compose_subject_hint"
-                    android:imeOptions="actionNext"
-                    android:inputType="textEmailSubject|textAutoCorrect|textCapSentences"
-                    android:paddingTop="16dp"
-                    android:paddingBottom="16dp"
-                    android:privateImeOptions="disableSticker=true;disableGifKeyboard=true"
-                    android:singleLine="true"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                android:layout_height="@dimen/min_height"
+                android:layout_marginLeft="@dimen/outer_margin"
+                android:layout_marginTop="6dp"
+                android:layout_marginRight="@dimen/outer_margin"
+                android:background="@android:color/transparent"
+                android:hint="@string/message_compose_subject_hint"
+                android:imeOptions="actionNext"
+                android:inputType="textEmailSubject|textAutoCorrect|textCapSentences"
+                android:privateImeOptions="disableSticker=true;disableGifKeyboard=true"
+                android:singleLine="true"
+                android:textStyle="bold" />
 
             <!--
                 Empty container for storing attachments. We'll stick
@@ -59,50 +51,46 @@
                  EditText won't properly grow in height while the user is typing the message -->
             <com.fsck.k9.ui.ImageRefusingEditText
                 android:id="@+id/message_content"
-                style="@style/ComposeTextLarge"
+                style="@style/ComposeEditTextLarge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginLeft="@dimen/outer_margin"
+                android:layout_marginTop="6dp"
+                android:layout_marginRight="@dimen/outer_margin"
                 android:layout_weight="1"
-                android:background="@android:color/transparent"
                 android:gravity="top"
                 android:hint="@string/message_compose_content_hint"
                 android:imeOptions="actionDone|flagNoEnterAction"
-                android:inputType="textMultiLine|textAutoCorrect|textCapSentences"
                 android:minLines="3"
                 android:paddingTop="8dp"
                 android:privateImeOptions="disableSticker=true;disableGifKeyboard=true" />
 
             <com.fsck.k9.ui.EolConvertingEditText
                 android:id="@+id/upper_signature"
+                style="@style/ComposeEditTextLarge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:background="@android:color/transparent"
+                android:layout_marginLeft="@dimen/outer_margin"
+                android:layout_marginRight="@dimen/outer_margin"
                 android:gravity="top"
                 android:hint="@string/message_compose_signature_hint"
-                android:inputType="textMultiLine|textAutoCorrect|textCapSentences"
                 android:minLines="0"
                 android:paddingTop="16dp"
-                android:paddingBottom="16dp"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:paddingBottom="16dp" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp">
+                android:layout_marginLeft="@dimen/outer_margin"
+                android:layout_marginRight="@dimen/outer_margin"
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:id="@+id/quoted_text_buttons"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="8dp">
+                    android:layout_alignParentEnd="true">
 
                     <ImageButton
                         android:id="@+id/quoted_text_edit"
@@ -130,8 +118,8 @@
                     android:layout_alignParentTop="true"
                     android:layout_gravity="end"
                     android:background="?android:selectableItemBackground"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
                     android:text="@string/message_compose_show_quoted_text_action"
                     android:textSize="16sp" />
             </RelativeLayout>
@@ -140,8 +128,8 @@
                 android:id="@+id/quoted_text_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp">
+                android:layout_marginStart="@dimen/outer_margin"
+                android:layout_marginEnd="@dimen/outer_margin">
 
                 <com.fsck.k9.ui.EolConvertingEditText
                     android:id="@+id/quoted_text"
@@ -164,8 +152,8 @@
                 android:id="@+id/lower_signature"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginLeft="@dimen/outer_margin"
+                android:layout_marginRight="@dimen/outer_margin"
                 android:background="@android:color/transparent"
                 android:gravity="top"
                 android:hint="@string/message_compose_signature_hint"
