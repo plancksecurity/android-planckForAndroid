@@ -1120,7 +1120,8 @@ public class TestUtils {
         if (exists(onView(withId(R.id.toolbar)))) {
             onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
         }
-        onView(isRoot()).perform(ViewActions.pressBack());
+        //onView(isRoot()).perform(ViewActions.pressBack());
+        device.pressBack();
         device.waitForIdle();
     }
 
