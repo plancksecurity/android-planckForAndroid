@@ -57,4 +57,7 @@
     <color name="status_todo_chevron">#888</color>
     <color name="status_error_cross">#f44336</color>
     <color name="status_ok_checkmark">#7bad45</color>
+
+    <color name="compose_gray">#FFAAAAAA</color>
+
 </resources>
