@@ -1431,18 +1431,10 @@ public class TestUtils {
             waitUntilIdle();
             device.waitForIdle();
         }
-        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
-        onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         while (true) {
             waitUntilIdle();
             device.waitForIdle();
             if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
-                device.waitForIdle();
-                waitUntilIdle();
-                onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
-                onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
-                device.waitForIdle();
-                waitUntilIdle();
                 waitForTooblar();
                 onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(color)));
                 checkUpperToolbar(color);
