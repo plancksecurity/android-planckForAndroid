@@ -97,6 +97,7 @@ import javax.inject.Inject;
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionRequester;
 import security.pEp.ui.PEpUIUtils;
+import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
@@ -119,7 +120,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     ToolBarCustomizer toolBarCustomizer;
     @Inject
     Preferences preferences;
-
+    @Inject
+    ResourcesProvider resourcesProvider;
 
     @Deprecated
     //TODO: Remove after 2017-09-11
@@ -2157,6 +2159,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             if (mDisplayMode != DisplayMode.SPLIT_VIEW) {
                 showMessageView();
             }
+
+            setUpToolbar(true, resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
+
         }
     }
 
@@ -2265,6 +2270,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         if (transactionId >= 0 && mFirstBackStackId < 0) {
             mFirstBackStackId = transactionId;
         }
+        setUpToolbar(true, resourcesProvider.getAttributeResource(R.attr.iconActionPreviousMessage));
+
     }
 
     @Override

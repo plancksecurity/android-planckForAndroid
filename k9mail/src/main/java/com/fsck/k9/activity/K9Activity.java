@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -78,7 +79,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 //    }
 
 
-    public void setUpToolbar(boolean showUpButton, Integer... drawable) {
+    public void setUpToolbar(boolean showUpButton, @DrawableRes Integer... drawable) {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             if (getSupportActionBar() != null) {
