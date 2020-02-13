@@ -132,6 +132,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     private Handler handler = new Handler();
     private MessageLoaderHelper messageLoaderHelper;
     private MessageCryptoPresenter messageCryptoPresenter;
+    private boolean permissionAsked;
 
     /**
      * Used to temporarily store the destination folder for refile operations if a confirmation
@@ -1044,22 +1045,30 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void createPermissionListeners() {
-        permissionRequester.requestStoragePermission(getRootView(), new PermissionListener() {
-            @Override
-            public void onPermissionGranted(PermissionGrantedResponse response) {
+        if(permissionChecker.doesntHaveWriteExternalPermission()) {
+            if (!permissionAsked) {
+                permissionAsked = true;
+                permissionRequester.requestStoragePermission(getRootView(), new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse response) {
 
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse response) {
+
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+
+                    }
+                });
             }
-
-            @Override
-            public void onPermissionDenied(PermissionDeniedResponse response) {
-                String permissionDenied = getResources().getString(R.string.download_snackbar_permission_permanently_denied);
-                FeedbackTools.showLongFeedback(mMessageView, permissionDenied);
+            else {
+                String permissionDenied = getResources().getString(R.string.download_permission_first_explanation);
+                permissionRequester.showRationaleSnackBar(mMessageView, permissionDenied);
             }
-
-            @Override
-            public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
-
-            }
-        });
+        }
     }
 }

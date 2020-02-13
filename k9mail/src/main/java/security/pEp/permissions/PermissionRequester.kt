@@ -14,4 +14,6 @@ interface PermissionRequester {
 
     fun requestAllPermissions(listener: PermissionListener)
 
+    fun showRationaleSnackBar(view: View, explanation: String)
+
 }
