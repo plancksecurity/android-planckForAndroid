@@ -78,12 +78,13 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 //    }
 
 
-
-    public void setUpToolbar(boolean showUpButton) {
+    public void setUpToolbar(boolean showUpButton, Integer... drawable) {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(showUpButton);
+                if (drawable.length > 0)
+                    getSupportActionBar().setHomeAsUpIndicator(drawable[0]);
             }
             if (K9.getK9Theme() == K9.Theme.DARK) {
                 toolbar.setPopupTheme(R.style.PEpThemeOverlay);

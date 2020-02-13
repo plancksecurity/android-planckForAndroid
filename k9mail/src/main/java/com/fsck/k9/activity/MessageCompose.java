@@ -121,6 +121,7 @@ import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
 import security.pEp.ui.message_compose.ComposeAccountRecipient;
+import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
@@ -267,6 +268,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     PermissionChecker permissionChecker;
     @Inject
     ToolBarCustomizer toolBarCustomizer;
+    @Inject
+    ResourcesProvider resourcesProvider;
 
     private PEpSecurityStatusLayout pEpSecurityStatusLayout;
 
@@ -514,7 +517,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     }
 
     private void startToolbar() {
-        setUpToolbar(true);
+        setUpToolbar(true, resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
         if (getToolbar() != null) {
             pEpSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
             pEpSecurityStatusLayout.setOnClickListener(v -> onPEpIndicator());
