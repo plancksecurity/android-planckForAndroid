@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.fsck.k9.view.MessageHeader
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.fsck.k9.view.MessageHeader xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/header_container"
     android:layout_width="match_parent"
-    android:orientation="vertical"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
 
         <!-- Color chip -->
         <View
             android:id="@+id/chip"
             android:layout_width="8dp"
             android:layout_height="match_parent"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            tools:visibility="visible" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,13 +28,16 @@
                 android:id="@+id/subject"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/outer_margin"
+                android:layout_marginTop="@dimen/outer_margin"
+                android:layout_marginEnd="@dimen/outer_margin"
+                android:layout_marginBottom="@dimen/outer_margin_small"
                 android:ellipsize="end"
                 android:fontFamily="sans-serif-medium"
-                android:textStyle="bold"
-                android:textColor="?android:attr/textColorPrimary"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:padding="8dp"
-                tools:text="Subject" />
+                android:textColor="?android:attr/textColorPrimary"
+                android:textStyle="bold"
+                tools:text="Subject a really big long huge extremelly huge text " />
 
             <View
                 android:layout_width="match_parent"
@@ -44,114 +47,105 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:layout_marginStart="@dimen/outer_margin"
+                android:layout_marginTop="@dimen/outer_margin_small"
+                android:layout_marginEnd="@dimen/outer_margin"
+                android:orientation="horizontal">
 
                 <RelativeLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="52dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" >
+                    android:orientation="vertical">
 
                     <com.fsck.k9.pEp.ui.PEpContactBadge
                         android:id="@+id/contact_badge"
-                        android:layout_width="52dp"
+                        android:layout_width="match_parent"
                         android:layout_height="52dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginStart="8dp" />
+                        android:layout_centerHorizontal="true" />
 
-                    <!-- State icons -->
-                    <LinearLayout
-                        android:id="@+id/icon_container"
-                        android:layout_width="wrap_content"
+                    <ImageView
+                        android:id="@+id/answered"
+                        android:layout_width="26sp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="2dp"
                         android:layout_below="@+id/contact_badge"
-                        android:layout_centerHorizontal="true"
-                        android:orientation="vertical" >
+                        android:src="?attr/iconActionReply"
+                        android:tint="@color/pep_no_color" />
 
-                        <View
-                            android:id="@+id/answered"
-                            android:layout_width="32sp"
-                            android:layout_height="32sp"
-                            android:paddingEnd="2dp"
-                            android:background="@drawable/ic_email_answered_small" />
-
-                        <View
-                            android:id="@+id/forwarded"
-                            android:layout_width="22sp"
-                            android:layout_height="22sp"
-                            android:paddingEnd="4dp"
-                            android:background="@drawable/ic_email_forwarded_small" />
-
-                    </LinearLayout>
+                    <ImageView
+                        android:id="@+id/forwarded"
+                        android:layout_width="26sp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/contact_badge"
+                        android:layout_toEndOf="@+id/answered"
+                        android:src="?attr/iconActionForward"
+                        android:tint="@color/pep_no_color" />
 
                 </RelativeLayout>
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
+                    android:layout_height="wrap_content">
 
                     <!-- From -->
                     <TextView
                         android:id="@+id/from"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_toStartOf="@+id/status_icon_strip"
                         android:layout_alignBottom="@+id/status_icon_strip"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_toStartOf="@+id/status_icon_strip"
+                        android:ellipsize="end"
+                        android:gravity="center_vertical"
                         android:paddingTop="0dp"
                         android:paddingEnd="6dp"
                         android:singleLine="true"
-                        android:ellipsize="end"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="@string/general_no_sender"
-                        android:gravity="center_vertical"
-                        />
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="?android:attr/textColorPrimary" />
                     <!-- Sender -->
                     <TextView
                         android:id="@+id/sender"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_below="@+id/from"
                         android:layout_alignParentStart="true"
                         android:layout_toStartOf="@+id/status_icon_strip"
-                        android:paddingTop="0dp"
-                        android:layout_below="@+id/from"
                         android:ellipsize="end"
-                        android:textColor="?android:attr/textColorPrimary"
+                        android:gravity="center_vertical"
+                        android:paddingTop="0dp"
                         android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="?android:attr/textColorPrimary"
                         android:textStyle="bold"
                         android:visibility="gone"
-                        android:gravity="center_vertical"
-                        />
+                        tools:text="email@email.com" />
                     <!-- To -->
                     <TextView
                         android:id="@+id/to_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignStart="@+id/from"
                         android:layout_alignBaseline="@+id/to"
+                        android:layout_alignStart="@+id/from"
                         android:paddingTop="2dp"
                         android:paddingEnd="4dp"
-                        android:textSize="16sp"
                         android:text="@string/message_to_label"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:textAppearance="@android:style/TextAppearance.Medium" />
+                        android:textSize="16sp" />
 
                     <TextView
                         android:id="@+id/to"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_toEndOf="@+id/to_label"
                         android:layout_below="@+id/sender"
-                        android:maxLines="2"
+                        android:layout_toEndOf="@+id/to_label"
                         android:ellipsize="end"
-                        android:textSize="16sp"
+                        android:maxLines="2"
                         android:paddingTop="2dp"
-                        tools:text="this is to"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:textAppearance="@android:style/TextAppearance.Medium" />
+                        android:textSize="16sp"
+                        tools:text="this is to" />
 
                     <!-- CC -->
                     <TextView
@@ -159,28 +153,28 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/to_label"
-                        android:layout_alignStart="@+id/to_label"
                         android:layout_alignBaseline="@+id/cc"
+                        android:layout_alignStart="@+id/to_label"
                         android:paddingTop="2dp"
                         android:paddingEnd="4dp"
-                        android:textSize="16sp"
                         android:text="@string/message_view_cc_label"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:textAppearance="@android:style/TextAppearance.Medium" />
+                        android:textSize="16sp" />
 
                     <TextView
                         android:id="@+id/cc"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_toEndOf="@+id/cc_label"
                         android:layout_below="@+id/to"
-                        android:maxLines="2"
-                        android:textSize="16sp"
+                        android:layout_toEndOf="@+id/cc_label"
                         android:ellipsize="end"
+                        android:maxLines="2"
                         android:paddingTop="2dp"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
                         android:textColor="?android:attr/textColorSecondary"
-                        tools:text="this is cc"
-                        android:textAppearance="@android:style/TextAppearance.Medium" />
+                        android:textSize="16sp"
+                        tools:text="this is cc" />
 
                     <!-- Date -->
                     <TextView
@@ -189,13 +183,13 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/cc"
                         android:layout_alignParentEnd="true"
+                        android:ellipsize="none"
                         android:paddingTop="8dp"
                         android:paddingEnd="8dp"
                         android:singleLine="true"
-                        android:ellipsize="none"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="?android:attr/textColorSecondary"
-                        tools:text="15:50"/>
+                        tools:text="15:50" />
 
                     <LinearLayout
                         android:id="@+id/status_icon_strip"
@@ -231,10 +225,10 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:layout_marginEnd="6dp"
-                android:singleLine="false"
                 android:ellipsize="none"
-                android:textColor="?android:attr/textColorSecondary"
+                android:singleLine="false"
                 android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorSecondary"
                 android:textIsSelectable="true" />
 
         </LinearLayout>
