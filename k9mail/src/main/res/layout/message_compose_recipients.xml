@@ -270,7 +270,7 @@
 
         <com.fsck.k9.pEp.ui.ActionRecipientSelectView
             android:id="@+id/to"
-            style="@style/ComposeTextLarge"
+            style="@style/MediumComposeText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -339,7 +339,7 @@
 
         <com.fsck.k9.pEp.ui.ActionRecipientSelectView
             android:id="@+id/cc"
-            style="@style/ComposeTextLarge"
+            style="@style/MediumComposeText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
@@ -382,7 +382,7 @@
 
         <com.fsck.k9.pEp.ui.ActionRecipientSelectView
             android:id="@+id/bcc"
-            style="@style/ComposeTextLarge"
+            style="@style/MediumComposeText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"

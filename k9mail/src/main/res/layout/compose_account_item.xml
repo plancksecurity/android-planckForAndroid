@@ -4,21 +4,12 @@
     android:id="@+id/identity"
     android:layout_width="wrap_content"
     android:layout_height="32dp"
-    android:background="@drawable/recipient_token_shape"
     android:orientation="horizontal"
     android:padding="0dp">
 
-    <com.fsck.k9.pEp.ui.PEpContactBadge
-        android:id="@+id/accountImage"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginStart="3dp"
-        android:clickable="false"
-        android:gravity="center_vertical"
-        tools:src="@drawable/ic_contact_picture" />
-
     <TextView
         android:id="@+id/accountName"
+        style="@style/MediumComposeText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
