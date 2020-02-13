@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:showIn="@layout/message_compose">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/outer_margin"
@@ -15,8 +15,7 @@
         android:layout_marginEnd="@dimen/outer_margin"
         android:layout_marginRight="@dimen/outer_margin"
         android:animateLayoutChanges="true"
-        android:minHeight="@dimen/min_height"
-        android:orientation="horizontal">
+        android:minHeight="@dimen/min_height">
 
         <TextView
             android:id="@+id/from_label"
@@ -25,18 +24,19 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:minWidth="@dimen/min_label_width"
-            android:text="@string/recipient_from" />
+            android:text="@string/recipient_from"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
+        <include
             android:id="@+id/identity"
-            style="@style/ComposeTextLarge"
-            android:layout_width="0dp"
+            layout="@layout/compose_account_item"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:singleLine="true"
-            tools:text="Address" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/from_label"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/pgp_inline_indicator"
@@ -46,6 +46,9 @@
             android:padding="8dp"
             android:tint="@color/light_black"
             android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/crypto_special_mode"
+            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/compatibility"
             tools:visibility="visible" />
 
@@ -57,6 +60,9 @@
             android:inAnimation="@anim/fade_in"
             android:outAnimation="@anim/fade_out"
             android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/crypto_status"
+            app:layout_constraintTop_toTopOf="parent"
             app:previewInitialChild="2"
             tools:visibility="visible">
 
@@ -106,6 +112,9 @@
             android:inAnimation="@anim/fade_in"
             android:outAnimation="@anim/fade_out"
             android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:previewInitialChild="2"
             tools:visibility="visible">
 
@@ -232,7 +241,7 @@
 
         </com.fsck.k9.view.ToolableViewAnimator>
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <View
         android:layout_width="match_parent"

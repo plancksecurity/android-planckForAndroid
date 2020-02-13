@@ -39,6 +39,7 @@ import java.util.List;
 
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
+import security.pEp.ui.message_compose.ComposeAccountRecipient;
 
 
 public class RecipientMvpView implements OnFocusChangeListener, OnClickListener {
@@ -68,7 +69,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     private final ActionRecipientSelectView toView;
     private final ActionRecipientSelectView ccView;
     private final ActionRecipientSelectView bccView;
-    private final TextView fromView;
+    private final ComposeAccountRecipient fromView;
     private final ViewAnimator cryptoStatusView;
     private final ViewAnimator recipientExpanderContainer;
     private final Account mAccount;
@@ -85,7 +86,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     public RecipientMvpView(MessageCompose activity) {
         this.activity = activity;
         this.mAccount = activity.getAccount();
-        fromView = (TextView) activity.findViewById(R.id.identity);
+        fromView =  activity.findViewById(R.id.identity);
         toView = (ActionRecipientSelectView) activity.findViewById(R.id.to);
         ccView = (ActionRecipientSelectView) activity.findViewById(R.id.cc);
         bccView = (ActionRecipientSelectView) activity.findViewById(R.id.bcc);
@@ -601,7 +602,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     }
 
     public String getFrom() {
-        return fromView.getText().toString();
+        return fromView.getText();
     }
 
     public enum CryptoSpecialModeDisplayType {

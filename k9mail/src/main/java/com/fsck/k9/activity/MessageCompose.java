@@ -120,6 +120,7 @@ import javax.inject.Inject;
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
+import security.pEp.ui.message_compose.ComposeAccountRecipient;
 import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
@@ -178,7 +179,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     /**
      * Regular expression to remove the first localized "Re:" prefix in subjects.
-     *
+     * <p>
      * Currently:
      * - "Aw:" (german: abbreviation for "Antwort")
      */
@@ -246,7 +247,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     private boolean requestReadReceipt = false;
 
-    private TextView chooseIdentityButton;
+    private ComposeAccountRecipient accountRecipient;
     private EditText subjectView;
     private EolConvertingEditText signatureView;
     private EolConvertingEditText messageContentView;
@@ -291,7 +292,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             ContextThemeWrapper themeContext = new ContextThemeWrapper(this,
                     K9.getK9ThemeResourceId(K9.getK9ComposerTheme()));
             @SuppressLint("InflateParams") // this is the top level activity element, it has no root
-            View v = LayoutInflater.from(themeContext).inflate(R.layout.message_compose, null);
+                    View v = LayoutInflater.from(themeContext).inflate(R.layout.message_compose, null);
             TypedValue outValue = new TypedValue();
             // background color needs to be forced
             themeContext.getTheme().resolveAttribute(R.attr.messageViewBackgroundColor, outValue, true);
@@ -337,10 +338,10 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
         contacts = Contacts.getInstance(MessageCompose.this);
 
-        rootView = (LinearLayout) findViewById(R.id.content);
+        rootView = findViewById(R.id.content);
 
-        chooseIdentityButton = (TextView) findViewById(R.id.identity);
-        chooseIdentityButton.setOnClickListener(this);
+        accountRecipient = findViewById(R.id.identity);
+        accountRecipient.setOnClickListener(this);
 
         recipientMvpView = new RecipientMvpView(this);
         ComposePgpInlineDecider composePgpInlineDecider = new ComposePgpInlineDecider();
@@ -351,21 +352,21 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         recipientPresenter.updateCryptoStatus();
 
 
-        subjectView = (EditText) findViewById(R.id.subject);
+        subjectView = findViewById(R.id.subject);
         subjectView.getInputExtras(true).putBoolean("allowEmoji", true);
 
-        EolConvertingEditText upperSignature = (EolConvertingEditText) findViewById(R.id.upper_signature);
-        EolConvertingEditText lowerSignature = (EolConvertingEditText) findViewById(R.id.lower_signature);
+        EolConvertingEditText upperSignature = findViewById(R.id.upper_signature);
+        EolConvertingEditText lowerSignature = findViewById(R.id.lower_signature);
 
         QuotedMessageMvpView quotedMessageMvpView = new QuotedMessageMvpView(this);
         quotedMessagePresenter = new QuotedMessagePresenter(this, quotedMessageMvpView, account);
         attachmentPresenter = new AttachmentPresenter(getApplicationContext(), attachmentMvpView,
                 getSupportLoaderManager(), this);
 
-        messageContentView = (EolConvertingEditText) findViewById(R.id.message_content);
+        messageContentView = findViewById(R.id.message_content);
         messageContentView.getInputExtras(true).putBoolean("allowEmoji", true);
 
-        attachmentsView = (LinearLayout) findViewById(R.id.attachments);
+        attachmentsView = findViewById(R.id.attachments);
 
         TextWatcher draftNeedsChangingTextWatcher = new SimpleTextWatcher() {
             @Override
@@ -552,18 +553,16 @@ public class MessageCompose extends PepActivity implements OnClickListener,
      * <p>
      * Supported external intents:
      * <ul>
-     *   <li>{@link Intent#ACTION_VIEW}</li>
-     *   <li>{@link Intent#ACTION_SENDTO}</li>
-     *   <li>{@link Intent#ACTION_SEND}</li>
-     *   <li>{@link Intent#ACTION_SEND_MULTIPLE}</li>
+     * <li>{@link Intent#ACTION_VIEW}</li>
+     * <li>{@link Intent#ACTION_SENDTO}</li>
+     * <li>{@link Intent#ACTION_SEND}</li>
+     * <li>{@link Intent#ACTION_SEND_MULTIPLE}</li>
      * </ul>
      * </p>
      *
-     * @param intent
-     *         The (external) intent that started the activity.
-     *
+     * @param intent The (external) intent that started the activity.
      * @return {@code true}, if this activity was started by an external intent. {@code false},
-     *         otherwise.
+     * otherwise.
      */
     private boolean initFromIntent(final Intent intent) {
         boolean startedByExternalIntent = false;
@@ -978,7 +977,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     }
 
     private void updateFrom() {
-        chooseIdentityButton.setText(identity.getEmail());
+        accountRecipient.bindView(identity.getEmail());
     }
 
     private void updateSignature() {
@@ -1271,24 +1270,24 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                         .create();
             case DIALOG_CONFIRM_DISCARD_ON_BACK:
                 return new AlertDialog.Builder(this)
-                       .setTitle(R.string.confirm_discard_draft_message_title)
-                       .setMessage(R.string.confirm_discard_draft_message)
-                .setPositiveButton(R.string.cancel_action, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        dismissDialog(DIALOG_CONFIRM_DISCARD_ON_BACK);
-                    }
-                })
-                .setNegativeButton(R.string.discard_action, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        dismissDialog(DIALOG_CONFIRM_DISCARD_ON_BACK);
-                        FeedbackTools.showLongFeedback(getRootView(),
-                                       getString(R.string.message_discarded_toast));
-                        onDiscard();
-                    }
-                })
-                .create();
+                        .setTitle(R.string.confirm_discard_draft_message_title)
+                        .setMessage(R.string.confirm_discard_draft_message)
+                        .setPositiveButton(R.string.cancel_action, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                dismissDialog(DIALOG_CONFIRM_DISCARD_ON_BACK);
+                            }
+                        })
+                        .setNegativeButton(R.string.discard_action, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                dismissDialog(DIALOG_CONFIRM_DISCARD_ON_BACK);
+                                FeedbackTools.showLongFeedback(getRootView(),
+                                        getString(R.string.message_discarded_toast));
+                                onDiscard();
+                            }
+                        })
+                        .create();
             case DIALOG_CHOOSE_IDENTITY:
                 Context context = new ContextThemeWrapper(this,
                         (K9.getK9Theme() == K9.Theme.LIGHT) ?
@@ -1362,8 +1361,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
      * Pull out the parts of the now loaded source message and apply them to the new message
      * depending on the type of message being composed.
      *
-     * @param messageViewInfo
-     *         The source message used to populate the various text fields.
+     * @param messageViewInfo The source message used to populate the various text fields.
      */
     private void processSourceMessage(MessageViewInfo messageViewInfo) {
         try {
@@ -1572,7 +1570,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         }
 
         public SendMessageTask(Context context, Account account, Contacts contacts, Message message,
-                        Long draftId, MessageReference messageReference, PEpProvider.CompletedCallback completedCallback) {
+                               Long draftId, MessageReference messageReference, PEpProvider.CompletedCallback completedCallback) {
             this.context = context;
             this.account = account;
             this.contacts = contacts;
@@ -1627,8 +1625,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
      * When we are launched with an intent that includes a mailto: URI, we can actually
      * gather quite a few of our message fields from it.
      *
-     * @param mailTo
-     *         The MailTo object we use to initialize message field
+     * @param mailTo The MailTo object we use to initialize message field
      */
     private void initializeFromMailto(MailTo mailTo) {
         recipientPresenter.initFromMailto(mailTo);
