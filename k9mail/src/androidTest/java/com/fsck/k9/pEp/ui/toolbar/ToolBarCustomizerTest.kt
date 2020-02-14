@@ -14,14 +14,11 @@ import com.fsck.k9.activity.MessageCompose
 import com.fsck.k9.matchers.withBackgroundColour
 import com.fsck.k9.pEp.ui.activities.UtilsPackage
 import com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle
-import foundation.pEp.jniadapter.Rating
 import org.hamcrest.Matchers.allOf
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import security.pEp.ui.PEpUIUtils
-
 
 @RunWith(AndroidJUnit4::class)
 class ToolBarCustomizerTest {
@@ -50,26 +47,6 @@ class ToolBarCustomizerTest {
     }
 
     @Test
-    fun check_if_status_bar_changes_color_by_rating() {
-        val rating = Rating.pEpRatingReliable
-        mActivityRule.activity.setStatusBarPepColor(rating)
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-
-        val beforeColour = mActivityRule.activity.window.statusBarColor
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-
-        mActivityRule.activity.setStatusBarPepColor(rating)
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-
-        onView(withId(android.R.id.statusBarBackground))
-                .check(matches(ViewMatchers.isDisplayed()))
-
-        val afterColour = mActivityRule.activity.window.statusBarColor
-
-        Assert.assertEquals(beforeColour, afterColour)
-    }
-
-    @Test
     fun check_if_toolbar_changes_color_by_color_resource() {
         waitForToolbar(50)
 
@@ -82,21 +59,6 @@ class ToolBarCustomizerTest {
 
         if (isToolbarVisible())
             onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColour(colorRes)))
-    }
-
-    @Test
-    fun check_if_toolbar_changes_color_by_rating() {
-        waitForToolbar(50)
-
-        val rating = Rating.pEpRatingTrusted
-        val ratingColorRes = PEpUIUtils.getRatingColorRes(rating)
-
-        mActivityRule.activity.setToolbarColor(rating)
-
-        waitForToolbar(70)
-
-        if (isToolbarVisible())
-            onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColour(ratingColorRes)))
     }
 
     private fun waitForToolbar(i: Int) {
