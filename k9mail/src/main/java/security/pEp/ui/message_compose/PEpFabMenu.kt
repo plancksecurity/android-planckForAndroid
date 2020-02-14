@@ -12,7 +12,11 @@ import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener
 import kotlinx.android.synthetic.main.fab_menu_layout.view.*
 
 
-class PEpFabMenu(context: Context?, attrs: AttributeSet?) : ConstraintLayout(context, attrs), PEpFabMenuView {
+class PEpFabMenu : ConstraintLayout, PEpFabMenuView {
+
+    constructor(context: Context) : this(context, null)
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     private val fabOpenAnimation = AnimationUtils.loadAnimation(context, R.anim.fab_open)
     private val fabCloseAnimation = AnimationUtils.loadAnimation(context, R.anim.fab_close)
@@ -23,11 +27,11 @@ class PEpFabMenu(context: Context?, attrs: AttributeSet?) : ConstraintLayout(con
     private val slideDownReplyAll = AnimationUtils.loadAnimation(context, R.anim.slide_down_reply_all)
     private val slideDownForward = AnimationUtils.loadAnimation(context, R.anim.slide_down_forward)
 
-    lateinit var presenter: PEpFabMenuPresenter
+    val presenter: PEpFabMenuPresenter = PEpFabMenuPresenter(this)
 
     override fun onAttachedToWindow() {
-        presenter = PEpFabMenuPresenter(this)
         super.onAttachedToWindow()
+        presenter.init()
     }
 
     public override fun onFinishInflate() {
@@ -41,10 +45,10 @@ class PEpFabMenu(context: Context?, attrs: AttributeSet?) : ConstraintLayout(con
     fun setClickListeners(listener: OnMessageOptionsListener) {
         presenter.listener = listener
 
-        openCloseButton.setOnClickListener { presenter.onMainActionClicked() }
-        fabForward.setOnClickListener { presenter.onForwardClicked() }
-        fabReplyAll.setOnClickListener { presenter.onReplyAllClicked() }
-        fabReply.setOnClickListener { presenter.onReplyClicked() }
+        openCloseButton?.setOnClickListener { presenter.onMainActionClicked() }
+        fabForward?.setOnClickListener { presenter.onForwardClicked() }
+        fabReplyAll?.setOnClickListener { presenter.onReplyAllClicked() }
+        fabReply?.setOnClickListener { presenter.onReplyClicked() }
     }
 
     override fun openMenu() {
@@ -85,7 +89,7 @@ class PEpFabMenu(context: Context?, attrs: AttributeSet?) : ConstraintLayout(con
     }
 
     override fun showInitialState() {
-        openCloseButton.post {
+        openCloseButton?.post {
             setTextHintsVisibility(GONE)
             openCloseButton.setImageResource(R.drawable.ic_reply_green)
         }

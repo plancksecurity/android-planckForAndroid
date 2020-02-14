@@ -7,7 +7,7 @@ class PEpFabMenuPresenter(private val view: PEpFabMenuView) {
     var open = false
     lateinit var listener: OnMessageOptionsListener
 
-    init {
+    fun init() {
         view.showInitialState()
     }
 
@@ -41,5 +41,6 @@ class PEpFabMenuPresenter(private val view: PEpFabMenuView) {
     fun onReplyClicked() {
         listener.OnMessageOptionsListener(MessageAction.REPLY)
     }
+
 
 }
