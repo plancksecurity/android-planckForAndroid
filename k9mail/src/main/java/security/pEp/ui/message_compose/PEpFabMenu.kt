@@ -56,6 +56,9 @@ class PEpFabMenu : ConstraintLayout, PEpFabMenuView {
         fabForward.startAnimation(slideUpForward)
         fabReplyAll.startAnimation(slideUpReplyAll)
         fabReply.startAnimation(slideUpReply)
+        fabReply.show()
+        fabReplyAll.show()
+        fabForward.show()
         animateOpenCloseFab(R.drawable.reply_to_cross_animated)
         setTextHintsVisibility(VISIBLE)
     }
@@ -65,6 +68,9 @@ class PEpFabMenu : ConstraintLayout, PEpFabMenuView {
         fabForward.startAnimation(slideDownForward)
         fabReplyAll.startAnimation(slideDownReplyAll)
         fabReply.startAnimation(slideDownReply)
+        fabReply.hide()
+        fabReplyAll.hide()
+        fabForward.hide()
         animateOpenCloseFab(R.drawable.cross_to_reply_animated)
         setTextHintsVisibility(GONE)
     }
