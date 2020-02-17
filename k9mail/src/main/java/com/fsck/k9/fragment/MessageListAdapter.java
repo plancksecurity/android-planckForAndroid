@@ -302,17 +302,11 @@ public class MessageListAdapter extends CursorAdapter {
         if (fragment.previewLines == 0 && fragment.contactsPictureLoader == null) {
             view.findViewById(R.id.preview).setVisibility(GONE);
             holder.preview = (TextView) view.findViewById(R.id.sender_compact);
-            holder.flagged = (CheckBox) view.findViewById(R.id.flagged_center_right);
-            view.findViewById(R.id.flagged_bottom_right).setVisibility(GONE);
-
-
-
+            view.findViewById(R.id.flagged_checkbox).setVisibility(GONE);
         } else {
             view.findViewById(R.id.sender_compact).setVisibility(GONE);
             holder.preview = (TextView) view.findViewById(R.id.preview);
-            holder.flagged = (CheckBox) view.findViewById(R.id.flagged_bottom_right);
-            view.findViewById(R.id.flagged_center_right).setVisibility(GONE);
-
+            holder.flagged = (CheckBox) view.findViewById(R.id.flagged_checkbox);
         }
 
         PEpContactBadge contactBadge = (PEpContactBadge) view.findViewById(R.id.contact_badge);

@@ -36,8 +36,7 @@ public class MessageViewHolder implements View.OnClickListener {
                 case R.id.selected_checkbox:
                     fragment.toggleMessageSelectWithAdapterPosition(position);
                     break;
-                case R.id.flagged_bottom_right:
-                case R.id.flagged_center_right:
+                case R.id.flagged_checkbox:
                     fragment.toggleMessageFlagWithAdapterPosition(position);
                     break;
             }
