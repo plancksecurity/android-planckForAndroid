@@ -296,7 +296,6 @@ public class MessageListAdapter extends CursorAdapter {
 
         MessageViewHolder holder = new MessageViewHolder(fragment);
         holder.date = (TextView) view.findViewById(R.id.date);
-        holder.chip = view.findViewById(R.id.chip);
         holder.attachment = view.findViewById(R.id.attachment_icon);
 
         if (fragment.previewLines == 0 && fragment.contactsPictureLoader == null) {
@@ -351,9 +350,6 @@ public class MessageListAdapter extends CursorAdapter {
 
         long uniqueId = cursor.getLong(fragment.uniqueIdColumn);
         boolean selected = fragment.selected.contains(uniqueId);
-
-
-        if (Preferences.getPreferences(fragment.getActivity().getApplicationContext()).getAccounts().size() > 1) holder.chip.setBackgroundColor(account.getChipColor());
 
         if (fragment.checkboxes) {
             holder.selected.setChecked(selected);

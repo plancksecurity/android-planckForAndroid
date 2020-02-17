@@ -16,7 +16,6 @@ public class MessageViewHolder implements View.OnClickListener {
     public TextView from;
     public TextView time;
     public TextView date;
-    public View chip;
     public TextView threadCount;
     public CheckBox flagged;
     public CheckBox selected;

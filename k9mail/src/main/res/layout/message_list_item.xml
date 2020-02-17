@@ -6,14 +6,6 @@
     android:layout_gravity="center_vertical"
     android:orientation="horizontal">
 
-    <View
-        android:id="@+id/chip"
-        android:layout_width="8dp"
-        android:layout_height="match_parent"
-        android:adjustViewBounds="false"
-        android:paddingEnd="4dp"
-        android:visibility="invisible" />
-
     <LinearLayout
         android:id="@+id/selected_checkbox_wrapper"
         android:layout_width="wrap_content"

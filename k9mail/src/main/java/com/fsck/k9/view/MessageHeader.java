@@ -21,7 +21,6 @@ import android.widget.TextView;
 import com.fsck.k9.Account;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.misc.ContactPictureLoader;
 import com.fsck.k9.helper.ClipboardManager;
@@ -36,7 +35,6 @@ import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
 import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
@@ -65,7 +63,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     private TextView mSubjectView;
     private MessageCryptoStatusView mCryptoStatusIcon;
 
-    private View mChip;
     private int defaultSubjectColor;
     private TextView mAdditionalHeadersView;
     private View mAnsweredIcon;
@@ -157,7 +154,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
         mSubjectView = findViewById(R.id.subject);
         mAdditionalHeadersView = findViewById(R.id.additional_headers_view);
-        mChip = findViewById(R.id.chip);
         mDateView = findViewById(R.id.date);
 
         defaultSubjectColor = mSubjectView.getCurrentTextColor();
@@ -381,8 +377,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         updateAddressField(mCcView, cc, mCcLabel);
         mAnsweredIcon.setVisibility(message.isSet(Flag.ANSWERED) ? View.VISIBLE : View.GONE);
         mForwardedIcon.setVisibility(message.isSet(Flag.FORWARDED) ? View.VISIBLE : View.GONE);
-
-        if (Preferences.getPreferences(getContext()).getAccounts().size() > 1) mChip.setBackgroundColor(mAccount.getChipColor());
 
         setVisibility(View.VISIBLE);
 

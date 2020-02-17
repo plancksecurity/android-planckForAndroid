@@ -9,229 +9,214 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <!-- Color chip -->
+        <TextView
+            android:id="@+id/subject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/outer_margin"
+            android:layout_marginTop="@dimen/outer_margin"
+            android:layout_marginEnd="@dimen/outer_margin"
+            android:layout_marginBottom="@dimen/outer_margin_small"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textStyle="bold"
+            tools:text="Subject a really big long huge extremelly huge text " />
+
         <View
-            android:id="@+id/chip"
-            android:layout_width="8dp"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            tools:visibility="visible" />
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="?android:attr/dividerHorizontal" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginStart="@dimen/outer_margin"
+            android:layout_marginTop="@dimen/outer_margin_small"
+            android:layout_marginEnd="@dimen/outer_margin"
+            android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/subject"
-                android:layout_width="match_parent"
+            <RelativeLayout
+                android:layout_width="52dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/outer_margin"
-                android:layout_marginTop="@dimen/outer_margin"
-                android:layout_marginEnd="@dimen/outer_margin"
-                android:layout_marginBottom="@dimen/outer_margin_small"
-                android:ellipsize="end"
-                android:fontFamily="sans-serif-medium"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textStyle="bold"
-                tools:text="Subject a really big long huge extremelly huge text " />
+                android:orientation="vertical">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="?android:attr/dividerHorizontal" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/outer_margin"
-                android:layout_marginTop="@dimen/outer_margin_small"
-                android:layout_marginEnd="@dimen/outer_margin"
-                android:orientation="horizontal">
-
-                <RelativeLayout
-                    android:layout_width="52dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <com.fsck.k9.pEp.ui.PEpContactBadge
-                        android:id="@+id/contact_badge"
-                        android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:layout_centerHorizontal="true" />
-
-                    <ImageView
-                        android:id="@+id/answered"
-                        android:layout_width="26sp"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/contact_badge"
-                        android:src="?attr/iconActionReply"
-                        android:tint="@color/pep_no_color" />
-
-                    <ImageView
-                        android:id="@+id/forwarded"
-                        android:layout_width="26sp"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/contact_badge"
-                        android:layout_toEndOf="@+id/answered"
-                        android:src="?attr/iconActionForward"
-                        android:tint="@color/pep_no_color" />
-
-                </RelativeLayout>
-
-                <RelativeLayout
+                <com.fsck.k9.pEp.ui.PEpContactBadge
+                    android:id="@+id/contact_badge"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="52dp"
+                    android:layout_centerHorizontal="true" />
 
-                    <!-- From -->
-                    <TextView
-                        android:id="@+id/from"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignBottom="@+id/status_icon_strip"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentTop="true"
-                        android:layout_toStartOf="@+id/status_icon_strip"
-                        android:ellipsize="end"
-                        android:gravity="center_vertical"
-                        android:paddingTop="0dp"
-                        android:paddingEnd="6dp"
-                        android:singleLine="true"
-                        android:text="@string/general_no_sender"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textColor="?android:attr/textColorPrimary" />
-                    <!-- Sender -->
-                    <TextView
-                        android:id="@+id/sender"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/from"
-                        android:layout_alignParentStart="true"
-                        android:layout_toStartOf="@+id/status_icon_strip"
-                        android:ellipsize="end"
-                        android:gravity="center_vertical"
-                        android:paddingTop="0dp"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:textStyle="bold"
-                        android:visibility="gone"
-                        tools:text="email@email.com" />
-                    <!-- To -->
-                    <TextView
-                        android:id="@+id/to_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignBaseline="@+id/to"
-                        android:layout_alignStart="@+id/from"
-                        android:paddingTop="2dp"
-                        android:paddingEnd="4dp"
-                        android:text="@string/message_to_label"
-                        android:textAppearance="@android:style/TextAppearance.Medium"
-                        android:textColor="?android:attr/textColorSecondary"
-                        android:textSize="16sp" />
+                <ImageView
+                    android:id="@+id/answered"
+                    android:layout_width="26sp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/contact_badge"
+                    android:src="?attr/iconActionReply"
+                    android:tint="@color/pep_no_color" />
 
-                    <TextView
-                        android:id="@+id/to"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/sender"
-                        android:layout_toEndOf="@+id/to_label"
-                        android:ellipsize="end"
-                        android:maxLines="2"
-                        android:paddingTop="2dp"
-                        android:textAppearance="@android:style/TextAppearance.Medium"
-                        android:textColor="?android:attr/textColorSecondary"
-                        android:textSize="16sp"
-                        tools:text="this is to" />
+                <ImageView
+                    android:id="@+id/forwarded"
+                    android:layout_width="26sp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/contact_badge"
+                    android:layout_toEndOf="@+id/answered"
+                    android:src="?attr/iconActionForward"
+                    android:tint="@color/pep_no_color" />
 
-                    <!-- CC -->
-                    <TextView
-                        android:id="@+id/cc_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/to_label"
-                        android:layout_alignBaseline="@+id/cc"
-                        android:layout_alignStart="@+id/to_label"
-                        android:paddingTop="2dp"
-                        android:paddingEnd="4dp"
-                        android:text="@string/message_view_cc_label"
-                        android:textAppearance="@android:style/TextAppearance.Medium"
-                        android:textColor="?android:attr/textColorSecondary"
-                        android:textSize="16sp" />
+            </RelativeLayout>
 
-                    <TextView
-                        android:id="@+id/cc"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/to"
-                        android:layout_toEndOf="@+id/cc_label"
-                        android:ellipsize="end"
-                        android:maxLines="2"
-                        android:paddingTop="2dp"
-                        android:textAppearance="@android:style/TextAppearance.Medium"
-                        android:textColor="?android:attr/textColorSecondary"
-                        android:textSize="16sp"
-                        tools:text="this is cc" />
-
-                    <!-- Date -->
-                    <TextView
-                        android:id="@+id/date"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/cc"
-                        android:layout_alignParentEnd="true"
-                        android:ellipsize="none"
-                        android:paddingTop="8dp"
-                        android:paddingEnd="8dp"
-                        android:singleLine="true"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="?android:attr/textColorSecondary"
-                        tools:text="15:50" />
-
-                    <LinearLayout
-                        android:id="@+id/status_icon_strip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true">
-
-                        <ImageView
-                            android:id="@+id/message_more_options"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="start|center_vertical"
-                            android:background="?android:selectableItemBackground"
-                            android:clickable="true"
-                            android:padding="8dp"
-                            android:src="@drawable/ic_navigation_more_vert" />
-
-                        <include
-                            layout="@layout/message_crypto_status_view"
-                            android:visibility="gone" />
-
-                    </LinearLayout>
-
-                </RelativeLayout>
-
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/additional_headers_view"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:layout_marginEnd="6dp"
-                android:ellipsize="none"
-                android:singleLine="false"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textIsSelectable="true" />
+                android:layout_height="wrap_content">
+
+                <!-- From -->
+                <TextView
+                    android:id="@+id/from"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/status_icon_strip"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_toStartOf="@+id/status_icon_strip"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:paddingTop="0dp"
+                    android:paddingEnd="6dp"
+                    android:singleLine="true"
+                    android:text="@string/general_no_sender"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="?android:attr/textColorPrimary" />
+                <!-- Sender -->
+                <TextView
+                    android:id="@+id/sender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/from"
+                    android:layout_alignParentStart="true"
+                    android:layout_toStartOf="@+id/status_icon_strip"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:paddingTop="0dp"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    tools:text="email@email.com" />
+                <!-- To -->
+                <TextView
+                    android:id="@+id/to_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/to"
+                    android:layout_alignStart="@+id/from"
+                    android:paddingTop="2dp"
+                    android:paddingEnd="4dp"
+                    android:text="@string/message_to_label"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/to"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/sender"
+                    android:layout_toEndOf="@+id/to_label"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:paddingTop="2dp"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="16sp"
+                    tools:text="this is to" />
+
+                <!-- CC -->
+                <TextView
+                    android:id="@+id/cc_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/to_label"
+                    android:layout_alignBaseline="@+id/cc"
+                    android:layout_alignStart="@+id/to_label"
+                    android:paddingTop="2dp"
+                    android:paddingEnd="4dp"
+                    android:text="@string/message_view_cc_label"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/cc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/to"
+                    android:layout_toEndOf="@+id/cc_label"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:paddingTop="2dp"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="16sp"
+                    tools:text="this is cc" />
+
+                <!-- Date -->
+                <TextView
+                    android:id="@+id/date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/cc"
+                    android:layout_alignParentEnd="true"
+                    android:ellipsize="none"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="8dp"
+                    android:singleLine="true"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorSecondary"
+                    tools:text="15:50" />
+
+                <LinearLayout
+                    android:id="@+id/status_icon_strip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true">
+
+                    <ImageView
+                        android:id="@+id/message_more_options"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start|center_vertical"
+                        android:background="?android:selectableItemBackground"
+                        android:clickable="true"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_navigation_more_vert" />
+
+                    <include
+                        layout="@layout/message_crypto_status_view"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/additional_headers_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_marginEnd="6dp"
+            android:ellipsize="none"
+            android:singleLine="false"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textIsSelectable="true" />
 
     </LinearLayout>
 
