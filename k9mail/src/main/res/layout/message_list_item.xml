@@ -204,7 +204,7 @@
                     android:id="@+id/flagged_bottom_right"
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
-                    android:button="@drawable/read_message_favorite_checkbox"
+                    android:button="@drawable/flagged_message"
                     android:focusable="false"
                     android:gravity="center_vertical"
                     android:visibility="visible" />

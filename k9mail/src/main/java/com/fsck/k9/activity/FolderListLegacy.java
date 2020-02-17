@@ -1135,7 +1135,7 @@ public class FolderListLegacy extends K9ListActivity {
                 holder.flaggedMessageCountWrapper.setOnClickListener(
                         createFlaggedSearch(mAccount, folder));
                 holder.flaggedMessageCountWrapper.setVisibility(View.VISIBLE);
-                holder.flaggedMessageCountIcon.setBackgroundDrawable(getDrawable(R.drawable.ic_unread_toggle_star));
+                holder.flaggedMessageCountIcon.setBackgroundResource(R.drawable.ic_flag_light);
             } else {
                 holder.flaggedMessageCountWrapper.setVisibility(View.GONE);
             }

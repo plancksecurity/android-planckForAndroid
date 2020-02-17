@@ -909,13 +909,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 holder.newMessageCountWrapper!!.visibility = View.GONE
                 holder.flaggedMessageCountWrapper!!.visibility = View.GONE
             }
-            if (account is Account) {
-                val realAccount = account
-                holder.flaggedMessageCountIcon!!.setBackgroundDrawable(ContextCompat.getDrawable(this@SettingsActivity, R.drawable.ic_unread_toggle_star))
-            } else {
-                holder.flaggedMessageCountIcon!!.setBackgroundDrawable(ContextCompat.getDrawable(this@SettingsActivity,
-                        R.drawable.ic_unread_toggle_star))
-            }
+
+            holder.flaggedMessageCountIcon!!.setBackgroundResource(R.drawable.ic_flag_border_light);
 
 
             fontSizes.setViewTextSize(holder.description, fontSizes.accountName)

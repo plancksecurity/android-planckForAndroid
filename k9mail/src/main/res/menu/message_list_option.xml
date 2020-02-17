@@ -14,7 +14,7 @@
     <!-- MessageView -->
     <item
         android:id="@+id/flag"
-        android:icon="@drawable/read_message_favorite_checkbox"
+        android:icon="@drawable/flagged_message_opaque"
         android:title="@string/flag_action"
         app:actionViewClass="android.widget.CheckBox"
         android:checkable="true"
