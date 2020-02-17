@@ -1,180 +1,178 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_vertical"
+    android:layout_marginEnd="12dp"
     android:orientation="horizontal">
 
-    <LinearLayout
-        android:id="@+id/selected_checkbox_wrapper"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:baselineAligned="false"
-        android:orientation="vertical"
-        android:textColor="?android:attr/textColorPrimary"
-        android:visibility="visible">
+    <ImageView
+        android:id="@+id/message_security_badge"
+        android:layout_width="32dp"
+        android:layout_height="12dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        app:layout_constraintBottom_toTopOf="@+id/selected_checkbox"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/sender"
+        app:srcCompat="@drawable/pep_status_yellow" />
 
-        <CheckBox
-            android:id="@+id/selected_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:clickable="false"
-            android:focusable="false"
-            android:gravity="center"
-            android:paddingStart="4dp"
-            android:paddingEnd="0dp"
-            android:visibility="visible" />
-
-    </LinearLayout>
+    <CheckBox
+        android:id="@+id/selected_checkbox"
+        android:layout_width="32dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:gravity="center"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/preview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/message_security_badge" />
 
     <com.fsck.k9.pEp.ui.PEpContactBadge
         android:id="@+id/contact_badge"
+        style="?android:attr/quickContactBadgeStyleWindowLarge"
         android:layout_width="52dp"
         android:layout_height="52dp"
-        android:layout_gravity="center_vertical"
         android:background="@android:color/transparent"
-        android:paddingStart="4dp"
-        android:paddingTop="4dp"
-        android:paddingEnd="8dp"
-        android:paddingBottom="3dp"
+        android:padding="4dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_contact_picture" />
+        android:src="@drawable/ic_contact_picture"
+        app:layout_constraintStart_toEndOf="@+id/message_security_badge"
+        app:layout_constraintTop_toTopOf="@+id/sender" />
 
-    <RelativeLayout
-        android:id="@+id/list_item_inner"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/sender"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="12dp"
+        android:clickable="false"
+        android:ellipsize="end"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/subject"
+        app:layout_constraintEnd_toStartOf="@+id/thread_count"
+        app:layout_constraintStart_toEndOf="@+id/contact_badge"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Sender compact" />
+
+    <TextView
+        android:id="@+id/thread_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:background="?attr/messageListThreadCountBackground"
         android:clickable="false"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp">
+        android:paddingStart="3dp"
+        android:paddingLeft="4dp"
+        android:paddingEnd="4dp"
+        android:paddingRight="4dp"
+        android:paddingBottom="1dp"
+        android:textColor="?attr/messageListThreadCountForegroundColor"
+        app:layout_constraintBottom_toBottomOf="@+id/sender"
+        app:layout_constraintEnd_toStartOf="@+id/date"
+        app:layout_constraintStart_toEndOf="@+id/sender"
+        app:layout_constraintTop_toTopOf="@+id/sender"
+        tools:text="2" />
 
-        <TextView
-            android:id="@+id/preview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignWithParentIfMissing="false"
-            android:layout_below="@+id/subject_wrapper"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentBottom="false"
-            android:layout_toStartOf="@+id/extra_items_container"
-            android:bufferType="spannable"
-            android:fontFamily="sans-serif-light"
-            android:gravity="top"
-            android:longClickable="false"
-            android:maxLines="1"
-            android:paddingStart="1dp"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="14sp"
-            tools:text="Preview" />
-
-        <LinearLayout
-            android:id="@+id/subject_wrapper"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="false"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentBottom="false"
-            android:layout_centerVertical="true"
-            android:layout_toStartOf="@+id/date">
-
-            <TextView
-                android:id="@+id/sender_compact"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.3"
-                android:ellipsize="end"
-                android:fontFamily="sans-serif-medium"
-                android:paddingStart="1dp"
-                android:paddingBottom="1dp"
-                android:singleLine="true"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                tools:text="Sender compact" />
-
-            <TextView
-                android:id="@+id/subject"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.7"
-                android:ellipsize="marquee"
-                android:fontFamily="sans-serif-medium"
-                android:paddingStart="1dp"
-                android:paddingBottom="1dp"
-                android:singleLine="true"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                tools:text="Subject" />
-
-            <TextView
-                android:id="@+id/thread_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/messageListThreadCountBackground"
-                android:focusable="false"
-                android:paddingStart="3dp"
-                android:paddingLeft="4dp"
-                android:paddingEnd="4dp"
-                android:paddingRight="4dp"
-                android:paddingBottom="1dp"
-                android:textColor="?attr/messageListThreadCountForegroundColor"
-                tools:text="ThreadCount" />
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/subject_wrapper"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:fontFamily="sans-serif-medium"
-            android:paddingStart="3dp"
-            android:paddingEnd="16dp"
-            android:singleLine="true"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            tools:text="20:00" />
-
-        <LinearLayout
-            android:id="@+id/extra_items_container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/date"
-            android:layout_alignBottom="@+id/preview"
-            android:layout_alignParentEnd="true"
-            android:orientation="horizontal"
-            android:paddingStart="2dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="16dp">
-
-            <ImageView
-                android:id="@+id/attachment_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_email_attachment_small"
-                android:visibility="gone"
-                tools:visibility="visible" />
-
-            <CheckBox
-                android:id="@+id/flagged_checkbox"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:button="?attr/iconFlagButtonGreen"
-                android:focusable="false"
-                android:gravity="center_vertical"
-                android:visibility="visible" />
-        </LinearLayout>
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:fontFamily="sans-serif-medium"
+        android:singleLine="true"
+        android:textColor="?android:attr/textColorSecondary"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/sender"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/sender"
+        tools:text="15:12" />
 
 
-    </RelativeLayout>
+    <TextView
+        android:id="@+id/subject"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:ellipsize="marquee"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/preview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/contact_badge"
+        app:layout_constraintTop_toBottomOf="@+id/sender"
+        tools:text="Subject" />
 
-</LinearLayout>
+
+    <TextView
+        android:id="@+id/preview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:bufferType="spannable"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:fontFamily="sans-serif-light"
+        android:gravity="top"
+        android:longClickable="false"
+        android:maxLines="1"
+        android:textColor="?android:attr/textColorSecondary"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/flagged_checkbox"
+        app:layout_constraintStart_toEndOf="@id/contact_badge"
+        app:layout_constraintTop_toBottomOf="@+id/subject"
+        tools:text="Preview" />
+
+    <CheckBox
+        android:id="@+id/flagged_checkbox"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_margin="2dp"
+        android:button="?attr/iconFlagButtonGreen"
+        android:focusable="false"
+        android:gravity="center_vertical"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/preview"
+        app:layout_constraintEnd_toStartOf="@+id/attachment_icon"
+        app:layout_constraintTop_toTopOf="@+id/preview" />
+
+
+    <ImageView
+        android:id="@+id/attachment_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_margin="2dp"
+        android:src="@drawable/ic_email_attachment_small"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/preview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/preview"
+        tools:visibility="visible" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

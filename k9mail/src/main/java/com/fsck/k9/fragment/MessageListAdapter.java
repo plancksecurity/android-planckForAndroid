@@ -25,7 +25,6 @@ import com.daimajia.swipe.SwipeLayout;
 import com.fsck.k9.Account;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.helper.Utility;
@@ -300,10 +299,10 @@ public class MessageListAdapter extends CursorAdapter {
 
         if (fragment.previewLines == 0 && fragment.contactsPictureLoader == null) {
             view.findViewById(R.id.preview).setVisibility(GONE);
-            holder.preview = (TextView) view.findViewById(R.id.sender_compact);
+            holder.preview = (TextView) view.findViewById(R.id.sender);
             view.findViewById(R.id.flagged_checkbox).setVisibility(GONE);
         } else {
-            view.findViewById(R.id.sender_compact).setVisibility(GONE);
+            view.findViewById(R.id.sender).setVisibility(GONE);
             holder.preview = (TextView) view.findViewById(R.id.preview);
             holder.flagged = (CheckBox) view.findViewById(R.id.flagged_checkbox);
         }
@@ -333,13 +332,13 @@ public class MessageListAdapter extends CursorAdapter {
         fontSizes.setViewTextSize(holder.preview, fontSizes.getMessageListPreview());
         holder.threadCount = (TextView) view.findViewById(R.id.thread_count);
         fontSizes.setViewTextSize(holder.threadCount, fontSizes.getMessageListSubject()); // thread count is next to subject
-        view.findViewById(R.id.selected_checkbox_wrapper).setVisibility((fragment.checkboxes) ? View.VISIBLE : GONE);
 
         holder.flagged.setVisibility(fragment.stars ? View.VISIBLE : GONE);
         holder.flagged.setOnClickListener(holder);
 
 
         holder.selected = (CheckBox) view.findViewById(R.id.selected_checkbox);
+        holder.selected.setVisibility((fragment.checkboxes) ? View.VISIBLE : GONE);
         holder.selected.setOnClickListener(holder);
 
         boolean hasAttachments = (cursor.getInt(ATTACHMENT_COUNT_COLUMN) > 0);
