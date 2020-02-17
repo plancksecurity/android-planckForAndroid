@@ -200,7 +200,7 @@
                     />
             <CheckBox
                     android:id="@+id/flagged_bottom_right"
-                    android:button="@drawable/flagged_message"
+                    android:button="@drawable/flagged_message_green"
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
                     android:visibility="visible"
