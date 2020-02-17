@@ -17,7 +17,6 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
@@ -33,10 +32,11 @@ import com.fsck.k9.mailstore.DatabasePreviewType;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 
-import foundation.pEp.jniadapter.Rating;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
+import foundation.pEp.jniadapter.Rating;
 
 import static android.view.View.GONE;
 import static com.fsck.k9.fragment.MLFProjectionInfo.ANSWERED_COLUMN;
@@ -74,7 +74,7 @@ public class MessageListAdapter extends CursorAdapter {
     }
 
     private enum Swipe {
-        NO_SWIPE, LEFT, RIGHT;
+        NO_SWIPE, LEFT, RIGHT
     }
 
     private final MessageListFragment fragment;
@@ -219,25 +219,19 @@ public class MessageListAdapter extends CursorAdapter {
         boolean answered = (cursor.getInt(ANSWERED_COLUMN) == 1);
         boolean forwarded = (cursor.getInt(FORWARDED_COLUMN) == 1);
 
-        SwipeLayout swipeView = (SwipeLayout) view.findViewById(R.id.swipe_container);
+        SwipeLayout swipeView = view.findViewById(R.id.swipe_container);
         swipeView.addDrag(SwipeLayout.DragEdge.Left, swipeView.findViewById(R.id.archive_email_container));
         swipeView.addDrag(SwipeLayout.DragEdge.Right, swipeView.findViewById(R.id.delete_email_container));
 
         final Swipe[] swipe = {Swipe.NO_SWIPE};
-        swipeView.findViewById(R.id.delete_email_container).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                swipe[0] = Swipe.LEFT;
-                swipeView.close();
-            }
+        swipeView.findViewById(R.id.delete_email_container).setOnClickListener(v -> {
+            swipe[0] = Swipe.LEFT;
+            swipeView.close();
         });
 
-        swipeView.findViewById(R.id.archive_email_container).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                swipe[0] = Swipe.RIGHT;
-                swipeView.close();
-            }
+        swipeView.findViewById(R.id.archive_email_container).setOnClickListener(v -> {
+            swipe[0] = Swipe.RIGHT;
+            swipeView.close();
         });
 
         swipeView.addSwipeListener(new SwipeLayout.SwipeListener() {
@@ -294,20 +288,20 @@ public class MessageListAdapter extends CursorAdapter {
         }
 
         MessageViewHolder holder = new MessageViewHolder(fragment);
-        holder.date = (TextView) view.findViewById(R.id.date);
+        holder.date = view.findViewById(R.id.date);
         holder.attachment = view.findViewById(R.id.attachment_icon);
 
         if (fragment.previewLines == 0 && fragment.contactsPictureLoader == null) {
             view.findViewById(R.id.preview).setVisibility(GONE);
-            holder.preview = (TextView) view.findViewById(R.id.sender);
+            holder.preview = view.findViewById(R.id.sender);
             view.findViewById(R.id.flagged_checkbox).setVisibility(GONE);
         } else {
             view.findViewById(R.id.sender).setVisibility(GONE);
-            holder.preview = (TextView) view.findViewById(R.id.preview);
-            holder.flagged = (CheckBox) view.findViewById(R.id.flagged_checkbox);
+            holder.preview = view.findViewById(R.id.preview);
+            holder.flagged = view.findViewById(R.id.flagged_checkbox);
         }
 
-        PEpContactBadge contactBadge = (PEpContactBadge) view.findViewById(R.id.contact_badge);
+        PEpContactBadge contactBadge = view.findViewById(R.id.contact_badge);
         if (fragment.contactsPictureLoader != null) {
             holder.contactBadge = contactBadge;
         } else {
@@ -315,11 +309,11 @@ public class MessageListAdapter extends CursorAdapter {
         }
 
         if (fragment.senderAboveSubject) {
-            holder.from = (TextView) view.findViewById(R.id.subject);
+            holder.from = view.findViewById(R.id.subject);
             fontSizes.setViewTextSize(holder.from, fontSizes.getMessageListSender());
 
         } else {
-            holder.subject = (TextView) view.findViewById(R.id.subject);
+            holder.subject = view.findViewById(R.id.subject);
             fontSizes.setViewTextSize(holder.subject, fontSizes.getMessageListSubject());
 
         }
@@ -330,14 +324,14 @@ public class MessageListAdapter extends CursorAdapter {
         // 1 preview line is needed even if it is set to 0, because subject is part of the same text view
         //holder.preview.setLines(Math.max(mPreviewLines,1));
         fontSizes.setViewTextSize(holder.preview, fontSizes.getMessageListPreview());
-        holder.threadCount = (TextView) view.findViewById(R.id.thread_count);
+        holder.threadCount = view.findViewById(R.id.thread_count);
         fontSizes.setViewTextSize(holder.threadCount, fontSizes.getMessageListSubject()); // thread count is next to subject
 
         holder.flagged.setVisibility(fragment.stars ? View.VISIBLE : GONE);
         holder.flagged.setOnClickListener(holder);
 
 
-        holder.selected = (CheckBox) view.findViewById(R.id.selected_checkbox);
+        holder.selected = view.findViewById(R.id.selected_checkbox);
         holder.selected.setVisibility((fragment.checkboxes) ? View.VISIBLE : GONE);
         holder.selected.setOnClickListener(holder);
 
@@ -398,7 +392,7 @@ public class MessageListAdapter extends CursorAdapter {
 
         // Thread count
         if (threadCount > 1) {
-            holder.threadCount.setText(String.format("%d", threadCount));
+            holder.threadCount.setText(String.format(Locale.getDefault(), "%d", threadCount));
             holder.threadCount.setVisibility(View.VISIBLE);
         } else {
             holder.threadCount.setVisibility(GONE);
@@ -593,7 +587,7 @@ public class MessageListAdapter extends CursorAdapter {
 
     private void updateWithThreadCount(MessageViewHolder holder, int threadCount) {
         if (threadCount > 1) {
-            holder.threadCount.setText(String.format("%d", threadCount));
+            holder.threadCount.setText(String.format(Locale.getDefault(), "%d", threadCount));
             holder.threadCount.setVisibility(View.VISIBLE);
         } else {
             holder.threadCount.setVisibility(GONE);
