@@ -71,6 +71,9 @@
 
         <attr name="iconpEpDeviceGroup" format="reference"/>
         <attr name="iconAdavancedSettings" format="reference"/>
+        <attr name="iconFlagButton" format="reference"/>
+        <attr name="iconFlagButtonGreen" format="reference"/>
+        <attr name="iconFlagButtonOpaque" format="reference"/>
 
         <attr name="openpgp_black" format="reference|color" />
         <attr name="openpgp_orange" format="reference|color" />

@@ -1887,7 +1887,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         mMenu = menu;
         mMenuButtonCheckMail = menu.findItem(R.id.check_mail);
         flaggedCheckbox = (CheckBox) menu.findItem(R.id.flag).getActionView();
-        flaggedCheckbox.setButtonDrawable(R.drawable.flagged_message_opaque);
+        flaggedCheckbox.setButtonDrawable(resourcesProvider.getAttributeResource(R.attr.iconFlagButtonOpaque));
         flaggedCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                     if (buttonView.isPressed())
                         mMessageViewFragment.onToggleFlagged();
