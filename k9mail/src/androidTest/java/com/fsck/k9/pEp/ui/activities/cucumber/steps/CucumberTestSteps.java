@@ -92,7 +92,7 @@ public class CucumberTestSteps {
 
     private static final String HOST = "@sq.pep.security";
 
-    private String bot[];
+    private String[] bot;
     private int accounts = 3;
     private int accountSelected = 0;
     public String b ="";
@@ -431,7 +431,7 @@ public class CucumberTestSteps {
         device.waitForIdle();
         testUtils.doWaitForResource(R.id.toolbar);
         if (!TestUtils.jsonArray.toString().contains("47220F5487391A9ADA8199FD8F8EB7716FA59050")) {
-            testUtils.assertFailWithMessage("Wrong extra key");
+            TestUtils.assertFailWithMessage("Wrong extra key");
         }
     }
 
@@ -478,7 +478,7 @@ public class CucumberTestSteps {
                 e.printStackTrace();
             }
         }
-        testUtils.assertFailWithMessage("Wrong Trust Words");
+        TestUtils.assertFailWithMessage("Wrong Trust Words");
     }
     private void assertTextInJSONArray(String text, JSONArray array, String textToCompare) {
         for (int position = 0; position < array.length(); position++) {
@@ -490,7 +490,7 @@ public class CucumberTestSteps {
                 e.printStackTrace();
             }
         }
-        testUtils.assertFailWithMessage("Text is not in JSON");
+        TestUtils.assertFailWithMessage("Text is not in JSON");
     }
 
     private void assertTextInJSON(JSONObject json, String textToCompare) {
@@ -498,14 +498,14 @@ public class CucumberTestSteps {
         if (json.toString().contains(textToCompare)) {
             return;
         }
-        testUtils.assertFailWithMessage("json file doesn't contain the text: " + json.toString() + " ***TEXT*** : " + textToCompare);
+        TestUtils.assertFailWithMessage("json file doesn't contain the text: " + json.toString() + " ***TEXT*** : " + textToCompare);
     }
 
     private void assertText(String text, String textToCompare) {
         if (text.contains(textToCompare)) {
             return;
         }
-        testUtils.assertFailWithMessage("Texts are different");
+        TestUtils.assertFailWithMessage("Texts are different");
     }
 
     private void confirmAllTrustWords (String webViewText) {
@@ -574,7 +574,7 @@ public class CucumberTestSteps {
     private void checkWordIsInText(String [] arrayToCompare, String webViewText) {
         for (String textToCompare : arrayToCompare) {
             if (!webViewText.contains(textToCompare)) {
-                testUtils.assertFailWithMessage("Text not found in Trustwords");
+                TestUtils.assertFailWithMessage("Text not found in Trustwords");
             }
         }
     }
@@ -1007,7 +1007,7 @@ public class CucumberTestSteps {
         device.waitForIdle();
         onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
         if (messageListSize[0] - 1 != messages) {
-            testUtils.assertFailWithMessage("There are not " + messages + " messages in the list. There are: " + (messageListSize[0] - 1));
+            TestUtils.assertFailWithMessage("There are not " + messages + " messages in the list. There are: " + (messageListSize[0] - 1));
         }
     }
 
@@ -1252,7 +1252,7 @@ public class CucumberTestSteps {
                 String shaCode = new BigInteger(1, hash).toString(16);
                 JSONObject jsonObject = (JSONObject) (testUtils.returnJSON()).getJSONObject("attachments_in").get("decrypted");
                 if (!jsonObject.toString().contains(shaCode)) {
-                    testUtils.assertFailWithMessage("couldn't find shaCode in json file");
+                    TestUtils.assertFailWithMessage("couldn't find shaCode in json file");
                 }
             } catch (Exception ex) {
                 Timber.i("Couldn't get SHA256 from file: " + file.getName());
@@ -1433,7 +1433,7 @@ public class CucumberTestSteps {
     private void CopyAssets() {
         File file = null;
             try {
-                String extStorageDirectory = Environment.getExternalStorageDirectory().getAbsolutePath().toString();
+                String extStorageDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
                 file = new File("/data/data/security.pEp.debug/cucumber-reports/", "cucumber.json");
                 File file2 = new File(extStorageDirectory + "/cucumber.json");
                 FileInputStream in = new FileInputStream(file);
@@ -1477,11 +1477,11 @@ public class CucumberTestSteps {
                     Timber.i("Timeout: " + time[0] + "/" + finalTime);
                     if (activityTestRule == null) {
                         time[0] = 0;
-                        testUtils.assertFailWithMessage("Timeout. Couldn't finish the test");
+                        TestUtils.assertFailWithMessage("Timeout. Couldn't finish the test");
                     } else if (time[0] > finalTime) {
                         try {
                             time[0] = 0;
-                            testUtils.assertFailWithMessage("Timeout. Couldn't finish the test");
+                            TestUtils.assertFailWithMessage("Timeout. Couldn't finish the test");
                         } catch (Exception ex) {
                             Timber.e("Couldn't close the test");
                         }
