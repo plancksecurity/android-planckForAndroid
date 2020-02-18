@@ -1250,8 +1250,8 @@ public class CucumberTestSteps {
                 bis.close();
                 byte[] hash = digest.digest();
                 String shaCode = new BigInteger(1, hash).toString(16);
-                JSONObject jsonObject = (JSONObject) (testUtils.returnJSON()).getJSONObject("attachments_in").get("decrypted");
-                if (!jsonObject.toString().contains(shaCode)) {
+                String jsonObject = (testUtils.returnJSON()).getJSONObject("attachments_in").get("decrypted").toString();
+                if (!jsonObject.contains(shaCode)) {
                     TestUtils.assertFailWithMessage("couldn't find shaCode in json file");
                 }
             } catch (Exception ex) {
