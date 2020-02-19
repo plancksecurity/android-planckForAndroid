@@ -47,6 +47,7 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.MessageActions;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
+import com.fsck.k9.activity.setup.WelcomeMessage;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.fragment.MessageListFragment;
@@ -1793,6 +1794,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             }
             case R.id.mark_all_as_read: {
                 mMessageListFragment.confirmMarkAllAsRead();
+                return true;
+            }
+            case R.id.tutorial: {
+                WelcomeMessage.showTutorial(this);
                 return true;
             }
             case R.id.show_folder_list: {

@@ -245,4 +245,9 @@
         app:showAsAction="never"
         android:title="@string/action_settings"/>
 
+    <item
+        android:id="@+id/tutorial"
+        app:showAsAction="never"
+        android:title="@string/action_tutorial"/>
+
 </menu>

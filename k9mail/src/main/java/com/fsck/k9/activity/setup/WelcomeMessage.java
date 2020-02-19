@@ -18,8 +18,17 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class WelcomeMessage extends AppIntro {
 
+    private static final String TUTORIAL = "tutorial";
+    private boolean tutorial = false;
+
     public static void showWelcomeMessage(Context context) {
         Intent intent = new Intent(context, WelcomeMessage.class);
+        context.startActivity(intent);
+    }
+
+    public static void showTutorial(Context context) {
+        Intent intent = new Intent(context, WelcomeMessage.class);
+        intent.putExtra(TUTORIAL, true);
         context.startActivity(intent);
     }
 
@@ -27,12 +36,20 @@ public class WelcomeMessage extends AppIntro {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        getExtras();
         addSlide(new IntroFirstFragment());
         addSlide(new IntroSecondFragment());
         addSlide(new IntroThirdFragment());
 
         showSkipButton(true);
         setProgressButtonEnabled(true);
+    }
+
+    private void getExtras() {
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            tutorial = extras.getBoolean(TUTORIAL);
+        }
     }
 
     @Override
@@ -48,10 +65,12 @@ public class WelcomeMessage extends AppIntro {
     }
 
     private void nextAction() {
-        if (K9.isShallRequestPermissions()) {
-            PermissionsActivity.actionAskPermissions(this);
-        } else {
-            AccountSetupBasics.actionNewAccount(this);
+        if (!tutorial) {
+            if (K9.isShallRequestPermissions()) {
+                PermissionsActivity.actionAskPermissions(this);
+            } else {
+                AccountSetupBasics.actionNewAccount(this);
+            }
         }
         finish();
     }
