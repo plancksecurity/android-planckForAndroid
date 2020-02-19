@@ -1312,7 +1312,7 @@ You can keep this message and use it as a backup for your secret key. If you wan
     <string name="switch_on">On</string>
     <string name="switch_off">Off</string>
     <string name="search_empty_error">Please write text to search</string>
-    <string name="search_empty_error">Please write text to search</string>
+
     <string name="intro_frag_first_text_1">Welcome to the <font color="#4caf50">p≡p</font> tutorial</string>
     <string name="intro_frag_first_text_2">You can close this tutorial any time.\n\n<font color="#4caf50">p≡p</font> uses a Privacy Status to indicate how secure your communication is.\n\nThis Privacy Status is shown as an icon in the user\'s avatar</string>
     <string name="intro_frag_first_text_3">And in the top bar when you open or write an e-mail:</string>
@@ -1323,10 +1323,15 @@ You can keep this message and use it as a backup for your secret key. If you wan
     <string name="intro_frag_second_text_1">With this Privacy Status all communication is Secure, but to confirm that your contact is really the person you know, you should Trustwords with this contact.</string>
     <string name="intro_frag_second_text_2">When the Trustwords are confirmed to be correct and the Handshake is done, the communication will be completely secure and trusted.</string>
     <string name="intro_frag_second_text_3">If the Trustwords are not correct, your communication partner is Mistrusted.</string>
+
     <string name="intro_frag_third_text_1">Handshake</string>
     <string name="intro_frag_third_text_2">When you click on the Privacy Status icon in the top bar, you will get to the Handshake, where you can verify your communication partner.</string>
-    <string name="intro_frag_third_text_3">Complete a handshake with your communication partner. A handshake is needed only once per partner and will ensure Secure and Trusted communication.</string>
+    <string name="intro_frag_third_text_3">OUTDISTANCE\t\t\tCORRINA\t\t\tETHIOPIA\t\t\tOUTDRAW\t\t\tFLEECER\t\t\t…</string>
+    <string name="intro_frag_third_text_4">Complete a handshake with your communication partner. A handshake is needed only once per partner and will ensure Secure and Trusted communication.</string>
+
     <string name="intro_frag_fourth_text_1">Privacy Status</string>
     <string name="intro_frag_fourth_text_2">The icon in the top bar reflects the Privacy Status of the message, which is the lowest common denominator of all communication partners of that message, for example:</string>
     <string name="intro_frag_fourth_text_3">In this case the Privacy Status of the message is Secure, because this is the lowest common denominator of the two communication partners.</string>
+    <string name="reject_handshake_button">Reject</string>
+    <string name="accept_handshake_button">Confirm</string>
 </resources>
