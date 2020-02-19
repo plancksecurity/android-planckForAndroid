@@ -524,7 +524,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             registerForContextMenu(pEpSecurityStatusLayout);
         }
         toolBarCustomizer.setToolbarColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
-        toolBarCustomizer.setStatusBarPepColor(ContextCompat.getColor(getApplicationContext(), R.color.light_black));
+        toolBarCustomizer.setStatusBarPepColor(ContextCompat.getColor(getApplicationContext(), R.color.nav_contact_background));
     }
 
     private void createDynamicShortcut() {

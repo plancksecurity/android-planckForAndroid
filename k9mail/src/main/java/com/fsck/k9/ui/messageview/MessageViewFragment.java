@@ -332,7 +332,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         pEpSecurityStatusLayout.setOnClickListener(view -> onPepStatus(getActivity()));
         pEpSecurityStatusLayout.setRating(mAccount.ispEpPrivacyProtected() ? pEpRating : pEpRatingUndefined);
         toolBarCustomizer.setToolbarColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
-        toolBarCustomizer.setStatusBarPepColor(ContextCompat.getColor(getApplicationContext(), R.color.light_black));
+        toolBarCustomizer.setStatusBarPepColor(ContextCompat.getColor(getApplicationContext(), R.color.nav_contact_background));
     }
 
     private void showUnableToDecodeError() {
