@@ -79,9 +79,4 @@ public class PEpModule {
         return Preferences.getPreferences(context);
     }
 
-    @Provides
-    public ResourcesProvider providepEpResourcesProvider() {
-        return new PEpResourcesProvider(context.getApplicationContext());
-    }
-
 }
