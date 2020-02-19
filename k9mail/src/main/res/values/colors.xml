@@ -60,10 +60,9 @@
 
     <color name="compose_gray">#FFAAAAAA</color>
 
-    <color name="message_list_active_background_color_dark">#33b5e5</color>
-    <color name="message_list_active_background_color_light">#2ea7d1</color>
-    <color name="message_list_selected_background_color_light">#2ea7d1</color>
-    <color name="message_list_selected_background_color">#8038B8E2</color>
+    <color name="message_list_active_background_color_dark">#42A044</color>
+    <color name="message_list_active_background_color_light">#59D85D</color>
+    <color name="message_list_selected_background_color">#c8e6c9</color>
     <color name="message_list_read_background_color">#c0cdcdcd</color>
     <color name="message_list_unread_background_color_dark">#c05a5a5a</color>
     <color name="message_list_divider_color_light">#ffcccccc</color>

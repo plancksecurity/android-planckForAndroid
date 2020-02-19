@@ -66,7 +66,7 @@
         <item name="messageListActiveItemBackgroundColor">@color/message_list_active_background_color_light</item>
         <item name="messageListDividerColor">@color/message_list_divider_color_light</item>
         <item name="messageListCheckbox">@drawable/btn_check_message_list_light</item>
-        <item name="messageViewBackgroundColor">#ffffffff</item>
+        <item name="messageViewBackgroundColor">@color/white</item>
         <item name="messageViewAttachmentBackground">@color/attachment_background_light</item>
         <item name="messageComposeAddContactImage">@drawable/ic_person_plus_light</item>
         <item name="contactPictureFallbackDefaultBackgroundColor">#ffababab</item>
@@ -288,7 +288,7 @@
         <item name="messageListActiveItemBackgroundColor">@color/message_list_active_background_color_light</item>
         <item name="messageListDividerColor">@color/message_list_divider_color_light</item>
         <item name="messageListCheckbox">@drawable/btn_check_message_list_light</item>
-        <item name="messageViewBackgroundColor">#ffffffff</item>
+        <item name="messageViewBackgroundColor">@color/white</item>
         <item name="messageViewAttachmentBackground">@color/attachment_background_light</item>
         <item name="messageComposeAddContactImage">@drawable/ic_person_plus_light</item>
         <item name="contactPictureFallbackDefaultBackgroundColor">#ffababab</item>
@@ -373,7 +373,7 @@
         <item name="messageListActiveItemBackgroundColor">@color/message_list_active_background_color_dark</item>
         <item name="messageListDividerColor">@color/message_list_divider_color_dark</item>
         <item name="messageListCheckbox">@drawable/btn_check_message_list_dark</item>
-        <item name="messageViewBackgroundColor">#000000</item>
+        <item name="messageViewBackgroundColor">?android:attr/colorBackground</item>
         <item name="messageViewAttachmentBackground">@color/attachment_background_dark</item>
         <item name="messageComposeAddContactImage">@drawable/ic_person_plus_dark</item>
         <item name="contactTokenBackgroundColor">#313131</item>
