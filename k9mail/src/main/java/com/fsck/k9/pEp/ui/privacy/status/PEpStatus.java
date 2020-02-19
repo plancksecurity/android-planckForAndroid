@@ -115,8 +115,30 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     }
 
     private void setUpActionBar() {
-        initializeToolbar(true, R.string.pep_title_activity_privacy_status);
+        initializeToolbar(false, R.string.pep_title_activity_privacy_status);
         colorActionBar();
+    }
+
+    @Override
+    public void initializeToolbar(Boolean showUpButton, @StringRes int stringResource) {
+        setUpToolbar(showUpButton);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            TextView titleTV = findViewById(R.id.titleText);
+            titleTV.setText(stringResource);
+            //getSupportActionBar().setTitle(getResources().getString(stringResource));
+        }
+    }
+
+    @Override
+    public void initializeToolbar(Boolean showUpButton, String title) {
+        setUpToolbar(showUpButton);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            TextView titleTV = findViewById(R.id.titleText);
+            titleTV.setText(title);
+            //getSupportActionBar().setTitle(title);
+        }
     }
 
     @Override
