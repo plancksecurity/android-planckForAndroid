@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/swipe_container"
     android:layout_width="match_parent"
-    android:layout_height="80dp">
+    android:layout_height="wrap_content">
     <!-- Bottom View Start-->
 
     <LinearLayout
@@ -14,8 +14,8 @@
         android:background="#FF5722"
         android:orientation="horizontal"
         android:visibility="gone"
-        tools:visibility="visible"
-        android:weightSum="1">
+        android:weightSum="1"
+        tools:visibility="visible">
 
         <ImageView
             android:id="@+id/delete_email"
@@ -56,16 +56,17 @@
     <RelativeLayout
         android:id="@+id/container_background"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <include
             android:id="@+id/message_read_container"
-            layout="@layout/message_list_item" />
+            layout="@layout/message_list_item"
+            tools:visibility="visible" />
 
         <include
             android:id="@+id/message_unread_container"
             layout="@layout/unread_message_list_item"
-            android:visibility="gone" />
+            tools:visibility="gone" />
 
         <!--What you want to show in SurfaceView-->
     </RelativeLayout>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mail_list_item"
     android:layout_width="match_parent"
@@ -26,7 +27,7 @@
         android:layout_marginStart="4dp"
         android:layout_toLeftOf="@+id/mail_date"
         android:layout_toStartOf="@+id/mail_date"
-        android:src="@drawable/ic_email_attachment_small"
+        app:srcCompat="@drawable/ic_attachment_light"
         android:visibility="gone"
         tools:visibility="visible" />
 

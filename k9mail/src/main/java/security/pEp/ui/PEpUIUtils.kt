@@ -89,6 +89,24 @@ object PEpUIUtils {
     }
 
     @JvmStatic
+    fun getDrawableForMessageList(context: Context, rating: Rating?): Drawable? {
+        return when {
+            rating == null ->
+                null
+            rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value ->
+                null
+            rating.value == Rating.pEpRatingMistrust.value ->
+                ContextCompat.getDrawable(context, R.drawable.pep_status_red)
+            rating.value >= Rating.pEpRatingTrusted.value ->
+                ContextCompat.getDrawable(context, R.drawable.pep_status_green)
+            rating.value == Rating.pEpRatingReliable.value ->
+                ContextCompat.getDrawable(context, R.drawable.pep_status_yellow)
+            else ->
+                null
+        }
+    }
+
+    @JvmStatic
     fun getToolbarRatingVisibility(rating: Rating?, encrypt: Boolean = true): Int {
         return when {
             !encrypt ->

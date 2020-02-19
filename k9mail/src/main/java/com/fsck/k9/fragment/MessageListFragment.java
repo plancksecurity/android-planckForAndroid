@@ -13,6 +13,8 @@ import android.os.Parcelable;
 
 import com.fsck.k9.pEp.ui.fragments.PEpFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import androidx.annotation.AttrRes;
 import androidx.fragment.app.DialogFragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
@@ -22,7 +24,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
-import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -109,6 +110,7 @@ import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
+import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
@@ -197,9 +199,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     private SwipeRefreshLayout swipeRefreshLayout;
     Parcelable savedListState;
 
-    int previewLines = 0;
-
-
     private MessageListAdapter adapter;
     private View footerView;
     private FolderInfoHolder currentFolder;
@@ -234,9 +233,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     private SortType sortType = SortType.SORT_DATE;
     private boolean sortAscending = true;
     private boolean sortDateAscending = false;
-    boolean senderAboveSubject = false;
     boolean checkboxes = true;
-    boolean stars = true;
 
     private int selectedCount = 0;
     Set<Long> selected = new HashSet<>();
@@ -283,6 +280,16 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     private SelectedItemActionModeCallback selectedMessageActionModeCallback = new SelectedItemActionModeCallback();
     @Inject
     ToolBarCustomizer toolBarCustomizer;
+    @Inject
+    ResourcesProvider resourcesProvider;
+
+    int getColorFromAttributeResource(@AttrRes int resource) {
+        return resourcesProvider.getColorFromAttributeResource(resource);
+    }
+
+    int getAttributeResource(@AttrRes int resource) {
+        return resourcesProvider.getAttributeResource(resource);
+    }
 
     private void enableSwipeToRefresh(boolean enable) {
         if (!isFastPolling()) {
@@ -487,9 +494,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         preferences = Preferences.getPreferences(appContext);
         messagingController = MessagingController.getInstance(getActivity().getApplication());
 
-        previewLines = K9.messageListPreviewLines();
         checkboxes = K9.messageListCheckboxes();
-        stars = K9.messageListStars();
 
         if (K9.showContactPicture()) {
             contactsPictureLoader = ContactPicture.getContactPictureLoader(getActivity());
@@ -753,7 +758,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     public void onResume() {
         super.onResume();
 
-        senderAboveSubject = K9.messageListSenderAboveSubject();
         if (!loaderJustInitialized) {
             if(accountExists()) {
                 restartLoader();
@@ -837,7 +841,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         });
     }
 
-//    private void initializePullToRefresh(View layout) {
+    //    private void initializePullToRefresh(View layout) {
 //        swipeRefreshLayout = (SwipeRefreshLayout) layout.findViewById(R.id.swiperefresh);
 //        listView = (ListView) layout.findViewById(R.id.message_list);
 //
@@ -863,6 +867,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 //        // Disable pull-to-refresh until the message list has been loaded
 //        swipeRefreshLayout.setEnabled(false);
 //    }
+
     private boolean isLongClicked;
 
     private void initializeLayout() {
@@ -870,7 +875,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         listView.setLongClickable(true);
         listView.setFastScrollEnabled(true);
         listView.setScrollingCacheEnabled(false);
-        //listView.setOnItemClickListener(this);
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
