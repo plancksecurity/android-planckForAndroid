@@ -501,7 +501,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         K9.getFontSizes().setViewTextSize(subjectView, fontSize);
         K9.getFontSizes().setViewTextSize(messageContentView, fontSize);
         K9.getFontSizes().setViewTextSize(signatureView, fontSize);
-// TODO: pEp font sizes and skin stuff
+        // TODO: pEp font sizes and skin stuff
         updateMessageFormat();
 
         setTitle();
@@ -517,7 +517,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     }
 
     private void startToolbar() {
-        setUpToolbar(true, resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
+        setUpToolbar(true);
+        setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
         if (getToolbar() != null) {
             pEpSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
             pEpSecurityStatusLayout.setOnClickListener(v -> onPEpIndicator());

@@ -2165,7 +2165,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 showMessageView();
             }
 
-            setUpToolbar(true, resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
+            setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
 
         }
     }
@@ -2275,7 +2275,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         if (transactionId >= 0 && mFirstBackStackId < 0) {
             mFirstBackStackId = transactionId;
         }
-        setUpToolbar(true, resourcesProvider.getAttributeResource(R.attr.iconActionPreviousMessage));
+        setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(R.attr.iconActionPreviousMessage));
 
     }
 

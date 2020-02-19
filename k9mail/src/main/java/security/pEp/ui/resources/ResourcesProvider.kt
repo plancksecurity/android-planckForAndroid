@@ -1,6 +1,6 @@
 package security.pEp.ui.resources
 
-import android.content.Context
+import android.app.Activity
 import android.content.res.TypedArray
 import android.util.TypedValue
 import androidx.annotation.AttrRes
@@ -14,7 +14,8 @@ interface ResourcesProvider {
     fun getColorFromAttributeResource(@AttrRes resource: Int): Int
 }
 
-class PEpResourcesProvider(private val context: Context) : ResourcesProvider {
+//TODO: Check context scope needed
+class PEpResourcesProvider(private val context: Activity) : ResourcesProvider {
 
     override fun getAttributeResource(@AttrRes resource: Int): Int {
         val a: TypedArray = context.theme.obtainStyledAttributes(K9.getK9ThemeResourceId(), intArrayOf(resource))

@@ -4,13 +4,6 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.DrawableRes;
-import androidx.annotation.LayoutRes;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,6 +11,13 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
@@ -79,17 +79,21 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 //    }
 
 
-    public void setUpToolbar(boolean showUpButton, @DrawableRes Integer... drawable) {
+    public void setUpToolbar(boolean showUpButton) {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(showUpButton);
-                if (drawable.length > 0)
-                    getSupportActionBar().setHomeAsUpIndicator(drawable[0]);
             }
             if (K9.getK9Theme() == K9.Theme.DARK) {
                 toolbar.setPopupTheme(R.style.PEpThemeOverlay);
             }
+        }
+    }
+
+    public void setUpToolbarHomeIcon(@DrawableRes int drawable) {
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setHomeAsUpIndicator(drawable);
         }
     }
 
