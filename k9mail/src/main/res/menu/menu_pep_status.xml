@@ -3,9 +3,13 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       tools:context=".pEp.ui.privacy.status.PEpStatus">
     <item
-            android:id="@+id/action_explanation"
-            android:title="@string/pep_explanation"
-            android:orderInCategory="100"
-            android:icon="@drawable/ic_action_pep_indicator_white"
-            app:showAsAction="always"/>
+        android:id="@+id/force_unencrypted"
+        android:title="@string/pep_force_unprotected"
+        android:orderInCategory="100"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/is_always_secure"
+        android:title="@string/is_always_secure"
+        android:orderInCategory="100"
+        app:showAsAction="never"/>
 </menu>
