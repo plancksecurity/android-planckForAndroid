@@ -2275,8 +2275,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         if (transactionId >= 0 && mFirstBackStackId < 0) {
             mFirstBackStackId = transactionId;
         }
-        setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(R.attr.iconActionPreviousMessage));
-
     }
 
     @Override
