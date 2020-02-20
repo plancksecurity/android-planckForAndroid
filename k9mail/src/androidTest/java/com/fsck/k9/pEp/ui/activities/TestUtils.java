@@ -1461,7 +1461,7 @@ public class TestUtils {
         device.waitForIdle();
     }
 
-    public void waitForTooblar () {
+    public static void waitForTooblar() {
         for (int waitLoop = 0; waitLoop < 1000; waitLoop++) {
             device.waitForIdle();
             while (!viewIsDisplayed(R.id.toolbar) || !viewIsDisplayed(R.id.toolbar_container)) {
@@ -1906,6 +1906,7 @@ public class TestUtils {
                     device.waitForIdle();
                     object.getParent().getChildren().get(3).click();
                     device.waitForIdle();
+                    waitForTooblar();
                     onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
                     return;
                 }
