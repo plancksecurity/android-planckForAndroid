@@ -57,7 +57,7 @@
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancel</string>
     <string name="pep_dialog_confirm_forward_title">Confirm forward</string>
 
-    <string name="pep_title_activity_privacy_status">Privacy status</string>
+    <string name="pep_title_activity_privacy_status">PRIVACY STATUS</string>
     <string name="pep_extra_addresses">Extra key ids:</string>
     <string name="pep_use_keyserver">Look up keys on key server</string>
     <string name="pep_passive_mode">Passive mode</string>
