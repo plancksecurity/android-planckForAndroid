@@ -1588,7 +1588,6 @@ public class TestUtils {
                             while (object.getText().equals(resources.getString(resource))) {
                                 device.waitForIdle();
                                 object.longClick();
-                                waitForTooblar();
                             }
                             device.waitForIdle();
                             return;
