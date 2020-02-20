@@ -24,7 +24,6 @@ import androidx.test.espresso.IdlingPolicies;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.NoMatchingViewException;
-import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
@@ -83,7 +82,6 @@ import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -710,13 +708,13 @@ public class TestUtils {
     }
 
     private void clickInbox () {
-        waitForTooblar();
+        waitForToolbar();
         device.waitForIdle();
         while (true) {
             try {
                 selectFromScreen(R.string.special_mailbox_name_inbox);
                 device.waitForIdle();
-                waitForTooblar();
+                waitForToolbar();
                 return;
             } catch (Exception noInbox) {
                 Timber.i("No inbox to click: " + noInbox.getMessage());
@@ -1320,7 +1318,7 @@ public class TestUtils {
         while (!viewIsDisplayed(R.id.pEpTitle)) {
             device.waitForIdle();
         }
-        waitForTooblar();
+        waitForToolbar();
         onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
         if (!exists(onView(withId(R.id.send)))) {
             goBack(false);
@@ -1436,7 +1434,7 @@ public class TestUtils {
             waitUntilIdle();
             device.waitForIdle();
             if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
-                waitForTooblar();
+                waitForToolbar();
                 onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(color)));
                 checkUpperToolbar(color);
                 return;
@@ -1461,7 +1459,7 @@ public class TestUtils {
         device.waitForIdle();
     }
 
-    public static void waitForTooblar() {
+    public static void waitForToolbar() {
         for (int waitLoop = 0; waitLoop < 1000; waitLoop++) {
             device.waitForIdle();
             while (!viewIsDisplayed(R.id.toolbar) || !viewIsDisplayed(R.id.toolbar_container)) {
@@ -1663,7 +1661,7 @@ public class TestUtils {
         while (!backToMessageCompose){
             pressBack();
             device.waitForIdle();
-            waitForTooblar();
+            waitForToolbar();
             if (viewIsDisplayed(R.id.fab_button_compose_message)){
                 backToMessageCompose = true;
             }
@@ -1906,7 +1904,7 @@ public class TestUtils {
                     device.waitForIdle();
                     object.getParent().getChildren().get(3).click();
                     device.waitForIdle();
-                    waitForTooblar();
+                    waitForToolbar();
                     onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
                     return;
                 }
