@@ -292,10 +292,11 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         }
     }
 
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        boolean isIncoming = getIntent().getBooleanExtra(MESSAGE_DIRECTION, false);
+        if(isIncoming) return false;
+
         getMenuInflater().inflate(R.menu.menu_pep_status, menu);
         return true;
     }
@@ -308,9 +309,14 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
             case android.R.id.home:
                 onBackPressed();
                 return true;
-            case R.id.action_explanation:
-                showExplanationDialog();
+            case R.id.force_unencrypted:
                 return true;
+            case R.id.is_always_secure:
+                return true;
+
+            /*case R.id.action_explanation:
+                showExplanationDialog();
+                return true;*/
         }
 
         return super.onOptionsItemSelected(item);
