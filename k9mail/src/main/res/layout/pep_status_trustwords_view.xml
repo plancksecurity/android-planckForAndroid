@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/trustwordsView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:showIn="@layout/pep_recipient_row_with_trustwords">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/trustwords"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?android:attr/textColorPrimary"
+            android:fontFamily="sans-serif"
+            tools:text="IMPORTUNER METAPHOR ARNO DIABETES SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET"
+            android:textSize="24sp"
+            android:ellipsize="none"
+            android:breakStrategy="simple"
+            android:paddingTop="8dp"/>
+
+        <ImageView
+            android:id="@+id/change_language"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/wrongTrustwords"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="@dimen/button_minWidth"
+            android:padding="10dip"
+            android:stateListAnimator="@null"
+            android:text="@string/pep_wrong_trustwords"
+            android:theme="@style/PEpStyleButton.Red"/>
+
+        <Button
+            android:id="@+id/confirmTrustWords"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="@dimen/button_minWidth"
+            android:padding="10dip"
+            android:stateListAnimator="@null"
+            android:text="@string/pep_confirm_trustwords"
+            android:theme="@style/PEpStyleButton.Green"/>
+
+    </LinearLayout>
+</LinearLayout>

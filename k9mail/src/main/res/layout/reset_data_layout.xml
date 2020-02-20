@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/resetDataLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Reset all pep data for this communication partner:"/>
+
+    <Button
+        android:id="@+id/button_identity_key_reset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="@dimen/button_minWidth"
+        android:padding="10dip"
+        android:text="@string/reset"
+        android:theme="@style/PEpStyleButton.Grey"/>
+</LinearLayout>
