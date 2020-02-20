@@ -9,10 +9,9 @@ import foundation.pEp.jniadapter.Rating
 import java.util.*
 
 class PEpStatusRendererBuilder(
-        val accounts : List<Account>/*,
-        val onResetGreenClick : View.OnClickListener,
-        val onResetRedClick : View.OnClickListener ,
-        val onHandshakeClick : View.OnClickListener*/
+        accounts : List<Account>,
+        private val resetClickListener: ResetClickListener,
+        private val trustResetClickListener: TrustResetClickListener
 ) : RendererBuilder<PEpIdentity>() {
 
     init {
@@ -23,7 +22,6 @@ class PEpStatusRendererBuilder(
 
     private var addressesOnDevice: MutableList<String>? = null
 
-
     private fun initializeAddressesOnDevice(accounts: List<Account>) {
         addressesOnDevice = ArrayList(accounts.size)
         for (account in accounts) {
@@ -31,7 +29,6 @@ class PEpStatusRendererBuilder(
             addressesOnDevice!!.add(email)
         }
     }
-
 
     override fun getPrototypeClass(content: PEpIdentity): Class<*> {
         if(addressesOnDevice!!.contains(content.address)) {
@@ -53,15 +50,19 @@ class PEpStatusRendererBuilder(
 
     private fun getVideoRendererPrototypes(): List<Renderer<PEpIdentity>> {
         return listOf(
-                PEpStatusMyselfRenderer(),
-                PEpStatusMistrustRenderer(),
-                PEpStatusTrustedRenderer(),
-                PEpStatusSecureRenderer(),
-                PEpStatusUnsecureRenderer()
+                PEpStatusMyselfRenderer(resetClickListener),
+                PEpStatusMistrustRenderer(resetClickListener),
+                PEpStatusTrustedRenderer(resetClickListener, trustResetClickListener),
+                PEpStatusSecureRenderer(resetClickListener),
+                PEpStatusUnsecureRenderer(resetClickListener)
         )
     }
 
     interface ResetClickListener {
-        fun keyReset(position: Int)
+        fun keyReset(identity : PEpIdentity)
+    }
+
+    interface TrustResetClickListener {
+        fun stopTrusting(identity: PEpIdentity)
     }
 }

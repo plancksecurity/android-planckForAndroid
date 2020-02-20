@@ -156,7 +156,11 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         recipientsView.setLayoutManager(recipientsLayoutManager);
         //presenter.initializeAddressesOnDevice(preferences.getAccounts());
         //PEpStatusRenderer renderer111 = new PEpStatusRenderer(presenter.getAddressesOnDevice());
-        RendererBuilder<PEpIdentity> rendererBuilder = new PEpStatusRendererBuilder(preferences.getAccounts());
+        RendererBuilder<PEpIdentity> rendererBuilder =
+                new PEpStatusRendererBuilder(
+                        preferences.getAccounts(),
+                        getOnResetClickListener(),
+                        getOnTrustRessetClickListener());
         //Timber.e("the identities: " + pEpIdentities);
         ListAdapteeCollection<PEpIdentity> adapteeCollection = new ListAdapteeCollection<>(pEpIdentities);
         recipientsAdapter = new RVRendererAdapter<>(rendererBuilder, adapteeCollection);
@@ -175,8 +179,14 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
     }
 
-    private PEpIdentitiesAdapter.ContextActions getContextActions() {
-        return position -> presenter.resetpEpData(position);
+    @NonNull
+    private PEpStatusRendererBuilder.ResetClickListener getOnResetClickListener() {
+        return identity -> presenter.resetpEpData(identity);
+    }
+
+    @NonNull
+    private PEpStatusRendererBuilder.TrustResetClickListener getOnTrustRessetClickListener() {
+        return identity -> presenter.resetRecipientTrust(identity);
     }
 
     @NonNull
@@ -187,7 +197,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         };
     }
 
-    @NonNull
+    /*@NonNull
     private View.OnClickListener getOnResetRedClickListener() {
         return view -> new AlertDialog.Builder(view.getContext())
                 .setMessage(R.string.handshake_reset_dialog_message)
@@ -196,15 +206,15 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
             int position = ((Integer) view.getTag());
             presenter.resetRecipientTrust(position);
         }).setNegativeButton(R.string.cancel_action, null).show();
-    }
+    }*/
 
-    @NonNull
+    /*@NonNull
     private View.OnClickListener getOnResetGreenClickListener() {
         return view -> {
             int position = ((Integer) view.getTag());
             presenter.resetRecipientTrust(position);
         };
-    }
+    }*/
 
     @Override
     public void setupBackIntent(Rating rating) {

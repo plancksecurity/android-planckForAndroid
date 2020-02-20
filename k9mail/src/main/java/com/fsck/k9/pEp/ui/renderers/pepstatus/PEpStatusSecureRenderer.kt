@@ -6,15 +6,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import butterknife.Bind
 import butterknife.ButterKnife
-import com.fsck.k9.R
 import butterknife.OnClick
+import com.fsck.k9.R
+import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererBuilder
 
 
-
-class PEpStatusSecureRenderer : PEpStatusBaseRenderer() {
-
-    @Bind(R.id.button_identity_key_reset)
-    lateinit var resetDataButton: Button
+class PEpStatusSecureRenderer(resetClickListener: PEpStatusRendererBuilder.ResetClickListener)
+    : PEpStatusBaseRenderer(resetClickListener) {
 
     override fun inflate(inflater: LayoutInflater?, parent: ViewGroup?): View {
         val view : View = inflater!!.inflate(R.layout.pep_recipient_row_with_trustwords, parent, false)

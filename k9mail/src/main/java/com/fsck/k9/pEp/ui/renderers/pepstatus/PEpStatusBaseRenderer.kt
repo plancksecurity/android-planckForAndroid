@@ -1,11 +1,10 @@
 package com.fsck.k9.pEp.ui.renderers.pepstatus
 
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
+import androidx.annotation.Nullable
 import butterknife.Bind
-import butterknife.ButterKnife
+import butterknife.OnClick
 import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.helper.ContactPicture
@@ -16,12 +15,13 @@ import com.fsck.k9.mail.Address
 import com.fsck.k9.pEp.PePUIArtefactCache
 import com.fsck.k9.pEp.models.PEpIdentity
 import com.fsck.k9.pEp.ui.PEpContactBadge
+import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererBuilder
 import com.pedrogomez.renderers.Renderer
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Rating
 import timber.log.Timber
 
-abstract class PEpStatusBaseRenderer : Renderer<PEpIdentity>() {
+abstract class PEpStatusBaseRenderer(private val resetClickListener: PEpStatusRendererBuilder.ResetClickListener) : Renderer<PEpIdentity>() {
 
     @Bind(R.id.tvUsername)
     lateinit var identityUserName: TextView
@@ -37,11 +37,13 @@ abstract class PEpStatusBaseRenderer : Renderer<PEpIdentity>() {
     @Bind(R.id.status_badge)
     lateinit var badge: PEpContactBadge
 
+    @Nullable @Bind(R.id.button_identity_key_reset)
+    lateinit var resetDataButton: Button
+
     override fun render() {
         val identity: PEpIdentity = content
         renderRating(identity.rating)
-        renderBadge(identity.address, identity.rating)
-        //renderIdentity(identity)
+        renderBadge(identity)
     }
 
     private fun renderRating(rating: Rating) {
@@ -51,38 +53,25 @@ abstract class PEpStatusBaseRenderer : Renderer<PEpIdentity>() {
         Timber.e("==== rating text is ${PePUIArtefactCache.getInstance(context).getTitle(rating)}")
     }
 
-    protected fun renderBadge(address: String, rating: Rating) {
-        val realAddress = Address(address)
+    private fun renderBadge(identity: PEpIdentity) {
+        val realAddress = Address(identity.address, identity.username)
         if (K9.showContactPicture()) {
             Utility.setContactForBadge(badge, realAddress)
             val mContactsPictureLoader = ContactPicture.getContactPictureLoader(context)
             mContactsPictureLoader.loadContactPicture(realAddress, badge)
-            badge.setPepRating(rating, true)
+            badge.setPepRating(identity.rating, true)
         }
         val contacts = if (K9.showContactName()) Contacts.getInstance(context) else null
+        renderContact(realAddress, contacts)
+    }
+
+    private fun renderContact(realAddress: Address, contacts: Contacts?) {
         val partner = MessageHelper.toFriendly(realAddress, contacts)
         identityUserName.text = partner
     }
 
-
-
-    fun renderIdentity(identity: Identity) {
-
-
-
-        if (identity.username != null && identity.address != identity.username && !identity.username.isEmpty()) {
-            identityUserName.text = identity.username
-            if (identity.address != null) {
-                identityAdress.visibility = View.VISIBLE
-                identityAdress.text = identity.address
-            } else {
-                identityAdress.visibility = View.VISIBLE
-            }
-
-        } else {
-            identityUserName.visibility = View.GONE
-            identityAdress.visibility = View.VISIBLE
-            identityAdress.text = identity.address
-        }
+    @Nullable @OnClick(R.id.button_identity_key_reset)
+    fun onResetClicked() {
+        resetClickListener.keyReset(content)
     }
 }
