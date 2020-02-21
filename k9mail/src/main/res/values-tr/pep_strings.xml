@@ -5,11 +5,9 @@
     <string name="pEp_trustwords">p≡p Trustwords</string>
     <string name="pep_account_setup_generating_keys">Gizlilik Ayarı </string>
     <string name="pep_dialog_weaker_forward_warning_message">Siz, emniyetli bir mesajı emniyetsiz olarak iletmek üzeresiniz. Devam etmeyi seçerseniz, sizi ve iletişim ortaklarınızı riske atabilecek gizli bilgiler sızdırılabilir. Devam etmek istediğinize emin misiniz? </string>
-
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">İlerle</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">İptal</string>
     <string name="pep_dialog_confirm_forward_title">İletiyi onayla</string>
-
     <string name="pep_title_activity_privacy_status">Gizlilik Durumu</string>
     <string name="pep_extra_addresses">Ekstra anahtar kimlikleri:</string>
     <string name="pep_use_keyserver">Anahtarları anahtar sunucusunda ara</string>
@@ -17,7 +15,6 @@
     <string name="pep_subject_unprotected">Korunmasız mesaj konularını etkinleştir</string>
     <string name="pep_add_key_to_blacklist">Kara listeye bir anahtarı ekleyin</string>
     <string name="pep_remove_key_from_blacklist">Kara listeden bir anahtarı çıkarın</string>
-
     <string name="pep_confirm_trustwords">Güvenlik kelimelerini Onayla</string>
     <string name="pep_wrong_trustwords">Hatalı Güvenlik kelimeleri</string>
     <string name="pep_wrong_fingerprint">Yanlış parmak izi</string>
@@ -41,7 +38,6 @@
     <string name="pep_app_license">GNU Genel Kamu Lisansı v3 altında Lisanslı</string>
     <string name="pep_trust_server_description">Server tarafındaki e-postaları güvenli bir biçimde saklayın.</string>
     <string name="pep_account_privacy_protection_explanation">Bu hesap için gizlilik korumasını etkinleştir </string>
-
     <string name="key_list_title">Available keys</string>
     <string name="pep_add_device_ask_trustwords">You are about to add a device to your pEp device group. Confirm by successfully verifying the following Trustwords.</string>
     <string name="pep_device_group">p≡p Aygхt grubu</string>
@@ -53,7 +49,6 @@
     <string name="pep_enable_auto_download">Decrypt messages</string>
     <string name="pep_sync_enable_account">Synchronize this account</string>
     <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
-
     <string-array name="pep_title">
         <item>Bilinmeyen<!--pEpRatingUndefined--></item>
         <item>Deşifre edilemez<!--pEpRatingCannotDecrypt--></item>
@@ -69,7 +64,6 @@
         <item>Ooops: İç sorun<!--pEpRatingB0rken--></item>
         <item>Saldırı altında<!--pEpRatingUnderAttack--></item>
     </string-array>
-
     <string-array name="pep_explanation">
         <item>Bu mesajın emniyetli olup olmadığını belirlemek için yeterli bilgi bulunmamaktadır.<!--pEpRatingUndefined--></item>
         <item>Bu hesap için gizlilik korumasını etkinleştir.<!--pEpRatingCannotDecrypt--></item>
@@ -85,7 +79,6 @@
         <item><!--pEpRatingB0rken--></item>
         <item>Bu mesaj emniyetli değildir ve müdahale edilmiştir.<!--pEpRatingUnderAttack--></item>
     </string-array>
-
     <string-array name="pep_suggestion">
         <item>Lütfen gerekli bilgileri ekleyin.<!--pEpRatingUndefined--></item>
         <item>Bu mesaj size gönderilmiş ise lütfen gönderen kişiye anahtarın sizde olmadığını bildiriniz.<!--pEpRatingCannotDecrypt--></item>
@@ -101,6 +94,9 @@
         <item><!--pEpRatingB0rken--></item>
         <item>Bu mesajın içeriğini iletişim ortağınız ile ayrıca doğrulayın.<!--pEpRatingUnderAttack--></item>
     </string-array>
-    
     <string name="pep_forward_warning_description">Bir mesaj cevap veya ileti yoluyla güvenliğini kaybettiğinde uyarı mesajı göster.</string>
+    <string name="global_settings_title">Genel ayarlar</string>
+    <string name="pep_force_protected">Gizlilik korumasını etkinleştirir</string>
+    <string name="button_settings">Ayarlar</string>
+    <string name="action_continue">Devam</string>
 </resources>
