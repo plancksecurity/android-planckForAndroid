@@ -838,4 +838,13 @@
     <string name="fetching_attachment_dialog_message">Recuperant adjunt…</string>
     <!--=== Client certificates specific ==================================================================-->
     <!--Note: This references message_view_download_remainder-->
+    <string name="crypto_info_ok">D’acord</string>
+    <string name="account_settings_folder_notify_new_mail_mode_all">Tots</string>
+    <string name="account_settings_folder_notify_new_mail_mode_none">Cap</string>
+    <string name="folder_settings_folder_notify_mode_normal">Cap</string>
+    <string name="client_certificate_advanced_options">Advanced options</string>
+    <string name="crypto_settings_cancel">Cancel·lar</string>
+    <string name="recipient_cc">Cc</string>
+    <string name="recipient_to">A</string>
+    <string name="crypto_settings_ok">Continuar</string>
 </resources>
