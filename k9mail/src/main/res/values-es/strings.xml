@@ -1019,4 +1019,6 @@
     <string name="pep_menu_long_trustwords">Ver más</string>
     <string name="pep_menu_short_trustwords">Ver menos</string>
     <string name="app_authors">Los paseadores de perros K-9, p≡p Security SA</string>
+    <string name="openpgp_sign_only_disable">Desactivar</string>
+    <string name="openpgp_enabled_error_back">Atrás</string>
 </resources>
