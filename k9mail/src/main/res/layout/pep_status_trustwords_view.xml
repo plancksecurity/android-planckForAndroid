@@ -10,29 +10,40 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingRight="8dp"
+        android:layout_marginTop="16dp">
         <TextView
             android:id="@+id/trustwords"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:textColor="?android:attr/textColorPrimary"
             android:fontFamily="sans-serif"
             tools:text="IMPORTUNER METAPHOR ARNO DIABETES SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET"
-            android:textSize="24sp"
             android:ellipsize="none"
             android:breakStrategy="simple"
-            android:paddingTop="8dp"/>
+            android:paddingTop="8dp"
+            android:layout_marginRight="40dp"/>
 
         <ImageView
             android:id="@+id/change_language"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_language"/>
     </LinearLayout>
+    <ImageView
+        android:id="@+id/show_long_trustwords"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/selectable_message_background"
+        android:src="@drawable/ic_show_long_trustwords" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp">
 
         <Button
             android:id="@+id/wrongTrustwords"
@@ -52,7 +63,8 @@
             android:padding="10dip"
             android:stateListAnimator="@null"
             android:text="@string/pep_confirm_trustwords"
-            android:theme="@style/PEpStyleButton.Green"/>
+            android:theme="@style/PEpStyleButton.Green"
+            android:layout_marginLeft="16dp"/>
 
     </LinearLayout>
 </LinearLayout>
