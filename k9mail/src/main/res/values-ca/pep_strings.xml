@@ -2,13 +2,10 @@
 <resources>
     <string name="pep_reset_trust">Desconfia</string>
     <string name="pep_pgp_fingerprint">Empremta PGP</string>
-
     <string name="pep_dialog_weaker_forward_warning_message">Està a punt de re-enviar un missatge segur com a no segur. Si decideix continuar, informació confidencial podria ser filtrada posant-lo a vostè i les persones involucrades en aquesta comunicació en peril. Segur que desitja continuar?</string>
-
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Continuar</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancel·lar</string>
     <string name="pep_dialog_confirm_forward_title">Confirmar reenviament</string>
-
     <string name="pep_title_activity_privacy_status">Estat de privacitat</string>
     <string name="pep_extra_addresses">Extra key ids:</string>
     <string name="pep_use_keyserver">Consultar les claus al servidor de claus</string>
@@ -16,7 +13,6 @@
     <string name="pep_subject_unprotected">Deshabilitar protecció de l\'assumpte</string>
     <string name="pep_add_key_to_blacklist">Add a key to blacklist</string>
     <string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>
-
     <string name="pep_confirm_trustwords">Acceptar</string>
     <string name="pep_wrong_trustwords">Rebutjar</string>
     <string name="pep_wrong_fingerprint">Empremta incorrecte</string>
@@ -50,7 +46,6 @@
     <string name="crash_toast_text">Oops, something went wrong</string>
     <string name="advanced_options">Advanced options</string>
     <string name="basic_options">Basic options</string>
-    <string name="pep_enable_auto_download">Decrypt messages</string>
     <string name="pep_sync_enable_account">Sincronitza aquest compte</string>
     <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
     <string-array name="pep_title">
@@ -68,7 +63,6 @@
         <item>Ooops: Problema intern<!--pEpRatingB0rken--></item>
         <item>Falsificat<!--pEpRatingUnderAttack--></item>
     </string-array>
-
     <string-array name="pep_explanation">
         <item>No es disposa d\'informació suficient per determinar si la comunicació és segura.<!--pEpRatingUndefined--></item>
         <item>No s\'ha pogut desxifrar el missatge.<!--pEpRatingCannotDecrypt--></item>
@@ -84,7 +78,6 @@
         <item><!--pEpRatingB0rken--></item>
         <item>Aquest missatge no és segur i ha sigut manipulat.<!--pEpRatingUnderAttack--></item>
     </string-array>
-
     <string-array name="pep_suggestion">
         <item>Si us plau, introdueixi la informació necessària.<!--pEpRatingUndefined--></item>
         <item>Si ets el destinatari d\'aquest missatge, si us plau informa a la persona que envia el missatge que no disposes de la seva clau.<!--pEpRatingCannotDecrypt--></item>
@@ -100,7 +93,6 @@
         <item><!--pEpRatingB0rken--></item>
         <item>Verifiqui tant vostè com el seu company de comunicació el contingut del missatge.<!--pEpRatingUnderAttack--></item>
     </string-array>
-
     <string name="pep_forward_warning_description">Mostrar un avís quan es reenvii o respongui un missatge segur de forma insegura.</string>
     <string name="navigation_drawer_open">Obrir el panell de navegació</string>
     <string name="navigation_drawer_close">Tancar el panell de navegació</string>
@@ -117,7 +109,6 @@
     <string name="read_snackbar_permission_rationale">We need your permission to read the contacts stored on your mobile phone</string>
     <string name="read_snackbar_permission_permanently_denied">Denegant la lectura dels seus contactes podria produïr comportaments inesperats</string>
     <string name="read_permission_rationale_title">Llegint contactes</string>
-
     <string name="download_permission_first_explanation">Necesitem el seu permís per descarragar fitxers al seu dispositiu</string>
     <string name="add_fpr">Afegir emprempta</string>
     <string name="error_parsing_fingerprint">Empremta no valida!</string>
@@ -129,5 +120,4 @@
     <string name="action_continue">Continuar</string>
     <string name="battery_optimization_rationale_title">Desactivar l\'optimitzaciò de bateria</string>
     <string name="battery_optimiazation_explanation">Per a sincronitzar els seus missatges en segon pla necessitem desactivar l\'optimització de bateria</string>
-
 </resources>
