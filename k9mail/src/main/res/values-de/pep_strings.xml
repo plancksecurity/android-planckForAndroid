@@ -4,13 +4,10 @@
     <string name="pep_pgp_fingerprint">PGP-Fingerabdruck</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
     <string name="pep_account_setup_generating_keys">"Datenschutz wird eingerichtet "</string>
-
     <string name="pep_dialog_weaker_forward_warning_message">"Sie versuchen, eine sichere Nachricht ungesichert weiterzuleiten. Wenn Sie damit fortfahren, setzen Sie sich und Ihre Kommunikationspartner dem Risiko aus, dass Dritte Zugriff auf vertrauliche Informationen erhalten. Möchten Sie wirklich fortfahren? "</string>
-
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Fortfahren</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Abbrechen</string>
     <string name="pep_dialog_confirm_forward_title">Weiterleitung bestätigen</string>
-
     <string name="pep_title_activity_privacy_status">Datenschutzstatus</string>
     <string name="pep_extra_addresses">Zusätzliche Schlüsselkennungen:</string>
     <string name="pep_use_keyserver">Schlüssel auf Schlüsselserver suchen</string>
@@ -18,7 +15,6 @@
     <string name="pep_subject_unprotected">Betreff in Nachrichten nicht schützen</string>
     <string name="pep_add_key_to_blacklist">Schlüssel nicht mehr verwenden</string>
     <string name="pep_remove_key_from_blacklist">Schlüssel wieder verwenden</string>
-
     <string name="pep_confirm_trustwords">Bestätigen</string>
     <string name="pep_wrong_trustwords">Ablehnen</string>
     <string name="pep_wrong_fingerprint">Falscher Fingerabdruck</string>
@@ -53,7 +49,6 @@
     <string name="pep_enable_auto_download">Decrypt messages</string>
     <string name="pep_sync_enable_account">Dieses Konto synchronisieren</string>
     <string name="synchronize_these_accounts_between_my_devices">Diese Konten zwischen meinen Geräten synchronisieren</string>
-
     <string-array name="pep_title">
         <item>Unbekannt<!--pEpRatingUndefined--></item>
         <item>Entschlüsselung ist nicht möglich<!--pEpRatingCannotDecrypt--></item>
@@ -69,7 +64,6 @@
         <item>Ooops: Internes Problem<!--pEpRatingB0rken--></item>
         <item>Manipuliert<!--pEpRatingUnderAttack--></item>
     </string-array>
-
     <string-array name="pep_explanation">
         <item>Über diese Nachricht liegen nicht genügend Informationen vor, um überprüfen zu können, ob sie sicher übertragen wurde..<!--pEpRatingUndefined--></item>
         <item>Diese Nachricht kann nicht entschlüsselt werden.<!--pEpRatingCannotDecrypt--></item>
@@ -85,7 +79,6 @@
         <item><!--pEpRatingB0rken--></item>
         <item>Diese Nachricht ist nicht sicher und wurde manipuliert.<!--pEpRatingUnderAttack--></item>
     </string-array>
-
     <string-array name="pep_suggestion">
         <item>Bitte ergänzen Sie die notwendigen Informationen.<!--pEpRatingUndefined--></item>
         <item>Falls diese Nachricht für Sie verschlüsselt wurde, informieren Sie den Absender, dass Sie nicht im Besitz des notwendigen Schlüssels sind.<!--pEpRatingCannotDecrypt--></item>
@@ -101,9 +94,7 @@
         <item><!--pEpRatingB0rken--></item>
         <item>Überprüfen Sie den Inhalt dieser Nachricht zusammen mit Ihrem Kommunikationspartner.<!--pEpRatingUnderAttack--></item>
     </string-array>
-
     <string name="pep_forward_warning_description">Warnhinweis anzeigen, wenn die Datensicherheit einer Nachricht durch Antwort oder Weiterleitung verloren geht.</string>
-
     <string name="navigation_drawer_open">Seitenmenü öffnen</string>
     <string name="navigation_drawer_close">Seitenmenü schließen</string>
     <string name="pep_force_protected">Schutz einschalten</string>
@@ -122,7 +113,6 @@
     <string name="read_snackbar_permission_rationale">p≡p benötigt Ihre Erlaubnis, um die auf Ihrem Gerät gespeicherten Kontakte zu lesen</string>
     <string name="read_snackbar_permission_permanently_denied">Es kann zu unerwartetem Verhalten in der Anwendung führen, wenn Sie das Lesen der Kontakte nicht erlauben</string>
     <string name="read_permission_rationale_title">Lesezugriff auf Kontakte</string>
-
     <string name="download_permission_first_explanation">p≡p benötigt Ihre Erlaubnis, um Dateien auf Ihr Gerät herunterzuladen</string>
     <string name="download_snackbar_permission_rationale">p≡p benötigt Ihre Erlaubnis, um Dateien auf Ihr Gerät herunterzuladen</string>
     <string name="download_snackbar_permission_permanently_denied">Es kann zu unerwartetem Verhalten in der Anwendung führen, wenn Sie das Herunterladen von Dateien nicht erlauben</string>
@@ -139,5 +129,10 @@
     <string name="action_continue">Weiter</string>
     <string name="battery_optimization_rationale_title">Energiesparmodus deaktivieren</string>
     <string name="battery_optimiazation_explanation">Um Ihre Nachrichten im Hintergrund synchronisieren zu können, muss der Energiesparmodus deaktiviert werden</string>
-
+    <string name="key_reset_own_identity_feedback">Das Konto wurde zurückgesetzt</string>
+    <string name="pep_key_reset_all_own_ids_summary">Alle Konten zurücksetzen</string>
+    <string name="key_reset_identity_feedback">Der p≡p-Status dieses Kommunikationspartners wurde zurückgesetzt.</string>
+    <string name="reset">Zurücksetzen</string>
+    <string name="nnf_name">Name</string>
+    <string name="pep_sync">p≡p Synchronisierung</string>
 </resources>
