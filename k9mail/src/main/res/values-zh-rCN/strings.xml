@@ -854,4 +854,5 @@
     <string name="crypto_settings_cancel">取消</string>
     <string name="recipient_to">至</string>
     <string name="crypto_info_ok">好</string>
+    <string name="recipient_cc">抄送</string>
 </resources>
