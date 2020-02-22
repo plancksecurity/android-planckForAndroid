@@ -11,7 +11,8 @@ import java.util.*
 class PEpStatusRendererBuilder(
         accounts : List<Account>,
         private val resetClickListener: ResetClickListener,
-        private val trustResetClickListener: TrustResetClickListener
+        private val trustResetClickListener: TrustResetClickListener,
+        private val myself: String
 ) : RendererBuilder<PEpIdentity>() {
 
     init {
@@ -53,7 +54,10 @@ class PEpStatusRendererBuilder(
                 PEpStatusMyselfRenderer(resetClickListener),
                 PEpStatusMistrustRenderer(resetClickListener),
                 PEpStatusTrustedRenderer(resetClickListener, trustResetClickListener),
-                PEpStatusSecureRenderer(resetClickListener),
+                PEpStatusSecureRenderer(
+                        resetClickListener,
+                        myself
+                        ),
                 PEpStatusUnsecureRenderer(resetClickListener)
         )
     }

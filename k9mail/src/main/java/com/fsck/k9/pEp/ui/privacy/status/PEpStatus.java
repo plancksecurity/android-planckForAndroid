@@ -23,7 +23,6 @@ import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.models.PEpIdentity;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
-import com.fsck.k9.pEp.ui.adapters.PEpIdentitiesAdapter;
 
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.pedrogomez.renderers.ListAdapteeCollection;
@@ -38,7 +37,6 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
@@ -160,7 +158,9 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
                 new PEpStatusRendererBuilder(
                         preferences.getAccounts(),
                         getOnResetClickListener(),
-                        getOnTrustRessetClickListener());
+                        getOnTrustRessetClickListener(),
+                        myself
+                );
         //Timber.e("the identities: " + pEpIdentities);
         ListAdapteeCollection<PEpIdentity> adapteeCollection = new ListAdapteeCollection<>(pEpIdentities);
         recipientsAdapter = new RVRendererAdapter<>(rendererBuilder, adapteeCollection);
@@ -195,6 +195,11 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
             int partnerPosition = ((Integer) v.getTag());
             PEpTrustwords.actionRequestHandshake(PEpStatus.this, myself, partnerPosition);
         };
+    }
+
+    @NonNull
+    private PEpStatusRendererBuilder.TrustWordsLoadStarter getTrustwordsLoadStarter() {
+        return identity -> presenter.loadTrustwords(identity);
     }
 
     /*@NonNull
