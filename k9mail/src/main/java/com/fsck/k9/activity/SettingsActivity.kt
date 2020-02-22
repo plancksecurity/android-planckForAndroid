@@ -500,8 +500,12 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             DIALOG_REMOVE_ACCOUNT -> {
                 return if (selectedContextAccount == null) {
                     null
-                } else ConfirmationDialog.create(this, id, R.string.account_delete_dlg_title, getString(R.string.account_delete_dlg_instructions_fmt,
-                        selectedContextAccount!!.description), R.string.okay_action, R.string.cancel_action, this@SettingsActivity::deleteAccountWork)
+                } else ConfirmationDialog.create(
+                        this, id, R.string.account_delete_dlg_title,
+                        getString(R.string.account_delete_dlg_instructions_fmt,
+                        selectedContextAccount!!.description),
+                        R.string.okay_action,
+                        R.string.cancel_action, this@SettingsActivity::deleteAccountWork)
 
             }
             DIALOG_CLEAR_ACCOUNT -> {
@@ -844,7 +848,11 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     }
 
 
-    internal inner class AccountListAdapter(accounts: List<BaseAccount>, private val onFolderClickListener: OnFolderClickListener, private val onBaseAccountClickListener: OnBaseAccountClickListener) : ArrayAdapter<BaseAccount>(this@SettingsActivity, 0, accounts) {
+    internal inner class AccountListAdapter(
+            accounts: List<BaseAccount>,
+            private val onFolderClickListener: OnFolderClickListener,
+            private val onBaseAccountClickListener: OnBaseAccountClickListener
+    ) : ArrayAdapter<BaseAccount>(this@SettingsActivity, 0, accounts) {
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val account = getItem(position)
@@ -905,12 +913,16 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 holder.newMessageCount!!.text = String.format("%d", unreadMessageCount)
 
                 holder.flaggedMessageCount!!.text = String.format("%d", stats.flaggedMessageCount)
-                holder.flaggedMessageCountWrapper!!.visibility = if (K9.messageListStars() && stats.flaggedMessageCount > 0) View.VISIBLE else View.GONE
+                holder.flaggedMessageCountWrapper!!.visibility = if (K9.messageListStars() && stats.flaggedMessageCount > 0) {
+                    View.VISIBLE
+                } else View.GONE
 
                 holder.flaggedMessageCountWrapper!!.setOnClickListener(createFlaggedSearchListener(account))
                 holder.newMessageCountWrapper!!.setOnClickListener(createUnreadSearchListener(account))
 
-                holder.activeIcons!!.setOnClickListener { FeedbackTools.showShortFeedback(accountsList, getString(R.string.tap_hint)) }
+                holder.activeIcons!!.setOnClickListener {
+                    FeedbackTools.showShortFeedback(accountsList, getString(R.string.tap_hint))
+                }
 
             } else {
                 holder.newMessageCountWrapper!!.visibility = View.GONE
