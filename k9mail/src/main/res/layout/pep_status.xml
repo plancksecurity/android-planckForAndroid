@@ -16,4 +16,14 @@
         android:scrollbars="vertical"
         android:visibility="invisible"
         tools:visibility="visible"/>
+
+    <TextView
+        android:id="@+id/its_own_messageTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:text="This is an own message, no communication partner involved."
+        android:layout_margin="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+
 </LinearLayout>

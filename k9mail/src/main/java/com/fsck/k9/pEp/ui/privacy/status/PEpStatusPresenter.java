@@ -19,6 +19,7 @@ import com.fsck.k9.pEp.ui.SimpleMessageLoaderHelper;
 
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
+import timber.log.Timber;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,7 +65,13 @@ public class PEpStatusPresenter implements Presenter {
     void loadRecipients() {
         List<Identity> recipients = cache.getRecipients();
         identities = pEpIdentityMapper.mapRecipients(recipients);
-        view.setupRecipients(identities);
+
+        if(!identities.isEmpty()) {
+            view.setupRecipients(identities);
+        }
+        else {
+            view.showItsOnlyOwnMsg();
+        }
     }
 
     void resetRecipientTrust(Identity id) {

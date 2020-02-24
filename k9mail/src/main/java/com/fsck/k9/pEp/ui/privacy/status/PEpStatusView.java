@@ -32,4 +32,6 @@ public interface PEpStatusView {
     void showUndoMistrust(String username);
 
     void showMistrustFeedback(String username);
+
+    void showItsOnlyOwnMsg();
 }

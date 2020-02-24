@@ -59,6 +59,9 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     @Bind(R.id.my_recycler_view)
     RecyclerView recipientsView;
 
+    @Bind(R.id.its_own_messageTV)
+    TextView itsOwnMessageTV;
+
 
     //PEpIdentitiesAdapter recipientsAdapter;
     RecyclerView.LayoutManager recipientsLayoutManager;
@@ -381,5 +384,11 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(RATING, pEpRating);
+    }
+
+    @Override
+    public void showItsOnlyOwnMsg() {
+        recipientsView.setVisibility(View.GONE);
+        itsOwnMessageTV.setVisibility(View.VISIBLE);
     }
 }
