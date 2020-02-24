@@ -1031,7 +1031,7 @@
     <string name="openpgp_description_text3">Šifrovanie sa zobrazí iba v prípade, že ho podporujú všetci príjemcovia a predtým vám museli poslať e-mail.</string>
     <string name="openpgp_enabled_error_disable">Zakázať šifrovanie</string>
     <string name="openpgp_encryption">OpenPGP šifrovanie</string>
-    <string name="dialog_openkeychain_info_text">"K-9  Mail vyžaduje OpenKeychain na šifrovanie end-to-end."</string>
+    <string name="dialog_openkeychain_info_text">K-9 Mail vyžaduje OpenKeychain na šifrovanie end-to-end.</string>
     <string name="toast_account_not_found">Interná chyba: Neplatný účet!</string>
     <string name="ac_transfer_msg_body">Táto správa obsahuje všetky informácie o bezpečnom prenose nastavení automatického šifrovania spolu s tajným kľúčom z pôvodného zariadenia. Ak chcete nastaviť svoje nové zariadenie na automatické šifrovanie, postupujte podľa pokynov, ktoré by malo nové zariadenie predložiť. Túto správu si môžete ponechať a použiť ju ako zálohu tajného kľúča. Ak to chcete urobiť, mali by ste si zapísať heslo a bezpečne ho uložiť.</string>
     <string name="status_poll_and_push_disabled">Polling and pushing disabled</string>
@@ -1060,8 +1060,8 @@
     <string name="openpgp_description_text2">Kliknutím na túto ikonu prepnete šifrovanie.</string>
     <string name="openpgp_enabled_error_gotit">Mám to</string>
     <string name="openpgp_enabled_error_back">späť</string>
-    <string name="account_settings_crypto_prefer_encrypt">Autocrypt mutual mode</string>
-    <string name="dialog_autocrypt_mutual_title">Autocrypt mutual mode</string>
+    <string name="account_settings_crypto_prefer_encrypt">Autocrypt vzájomný režim</string>
+    <string name="dialog_autocrypt_mutual_title">Autocrypt vzájomný režim</string>
     <string name="dialog_autocrypt_mutual_description_1">Správy sa zvyčajne šifrujú podľa výberu alebo pri odpovedi na šifrovanú správu.</string>
     <string name="dialog_autocrypt_mutual_description_2">Ak odosielateľ aj príjemca povolia vzájomný režim, v predvolenom nastavení bude šifrovanie povolené.</string>
     <string name="dialog_autocrypt_mutual_learn_more">=== App-specific strings =============================================================</string>
@@ -1070,9 +1070,9 @@
     <string name="dialog_openkeychain_info_install">Inštalovať</string>
     <string name="encrypted_subject">Šifrovaná správa</string>
     <string name="toast_openpgp_provider_error">Chyba pri pripájaní k %s!</string>
-    <string name="ac_transfer_setting_title">Poslať správu o automatickom šifrovaní</string>
+    <string name="ac_transfer_setting_title">Poslať nastavovaciu správu Autocryptu</string>
     <string name="ac_transfer_setting_summary">Bezpečne zdieľajte kompletné nastavenie s ostatnými zariadeniami</string>
-    <string name="ac_transfer_title">Správa o automatickom šifrovaní</string>
+    <string name="ac_transfer_title">Nastavovacia správa Autocryptu</string>
     <string name="ac_transfer_intro">Správa o automatickom šifrovaní bezpečne zdieľa vaše nastavenie medzi ostatnými zariadeniami.</string>
     <string name="ac_transfer_button_send">Poslať nastavovaciu správu</string>
     <string name="ac_transfer_will_be_sent">Správa sa odošle na vašu adresu:</string>
@@ -1080,7 +1080,7 @@
     <string name="ac_transfer_sending_to">Posiela sa správa:</string>
     <string name="ac_transfer_finish">Na dokončenie otvorte správu na druhom zariadení a zadajte inštalačný kód.</string>
     <string name="ac_transfer_show_code">Zobraziť inštalačný kód</string>
-    <string name="ac_transfer_msg_subject">Správa o automatickom šifrovaní</string>
+    <string name="ac_transfer_msg_subject">Nastavovacia správa Autocryptu</string>
     <string name="ac_transfer_error_send">Pri odosielaní správy došlo k chybe. Skontrolujte sieťové pripojenie a konfiguráciu servera odchádzajúcich serverov.</string>
     <string name="switch_on">na</string>
     <string name="switch_off">vypnúť</string>
