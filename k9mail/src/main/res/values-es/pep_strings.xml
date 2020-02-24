@@ -115,7 +115,7 @@
     <string name="button_settings">Configuración</string>
     <string name="read_snackbar_permission_rationale">Necesitamos tu permiso para leer los contactos almacenados en tu móvil</string>
     <string name="read_snackbar_permission_permanently_denied">No permitir la lectura de contactos puede provocar que la app se comporte de manera inesperada</string>
-    <string name="read_permission_rationale_title">"Leer  contactos"</string>
+    <string name="read_permission_rationale_title">Leer contactos</string>
     <string name="download_permission_first_explanation">Necesitamos tu permiso para descargar archivos</string>
     <string name="download_snackbar_permission_rationale">Necesitamos tu permiso para descargar archivos</string>
     <string name="download_snackbar_permission_permanently_denied">No permitir la descarga de archivos puede provocar comportamientos inesperados</string>
