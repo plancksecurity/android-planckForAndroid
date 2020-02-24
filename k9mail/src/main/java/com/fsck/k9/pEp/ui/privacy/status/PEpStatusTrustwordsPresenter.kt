@@ -16,7 +16,8 @@ class PEpStatusTrustwordsPresenter(
 
     private val myself: Identity = PEpUtils.createIdentity(Address(myselfAddress), context)
     private val pep: PEpProvider = (context.applicationContext as K9).getpEpProvider()
-    private var areTrustwordsShort: Boolean = true
+    var areTrustwordsShort: Boolean = true
+        private set
     private var currentLanguage: String = getLanguageForTrustwords()
     private lateinit var localesMap: Map<String, String>
 
@@ -44,11 +45,15 @@ class PEpStatusTrustwordsPresenter(
     }
 
     fun loadTrustwords(partner: Identity) {
+        trustwordsView.enableButtons(false)
         retrieveTrustwords(partner, null, null)
     }
 
     fun changeTrustwordsSize(partner: Identity, areShort: Boolean) {
-        retrieveTrustwords(partner, areShort, null)
+        if(areShort != areTrustwordsShort) {
+            trustwordsView.enableButtons(false)
+            retrieveTrustwords(partner, areShort, null)
+        }
     }
 
     fun changeTrustwordsLanguage(partner: Identity, languageKey: String) {
@@ -75,19 +80,21 @@ class PEpStatusTrustwordsPresenter(
         val fullTrustwords = handshakeData.fullTrustwords
         val shortTrustwords = handshakeData.shortTrustwords
         if (areTrustwordsShort) {
-            trustwordsView.setTrustwords(shortTrustwords)
+            trustwordsView.setShortTrustwords(shortTrustwords)
 
         } else {
-            trustwordsView.setTrustwords(fullTrustwords)
+            trustwordsView.setLongTrustwords(fullTrustwords)
         }
     }
 
     fun rejectTrustwords(partner: Identity) {
+        trustwordsView.enableButtons(false)
         pep.keyMistrusted(partner)
         pep.getRating(partner)
     }
 
     fun confirmTrustwords(partner: Identity) {
+        trustwordsView.enableButtons(false)
         var newpartner = partner
         if (partner.user_id == null || partner.user_id.isEmpty()) {
             val tempFpr = partner.fpr
@@ -98,8 +105,10 @@ class PEpStatusTrustwordsPresenter(
     }
 
     interface PEpStatusTrustwordsView {
-        fun setTrustwords(newTrustwords: String)
+        fun setLongTrustwords(newTrustwords: String)
+        fun setShortTrustwords(newTrustwords: String)
         fun reportError(errorMessage: String?)
+        fun enableButtons(enabled: Boolean)
     }
 
 }

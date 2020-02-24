@@ -33,9 +33,6 @@ class PEpStatusSecureRenderer(
     @Bind(R.id.change_language)
     lateinit var changeLanguageImage: ImageView
 
-    @Bind(R.id.show_long_trustwords)
-    lateinit var showFullTrustwordsButton: ImageView
-
     @Bind(R.id.wrongTrustwords)
     lateinit var rejectTrustwordsButton: Button
 
@@ -60,8 +57,14 @@ class PEpStatusSecureRenderer(
     override fun setUpView(rootView: View?) {
         trustwordsPresenter = PEpStatusTrustwordsPresenter(myself,context,
                 object : PEpStatusTrustwordsPresenter.PEpStatusTrustwordsView {
-                    override fun setTrustwords(newTrustwords: String) {
+
+                    override fun setLongTrustwords(newTrustwords: String) {
                         trustwordsTv.text = newTrustwords
+                        enableButtons(true)
+                    }
+
+                    override fun setShortTrustwords(newTrustwords: String) {
+                        trustwordsTv.text = context.getString(R.string.ellipsized_text, newTrustwords)
                         enableButtons(true)
                     }
 
@@ -70,26 +73,26 @@ class PEpStatusSecureRenderer(
                         FeedbackTools.showShortFeedback(rootView, errorMessage)
                     }
 
+                    override fun enableButtons(enabled: Boolean) {
+                        rejectTrustwordsButton.isEnabled = enabled
+                        confirmTrustwordsButton.isEnabled = enabled
+                    }
+
                 })
     }
 
     private fun doLoadTrustWords(identity: PEpIdentity) {
-        enableButtons(false)
         trustwordsPresenter.loadTrustwords(identity)
     }
 
-    @OnClick(R.id.show_long_trustwords)
+    @OnClick(R.id.trustwords)
     fun doShowFullTrustwords() {
-        showFullTrustwordsButton.visibility = View.GONE
-        enableButtons(false)
         trustwordsPresenter.changeTrustwordsSize(content, false)
     }
 
 
     @OnLongClick(R.id.trustwords)
     fun doShowShortTrustwords() : Boolean {
-        showFullTrustwordsButton.visibility = View.VISIBLE
-        enableButtons(false)
         trustwordsPresenter.changeTrustwordsSize(content, true)
         return true
     }
@@ -101,21 +104,14 @@ class PEpStatusSecureRenderer(
 
     @OnClick(R.id.wrongTrustwords)
     fun onRejectTrustwordsClicked() {
-        enableButtons(false)
         trustwordsPresenter.rejectTrustwords(content)
         handshakeResultListener.onHandshakeResult(content, false)
     }
 
     @OnClick(R.id.confirmTrustWords)
     fun onConfirmTrustwordsClicked() {
-        enableButtons(false)
         trustwordsPresenter.confirmTrustwords(content)
         handshakeResultListener.onHandshakeResult(content, true)
-    }
-
-    private fun enableButtons(b: Boolean) {
-        rejectTrustwordsButton.isEnabled = b
-        confirmTrustwordsButton.isEnabled = b
     }
 
     private fun showLanguageSelectionPopup(v: View) {

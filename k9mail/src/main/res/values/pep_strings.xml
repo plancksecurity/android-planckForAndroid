@@ -242,5 +242,6 @@
     <string name="pep_key_reset_own_id_warning">This action will reset your account. \n Are you sure you want to reset?</string>
 
     <string name="pep_key_reset_own_id_warning_title">Reset %s account</string>
+    <string name="ellipsized_text" translatable="false">%s  …</string>
 
 </resources>
