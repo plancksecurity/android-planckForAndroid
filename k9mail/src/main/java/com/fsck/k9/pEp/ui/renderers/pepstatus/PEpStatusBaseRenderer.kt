@@ -49,7 +49,7 @@ abstract class PEpStatusBaseRenderer(private val resetClickListener: PEpStatusRe
     private fun renderRating(rating: Rating) {
         val artefactCache = PePUIArtefactCache.getInstance(context)
         ratingStatusTV.text = artefactCache.getTitle(rating)
-        statusExplanationTV.text = artefactCache.getExplanation(rating)
+        statusExplanationTV.text = artefactCache.getSuggestion(rating)
         Timber.e("==== rating text is ${PePUIArtefactCache.getInstance(context).getTitle(rating)}")
     }
 
