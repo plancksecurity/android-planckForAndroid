@@ -1,7 +1,6 @@
 package com.fsck.k9.pEp.ui.privacy.status
 
 import com.fsck.k9.Account
-import com.fsck.k9.Identity
 import com.fsck.k9.pEp.models.PEpIdentity
 import com.fsck.k9.pEp.ui.renderers.pepstatus.*
 import com.pedrogomez.renderers.Renderer
@@ -34,9 +33,6 @@ class PEpStatusRendererBuilder(
     }
 
     override fun getPrototypeClass(content: PEpIdentity): Class<*> {
-        if(addressesOnDevice!!.contains(content.address)) {
-            return PEpStatusMyselfRenderer::class.java
-        }
         val rating = content.rating
         var prototypeClass : Class<*> = PEpStatusUnsecureRenderer::class.java
         if (rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value) {
@@ -53,7 +49,6 @@ class PEpStatusRendererBuilder(
 
     private fun getVideoRendererPrototypes(): List<Renderer<PEpIdentity>> {
         return listOf(
-                PEpStatusMyselfRenderer(resetClickListener),
                 PEpStatusMistrustRenderer(resetClickListener),
                 PEpStatusTrustedRenderer(resetClickListener, trustResetClickListener),
                 PEpStatusSecureRenderer(

@@ -442,10 +442,9 @@ public class PEpUtils {
             }
         });
 
-        boolean addMyself = false;
         for (int i = 0; i < recipients.size(); i++) {
             Identity identity = recipients.get(i);
-            if (addMyself || !identity.address.equalsIgnoreCase(account.getEmail())) {
+            if (!identity.address.equalsIgnoreCase(account.getEmail())) {
                 if (identities.size() == 0) {
                     identities.add(identity);
                 } else {
@@ -455,7 +454,6 @@ public class PEpUtils {
                     }
                 }
             }
-            else addMyself = true;
         }
         return identities;
     }
