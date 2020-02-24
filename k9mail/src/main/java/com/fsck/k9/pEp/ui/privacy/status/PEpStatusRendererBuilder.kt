@@ -32,14 +32,15 @@ class PEpStatusRendererBuilder(
         }
     }
 
+    // 24/02/2020: Since values for red color are never returned from engine, we do not need a renderer for red communication channels.
     override fun getPrototypeClass(content: PEpIdentity): Class<*> {
         val rating = content.rating
         var prototypeClass : Class<*> = PEpStatusUnsecureRenderer::class.java
         if (rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value) {
             prototypeClass = PEpStatusUnsecureRenderer::class.java
-        } else if (rating.value == Rating.pEpRatingMistrust.value) {
+        } /*else if (rating.value == Rating.pEpRatingMistrust.value) {
             prototypeClass = PEpStatusMistrustRenderer::class.java
-        } else if (rating.value >= Rating.pEpRatingTrusted.value) {
+        }*/ else if (rating.value >= Rating.pEpRatingTrusted.value) {
             prototypeClass = PEpStatusTrustedRenderer::class.java
         } else if (rating.value == Rating.pEpRatingReliable.value) {
             prototypeClass = PEpStatusSecureRenderer::class.java
@@ -49,7 +50,7 @@ class PEpStatusRendererBuilder(
 
     private fun getVideoRendererPrototypes(): List<Renderer<PEpIdentity>> {
         return listOf(
-                PEpStatusMistrustRenderer(resetClickListener),
+                //PEpStatusMistrustRenderer(resetClickListener),
                 PEpStatusTrustedRenderer(resetClickListener, trustResetClickListener),
                 PEpStatusSecureRenderer(
                         resetClickListener,
