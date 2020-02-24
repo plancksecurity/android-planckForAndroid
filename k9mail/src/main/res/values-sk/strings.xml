@@ -1035,7 +1035,7 @@
     <string name="toast_account_not_found">Interná chyba: Neplatný účet!</string>
     <string name="ac_transfer_msg_body">Táto správa obsahuje všetky informácie o bezpečnom prenose nastavení automatického šifrovania spolu s tajným kľúčom z pôvodného zariadenia. Ak chcete nastaviť svoje nové zariadenie na automatické šifrovanie, postupujte podľa pokynov, ktoré by malo nové zariadenie predložiť. Túto správu si môžete ponechať a použiť ju ako zálohu tajného kľúča. Ak to chcete urobiť, mali by ste si zapísať heslo a bezpečne ho uložiť.</string>
     <string name="status_poll_and_push_disabled">Polling and pushing disabled</string>
-    <string name="debug_delete_local_body">Telo ladenia / vymazania</string>
+    <string name="debug_delete_local_body">Ladenie / vymazanie tela správy</string>
     <string name="messageview_crypto_warning_show_anyway">Zobraziť správu napriek tomu</string>
     <string name="messageview_crypto_warning_unsigned">=== App-specific strings =============================================================</string>
     <string name="account_settings_crypto_hide_sign_only">Skryť nezašifrované podpisy</string>
