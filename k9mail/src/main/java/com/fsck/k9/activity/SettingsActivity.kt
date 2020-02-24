@@ -338,7 +338,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         TOP, MIDDLE, BOTTOM
     }
 
-    private fun accountLocation(account: BaseAccount): EnumSet<ACCOUNT_LOCATION> {
+    private fun accountLocation(account: BaseAccount?): EnumSet<ACCOUNT_LOCATION> {
         val accountLocation = EnumSet.of(ACCOUNT_LOCATION.MIDDLE)
         if (accounts.size > 0) {
             if (accounts[0] == account) {
