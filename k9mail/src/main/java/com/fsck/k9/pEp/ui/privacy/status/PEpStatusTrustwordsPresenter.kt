@@ -82,6 +82,21 @@ class PEpStatusTrustwordsPresenter(
         }
     }
 
+    fun rejectTrustwords(partner: Identity) {
+        pep.keyMistrusted(partner)
+        pep.getRating(partner)
+    }
+
+    fun confirmTrustwords(partner: Identity) {
+        var newpartner = partner
+        if (partner.user_id == null || partner.user_id.isEmpty()) {
+            val tempFpr = partner.fpr
+            newpartner = pep.updateIdentity(partner)
+            newpartner.fpr = tempFpr
+        }
+        pep.trustPersonaKey(newpartner)
+    }
+
     interface PEpStatusTrustwordsView {
         fun setTrustwords(newTrustwords: String)
         fun reportError(errorMessage: String?)

@@ -20,6 +20,7 @@ import com.fsck.k9.pEp.ui.tools.FeedbackTools
 
 class PEpStatusSecureRenderer(
         resetClickListener: PEpStatusRendererBuilder.ResetClickListener,
+        private val handshakeResultListener: PEpStatusRendererBuilder.HandshakeResultListener,
         private val myself: String
 )
     : PEpStatusBaseRenderer(resetClickListener) {
@@ -79,7 +80,7 @@ class PEpStatusSecureRenderer(
 
     @OnClick(R.id.show_long_trustwords)
     fun doShowFullTrustwords() {
-        showFullTrustwordsButton.setVisibility(View.GONE)
+        showFullTrustwordsButton.visibility = View.GONE
         enableButtons(false)
         trustwordsPresenter.changeTrustwordsSize(content, false)
     }
@@ -87,7 +88,7 @@ class PEpStatusSecureRenderer(
 
     @OnLongClick(R.id.trustwords)
     fun doShowShortTrustwords() : Boolean {
-        showFullTrustwordsButton.setVisibility(View.VISIBLE)
+        showFullTrustwordsButton.visibility = View.VISIBLE
         enableButtons(false)
         trustwordsPresenter.changeTrustwordsSize(content, true)
         return true
@@ -96,6 +97,20 @@ class PEpStatusSecureRenderer(
     @OnClick(R.id.change_language)
     fun onChangeLanguageClicked() {
         showLanguageSelectionPopup(changeLanguageImage)
+    }
+
+    @OnClick(R.id.wrongTrustwords)
+    fun onRejectTrustwordsClicked() {
+        enableButtons(false)
+        trustwordsPresenter.rejectTrustwords(content)
+        handshakeResultListener.onHandshakeResult(content, false)
+    }
+
+    @OnClick(R.id.confirmTrustWords)
+    fun onConfirmTrustwordsClicked() {
+        enableButtons(false)
+        trustwordsPresenter.confirmTrustwords(content)
+        handshakeResultListener.onHandshakeResult(content, true)
     }
 
     private fun enableButtons(b: Boolean) {

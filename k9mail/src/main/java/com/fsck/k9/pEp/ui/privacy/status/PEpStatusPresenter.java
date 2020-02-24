@@ -167,6 +167,16 @@ public class PEpStatusPresenter implements Presenter {
         showUndoAction(trustAction);
     }
 
+    void onHandshakeResult(Identity id, boolean trust) {
+        latestHandshakeId = id;
+        updateIdentities();
+        refreshRating();
+        if(trust) showUndoAction(PEpProvider.TrustAction.TRUST);
+        else {
+            view.showMistrustFeedback(latestHandshakeId.username);
+        }
+    }
+
     private void updateIdentities() {
         ArrayList<Identity> recipients = cache.getRecipients();
         identities = pEpIdentityMapper.mapRecipients(recipients);

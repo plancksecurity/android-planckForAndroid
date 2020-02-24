@@ -30,4 +30,6 @@ public interface PEpStatusView {
     void showUndoTrust(String username);
 
     void showUndoMistrust(String username);
+
+    void showMistrustFeedback(String username);
 }

@@ -1,6 +1,7 @@
 package com.fsck.k9.pEp.ui.privacy.status
 
 import com.fsck.k9.Account
+import com.fsck.k9.Identity
 import com.fsck.k9.pEp.models.PEpIdentity
 import com.fsck.k9.pEp.ui.renderers.pepstatus.*
 import com.pedrogomez.renderers.Renderer
@@ -12,6 +13,7 @@ class PEpStatusRendererBuilder(
         accounts : List<Account>,
         private val resetClickListener: ResetClickListener,
         private val trustResetClickListener: TrustResetClickListener,
+        private val handshakeResultListener: HandshakeResultListener,
         private val myself: String
 ) : RendererBuilder<PEpIdentity>() {
 
@@ -56,6 +58,7 @@ class PEpStatusRendererBuilder(
                 PEpStatusTrustedRenderer(resetClickListener, trustResetClickListener),
                 PEpStatusSecureRenderer(
                         resetClickListener,
+                        handshakeResultListener,
                         myself
                         ),
                 PEpStatusUnsecureRenderer(resetClickListener)
@@ -68,5 +71,9 @@ class PEpStatusRendererBuilder(
 
     interface TrustResetClickListener {
         fun stopTrusting(identity: PEpIdentity)
+    }
+
+    interface HandshakeResultListener {
+        fun onHandshakeResult(id: PEpIdentity, trust: Boolean)
     }
 }

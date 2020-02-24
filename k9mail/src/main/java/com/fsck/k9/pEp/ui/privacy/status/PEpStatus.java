@@ -159,6 +159,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
                         preferences.getAccounts(),
                         getOnResetClickListener(),
                         getOnTrustRessetClickListener(),
+                        getOnHandshakeResultListener(),
                         myself
                 );
         //Timber.e("the identities: " + pEpIdentities);
@@ -198,8 +199,8 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     }
 
     @NonNull
-    private PEpStatusRendererBuilder.TrustWordsLoadStarter getTrustwordsLoadStarter() {
-        return identity -> presenter.loadTrustwords(identity);
+    private PEpStatusRendererBuilder.HandshakeResultListener getOnHandshakeResultListener() {
+        return (identity, trust) -> presenter.onHandshakeResult(identity, trust);
     }
 
     /*@NonNull
@@ -277,6 +278,11 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     @Override
     public void showUndoMistrust(String username) {
         showUndo(getString(R.string.mistrust_identity_feedback, username));
+    }
+
+    @Override
+    public void showMistrustFeedback(String username) {
+        FeedbackTools.showLongFeedback(getRootView(), getString(R.string.mistrust_identity_feedback, username));
     }
 
     public void showUndo(String feedback) {
