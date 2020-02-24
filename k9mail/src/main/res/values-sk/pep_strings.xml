@@ -63,7 +63,7 @@
     <string name="pep_partner_format"/>
     <string name="pep_complete_myself_format"/>
     <string name="pep_myself_format"/>
-    <string name="pep_force_unprotected"/>
+    <string name="pep_force_unprotected">Zakázať šifrovanie</string>
     <string name="pep_force_protected"/>
     <string name="pep_receivedSecretKey"/>
     <string name="pep_username"/>
@@ -172,7 +172,7 @@
     </string-array>
     <string name="nnf_new_folder"/>
     <string name="nnf_create_folder_error"/>
-    <string name="nnf_name"/>
+    <string name="nnf_name">Meno</string>
     <string name="nnf_select_something_first"/>
     <string name="nnf_need_valid_filename"/>
     <string name="nnf_permission_external_write_denied"/>
