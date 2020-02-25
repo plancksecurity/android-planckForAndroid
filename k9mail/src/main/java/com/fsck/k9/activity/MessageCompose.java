@@ -191,9 +191,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     private QuotedMessagePresenter quotedMessagePresenter;
     private MessageLoaderHelper messageLoaderHelper;
     private AttachmentPresenter attachmentPresenter;
-    private boolean encrypted = true;
     private LinearLayout rootView;
-    private MenuItem alwaysSecureMenuItem;
     private PePUIArtefactCache uiCache;
     private boolean permissionAsked;
     private RecipientMvpView recipientMvpView;
@@ -1146,31 +1144,35 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         inflater.inflate(R.menu.pep_security_badge_options_menu, menu);
 
         menu.findItem(R.id.force_unencrypted)
-                .setTitle(encrypted ? R.string.pep_force_unprotected : R.string.pep_force_protected);
-
+                .setTitle(!recipientPresenter.isForceUnencrypted() ? R.string.pep_force_unprotected : R.string.pep_force_protected);
         menu.findItem(R.id.force_unencrypted).setVisible(account.ispEpPrivacyProtected());
+
+        menu.findItem(R.id.is_always_secure).setTitle(
+                recipientPresenter.isAlwaysSecure()
+                        ? R.string.is_not_always_secure
+                        : R.string.is_always_secure
+        );
+
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.force_unencrypted:
-                if (encrypted) {
+                if (!recipientPresenter.isForceUnencrypted()) {
                     item.setTitle(R.string.pep_force_protected);
                 } else {
                     item.setTitle(R.string.pep_force_unprotected);
                 }
-                encrypted = !encrypted;
                 forceUnencrypted();
                 break;
             case R.id.is_always_secure:
-                if (alwaysSecureMenuItem.getTitle().toString().equals(getString(R.string.is_always_secure))) {
-                    recipientPresenter.setAlwaysSecure(true);
-                    alwaysSecureMenuItem.setTitle(R.string.is_not_always_secure);
-                } else {
-                    recipientPresenter.setAlwaysSecure(false);
-                    alwaysSecureMenuItem.setTitle(R.string.is_always_secure);
-                }
+                recipientPresenter.setAlwaysSecure(!recipientPresenter.isAlwaysSecure());
+                item.setTitle(
+                        recipientPresenter.isAlwaysSecure()
+                                ? R.string.is_not_always_secure
+                                : R.string.is_always_secure
+                );
                 break;
             default:
                 return false;
@@ -1199,13 +1201,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         //  TODO> Review after rebase
         handlePEpState(false);       // fire once to get everything set up.
 
-        alwaysSecureMenuItem = menu.findItem(R.id.is_always_secure);
-        if(recipientPresenter.isAlwaysSecure()) {
-            alwaysSecureMenuItem.setTitle(R.string.is_not_always_secure);
-        }
-        else {
-            alwaysSecureMenuItem.setTitle(R.string.is_always_secure);
-        }
         return true;
     }
 
@@ -2027,7 +2022,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     }
 
     public void setToolbarRating(Rating rating) {
-        pEpSecurityStatusLayout.setEncrypt(encrypted);
+        boolean encrypt = recipientPresenter == null || (!recipientPresenter.isForceUnencrypted() && account.ispEpPrivacyProtected());
+        pEpSecurityStatusLayout.setEncrypt(encrypt);
         pEpSecurityStatusLayout.setRating(rating);
     }
 
