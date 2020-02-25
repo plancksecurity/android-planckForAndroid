@@ -510,6 +510,8 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         activity.setToolbarRating(pEpRating);
     }
 
+    }
+
      void updatePePState() {
         presenter.updatepEpState();
     }
@@ -527,8 +529,9 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
 //        mIgnoreOnPause = true;  // do *not* save state
         pEpUiCache.setRecipients(mAccount, recipients);
-
-        PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom(), presenter.isForceUnencrypted());
+        PendingIntent pendingIntent = PEpStatus.pendingIntentShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom(), presenter.isForceUnencrypted(), presenter.isAlwaysSecure());
+        launchUserInteractionPendingIntent(pendingIntent, PEpStatus.REQUEST_STATUS);
+        //PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom(), presenter.isForceUnencrypted());
     }
 
     public void setMessageReference(MessageReference reference) {

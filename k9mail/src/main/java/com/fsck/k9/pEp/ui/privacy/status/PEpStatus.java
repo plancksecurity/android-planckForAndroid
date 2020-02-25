@@ -49,7 +49,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     private static final String RATING = "rating";
     private static final String MESSAGE_REFERENCE = "messageReference";
     private static final String MESSAGE_DIRECTION = "messageDirection";
-    public static final int REQUEST_STATUS = 5;
+    public static final int REQUEST_STATUS = 2;
 
     @Inject PEpStatusPresenter presenter;
 
@@ -79,34 +79,17 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     private static final String FORCE_UNENCRYPTED = "forceUnencrypted";
     private static final String ALWAYS_SECURE = "alwaysSecure";
 
-    public static void actionShowStatus(Activity context, int requestCode, Rating currentRating, String sender, MessageReference messageReference,
-                                        Boolean isMessageIncoming, String myself, Boolean forceDecrypted, Boolean alwaysSecure) {
-        Intent i = new Intent(context, PEpStatus.class);
-        i.setAction(ACTION_SHOW_PEP_STATUS);
-        i.putExtra(CURRENT_RATING, currentRating.toString());
-        i.putExtra(SENDER, sender);
-        i.putExtra(MYSELF, myself);
-        if (messageReference != null) {
-            i.putExtra(MESSAGE_REFERENCE, messageReference.toIdentityString());
-        } else {
-            i.putExtra(MESSAGE_REFERENCE, "");
-        }
-        i.putExtra(MESSAGE_DIRECTION, isMessageIncoming);
-        i.putExtra(FORCE_UNENCRYPTED, forceDecrypted);
-        i.putExtra(ALWAYS_SECURE, alwaysSecure);
-        context.startActivityForResult(i, requestCode);
-    }
-
-    public static void actionShowStatus(Activity context, Rating currentRating, String sender,
-                                        MessageReference messageReference, Boolean isMessageIncoming, String myself,
-                                        boolean forceUnencrypted) {
-        Intent intent = createShowStatusIntent(context, currentRating, sender, messageReference,
-                isMessageIncoming, myself, forceUnencrypted);
-        context.startActivityForResult(intent, REQUEST_STATUS);
+    public static PendingIntent pendingIntentShowStatus(
+            Activity context, Rating currentRating, String sender, MessageReference messageReference,
+            Boolean isMessageIncoming, String myself, boolean forceUnencrypted, boolean alwaysSecure) {
+        Intent intent = createShowStatusIntent(context, currentRating, sender, messageReference, isMessageIncoming, myself, forceUnencrypted, alwaysSecure);
+        return PendingIntent.getActivity(context, REQUEST_STATUS, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     @NotNull
-    private static Intent createShowStatusIntent(Activity context, Rating currentRating, String sender, MessageReference messageReference, Boolean isMessageIncoming, String myself, boolean forceUnencrypted) {
+    private static Intent createShowStatusIntent(
+            Activity context, Rating currentRating, String sender, MessageReference messageReference,
+            Boolean isMessageIncoming, String myself, boolean forceUnencrypted, boolean alwaysSecure) {
         Intent i = new Intent(context, PEpStatus.class);
         i.setAction(ACTION_SHOW_PEP_STATUS);
         String ratingName = forceUnencrypted?Rating.pEpRatingUnencrypted.toString():currentRating.toString();
@@ -119,12 +102,15 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
             i.putExtra(MESSAGE_REFERENCE, "");
         }
         i.putExtra(MESSAGE_DIRECTION, isMessageIncoming);
+        i.putExtra(FORCE_UNENCRYPTED, forceUnencrypted);
+        i.putExtra(ALWAYS_SECURE, alwaysSecure);
         return i;
     }
 
     public static void actionShowStatus(Activity context, Rating currentRating, String sender,
                                         MessageReference messageReference, Boolean isMessageIncoming, String myself) {
-        actionShowStatus(context, currentRating, sender, messageReference, isMessageIncoming, myself, false);
+        Intent intent  = createShowStatusIntent(context, currentRating, sender, messageReference, isMessageIncoming, myself, false, false);
+        context.startActivityForResult(intent, REQUEST_STATUS);
     }
 
     @Override

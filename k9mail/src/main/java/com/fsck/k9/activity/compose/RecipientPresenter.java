@@ -54,6 +54,9 @@ import java.util.Collections;
 import java.util.List;
 import timber.log.Timber;
 
+import static com.fsck.k9.pEp.ui.PepColoredActivity.CURRENT_RATING;
+import static com.fsck.k9.pEp.ui.privacy.status.PEpStatus.REQUEST_STATUS;
+
 
 public class RecipientPresenter {
     private static final String STATE_KEY_CC_SHOWN = "state:ccShown";
@@ -557,34 +560,36 @@ public class RecipientPresenter {
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case CONTACT_PICKER_TO:
-            case CONTACT_PICKER_CC:
-            case CONTACT_PICKER_BCC:
-                if (resultCode != Activity.RESULT_OK || data == null) {
-                    return;
-                }
-                RecipientType recipientType = recipientTypeFromRequestCode(requestCode);
-                addRecipientFromContactUri(recipientType, data.getData());
-                break;
-            case OPENPGP_USER_INTERACTION:
-                openPgpApiManager.onUserInteractionResult();
-                break;
-            case PEpStatus.REQUEST_STATUS:
-                doActionsFromPEpStatus(data);
-                break;
+        if (!handlepEpData(requestCode, data)) {
+            switch (requestCode) {
+                case CONTACT_PICKER_TO:
+                case CONTACT_PICKER_CC:
+                case CONTACT_PICKER_BCC:
+                    if (resultCode != Activity.RESULT_OK || data == null) {
+                        return;
+                    }
+                    RecipientType recipientType = recipientTypeFromRequestCode(requestCode);
+                    addRecipientFromContactUri(recipientType, data.getData());
+                    break;
+                case OPENPGP_USER_INTERACTION:
+                    openPgpApiManager.onUserInteractionResult();
+                    break;
+            }
         }
     }
 
-    private void doActionsFromPEpStatus(Intent data) {
-        boolean forceUncrypted = data.getBooleanExtra(STATE_FORCE_UNENCRYPTED, this.forceUnencrypted);
-        boolean alwaysSecure = data.getBooleanExtra(STATE_ALWAYS_SECURE, this.isAlwaysSecure);
-        if(forceUncrypted != this.forceUnencrypted) {
-            switchPrivacyProtection(PEpProvider.ProtectionScope.MESSAGE);
-        }
-        if(alwaysSecure != this.isAlwaysSecure) {
-            setAlwaysSecure(alwaysSecure);
-        }
+    private boolean handlepEpData(int requestCode, Intent data) {
+        if (requestCode == REQUEST_STATUS && data.hasExtra(CURRENT_RATING)) {
+            boolean forceUncrypted = data.getBooleanExtra(STATE_FORCE_UNENCRYPTED, this.forceUnencrypted);
+            boolean alwaysSecure = data.getBooleanExtra(STATE_ALWAYS_SECURE, this.isAlwaysSecure);
+            if (forceUncrypted != this.forceUnencrypted) {
+                switchPrivacyProtection(PEpProvider.ProtectionScope.MESSAGE);
+            }
+            if (alwaysSecure != this.isAlwaysSecure) {
+                setAlwaysSecure(alwaysSecure);
+            }
+            return true;
+        } else return false;
     }
 
     private static int recipientTypeToRequestCode(RecipientType type) {

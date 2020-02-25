@@ -884,13 +884,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         startActivityForResult(contacts.contactPickerIntent(), requestCode);
     }
 
-    public void goToPepStatus(Rating currentRating, String sender, MessageReference messageReference,
-                              Boolean isMessageIncoming, String myself, Boolean forceDecrypted, Boolean alwaysSecure) {
-        int requestCode = PEpStatus.REQUEST_STATUS | REQUEST_MASK_RECIPIENT_PRESENTER;
-        isInSubActivity = true;
-        PEpStatus.actionShowStatus(this, requestCode, currentRating, sender, messageReference, isMessageIncoming, myself, forceDecrypted, alwaysSecure);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         isInSubActivity = false;
