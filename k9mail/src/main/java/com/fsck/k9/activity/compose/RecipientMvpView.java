@@ -506,9 +506,8 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
                 new Handler(Looper.getMainLooper()).post(() -> pEpIndicator.setIcon(pEpUiCache.getIcon()));
                 String msg = pEpUiCache.getTitle(pEpRating);
             }
+            activity.setToolbarRating(pEpRating);
         }
-        activity.setToolbarRating(pEpRating);
-    }
 
     }
 
