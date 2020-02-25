@@ -9,7 +9,7 @@ import java.util.List;
 public interface PEpStatusView {
     void setupRecipients(List<PEpIdentity> pEpIdentities);
 
-    void setupBackIntent(Rating rating);
+    void setupBackIntent(Rating rating, boolean forceUncrypted, boolean alwaysSecure);
 
     void showPEpTexts(String title, String suggestion);
 

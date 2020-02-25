@@ -46,7 +46,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     private static final String RATING = "rating";
     private static final String MESSAGE_REFERENCE = "messageReference";
     private static final String MESSAGE_DIRECTION = "messageDirection";
-    public static final int REQUEST_STATUS = 2;
+    public static final int REQUEST_STATUS = 5;
 
     @Inject PEpStatusPresenter presenter;
 
@@ -72,6 +72,27 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     String sender = "";
     private MessageReference messageReference;
     private String myself = "";
+
+    private static final String FORCE_UNENCRYPTED = "forceUnencrypted";
+    private static final String ALWAYS_SECURE = "alwaysSecure";
+
+    public static void actionShowStatus(Activity context, int requestCode, Rating currentRating, String sender, MessageReference messageReference,
+                                        Boolean isMessageIncoming, String myself, Boolean forceDecrypted, Boolean alwaysSecure) {
+        Intent i = new Intent(context, PEpStatus.class);
+        i.setAction(ACTION_SHOW_PEP_STATUS);
+        i.putExtra(CURRENT_RATING, currentRating.toString());
+        i.putExtra(SENDER, sender);
+        i.putExtra(MYSELF, myself);
+        if (messageReference != null) {
+            i.putExtra(MESSAGE_REFERENCE, messageReference.toIdentityString());
+        } else {
+            i.putExtra(MESSAGE_REFERENCE, "");
+        }
+        i.putExtra(MESSAGE_DIRECTION, isMessageIncoming);
+        i.putExtra(FORCE_UNENCRYPTED, forceDecrypted);
+        i.putExtra(ALWAYS_SECURE, alwaysSecure);
+        context.startActivityForResult(i, requestCode);
+    }
 
     public static void actionShowStatus(Activity context, Rating currentRating, String sender, MessageReference messageReference, Boolean isMessageIncoming, String myself) {
         Intent i = new Intent(context, PEpStatus.class);
@@ -104,7 +125,13 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
             presenter.initilize(this, getUiCache(), getpEp(), isMessageIncoming, new Address(sender));
             presenter.loadMessage(messageReference);
         }
+
+        if(getIntent().hasExtra(FORCE_UNENCRYPTED)) {
+            presenter.setForceUnencrypted(getIntent().getBooleanExtra(FORCE_UNENCRYPTED, false));
+            presenter.setAlwaysSecure(getIntent().getBooleanExtra(ALWAYS_SECURE, false));
+        }
         restorePEpRating(savedInstanceState);
+        presenter.restoreInstanceState(savedInstanceState);
         setUpActionBar();
         presenter.loadRecipients();
         presenter.loadRating(getpEpRating());
@@ -226,9 +253,11 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     }*/
 
     @Override
-    public void setupBackIntent(Rating rating) {
+    public void setupBackIntent(Rating rating, boolean forceUnencrypted, boolean alwaysSecure) {
         Intent returnIntent = new Intent();
         returnIntent.putExtra(CURRENT_RATING, rating);
+        returnIntent.putExtra(FORCE_UNENCRYPTED, forceUnencrypted);
+        returnIntent.putExtra(ALWAYS_SECURE, alwaysSecure);
         setResult(Activity.RESULT_OK, returnIntent);
     }
 
@@ -339,6 +368,17 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         if(isIncoming) return false;
 
         getMenuInflater().inflate(R.menu.menu_pep_status, menu);
+        if (!presenter.isForceUnencrypted()) {
+            menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_unprotected);
+        } else {
+            menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_protected);
+        }
+
+        if (!presenter.isAlwaysSecure()) {
+            menu.findItem(R.id.is_always_secure).setTitle(R.string.is_always_secure);
+        } else {
+            menu.findItem(R.id.is_always_secure).setTitle(R.string.is_not_always_secure);
+        }
         return true;
     }
 
@@ -351,8 +391,22 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
                 onBackPressed();
                 return true;
             case R.id.force_unencrypted:
+                if (presenter.isForceUnencrypted()) {
+                    item.setTitle(R.string.pep_force_unprotected);
+
+                } else {
+                    item.setTitle(R.string.pep_force_protected);
+                }
+                presenter.setForceUnencrypted(!presenter.isForceUnencrypted());
                 return true;
             case R.id.is_always_secure:
+                if (item.getTitle().toString().equals(getString(R.string.is_always_secure))) {
+                    presenter.setAlwaysSecure(true);
+                    item.setTitle(R.string.is_not_always_secure);
+                } else {
+                    presenter.setAlwaysSecure(false);
+                    item.setTitle(R.string.is_always_secure);
+                }
                 return true;
 
             /*case R.id.action_explanation:
@@ -384,6 +438,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(RATING, pEpRating);
+        presenter.saveInstanceState(outState);
     }
 
     @Override

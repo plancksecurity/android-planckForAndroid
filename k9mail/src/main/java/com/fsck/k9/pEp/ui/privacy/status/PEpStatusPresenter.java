@@ -2,6 +2,7 @@ package com.fsck.k9.pEp.ui.privacy.status;
 
 import android.content.Intent;
 import android.content.IntentSender;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
@@ -40,6 +41,12 @@ public class PEpStatusPresenter implements Presenter {
     private Address senderAddress;
     private Rating currentRating;
     private Identity latestHandshakeId;
+
+    private static final String STATE_FORCE_UNENCRYPTED = "forceUnencrypted";
+    private static final String STATE_ALWAYS_SECURE = "alwaysSecure";
+
+    private boolean forceUnencrypted = false;
+    private boolean isAlwaysSecure = false;
 
     @Inject
     PEpStatusPresenter(SimpleMessageLoaderHelper simpleMessageLoaderHelper, PEpIdentityMapper pEpIdentityMapper) {
@@ -151,7 +158,8 @@ public class PEpStatusPresenter implements Presenter {
             localMessage.setpEpRating(rating);
         }
         view.setRating(rating);
-        view.setupBackIntent(rating);
+        view.setupBackIntent(rating,
+                forceUnencrypted, isAlwaysSecure);
     }
 
     void loadRating(Rating rating) {
@@ -293,5 +301,35 @@ public class PEpStatusPresenter implements Presenter {
         if (latestHandshakeId != null) {
             resetTrust(latestHandshakeId);
         }
+    }
+
+    public void saveInstanceState(Bundle outState) {
+        outState.putBoolean(STATE_FORCE_UNENCRYPTED, forceUnencrypted);
+        outState.putBoolean(STATE_ALWAYS_SECURE, isAlwaysSecure);
+    }
+
+    public void restoreInstanceState(Bundle savedInstanceState) {
+        if(savedInstanceState != null) {
+            forceUnencrypted = savedInstanceState.getBoolean(STATE_FORCE_UNENCRYPTED);
+            isAlwaysSecure = savedInstanceState.getBoolean(STATE_ALWAYS_SECURE);
+        }
+    }
+
+    public boolean isForceUnencrypted() {
+        return forceUnencrypted;
+    }
+
+    public void setForceUnencrypted(boolean forceUnencrypted) {
+        this.forceUnencrypted = forceUnencrypted;
+        view.setupBackIntent(currentRating, forceUnencrypted, isAlwaysSecure);
+    }
+
+    public boolean isAlwaysSecure() {
+        return isAlwaysSecure;
+    }
+
+    public void setAlwaysSecure(boolean alwaysSecure) {
+        isAlwaysSecure = alwaysSecure;
+        view.setupBackIntent(currentRating, forceUnencrypted, alwaysSecure);
     }
 }
