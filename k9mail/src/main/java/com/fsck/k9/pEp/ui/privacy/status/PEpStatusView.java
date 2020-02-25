@@ -34,4 +34,6 @@ public interface PEpStatusView {
     void showMistrustFeedback(String username);
 
     void showItsOnlyOwnMsg();
+
+    void updateToolbarColor(Rating rating);
 }

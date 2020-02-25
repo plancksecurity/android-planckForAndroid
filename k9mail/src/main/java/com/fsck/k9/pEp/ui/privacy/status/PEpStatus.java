@@ -2,6 +2,7 @@ package com.fsck.k9.pEp.ui.privacy.status;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
@@ -138,7 +139,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         presenter.restoreInstanceState(savedInstanceState);
         setUpActionBar();
         presenter.loadRecipients();
-        presenter.loadRating(getpEpRating());
+        //presenter.loadRating(getpEpRating());
     }
 
     @Override
@@ -197,6 +198,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
                         myself
                 );
         //Timber.e("the identities: " + pEpIdentities);
+        //presenter.disablePEpInListIfNeeded(pEpIdentities);
         ListAdapteeCollection<PEpIdentity> adapteeCollection = new ListAdapteeCollection<>(pEpIdentities);
         recipientsAdapter = new RVRendererAdapter<>(rendererBuilder, adapteeCollection);
 
@@ -372,17 +374,16 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         if(isIncoming) return false;
 
         getMenuInflater().inflate(R.menu.menu_pep_status, menu);
-        if (!presenter.isForceUnencrypted()) {
-            menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_unprotected);
-        } else {
-            menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_protected);
-        }
+        menu.findItem(R.id.force_unencrypted).setTitle(presenter.isForceUnencrypted()
+                ? R.string.pep_force_protected
+                : R.string.pep_force_unprotected
+        );
 
-        if (!presenter.isAlwaysSecure()) {
-            menu.findItem(R.id.is_always_secure).setTitle(R.string.is_always_secure);
-        } else {
-            menu.findItem(R.id.is_always_secure).setTitle(R.string.is_not_always_secure);
-        }
+        menu.findItem(R.id.is_always_secure).setTitle(presenter.isAlwaysSecure()
+                ? R.string.is_always_secure
+                : R.string.is_not_always_secure
+        );
+
         return true;
     }
 
@@ -395,22 +396,18 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
                 onBackPressed();
                 return true;
             case R.id.force_unencrypted:
-                if (presenter.isForceUnencrypted()) {
-                    item.setTitle(R.string.pep_force_unprotected);
-
-                } else {
-                    item.setTitle(R.string.pep_force_protected);
-                }
                 presenter.setForceUnencrypted(!presenter.isForceUnencrypted());
+                item.setTitle(presenter.isForceUnencrypted()
+                        ? R.string.pep_force_protected
+                        : R.string.pep_force_unprotected
+                );
                 return true;
             case R.id.is_always_secure:
-                if (item.getTitle().toString().equals(getString(R.string.is_always_secure))) {
-                    presenter.setAlwaysSecure(true);
-                    item.setTitle(R.string.is_not_always_secure);
-                } else {
-                    presenter.setAlwaysSecure(false);
-                    item.setTitle(R.string.is_always_secure);
-                }
+                presenter.setAlwaysSecure(!presenter.isAlwaysSecure());
+                item.setTitle(presenter.isAlwaysSecure()
+                        ? R.string.is_not_always_secure
+                        : R.string.is_always_secure
+                );
                 return true;
 
             /*case R.id.action_explanation:
@@ -450,4 +447,10 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         recipientsView.setVisibility(View.GONE);
         itsOwnMessageTV.setVisibility(View.VISIBLE);
     }
+
+    @Override
+    public void updateToolbarColor(Rating rating) {
+        colorActionBar(rating);
+    }
+
 }

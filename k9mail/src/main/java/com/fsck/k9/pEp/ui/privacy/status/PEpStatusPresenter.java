@@ -321,6 +321,10 @@ public class PEpStatusPresenter implements Presenter {
 
     public void setForceUnencrypted(boolean forceUnencrypted) {
         this.forceUnencrypted = forceUnencrypted;
+        view.updateToolbarColor(forceUnencrypted
+                ? Rating.getByInt(Rating.pEpRatingUnencrypted.value)
+                : currentRating
+        );
         view.setupBackIntent(currentRating, forceUnencrypted, isAlwaysSecure);
     }
 

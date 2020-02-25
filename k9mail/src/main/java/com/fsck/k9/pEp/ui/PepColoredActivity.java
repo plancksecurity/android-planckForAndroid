@@ -51,6 +51,11 @@ public abstract class PepColoredActivity extends K9Activity {
         }
     }
 
+    protected void colorActionBar(Rating pEpRating) {
+        toolBarCustomizer.setToolbarColor(pEpRating);
+        toolBarCustomizer.setStatusBarPepColor(pEpRating);
+    }
+
     public void setToolbarTitle(String title) {
         if (getSupportActionBar() != null) {
             setTitle(title);
