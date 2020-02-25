@@ -318,7 +318,7 @@ public class K9 extends MultiDexApplication {
     private static SortType mSortType;
     private static Map<SortType, Boolean> mSortAscending = new HashMap<SortType, Boolean>();
 
-    private static boolean sUseBackgroundAsUnreadIndicator = true;
+    private static boolean sUseBackgroundAsUnreadIndicator = false;
     private static boolean sThreadedViewEnabled = true;
     private static SplitViewMode sSplitViewMode = SplitViewMode.NEVER;
     private static boolean sColorizeMissingContactPictures = DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE;
@@ -967,7 +967,7 @@ public class K9 extends MultiDexApplication {
 
         mAttachmentDefaultPath = storage.getString("attachmentdefaultpath",
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString());
-        sUseBackgroundAsUnreadIndicator = storage.getBoolean("useBackgroundAsUnreadIndicator", true);
+        sUseBackgroundAsUnreadIndicator = storage.getBoolean("useBackgroundAsUnreadIndicator", false);
         sThreadedViewEnabled = storage.getBoolean("threadedView", true);
         fontSizes.load(storage);
 

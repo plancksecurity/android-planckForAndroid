@@ -60,6 +60,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import security.pEp.ui.toolbar.ToolBarCustomizer;
+
 import static android.app.Activity.RESULT_OK;
 
 public class AccountSetupOutgoingFragment extends PEpFragment {
@@ -95,6 +97,8 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     private boolean mEdit;
 
     @Inject PEpSettingsChecker pEpSettingsChecker;
+    @Inject
+    ToolBarCustomizer toolBarCustomizer;
     private ContentLoadingProgressBar nextProgressBar;
     private AccountSetupNavigator accountSetupNavigator;
     private boolean mBack;
@@ -141,7 +145,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         rootView = inflater.inflate(R.layout.fragment_account_setup_outgoing, container, false);
 
         ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_setup_outgoing_title);
-        ((K9Activity) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.pep_green));
+        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.colorPrimary));
 
         String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
         mEdit = getArguments().getBoolean(EXTRA_EDIT);

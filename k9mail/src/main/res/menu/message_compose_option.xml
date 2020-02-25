@@ -5,14 +5,14 @@
         android:id="@+id/add_attachment"
         android:alphabeticShortcut="n"
         android:title="@string/add_attachment_action"
-        android:icon="@drawable/ic_file_attachment"
+        android:icon="?attr/iconActionAddAttachment"
         app:showAsAction="always"
     />
     <item
         android:id="@+id/send"
         android:alphabeticShortcut="s"
         android:title="@string/send_action"
-        android:icon="@drawable/ic_content_send"
+        android:icon="?attr/iconActionSend"
         app:showAsAction="always"
     />
     <item
@@ -20,13 +20,6 @@
         android:alphabeticShortcut="a"
         android:title="@string/add_from_contacts"
     />
-    <item
-        android:id="@+id/pEp_indicator"
-        android:alphabeticShortcut="s"
-        android:title="@string/pep_title_activity_privacy_status"
-        android:icon="@drawable/ic_action_pep_indicator_white"
-        app:showAsAction="always"
-        />
 
     <item
         android:id="@+id/save"
@@ -46,10 +39,6 @@
         android:title="@string/read_receipt"
         android:icon="?attr/iconActionRequestReadReceipt"
     />
-    <item
-            android:id="@+id/force_unencrypted"
-            android:title="@string/pep_force_unprotected"
-            app:showAsAction="never"/>
 
     <!--item
         android:id="@+id/openpgp_inline_enable"
@@ -63,10 +52,4 @@
         android:title="@string/disable_inline_pgp"
         app:showAsAction="never"
         /-->
-    <item
-        android:id="@+id/is_always_secure"
-        android:alphabeticShortcut="g"
-        android:title="@string/is_always_secure"
-        app:showAsAction="never"
-        />
 </menu>

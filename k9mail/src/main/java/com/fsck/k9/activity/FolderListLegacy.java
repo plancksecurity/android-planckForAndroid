@@ -68,6 +68,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import security.pEp.ui.resources.ResourcesProvider;
 import timber.log.Timber;
 
 import static com.fsck.k9.activity.MessageList.EXTRA_SEARCH_ACCOUNT;
@@ -108,6 +109,7 @@ public class FolderListLegacy extends K9ListActivity {
     private View searchLayout;
     private EditText searchInput;
     private View clearSearchIcon;
+    private ResourcesProvider resourcesProvider;
 
     class FolderListHandler extends Handler {
 
@@ -1115,8 +1117,6 @@ public class FolderListLegacy extends K9ListActivity {
                 holder.newMessageCount.setText(String.format("%d", folder.unreadMessageCount));
                 holder.newMessageCountWrapper.setOnClickListener(
                         createUnreadSearch(mAccount, folder));
-                holder.newMessageCountIcon.setBackgroundDrawable(
-                        mAccount.generateColorChip(false, false).drawable());
             } else {
                 holder.newMessageCountWrapper.setVisibility(View.GONE);
             }
@@ -1135,7 +1135,7 @@ public class FolderListLegacy extends K9ListActivity {
                 holder.flaggedMessageCountWrapper.setOnClickListener(
                         createFlaggedSearch(mAccount, folder));
                 holder.flaggedMessageCountWrapper.setVisibility(View.VISIBLE);
-                holder.flaggedMessageCountIcon.setBackgroundDrawable(getDrawable(R.drawable.ic_unread_toggle_star));
+                holder.flaggedMessageCountIcon.setBackgroundResource(resourcesProvider.getAttributeResource(R.attr.iconActionFlag));
             } else {
                 holder.flaggedMessageCountWrapper.setVisibility(View.GONE);
             }

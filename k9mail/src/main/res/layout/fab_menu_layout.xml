@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<security.pEp.ui.message_compose.PEpFabMenu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fab_menu"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentEnd="true"
+    android:layout_alignParentBottom="true"
+    android:layout_marginBottom="16dp"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:paddingStart="8dp"
+    android:paddingTop="4dp"
+    android:paddingEnd="20dp">
+
+    <TextView
+        android:id="@+id/textviewForward"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="@string/forward_action"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/fabForward"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/fabForward"
+        app:layout_constraintTop_toTopOf="@+id/fabForward"
+        tools:visibility="visible" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabForward"
+        style="@style/PepFabButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tint="@color/colorPrimary"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/fabReplyAll"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_forward_light_opaque"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/textviewReplyAll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="@string/reply_all_action"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/fabReplyAll"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/fabReplyAll"
+        app:layout_constraintTop_toTopOf="@+id/fabReplyAll"
+        tools:visibility="visible" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabReplyAll"
+        style="@style/PepFabButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tint="@color/colorPrimary"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/fabReply"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_reply_all_light_opaque"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/textviewReply"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="@string/reply_action"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/fabReply"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/fabReply"
+        app:layout_constraintTop_toTopOf="@+id/fabReply"
+        tools:visibility="visible" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabReply"
+        style="@style/PepFabButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tint="@color/colorPrimary"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/openCloseButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_reply_light_opaque"
+        tools:visibility="visible" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/openCloseButton"
+        style="@style/PepFabButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_reply_green" />
+
+</security.pEp.ui.message_compose.PEpFabMenu>

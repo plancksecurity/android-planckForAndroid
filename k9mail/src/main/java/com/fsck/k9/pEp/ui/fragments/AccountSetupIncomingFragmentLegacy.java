@@ -72,6 +72,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import security.pEp.ui.toolbar.ToolBarCustomizer;
+
 import static android.app.Activity.RESULT_OK;
 
 public class AccountSetupIncomingFragmentLegacy extends PEpFragment {
@@ -117,6 +119,10 @@ public class AccountSetupIncomingFragmentLegacy extends PEpFragment {
     private AccountSetupNavigator accountSetupNavigator;
     private boolean editSettings;
 
+    @Inject
+    ToolBarCustomizer toolBarCustomizer;
+
+
     public static AccountSetupIncomingFragmentLegacy actionIncomingSettings(Account account, boolean makeDefault) {
         AccountSetupIncomingFragmentLegacy fragment = new AccountSetupIncomingFragmentLegacy();
         Bundle bundle = new Bundle();
@@ -150,7 +156,7 @@ public class AccountSetupIncomingFragmentLegacy extends PEpFragment {
         rootView = inflater.inflate(R.layout.fragment_account_setup_incoming, container, false);
 
         ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_setup_incoming_title);
-        ((K9Activity) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.pep_green));
+        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.colorPrimary));
 
         mUsernameView = (EditText) rootView.findViewById(R.id.account_username);
         mPasswordView = (EditText) rootView.findViewById(R.id.account_password);

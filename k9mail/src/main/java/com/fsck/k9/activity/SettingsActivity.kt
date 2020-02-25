@@ -16,7 +16,6 @@ import android.view.ContextMenu.ContextMenuInfo
 import android.view.View.OnClickListener
 import android.widget.*
 import android.widget.AdapterView.AdapterContextMenuInfo
-import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import com.fsck.k9.*
@@ -51,6 +50,7 @@ import kotlinx.android.synthetic.main.accounts.*
 import kotlinx.coroutines.*
 import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
+import security.pEp.ui.resources.ResourcesProvider
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -94,6 +94,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     lateinit var permissionRequester: PermissionRequester
     @Inject
     lateinit var permissionChecker: PermissionChecker
+    @Inject
+    lateinit var resourcesProvider: ResourcesProvider
 
     private val storageListener = object : StorageManager.StorageListener {
 
@@ -909,13 +911,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 holder.newMessageCountWrapper!!.visibility = View.GONE
                 holder.flaggedMessageCountWrapper!!.visibility = View.GONE
             }
-            if (account is Account) {
-                val realAccount = account
-                holder.flaggedMessageCountIcon!!.setBackgroundDrawable(ContextCompat.getDrawable(this@SettingsActivity, R.drawable.ic_unread_toggle_star))
-            } else {
-                holder.flaggedMessageCountIcon!!.setBackgroundDrawable(ContextCompat.getDrawable(this@SettingsActivity,
-                        R.drawable.ic_unread_toggle_star))
-            }
+
+            holder.flaggedMessageCountIcon!!.setBackgroundResource(resourcesProvider.getAttributeResource(R.attr.iconFlagButton));
 
 
             fontSizes.setViewTextSize(holder.description, fontSizes.accountName)

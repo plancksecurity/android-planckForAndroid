@@ -5,14 +5,13 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 import android.widget.QuickContactBadge;
 
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.PEpUtils;
 
 import foundation.pEp.jniadapter.Rating;
+import security.pEp.ui.PEpUIUtils;
 
 public class PEpContactBadge extends QuickContactBadge {
     Rating pEpRating;
@@ -41,30 +40,15 @@ public class PEpContactBadge extends QuickContactBadge {
     }
 
     public void setPepRating(Rating pEpRating, boolean ispEpEnabled) {
-        if (ispEpEnabled) {
+        if (ispEpEnabled && pEpRating != null) {
             this.pEpRating = pEpRating;
         } else {
             this.pEpRating = Rating.pEpRatingUndefined;
         }
-        color = PEpUtils.getRatingColor(this.pEpRating, context);
+        color = PEpUIUtils.getRatingColor(context, this.pEpRating);
         paint.setColor(color);
-        currentStatus = getCurrentStatus();
+        currentStatus = PEpUIUtils.getDrawableForRatingBordered(context, this.pEpRating);
         invalidate();
-    }
-
-    private Drawable getCurrentStatus() {
-        if (color == getResources().getColor(R.color.pep_red)){
-            return ContextCompat.getDrawable(context, R.drawable.pep_status_red);
-        }
-        else if (color == getResources().getColor(R.color.pep_green)){
-            return ContextCompat.getDrawable(context, R.drawable.pep_status_green);
-        }
-        else if (color == getResources().getColor(R.color.pep_yellow)){
-            return ContextCompat.getDrawable(context, R.drawable.pep_status_yellow);
-        }
-        else {
-            return ContextCompat.getDrawable(context, R.drawable.pep_status_gray);
-        }
     }
 
     private void init(Context context) {
@@ -94,14 +78,16 @@ public class PEpContactBadge extends QuickContactBadge {
         int contactTop = Math.round(height * additionalPaddingPercent);
         int contactRight = Math.round(width * (1f - additionalPaddingPercent * 2));
         int contactBottom = Math.round(height * (1f - additionalPaddingPercent));
-        int pEpBadgeLeft = Math.round(width * .60f);
-        int pEpBadgeTop = Math.round(height * .60f);
+
+        int pepBadgeSize = Math.round(width * .35f);
+        int pepBadgePadding = Math.round(width * .10f);
+        int pEpBadgeLeft = width - pepBadgeSize - pepBadgePadding;
+        int pEpBadgeRight = width - pepBadgePadding;
+        int pEpBadgeTop = height - pepBadgeSize;
+
         contactBoundsBadgeRect = new Rect(contactLeft, contactTop, contactRight, contactBottom);
-        pEpBadgeRect = new Rect(pEpBadgeLeft, pEpBadgeTop, width, height);
-
+        pEpBadgeRect = new Rect(pEpBadgeLeft, pEpBadgeTop, pEpBadgeRight, height);
     }
-
-
 
 
 }

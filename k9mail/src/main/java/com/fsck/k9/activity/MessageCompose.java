@@ -23,9 +23,11 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.TypedValue;
+import android.view.ContextMenu;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,8 +38,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
@@ -117,6 +121,10 @@ import javax.inject.Inject;
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
+import security.pEp.ui.message_compose.ComposeAccountRecipient;
+import security.pEp.ui.resources.ResourcesProvider;
+import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
+import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
 
@@ -144,7 +152,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     public static final String EXTRA_PEP_RATING = "pEpRating";
     public static final String EXTRA_MESSAGE_DECRYPTION_RESULT = "message_decryption_result";
-    public static final String EXTRA_MESSAGE_BODY  = "messageBody";
+    public static final String EXTRA_MESSAGE_BODY = "messageBody";
 
     private static final String STATE_KEY_SOURCE_MESSAGE_PROCED =
             "com.fsck.k9.activity.MessageCompose.stateKeySourceMessageProced";
@@ -173,7 +181,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     /**
      * Regular expression to remove the first localized "Re:" prefix in subjects.
-     *
+     * <p>
      * Currently:
      * - "Aw:" (german: abbreviation for "Antwort")
      */
@@ -241,7 +249,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     private boolean requestReadReceipt = false;
 
-    private TextView chooseIdentityButton;
+    private ComposeAccountRecipient accountRecipient;
     private EditText subjectView;
     private EolConvertingEditText signatureView;
     private EolConvertingEditText messageContentView;
@@ -259,6 +267,12 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     PermissionRequester permissionRequester;
     @Inject
     PermissionChecker permissionChecker;
+    @Inject
+    ToolBarCustomizer toolBarCustomizer;
+    @Inject
+    ResourcesProvider resourcesProvider;
+
+    private PEpSecurityStatusLayout pEpSecurityStatusLayout;
 
     @Override
     public void inject() {
@@ -282,7 +296,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             ContextThemeWrapper themeContext = new ContextThemeWrapper(this,
                     K9.getK9ThemeResourceId(K9.getK9ComposerTheme()));
             @SuppressLint("InflateParams") // this is the top level activity element, it has no root
-            View v = LayoutInflater.from(themeContext).inflate(R.layout.message_compose, null);
+                    View v = LayoutInflater.from(themeContext).inflate(R.layout.message_compose, null);
             TypedValue outValue = new TypedValue();
             // background color needs to be forced
             themeContext.getTheme().resolveAttribute(R.attr.messageViewBackgroundColor, outValue, true);
@@ -291,6 +305,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         } else {
             bindViews(R.layout.message_compose);
         }
+
+        startToolbar();
 
         // on api level 15, setContentView() shows the progress bar for some reason...
         setProgressBarIndeterminateVisibility(false);
@@ -326,10 +342,10 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
         contacts = Contacts.getInstance(MessageCompose.this);
 
-        rootView = (LinearLayout) findViewById(R.id.content);
+        rootView = findViewById(R.id.content);
 
-        chooseIdentityButton = (TextView) findViewById(R.id.identity);
-        chooseIdentityButton.setOnClickListener(this);
+        accountRecipient = findViewById(R.id.identity);
+        accountRecipient.setOnClickListener(this);
 
         recipientMvpView = new RecipientMvpView(this);
         ComposePgpInlineDecider composePgpInlineDecider = new ComposePgpInlineDecider();
@@ -340,21 +356,21 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         recipientPresenter.updateCryptoStatus();
 
 
-        subjectView = (EditText) findViewById(R.id.subject);
+        subjectView = findViewById(R.id.subject);
         subjectView.getInputExtras(true).putBoolean("allowEmoji", true);
 
-        EolConvertingEditText upperSignature = (EolConvertingEditText) findViewById(R.id.upper_signature);
-        EolConvertingEditText lowerSignature = (EolConvertingEditText) findViewById(R.id.lower_signature);
+        EolConvertingEditText upperSignature = findViewById(R.id.upper_signature);
+        EolConvertingEditText lowerSignature = findViewById(R.id.lower_signature);
 
         QuotedMessageMvpView quotedMessageMvpView = new QuotedMessageMvpView(this);
         quotedMessagePresenter = new QuotedMessagePresenter(this, quotedMessageMvpView, account);
         attachmentPresenter = new AttachmentPresenter(getApplicationContext(), attachmentMvpView,
                 getSupportLoaderManager(), this);
 
-        messageContentView = (EolConvertingEditText) findViewById(R.id.message_content);
+        messageContentView = findViewById(R.id.message_content);
         messageContentView.getInputExtras(true).putBoolean("allowEmoji", true);
 
-        attachmentsView = (LinearLayout) findViewById(R.id.attachments);
+        attachmentsView = findViewById(R.id.attachments);
 
         TextWatcher draftNeedsChangingTextWatcher = new SimpleTextWatcher() {
             @Override
@@ -486,7 +502,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         K9.getFontSizes().setViewTextSize(subjectView, fontSize);
         K9.getFontSizes().setViewTextSize(messageContentView, fontSize);
         K9.getFontSizes().setViewTextSize(signatureView, fontSize);
-// TODO: pEp font sizes and skin stuff
+        // TODO: pEp font sizes and skin stuff
         updateMessageFormat();
 
         setTitle();
@@ -499,7 +515,18 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
         recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.ACCOUNT, account.ispEpPrivacyProtected());
 
+    }
+
+    private void startToolbar() {
         setUpToolbar(true);
+        setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
+        if (getToolbar() != null) {
+            pEpSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
+            pEpSecurityStatusLayout.setOnClickListener(v -> onPEpIndicator());
+            registerForContextMenu(pEpSecurityStatusLayout);
+        }
+        toolBarCustomizer.setToolbarColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
+        toolBarCustomizer.setStatusBarPepColor(ContextCompat.getColor(getApplicationContext(), R.color.nav_contact_background));
     }
 
     private void createDynamicShortcut() {
@@ -531,18 +558,16 @@ public class MessageCompose extends PepActivity implements OnClickListener,
      * <p>
      * Supported external intents:
      * <ul>
-     *   <li>{@link Intent#ACTION_VIEW}</li>
-     *   <li>{@link Intent#ACTION_SENDTO}</li>
-     *   <li>{@link Intent#ACTION_SEND}</li>
-     *   <li>{@link Intent#ACTION_SEND_MULTIPLE}</li>
+     * <li>{@link Intent#ACTION_VIEW}</li>
+     * <li>{@link Intent#ACTION_SENDTO}</li>
+     * <li>{@link Intent#ACTION_SEND}</li>
+     * <li>{@link Intent#ACTION_SEND_MULTIPLE}</li>
      * </ul>
      * </p>
      *
-     * @param intent
-     *         The (external) intent that started the activity.
-     *
+     * @param intent The (external) intent that started the activity.
      * @return {@code true}, if this activity was started by an external intent. {@code false},
-     *         otherwise.
+     * otherwise.
      */
     private boolean initFromIntent(final Intent intent) {
         boolean startedByExternalIntent = false;
@@ -964,7 +989,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     }
 
     private void updateFrom() {
-        chooseIdentityButton.setText(identity.getEmail());
+        accountRecipient.bindView(identity.getEmail());
     }
 
     private void updateSignature() {
@@ -1077,30 +1102,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             case R.id.add_attachment:
                 attachmentPresenter.onClickAddAttachment(recipientPresenter);
                 break;
-            case R.id.pEp_indicator:
-//                TODO> Review after rebase
-                onPEpIndicator();
-                break;
             case R.id.read_receipt:
                 onReadReceipt();
-                break;
-            case R.id.force_unencrypted:
-                if (encrypted) {
-                    item.setTitle(R.string.pep_force_protected);
-                } else {
-                    item.setTitle(R.string.pep_force_unprotected);
-                }
-                encrypted = !encrypted;
-                forceUnencrypted();
-                break;
-            case R.id.is_always_secure:
-                if (alwaysSecureMenuItem.getTitle().toString().equals(getString(R.string.is_always_secure))) {
-                    recipientPresenter.setAlwaysSecure(true);
-                    alwaysSecureMenuItem.setTitle(R.string.is_not_always_secure);
-                } else {
-                    recipientPresenter.setAlwaysSecure(false);
-                    alwaysSecureMenuItem.setTitle(R.string.is_always_secure);
-                }
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -1142,6 +1145,47 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         }
     }
 
+    // Context Menu
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.pep_security_badge_options_menu, menu);
+
+        menu.findItem(R.id.force_unencrypted)
+                .setTitle(encrypted ? R.string.pep_force_unprotected : R.string.pep_force_protected);
+
+        menu.findItem(R.id.force_unencrypted).setVisible(account.ispEpPrivacyProtected());
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.force_unencrypted:
+                if (encrypted) {
+                    item.setTitle(R.string.pep_force_protected);
+                } else {
+                    item.setTitle(R.string.pep_force_unprotected);
+                }
+                encrypted = !encrypted;
+                forceUnencrypted();
+                break;
+            case R.id.is_always_secure:
+                if (alwaysSecureMenuItem.getTitle().toString().equals(getString(R.string.is_always_secure))) {
+                    recipientPresenter.setAlwaysSecure(true);
+                    alwaysSecureMenuItem.setTitle(R.string.is_not_always_secure);
+                } else {
+                    recipientPresenter.setAlwaysSecure(false);
+                    alwaysSecureMenuItem.setTitle(R.string.is_always_secure);
+                }
+                break;
+            default:
+                return false;
+        }
+        return true;
+    }
+
+    // Options Menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -1158,16 +1202,10 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         }
 
         // grab our icon and set it to the wanted color.
-        recipientPresenter.setpEpIndicator(menu.findItem(R.id.pEp_indicator));
-//  TODO> Review after rebase
+        //    recipientPresenter.setpEpIndicator(menu.findItem(R.id.pEp_indicator));
+        //  TODO> Review after rebase
         handlePEpState(false);       // fire once to get everything set up.
 
-        if (encrypted &&
-                !recipientPresenter.isForceUnencrypted()) {
-            menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_unprotected);
-        } else {
-            menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_protected);
-        }
         alwaysSecureMenuItem = menu.findItem(R.id.is_always_secure);
         if(recipientPresenter.isAlwaysSecure()) {
             alwaysSecureMenuItem.setTitle(R.string.is_not_always_secure);
@@ -1183,6 +1221,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         super.onPrepareOptionsMenu(menu);
 
         recipientPresenter.onPrepareOptionsMenu(menu);
+        toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(ContextCompat.getColor(this, R.color.light_black));
 
         return true;
     }
@@ -1215,12 +1254,9 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         if (subjectView.getText().length() != 0) {
             return true;
         }
-        if (!recipientPresenter.getToAddresses().isEmpty() ||
+        return !recipientPresenter.getToAddresses().isEmpty() ||
                 !recipientPresenter.getCcAddresses().isEmpty() ||
-                !recipientPresenter.getBccAddresses().isEmpty()) {
-            return true;
-        }
-        return false;
+                !recipientPresenter.getBccAddresses().isEmpty();
     }
 
 
@@ -1252,24 +1288,24 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                         .create();
             case DIALOG_CONFIRM_DISCARD_ON_BACK:
                 return new AlertDialog.Builder(this)
-                       .setTitle(R.string.confirm_discard_draft_message_title)
-                       .setMessage(R.string.confirm_discard_draft_message)
-                .setPositiveButton(R.string.cancel_action, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        dismissDialog(DIALOG_CONFIRM_DISCARD_ON_BACK);
-                    }
-                })
-                .setNegativeButton(R.string.discard_action, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        dismissDialog(DIALOG_CONFIRM_DISCARD_ON_BACK);
-                        FeedbackTools.showLongFeedback(getRootView(),
-                                       getString(R.string.message_discarded_toast));
-                        onDiscard();
-                    }
-                })
-                .create();
+                        .setTitle(R.string.confirm_discard_draft_message_title)
+                        .setMessage(R.string.confirm_discard_draft_message)
+                        .setPositiveButton(R.string.cancel_action, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                dismissDialog(DIALOG_CONFIRM_DISCARD_ON_BACK);
+                            }
+                        })
+                        .setNegativeButton(R.string.discard_action, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                dismissDialog(DIALOG_CONFIRM_DISCARD_ON_BACK);
+                                FeedbackTools.showLongFeedback(getRootView(),
+                                        getString(R.string.message_discarded_toast));
+                                onDiscard();
+                            }
+                        })
+                        .create();
             case DIALOG_CHOOSE_IDENTITY:
                 Context context = new ContextThemeWrapper(this,
                         (K9.getK9Theme() == K9.Theme.LIGHT) ?
@@ -1343,8 +1379,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
      * Pull out the parts of the now loaded source message and apply them to the new message
      * depending on the type of message being composed.
      *
-     * @param messageViewInfo
-     *         The source message used to populate the various text fields.
+     * @param messageViewInfo The source message used to populate the various text fields.
      */
     private void processSourceMessage(MessageViewInfo messageViewInfo) {
         try {
@@ -1553,7 +1588,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         }
 
         public SendMessageTask(Context context, Account account, Contacts contacts, Message message,
-                        Long draftId, MessageReference messageReference, PEpProvider.CompletedCallback completedCallback) {
+                               Long draftId, MessageReference messageReference, PEpProvider.CompletedCallback completedCallback) {
             this.context = context;
             this.account = account;
             this.contacts = contacts;
@@ -1608,8 +1643,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
      * When we are launched with an intent that includes a mailto: URI, we can actually
      * gather quite a few of our message fields from it.
      *
-     * @param mailTo
-     *         The MailTo object we use to initialize message field
+     * @param mailTo The MailTo object we use to initialize message field
      */
     private void initializeFromMailto(MailTo mailTo) {
         recipientPresenter.initFromMailto(mailTo);
@@ -1792,7 +1826,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
         @Override
         public void startIntentSenderForMessageLoaderHelper(IntentSender si, int requestCode, Intent fillIntent,
-                int flagsMask, int flagValues, int extraFlags) {
+                                                            int flagsMask, int flagValues, int extraFlags) {
             try {
                 requestCode |= REQUEST_MASK_LOADER_HELPER;
                 startIntentSenderForResult(si, requestCode, fillIntent, flagsMask, flagValues, extraFlags);
@@ -1900,7 +1934,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             View view = getLayoutInflater().inflate(R.layout.message_compose_attachment, attachmentsView, false);
             attachmentViews.put(attachment.uri, view);
 
-            ImageView deleteButton = (ImageView) view.findViewById(R.id.attachment_delete);
+            ImageView deleteButton = view.findViewById(R.id.attachment_delete);
             deleteButton.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -1919,7 +1953,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                 throw new IllegalArgumentException();
             }
 
-            TextView nameView = (TextView) view.findViewById(R.id.attachment_name);
+            TextView nameView = view.findViewById(R.id.attachment_name);
             boolean hasMetadata = (attachment.state != Attachment.LoadingState.URI_ONLY);
             if (hasMetadata) {
                 nameView.setText(attachment.name);
@@ -1989,6 +2023,19 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     public void unlockSendButton() {
         isSendButtonLocked = false;
+    }
+
+    public void setToolbarColor(@ColorInt int color) {
+        toolBarCustomizer.setToolbarColor(color);
+    }
+
+    public void setStatusBarPepColor(@ColorInt int color) {
+        toolBarCustomizer.setStatusBarPepColor(color);
+    }
+
+    public void setToolbarRating(Rating rating) {
+        pEpSecurityStatusLayout.setEncrypt(encrypted);
+        pEpSecurityStatusLayout.setRating(rating);
     }
 
     private Handler internalMessageHandler = new Handler() {

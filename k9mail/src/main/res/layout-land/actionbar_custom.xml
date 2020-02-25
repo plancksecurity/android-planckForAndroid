@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/actionbar_custom"
+    style="@style/ToolbarTheme"
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
-    style="@style/ToolbarTheme"
-    xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="@layout/toolbar_layout">
 
     <LinearLayout
@@ -20,31 +21,31 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/actionbar_title_first"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="start"
-                android:singleLine="true"
-                tools:text="actionbar_title_first"
                 android:fontFamily="sans-serif-medium"
-                android:textSize="18dp"
+                android:singleLine="true"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white"
+                android:textSize="18dp"
+                tools:text="actionbar_title_first" />
 
             <TextView
                 android:id="@+id/actionbar_title_sub"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:visibility="gone"
-                tools:visibility="visible"
                 android:singleLine="true"
                 android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/white"
+                android:visibility="gone"
                 tools:text="actionbar_title_sub"
-                android:textColor="@color/white" />
+                tools:visibility="visible" />
         </LinearLayout>
 
         <ProgressBar
@@ -54,7 +55,7 @@
             android:layout_height="32dp"
             android:layout_gravity="center"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/actionbar_unread_count"
@@ -63,39 +64,63 @@
             android:paddingLeft="12dip"
             android:paddingRight="12dip"
             android:textColor="@color/white"
-            android:visibility="gone"
-            android:textSize="36sp" />
+            android:textSize="36sp"
+            android:visibility="gone" />
     </LinearLayout>
 
-    <RelativeLayout
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/actionbar_message_view"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:visibility="gone"
         tools:visibility="visible">
 
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/securityStatusIcon"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/securityStatusText"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/pep_status_red" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/securityStatusText"
+            style="@style/PEpSecurityStatusTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:gravity="center_vertical|start"
+            android:includeFontPadding="true"
+            android:lines="2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/securityStatusIcon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/pep_rating_secure"
+            tools:visibility="visible" />
+
         <com.fsck.k9.view.MessageTitleView
             android:id="@+id/message_title_view"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:singleLine="true"
             android:ellipsize="end"
-            android:layout_alignParentStart="true"
-            android:layout_toStartOf="@+id/tvPep"
             android:gravity="center_vertical"
             android:includeFontPadding="false"
+            android:singleLine="true"
             android:textSize="16sp"
             android:visibility="gone"
-            tools:text="message subtitle"
-            />
-        <TextView
-            android:id="@+id/tvPep"
-            android:text="@string/pep"
-            fontPath="fonts/UniversLTStd.otf"
-            style="@style/pEpIndicatorTVActionBarStyle"
-            android:textColor="@color/white"
-            android:layout_alignParentRight="true"/>
-    </RelativeLayout>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="message subtitle that is big enough to fil"
+            tools:visibility="gone" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </FrameLayout>

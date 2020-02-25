@@ -22,6 +22,8 @@ import dagger.Module;
 import dagger.Provides;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.ui.permissions.PEpPermissionChecker;
+import security.pEp.ui.resources.PEpResourcesProvider;
+import security.pEp.ui.resources.ResourcesProvider;
 
 @Module
 public class PEpModule {
@@ -76,4 +78,5 @@ public class PEpModule {
     public Preferences providePreferences() {
         return Preferences.getPreferences(context);
     }
+
 }

@@ -13,7 +13,7 @@
     <color name="message_list_widget_text_read">#444444</color>
     <color name="message_list_widget_text_unread">#000000</color>
     <color name="light_black">#444444</color>
-    <color name="light_grey">#737373</color>
+    <color name="dark_grey">#737373</color>
 
     <color name="openpgp_red">#CC0000</color>
     <color name="openpgp_orange">#FF8800</color>
@@ -58,4 +58,15 @@
     <color name="status_todo_chevron">#888</color>
     <color name="status_error_cross">#f44336</color>
     <color name="status_ok_checkmark">#7bad45</color>
+
+    <color name="compose_gray">#FFAAAAAA</color>
+
+    <color name="message_list_active_background_color_dark">#42A044</color>
+    <color name="message_list_active_background_color_light">#59D85D</color>
+    <color name="message_list_selected_background_color">#c8e6c9</color>
+    <color name="message_list_read_background_color">#c0cdcdcd</color>
+    <color name="message_list_unread_background_color_dark">#c05a5a5a</color>
+    <color name="message_list_divider_color_light">#ffcccccc</color>
+    <color name="message_list_divider_color_dark">#ff333333</color>
+
 </resources>

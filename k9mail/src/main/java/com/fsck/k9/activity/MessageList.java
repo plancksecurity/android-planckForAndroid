@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,12 +21,14 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
@@ -46,6 +47,7 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.MessageActions;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
+import com.fsck.k9.activity.setup.WelcomeMessage;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.fragment.MessageListFragment;
@@ -57,11 +59,9 @@ import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.notification.NotificationChannelManager;
 import com.fsck.k9.pEp.AccountUtils;
-import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.models.FolderModel;
-import com.fsck.k9.pEp.ui.PEpUIUtils;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageSwipeDirection;
 import com.fsck.k9.pEp.ui.infrastructure.Router;
@@ -97,6 +97,9 @@ import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionRequester;
+import security.pEp.ui.PEpUIUtils;
+import security.pEp.ui.resources.ResourcesProvider;
+import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
 
@@ -115,8 +118,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     @Inject
     PermissionRequester permissionRequester;
     @Inject
+    ToolBarCustomizer toolBarCustomizer;
+    @Inject
     Preferences preferences;
-
+    @Inject
+    ResourcesProvider resourcesProvider;
 
     @Deprecated
     //TODO: Remove after 2017-09-11
@@ -323,6 +329,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     private ProgressBar mActionBarProgress;
     private MenuItem mMenuButtonCheckMail;
+    private CheckBox flaggedCheckbox;
     private View mActionButtonIndeterminateProgress;
     private int mLastDirection = (K9.messageViewShowNext()) ? NEXT : PREVIOUS;
 
@@ -383,7 +390,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         initializeFragments();
         displayViews();
         channelUtils.updateChannels();
-        if (mAccount != null && mAccount.ispEpPrivacyProtected()) initializePepStatus();
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
@@ -465,7 +471,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void setupNavigationHeader() {
-        mainAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
+        mainAccountText.setText(PEpUIUtils.accountNameSummary(mAccount.getName()));
         mainAccountName.setText(mAccount.getName());
         mainAccountEmail.setText(mAccount.getEmail());
         setupNavigationHeaderListeners();
@@ -534,13 +540,13 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         final Account firstAccount = accounts.get(accounts.size() - 1);
         firstAccountLayout.setVisibility(View.VISIBLE);
         secondAccountLayout.setVisibility(View.GONE);
-        firstAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
+        firstAccountText.setText(PEpUIUtils.accountNameSummary(firstAccount.getName()));
         firstAccountLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mMessageListFragment.showLoadingMessages();
-                mainAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
-                firstAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
+                mainAccountText.setText(PEpUIUtils.accountNameSummary(firstAccount.getName()));
+                firstAccountText.setText(PEpUIUtils.accountNameSummary(mAccount.getName()));
                 mainAccountEmail.setText(firstAccount.getEmail());
                 mainAccountName.setText(firstAccount.getName());
                 changeAccountAnimation(mainAccountLayout, firstAccountLayout, firstAccount);
@@ -553,17 +559,17 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         final Account lastAccount = accounts.get(accounts.size() - 2);
         firstAccountLayout.setVisibility(View.VISIBLE);
         secondAccountLayout.setVisibility(View.VISIBLE);
-        firstAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
-        secondAccountText.setText(PEpUIUtils.firstLetterOf(lastAccount.getName()));
+        firstAccountText.setText(PEpUIUtils.accountNameSummary(firstAccount.getName()));
+        secondAccountText.setText(PEpUIUtils.accountNameSummary(lastAccount.getName()));
         firstAccountLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mMessageListFragment.showLoadingMessages();
-                mainAccountText.setText(PEpUIUtils.firstLetterOf(firstAccount.getName()));
+                mainAccountText.setText(PEpUIUtils.accountNameSummary(firstAccount.getName()));
                 mainAccountEmail.setText(firstAccount.getEmail());
                 mainAccountName.setText(firstAccount.getName());
-                firstAccountText.setText(PEpUIUtils.firstLetterOf(lastAccount.getName()));
-                secondAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
+                firstAccountText.setText(PEpUIUtils.accountNameSummary(lastAccount.getName()));
+                secondAccountText.setText(PEpUIUtils.accountNameSummary(mAccount.getName()));
                 changeAccountAnimation(mainAccountLayout, firstAccountLayout, firstAccount);
             }
         });
@@ -571,10 +577,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             @Override
             public void onClick(View v) {
                 mMessageListFragment.showLoadingMessages();
-                mainAccountText.setText(PEpUIUtils.firstLetterOf(lastAccount.getName()));
+                mainAccountText.setText(PEpUIUtils.accountNameSummary(lastAccount.getName()));
                 mainAccountEmail.setText(lastAccount.getEmail());
                 mainAccountName.setText(lastAccount.getName());
-                secondAccountText.setText(PEpUIUtils.firstLetterOf(mAccount.getName()));
+                secondAccountText.setText(PEpUIUtils.accountNameSummary(mAccount.getName()));
                 changeAccountAnimation(mainAccountLayout, secondAccountLayout, lastAccount);
             }
         });
@@ -1425,13 +1431,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
         StorageManager.getInstance(getApplication()).addListener(mStorageListener);
 
-        if (mAccount != null) {
-            initializePepStatus();
-        }
-
         if (!isThreadDisplayed) {
-            PEpUtils.colorToolbar(PePUIArtefactCache.getInstance(getApplicationContext()), getToolbar(), Rating.pEpRatingTrustedAndAnonymized);
-            setStatusBarPepColor(Rating.pEpRatingTrustedAndAnonymized);
+            toolBarCustomizer.setToolbarColor(Rating.pEpRatingTrustedAndAnonymized);
+            toolBarCustomizer.setStatusBarPepColor(Rating.pEpRatingTrustedAndAnonymized);
         }
 
         if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
@@ -1489,21 +1491,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         mActionButtonIndeterminateProgress = getActionButtonIndeterminateProgress();
     }
 
-    private void initializePepStatus() {
-        mActionBarPepStatus = (TextView) customView.findViewById(R.id.tvPep);
-        if (mAccount.ispEpPrivacyProtected()) {
-            mActionBarPepStatus.setVisibility(View.VISIBLE);
-            mActionBarPepStatus.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mMessageViewFragment.onPepStatus(MessageList.this);
-                }
-            });
-        } else {
-            mActionBarPepStatus.setVisibility(View.GONE);
-        }
-    }
-
     @SuppressLint("InflateParams")
     private View getActionButtonIndeterminateProgress() {
         return getLayoutInflater().inflate(R.layout.actionbar_indeterminate_progress_actionview, null);
@@ -1540,8 +1527,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void updateToolbarColorToOriginal() {
-        PEpUtils.colorToolbar(getToolbar(), PEpUtils.getRatingColor(Rating.pEpRatingFullyAnonymous, this));
-        setStatusBarPepColor(Rating.pEpRatingFullyAnonymous);
+        toolBarCustomizer.setToolbarColor(Rating.pEpRatingFullyAnonymous);
+        toolBarCustomizer.setStatusBarPepColor(Rating.pEpRatingFullyAnonymous);
     }
 
     /**
@@ -1809,6 +1796,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 mMessageListFragment.confirmMarkAllAsRead();
                 return true;
             }
+            case R.id.tutorial: {
+                WelcomeMessage.showTutorial(this);
+                return true;
+            }
             case R.id.show_folder_list: {
                 onShowFolderList();
                 return true;
@@ -1876,10 +1867,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 updateMenu();
                 return true;
             }
-            case R.id.pEp_indicator: {
-                mMessageViewFragment.onPepStatus(MessageList.this);
-
-            }
         }
 
         if (!mSingleFolderMode) {
@@ -1903,7 +1890,14 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.message_list_option, menu);
         mMenu = menu;
-        mMenuButtonCheckMail= menu.findItem(R.id.check_mail);
+        mMenuButtonCheckMail = menu.findItem(R.id.check_mail);
+        flaggedCheckbox = (CheckBox) menu.findItem(R.id.flag).getActionView();
+        flaggedCheckbox.setButtonDrawable(resourcesProvider.getAttributeResource(R.attr.iconFlagButtonOpaque));
+        flaggedCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    if (buttonView.isPressed())
+                        mMessageViewFragment.onToggleFlagged();
+                }
+        );
         return true;
     }
 
@@ -1938,6 +1932,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         if (mDisplayMode == DisplayMode.MESSAGE_LIST
                 || mMessageViewFragment == null
                 || !mMessageViewFragment.isInitialized()) {
+            toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(ContextCompat.getColor(this,R.color.white));
             menu.findItem(R.id.next_message).setVisible(false);
             menu.findItem(R.id.previous_message).setVisible(false);
             menu.findItem(R.id.single_message_options).setVisible(false);
@@ -1952,8 +1947,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             menu.findItem(R.id.select_text).setVisible(false);
             menu.findItem(R.id.show_headers).setVisible(false);
             menu.findItem(R.id.hide_headers).setVisible(false);
+            menu.findItem(R.id.flag).setVisible(false);
 
         } else {
+            toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(ContextCompat.getColor(this,R.color.light_black));
+            menu.findItem(R.id.delete).setIcon(R.drawable.ic_delete_black_24dp);
             // hide prev/next buttons in split mode
             if (mDisplayMode != DisplayMode.MESSAGE_VIEW) {
                 menu.findItem(R.id.next_message).setVisible(false);
@@ -1973,6 +1971,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 next.setEnabled(canDoNext);
                 next.getIcon().setAlpha(canDoNext ? 255 : 127);
             }
+
+
+            flaggedCheckbox.setChecked(mMessageViewFragment.isMessageFlagged());
 
             // Set title of menu item to toggle the read state of the currently displayed message
             if (mMessageViewFragment.isMessageRead()) {
@@ -2163,6 +2164,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             if (mDisplayMode != DisplayMode.SPLIT_VIEW) {
                 showMessageView();
             }
+
+            setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
+
         }
     }
 
