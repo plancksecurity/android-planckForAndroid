@@ -1162,12 +1162,19 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 //  TODO> Review after rebase
         handlePEpState(false);       // fire once to get everything set up.
 
-        if (encrypted) {
+        if (encrypted &&
+                !recipientPresenter.isForceUnencrypted()) {
             menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_unprotected);
         } else {
             menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_protected);
         }
         alwaysSecureMenuItem = menu.findItem(R.id.is_always_secure);
+        if(recipientPresenter.isAlwaysSecure()) {
+            alwaysSecureMenuItem.setTitle(R.string.is_not_always_secure);
+        }
+        else {
+            alwaysSecureMenuItem.setTitle(R.string.is_always_secure);
+        }
         return true;
     }
 
