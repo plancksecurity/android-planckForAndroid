@@ -54,24 +54,14 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
     @Inject PEpStatusPresenter presenter;
 
-    //@Bind(R.id.pEpTitle)
-    //TextView pEpTitle;
-    //@Bind(R.id.title_status_badge)
-    //ImageView statusBadge;
-    //@Bind(R.id.pEpSuggestion)
-    //TextView pEpSuggestion;
     @Bind(R.id.my_recycler_view)
     RecyclerView recipientsView;
 
     @Bind(R.id.its_own_messageTV)
     TextView itsOwnMessageTV;
 
-
-    //PEpIdentitiesAdapter recipientsAdapter;
     RecyclerView.LayoutManager recipientsLayoutManager;
-    //PepStatusRendererAdapter statusAdapter;
     private RVRendererAdapter<PEpIdentity> recipientsAdapter;
-    //PEpIdentitiesAdapter recipientsAdapter;
 
     String sender = "";
     private MessageReference messageReference;
@@ -139,7 +129,6 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         presenter.restoreInstanceState(savedInstanceState);
         setUpActionBar();
         presenter.loadRecipients();
-        //presenter.loadRating(getpEpRating());
     }
 
     @Override
@@ -166,7 +155,6 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
             TextView titleTV = findViewById(R.id.titleText);
             titleTV.setText(stringResource);
-            //getSupportActionBar().setTitle(getResources().getString(stringResource));
         }
     }
 
@@ -177,7 +165,6 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
             TextView titleTV = findViewById(R.id.titleText);
             titleTV.setText(title);
-            //getSupportActionBar().setTitle(title);
         }
     }
 
@@ -187,8 +174,6 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         recipientsLayoutManager = new LinearLayoutManager(this);
         ((LinearLayoutManager) recipientsLayoutManager).setOrientation(LinearLayoutManager.VERTICAL);
         recipientsView.setLayoutManager(recipientsLayoutManager);
-        //presenter.initializeAddressesOnDevice(preferences.getAccounts());
-        //PEpStatusRenderer renderer111 = new PEpStatusRenderer(presenter.getAddressesOnDevice());
         RendererBuilder<PEpIdentity> rendererBuilder =
                 new PEpStatusRendererBuilder(
                         preferences.getAccounts(),
@@ -197,19 +182,8 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
                         getOnHandshakeResultListener(),
                         myself
                 );
-        //Timber.e("the identities: " + pEpIdentities);
-        //presenter.disablePEpInListIfNeeded(pEpIdentities);
         ListAdapteeCollection<PEpIdentity> adapteeCollection = new ListAdapteeCollection<>(pEpIdentities);
         recipientsAdapter = new RVRendererAdapter<>(rendererBuilder, adapteeCollection);
-
-
-
-        /*recipientsAdapter = new PEpIdentitiesAdapter(preferences.getAccounts(),
-                getOnResetGreenClickListener(),
-                getOnResetRedClickListener(),
-                getOnHandshakeClickListener(),
-                getContextActions());
-        recipientsAdapter.setIdentities(pEpIdentities);*/
         recipientsView.setAdapter(recipientsAdapter);
         recipientsView.setVisibility(View.VISIBLE);
         recipientsView.addItemDecoration(new SimpleDividerItemDecoration(this));
@@ -238,25 +212,6 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     private PEpStatusRendererBuilder.HandshakeResultListener getOnHandshakeResultListener() {
         return (identity, trust) -> presenter.onHandshakeResult(identity, trust);
     }
-
-    /*@NonNull
-    private View.OnClickListener getOnResetRedClickListener() {
-        return view -> new AlertDialog.Builder(view.getContext())
-                .setMessage(R.string.handshake_reset_dialog_message)
-                .setCancelable(false)
-                .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
-            int position = ((Integer) view.getTag());
-            presenter.resetRecipientTrust(position);
-        }).setNegativeButton(R.string.cancel_action, null).show();
-    }*/
-
-    /*@NonNull
-    private View.OnClickListener getOnResetGreenClickListener() {
-        return view -> {
-            int position = ((Integer) view.getTag());
-            presenter.resetRecipientTrust(position);
-        };
-    }*/
 
     @Override
     public void setupBackIntent(Rating rating, boolean forceUnencrypted, boolean alwaysSecure) {
@@ -409,10 +364,6 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
                         : R.string.is_always_secure
                 );
                 return true;
-
-            /*case R.id.action_explanation:
-                showExplanationDialog();
-                return true;*/
         }
 
         return super.onOptionsItemSelected(item);
