@@ -13,18 +13,34 @@
         android:orientation="horizontal"
         android:paddingRight="8dp"
         android:layout_marginTop="16dp">
-        <TextView
+
+        <TextSwitcher
             android:id="@+id/trustwords"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="?android:attr/textColorPrimary"
-            android:fontFamily="sans-serif"
-            tools:text="IMPORTUNER METAPHOR ARNO DIABETES SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET"
-            android:ellipsize="none"
-            android:breakStrategy="simple"
             android:paddingTop="8dp"
-            android:layout_marginRight="40dp"/>
+            android:layout_marginRight="40dp"
+            android:measureAllChildren="false">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorPrimary"
+                android:fontFamily="sans-serif"
+                tools:text="IMPORTUNER METAPHOR ARNO DIABETES SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET"
+                android:ellipsize="none"
+                android:breakStrategy="simple" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorPrimary"
+                android:fontFamily="sans-serif"
+                tools:text="IMPORTUNER METAPHOR ARNO DIABETES SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET"
+                android:ellipsize="none"
+                android:breakStrategy="simple"
+                />
+        </TextSwitcher>
 
         <ImageView
             android:id="@+id/change_language"

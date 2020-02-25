@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.TextView
+import android.widget.TextSwitcher
 import androidx.appcompat.widget.PopupMenu
 import butterknife.Bind
 import butterknife.ButterKnife
@@ -28,7 +28,7 @@ class PEpStatusSecureRenderer(
     private lateinit var trustwordsPresenter: PEpStatusTrustwordsPresenter
 
     @Bind(R.id.trustwords)
-    lateinit var trustwordsTv: TextView
+    lateinit var trustwordsTv: TextSwitcher
 
     @Bind(R.id.change_language)
     lateinit var changeLanguageImage: ImageView
@@ -46,7 +46,8 @@ class PEpStatusSecureRenderer(
     }
 
     override fun hookListeners(rootView: View?) {
-
+        trustwordsTv.setInAnimation(context, android.R.anim.fade_in)
+        trustwordsTv.setOutAnimation(context, android.R.anim.fade_out)
     }
 
     override fun render() {
@@ -59,12 +60,12 @@ class PEpStatusSecureRenderer(
                 object : PEpStatusTrustwordsPresenter.PEpStatusTrustwordsView {
 
                     override fun setLongTrustwords(newTrustwords: String) {
-                        trustwordsTv.text = newTrustwords
+                        trustwordsTv.setText(newTrustwords)
                         enableButtons(true)
                     }
 
                     override fun setShortTrustwords(newTrustwords: String) {
-                        trustwordsTv.text = context.getString(R.string.ellipsized_text, newTrustwords)
+                        trustwordsTv.setText(context.getString(R.string.ellipsized_text, newTrustwords))
                         enableButtons(true)
                     }
 
