@@ -36,6 +36,7 @@ import com.fsck.k9.message.MessageBuilder;
 import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.Poller;
+import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import org.openintents.openpgp.OpenPgpApiManager;
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpApiManagerCallback;
@@ -571,6 +572,20 @@ public class RecipientPresenter {
             case OPENPGP_USER_INTERACTION:
                 openPgpApiManager.onUserInteractionResult();
                 break;
+            case PEpStatus.REQUEST_STATUS:
+                doActionsFromPEpStatus(data);
+                break;
+        }
+    }
+
+    private void doActionsFromPEpStatus(Intent data) {
+        boolean forceUncrypted = data.getBooleanExtra(STATE_FORCE_UNENCRYPTED, this.forceUnencrypted);
+        boolean alwaysSecure = data.getBooleanExtra(STATE_ALWAYS_SECURE, this.isAlwaysSecure);
+        if(forceUncrypted != this.forceUnencrypted) {
+            switchPrivacyProtection(PEpProvider.ProtectionScope.MESSAGE);
+        }
+        if(alwaysSecure != this.isAlwaysSecure) {
+            setAlwaysSecure(alwaysSecure);
         }
     }
 

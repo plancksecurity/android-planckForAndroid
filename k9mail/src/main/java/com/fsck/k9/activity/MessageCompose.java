@@ -91,6 +91,7 @@ import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepActivity;
+import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
@@ -856,6 +857,13 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         requestCode |= REQUEST_MASK_RECIPIENT_PRESENTER;
         isInSubActivity = true;
         startActivityForResult(contacts.contactPickerIntent(), requestCode);
+    }
+
+    public void goToPepStatus(Rating currentRating, String sender, MessageReference messageReference,
+                              Boolean isMessageIncoming, String myself, Boolean forceDecrypted, Boolean alwaysSecure) {
+        int requestCode = PEpStatus.REQUEST_STATUS | REQUEST_MASK_RECIPIENT_PRESENTER;
+        isInSubActivity = true;
+        PEpStatus.actionShowStatus(this, requestCode, currentRating, sender, messageReference, isMessageIncoming, myself, forceDecrypted, alwaysSecure);
     }
 
     @Override
