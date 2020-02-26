@@ -1,44 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/add_attachment"
         android:alphabeticShortcut="n"
-        android:title="@string/add_attachment_action"
         android:icon="?attr/iconActionAddAttachment"
-        app:showAsAction="always"
-    />
+        android:title="@string/add_attachment_action"
+        app:showAsAction="always" />
     <item
         android:id="@+id/send"
         android:alphabeticShortcut="s"
-        android:title="@string/send_action"
         android:icon="?attr/iconActionSend"
-        app:showAsAction="always"
-    />
+        android:title="@string/send_action"
+        app:showAsAction="always" />
     <item
         android:id="@+id/add_from_contacts"
         android:alphabeticShortcut="a"
-        android:title="@string/add_from_contacts"
-    />
+        android:title="@string/add_from_contacts" />
 
     <item
         android:id="@+id/save"
         android:alphabeticShortcut="d"
-        android:title="@string/save_draft_action"
         android:icon="?attr/iconActionSave"
-        />
+        android:title="@string/save_draft_action" />
     <item
         android:id="@+id/discard"
         android:alphabeticShortcut="q"
-        android:title="@string/discard_action"
         android:icon="?attr/iconActionCancel"
-    />
+        android:title="@string/discard_action" />
     <item
         android:id="@+id/read_receipt"
         android:alphabeticShortcut="r"
-        android:title="@string/read_receipt"
         android:icon="?attr/iconActionRequestReadReceipt"
-    />
+        android:title="@string/read_receipt" />
+
+    <item
+        android:id="@+id/privacyStatus"
+        android:title="@string/pep_title_activity_privacy_status"
+        app:showAsAction="never" />
 
     <!--item
         android:id="@+id/openpgp_inline_enable"

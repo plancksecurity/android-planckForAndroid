@@ -1867,6 +1867,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 updateMenu();
                 return true;
             }
+            case R.id.privacyStatus:
+                mMessageViewFragment.onPEpPrivacyStatus(true);
+                return true;
         }
 
         if (!mSingleFolderMode) {
@@ -1948,7 +1951,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             menu.findItem(R.id.show_headers).setVisible(false);
             menu.findItem(R.id.hide_headers).setVisible(false);
             menu.findItem(R.id.flag).setVisible(false);
-
         } else {
             toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(ContextCompat.getColor(this,R.color.light_black));
             menu.findItem(R.id.delete).setIcon(R.drawable.ic_delete_black_24dp);
@@ -2043,8 +2045,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             menu.findItem(R.id.send_messages).setVisible(false);
             menu.findItem(R.id.mark_all_as_read).setVisible(false);
             menu.findItem(R.id.show_folder_list).setVisible(false);
+            menu.findItem(R.id.privacyStatus).setVisible(true);
             setDrawerEnabled(false);
         } else {
+            menu.findItem(R.id.privacyStatus).setVisible(false);
             menu.findItem(R.id.set_sort).setVisible(true);
             menu.findItem(R.id.select_all).setVisible(true);
             menu.findItem(R.id.compose).setVisible(true);
