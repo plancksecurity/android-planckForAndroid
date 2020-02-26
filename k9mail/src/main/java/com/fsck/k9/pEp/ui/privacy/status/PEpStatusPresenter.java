@@ -20,7 +20,6 @@ import com.fsck.k9.pEp.ui.SimpleMessageLoaderHelper;
 
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
-import timber.log.Timber;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,12 +53,14 @@ public class PEpStatusPresenter implements Presenter {
         this.pEpIdentityMapper = pEpIdentityMapper;
     }
 
-    void initilize(PEpStatusView pEpStatusView, PePUIArtefactCache uiCache, PEpProvider pEpProvider, boolean isMessageIncoming, Address senderAddress) {
+    void initilize(PEpStatusView pEpStatusView, PePUIArtefactCache uiCache, PEpProvider pEpProvider, boolean isMessageIncoming, Address senderAddress, boolean forceUnencrypted, boolean alwaysSecure) {
         this.view = pEpStatusView;
         this.cache = uiCache;
         this.pEpProvider = pEpProvider;
         this.isMessageIncoming = isMessageIncoming;
         this.senderAddress = senderAddress;
+        this.forceUnencrypted = forceUnencrypted;
+        this.isAlwaysSecure = alwaysSecure;
         pEpIdentityMapper.initialize(pEpProvider);
     }
 

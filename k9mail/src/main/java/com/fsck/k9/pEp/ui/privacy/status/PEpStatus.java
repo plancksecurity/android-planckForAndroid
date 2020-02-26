@@ -111,20 +111,19 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         setContentView(R.layout.pep_status);
         ButterKnife.bind(PEpStatus.this);
         initPep();
-        if (getIntent() != null && getIntent().hasExtra(SENDER)
-                && getIntent().hasExtra(MESSAGE_REFERENCE)) {
-            sender = getIntent().getStringExtra(SENDER);
-            myself = getIntent().getStringExtra(MYSELF);
-            messageReference = MessageReference.parse(getIntent().getExtras().getString(MESSAGE_REFERENCE));
-            boolean isMessageIncoming = getIntent().getBooleanExtra(MESSAGE_DIRECTION, false);
-            presenter.initilize(this, getUiCache(), getpEp(), isMessageIncoming, new Address(sender));
+        final Intent intent = getIntent();
+        if (intent != null && intent.hasExtra(SENDER)
+                && intent.hasExtra(MESSAGE_REFERENCE)) {
+            sender = intent.getStringExtra(SENDER);
+            myself = intent.getStringExtra(MYSELF);
+            messageReference = MessageReference.parse(intent.getExtras().getString(MESSAGE_REFERENCE));
+            boolean isMessageIncoming = intent.getBooleanExtra(MESSAGE_DIRECTION, false);
+            boolean forceUnencrypted = intent.getBooleanExtra(FORCE_UNENCRYPTED, false);
+            boolean alwaysSecure = intent.getBooleanExtra(ALWAYS_SECURE, false);
+            presenter.initilize(this, getUiCache(), getpEp(), isMessageIncoming, new Address(sender), forceUnencrypted, alwaysSecure);
             presenter.loadMessage(messageReference);
         }
 
-        if(getIntent().hasExtra(FORCE_UNENCRYPTED)) {
-            presenter.setForceUnencrypted(getIntent().getBooleanExtra(FORCE_UNENCRYPTED, false));
-            presenter.setAlwaysSecure(getIntent().getBooleanExtra(ALWAYS_SECURE, false));
-        }
         restorePEpRating(savedInstanceState);
         presenter.restoreInstanceState(savedInstanceState);
         setUpActionBar();

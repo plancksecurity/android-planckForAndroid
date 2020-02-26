@@ -43,7 +43,7 @@ public class PEpStatusPresenterTest {
 
     @Test
     public void shouldStartMessageLoaderWhenLoadMessage() throws Exception {
-        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
+        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
 
         presenter.loadMessage(new MessageReference("","","", null));
 
@@ -55,7 +55,7 @@ public class PEpStatusPresenterTest {
     @Test
     public void shouldGetRecipientsFromCacheWhenLoadRecipients() throws Exception {
         when(uiCache.getRecipients()).thenReturn(recipients());
-        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
+        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
 
         presenter.loadRecipients();
 
@@ -64,7 +64,7 @@ public class PEpStatusPresenterTest {
 
     @Test
     public void shouldShowPEpTextsWhenLoadRating() throws Exception {
-        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
+        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
 
         presenter.loadRating(Rating.pEpRatingReliable);
 
@@ -73,7 +73,7 @@ public class PEpStatusPresenterTest {
 
     @Test
     public void shouldHideBadgeWhenLoadNullRating() throws Exception {
-        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
+        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
 
         presenter.loadRating(null);
 
@@ -82,7 +82,7 @@ public class PEpStatusPresenterTest {
 
     @Test
     public void shouldExtractRatingWhenOnResult() throws Exception {
-        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
+        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
 
         presenter.onResult(new Intent());
 
@@ -91,7 +91,7 @@ public class PEpStatusPresenterTest {
 
     @Test
     public void shouldGetRecipientsWhenOnResult() throws Exception {
-        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
+        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
 
         presenter.onResult(new Intent());
 
@@ -100,7 +100,7 @@ public class PEpStatusPresenterTest {
 
     @Test
     public void shouldUpdateViewOnResult() throws Exception {
-        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
+        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
         when(uiCache.getRecipients()).thenReturn(recipients());
 
         presenter.onResult(new Intent());
@@ -110,7 +110,7 @@ public class PEpStatusPresenterTest {
 
     @Test
     public void shouldGetRatingWhenSetupOutgoingMessageRating() throws Exception {
-        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress);
+        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
         when(uiCache.getRecipients()).thenReturn(recipients());
 
         presenter.onResult(new Intent());
