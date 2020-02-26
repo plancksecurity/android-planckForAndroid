@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <!-- Unstranslatable strings -->
@@ -11,8 +10,6 @@
     <string name="pEp_trustwords">p≡p Trustwords</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_user_name_format" translatable="false">%1$s</string>
-
-
     <string-array name="pep_states">
         <item>pEpRatingUndefined</item>
         <item>pEpRatingCannotDecrypt</item>
@@ -28,7 +25,6 @@
         <item>pEpRatingB0rken</item>
         <item>pEpRatingUnderAttack</item>
     </string-array>
-
     <array name="pep_color">
         <item>@color/pep_no_color<!--pEpRatingUndefined--></item>
         <item>@color/pep_no_color<!--pEpRatingCannotDecrypt--></item>
@@ -44,19 +40,14 @@
         <item>@color/pep_red<!--pEpRatingB0rken--></item>
         <item>@color/pep_red<!--pEpRatingUnderAttack--></item>
     </array>
-
     <!-- Translatable strings -->
-
     <string name="pep_account_setup_generating_keys">"Setting up your Privacy by Default "</string>
     <string name="pep_reset_trust">Stop trusting</string>
     <string name="pep_pgp_fingerprint">PGP Fingerprint</string>
-
     <string name="pep_dialog_weaker_forward_warning_message">You\'re about to forward a secure message as unsecure. If you choose to proceed, confidential information might be leaked putting you and your communication partners at risk. Are you sure you want to continue? </string>
-
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Proceed</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancel</string>
     <string name="pep_dialog_confirm_forward_title">Confirm forward</string>
-
     <string name="pep_title_activity_privacy_status">Privacy status</string>
     <string name="pep_extra_addresses">Extra key ids:</string>
     <string name="pep_use_keyserver">Look up keys on key server</string>
@@ -64,11 +55,10 @@
     <string name="pep_subject_unprotected">Unprotected message subjects</string>
     <string name="pep_add_key_to_blacklist">Add a key to blacklist</string>
     <string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>
-
     <string name="pep_confirm_trustwords">Accept</string>
     <string name="pep_wrong_trustwords">Decline</string>
     <string name="pep_wrong_fingerprint">Wrong fingerprint</string>
-    <string name="pep_ask_trustwords">Ask your partner in person or over the phone: What are your trustwords? Then compare to the correct answer shown below.</string>
+    <string name="pep_ask_trustwords">Ask your partner in person or over the phone: What are your Trustwords\? Then compare to the correct answer shown below.</string>
     <string name="pep_complete_partner_format">Partner\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_partner_format">Partner\n%1$s</string>
     <string name="pep_complete_myself_format">Myself\n%1$s &lt;%2$s&gt;</string>
@@ -112,12 +102,11 @@
     <string name="read_permission_first_explanation">We need your permission to read the contacts stored on your mobile phone</string>
     <string name="button_settings">Settings</string>
     <string name="read_snackbar_permission_rationale">We need your permission to read the contacts stored on your mobile phone</string>
-    <string name="read_snackbar_permission_permanently_denied">Don\'t allowing us read your contacts may cause unexpected behaviours</string>
+    <string name="read_snackbar_permission_permanently_denied">Not allowing us to read your contacts may cause unexpected behaviors</string>
     <string name="read_permission_rationale_title">Reading contacts</string>
-
     <string name="download_permission_first_explanation">We need your permission to download files on your mobile phone</string>
     <string name="download_snackbar_permission_rationale">We need your permission to save attachments from your emails.</string>
-    <string name="download_snackbar_permission_permanently_denied">Don\'t allowing us download files may cause unexpected behaviours</string>
+    <string name="download_snackbar_permission_permanently_denied">Not allowing us to download files may cause unexpected behaviors</string>
     <string name="download_permission_rationale_title">Download files</string>
     <string name="add_fpr">Add fingerprint</string>
     <string name="error_parsing_fingerprint">Error parsing fingerprint!</string>
@@ -135,8 +124,7 @@
     <string name="add_account_message">To be able to use this account you should add it to your device</string>
     <string name="account_already_exists">Account already exists</string>
     <string name="device_offline_warning">Your device seems to be offline, please check your connection before you can continue</string>
-    <string name="permissions_needed_message">Not granting the needed permissions may cause unexpected behaviours. Press OK to grant them to us.</string>
-
+    <string name="permissions_needed_message">Not granting the needed permissions may cause unexpected behaviors. Press OK to grant them to us.</string>
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>
         <item>Cannot Decrypt<!--pEpRatingCannotDecrypt--></item>
@@ -152,7 +140,6 @@
         <item>Ooops: Internal problem<!--pEpRatingB0rken--></item>
         <item>Under Attack<!--pEpRatingUnderAttack--></item>
     </string-array>
-
     <string-array name="pep_explanation">
         <item>This message does not contain enough information to determine if it is secure.<!--pEpRatingUndefined--></item>
         <item>This message cannot be decrypted.<!--pEpRatingCannotDecrypt--></item>
@@ -168,7 +155,6 @@
         <item><!--pEpRatingB0rken--></item>
         <item>This message is not secure and has been tampered with.<!--pEpRatingUnderAttack--></item>
     </string-array>
-
     <string-array name="pep_suggestion">
         <item>Please add the necessary information.<!--pEpRatingUndefined--></item>
         <item>If this message was addressed to you, please inform the sender that you don\'t have the key.<!--pEpRatingCannotDecrypt--></item>
@@ -184,27 +170,23 @@
         <item><!--pEpRatingB0rken--></item>
         <item>Separately verify the content of this message with your communication partner.<!--pEpRatingUnderAttack--></item>
     </string-array>
-
     <string name="nnf_new_folder">New folder</string>
     <string name="nnf_create_folder_error">Failed to create folder</string>
     <string name="nnf_name">Name</string>
     <string name="nnf_select_something_first">Please select something first</string>
     <string name="nnf_need_valid_filename">Please enter or select a valid filename</string>
-    <string name="nnf_permission_external_write_denied">Permisson to access filesystem denied</string>
+    <string name="nnf_permission_external_write_denied">Permission to access filesystem denied</string>
     <string name="nnf_filename">Filename</string>
-
     <string name="key_import_accept">Accept</string>
     <string name="key_import_reject">Reject</string>
     <string name="key_import_accept_feedback">Key replaced</string>
     <string name="key_import_reject_feedback">Key rejected</string>
     <string name="message_loading_error">Message rating is still loading, try again</string>
-
     <string name="pep_sync">p≡p sync</string>
     <string name="pep_sync_enable_account">Synchronize this account</string>
     <string name="pep_sync_enable_global">Enable p≡p sync</string>
     <string name="pep_sync_disable_global">Disable p≡p sync</string>
     <string name="pep_sync_leave_device_group">Leave Device group</string>
-
     <string name="open_pgp">OpenPGP</string>
     <string name="pgp">PGP</string>
     <string name="key_import_wizard_handshake_explanation">Please compare the following Trustwords with the ones on your other device and confirm if they match.</string>
@@ -225,7 +207,6 @@
     <string name="key_import_failure">Failed to import and use any key from %1$s with key id: %2$s</string>
     <string name="key_import_success">%1$s Key imported successfully from %2$s</string>
     <string name="key_import_from_fs_input_fpr">Please enter the Key ID or the fingerprint of the key.</string>
-
     <string name="reset">Reset</string>
     <string name="reset_all">Reset all</string>
     <string name="key_reset_for_identity_context_title">Reset p≡p data</string>
@@ -233,14 +214,9 @@
     <string name="key_reset_own_identity_feedback">The account has been reset.</string>
     <string name="trust_identity_feedback">%s now is trusted</string>
     <string name="mistrust_identity_feedback">%s now is mistrusted</string>
-
-
     <string name="pep_key_reset_all_own_ids_summary">Reset all accounts</string>
     <string name="key_reset_all_own_identitities_feedback">All p≡p accounts have been reset.</string>
-
     <string name="pep_key_reset_all_own_ids_warning">This action will reset all your accounts. \n Are you sure you want to reset?</string>
     <string name="pep_key_reset_own_id_warning">This action will reset your account. \n Are you sure you want to reset?</string>
-
     <string name="pep_key_reset_own_id_warning_title">Reset %s account</string>
-
 </resources>
