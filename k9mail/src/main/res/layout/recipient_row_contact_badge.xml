@@ -4,9 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    tools:showIn="@layout/pep_recipient_row_only_text"
-    android:elevation="5dp"
-    android:background="#eeeeee">
+    android:background="@color/white">
 
     <com.fsck.k9.pEp.ui.PEpContactBadge
         android:id="@+id/status_badge"
@@ -26,7 +24,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingLeft="4dp">
 
         <TextView
             android:id="@+id/tvUsername"
