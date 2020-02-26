@@ -354,6 +354,10 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         activity.invalidateOptionsMenu();
     }
 
+    public boolean isPepStatusClickable() {
+        return PEpUtils.isPepStatusClickable(pEpUiCache.getRecipients(), pEpRating);
+    }
+
     public void showCryptoStatus(CryptoStatusDisplayType cryptoStatusDisplayType) {
         boolean shouldBeHidden = cryptoStatusDisplayType.childToDisplay == VIEW_INDEX_HIDDEN;
         if (shouldBeHidden) {

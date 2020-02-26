@@ -1119,7 +1119,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     private void onPEpPrivacyStatus(boolean force) {
         recipientMvpView.refreshRecipients();
-        if (force || recipientPresenter.isPepStatusClickable()) {
+        if (force || recipientMvpView.isPepStatusClickable()) {
             recipientMvpView.setMessageReference(relatedMessageReference);
             handlePEpState(false);
             recipientPresenter.onPEpPrivacyStatus();
