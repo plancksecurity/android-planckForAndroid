@@ -77,7 +77,6 @@ import com.karumi.dexter.listener.single.PermissionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -249,7 +248,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
         displayMessage(messageReference);
         mMessageView.setPrivacyProtected(mAccount.ispEpPrivacyProtected());
-        pEpSecurityStatusLayout.setOnClickListener(view -> onPepStatus(getActivity()));
+        pEpSecurityStatusLayout.setOnClickListener(view -> onPepStatus());
     }
 
     @Override
@@ -329,7 +328,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void setToolbar() {
-        pEpSecurityStatusLayout.setOnClickListener(view -> onPepStatus(getActivity()));
+        pEpSecurityStatusLayout.setOnClickListener(view -> onPepStatus());
         pEpSecurityStatusLayout.setRating(mAccount.ispEpPrivacyProtected() ? pEpRating : pEpRatingUndefined);
         toolBarCustomizer.setToolbarColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
         toolBarCustomizer.setStatusBarPepColor(ContextCompat.getColor(getApplicationContext(), R.color.nav_contact_background));
@@ -796,39 +795,26 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         messageCryptoPresenter.onClickShowCryptoKey();
     }
 
-    public void onPepStatus(Activity context) {
+    private void refreshRecipients(Context context) {
         ArrayList<Identity> addresses = new ArrayList<>();
         addresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getFrom()), context));
         addresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), context));
         addresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.CC)), context));
-
-        String myAdress = mAccount.getEmail();
         pePUIArtefactCache.setRecipients(mAccount, addresses);
-
-        for (String s : mMessage.getHeaderNames()) {
-            for (String s1 : mMessage.getHeader(s)) {
-                Timber.i("MessageHeader: on pEp status %s:%s1", s, s1);
-            }
-        }
-
-
-        if (pePUIArtefactCache.getRecipients().size() == 0 // No recipients on the recipient list: means is from an own identity
-                && mMessage.getRecipients(Message.RecipientType.TO).length == 1 // the meassege is to 1 recipient
-                && mMessage.getRecipients(Message.RecipientType.TO)[0].getAddress().equals(mMessage.getFrom()[0].getAddress()) //Same address to be sure is the same account
-                && mMessage.getpEpRating().value == Rating.pEpRatingReliable.value) {
-
-            List<String> keysList = PEpUtils.getKeyListWithoutDuplicates(mMessage.getHeader(MimeHeader.HEADER_PEP_KEY_LIST));
-            if (keysList.size() == 2) {
-                //String keyListHeader = mMessage.getHeader(MimeHeader.HEADER_PEP_KEY_LIST)[0];
-                PEpTrustwords.actionRequestMultipleOwnAccountIdsHandshake(context, myAdress, keysList, PEpTrustwords.DEFAULT_POSITION, pEpRating);
-            } else {
-                PEpStatus.actionShowStatus(context, pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAdress);
-            }
-        } else {
-            PEpStatus.actionShowStatus(context, pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAdress);
-        }
     }
 
+    private boolean isPepStatusClickable() {
+        return pePUIArtefactCache.getRecipients().size() > 0
+                && mMessage.getpEpRating().value >= Rating.pEpRatingReliable.value;
+    }
+
+    private void onPepStatus() {
+        refreshRecipients(getContext());
+        if (isPepStatusClickable()) {
+            String myAddress = mAccount.getEmail();
+            PEpStatus.actionShowStatus(getActivity(), pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAddress);
+        }
+    }
 
     public interface MessageViewFragmentListener {
         void onForward(MessageReference messageReference, Parcelable decryptionResultForReply,

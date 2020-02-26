@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
-import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import androidx.loader.app.LoaderManager;
@@ -508,10 +507,9 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
             }
             activity.setToolbarRating(pEpRating);
         }
-
     }
 
-     void updatePePState() {
+    private void updatePePState() {
         presenter.updatepEpState();
     }
 
@@ -519,18 +517,17 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         this.pEpIndicator = pEpIndicator;
     }
 
-    public void onPepIndicator() {
+    public void refreshRecipients() {
         ArrayList<Identity> recipients = new ArrayList<>();
-        // update color, just to be sure...
         recipients.addAll(PEpUtils.createIdentities(getToAddresses(), activity.getApplicationContext()));
         recipients.addAll(PEpUtils.createIdentities(getCcAddresses(), activity.getApplicationContext()));
         recipients.addAll(PEpUtils.createIdentities(getBccAddresses(), activity.getApplicationContext()));
-
-//        mIgnoreOnPause = true;  // do *not* save state
         pEpUiCache.setRecipients(mAccount, recipients);
+    }
+
+    void onPepIndicator() {
         PendingIntent pendingIntent = PEpStatus.pendingIntentShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom(), presenter.isForceUnencrypted(), presenter.isAlwaysSecure());
         launchUserInteractionPendingIntent(pendingIntent, PEpStatus.REQUEST_STATUS);
-        //PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom(), presenter.isForceUnencrypted());
     }
 
     public void setMessageReference(MessageReference reference) {

@@ -1114,9 +1114,13 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     }
 
     private void onPEpIndicator() {
-        recipientMvpView.setMessageReference(relatedMessageReference);
-        handlePEpState(false);
-        recipientPresenter.onPepIndicator();
+        recipientMvpView.refreshRecipients();
+
+        if (recipientPresenter.isPepStatusClickable()) {
+            recipientMvpView.setMessageReference(relatedMessageReference);
+            handlePEpState(false);
+            recipientPresenter.onPepIndicator();
+        }
     }
 
     private void goBack() {
