@@ -37,7 +37,6 @@ import com.fsck.k9.message.MessageBuilder;
 import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.Poller;
-import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 
 import org.openintents.openpgp.OpenPgpApiManager;
@@ -560,26 +559,27 @@ public class RecipientPresenter {
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (!handlepEpData(requestCode, data)) {
-            switch (requestCode) {
-                case CONTACT_PICKER_TO:
-                case CONTACT_PICKER_CC:
-                case CONTACT_PICKER_BCC:
-                    if (resultCode != Activity.RESULT_OK || data == null) {
-                        return;
-                    }
-                    RecipientType recipientType = recipientTypeFromRequestCode(requestCode);
-                    addRecipientFromContactUri(recipientType, data.getData());
-                    break;
-                case OPENPGP_USER_INTERACTION:
-                    openPgpApiManager.onUserInteractionResult();
-                    break;
-            }
+        switch (requestCode) {
+            case REQUEST_STATUS:
+                handlepEpDataIfNeeded(requestCode, data, resultCode);
+                break;
+            case CONTACT_PICKER_TO:
+            case CONTACT_PICKER_CC:
+            case CONTACT_PICKER_BCC:
+                if (resultCode != Activity.RESULT_OK || data == null) {
+                    return;
+                }
+                RecipientType recipientType = recipientTypeFromRequestCode(requestCode);
+                addRecipientFromContactUri(recipientType, data.getData());
+                break;
+            case OPENPGP_USER_INTERACTION:
+                openPgpApiManager.onUserInteractionResult();
+                break;
         }
     }
 
-    private boolean handlepEpData(int requestCode, Intent data) {
-        if (requestCode == REQUEST_STATUS && data.hasExtra(CURRENT_RATING)) {
+    private void handlepEpDataIfNeeded(int requestCode, Intent data, int resultCode) {
+        if (requestCode == REQUEST_STATUS && resultCode == Activity.RESULT_OK && data.hasExtra(CURRENT_RATING)) {
             boolean forceUncrypted = data.getBooleanExtra(STATE_FORCE_UNENCRYPTED, this.forceUnencrypted);
             boolean alwaysSecure = data.getBooleanExtra(STATE_ALWAYS_SECURE, this.isAlwaysSecure);
             if (forceUncrypted != this.forceUnencrypted) {
@@ -588,8 +588,7 @@ public class RecipientPresenter {
             if (alwaysSecure != this.isAlwaysSecure) {
                 setAlwaysSecure(alwaysSecure);
             }
-            return true;
-        } else return false;
+        }
     }
 
     private static int recipientTypeToRequestCode(RecipientType type) {
