@@ -5,10 +5,10 @@ buildscript {
                 'targetSdk'            : 28,
                 'minSdk'               : 19,
                 'versionCode'          : 40,
-                'pEpEngineRevision'    : 4273,
+                'pEpEngineRevision'    : 4360,
                 'pEpJNIAdapterRevision': 631,
-                'versionName'          : '1.0.230',
-                'libpEpAdapterRevision': 146
+                'versionName'          : '1.0.231',
+                'libpEpAdapterRevision': 154
         ]
 
         versions = [

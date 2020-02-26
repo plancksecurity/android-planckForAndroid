@@ -35,6 +35,7 @@ import junit.framework.AssertionFailedError;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
@@ -91,7 +92,7 @@ public class CucumberTestSteps {
 
     private static final String HOST = "@sq.pep.security";
 
-    private String bot[];
+    private String[] bot;
     private int accounts = 3;
     private int accountSelected = 0;
     public String b ="";
@@ -147,56 +148,26 @@ public class CucumberTestSteps {
             testUtils.pressBack();
             device.waitForIdle();
         }
-        if (!exists(onView(withId(R.id.available_accounts_title)))) {
-            while (exists(onView(withId(R.id.reply))) || exists(onView(withId(R.id.reply_message))) || exists(onView(withId(R.id.attachment_container)))) {
+        while (!exists(onView(withId(R.id.available_accounts_title)))) {
+            device.waitForIdle();
+            if (exists(onView(withText(R.string.discard_action)))) {
                 device.waitForIdle();
-                if (exists(onView(withText(R.string.discard_action)))) {
-                    device.waitForIdle();
-                    onView(withText(R.string.discard_action)).perform(click());
-                }
-                testUtils.pressBack();
-                device.waitForIdle();
+                onView(withText(R.string.discard_action)).perform(click());
             }
-            if (exists(onView(withId(R.id.fab_button_compose_message)))
-                    && (exists(onView(withId(R.id.actionbar_title_first))) &&
-                    !getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.special_mailbox_name_inbox)))) {
-                device.waitForIdle();
-                testUtils.pressBack();
-                device.waitForIdle();
-            }
-
-            while (!((exists(onView(withId(R.id.fab_button_compose_message)))))) {
-                device.waitForIdle();
-                if (exists(onView(withText(R.string.discard_action)))) {
-                    device.waitForIdle();
-                    onView(withText(R.string.discard_action)).perform(click());
-                    device.waitForIdle();
-                }
-                if (exists(onView(withId(R.id.send)))) {
-                    testUtils.pressBack();
-                    device.waitForIdle();
-                }
-                if (exists(onView(withId(R.id.filter_folders)))) {
-                    testUtils.pressBack();
-                    device.waitForIdle();
-                }
-            }
+            testUtils.pressBack();
+            device.waitForIdle();
         }
         device.waitForIdle();
+        onView(withId(R.id.available_accounts_title)).check(matches(isDisplayed()));
         activityTestRule.finishActivity();
         device.waitForIdle();
-        try {
-            Espresso.pressBackUnconditionally();
-        } catch (Exception backException) {
-            Timber.i("Cannot pressBackUnconditionally: " + backException.getMessage());
-        }
     }
 
     @When(value = "^I created an account$")
     public void I_create_account() {
         device.waitForIdle();
         testUtils.readConfigFile();
-        if (!exists(onView(withId(R.id.accounts_list)))) {
+        if (!exists(onView(withId(R.id.accounts_list))) && !exists(onView(withId(android.R.id.list)))) {
             testUtils.createAccount();
         } else if (exists(onView(withId(R.id.add_account_container)))){
             if (exists(onView(withId(R.id.accounts_list)))) {
@@ -208,8 +179,6 @@ public class CucumberTestSteps {
                 }
                 if (accounts[0] == 0) {
                     testUtils.createNAccounts(testUtils.getTotalAccounts());
-                } else {
-                    testUtils.selectAccount(0);
                 }
             }
         }
@@ -219,11 +188,9 @@ public class CucumberTestSteps {
     @When("^I enter (\\S+) in the messageTo field")
     public void I_fill_messageTo_field(String cucumberMessageTo) {
         timeRequiredForThisMethod(15);
-        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         device.waitForIdle();
         while (!exists(onView(withId(R.id.to)))) {
-            device.waitForIdle();
-            scroll.swipe(Direction.UP, 1.0f);
+            TestUtils.swipeUpScreen();
         }
         switch (cucumberMessageTo) {
             case "empty":
@@ -315,10 +282,11 @@ public class CucumberTestSteps {
 
     private void textViewEditor (String text, String viewName) {
         int viewId = testUtils.intToID(viewName);
-        device.waitForIdle();
-        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-        scroll.swipe(Direction.DOWN, 1.0f);
-        device.waitForIdle();
+        while (!exists(onView(withId(viewId)))) {
+            device.waitForIdle();
+            TestUtils.swipeDownScreen();
+            device.waitForIdle();
+        }
         switch (text) {
             case "empty":
                 timeRequiredForThisMethod(30);
@@ -327,24 +295,22 @@ public class CucumberTestSteps {
             case "longText":
                 timeRequiredForThisMethod(3000);
                 device.waitForIdle();
-                String longText = "";
                 BySelector selector = By.clazz("android.widget.EditText");
                 UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/message_content"));
+                UiObject2 scroll;
                 for (UiObject2 object : device.findObjects(selector)) {
                     if (object.getResourceName().equals(uiObject.getResourceName())) {
                         while (!object.getText().contains(testUtils.longText())) {
                             try {
+                                scroll = device.findObject(By.clazz("android.widget.ScrollView"));
                                 device.waitForIdle();
                                 object.click();
                                 testUtils.setClipboard(testUtils.longText());
-                                for (int i = 0; i < 61; i++) {
+                                for (int i = 0; i < 80; i++) {
                                     device.waitForIdle();
-                                    longText = longText + testUtils.longText();
-                                }
-                                while (!object.getText().contains(longText)) {
-                                    device.waitForIdle();
-                                    testUtils.setClipboard(longText);
+                                    scroll.swipe(Direction.UP, 1.0f);
                                     testUtils.pasteClipboard();
+                                    device.waitForIdle();
                                 }
                                 object.click();
                             } catch (Exception ex) {
@@ -353,20 +319,11 @@ public class CucumberTestSteps {
                         }
                     }
                 }
-                while (!viewIsDisplayed(R.id.subject)) {
-                    try {
-                        scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-                        device.waitForIdle();
-                        scroll.swipe(Direction.DOWN, 1.0f);
-                        device.waitForIdle();
-                    } catch (Exception e) {
-                        testUtils.pressBack();
-                    }
-                }
-                onView(withId(R.id.subject)).check(matches(isCompletelyDisplayed()));
+                testUtils.scrollUpToSubject();
                 return;
             default:
                 timeRequiredForThisMethod(10);
+                testUtils.scrollUpToSubject();
                 while (!(containstText(onView(withId(viewId)), text))) {
                     try {
                         onView(withId(viewId)).perform(closeSoftKeyboard());
@@ -414,11 +371,7 @@ public class CucumberTestSteps {
                 break;
             case "longText":
                 device.waitForIdle();
-                String text1 = "";
-                for (int i = 0; i < 61; i++) {
-                    text1 = text1 + testUtils.longText();
-                }
-                cucumberBody = text1;
+                cucumberBody = testUtils.longText();
                 testUtils.compareMessageBodyLongText(cucumberBody);
                 break;
             default:
@@ -478,7 +431,7 @@ public class CucumberTestSteps {
         device.waitForIdle();
         testUtils.doWaitForResource(R.id.toolbar);
         if (!TestUtils.jsonArray.toString().contains("47220F5487391A9ADA8199FD8F8EB7716FA59050")) {
-            testUtils.assertFailWithMessage("Wrong extra key");
+            TestUtils.assertFailWithMessage("Wrong extra key");
         }
     }
 
@@ -525,7 +478,7 @@ public class CucumberTestSteps {
                 e.printStackTrace();
             }
         }
-        testUtils.assertFailWithMessage("Wrong Trust Words");
+        TestUtils.assertFailWithMessage("Wrong Trust Words");
     }
     private void assertTextInJSONArray(String text, JSONArray array, String textToCompare) {
         for (int position = 0; position < array.length(); position++) {
@@ -537,7 +490,7 @@ public class CucumberTestSteps {
                 e.printStackTrace();
             }
         }
-        testUtils.assertFailWithMessage("Text is not in JSON");
+        TestUtils.assertFailWithMessage("Text is not in JSON");
     }
 
     private void assertTextInJSON(JSONObject json, String textToCompare) {
@@ -545,14 +498,14 @@ public class CucumberTestSteps {
         if (json.toString().contains(textToCompare)) {
             return;
         }
-        testUtils.assertFailWithMessage("json file doesn't contain the text: " + json.toString() + " ***TEXT*** : " + textToCompare);
+        TestUtils.assertFailWithMessage("json file doesn't contain the text: " + json.toString() + " ***TEXT*** : " + textToCompare);
     }
 
     private void assertText(String text, String textToCompare) {
         if (text.contains(textToCompare)) {
             return;
         }
-        testUtils.assertFailWithMessage("Texts are different");
+        TestUtils.assertFailWithMessage("Texts are different");
     }
 
     private void confirmAllTrustWords (String webViewText) {
@@ -621,7 +574,7 @@ public class CucumberTestSteps {
     private void checkWordIsInText(String [] arrayToCompare, String webViewText) {
         for (String textToCompare : arrayToCompare) {
             if (!webViewText.contains(textToCompare)) {
-                testUtils.assertFailWithMessage("Text not found in Trustwords");
+                TestUtils.assertFailWithMessage("Text not found in Trustwords");
             }
         }
     }
@@ -636,9 +589,7 @@ public class CucumberTestSteps {
                 waitUntilIdle();
                 wb = device.findObject(By.clazz("android.webkit.WebView"));
                 wb.click();
-                UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-                scroll.swipe(Direction.UP, 1.0f);
-                device.waitForIdle();
+                TestUtils.swipeUpScreen();
                 UiObject2 webViewTemporal;
                 webViewTemporal = wb.getChildren().get(0);
                 while (true) {
@@ -683,9 +634,7 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(10);
         testUtils.goToHandshakeDialog();
         while (!viewIsDisplayed(R.id.confirmTrustWords)) {
-            device.waitForIdle();
-            UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-            scroll.swipe(Direction.UP, 1.0f);
+            TestUtils.swipeUpScreen();
         }
         testUtils.doWaitForResource(R.id.confirmTrustWords);
         while (!exists(onView(withId(R.id.confirmTrustWords)))) {
@@ -710,8 +659,7 @@ public class CucumberTestSteps {
         while (!viewIsDisplayed(R.id.trustwords)) {
             device.waitForIdle();
         }
-        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-        scroll.swipe(Direction.UP, 1.0f);
+        TestUtils.swipeUpScreen();
         onView(withId(R.id.wrongTrustwords)).perform(click());
         device.waitForIdle();
         testUtils.pressBack();
@@ -727,8 +675,7 @@ public class CucumberTestSteps {
         while (!viewIsDisplayed(R.id.trustwords)) {
             device.waitForIdle();
         }
-        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-        scroll.swipe(Direction.UP, 1.0f);
+        TestUtils.swipeUpScreen();
         while (exists(onView(withId(R.id.wrongTrustwords)))) {
             device.waitForIdle();
             try {
@@ -1060,7 +1007,7 @@ public class CucumberTestSteps {
         device.waitForIdle();
         onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
         if (messageListSize[0] - 1 != messages) {
-            testUtils.assertFailWithMessage("There are not " + messages + " messages in the list. There are: " + (messageListSize[0] - 1));
+            TestUtils.assertFailWithMessage("There are not " + messages + " messages in the list. There are: " + (messageListSize[0] - 1));
         }
     }
 
@@ -1074,8 +1021,7 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(10);
         device.waitForIdle();
         if (!viewIsDisplayed(testUtils.intToID("reply_message"))) {
-            UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-            scroll.swipe(Direction.DOWN, 1.0f);
+            TestUtils.swipeDownScreen();
         }
         while (!viewIsDisplayed(R.id.reply_message)) {
             device.waitForIdle();
@@ -1248,30 +1194,16 @@ public class CucumberTestSteps {
     @Then("^I check if the privacy status is (\\S+)$")
     public void I_check_toolBar_color_is(String color) {
         timeRequiredForThisMethod(10);
-        testUtils.waitForTooblar();
-        boolean wait = false;
-        while (!wait) {
-            try {
-                device.waitForIdle();
-                try {
-                    UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-                    scroll.swipe(Direction.UP, 1.0f);
-                    device.waitForIdle();
-                    scroll.swipe(Direction.DOWN, 1.0f);
-                    device.waitForIdle();
-                    scroll.swipe(Direction.DOWN, 1.0f);
-                    device.waitForIdle();
-                    testUtils.typeTextToForceRatingCaltulation(R.id.subject);
-                } catch (Exception ex) {
-                    Timber.i("Cannot do scroll down");
-                }
-                device.waitForIdle();
-                waitUntilIdle();
-                wait = true;
-            } catch (Exception ex) {
-                Timber.i("Cannot find toolbar");
-            }
+        TestUtils.swipeUpScreen();
+        TestUtils.swipeDownScreen();
+        TestUtils.swipeDownScreen();
+        try {
+            testUtils.typeTextToForceRatingCaltulation(R.id.subject);
+        } catch (Exception ex) {
+            Timber.i("Cannot find subject field");
         }
+        device.waitForIdle();
+        waitUntilIdle();
         device.waitForIdle();
         waitUntilIdle();
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
@@ -1318,9 +1250,9 @@ public class CucumberTestSteps {
                 bis.close();
                 byte[] hash = digest.digest();
                 String shaCode = new BigInteger(1, hash).toString(16);
-                JSONObject jsonObject = (JSONObject) (testUtils.returnJSON()).getJSONObject("attachments_in").get("decrypted");
-                if (!jsonObject.toString().contains(shaCode)) {
-                    testUtils.assertFailWithMessage("couldn't find shaCode in json file");
+                String jsonObject = (testUtils.returnJSON()).getJSONObject("attachments_in").get("decrypted").toString();
+                if (!jsonObject.contains(shaCode)) {
+                    TestUtils.assertFailWithMessage("couldn't find shaCode in json file");
                 }
             } catch (Exception ex) {
                 Timber.i("Couldn't get SHA256 from file: " + file.getName());
@@ -1346,28 +1278,23 @@ public class CucumberTestSteps {
         TestUtils.createFile("masterkeyfile.asc", R.raw.masterkeypro);
         masterKeyText2 = testUtils.readFile("", "masterkeyfile.asc").toString();
         if (!masterKeyText.equals(masterKeyText2)) {
-            testUtils.assertFailWithMessage("Wrong Master key file");
+            TestUtils.assertFailWithMessage("Wrong Master key file");
         }
         testUtils.emptyFolder("Download");
         testUtils.emptyFolder("");
     }
 
     private void openAttached () {
-        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         while (true) {
             try {
                 while (!exists(onView(withId(R.id.attachments)))) {
-                    device.waitForIdle();
-                    scroll.swipe(Direction.UP, 1.0f);
-                    device.waitForIdle();
+                    TestUtils.swipeUpScreen();
                 }
                 onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
                 while (!viewIsDisplayed(R.id.attachments)) {
-                    scroll.swipe(Direction.UP, 1.0f);
-                    device.waitForIdle();
+                    TestUtils.swipeUpScreen();
                 }
-                scroll.swipe(Direction.UP, 1.0f);
-                device.waitForIdle();
+                TestUtils.swipeUpScreen();
                 BySelector layout = By.clazz("android.widget.LinearLayout");
                 onView(withId(R.id.attachments)).check(matches(isCompletelyDisplayed()));
                 for (UiObject2 object : device.findObjects(layout)) {
@@ -1389,15 +1316,11 @@ public class CucumberTestSteps {
     }
 
     private void openAttachedMasterKey () {
-        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         while (true) {
             try {
-                device.waitForIdle();
-                scroll.swipe(Direction.UP, 1.0f);
-                device.waitForIdle();
+                TestUtils.swipeUpScreen();
                 onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
-                scroll.swipe(Direction.UP, 1.0f);
-                device.waitForIdle();
+                TestUtils.swipeUpScreen();
                 BySelector layout = By.clazz("android.widget.LinearLayout");
                 for (UiObject2 object : device.findObjects(layout)) {
                     if (object.getResourceName() != null && object.getResourceName().equals("security.pEp.debug:id/attachments") && object.getChildren().get(0).getChildren().get(0).getChildren().get(0).getChildren().get(1).getText().contains("masterkey")) {
@@ -1508,9 +1431,10 @@ public class CucumberTestSteps {
     }
 
     private void CopyAssets() {
+        File file = null;
             try {
-                String extStorageDirectory = Environment.getExternalStorageDirectory().getAbsolutePath().toString();
-                File file = new File("/data/data/security.pEp.debug/cucumber-reports/", "cucumber.json");
+                String extStorageDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
+                file = new File("/data/data/security.pEp.debug/cucumber-reports/", "cucumber.json");
                 File file2 = new File(extStorageDirectory + "/cucumber.json");
                 FileInputStream in = new FileInputStream(file);
                 file2.createNewFile();
@@ -1523,6 +1447,9 @@ public class CucumberTestSteps {
             } catch (Exception e) {
                 Log.e("tag", e.getMessage());
             }
+        if (!file.exists()) {
+            Assume.assumeTrue("File cucumber.json doesn't exist",false);
+        }
     }
 
     private void copyFile(InputStream in, OutputStream out) {
@@ -1550,11 +1477,11 @@ public class CucumberTestSteps {
                     Timber.i("Timeout: " + time[0] + "/" + finalTime);
                     if (activityTestRule == null) {
                         time[0] = 0;
-                        testUtils.assertFailWithMessage("Timeout. Couldn't finish the test");
+                        TestUtils.assertFailWithMessage("Timeout. Couldn't finish the test");
                     } else if (time[0] > finalTime) {
                         try {
                             time[0] = 0;
-                            testUtils.assertFailWithMessage("Timeout. Couldn't finish the test");
+                            TestUtils.assertFailWithMessage("Timeout. Couldn't finish the test");
                         } catch (Exception ex) {
                             Timber.e("Couldn't close the test");
                         }
