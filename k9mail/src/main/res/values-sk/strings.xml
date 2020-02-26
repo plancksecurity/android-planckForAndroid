@@ -1082,6 +1082,6 @@
     <string name="ac_transfer_show_code">Zobraziť inštalačný kód</string>
     <string name="ac_transfer_msg_subject">Nastavovacia správa Autocryptu</string>
     <string name="ac_transfer_error_send">Pri odosielaní správy došlo k chybe. Skontrolujte sieťové pripojenie a konfiguráciu servera odchádzajúcich serverov.</string>
-    <string name="switch_on">na</string>
-    <string name="switch_off">vypnúť</string>
+    <string name="switch_on">Zapnúť</string>
+    <string name="switch_off">Vypnúť</string>
 </resources>
