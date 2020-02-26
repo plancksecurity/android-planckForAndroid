@@ -5,19 +5,18 @@ Feature: Test
   Scenario Outline: Cucumber Click on Search button
 
     When I select account <account>
-    Then I remove account 0
+    Then I click compose message
 
     Examples:
       |account|
       |  0    |
-      |  0    |
-      |  0    |
-      |  0    |
-      |  0    |
-      |  0    |
-      |  0    |
-      |  0    |
-      |  0    |
-      |  0    |
-      |  0    |
+
+  @TM-02
+  Scenario Outline: Cucumber Click on Search
+
+    When I select account <account>
+    Then I click compose message
+
+    Examples:
+      |account|
       |  0    |
