@@ -50,7 +50,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     private static final String RATING = "rating";
     private static final String MESSAGE_REFERENCE = "messageReference";
     private static final String MESSAGE_DIRECTION = "messageDirection";
-    public static final int REQUEST_STATUS = 2;
+    public static final int REQUEST_STATUS = 5; // Do not use a value below 5 because it would collide with other constants in RecipientPresenter.
 
     @Inject PEpStatusPresenter presenter;
 
