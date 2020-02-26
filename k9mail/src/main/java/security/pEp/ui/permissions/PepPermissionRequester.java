@@ -156,7 +156,7 @@ public class PepPermissionRequester implements PermissionRequester {
                 .check();
     }
 
-
+    @Override
     public void showRationaleSnackBar(@NotNull View view, String explanation) {
         FeedbackTools.showLongFeedback(view, explanation, activity.getString(R.string.button_settings), v -> {
             Context context = v.getContext();
