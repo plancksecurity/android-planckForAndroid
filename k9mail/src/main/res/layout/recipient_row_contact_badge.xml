@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
-    tools:showIn="@layout/pep_recipient_row_only_text">
+    tools:showIn="@layout/pep_recipient_row_only_text"
+    android:elevation="5dp"
+    android:background="#eeeeee">
 
     <com.fsck.k9.pEp.ui.PEpContactBadge
         android:id="@+id/status_badge"
