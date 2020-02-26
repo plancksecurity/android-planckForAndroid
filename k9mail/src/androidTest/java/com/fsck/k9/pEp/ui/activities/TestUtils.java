@@ -1462,6 +1462,7 @@ public class TestUtils {
     public static void waitForToolbar() {
         for (int waitLoop = 0; waitLoop < 1000; waitLoop++) {
             device.waitForIdle();
+            Espresso.onIdle();
             while (!viewIsDisplayed(R.id.toolbar) || !viewIsDisplayed(R.id.toolbar_container)) {
                 device.waitForIdle();
             }

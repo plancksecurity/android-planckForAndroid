@@ -158,6 +158,7 @@ public class CucumberTestSteps {
             device.waitForIdle();
         }
         device.waitForIdle();
+        Espresso.onIdle();
         onView(withId(R.id.available_accounts_title)).check(matches(isDisplayed()));
         activityTestRule.finishActivity();
         device.waitForIdle();
@@ -457,11 +458,13 @@ public class CucumberTestSteps {
         int size = 1;
         for (int positionToClick = 0; positionToClick < size; positionToClick++) {
             device.waitForIdle();
+            Espresso.onIdle();
             testUtils.selectFromMenu(R.string.settings_language_label);
             if (size == 1) {
                 size = calculateNewSize(size, selector);
             }
             device.waitForIdle();
+            Espresso.onIdle();
             selectLanguage(positionToClick, size, selector);
             getTrustWords();
             assertTextInJSONArray(trustWords, array, words);
