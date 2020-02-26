@@ -1149,14 +1149,12 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
         menu.findItem(R.id.force_unencrypted)
                 .setTitle(!recipientPresenter.isForceUnencrypted() ? R.string.pep_force_unprotected : R.string.pep_force_protected);
-        menu.findItem(R.id.force_unencrypted).setVisible(account.ispEpPrivacyProtected());
 
         menu.findItem(R.id.is_always_secure).setTitle(
                 recipientPresenter.isAlwaysSecure()
                         ? R.string.is_not_always_secure
                         : R.string.is_always_secure
         );
-
     }
 
     @Override
