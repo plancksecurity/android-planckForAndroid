@@ -833,11 +833,6 @@ public class RecipientPresenter {
         return cachedCryptoStatus == null || !cachedCryptoStatus.isEncryptionEnabled();
     }
 
-    public boolean isPepStatusClickable() {
-        return recipientMvpView.pEpUiCache.getRecipients().size() > 0 &&
-                recipientMvpView.getpEpRating().value >= Rating.pEpRatingReliable.value;
-    }
-
     public interface RecipientsChangedListener {
         void onRecipientsChanged();
     }
