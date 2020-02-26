@@ -335,8 +335,8 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         );
 
         menu.findItem(R.id.is_always_secure).setTitle(presenter.isAlwaysSecure()
-                ? R.string.is_always_secure
-                : R.string.is_not_always_secure
+                ? R.string.is_not_always_secure
+                : R.string.is_always_secure
         );
 
         return true;
