@@ -965,4 +965,6 @@
     <string name="recipient_error_non_ascii">Speciale leestekens worden nog niet ondersteund!</string>
     <string name="recipient_error_parse_failed">Fout bij parsen van adres!</string>
     <string name="openpgp_sign_only_disable">Uitzetten</string>
+    <string name="openpgp_enabled_error_back">Back</string>
+    <string name="app_name">p≡p</string>
 </resources>
