@@ -80,10 +80,10 @@ class PEpStatusTrustwordsPresenter(
         val fullTrustwords = handshakeData.fullTrustwords
         val shortTrustwords = handshakeData.shortTrustwords
         if (areTrustwordsShort) {
-            trustwordsView.setShortTrustwords(shortTrustwords)
+            trustwordsView.setShortTrustwords(changeSpacesToTabs(shortTrustwords))
 
         } else {
-            trustwordsView.setLongTrustwords(fullTrustwords)
+            trustwordsView.setLongTrustwords(changeSpacesToTabs(fullTrustwords))
         }
     }
 
@@ -102,6 +102,10 @@ class PEpStatusTrustwordsPresenter(
             newpartner.fpr = tempFpr
         }
         pep.trustPersonaKey(newpartner)
+    }
+
+    private fun changeSpacesToTabs(text: String) : String {
+        return text.split(" ").joinToString("    ")
     }
 
     interface PEpStatusTrustwordsView {
