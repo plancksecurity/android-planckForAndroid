@@ -1797,7 +1797,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 return true;
             }
             case R.id.tutorial: {
-                WelcomeMessageKt.startWelcomeActivity(getApplicationContext());
+                WelcomeMessageKt.startTutorialMessage(this);
                 return true;
             }
             case R.id.show_folder_list: {
@@ -1948,7 +1948,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             menu.findItem(R.id.show_headers).setVisible(false);
             menu.findItem(R.id.hide_headers).setVisible(false);
             menu.findItem(R.id.flag).setVisible(false);
-
         } else {
             toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(ContextCompat.getColor(this,R.color.light_black));
             menu.findItem(R.id.delete).setIcon(R.drawable.ic_delete_black_24dp);

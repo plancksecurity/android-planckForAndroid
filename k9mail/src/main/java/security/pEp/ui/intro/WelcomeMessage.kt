@@ -1,5 +1,6 @@
 package security.pEp.ui.intro
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -21,10 +22,19 @@ import security.pEp.ui.permissions.PermissionsActivity
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
 
-fun Context.startWelcomeActivity() =
+private const val AUTOMATIC: String = "automatic"
+fun Activity.startWelcomeMessage() =
         Intent(this, WelcomeMessage::class.java).let(this::startActivity)
 
+fun Activity.startTutorialMessage() {
+    val intent = Intent(this, WelcomeMessage::class.java)
+    intent.putExtra(AUTOMATIC, false)
+    startActivity(intent)
+}
+
 class WelcomeMessage : AppIntro() {
+
+    var automatic: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +47,12 @@ class WelcomeMessage : AppIntro() {
         showSkipButton(true)
         setAppIntroColors()
         isProgressButtonEnabled = true
+
+        loadIntentData()
+    }
+
+    private fun loadIntentData() {
+        automatic = intent.getBooleanExtra(AUTOMATIC, true)
     }
 
     private fun setAppIntroColors() {
@@ -61,11 +77,12 @@ class WelcomeMessage : AppIntro() {
     }
 
     private fun nextAction() {
-        if (K9.isShallRequestPermissions()) {
-            PermissionsActivity.actionAskPermissions(this)
-        } else {
-            AccountSetupBasics.actionNewAccount(this)
-        }
+        if (automatic)
+            if (K9.isShallRequestPermissions()) {
+                PermissionsActivity.actionAskPermissions(this)
+            } else {
+                AccountSetupBasics.actionNewAccount(this)
+            }
         finish()
     }
 
