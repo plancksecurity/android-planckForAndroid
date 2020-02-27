@@ -21,7 +21,8 @@
             android:layout_weight="1"
             android:paddingTop="8dp"
             android:layout_marginRight="40dp"
-            android:measureAllChildren="false">
+            android:measureAllChildren="false"
+            android:animateLayoutChanges="true">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
