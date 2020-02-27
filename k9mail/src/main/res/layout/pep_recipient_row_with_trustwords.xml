@@ -74,7 +74,8 @@
             android:layout_height="wrap_content"
             tools:text="In order to make the communication with this communication partner Secure &amp; Trusted, you will have to compare the Trustwords below with this communication partner and ensure they match yours."/>
 
-        <include layout="@layout/pep_status_trustwords_view"/>
+        <include layout="@layout/pep_status_trustwords_view" />
+
         <include layout="@layout/reset_data_layout"/>
 
     </LinearLayout>

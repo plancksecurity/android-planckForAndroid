@@ -56,6 +56,8 @@
         <item name="iconPreferencesVarious">@drawable/ic_widgets_light</item>
         <item name="iconPreferencesPrivacy">@drawable/ic_shield_light</item>
         <item name="iconPreferencesDebug">@drawable/ic_bug_light</item>
+        <item name="iconLanguage">@drawable/ic_language_light</item>
+        <item name="iconLanguageGray">@drawable/ic_language_gray</item>
         <item name="textColorPrimaryRecipientDropdown">@android:color/primary_text_light</item>
         <item name="textColorSecondaryRecipientDropdown">@android:color/secondary_text_light</item>
         <item name="messageListSelectedBackgroundColor">@color/message_list_selected_background_color</item>
@@ -149,6 +151,8 @@
         <item name="iconPreferencesVarious">@drawable/ic_widgets_dark</item>
         <item name="iconPreferencesPrivacy">@drawable/ic_shield_dark</item>
         <item name="iconPreferencesDebug">@drawable/ic_bug_dark</item>
+        <item name="iconLanguage">@drawable/ic_language_dark</item>
+        <item name="iconLanguageGray">@drawable/ic_language_gray</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="textColorPrimaryRecipientDropdown">@android:color/primary_text_dark</item>
         <item name="textColorSecondaryRecipientDropdown">@android:color/secondary_text_dark</item>
@@ -278,6 +282,8 @@
         <item name="iconPreferencesVarious">@drawable/ic_widgets_light</item>
         <item name="iconPreferencesPrivacy">@drawable/ic_shield_light</item>
         <item name="iconPreferencesDebug">@drawable/ic_bug_light</item>
+        <item name="iconLanguage">@drawable/ic_language_light</item>
+        <item name="iconLanguageGray">@drawable/ic_language_gray</item>
         <item name="textColorPrimaryRecipientDropdown">@android:color/primary_text_light</item>
         <item name="textColorSecondaryRecipientDropdown">@android:color/secondary_text_light</item>
         <item name="messageListSelectedBackgroundColor">@color/message_list_selected_background_color</item>
@@ -362,6 +368,8 @@
         <item name="iconPreferencesVarious">@drawable/ic_widgets_dark</item>
         <item name="iconPreferencesPrivacy">@drawable/ic_shield_dark</item>
         <item name="iconPreferencesDebug">@drawable/ic_bug_dark</item>
+        <item name="iconLanguage">@drawable/ic_language_dark</item>
+        <item name="iconLanguageGray">@drawable/ic_language_gray</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="textColorPrimaryRecipientDropdown">@android:color/primary_text_dark</item>
         <item name="textColorSecondaryRecipientDropdown">@android:color/secondary_text_dark</item>

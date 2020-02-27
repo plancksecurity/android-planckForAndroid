@@ -68,6 +68,8 @@
         <attr name="tintColorBulletPointNeutral" format="reference|color"/>
         <attr name="tintColorBulletPointNegative" format="reference|color"/>
         <attr name="iconpEpShield" format="reference"/>
+        <attr name="iconLanguage" format="reference"/>
+        <attr name="iconLanguageGray" format="reference"/>
 
         <attr name="iconpEpDeviceGroup" format="reference"/>
         <attr name="iconAdavancedSettings" format="reference"/>

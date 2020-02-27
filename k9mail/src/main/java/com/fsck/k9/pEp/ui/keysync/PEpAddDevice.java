@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
@@ -36,6 +38,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
+import security.pEp.ui.resources.ResourcesProvider;
 
 public class PEpAddDevice extends WizardActivity implements AddDeviceView {
 
@@ -65,6 +68,9 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
     RecyclerView identitiesList;
     @Bind(R.id.show_long_trustwords)
     ImageView showLongTrustwords;
+
+    @Inject
+    ResourcesProvider resourcesProvider;
 
     @Bind(R.id.fingerprintView) View fingerPrints;
     @Bind(R.id.partnerLabel) TextView partnerLabel;
@@ -110,7 +116,9 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
         setContentView(R.layout.pep_add_device);
         ButterKnife.bind(this);
         setUpToolbar(false);
-        getToolbar().setOverflowIcon(getResources().getDrawable(R.drawable.ic_language));
+
+        int resource = resourcesProvider.getAttributeResource(R.attr.iconLanguageGray);
+        getToolbar().setOverflowIcon(ContextCompat.getDrawable(this, resource));
         initPep();
 
         if (getIntent() != null) {
