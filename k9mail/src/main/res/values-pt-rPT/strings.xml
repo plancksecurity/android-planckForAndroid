@@ -931,4 +931,6 @@
     <string name="messageview_crypto_warning_error">Ocorreu um <b>erro na assinatura desta mensagem!</b></string>
     <string name="recipient_error_non_ascii">Caracteres especiais não são suportados atualmente!</string>
     <string name="recipient_error_parse_failed">Erro ao analisar endereço!</string>
+    <string name="openpgp_sign_only_disable">Desativar</string>
+    <string name="crypto_settings_cancel">Cancelar</string>
 </resources>
