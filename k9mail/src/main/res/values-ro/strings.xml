@@ -699,4 +699,6 @@ Uneori datorită faptului că cineva încearcă să te atace pe tine sau serveru
     <string name="message_progress_text">Se încarcă...</string>
     <string name="messageview_decrypt_retry">Reîncearcă</string>
     <string name="messageview_crypto_warning_title">Atenționare de securitate</string>
+    <string name="openpgp_sign_only_disable">Dezactivează</string>
+    <string name="crypto_settings_cancel">Renunțați</string>
 </resources>
