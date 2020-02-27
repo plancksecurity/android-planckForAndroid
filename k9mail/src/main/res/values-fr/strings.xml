@@ -1043,4 +1043,5 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="global_settings_confirm_menu_mark_all_read">Marquer tous les messages comme lus</string>
     <string name="account_setup_auth_type_xoauth2">Jeton OAuth 2.0</string>
     <string name="status_no_network">Sync désactivé - Pas de réseau</string>
+    <string name="openpgp_enabled_error_back">Back</string>
 </resources>
