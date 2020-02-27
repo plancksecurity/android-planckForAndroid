@@ -991,4 +991,5 @@
     <string name="recipient_error_parse_failed">Błąd analizowania adresu!</string>
     <string name="error_sign_only_no_encryption">Szyfrowanie nie jest dostępne w trybie sign-only!</string>
     <string name="unsigned_text_divider_label">Niepodpisany tekst</string>
+    <string name="app_name">p≡p</string>
 </resources>
