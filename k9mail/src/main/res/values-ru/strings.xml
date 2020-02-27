@@ -980,4 +980,7 @@
     <string name="messageview_crypto_warning_error"><b>Ошибка в подписи сообщения!</b></string>
     <string name="recipient_error_non_ascii">Спецсимволы пока не поддерживаются!</string>
     <string name="recipient_error_parse_failed">Ошибка разбора адреса!</string>
+    <string name="openpgp_sign_only_disable">Отключить</string>
+    <string name="crypto_settings_cancel">Отмена</string>
+    <string name="app_name">p≡p</string>
 </resources>
