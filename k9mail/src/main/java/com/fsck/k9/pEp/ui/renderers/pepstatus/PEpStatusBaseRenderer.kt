@@ -1,9 +1,15 @@
 package com.fsck.k9.pEp.ui.renderers.pepstatus
 
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.annotation.IdRes
+import androidx.annotation.LayoutRes
 import androidx.annotation.Nullable
 import butterknife.Bind
+import butterknife.ButterKnife
 import butterknife.OnClick
 import com.fsck.k9.K9
 import com.fsck.k9.R
@@ -32,13 +38,17 @@ abstract class PEpStatusBaseRenderer(private val resetClickListener: PEpStatusRe
     @Bind(R.id.status_explanation_text)
     lateinit var statusExplanationTV: TextView
 
-    lateinit var identityAdress: TextView
-
     @Bind(R.id.status_badge)
     lateinit var badge: PEpContactBadge
 
     @Nullable @Bind(R.id.button_identity_key_reset)
     lateinit var resetDataButton: Button
+
+    override fun inflate(inflater: LayoutInflater?, parent: ViewGroup?): View {
+        return inflater!!.inflate(getLayout(), parent, false)
+    }
+
+    @LayoutRes abstract fun getLayout(): Int
 
     override fun render() {
         val identity: PEpIdentity = content
@@ -50,7 +60,6 @@ abstract class PEpStatusBaseRenderer(private val resetClickListener: PEpStatusRe
         val artefactCache = PePUIArtefactCache.getInstance(context)
         ratingStatusTV.text = artefactCache.getTitle(rating)
         statusExplanationTV.text = artefactCache.getSuggestion(rating)
-        Timber.e("==== rating text is ${PePUIArtefactCache.getInstance(context).getTitle(rating)}")
     }
 
     private fun renderBadge(identity: PEpIdentity) {
@@ -73,5 +82,13 @@ abstract class PEpStatusBaseRenderer(private val resetClickListener: PEpStatusRe
     @Nullable @OnClick(R.id.button_identity_key_reset)
     fun onResetClicked() {
         resetClickListener.keyReset(content)
+    }
+
+    override fun hookListeners(rootView: View?) {
+        //NOP
+    }
+
+    override fun setUpView(rootView: View?) {
+        ButterKnife.bind(this, rootView)
     }
 }

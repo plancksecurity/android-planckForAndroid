@@ -25,6 +25,9 @@ class PEpStatusSecureRenderer(
 )
     : PEpStatusBaseRenderer(resetClickListener) {
 
+    override fun getLayout() = R.layout.pep_recipient_row_with_trustwords;
+
+
     private lateinit var trustwordsPresenter: PEpStatusTrustwordsPresenter
 
     @Bind(R.id.trustwords)
@@ -39,11 +42,6 @@ class PEpStatusSecureRenderer(
     @Bind(R.id.confirmTrustWords)
     lateinit var confirmTrustwordsButton: Button
 
-    override fun inflate(inflater: LayoutInflater?, parent: ViewGroup?): View {
-        val view : View = inflater!!.inflate(R.layout.pep_recipient_row_with_trustwords, parent, false)
-        ButterKnife.bind(this, view)
-        return view
-    }
 
     override fun hookListeners(rootView: View?) {
         trustwordsTv.setInAnimation(context, android.R.anim.fade_in)
