@@ -238,7 +238,6 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     public void setRating(Rating pEpRating) {
         setpEpRating(pEpRating);
         colorActionBar();
-        presenter.loadRating(pEpRating);
     }
 
     @Override
@@ -308,16 +307,6 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
                 mDivider.setBounds(left, top, right, bottom);
                 mDivider.draw(c);
-            }
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PEpTrustwords.REQUEST_HANDSHAKE) {
-            if (resultCode == RESULT_OK) {
-                presenter.onResult(data);
             }
         }
     }

@@ -145,7 +145,7 @@ public class PEpStatusPresenter implements Presenter {
     }
 
     @NonNull
-    private List<Address> getRecipientAddresses() {
+    List<Address> getRecipientAddresses() {
         List<Address> addresses = new ArrayList<>(identities.size());
         for (PEpIdentity identity : identities) {
             addresses.add(new Address(identity.address));
@@ -161,26 +161,6 @@ public class PEpStatusPresenter implements Presenter {
         view.setRating(rating);
         view.setupBackIntent(rating,
                 forceUnencrypted, isAlwaysSecure);
-    }
-
-    void loadRating(Rating rating) {
-        view.showPEpTexts(cache.getTitle(rating), cache.getSuggestion(rating));
-        if (rating == null) {
-            view.hideBadge();
-        } else {
-            view.showBadge(rating);
-        }
-    }
-
-    void onResult(Intent data) {
-        latestHandshakeId = ((Identity) data.getSerializableExtra(PEpTrustwords.PARTNER_DATA));
-        PEpProvider.TrustAction trustAction = ((PEpProvider.TrustAction) data.getSerializableExtra(PEpTrustwords.PARTNER_ACTION));
-
-        updateIdentities();
-
-        refreshRating();
-
-        showUndoAction(trustAction);
     }
 
     void onHandshakeResult(Identity id, boolean trust) {
