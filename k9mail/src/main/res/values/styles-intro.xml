@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="IntroHeaderText" parent="IntroText">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/light_black</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/univers_lts_sd</item>
+    </style>
+
+    <style name="IntroText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/light_grey</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+</resources>

@@ -3,6 +3,8 @@ package com.fsck.k9.helper;
 import android.content.Context;
 import android.util.TypedValue;
 
+import androidx.core.content.ContextCompat;
+
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.misc.ContactPictureLoader;
@@ -21,5 +23,10 @@ public class ContactPicture {
         }
 
         return new ContactPictureLoader(context, defaultBgColor);
+    }
+
+
+    public static ContactPictureLoader getGrayPictureLoader(Context context) {
+        return new ContactPictureLoader(context, ContextCompat.getColor(context, R.color.gray));
     }
 }

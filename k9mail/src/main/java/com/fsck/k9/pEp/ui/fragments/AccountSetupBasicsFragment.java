@@ -532,7 +532,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
                             accountSetupNavigator.createGmailAccount(getActivity());
                         }
                     })
-                    .setNegativeButton(getResources().getString(R.string.skip_button), new DialogInterface.OnClickListener() {
+                    .setNegativeButton(getResources().getString(R.string.app_intro_skip_button), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             setup(email);
