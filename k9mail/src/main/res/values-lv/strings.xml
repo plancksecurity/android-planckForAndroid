@@ -992,4 +992,5 @@ pat <xliff:g id="messages_to_load">%d</xliff:g> vairāk</string>
     <string name="recipient_error_parse_failed">Kļūda analizējot adresi!</string>
     <string name="error_sign_only_no_encryption">Nevar iešifrēt \"tikai parakstīt\" režīmā!</string>
     <string name="unsigned_text_divider_label">Neparakstīts teksts</string>
+    <string name="app_name">p≡p</string>
 </resources>
