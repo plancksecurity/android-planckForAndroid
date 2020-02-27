@@ -989,4 +989,5 @@
     <string name="recipient_error_non_ascii">Speciální znaky nejsou momentálně podporovány!</string>
     <string name="recipient_error_parse_failed">Chyba parsování adresy!</string>
     <string name="error_sign_only_no_encryption">Šifrování nedostupné v podpisovém módu!</string>
+    <string name="app_name">p≡p</string>
 </resources>
