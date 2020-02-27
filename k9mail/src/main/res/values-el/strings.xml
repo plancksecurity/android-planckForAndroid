@@ -970,4 +970,6 @@
     <string name="messageview_crypto_warning_error">Υπήρχε ένα <b>σφάλμα στην υπογραφή του μηνύματος!</b></string>
     <string name="recipient_error_non_ascii">Δεν υποστηρίζονται ειδικοί χαρακτήρες!</string>
     <string name="recipient_error_parse_failed">Σφάλμα στη διεύθυνση!</string>
+    <string name="openpgp_sign_only_disable">Απενεργοποίηση</string>
+    <string name="app_name">p≡p</string>
 </resources>
