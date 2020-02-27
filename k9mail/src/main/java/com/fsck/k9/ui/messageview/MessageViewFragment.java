@@ -248,7 +248,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
         displayMessage(messageReference);
         mMessageView.setPrivacyProtected(mAccount.ispEpPrivacyProtected());
-        pEpSecurityStatusLayout.setOnClickListener(view -> onPepStatus());
+        pEpSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
     }
 
     @Override
@@ -328,7 +328,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void setToolbar() {
-        pEpSecurityStatusLayout.setOnClickListener(view -> onPepStatus());
+        pEpSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
         pEpSecurityStatusLayout.setRating(mAccount.ispEpPrivacyProtected() ? pEpRating : pEpRatingUndefined);
         toolBarCustomizer.setToolbarColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
         toolBarCustomizer.setStatusBarPepColor(ContextCompat.getColor(getApplicationContext(), R.color.nav_contact_background));
@@ -808,9 +808,9 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
                 && mMessage.getpEpRating().value >= Rating.pEpRatingReliable.value;
     }
 
-    private void onPepStatus() {
+    public void onPEpPrivacyStatus(boolean force) {
         refreshRecipients(getContext());
-        if (isPepStatusClickable()) {
+        if (force || isPepStatusClickable()) {
             String myAddress = mAccount.getEmail();
             PEpStatus.actionShowStatus(getActivity(), pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAddress);
         }

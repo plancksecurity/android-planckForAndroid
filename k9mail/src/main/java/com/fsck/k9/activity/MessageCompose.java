@@ -520,7 +520,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
         if (getToolbar() != null) {
             pEpSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
-            pEpSecurityStatusLayout.setOnClickListener(v -> onPEpIndicator());
+            pEpSecurityStatusLayout.setOnClickListener(v -> onPEpPrivacyStatus(false));
             registerForContextMenu(pEpSecurityStatusLayout);
         }
         toolBarCustomizer.setToolbarColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
@@ -1096,6 +1096,9 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             case R.id.read_receipt:
                 onReadReceipt();
                 break;
+            case R.id.privacyStatus:
+                onPEpPrivacyStatus(true);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -1113,13 +1116,12 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         recipientPresenter.handlepEpState(withToast);
     }
 
-    private void onPEpIndicator() {
+    private void onPEpPrivacyStatus(boolean force) {
         recipientMvpView.refreshRecipients();
-
-        if (recipientPresenter.isPepStatusClickable()) {
+        if (force || recipientPresenter.isPepStatusClickable()) {
             recipientMvpView.setMessageReference(relatedMessageReference);
             handlePEpState(false);
-            recipientPresenter.onPepIndicator();
+            recipientPresenter.onPEpPrivacyStatus();
         }
     }
 
