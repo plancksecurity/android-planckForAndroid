@@ -985,4 +985,5 @@
     <string name="recipient_error_parse_failed">Kan inte tolka adressen!</string>
     <string name="error_sign_only_no_encryption">Kryptering otillgänglig i signera-endast läge!</string>
     <string name="unsigned_text_divider_label">Osignerad text</string>
+    <string name="app_name">p≡p</string>
 </resources>
