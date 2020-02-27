@@ -833,4 +833,12 @@
     <string name="fetching_attachment_dialog_message">Henter vedhæftning…</string>
     <!--=== Client certificates specific ==================================================================-->
     <!--Note: This references message_view_download_remainder-->
+    <string name="crypto_info_ok">OK</string>
+    <string name="recipient_to">Modtagere (Til)</string>
+    <string name="recipient_cc">Modtagere (Cc)</string>
+    <string name="crypto_settings_cancel">Fortryd</string>
+    <string name="folder_settings_folder_notify_mode_normal">Ingen</string>
+    <string name="account_settings_folder_notify_new_mail_mode_none">Ingen</string>
+    <string name="account_settings_folder_notify_new_mail_mode_all">Alle</string>
+    <string name="app_name">p≡p</string>
 </resources>
