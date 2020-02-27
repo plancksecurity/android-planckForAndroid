@@ -833,4 +833,7 @@
     <string name="recipient_cc">Cc</string>
     <string name="recipient_to">A</string>
     <string name="crypto_settings_ok">Continuar</string>
+    <string name="openpgp_enabled_error_back">Back</string>
+    <string name="openpgp_sign_only_disable">Disable</string>
+    <string name="openpgp_inline_disable">Disable</string>
 </resources>
