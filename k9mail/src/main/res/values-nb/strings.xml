@@ -986,4 +986,5 @@ til <xliff:g id="messages_to_load">%d</xliff:g> flere</string>
     <string name="recipient_error_parse_failed">Feil ved tolking av adresse!</string>
     <string name="error_sign_only_no_encryption">Kryptering utilgjengelig i Bare-Signer-modus!</string>
     <string name="unsigned_text_divider_label">Usignert tekst</string>
+    <string name="app_name">p≡p</string>
 </resources>
