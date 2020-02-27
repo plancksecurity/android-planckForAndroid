@@ -4,7 +4,7 @@
     <string name="pep_pgp_fingerprint">PGP-Fingerabdruck</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
     <string name="pep_account_setup_generating_keys">"Datenschutz wird eingerichtet "</string>
-    <string name="pep_dialog_weaker_forward_warning_message">"Sie versuchen, eine sichere Nachricht ungesichert weiterzuleiten. Wenn Sie damit fortfahren, setzen Sie sich und Ihre Kommunikationspartner dem Risiko aus, dass Dritte Zugriff auf vertrauliche Informationen erhalten. Möchten Sie wirklich fortfahren? "</string>
+    <string name="pep_dialog_weaker_forward_warning_message">Sie versuchen, eine sichere Nachricht ungesichert weiterzuleiten. Wenn Sie damit fortfahren, setzen Sie sich und Ihre Kommunikationspartner dem Risiko aus, dass Dritte Zugriff auf vertrauliche Informationen erhalten. Möchten Sie wirklich fortfahren\?</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Fortfahren</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Abbrechen</string>
     <string name="pep_dialog_confirm_forward_title">Weiterleitung bestätigen</string>
