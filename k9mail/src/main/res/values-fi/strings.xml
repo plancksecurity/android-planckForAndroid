@@ -981,4 +981,5 @@
     <string name="recipient_error_parse_failed">Virhe osoitetta jäsennettäessä!</string>
     <string name="error_sign_only_no_encryption">Salaus ei ole käytettävissä pelkässä allekirjoitustilassa!</string>
     <string name="unsigned_text_divider_label">Allekirjoittamaton teksti</string>
+    <string name="app_name">p≡p</string>
 </resources>
