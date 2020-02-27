@@ -981,4 +981,5 @@
     <string name="messageview_crypto_warning_error">Дошло је до <b>грешке у потпису ове поруке!</b></string>
     <string name="recipient_error_non_ascii">Посебни знакови тренутно нису нису подржани!</string>
     <string name="recipient_error_parse_failed">Грешка прослеђивања адресе!</string>
+    <string name="app_name">p≡p</string>
 </resources>
