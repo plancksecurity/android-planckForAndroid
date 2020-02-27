@@ -18,7 +18,7 @@
     <string name="pep_confirm_trustwords">Bestätigen</string>
     <string name="pep_wrong_trustwords">Ablehnen</string>
     <string name="pep_wrong_fingerprint">Falscher Fingerabdruck</string>
-    <string name="pep_ask_trustwords">Bitten Sie Ihren Kommunikationspartner, seine Trustwords persönlich oder telefonisch vorzulesen. Diese sollten mit den untenstehenden übereinstimmen.</string>
+    <string name="pep_ask_trustwords">Bitten Sie Ihren Kommunikationspartner, seine Trustwords persönlich oder telefonisch vorzulesen. Diese müssen mit den untenstehenden übereinstimmen.</string>
     <string name="pep_complete_partner_format">Partner\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_partner_format">Partner\n%1$s</string>
     <string name="pep_complete_myself_format">Ich\n%1$s &lt;%2$s&gt;</string>
@@ -110,11 +110,11 @@
     <string name="read_permission_first_explanation">Wir benötigen Ihre Erlaubnis, um auf die auf Ihrem Gerät gespeicherten Kontakte zuzugreifen</string>
     <string name="button_settings">Einstellungen</string>
     <string name="read_snackbar_permission_rationale">p≡p benötigt Ihre Erlaubnis, um die auf Ihrem Gerät gespeicherten Kontakte zu lesen</string>
-    <string name="read_snackbar_permission_permanently_denied">Es kann zu unerwartetem Verhalten in der Anwendung führen, wenn Sie das Lesen der Kontakte nicht erlauben</string>
+    <string name="read_snackbar_permission_permanently_denied">Ohne Zugriff auf die Kontakte können unerwartete Fehler auftreten.</string>
     <string name="read_permission_rationale_title">Lesezugriff auf Kontakte</string>
     <string name="download_permission_first_explanation">p≡p benötigt Ihre Erlaubnis, um Dateien auf Ihr Gerät herunterzuladen</string>
     <string name="download_snackbar_permission_rationale">p≡p benötigt Ihre Erlaubnis, um Dateien auf Ihr Gerät herunterzuladen</string>
-    <string name="download_snackbar_permission_permanently_denied">Es kann zu unerwartetem Verhalten in der Anwendung führen, wenn Sie das Herunterladen von Dateien nicht erlauben</string>
+    <string name="download_snackbar_permission_permanently_denied">Ohne Erlaubnis für Downloads können unerwartete Fehler auftreten.</string>
     <string name="download_permission_rationale_title">Dateien herunterladen</string>
     <string name="add_fpr">Fingerabdruck hinzufügen</string>
     <string name="error_parsing_fingerprint">Fehler beim Analysieren des Fingerabdrucks!</string>
