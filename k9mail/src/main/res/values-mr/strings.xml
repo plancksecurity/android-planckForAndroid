@@ -87,7 +87,7 @@
     <string name="status_syncing_off"/>
     <string name="status_syncing"/>
     <string name="actionbar_selected"><xliff:g id="selection_count">%d</xliff:g> selected</string>
-    <string name="next_action"/>
+    <string name="next_action">Next</string>
     <string name="previous_action"/>
     <!-- Used to confirm acceptance of dialog boxes, warnings, errors, etc. -->
     <string name="okay_action">ठीक आहे</string>
@@ -747,7 +747,7 @@
     <string name="font_size_message_view"/>
     <string name="font_size_message_view_sender"/>
     <string name="font_size_message_view_to">करण्यासाठी</string>
-    <string name="font_size_message_view_cc"/>
+    <string name="font_size_message_view_cc">Cc</string>
     <string name="font_size_message_view_additional_headers"/>
     <string name="font_size_message_view_subject"/>
     <string name="font_size_message_view_date"/>
@@ -927,7 +927,7 @@
     <string name="add_from_contacts"/>
     <string name="crypto_settings_cancel">रद्द करा</string>
     <string name="crypto_settings_ok"/>
-    <string name="recipient_cc"/>
+    <string name="recipient_cc">Cc</string>
     <string name="recipient_bcc"/>
     <string name="recipient_to">करण्यासाठी</string>
     <string name="recipient_from"/>
@@ -950,7 +950,7 @@
     <string name="enable_sign_only"/>
     <string name="disable_sign_only"/>
     <string name="openpgp_sign_only_ok"/>
-    <string name="openpgp_sign_only_disable"/>
+    <string name="openpgp_sign_only_disable">Disable</string>
     <string name="openpgp_sign_only_keep_enabled"/>
     <string name="openpgp_dialog_sign_only_title"/>
     <string name="openpgp_dialog_sign_only_text"/>
@@ -1008,7 +1008,7 @@
     <string name="openpgp_inline_minus_transit"/>
     <string name="openpgp_inline_minus_attach"/>
     <string name="openpgp_inline_ok"/>
-    <string name="openpgp_inline_disable"/>
+    <string name="openpgp_inline_disable">Disable</string>
     <string name="openpgp_inline_keep_enabled"/>
     <string name="apg_deprecated_title"/>
     <string name="apg_deprecated_1"/>
@@ -1043,7 +1043,7 @@
     <string name="openpgp_description_text3"/>
     <string name="openpgp_description_text2"/>
     <string name="openpgp_enabled_error_gotit"/>
-    <string name="openpgp_enabled_error_back"/>
+    <string name="openpgp_enabled_error_back">Back</string>
     <string name="openpgp_enabled_error_disable"/>
     <string name="openpgp_encryption"/>
     <string name="account_settings_crypto_prefer_encrypt"/>
