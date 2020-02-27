@@ -11,17 +11,11 @@ public interface PEpStatusView {
 
     void setupBackIntent(Rating rating, boolean forceUncrypted, boolean alwaysSecure);
 
-    void showPEpTexts(String title, String suggestion);
-
     void updateIdentities(List<PEpIdentity> updatedIdentities);
 
     void setRating(Rating pEpRating);
 
     void showDataLoadError();
-
-    void showBadge(Rating rating);
-
-    void hideBadge();
 
     void showResetpEpDataFeedback();
 

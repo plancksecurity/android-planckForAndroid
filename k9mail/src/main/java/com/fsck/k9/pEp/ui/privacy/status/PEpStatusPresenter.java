@@ -82,10 +82,6 @@ public class PEpStatusPresenter implements Presenter {
         }
     }
 
-    void resetRecipientTrust(Identity id) {
-        resetTrust(id);
-    }
-
     private void resetTrust(Identity id) {
         if (isMessageIncoming) {
             resetIncomingMessageTrust(id);
@@ -269,13 +265,10 @@ public class PEpStatusPresenter implements Presenter {
     }
 
     public void resetpEpData(Identity id) {
-//            resetIncomingMessageTrust(id);
         pEpProvider.keyResetIdentity(id, null);
-        //Rating rating = pEpProvider.incomingMessageRating(localMessage);
         refreshRating();
-        //onTrustReset(currentRating, id);
+        onTrustReset(currentRating, id);
         view.showResetpEpDataFeedback();
-    //    view.finish();
     }
 
     public void undoTrust() {

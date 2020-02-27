@@ -169,15 +169,12 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
     @Override
     public void setupRecipients(List<PEpIdentity> pEpIdentities) {
-        Preferences preferences = Preferences.getPreferences(PEpStatus.this);
         recipientsLayoutManager = new LinearLayoutManager(this);
         ((LinearLayoutManager) recipientsLayoutManager).setOrientation(LinearLayoutManager.VERTICAL);
         recipientsView.setLayoutManager(recipientsLayoutManager);
         RendererBuilder<PEpIdentity> rendererBuilder =
                 new PEpStatusRendererBuilder(
-                        preferences.getAccounts(),
                         getOnResetClickListener(),
-                        getOnTrustRessetClickListener(),
                         getOnHandshakeResultListener(),
                         myself
                 );
@@ -195,19 +192,6 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     }
 
     @NonNull
-    private PEpStatusRendererBuilder.TrustResetClickListener getOnTrustRessetClickListener() {
-        return identity -> presenter.resetRecipientTrust(identity);
-    }
-
-    @NonNull
-    private View.OnClickListener getOnHandshakeClickListener() {
-        return v -> {
-            int partnerPosition = ((Integer) v.getTag());
-            PEpTrustwords.actionRequestHandshake(PEpStatus.this, myself, partnerPosition);
-        };
-    }
-
-    @NonNull
     private PEpStatusRendererBuilder.HandshakeResultListener getOnHandshakeResultListener() {
         return (identity, trust) -> presenter.onHandshakeResult(identity, trust);
     }
@@ -222,15 +206,8 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     }
 
     @Override
-    public void showPEpTexts(String title, String suggestion) {
-        //pEpTitle.setText(title);
-        //pEpSuggestion.setText(suggestion);
-    }
-
-    @Override
     public void updateIdentities(List<PEpIdentity> updatedIdentities) {
         recipientsAdapter.setCollection(new ListAdapteeCollection<>(updatedIdentities));
-        //recipientsAdapter.setIdentities(updatedIdentities);
         recipientsAdapter.notifyDataSetChanged();
     }
 
@@ -243,17 +220,6 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     @Override
     public void showDataLoadError() {
         FeedbackTools.showLongFeedback(getRootView() ,getResources().getString(R.string.status_loading_error));
-    }
-
-    @Override
-    public void showBadge(Rating rating) {
-        //statusBadge.setVisibility(View.VISIBLE);
-        //statusBadge.setImageDrawable(PEpUIUtils.getDrawableForRating(PEpStatus.this, rating));
-    }
-
-    @Override
-    public void hideBadge() {
-        //statusBadge.setVisibility(View.GONE);
     }
 
     @Override

@@ -815,8 +815,8 @@ public class RecipientPresenter {
         poller.stopPolling();
     }
 
-    public void onPepIndicator() {
-        recipientMvpView.onPepIndicator();
+    public void onPEpPrivacyStatus() {
+        recipientMvpView.onPEpPrivacyStatus();
     }
 
 
