@@ -986,4 +986,6 @@
     <string name="recipient_error_parse_failed">Errore durante l\'analisi dell\'indirizzo!</string>
     <string name="error_sign_only_no_encryption">Cifratura non disponibile in modalità solo firma!</string>
     <string name="unsigned_text_divider_label">Testo non firmato</string>
+    <string name="openpgp_enabled_error_back">Back</string>
+    <string name="app_name">p≡p</string>
 </resources>
