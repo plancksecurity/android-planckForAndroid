@@ -206,7 +206,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             onSettingsImport()
         } else if (accounts.size < 1) {
 
-            startWelcomeActivity(this)
+            startWelcomeActivity()
             finish()
             return
         }

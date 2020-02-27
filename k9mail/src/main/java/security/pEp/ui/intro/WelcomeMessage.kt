@@ -21,8 +21,8 @@ import security.pEp.ui.permissions.PermissionsActivity
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
 
-fun Context.startWelcomeActivity(context: Context) =
-        Intent(context, WelcomeMessage::class.java).let(this::startActivity)
+fun Context.startWelcomeActivity() =
+        Intent(this, WelcomeMessage::class.java).let(this::startActivity)
 
 class WelcomeMessage : AppIntro() {
 

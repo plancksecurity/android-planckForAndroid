@@ -47,7 +47,6 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.MessageActions;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
-import com.fsck.k9.activity.setup.WelcomeMessage;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.fragment.MessageListFragment;
@@ -98,6 +97,7 @@ import javax.inject.Inject;
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionRequester;
 import security.pEp.ui.PEpUIUtils;
+import security.pEp.ui.intro.WelcomeMessageKt;
 import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
@@ -1797,7 +1797,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 return true;
             }
             case R.id.tutorial: {
-                WelcomeMessage.showTutorial(this);
+                WelcomeMessageKt.startWelcomeActivity(getApplicationContext());
                 return true;
             }
             case R.id.show_folder_list: {
