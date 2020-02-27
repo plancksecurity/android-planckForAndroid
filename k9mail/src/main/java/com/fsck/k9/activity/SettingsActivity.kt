@@ -51,7 +51,7 @@ import kotlinx.coroutines.*
 import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
 import security.pEp.ui.resources.ResourcesProvider
-import security.pEp.ui.intro.startWelcomeActivity
+import security.pEp.ui.intro.startWelcomeMessage
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -206,7 +206,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             onSettingsImport()
         } else if (accounts.size < 1) {
 
-            startWelcomeActivity()
+            startWelcomeMessage()
             finish()
             return
         }
