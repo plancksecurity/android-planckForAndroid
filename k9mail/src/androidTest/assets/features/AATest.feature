@@ -34,6 +34,7 @@ Feature: Test
     Examples:
       |account|
       |  0    |
+      |  1    |
 
   @TM-02
   Scenario Outline: Cucumber Click on Search
@@ -44,7 +45,8 @@ Feature: Test
     Examples:
       |account|
       |  0    |
-    
+      |  1    |
+
     @TM-152 @TM-1
   Scenario Outline: Cucumber Send Unencrypted email with long text
 
