@@ -855,4 +855,8 @@
     <string name="recipient_to">至</string>
     <string name="crypto_info_ok">好</string>
     <string name="recipient_cc">抄送</string>
+    <string name="openpgp_enabled_error_back">Back</string>
+    <string name="openpgp_inline_disable">Disable</string>
+    <string name="openpgp_sign_only_disable">Disable</string>
+    <string name="app_name">p≡p</string>
 </resources>
