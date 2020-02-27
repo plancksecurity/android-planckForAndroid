@@ -525,7 +525,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         pEpUiCache.setRecipients(mAccount, recipients);
     }
 
-    void onPepIndicator() {
+    void onPEpPrivacyStatus() {
         PendingIntent pendingIntent = PEpStatus.pendingIntentShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom(), presenter.isForceUnencrypted(), presenter.isAlwaysSecure());
         launchUserInteractionPendingIntent(pendingIntent, PEpStatus.REQUEST_STATUS);
     }
