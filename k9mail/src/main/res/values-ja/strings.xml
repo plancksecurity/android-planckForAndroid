@@ -979,4 +979,5 @@
     <string name="recipient_error_parse_failed">アドレスの解析時にエラー!</string>
     <string name="error_sign_only_no_encryption">署名専用モードでは暗号化を使用できません!</string>
     <string name="unsigned_text_divider_label">未署名のテキスト</string>
+    <string name="app_name">p≡p</string>
 </resources>
