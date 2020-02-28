@@ -61,7 +61,6 @@ public class PEpStatusPresenter implements Presenter {
         this.senderAddress = senderAddress;
         this.forceUnencrypted = forceUnencrypted;
         this.isAlwaysSecure = alwaysSecure;
-        pEpIdentityMapper.initialize(pEpProvider);
     }
 
     void loadMessage(MessageReference messageReference) {
