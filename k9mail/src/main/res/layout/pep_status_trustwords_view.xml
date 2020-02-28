@@ -61,7 +61,6 @@
             android:layout_height="wrap_content"
             android:minWidth="@dimen/button_minWidth"
             android:padding="10dip"
-            android:stateListAnimator="@null"
             android:text="@string/pep_wrong_trustwords"
             android:theme="@style/PEpStyleButton.Red"/>
 
@@ -71,7 +70,6 @@
             android:layout_height="wrap_content"
             android:minWidth="@dimen/button_minWidth"
             android:padding="10dip"
-            android:stateListAnimator="@null"
             android:text="@string/pep_confirm_trustwords"
             android:theme="@style/PEpStyleButton.Green"
             android:layout_marginLeft="16dp"/>
