@@ -1,14 +1,11 @@
 package com.fsck.k9.pEp.ui.renderers.pepstatus
 
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextSwitcher
 import androidx.appcompat.widget.PopupMenu
 import butterknife.Bind
-import butterknife.ButterKnife
 import butterknife.OnClick
 import butterknife.OnLongClick
 import com.fsck.k9.R

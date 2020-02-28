@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.Nullable
 import butterknife.Bind
@@ -23,9 +22,7 @@ import com.fsck.k9.pEp.models.PEpIdentity
 import com.fsck.k9.pEp.ui.PEpContactBadge
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererBuilder
 import com.pedrogomez.renderers.Renderer
-import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Rating
-import timber.log.Timber
 
 abstract class PEpStatusBaseRenderer(private val resetClickListener: PEpStatusRendererBuilder.ResetClickListener) : Renderer<PEpIdentity>() {
 
@@ -45,7 +42,9 @@ abstract class PEpStatusBaseRenderer(private val resetClickListener: PEpStatusRe
     lateinit var resetDataButton: Button
 
     override fun inflate(inflater: LayoutInflater?, parent: ViewGroup?): View {
-        return inflater!!.inflate(getLayout(), parent, false)
+        val view : View = inflater!!.inflate(getLayout(), parent, false)
+        ButterKnife.bind(this, view)
+        return view
     }
 
     @LayoutRes abstract fun getLayout(): Int
