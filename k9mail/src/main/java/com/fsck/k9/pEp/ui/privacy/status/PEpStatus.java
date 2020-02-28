@@ -153,7 +153,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
             TextView titleTV = findViewById(R.id.titleText);
-            titleTV.setText(stringResource);
+            titleTV.setText(getString(stringResource).toUpperCase());
         }
     }
 
