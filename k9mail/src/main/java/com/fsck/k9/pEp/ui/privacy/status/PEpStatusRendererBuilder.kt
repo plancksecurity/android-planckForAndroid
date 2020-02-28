@@ -8,9 +8,7 @@ import com.fsck.k9.pEp.ui.renderers.pepstatus.PEpStatusTrustedRenderer
 import com.fsck.k9.pEp.ui.renderers.pepstatus.PEpStatusUnsecureRenderer
 import com.pedrogomez.renderers.Renderer
 import com.pedrogomez.renderers.RendererBuilder
-import foundation.pEp.jniadapter.CommType
 import foundation.pEp.jniadapter.Rating
-import timber.log.Timber
 
 class PEpStatusRendererBuilder(
         private val resetClickListener: ResetClickListener,
@@ -25,19 +23,21 @@ class PEpStatusRendererBuilder(
 
     // 24/02/2020: Since values for red color are never returned from engine, we do not need a renderer for red communication channels.
     override fun getPrototypeClass(content: PEpIdentity): Class<*> {
-        Timber.e("==== commtype = ${content.comm_type}" )
-        if(content.comm_type.equals(CommType.PEP_ct_unknown)) return PEpStatusPGPIdentityRenderer::class.java
-
         val rating = content.rating
         var prototypeClass: Class<*> = PEpStatusUnsecureRenderer::class.java
-        if (rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value) {
+        if (rating.value == Rating.pEpRatingReliable.value) {
+            prototypeClass = if(!PEpUtils.isPEpUser(content)) {
+                PEpStatusPGPIdentityRenderer::class.java
+            } else {
+                PEpStatusSecureRenderer::class.java
+            }
+        }
+        else if (rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value) {
             prototypeClass = PEpStatusUnsecureRenderer::class.java
         } /*else if (rating.value == Rating.pEpRatingMistrust.value) {
             prototypeClass = PEpStatusMistrustRenderer::class.java
         }*/ else if (rating.value >= Rating.pEpRatingTrusted.value) {
             prototypeClass = PEpStatusTrustedRenderer::class.java
-        } else if (rating.value == Rating.pEpRatingReliable.value) {
-            prototypeClass = PEpStatusSecureRenderer::class.java
         }
         return prototypeClass
     }
