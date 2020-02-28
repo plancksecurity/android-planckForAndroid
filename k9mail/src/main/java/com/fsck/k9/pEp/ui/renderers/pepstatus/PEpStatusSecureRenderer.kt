@@ -53,12 +53,10 @@ class PEpStatusSecureRenderer(
 
                     override fun setLongTrustwords(newTrustwords: String) {
                         trustwordsTv.setText(newTrustwords)
-                        enableButtons(true)
                     }
 
                     override fun setShortTrustwords(newTrustwords: String) {
                         trustwordsTv.setText(context.getString(R.string.ellipsized_text, newTrustwords))
-                        enableButtons(true)
                     }
 
                     override fun reportError(errorMessage: String?) {
@@ -69,6 +67,7 @@ class PEpStatusSecureRenderer(
                     override fun enableButtons(enabled: Boolean) {
                         rejectTrustwordsButton.isEnabled = enabled
                         confirmTrustwordsButton.isEnabled = enabled
+                        resetDataButton.isEnabled = enabled
                     }
 
                 })

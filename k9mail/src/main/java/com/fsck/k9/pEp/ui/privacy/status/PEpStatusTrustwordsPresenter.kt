@@ -88,6 +88,7 @@ class PEpStatusTrustwordsPresenter(
             } else {
                 identityView.setLongTrustwords(fullTrustwords)
             }
+            identityView.enableButtons(true)
         }
         else if(identityView is PEpStatusPGPIdentityView) {
             myself = handshakeData.myself
@@ -113,6 +114,7 @@ class PEpStatusTrustwordsPresenter(
             )
 
             identityView.setFingerPrintTexts(PEpUtils.formatFpr(myself.fpr), PEpUtils.formatFpr(partner.fpr))
+            identityView.enableButtons(true)
         }
     }
 
