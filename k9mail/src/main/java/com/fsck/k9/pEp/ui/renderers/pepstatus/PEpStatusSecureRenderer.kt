@@ -1,9 +1,7 @@
 package com.fsck.k9.pEp.ui.renderers.pepstatus
 
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextSwitcher
+import android.widget.*
 import androidx.appcompat.widget.PopupMenu
 import butterknife.Bind
 import butterknife.OnClick
@@ -22,7 +20,7 @@ class PEpStatusSecureRenderer(
 )
     : PEpStatusBaseRenderer(resetClickListener) {
 
-    override fun getLayout() = R.layout.pep_recipient_row_with_trustwords;
+    override fun getLayout() = R.layout.pep_recipient_row_with_trustwords
 
 
     private lateinit var trustwordsPresenter: PEpStatusTrustwordsPresenter
@@ -33,12 +31,11 @@ class PEpStatusSecureRenderer(
     @Bind(R.id.change_language)
     lateinit var changeLanguageImage: ImageView
 
-    @Bind(R.id.wrongTrustwords)
+    @Bind(R.id.rejectHandshake)
     lateinit var rejectTrustwordsButton: Button
 
-    @Bind(R.id.confirmTrustWords)
+    @Bind(R.id.confirmHandshake)
     lateinit var confirmTrustwordsButton: Button
-
 
     override fun hookListeners(rootView: View?) {
         trustwordsTv.setInAnimation(context, android.R.anim.fade_in)
@@ -52,7 +49,7 @@ class PEpStatusSecureRenderer(
 
     override fun setUpView(rootView: View?) {
         trustwordsPresenter = PEpStatusTrustwordsPresenter(myself,context,
-                object : PEpStatusTrustwordsPresenter.PEpStatusTrustwordsView {
+                object : PEpStatusTrustwordsPresenter.PEpStatusPEpIdentityView {
 
                     override fun setLongTrustwords(newTrustwords: String) {
                         trustwordsTv.setText(newTrustwords)
@@ -78,7 +75,7 @@ class PEpStatusSecureRenderer(
     }
 
     private fun doLoadTrustWords(identity: PEpIdentity) {
-        trustwordsPresenter.loadTrustwords(identity)
+        trustwordsPresenter.loadHandshakeData(identity)
     }
 
     @OnClick(R.id.trustwords)
@@ -98,15 +95,15 @@ class PEpStatusSecureRenderer(
         showLanguageSelectionPopup(changeLanguageImage)
     }
 
-    @OnClick(R.id.wrongTrustwords)
+    @OnClick(R.id.rejectHandshake)
     fun onRejectTrustwordsClicked() {
-        trustwordsPresenter.rejectTrustwords(content)
+        trustwordsPresenter.rejectHandshake(content)
         handshakeResultListener.onHandshakeResult(content, false)
     }
 
-    @OnClick(R.id.confirmTrustWords)
+    @OnClick(R.id.confirmHandshake)
     fun onConfirmTrustwordsClicked() {
-        trustwordsPresenter.confirmTrustwords(content)
+        trustwordsPresenter.confirmHandshake(content)
         handshakeResultListener.onHandshakeResult(content, true)
     }
 

@@ -56,7 +56,7 @@
         android:layout_marginTop="16dp">
 
         <Button
-            android:id="@+id/wrongTrustwords"
+            android:id="@+id/rejectHandshake"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="@dimen/button_minWidth"
@@ -66,7 +66,7 @@
             android:theme="@style/PEpStyleButton.Red"/>
 
         <Button
-            android:id="@+id/confirmTrustWords"
+            android:id="@+id/confirmHandshake"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="@dimen/button_minWidth"
