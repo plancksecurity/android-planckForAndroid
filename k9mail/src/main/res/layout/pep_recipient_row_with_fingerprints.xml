@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:paddingTop="8dp">
+
+    <include layout="@layout/recipient_row_contact_badge"
+        android:elevation="3dp"/>
+
+    <LinearLayout
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:id="@+id/privacy_rating_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="8dp">
+
+        <TextView
+            android:id="@+id/status_explanation_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="In order to make the communication with this communication partner Secure &amp; Trusted, you will have to compare the Trustwords below with this communication partner and ensure they match yours."/>
+
+        <include layout="@layout/pep_fingerprints_view" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+
+            <Button
+                android:id="@+id/rejectHandshake"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="@dimen/button_minWidth"
+                android:padding="10dip"
+                android:stateListAnimator="@null"
+                android:text="@string/pep_wrong_trustwords"
+                android:theme="@style/PEpStyleButton.Red"/>
+
+            <Button
+                android:id="@+id/confirmHandshake"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="@dimen/button_minWidth"
+                android:padding="10dip"
+                android:stateListAnimator="@null"
+                android:text="@string/pep_confirm_trustwords"
+                android:theme="@style/PEpStyleButton.Green"
+                android:layout_marginLeft="16dp"/>
+
+        </LinearLayout>
+
+        <include layout="@layout/reset_data_layout"/>
+
+    </LinearLayout>
+
+</LinearLayout>
