@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.KeyEvent;
 
@@ -306,7 +308,12 @@ public class CucumberTestSteps {
                                 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
                                 device.waitForIdle();
                                 object.click();
-                                testUtils.setClipboard(testUtils.longText());
+                                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        testUtils.setClipboard(testUtils.longText());
+                                    }
+                                });
                                 for (int i = 0; i < 80; i++) {
                                     device.waitForIdle();
                                     scroll.swipe(Direction.UP, 1.0f);
