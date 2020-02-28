@@ -126,7 +126,6 @@ class PEpStatusTrustwordsPresenter(
     fun rejectHandshake(partner: Identity) {
         identityView.enableButtons(false)
         pep.keyMistrusted(partner)
-        pep.getRating(partner)
     }
 
     fun confirmHandshake(partner: Identity) {
