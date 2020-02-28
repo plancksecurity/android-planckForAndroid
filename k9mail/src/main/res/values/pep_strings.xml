@@ -275,4 +275,5 @@
     <string name="pep_rating_none"></string>
 
     <string name="action_tutorial">Tutorial</string>
+    <string name="only_own_identities">his is an own message, no communication partner involved.</string>
 </resources>
