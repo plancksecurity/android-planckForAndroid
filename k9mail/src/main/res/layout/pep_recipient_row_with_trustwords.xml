@@ -69,10 +69,9 @@
         android:paddingRight="8dp">
 
         <TextView
-            android:id="@+id/status_explanation_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="In order to make the communication with this communication partner Secure &amp; Trusted, you will have to compare the Trustwords below with this communication partner and ensure they match yours."/>
+            android:text="@string/pep_ask_trustwords"/>
 
         <include layout="@layout/pep_status_trustwords_view" />
 

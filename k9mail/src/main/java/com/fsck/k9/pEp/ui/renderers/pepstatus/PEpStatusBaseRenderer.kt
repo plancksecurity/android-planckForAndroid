@@ -32,7 +32,7 @@ abstract class PEpStatusBaseRenderer(private val resetClickListener: PEpStatusRe
     @Bind(R.id.tvRatingStatus)
     lateinit var ratingStatusTV: TextView
 
-    @Bind(R.id.status_explanation_text)
+    @Nullable @Bind(R.id.status_explanation_text)
     lateinit var statusExplanationTV: TextView
 
     @Bind(R.id.status_badge)
@@ -58,7 +58,7 @@ abstract class PEpStatusBaseRenderer(private val resetClickListener: PEpStatusRe
     private fun renderRating(rating: Rating) {
         val artefactCache = PePUIArtefactCache.getInstance(context)
         ratingStatusTV.text = artefactCache.getTitle(rating)
-        statusExplanationTV.text = artefactCache.getSuggestion(rating)
+        if(::statusExplanationTV.isInitialized) statusExplanationTV.text = artefactCache.getSuggestion(rating)
     }
 
     private fun renderBadge(identity: PEpIdentity) {

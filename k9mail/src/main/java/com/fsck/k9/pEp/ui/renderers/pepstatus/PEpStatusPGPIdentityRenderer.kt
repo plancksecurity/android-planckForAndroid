@@ -44,7 +44,6 @@ class PEpStatusPGPIdentityRenderer(
     override fun render() {
         super.render()
         doLoadFingerPrints(content)
-        statusExplanationTV.visibility = View.GONE
         myselfLabel.text = myself
         partnerLabel.text = content.address
     }
