@@ -26,10 +26,7 @@
             android:id="@+id/message_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:divider="@color/white"
-            android:dividerHeight="12dp"
-            android:paddingTop="6dp" />
+            android:clipToPadding="false" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
