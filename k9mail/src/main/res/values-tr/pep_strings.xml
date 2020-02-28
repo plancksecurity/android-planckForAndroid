@@ -98,4 +98,9 @@
     <string name="pep_force_protected">Gizlilik korumasını etkinleştirir</string>
     <string name="button_settings">Ayarlar</string>
     <string name="action_continue">Devam</string>
+    <string name="pep_key_reset_all_own_ids_summary">Reset all accounts</string>
+    <string name="key_reset_own_identity_feedback">The account has been reset.</string>
+    <string name="key_reset_identity_feedback">All p≡p data for this communication partner has been reset.</string>
+    <string name="nnf_name">Name</string>
+    <string name="reset">Reset</string>
 </resources>
