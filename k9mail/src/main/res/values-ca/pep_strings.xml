@@ -120,4 +120,9 @@
     <string name="action_continue">Continuar</string>
     <string name="battery_optimization_rationale_title">Desactivar l\'optimitzaciò de bateria</string>
     <string name="battery_optimiazation_explanation">Per a sincronitzar els seus missatges en segon pla necessitem desactivar l\'optimització de bateria</string>
+    <string name="pep_key_reset_all_own_ids_summary">Reset all accounts</string>
+    <string name="key_reset_own_identity_feedback">The account has been reset.</string>
+    <string name="key_reset_identity_feedback">All p≡p data for this communication partner has been reset.</string>
+    <string name="reset">Reset</string>
+    <string name="nnf_name">Name</string>
 </resources>
