@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Reset all pep data for this communication partner:"/>
+        android:text="@string/key_reset_for_identity_context_title"/>
 
     <Button
         android:id="@+id/button_identity_key_reset"
