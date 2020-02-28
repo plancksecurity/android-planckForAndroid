@@ -14,7 +14,8 @@
         android:orientation="horizontal"
         android:paddingLeft="16dp"
         android:background="@color/white"
-        android:elevation="3dp">
+        android:elevation="3dp"
+        android:paddingBottom="8dp">
 
         <com.fsck.k9.pEp.ui.PEpContactBadge
             android:id="@+id/status_badge"
@@ -58,7 +59,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:paddingTop="8dp"
+        android:paddingTop="16dp"
         android:paddingBottom="8dp"
         android:id="@+id/privacy_rating_layout"
         android:layout_width="match_parent"
