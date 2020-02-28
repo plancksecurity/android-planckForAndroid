@@ -327,6 +327,7 @@ public class CucumberTestSteps {
                         }
                     }
                 }
+                Espresso.onIdle();
                 testUtils.scrollUpToSubject();
                 return;
             default:

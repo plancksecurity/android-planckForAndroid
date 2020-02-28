@@ -127,14 +127,21 @@ dependencies {
     testImplementation "org.robolectric:shadows-multidex:${versions.robolectric}"
 
     // Cucumber
-    androidTestImplementation('info.cukes:cucumber-android:1.2.4') {
+/*    androidTestImplementation('info.cukes:cucumber-android:1.2.4') {
         exclude module: 'cucumber-jvm-deps'
     }
 
     androidTestImplementation('info.cukes:cucumber-picocontainer:1.2.4') {
         exclude module: 'cucumber-jvm-deps'
     }
-    androidTestImplementation 'info.cukes:cucumber-jvm-deps:1.0.5'
+    androidTestImplementation 'info.cukes:cucumber-jvm-deps:1.0.5'*/
+
+    /*androidTestImplementation group: 'io.cucumber', name: 'cucumber-java', version: '4.2.3'
+    androidTestImplementation group: 'io.cucumber', name: 'cucumber-junit', version: '4.2.3'*/
+
+    androidTestImplementation "io.cucumber:cucumber-android:${versions.cucumber}"
+    androidTestImplementation "io.cucumber:cucumber-picocontainer:${versions.cucumber}"
+
     // Screenshots
     androidTestImplementation 'com.squareup.spoon:spoon-client:1.7.1'
     androidTestImplementation('com.schibsted.spain:barista:2.8.0') {
@@ -159,7 +166,7 @@ android {
 
        //        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testApplicationId "com.fsck.k9.pEp.ui.activities.test"
-        testInstrumentationRunner "com.fsck.k9.pEp.ui.activities.runner.CucumberTestRunner"
+        testInstrumentationRunner "com.fsck.k9.pEp.ui.activities.test.CucumberTestCase"
 
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
