@@ -1472,6 +1472,7 @@ public class TestUtils {
             onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
             device.waitForIdle();
             waitUntilIdle();
+            Espresso.onIdle();
         }}
 
     private void checkUpperToolbar (int color){
