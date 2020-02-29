@@ -36,6 +36,7 @@ import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
@@ -125,6 +126,7 @@ import security.pEp.ui.message_compose.ComposeAccountRecipient;
 import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
+import security.pEp.ui.toolbar.ToolbarStatusPopUpMenu;
 import timber.log.Timber;
 
 
@@ -521,7 +523,12 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         if (getToolbar() != null) {
             pEpSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
             pEpSecurityStatusLayout.setOnClickListener(v -> onPEpPrivacyStatus(false));
-            registerForContextMenu(pEpSecurityStatusLayout);
+            pEpSecurityStatusLayout.setOnLongClickListener( view -> {
+                PopupMenu statusMenu = new ToolbarStatusPopUpMenu(getApplicationContext(),
+                        view, recipientPresenter);
+                statusMenu.show();
+                return true;
+            });
         }
         toolBarCustomizer.setToolbarColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
         toolBarCustomizer.setStatusBarPepColor(ContextCompat.getColor(getApplicationContext(), R.color.nav_contact_background));
@@ -1108,9 +1115,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                 && account.ispEpPrivacyProtected();
     }
 
-    private void forceUnencrypted() {
-        recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.MESSAGE);
-    }
 
     private void handlePEpState(boolean... withToast) {
         recipientPresenter.handlepEpState(withToast);
@@ -1142,47 +1146,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         }
     }
 
-    // Context Menu
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.pep_security_badge_options_menu, menu);
-
-        menu.findItem(R.id.force_unencrypted)
-                .setTitle(!recipientPresenter.isForceUnencrypted() ? R.string.pep_force_unprotected : R.string.pep_force_protected);
-
-        menu.findItem(R.id.is_always_secure).setTitle(
-                recipientPresenter.isAlwaysSecure()
-                        ? R.string.is_not_always_secure
-                        : R.string.is_always_secure
-        );
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.force_unencrypted:
-                if (!recipientPresenter.isForceUnencrypted()) {
-                    item.setTitle(R.string.pep_force_protected);
-                } else {
-                    item.setTitle(R.string.pep_force_unprotected);
-                }
-                forceUnencrypted();
-                break;
-            case R.id.is_always_secure:
-                recipientPresenter.setAlwaysSecure(!recipientPresenter.isAlwaysSecure());
-                item.setTitle(
-                        recipientPresenter.isAlwaysSecure()
-                                ? R.string.is_not_always_secure
-                                : R.string.is_always_secure
-                );
-                break;
-            default:
-                return false;
-        }
-        return true;
-    }
 
     // Options Menu
     @Override
