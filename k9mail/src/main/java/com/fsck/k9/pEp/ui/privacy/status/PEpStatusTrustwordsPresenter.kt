@@ -138,22 +138,4 @@ class PEpStatusTrustwordsPresenter(
         }
         pep.trustPersonaKey(newpartner)
     }
-
-    interface PEpStatusIdentityView {
-        fun reportError(errorMessage: String?)
-        fun enableButtons(enabled: Boolean)
-    }
-
-    interface PEpStatusPEpIdentityView : PEpStatusIdentityView {
-        fun setLongTrustwords(newTrustwords: String)
-        fun setShortTrustwords(newTrustwords: String)
-    }
-
-    interface PEpStatusPGPIdentityView : PEpStatusIdentityView {
-        fun setLabelTexts(myselfLabelText: String, partnerLabelText: String)
-        fun setFingerPrintTexts(myselfFprText: String, partnerFprText: String)
-    }
-
-
-
 }

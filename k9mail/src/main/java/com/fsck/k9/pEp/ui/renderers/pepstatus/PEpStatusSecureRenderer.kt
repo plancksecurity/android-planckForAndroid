@@ -8,6 +8,8 @@ import butterknife.OnClick
 import butterknife.OnLongClick
 import com.fsck.k9.R
 import com.fsck.k9.pEp.models.PEpIdentity
+import com.fsck.k9.pEp.ui.privacy.status.PEpStatusIdentityView
+import com.fsck.k9.pEp.ui.privacy.status.PEpStatusPEpIdentityView
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererBuilder
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusTrustwordsPresenter
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
@@ -18,7 +20,7 @@ class PEpStatusSecureRenderer(
         private val handshakeResultListener: PEpStatusRendererBuilder.HandshakeResultListener,
         private val myself: String
 )
-    : PEpStatusBaseRenderer(resetClickListener) {
+    : PEpStatusBaseRenderer(resetClickListener), PEpStatusPEpIdentityView {
 
     override fun getLayout() = R.layout.pep_recipient_row_with_trustwords
 
@@ -48,29 +50,7 @@ class PEpStatusSecureRenderer(
     }
 
     override fun setUpView(rootView: View?) {
-        trustwordsPresenter = PEpStatusTrustwordsPresenter(myself,context,
-                object : PEpStatusTrustwordsPresenter.PEpStatusPEpIdentityView {
-
-                    override fun setLongTrustwords(newTrustwords: String) {
-                        trustwordsTv.setText(newTrustwords)
-                    }
-
-                    override fun setShortTrustwords(newTrustwords: String) {
-                        trustwordsTv.setText(context.getString(R.string.ellipsized_text, newTrustwords))
-                    }
-
-                    override fun reportError(errorMessage: String?) {
-                        enableButtons(true)
-                        FeedbackTools.showShortFeedback(rootView, errorMessage)
-                    }
-
-                    override fun enableButtons(enabled: Boolean) {
-                        rejectTrustwordsButton.isEnabled = enabled
-                        confirmTrustwordsButton.isEnabled = enabled
-                        resetDataButton.isEnabled = enabled
-                    }
-
-                })
+        trustwordsPresenter = PEpStatusTrustwordsPresenter(myself,context, this)
     }
 
     private fun doLoadTrustWords(identity: PEpIdentity) {
@@ -117,6 +97,25 @@ class PEpStatusSecureRenderer(
             true
         }
         popup.show()
+    }
+
+    override fun setLongTrustwords(newTrustwords: String) {
+        trustwordsTv.setText(newTrustwords)
+    }
+
+    override fun setShortTrustwords(newTrustwords: String) {
+        trustwordsTv.setText(context.getString(R.string.ellipsized_text, newTrustwords))
+    }
+
+    override fun reportError(errorMessage: String?) {
+        enableButtons(true)
+        FeedbackTools.showShortFeedback(rootView, errorMessage)
+    }
+
+    override fun enableButtons(enabled: Boolean) {
+        rejectTrustwordsButton.isEnabled = enabled
+        confirmTrustwordsButton.isEnabled = enabled
+        resetDataButton.isEnabled = enabled
     }
 
 }
