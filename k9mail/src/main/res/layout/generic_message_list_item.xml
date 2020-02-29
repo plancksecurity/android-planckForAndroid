@@ -56,10 +56,7 @@
     <RelativeLayout
         android:id="@+id/container_background"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
-        >
+        android:layout_height="wrap_content">
 
         <include
             android:id="@+id/message_read_container"

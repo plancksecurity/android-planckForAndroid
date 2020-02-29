@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="0dp"
-    android:paddingTop="8dp"
+    android:paddingTop="14dp"
     android:paddingEnd="12dp"
-    android:paddingBottom="8dp">
+    android:paddingBottom="14dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/left_constraint"
