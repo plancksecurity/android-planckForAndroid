@@ -821,13 +821,7 @@ public class K9 extends MultiDexApplication {
         Context context = K9.this.getApplicationContext();
         Intent syncTrustowordsActivity = PEpAddDevice.getActionRequestHandshake(context, trust, myself, partner, explanation, false);
         syncTrustowordsActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 22, syncTrustowordsActivity, 0);
-        try {
-            pendingIntent.send();
-        } catch (PendingIntent.CanceledException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        startActivity(syncTrustowordsActivity);
     }
 
     private void pEpSetupUiEngineSession() {
