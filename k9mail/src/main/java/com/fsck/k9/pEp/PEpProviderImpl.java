@@ -673,7 +673,7 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public synchronized void close() {
         if (engine != null) {
-            engine.stopSync();
+            //engine.stopSync();
             engine.close();
         }
     }

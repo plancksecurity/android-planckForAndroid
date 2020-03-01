@@ -744,8 +744,10 @@ public class K9 extends MultiDexApplication {
             }
 
         });
+
+        pEpSyncProvider = PEpProviderFactory.createAndSetupProvider(this);
         for (Account account : prefs.getAccounts()) {
-            pEpProvider.myself(PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), this));
+            pEpSyncProvider.myself(PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), this));
         }
         pEpInitSyncEnvironment();
         setupFastPoller();
@@ -788,7 +790,6 @@ public class K9 extends MultiDexApplication {
     }
 
     private void initSync() {
-        pEpSyncProvider = PEpProviderFactory.createAndSetupProvider(this);
 
         pEpSyncProvider.setSyncHandshakeCallback(notifyHandshakeCallback);
 
@@ -806,7 +807,9 @@ public class K9 extends MultiDexApplication {
             }
         });
 //        if (Preferences.getPreferences(this).getAccounts().size() > 0) {
-        pEpSyncProvider.startSync();
+        if (!pEpSyncProvider.isSyncRunning())  {
+            pEpSyncProvider.startSync();
+        }
 //        }
     }
 
@@ -1672,6 +1675,7 @@ public class K9 extends MultiDexApplication {
             if (activityCount == 0) {
 //                if (activity instanceof K9Activity) pEpSyncProvider.setSyncHandshakeCallback((Sync.showHandshakeCallback) activity);
                 pEpProvider = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
+                pEpInitSyncEnvironment();
             }
             ++activityCount;
         }
@@ -1705,6 +1709,7 @@ public class K9 extends MultiDexApplication {
         public void onActivityDestroyed(Activity activity) {
             --activityCount;
             if (activityCount == 0) {
+                pEpSyncProvider.stopSync();
                 pEpProvider.close();
                 pEpProvider = null;
             }
@@ -1894,7 +1899,7 @@ public class K9 extends MultiDexApplication {
         this.grouped = value;
     }
 
-    public boolean getGrouped() {
+    public boolean isGrouped() {
         return this.grouped;
     }
 

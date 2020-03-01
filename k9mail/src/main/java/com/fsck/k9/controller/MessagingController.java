@@ -3087,6 +3087,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                         // pEp the message to send...
                         Message encryptedMessage;
 //                        PEpUtils.dumpMimeMessage("beforeEncrypt", (MimeMessage) message);
+                        //If it is a pEpSyncMessage there is no need to encrypt it
                         if (message.isSet(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)
                                 || PEpUtils.ispEpDisabled(account, pEpProvider.getRating(message))) {
                             message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(Rating.pEpRatingUnencrypted));
@@ -4918,7 +4919,9 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                     sendpEpSyncMessage(fromAccount, message);
                     Log.e("pEpEngine", "Finish SMTP send: " + message.getMessageId());
 
-                }
+               // }
+
+                checkpEpSyncMailForAccount(fromAccount, null);
 
             } catch (pEpException | MessagingException e) {
                 Timber.e(e, "messageToSend: Cannot send message");
