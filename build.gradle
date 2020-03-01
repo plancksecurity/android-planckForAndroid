@@ -3,12 +3,12 @@ buildscript {
         buildConfig = [
                 'compileSdk'           : 28,
                 'targetSdk'            : 28,
-                'minSdk'               : 19,
-                'versionCode'          : 40,
-                'pEpEngineRevision'    : 4360,
-                'pEpJNIAdapterRevision': 631,
-                'versionName'          : '1.0.231',
-                'libpEpAdapterRevision': 154
+                'minSdk'               : 21,
+                'versionCode'          : 41,
+                'pEpEngineRevision'    : 4458,
+                'pEpJNIAdapterRevision': 650,
+                'versionName'          : '1.0.232',
+                'libpEpAdapterRevision': 159
         ]
 
         versions = [
