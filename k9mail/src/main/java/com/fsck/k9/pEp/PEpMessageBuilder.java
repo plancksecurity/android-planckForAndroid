@@ -22,6 +22,7 @@ import foundation.pEp.jniadapter.Pair;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -78,10 +79,11 @@ class PEpMessageBuilder {
                 }
 
             String charset =  MimeUtility.getHeaderParameter(mm.getContentType(), "charset");
-            if (charset == null) {
-                // failback when the header doesn't have charset parameter, defaults to UTF-8
+
+            if (charset == null || !Charset.isSupported(charset)) {
+                // failback when the header doesn't have charset parameter or it is invalid, defaults to UTF-8
                 // FIXME: charset, trate non text bod4y types like application/pgp-keys
-                charset = "UTF-8";
+                charset = Charset.defaultCharset().name();
             }
             String text = new String(PEpUtils.extractBodyContent(b), charset);
             if(mm.isMimeType("text/html")) {
@@ -169,6 +171,8 @@ class PEpMessageBuilder {
             return MimeHeader.CID_SCHEME + attachment.getContentId();
         } else {
             return MimeHeader.FILE_SCHEME + getFileName(attachment);
+
+
         }
     }
 

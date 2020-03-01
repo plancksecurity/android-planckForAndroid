@@ -2,40 +2,22 @@
 package com.fsck.k9.mailstore;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Stack;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import androidx.annotation.Nullable;
 import android.text.TextUtils;
-import timber.log.Timber;
+
+import androidx.annotation.Nullable;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.activity.MessageReference;
-import com.fsck.k9.controller.PendingCommandSerializer;
 import com.fsck.k9.controller.MessagingControllerCommands.PendingCommand;
+import com.fsck.k9.controller.PendingCommandSerializer;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.BodyPart;
@@ -65,11 +47,33 @@ import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.search.SqlQueryBuilder;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.james.mime4j.codec.Base64InputStream;
 import org.apache.james.mime4j.codec.QuotedPrintableInputStream;
 import org.apache.james.mime4j.util.MimeUtil;
 import org.openintents.openpgp.util.OpenPgpApi.OpenPgpDataSource;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Stack;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+import timber.log.Timber;
 
 /**
  * <pre>
@@ -587,7 +591,7 @@ public class LocalStore extends Store implements Serializable {
 
         String[] selectionArgs = queryArgs.toArray(new String[queryArgs.size()]);
 
-        String sqlQuery = "SELECT " + GET_MESSAGES_COLS + "FRO  M messages " +
+        String sqlQuery = "SELECT " + GET_MESSAGES_COLS + "FROM messages " +
                 "LEFT JOIN threads ON (threads.message_id = messages.id) " +
                 "LEFT JOIN message_parts ON (message_parts.id = messages.message_part_id) " +
                 "LEFT JOIN folders ON (folders.id = messages.folder_id) WHERE " +

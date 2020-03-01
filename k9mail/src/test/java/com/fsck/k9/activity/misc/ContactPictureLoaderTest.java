@@ -1,7 +1,8 @@
 package com.fsck.k9.activity.misc;
 
 
-import com.fsck.k9.K9RobolectricTestRunner;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.fsck.k9.mail.Address;
 
 import org.junit.Test;
@@ -9,7 +10,7 @@ import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(K9RobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class ContactPictureLoaderTest {
 
     @Test

@@ -8,9 +8,22 @@
     android:orientation="horizontal"
     android:descendantFocusability="blocksDescendants"
     android:gravity="center_vertical"
-    android:clickable="true"
     android:background="?attr/selectableItemBackground"
     xmlns:tools="http://schemas.android.com/tools">
+
+    <ImageButton
+        android:id="@+id/account_settings"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:alpha="1"
+        android:background="?android:attr/selectableItemBackground"
+        android:focusable="false"
+        android:gravity="center_vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:src="?attr/iconActionSettings"
+        android:visibility="gone"
+        app:tintMode="src_atop" />
 
     <LinearLayout android:id="@+id/accounts_description_layout"
             android:layout_width="wrap_content"
@@ -73,32 +86,6 @@
             android:layout_gravity="center_vertical"
             android:orientation="horizontal"
             >
-        <ImageButton
-            android:id="@+id/account_leave_device_group"
-            android:gravity="center_vertical"
-            android:focusable="false"
-            app:srcCompat="?attr/iconpEpDeviceGroup"
-            android:background="?android:attr/selectableItemBackground"
-            android:layout_width="48dp"
-            android:layout_height="fill_parent"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:tint="@color/pep_green"
-            />
-        <ImageButton
-            android:id="@+id/account_settings"
-            android:gravity="center_vertical"
-            android:focusable="false"
-            android:src="?attr/iconActionSettings"
-            android:background="?android:attr/selectableItemBackground"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:tint="@color/pep_green"
-            app:tintMode="src_atop"
-            android:alpha="1"
-            />
 
         <ImageButton
             android:id="@+id/folders"

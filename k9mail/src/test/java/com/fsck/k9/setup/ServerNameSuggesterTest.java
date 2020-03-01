@@ -1,18 +1,14 @@
 package com.fsck.k9.setup;
 
 
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.mail.ServerSettings.Type;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.assertEquals;
 
 
-@RunWith(K9RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ServerNameSuggesterTest {
     private ServerNameSuggester serverNameSuggester;
 
@@ -23,7 +19,7 @@ public class ServerNameSuggesterTest {
     }
 
     @Test
-    public void suggestServerName_forImapServer() throws Exception {
+    public void suggestServerName_forImapServer() {
         Type serverType = Type.IMAP;
         String domainPart = "example.org";
 
@@ -33,7 +29,7 @@ public class ServerNameSuggesterTest {
     }
 
     @Test
-    public void suggestServerName_forPop3Server() throws Exception {
+    public void suggestServerName_forPop3Server() {
         Type serverType = Type.POP3;
         String domainPart = "example.org";
 
@@ -43,7 +39,7 @@ public class ServerNameSuggesterTest {
     }
 
     @Test
-    public void suggestServerName_forWebDavServer() throws Exception {
+    public void suggestServerName_forWebDavServer() {
         Type serverType = Type.WebDAV;
         String domainPart = "example.org";
 
@@ -53,7 +49,7 @@ public class ServerNameSuggesterTest {
     }
 
     @Test
-    public void suggestServerName_forSmtpServer() throws Exception {
+    public void suggestServerName_forSmtpServer() {
         Type serverType = Type.SMTP;
         String domainPart = "example.org";
 

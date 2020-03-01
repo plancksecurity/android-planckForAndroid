@@ -20,14 +20,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.TypedValue;
+import android.view.ContextMenu;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,7 +36,13 @@ import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
@@ -89,14 +95,19 @@ import com.fsck.k9.message.SimpleMessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.PepPermissionActivity;
+import com.fsck.k9.pEp.PepActivity;
+import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
-import com.karumi.dexter.listener.single.CompositePermissionListener;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
 
-import foundation.pEp.jniadapter.Rating;
+import org.openintents.openpgp.OpenPgpApiManager;
 
 import java.util.Collections;
 import java.util.Date;
@@ -106,13 +117,21 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.openintents.openpgp.OpenPgpApiManager;
+import javax.inject.Inject;
 
+import foundation.pEp.jniadapter.Rating;
+import security.pEp.permissions.PermissionChecker;
+import security.pEp.permissions.PermissionRequester;
+import security.pEp.ui.message_compose.ComposeAccountRecipient;
+import security.pEp.ui.resources.ResourcesProvider;
+import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
+import security.pEp.ui.toolbar.ToolBarCustomizer;
+import security.pEp.ui.toolbar.ToolbarStatusPopUpMenu;
 import timber.log.Timber;
 
 
 @SuppressWarnings("deprecation") // TODO get rid of activity dialogs and indeterminate progress bars
-public class MessageCompose extends PepPermissionActivity implements OnClickListener,
+public class MessageCompose extends PepActivity implements OnClickListener,
         CancelListener, OnFocusChangeListener, OnCryptoModeChangedListener,
         OnOpenPgpInlineChangeListener, PgpSignOnlyDialog.OnOpenPgpSignOnlyChangeListener, MessageBuilder.Callback,
         AttachmentPresenter.AttachmentsChangedListener, RecipientPresenter.RecipientsChangedListener {
@@ -135,7 +154,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
     public static final String EXTRA_PEP_RATING = "pEpRating";
     public static final String EXTRA_MESSAGE_DECRYPTION_RESULT = "message_decryption_result";
-    public static final String EXTRA_MESSAGE_BODY  = "messageBody";
+    public static final String EXTRA_MESSAGE_BODY = "messageBody";
 
     private static final String STATE_KEY_SOURCE_MESSAGE_PROCED =
             "com.fsck.k9.activity.MessageCompose.stateKeySourceMessageProced";
@@ -164,7 +183,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
     /**
      * Regular expression to remove the first localized "Re:" prefix in subjects.
-     *
+     * <p>
      * Currently:
      * - "Aw:" (german: abbreviation for "Antwort")
      */
@@ -174,10 +193,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     private QuotedMessagePresenter quotedMessagePresenter;
     private MessageLoaderHelper messageLoaderHelper;
     private AttachmentPresenter attachmentPresenter;
-    private boolean encrypted = true;
-    private CompositePermissionListener contactPermissionListener;
     private LinearLayout rootView;
-    private MenuItem alwaysSecureMenuItem;
     private PePUIArtefactCache uiCache;
     private boolean permissionAsked;
     private RecipientMvpView recipientMvpView;
@@ -233,7 +249,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
     private boolean requestReadReceipt = false;
 
-    private TextView chooseIdentityButton;
+    private ComposeAccountRecipient accountRecipient;
     private EditText subjectView;
     private EolConvertingEditText signatureView;
     private EolConvertingEditText messageContentView;
@@ -246,6 +262,22 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     private SimpleMessageFormat currentMessageFormat;
 
     private boolean isInSubActivity = false;
+
+    @Inject
+    PermissionRequester permissionRequester;
+    @Inject
+    PermissionChecker permissionChecker;
+    @Inject
+    ToolBarCustomizer toolBarCustomizer;
+    @Inject
+    ResourcesProvider resourcesProvider;
+
+    private PEpSecurityStatusLayout pEpSecurityStatusLayout;
+
+    @Override
+    public void inject() {
+        getpEpComponent().inject(this);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -264,7 +296,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             ContextThemeWrapper themeContext = new ContextThemeWrapper(this,
                     K9.getK9ThemeResourceId(K9.getK9ComposerTheme()));
             @SuppressLint("InflateParams") // this is the top level activity element, it has no root
-            View v = LayoutInflater.from(themeContext).inflate(R.layout.message_compose, null);
+                    View v = LayoutInflater.from(themeContext).inflate(R.layout.message_compose, null);
             TypedValue outValue = new TypedValue();
             // background color needs to be forced
             themeContext.getTheme().resolveAttribute(R.attr.messageViewBackgroundColor, outValue, true);
@@ -273,6 +305,8 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         } else {
             bindViews(R.layout.message_compose);
         }
+
+        startToolbar();
 
         // on api level 15, setContentView() shows the progress bar for some reason...
         setProgressBarIndeterminateVisibility(false);
@@ -308,10 +342,10 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
         contacts = Contacts.getInstance(MessageCompose.this);
 
-        rootView = (LinearLayout) findViewById(R.id.content);
+        rootView = findViewById(R.id.content);
 
-        chooseIdentityButton = (TextView) findViewById(R.id.identity);
-        chooseIdentityButton.setOnClickListener(this);
+        accountRecipient = findViewById(R.id.identity);
+        accountRecipient.setOnClickListener(this);
 
         recipientMvpView = new RecipientMvpView(this);
         ComposePgpInlineDecider composePgpInlineDecider = new ComposePgpInlineDecider();
@@ -322,21 +356,21 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         recipientPresenter.updateCryptoStatus();
 
 
-        subjectView = (EditText) findViewById(R.id.subject);
+        subjectView = findViewById(R.id.subject);
         subjectView.getInputExtras(true).putBoolean("allowEmoji", true);
 
-        EolConvertingEditText upperSignature = (EolConvertingEditText) findViewById(R.id.upper_signature);
-        EolConvertingEditText lowerSignature = (EolConvertingEditText) findViewById(R.id.lower_signature);
+        EolConvertingEditText upperSignature = findViewById(R.id.upper_signature);
+        EolConvertingEditText lowerSignature = findViewById(R.id.lower_signature);
 
         QuotedMessageMvpView quotedMessageMvpView = new QuotedMessageMvpView(this);
         quotedMessagePresenter = new QuotedMessagePresenter(this, quotedMessageMvpView, account);
         attachmentPresenter = new AttachmentPresenter(getApplicationContext(), attachmentMvpView,
                 getSupportLoaderManager(), this);
 
-        messageContentView = (EolConvertingEditText) findViewById(R.id.message_content);
+        messageContentView = findViewById(R.id.message_content);
         messageContentView.getInputExtras(true).putBoolean("allowEmoji", true);
 
-        attachmentsView = (LinearLayout) findViewById(R.id.attachments);
+        attachmentsView = findViewById(R.id.attachments);
 
         TextWatcher draftNeedsChangingTextWatcher = new SimpleTextWatcher() {
             @Override
@@ -468,7 +502,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         K9.getFontSizes().setViewTextSize(subjectView, fontSize);
         K9.getFontSizes().setViewTextSize(messageContentView, fontSize);
         K9.getFontSizes().setViewTextSize(signatureView, fontSize);
-// TODO: pEp font sizes and skin stuff
+        // TODO: pEp font sizes and skin stuff
         updateMessageFormat();
 
         setTitle();
@@ -481,7 +515,23 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
         recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.ACCOUNT, account.ispEpPrivacyProtected());
 
+    }
+
+    private void startToolbar() {
         setUpToolbar(true);
+        setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
+        if (getToolbar() != null) {
+            pEpSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
+            pEpSecurityStatusLayout.setOnClickListener(v -> onPEpPrivacyStatus(false));
+            pEpSecurityStatusLayout.setOnLongClickListener( view -> {
+                PopupMenu statusMenu = new ToolbarStatusPopUpMenu(getApplicationContext(),
+                        view, recipientPresenter);
+                statusMenu.show();
+                return true;
+            });
+        }
+        toolBarCustomizer.setToolbarColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
+        toolBarCustomizer.setStatusBarPepColor(ContextCompat.getColor(getApplicationContext(), R.color.nav_contact_background));
     }
 
     private void createDynamicShortcut() {
@@ -513,18 +563,16 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
      * <p>
      * Supported external intents:
      * <ul>
-     *   <li>{@link Intent#ACTION_VIEW}</li>
-     *   <li>{@link Intent#ACTION_SENDTO}</li>
-     *   <li>{@link Intent#ACTION_SEND}</li>
-     *   <li>{@link Intent#ACTION_SEND_MULTIPLE}</li>
+     * <li>{@link Intent#ACTION_VIEW}</li>
+     * <li>{@link Intent#ACTION_SENDTO}</li>
+     * <li>{@link Intent#ACTION_SEND}</li>
+     * <li>{@link Intent#ACTION_SEND_MULTIPLE}</li>
      * </ul>
      * </p>
      *
-     * @param intent
-     *         The (external) intent that started the activity.
-     *
+     * @param intent The (external) intent that started the activity.
      * @return {@code true}, if this activity was started by an external intent. {@code false},
-     *         otherwise.
+     * otherwise.
      */
     private boolean initFromIntent(final Intent intent) {
         boolean startedByExternalIntent = false;
@@ -939,7 +987,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     }
 
     private void updateFrom() {
-        chooseIdentityButton.setText(identity.getEmail());
+        accountRecipient.bindView(identity.getEmail());
     }
 
     private void updateSignature() {
@@ -977,6 +1025,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
     public void onOpenPgpSignOnlyChange(boolean enabled) {
         recipientPresenter.onCryptoPgpSignOnlyDisabled();
     }
+
     @Override
     public void onAttachmentAdded() {
         changesMadeSinceLastSave = true;
@@ -1051,30 +1100,11 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             case R.id.add_attachment:
                 attachmentPresenter.onClickAddAttachment(recipientPresenter);
                 break;
-            case R.id.pEp_indicator:
-//                TODO> Review after rebase
-                onPEpIndicator();
-                break;
             case R.id.read_receipt:
                 onReadReceipt();
                 break;
-            case R.id.force_unencrypted:
-                if (encrypted) {
-                    item.setTitle(R.string.pep_force_protected);
-                } else {
-                    item.setTitle(R.string.pep_force_unprotected);
-                }
-                encrypted = !encrypted;
-                forceUnencrypted();
-                break;
-            case R.id.is_always_secure:
-                if (alwaysSecureMenuItem.getTitle().toString().equals(getString(R.string.is_always_secure))) {
-                    recipientPresenter.setAlwaysSecure(true);
-                    alwaysSecureMenuItem.setTitle(R.string.is_not_always_secure);
-                } else {
-                    recipientPresenter.setAlwaysSecure(false);
-                    alwaysSecureMenuItem.setTitle(R.string.is_always_secure);
-                }
+            case R.id.privacyStatus:
+                onPEpPrivacyStatus(true);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -1085,18 +1115,18 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                 && account.ispEpPrivacyProtected();
     }
 
-    private void forceUnencrypted() {
-        recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.MESSAGE);
-    }
 
     private void handlePEpState(boolean... withToast) {
         recipientPresenter.handlepEpState(withToast);
     }
 
-    private void onPEpIndicator() {
-        recipientMvpView.setMessageReference(relatedMessageReference);
-        handlePEpState(false);
-        recipientPresenter.onPepIndicator();
+    private void onPEpPrivacyStatus(boolean force) {
+        recipientMvpView.refreshRecipients();
+        if (force || recipientPresenter.isPepStatusClickable()) {
+            recipientMvpView.setMessageReference(relatedMessageReference);
+            handlePEpState(false);
+            recipientPresenter.onPEpPrivacyStatus();
+        }
     }
 
     private void goBack() {
@@ -1116,6 +1146,8 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         }
     }
 
+
+    // Options Menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -1132,16 +1164,10 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         }
 
         // grab our icon and set it to the wanted color.
-        recipientPresenter.setpEpIndicator(menu.findItem(R.id.pEp_indicator));
-//  TODO> Review after rebase
+        //    recipientPresenter.setpEpIndicator(menu.findItem(R.id.pEp_indicator));
+        //  TODO> Review after rebase
         handlePEpState(false);       // fire once to get everything set up.
 
-        if (encrypted) {
-            menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_unprotected);
-        } else {
-            menu.findItem(R.id.force_unencrypted).setTitle(R.string.pep_force_protected);
-        }
-        alwaysSecureMenuItem = menu.findItem(R.id.is_always_secure);
         return true;
     }
 
@@ -1150,6 +1176,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         super.onPrepareOptionsMenu(menu);
 
         recipientPresenter.onPrepareOptionsMenu(menu);
+        toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(ContextCompat.getColor(this, R.color.light_black));
 
         return true;
     }
@@ -1182,12 +1209,9 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         if (subjectView.getText().length() != 0) {
             return true;
         }
-        if (!recipientPresenter.getToAddresses().isEmpty() ||
+        return !recipientPresenter.getToAddresses().isEmpty() ||
                 !recipientPresenter.getCcAddresses().isEmpty() ||
-                !recipientPresenter.getBccAddresses().isEmpty()) {
-            return true;
-        }
-        return false;
+                !recipientPresenter.getBccAddresses().isEmpty();
     }
 
 
@@ -1219,24 +1243,24 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                         .create();
             case DIALOG_CONFIRM_DISCARD_ON_BACK:
                 return new AlertDialog.Builder(this)
-                       .setTitle(R.string.confirm_discard_draft_message_title)
-                       .setMessage(R.string.confirm_discard_draft_message)
-                .setPositiveButton(R.string.cancel_action, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        dismissDialog(DIALOG_CONFIRM_DISCARD_ON_BACK);
-                    }
-                })
-                .setNegativeButton(R.string.discard_action, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        dismissDialog(DIALOG_CONFIRM_DISCARD_ON_BACK);
-                        FeedbackTools.showLongFeedback(getRootView(),
-                                       getString(R.string.message_discarded_toast));
-                        onDiscard();
-                    }
-                })
-                .create();
+                        .setTitle(R.string.confirm_discard_draft_message_title)
+                        .setMessage(R.string.confirm_discard_draft_message)
+                        .setPositiveButton(R.string.cancel_action, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                dismissDialog(DIALOG_CONFIRM_DISCARD_ON_BACK);
+                            }
+                        })
+                        .setNegativeButton(R.string.discard_action, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                dismissDialog(DIALOG_CONFIRM_DISCARD_ON_BACK);
+                                FeedbackTools.showLongFeedback(getRootView(),
+                                        getString(R.string.message_discarded_toast));
+                                onDiscard();
+                            }
+                        })
+                        .create();
             case DIALOG_CHOOSE_IDENTITY:
                 Context context = new ContextThemeWrapper(this,
                         (K9.getK9Theme() == K9.Theme.LIGHT) ?
@@ -1310,8 +1334,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
      * Pull out the parts of the now loaded source message and apply them to the new message
      * depending on the type of message being composed.
      *
-     * @param messageViewInfo
-     *         The source message used to populate the various text fields.
+     * @param messageViewInfo The source message used to populate the various text fields.
      */
     private void processSourceMessage(MessageViewInfo messageViewInfo) {
         try {
@@ -1520,7 +1543,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
         }
 
         public SendMessageTask(Context context, Account account, Contacts contacts, Message message,
-                        Long draftId, MessageReference messageReference, PEpProvider.CompletedCallback completedCallback) {
+                               Long draftId, MessageReference messageReference, PEpProvider.CompletedCallback completedCallback) {
             this.context = context;
             this.account = account;
             this.contacts = contacts;
@@ -1575,8 +1598,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
      * When we are launched with an intent that includes a mailto: URI, we can actually
      * gather quite a few of our message fields from it.
      *
-     * @param mailTo
-     *         The MailTo object we use to initialize message field
+     * @param mailTo The MailTo object we use to initialize message field
      */
     private void initializeFromMailto(MailTo mailTo) {
         recipientPresenter.initFromMailto(mailTo);
@@ -1759,7 +1781,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
         @Override
         public void startIntentSenderForMessageLoaderHelper(IntentSender si, int requestCode, Intent fillIntent,
-                int flagsMask, int flagValues, int extraFlags) {
+                                                            int flagsMask, int flagValues, int extraFlags) {
             try {
                 requestCode |= REQUEST_MASK_LOADER_HELPER;
                 startIntentSenderForResult(si, requestCode, fillIntent, flagsMask, flagValues, extraFlags);
@@ -1867,7 +1889,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
             View view = getLayoutInflater().inflate(R.layout.message_compose_attachment, attachmentsView, false);
             attachmentViews.put(attachment.uri, view);
 
-            ImageView deleteButton = (ImageView) view.findViewById(R.id.attachment_delete);
+            ImageView deleteButton = view.findViewById(R.id.attachment_delete);
             deleteButton.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -1886,7 +1908,7 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
                 throw new IllegalArgumentException();
             }
 
-            TextView nameView = (TextView) view.findViewById(R.id.attachment_name);
+            TextView nameView = view.findViewById(R.id.attachment_name);
             boolean hasMetadata = (attachment.state != Attachment.LoadingState.URI_ONLY);
             if (hasMetadata) {
                 nameView.setText(attachment.name);
@@ -1929,30 +1951,47 @@ public class MessageCompose extends PepPermissionActivity implements OnClickList
 
 
     public void askForPermissions() {
-        if(!permissionAsked) {
+        if (!permissionAsked && permissionChecker.doesntHaveContactsPermission()) {
             permissionAsked = true;
-            createContactsPermissionListeners();
+            permissionRequester.requestContactsPermission(getRootView(), new PermissionListener() {
+                @Override
+                public void onPermissionGranted(PermissionGrantedResponse response) {
+                }
+
+                @Override
+                public void onPermissionDenied(PermissionDeniedResponse response) {
+                    String permissionDenied = getResources().getString(R.string.read_snackbar_permission_permanently_denied);
+                    FeedbackTools.showLongFeedback(getRootView(), permissionDenied);
+                }
+
+                @Override
+                public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+
+                }
+            });
         }
     }
 
-    public void showPermissionGranted(String permissionName) {
-    }
-
-    public void showPermissionDenied(String permissionName, boolean permanentlyDenied) {
-        String permissionDenied = getResources().getString(R.string.read_snackbar_permission_permanently_denied);
-        FeedbackTools.showLongFeedback(getRootView(),  permissionDenied);
-    }
-
-    @Override
-    public void inject() {
-
-    }
     public void lockSendButton() {
         isSendButtonLocked = true;
     }
 
     public void unlockSendButton() {
         isSendButtonLocked = false;
+    }
+
+    public void setToolbarColor(@ColorInt int color) {
+        toolBarCustomizer.setToolbarColor(color);
+    }
+
+    public void setStatusBarPepColor(@ColorInt int color) {
+        toolBarCustomizer.setStatusBarPepColor(color);
+    }
+
+    public void setToolbarRating(Rating rating) {
+        boolean encrypt = recipientPresenter == null || (!recipientPresenter.isForceUnencrypted() && account.ispEpPrivacyProtected());
+        pEpSecurityStatusLayout.setEncrypt(encrypt);
+        pEpSecurityStatusLayout.setRating(rating);
     }
 
     private Handler internalMessageHandler = new Handler() {

@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.fsck.k9.Account;
@@ -31,7 +32,7 @@ import com.fsck.k9.view.ToolableViewAnimator;
 import org.openintents.openpgp.OpenPgpError;
 
 
-public class MessageTopView extends LinearLayout {
+public class MessageTopView extends RelativeLayout {
 
     public static final int PROGRESS_MAX = 1000;
     public static final int PROGRESS_MAX_WITH_MARGIN = 950;
@@ -195,10 +196,6 @@ public class MessageTopView extends LinearLayout {
     public void setHeaders(final Message message, Account account) {
         mHeaderContainer.populate(message, account);
         mHeaderContainer.setVisibility(View.VISIBLE);
-    }
-
-    public void setOnToggleFlagClickListener(OnClickListener listener) {
-        mHeaderContainer.setOnFlagListener(listener);
     }
 
     public void showAllHeaders() {

@@ -91,11 +91,6 @@ public class PePUIArtefactCache
         return ContextCompat.getDrawable(context, R.drawable.ic_action_pep_indicator_white);
     }
 
-    public int getColor(Rating pEpRating) {
-        return PEpUtils.getRatingColor(pEpRating, context);
-    }
-
-
     public ArrayList<Identity> getRecipients() {
         if (recipients == null) {
             return new ArrayList<>();

@@ -1,8 +1,8 @@
 package com.fsck.k9.pEp.ui.fragments;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.fsck.k9.R;
 import com.fsck.k9.activity.setup.AccountSetupBasics;

@@ -43,6 +43,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -165,7 +166,6 @@ public class PEpUtils {
             throw new RuntimeException("Could not convert Identiy.address " + id.address + " to Address.");
         return adr;
     }
-
 
 //    /**
 //     * dumps a k9 msg to log
@@ -330,32 +330,6 @@ public class PEpUtils {
 
     }
 
-    public static int getRatingColor(Rating rating, Context context) {
-        // TODO: 02/09/16 PEP_color color_from_rating(PEP_rating rating) from pEpEngine;
-
-        if (rating == null || rating.equals(Rating.pEpRatingB0rken)
-                || rating.equals(Rating.pEpRatingHaveNoKey)) {
-            return ContextCompat.getColor(context, R.color.pep_no_color);
-        }
-
-        if (rating.value < Rating.pEpRatingUndefined.value) {
-            return ContextCompat.getColor(context, R.color.pep_red);
-        }
-
-        if (rating.value < Rating.pEpRatingReliable.value) {
-            return ContextCompat.getColor(context, R.color.pep_no_color);
-        }
-
-        if (rating.value < Rating.pEpRatingTrusted.value) {
-            return ContextCompat.getColor(context, R.color.pep_yellow);
-        }
-
-        if (rating.value >= Rating.pEpRatingTrusted.value) {
-            return ContextCompat.getColor(context, R.color.pep_green);
-        }
-        throw new RuntimeException("Invalid rating");
-    }
-
     public static Rating extractRating(Message message) {
         String[] pEpRating;
         pEpRating = message.getHeader(MimeHeader.HEADER_PEP_RATING);
@@ -384,7 +358,6 @@ public class PEpUtils {
         return String.valueOf(fprChars);
     }
 
-
     public static boolean ispEpDisabled(Account account, Rating messageRating) {
         return messageRating == Rating.pEpRatingUndefined
                 || !account.ispEpPrivacyProtected();
@@ -401,34 +374,7 @@ public class PEpUtils {
     }
 
     private static void updateSyncFlag(Account account, PEpProvider pEp, Identity myIdentity) {
-        if (!account.isPepSyncEnabled()) {
-            pEp.setIdentityFlag(myIdentity, IdentityFlags.pEpIdfNotForSync.value);
-        } else {
-            pEp.unsetIdentityFlag(myIdentity, IdentityFlags.pEpIdfNotForSync.value);
-        }
-    }
-
-
-    public static void colorToolbar(PePUIArtefactCache uiCache, Toolbar toolbar, Rating pEpRating) {
-        if (toolbar != null) {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    toolbar.setBackgroundColor(uiCache.getColor(pEpRating));
-                }
-            });
-        }
-    }
-
-    public static void colorToolbar(PePUIArtefactCache uiCache, ActionBar supportActionBar, Rating pEpRating) {
-        ColorDrawable colorDrawable = new ColorDrawable(uiCache.getColor(pEpRating));
-        supportActionBar.setBackgroundDrawable(colorDrawable);
-    }
-
-    public static void colorToolbar(Toolbar toolbar, int colorResource) {
-        if (toolbar != null) {
-            toolbar.setBackgroundColor(colorResource);
-        }
+        pEp.setIdentityFlag(myIdentity, account.isPepSyncEnabled());
     }
 
     public static ArrayList<Identity> filterRecipients(Account account, ArrayList<Identity> recipients) {
@@ -479,34 +425,6 @@ public class PEpUtils {
             for (String cur : sv)
                 rt += cur + "; ";
         return rt;
-    }
-
-    public static Drawable getDrawableForRating(Context context, Rating rating) {
-        if (rating.value != Rating.pEpRatingMistrust.value
-                && rating.value < Rating.pEpRatingReliable.value) {
-            return context.getResources().getDrawable(R.drawable.pep_status_gray);
-        } else if (rating.value == Rating.pEpRatingMistrust.value) {
-            return context.getResources().getDrawable(R.drawable.pep_status_red);
-        } else if (rating.value >= Rating.pEpRatingTrusted.value) {
-            return context.getResources().getDrawable(R.drawable.pep_status_green);
-        } else if (rating.value == Rating.pEpRatingReliable.value) {
-            return context.getResources().getDrawable(R.drawable.pep_status_yellow);
-        }
-        return context.getResources().getDrawable(R.drawable.pep_status_gray);
-    }
-
-    public static Drawable getDrawableForRatingRecipient(Context context, Rating rating) {
-        if (rating.value != Rating.pEpRatingMistrust.value
-                && rating.value < Rating.pEpRatingReliable.value) {
-            return context.getResources().getDrawable(R.drawable.pep_status_gray_white);
-        } else if (rating.value == Rating.pEpRatingMistrust.value) {
-            return context.getResources().getDrawable(R.drawable.pep_status_red_white);
-        } else if (rating.value >= Rating.pEpRatingTrusted.value) {
-            return context.getResources().getDrawable(R.drawable.pep_status_green_dark);
-        } else if (rating.value == Rating.pEpRatingReliable.value) {
-            return context.getResources().getDrawable(R.drawable.pep_status_yellow_white);
-        }
-        return context.getResources().getDrawable(R.drawable.pep_status_gray_white);
     }
 
     public static String addressesToString(Address[] addresses) {
@@ -626,6 +544,12 @@ public class PEpUtils {
     public static String sanitizeFpr(String fpr) {
         if (fpr != null) return fpr.toUpperCase().replaceAll("\\P{XDigit}", "");
         return "";
+    }
+
+    public static <MSG extends Message> boolean isAutoConsumeMessage(MSG message) {
+        final Set<String> headerNames = message.getHeaderNames();
+        return headerNames.contains(MimeHeader.HEADER_PEP_AUTOCONSUME.toUpperCase(Locale.ROOT))
+                || headerNames.contains(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY.toUpperCase(Locale.ROOT));
     }
 }
 

@@ -534,17 +534,20 @@ public abstract class MessageBuilder {
             @Override
             public void onComplete() {
                 deliverResult();
+                Timber.i("Contador de MessageBuilder onComplete-1");
                 EspressoTestingIdlingResource.decrement();
             }
 
             @Override
             public void onError(Throwable throwable) {
+                Timber.i("Contador de MessageBuilder onError-1");
                 EspressoTestingIdlingResource.decrement();
             }
         };
         PostExecutionThread postExecutionThread = new UIThread();
         ThreadExecutor threadExecutor = new JobExecutor();
         threadExecutor.execute(() -> {
+            Timber.i("Contador de MessageBuilder+1");
             EspressoTestingIdlingResource.increment();
             buildMessageInternal();
             postExecutionThread.post(completedCallback::onComplete);

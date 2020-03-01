@@ -14,9 +14,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
@@ -25,8 +27,13 @@ import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.PepActivity;
 
-public class AccountSetupNames extends K9Activity implements OnClickListener {
+import javax.inject.Inject;
+
+import security.pEp.ui.toolbar.ToolBarCustomizer;
+
+public class AccountSetupNames extends PepActivity implements OnClickListener {
     private static final String EXTRA_ACCOUNT = "account";
 
     private EditText mDescription;
@@ -36,8 +43,12 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
     private Account mAccount;
 
     private Button mDoneButton;
-    //private CheckBox pepSyncAccount;
+    private CheckBox pepSyncAccount;
     private PePUIArtefactCache pePUIArtefactCache;
+
+    @Inject
+    ToolBarCustomizer toolBarCustomizer;
+
 
     public static void actionSetNames(Context context, Account account) {
         Intent i = new Intent(context, AccountSetupNames.class);
@@ -52,11 +63,11 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
         bindViews(R.layout.account_setup_names);
 
         initializeToolbar(true, R.string.account_setup_names_title);
-        setStatusBarPepColor(getResources().getColor(R.color.pep_green));
+        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.colorPrimary));
 
         mDescription = (EditText)findViewById(R.id.account_description);
         mName = (EditText)findViewById(R.id.account_name);
-        //pepSyncAccount = (CheckBox)findViewById(R.id.pep_enable_sync_account);
+        pepSyncAccount = (CheckBox)findViewById(R.id.pep_enable_sync_account);
         mDoneButton = (Button)findViewById(R.id.done);
         mDoneButton.setOnClickListener(this);
 
@@ -91,9 +102,9 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
             mDoneButton.setEnabled(false);
         }
 
-       /* if (!BuildConfig.WITH_KEY_SYNC) {
+        if (!BuildConfig.WITH_KEY_SYNC) {
             pepSyncAccount.setVisibility(View.GONE);
-        }*/
+        }
 
         pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
         pePUIArtefactCache.removeCredentialsInPreferences();
@@ -102,6 +113,11 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
     @Override
     public void search(String query) {
 
+    }
+
+    @Override
+    public void inject() {
+        getpEpComponent().inject(this);
     }
 
     @Override
@@ -128,7 +144,7 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
             mAccount.setDescription(mDescription.getText().toString());
         }
         mAccount.setName(mName.getText().toString());
-      //  mAccount.setPEpSyncAccount(pepSyncAccount.isChecked());
+        mAccount.setPEpSyncAccount(pepSyncAccount.isChecked());
         mAccount.save(Preferences.getPreferences(this));
         new pEpGenerateAccountKeysTask().execute();
     }

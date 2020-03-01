@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/force_unencrypted"
+        android:title="@string/pep_force_unprotected" />
+
+    <item
+        android:id="@+id/is_always_secure"
+        android:alphabeticShortcut="g"
+        android:title="@string/is_always_secure"/>
+</menu>

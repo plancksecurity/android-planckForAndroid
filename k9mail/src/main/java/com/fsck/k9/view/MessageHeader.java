@@ -10,12 +10,9 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.style.StyleSpan;
 import android.util.AttributeSet;
-import timber.log.Timber;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -24,7 +21,6 @@ import android.widget.TextView;
 import com.fsck.k9.Account;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.misc.ContactPictureLoader;
 import com.fsck.k9.helper.ClipboardManager;
@@ -43,17 +39,16 @@ import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
 import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
-import com.fsck.k9.pEp.PePUIArtefactCache;
-
 import com.fsck.k9.ui.messageview.OnCryptoClickListener;
-
-import foundation.pEp.jniadapter.Rating;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import foundation.pEp.jniadapter.Rating;
+import timber.log.Timber;
 
 
 public class MessageHeader extends LinearLayout implements OnClickListener, OnLongClickListener {
@@ -68,8 +63,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     private TextView mSubjectView;
     private MessageCryptoStatusView mCryptoStatusIcon;
 
-    private View mChip;
-    private CheckBox mFlagged;
     private int defaultSubjectColor;
     private TextView mAdditionalHeadersView;
     private View mAnsweredIcon;
@@ -88,10 +81,8 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     private OnCryptoClickListener onCryptoClickListener;
 
     private Rating pEpRating;
-    private PePUIArtefactCache pePUIArtefactCache;
 
     private OnMessageOptionsListener onMessageOptionsListener;
-    private ImageView replyMessage;
     private ImageView moreOptions;
 
     public void setOnMessageOptionsListener(OnMessageOptionsListener onMessageOptionsListener) {
@@ -116,7 +107,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         super(context, attrs);
         mContext = context;
         mContacts = Contacts.getInstance(mContext);
-        pePUIArtefactCache = PePUIArtefactCache.getInstance(context);
     }
 
     @Override
@@ -125,57 +115,46 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
         mAnsweredIcon = findViewById(R.id.answered);
         mForwardedIcon = findViewById(R.id.forwarded);
-        mFromView = (TextView) findViewById(R.id.from);
-        mSenderView = (TextView) findViewById(R.id.sender);
-        mToView = (TextView) findViewById(R.id.to);
-        mToLabel = (TextView) findViewById(R.id.to_label);
-        mCcView = (TextView) findViewById(R.id.cc);
-        mCcLabel = (TextView) findViewById(R.id.cc_label);
+        mFromView = findViewById(R.id.from);
+        mSenderView = findViewById(R.id.sender);
+        mToView = findViewById(R.id.to);
+        mToLabel = findViewById(R.id.to_label);
+        mCcView = findViewById(R.id.cc);
+        mCcLabel = findViewById(R.id.cc_label);
 
-        replyMessage = (ImageView) findViewById(R.id.reply_message);
-        moreOptions = (ImageView) findViewById(R.id.message_more_options);
+        moreOptions = findViewById(R.id.message_more_options);
 
-        replyMessage.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onMessageOptionsListener.OnMessageOptionsListener(MessageAction.REPLY);
-            }
+
+        moreOptions.setOnClickListener(view -> {
+            PopupMenu popupMenu = new PopupMenu(getContext(), view);
+            popupMenu.getMenuInflater().inflate(R.menu.message_more_options_menu, popupMenu.getMenu());
+
+            popupMenu.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()) {
+                    case R.id.reply:
+                        onMessageOptionsListener.OnMessageOptionsListener(MessageAction.REPLY);
+                        break;
+                    case R.id.reply_all:
+                        onMessageOptionsListener.OnMessageOptionsListener(MessageAction.REPLY_ALL);
+                        break;
+                    case R.id.forward:
+                        onMessageOptionsListener.OnMessageOptionsListener(MessageAction.FORWARD);
+                        break;
+                    case R.id.share:
+                        onMessageOptionsListener.OnMessageOptionsListener(MessageAction.SHARE);
+                        break;
+                }
+                return true;
+            });
+
+            popupMenu.show();
         });
 
-        moreOptions.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PopupMenu popupMenu = new PopupMenu(getContext(), view);
-                popupMenu.getMenuInflater().inflate(R.menu.message_more_options_menu, popupMenu.getMenu());
+        mContactBadge = findViewById(R.id.contact_badge);
 
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.reply_all:
-                                onMessageOptionsListener.OnMessageOptionsListener(MessageAction.REPLY_ALL);
-                                break;
-                            case R.id.forward:
-                                onMessageOptionsListener.OnMessageOptionsListener(MessageAction.FORWARD);
-                                break;
-                            case R.id.share:
-                                onMessageOptionsListener.OnMessageOptionsListener(MessageAction.SHARE);
-                                break;
-                        }
-                        return true;
-                    }
-                });
-
-                popupMenu.show();
-            }
-        });
-
-        mContactBadge = (PEpContactBadge) findViewById(R.id.contact_badge);
-
-        mSubjectView = (TextView) findViewById(R.id.subject);
-        mAdditionalHeadersView = (TextView) findViewById(R.id.additional_headers_view);
-        mChip = findViewById(R.id.chip);
-        mDateView = (TextView) findViewById(R.id.date);
-        mFlagged = (CheckBox) findViewById(R.id.flagged);
+        mSubjectView = findViewById(R.id.subject);
+        mAdditionalHeadersView = findViewById(R.id.additional_headers_view);
+        mDateView = findViewById(R.id.date);
 
         defaultSubjectColor = mSubjectView.getCurrentTextColor();
         mFontSizes.setViewTextSize(mSubjectView, mFontSizes.getMessageViewSubject());
@@ -266,10 +245,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     private void onAddRecipientsToClipboard(Message.RecipientType recipientType) {
         onAddAddressesToClipboard(mMessage.getRecipients(recipientType));
-    }
-
-    public void setOnFlagListener(OnClickListener listener) {
-        mFlagged.setOnClickListener(listener);
     }
 
     public boolean additionalHeadersVisible() {
@@ -402,9 +377,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         updateAddressField(mCcView, cc, mCcLabel);
         mAnsweredIcon.setVisibility(message.isSet(Flag.ANSWERED) ? View.VISIBLE : View.GONE);
         mForwardedIcon.setVisibility(message.isSet(Flag.FORWARDED) ? View.VISIBLE : View.GONE);
-        mFlagged.setChecked(message.isSet(Flag.FLAGGED));
-
-        if (Preferences.getPreferences(getContext()).getAccounts().size() > 1) mChip.setBackgroundColor(mAccount.getChipColor());
 
         setVisibility(View.VISIBLE);
 

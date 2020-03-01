@@ -1,14 +1,17 @@
 package com.fsck.k9.pEp.ui.fragments;
 
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.loader.app.LoaderManager;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
 import com.fsck.k9.pEp.infrastructure.components.PEpComponent;
+import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 
 public abstract class PEpFragment extends Fragment {
@@ -36,7 +39,8 @@ public abstract class PEpFragment extends Fragment {
         applicationComponent.inject(this);
         pEpComponent = DaggerPEpComponent.builder()
                 .applicationComponent(applicationComponent)
-                .pEpModule(new PEpModule(getActivity(), getLoaderManager(), getFragmentManager()))
+                .pEpModule(new PEpModule(getActivity(), LoaderManager.getInstance(this), getFragmentManager()))
+                .activityModule(new ActivityModule(getActivity()))
                 .build();
     }
 

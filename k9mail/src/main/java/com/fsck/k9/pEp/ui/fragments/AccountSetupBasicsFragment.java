@@ -7,15 +7,13 @@ import android.content.res.XmlResourceParser;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.widget.ContentLoadingProgressBar;
-import androidx.appcompat.app.AlertDialog;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -24,6 +22,11 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.widget.ContentLoadingProgressBar;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.EmailAddressValidator;
@@ -44,15 +47,18 @@ import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.filter.Hex;
 import com.fsck.k9.mail.store.RemoteStore;
-import com.fsck.k9.pEp.PEpPermissionChecker;
 import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.PepPermissionActivity;
 import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpCertificateException;
 import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpSetupException;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.tools.SetupAccountType;
 import com.fsck.k9.view.ClientCertificateSpinner;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -69,6 +75,9 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import butterknife.OnTextChanged;
+import security.pEp.permissions.PermissionChecker;
+import security.pEp.permissions.PermissionRequester;
+import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -109,28 +118,37 @@ public class AccountSetupBasicsFragment extends PEpFragment
     public boolean ismCheckedIncoming() {
         return mCheckedIncoming;
     }
+
     private CheckBox mShowPasswordCheckBox;
 
-    @Inject PEpSettingsChecker pEpSettingsChecker;
-    @Inject SetupAccountType setupAccountType;
+    @Inject
+    PEpSettingsChecker pEpSettingsChecker;
+    @Inject
+    SetupAccountType setupAccountType;
+    @Inject
+    PermissionChecker permissionChecker;
+    @Inject
+    PermissionRequester permissionRequester;
+    @Inject
+    ToolBarCustomizer toolBarCustomizer;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_account_login, container, false);
         setupToolbar();
-        mEmailView = (EditText) rootView.findViewById(R.id.account_email);
-        mPasswordView = (EditText) rootView.findViewById(R.id.account_password);
-        mClientCertificateCheckBox = (CheckBox) rootView.findViewById(R.id.account_client_certificate);
-        mClientCertificateSpinner = (ClientCertificateSpinner) rootView.findViewById(R.id.account_client_certificate_spinner);
-        mOAuth2CheckBox = (CheckBox) rootView.findViewById(R.id.account_oauth2);
-        mNextButton = (Button) rootView.findViewById(R.id.next);
-        nextProgressBar = (ContentLoadingProgressBar) rootView.findViewById(R.id.next_progressbar);
-        mManualSetupButton = (Button) rootView.findViewById(R.id.manual_setup);
-        mShowPasswordCheckBox = (CheckBox) rootView.findViewById(R.id.show_password);
+        mEmailView = rootView.findViewById(R.id.account_email);
+        mPasswordView = rootView.findViewById(R.id.account_password);
+        mClientCertificateCheckBox = rootView.findViewById(R.id.account_client_certificate);
+        mClientCertificateSpinner = rootView.findViewById(R.id.account_client_certificate_spinner);
+        mOAuth2CheckBox = rootView.findViewById(R.id.account_oauth2);
+        mNextButton = rootView.findViewById(R.id.next);
+        nextProgressBar = rootView.findViewById(R.id.next_progressbar);
+        mManualSetupButton = rootView.findViewById(R.id.manual_setup);
+        mShowPasswordCheckBox = rootView.findViewById(R.id.show_password);
         mNextButton.setOnClickListener(this);
         mManualSetupButton.setOnClickListener(this);
-        mAccountSpinner = (Spinner) rootView.findViewById(R.id.account_spinner);
+        mAccountSpinner = rootView.findViewById(R.id.account_spinner);
 
         initializeViewListeners();
         validateFields();
@@ -143,12 +161,19 @@ public class AccountSetupBasicsFragment extends PEpFragment
             mEmailView.setText(email);
             mPasswordView.setText(password);
         }
+        setHasOptionsMenu(true);
         return rootView;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.account_setup_basic_option, menu);
+    }
+
     private void setupToolbar() {
-        ((AccountSetupBasics) getActivity()).initializeToolbar(true, R.string.account_setup_basics_title);
-        ((AccountSetupBasics) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.pep_green));
+        ((AccountSetupBasics) getActivity()).initializeToolbar(!getActivity().isTaskRoot(), R.string.account_setup_basics_title);
+        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.colorPrimary));
     }
 
     private void initializeViewListeners() {
@@ -222,8 +247,25 @@ public class AccountSetupBasicsFragment extends PEpFragment
      */
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (!PEpPermissionChecker.hasContactsPermission(getActivity())) {
-            ((PepPermissionActivity) getActivity()).createContactsPermissionListeners();
+        if (!permissionChecker.hasContactsPermission()) {
+            if (isChecked) {
+                permissionRequester.requestContactsPermission(rootView, new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse response) {
+                        contactsPermissionGranted();
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse response) {
+                        contactsPermissionDenied();
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+                        //NOP
+                    }
+                });
+            }
         } else {
             updateViewVisibility(mClientCertificateCheckBox.isChecked(), mOAuth2CheckBox.isChecked());
             validateFields();
@@ -233,6 +275,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
                 mClientCertificateSpinner.chooseCertificate();
             }
         }
+
     }
 
     private void updateViewVisibility(boolean usingCertificates, boolean usingXoauth) {
@@ -489,7 +532,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
                             accountSetupNavigator.createGmailAccount(getActivity());
                         }
                     })
-                    .setNegativeButton(getResources().getString(R.string.skip_button), new DialogInterface.OnClickListener() {
+                    .setNegativeButton(getResources().getString(R.string.app_intro_skip_button), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             setup(email);
@@ -582,7 +625,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ACTIVITY_REQUEST_PICK_SETTINGS_FILE
                 && resultCode != RESULT_CANCELED) {
-            ((AccountSetupBasics)getActivity()).onImport(data.getData());
+            ((AccountSetupBasics) getActivity()).onImport(data.getData());
         } else {
             if (resultCode == RESULT_OK) {
                 if (!mCheckedIncoming) {
@@ -617,7 +660,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private void goForward() {
         try {
             setupAccountType.setupStoreAndSmtpTransport(mAccount, IMAP, "imap+ssl+");
-        accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
+            accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
         } catch (URISyntaxException e) {
             Timber.e(e);
         }
@@ -825,12 +868,17 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
     private String errorMessageForCertificateException(CertificateValidationException e) {
         switch (e.getReason()) {
-            case Expired: return getString(R.string.client_certificate_expired, e.getAlias(), e.getMessage());
-            case MissingCapability: return getString(R.string.auth_external_error);
-            case RetrievalFailure: return getString(R.string.client_certificate_retrieval_failure, e.getAlias());
-            case UseMessage: return e.getMessage();
+            case Expired:
+                return getString(R.string.client_certificate_expired, e.getAlias(), e.getMessage());
+            case MissingCapability:
+                return getString(R.string.auth_external_error);
+            case RetrievalFailure:
+                return getString(R.string.client_certificate_retrieval_failure, e.getAlias());
+            case UseMessage:
+                return e.getMessage();
             case Unknown:
-            default: return "";
+            default:
+                return "";
         }
     }
 
@@ -874,7 +922,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
                     //  by a subjectDN not matching the server even though a
                     //  SubjectAltName matches)
                     try {
-                        final Collection< List<? >> subjectAlternativeNames = chain[i].getSubjectAlternativeNames();
+                        final Collection<List<?>> subjectAlternativeNames = chain[i].getSubjectAlternativeNames();
                         if (subjectAlternativeNames != null) {
                             // The list of SubjectAltNames may be very long
                             //TODO: localize this string
@@ -886,7 +934,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
                             String transportURIHost = (Uri.parse(mAccount.getTransportUri())).getHost();
 
                             for (List<?> subjectAlternativeName : subjectAlternativeNames) {
-                                Integer type = (Integer)subjectAlternativeName.get(0);
+                                Integer type = (Integer) subjectAlternativeName.get(0);
                                 Object value = subjectAlternativeName.get(1);
                                 String name;
                                 switch (type.intValue()) {
@@ -894,10 +942,10 @@ public class AccountSetupBasicsFragment extends PEpFragment
                                         Log.w(K9.LOG_TAG, "SubjectAltName of type OtherName not supported.");
                                         continue;
                                     case 1: // RFC822Name
-                                        name = (String)value;
+                                        name = (String) value;
                                         break;
                                     case 2:  // DNSName
-                                        name = (String)value;
+                                        name = (String) value;
                                         break;
                                     case 3:
                                         Log.w(K9.LOG_TAG, "unsupported SubjectAltName of type x400Address");
@@ -909,10 +957,10 @@ public class AccountSetupBasicsFragment extends PEpFragment
                                         Log.w(K9.LOG_TAG, "unsupported SubjectAltName of type ediPartyName");
                                         continue;
                                     case 6:  // Uri
-                                        name = (String)value;
+                                        name = (String) value;
                                         break;
                                     case 7: // ip-address
-                                        name = (String)value;
+                                        name = (String) value;
                                         break;
                                     default:
                                         Log.w(K9.LOG_TAG, "unsupported SubjectAltName of unknown type");

@@ -13,6 +13,15 @@
 
     <!-- MessageView -->
     <item
+        android:id="@+id/flag"
+        android:icon="?attr/iconFlagButtonOpaque"
+        android:title="@string/flag_action"
+        app:actionViewClass="android.widget.CheckBox"
+        android:checkable="true"
+        app:showAsAction="always" />
+
+    <!-- MessageView -->
+    <item
         android:id="@+id/previous_message"
         android:title="@string/previous_action"
         android:icon="?attr/iconActionPreviousMessage"
@@ -55,7 +64,7 @@
     <item
         android:id="@+id/delete"
         android:alphabeticShortcut="q"
-        android:icon="@drawable/ic_action_delete"
+        android:icon="@drawable/ic_delete_white_24dp"
         app:showAsAction="always"
         android:title="@string/delete_action"/>
     <!-- MessageView -->
@@ -235,5 +244,16 @@
         android:icon="?attr/iconActionSettings"
         app:showAsAction="never"
         android:title="@string/action_settings"/>
+
+    <!-- MessageView -->
+    <item
+        android:id="@+id/privacyStatus"
+        app:showAsAction="never"
+        android:title="@string/pep_title_activity_privacy_status"/>
+
+    <item
+        android:id="@+id/tutorial"
+        app:showAsAction="never"
+        android:title="@string/action_tutorial"/>
 
 </menu>

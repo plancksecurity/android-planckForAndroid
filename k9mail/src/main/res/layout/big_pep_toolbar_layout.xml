@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.appbar.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/toolbar_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:theme="@style/ToolbarTheme"
+        tools:backgroundTint="@color/colorPrimary">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="left"
+                android:fontFamily="@font/univers_lts_sd"
+                android:gravity="center_vertical"
+                android:paddingBottom="8dp"
+                android:text="@string/pep"
+                android:textColor="@color/white"
+                android:textSize="36dp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/titleText"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="left"
+                android:layout_marginLeft="30dp"
+                android:fontFamily="@font/univers_lts_sd"
+                android:gravity="center_vertical"
+                android:textColor="@color/white"
+                android:textSize="14dp"
+                android:textStyle="bold"
+                tools:text = "Privacy status"/>
+
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <FrameLayout
+        android:id="@+id/toolbar_search_container"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:clipChildren="false"
+        android:visibility="gone">
+
+        <include layout="@layout/include_search_bar" />
+    </FrameLayout>
+
+</com.google.android.material.appbar.AppBarLayout>

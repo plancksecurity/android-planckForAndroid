@@ -1,0 +1,77 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:padding="@dimen/intro_fragment_padding">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        tools:context="com.fsck.k9.security.pEp.ui.intro.IntroFourthFragment">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/header_privacy_status"
+            style="@style/IntroHeaderText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/intro_frag_fourth_text_1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/text_privacy_status"
+            style="@style/IntroText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/intro_margin_top_small"
+            android:text="@string/intro_frag_fourth_text_2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/header_privacy_status" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/intro_margin_top_standard"
+            android:adjustViewBounds="true"
+            android:src="@drawable/intro_actionbar_screenshot"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_privacy_status" />
+
+
+        <com.fsck.k9.pEp.ui.PEpContactBadge
+            android:id="@+id/secureBadge"
+            android:layout_width="@dimen/intro_contact_badge_width_height"
+            android:layout_height="@dimen/intro_contact_badge_width_height"
+            android:layout_marginTop="@dimen/intro_margin_top_standard"
+            app:layout_constraintEnd_toStartOf="@id/secureTrustedBadge"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/image" />
+
+        <com.fsck.k9.pEp.ui.PEpContactBadge
+            android:id="@+id/secureTrustedBadge"
+            android:layout_width="@dimen/intro_contact_badge_width_height"
+            android:layout_height="@dimen/intro_contact_badge_width_height"
+            android:layout_marginStart="@dimen/intro_margin_start_large"
+            android:layout_marginTop="@dimen/intro_margin_top_standard"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/secureBadge"
+            app:layout_constraintTop_toBottomOf="@id/image" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/text_2_privacy_status"
+            style="@style/IntroText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/intro_margin_top_standard"
+            android:text="@string/intro_frag_fourth_text_3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/secureTrustedBadge" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

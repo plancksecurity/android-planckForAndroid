@@ -1,15 +1,12 @@
 package com.fsck.k9.activity
 
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -19,14 +16,12 @@ import android.view.ContextMenu.ContextMenuInfo
 import android.view.View.OnClickListener
 import android.widget.*
 import android.widget.AdapterView.AdapterContextMenuInfo
-import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import com.fsck.k9.*
-import com.fsck.k9.activity.misc.ExtendedAsyncTask
 import com.fsck.k9.activity.misc.NonConfigurationInstance
 import com.fsck.k9.activity.setup.AccountSetupBasics
-import com.fsck.k9.activity.setup.WelcomeMessage
+import security.pEp.ui.intro.WelcomeMessage
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.helper.SizeFormatter
 import com.fsck.k9.mailstore.LocalFolder
@@ -46,10 +41,21 @@ import com.fsck.k9.ui.fragmentTransaction
 import com.fsck.k9.ui.settings.account.AccountSettingsActivity
 import com.fsck.k9.ui.settings.general.GeneralSettingsActivity
 import com.fsck.k9.ui.settings.general.GeneralSettingsFragment
-import com.karumi.dexter.listener.single.CompositePermissionListener
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionDeniedResponse
+import com.karumi.dexter.listener.PermissionGrantedResponse
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.single.PermissionListener
+import kotlinx.android.synthetic.main.accounts.*
+import kotlinx.coroutines.*
+import security.pEp.permissions.PermissionChecker
+import security.pEp.permissions.PermissionRequester
+import security.pEp.ui.resources.ResourcesProvider
+import security.pEp.ui.intro.startWelcomeMessage
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Inject
 
 
 class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
@@ -79,13 +85,18 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     /**
      * Contains information about objects that need to be retained on configuration changes.
      *
-     * @see .onRetainNonConfigurationInstance
+     * @see .onRetainCustomNonConfigurationInstance
      */
     private var nonConfigurationInstance: NonConfigurationInstance? = null
     private var accountsList: NestedListView? = null
     private var addAccountButton: View? = null
-    private val storagePermissionListener: CompositePermissionListener? = null
 
+    @Inject
+    lateinit var permissionRequester: PermissionRequester
+    @Inject
+    lateinit var permissionChecker: PermissionChecker
+    @Inject
+    lateinit var resourcesProvider: ResourcesProvider
 
     private val storageListener = object : StorageManager.StorageListener {
 
@@ -101,15 +112,14 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     /**
      * Save the reference to a currently displayed dialog or a running AsyncTask (if available).
      */
-    // TODO: 28/9/16 Fix this
-    //    @Override
-    //    public Object onRetainNonConfigurationInstance() {
-    //        Object retain = null;
-    //        if (nonConfigurationInstance != null && nonConfigurationInstance.retain()) {
-    //            retain = nonConfigurationInstance;
-    //        }
-    //        return retain;
-    //    }
+
+    override fun onRetainCustomNonConfigurationInstance(): Any? {
+        var retain: Any? = null
+        if (nonConfigurationInstance?.retain() == true) {
+            retain = nonConfigurationInstance
+        }
+        return retain
+    }
 
     private val accounts = ArrayList<BaseAccount>()
 
@@ -195,7 +205,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         if (ACTION_IMPORT_SETTINGS == intent.action) {
             onSettingsImport()
         } else if (accounts.size < 1) {
-            WelcomeMessage.showWelcomeMessage(this)
+
+            startWelcomeMessage()
             finish()
             return
         }
@@ -204,6 +215,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             finish()
             return
         }
+
 
         val startup = intent.getBooleanExtra(EXTRA_STARTUP, true)
         if (startup && K9.startIntegratedInbox() && !K9.isHideSpecialAccounts()) {
@@ -242,24 +254,14 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
 
         setupAddAccountButton()
-        askForBatteryOptimizationWhiteListing()
     }
 
     override fun search(query: String) {
         triggerSearch(query, null)
     }
 
-    override fun showPermissionGranted(permissionName: String) {
-
-    }
-
-    override fun showPermissionDenied(permissionName: String, permanentlyDenied: Boolean) {
-        val permissionDenied = resources.getString(R.string.download_snackbar_permission_permanently_denied)
-        FeedbackTools.showLongFeedback(rootView, permissionDenied)
-    }
-
     override fun inject() {
-
+        getpEpComponent().inject(this)
     }
 
     private fun setupAddAccountButton() {
@@ -355,11 +357,10 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         accounts.clear()
         accounts.addAll(Preferences.getPreferences(this).accounts)
 
-        // see if we should show the welcome message
-        //        if (accounts.length < 1) {
-        //            WelcomeMessage.showWelcomeMessage(this);
-        //            finish();
-        //        }
+        if (accounts.size < 1) {
+            AccountSetupBasics.actionNewAccount(this)
+            finishAffinity()
+        }
 
         val newAccounts: MutableList<BaseAccount>
         if (!K9.isHideSpecialAccounts() && accounts.size > 0) {
@@ -383,7 +384,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
             override fun onClick(position: Int?) {
                 val account = accountsList!!.getItemAtPosition(position!!) as BaseAccount
-                onOpenAccount(account)
+                onEditAccount(account as Account)
             }
         }, OnBaseAccountClickListener { baseAccount -> AccountSettingsActivity.start(this@SettingsActivity, baseAccount.uuid) })
         accountsList!!.adapter = adapter
@@ -657,10 +658,32 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         showDialog(DIALOG_RECREATE_ACCOUNT)
     }
 
+
+    private suspend fun moveAccount(account: Account, up: Boolean) = withContext(Dispatchers.IO) {
+        launch(Dispatchers.IO) {
+            account.move(Preferences.getPreferences(applicationContext), up)
+        }
+        delay(600)
+    }
+
+
     private fun onMove(account: Account, up: Boolean) {
-        val asyncTask = MoveAccountAsyncTask(this, account, up)
-        setNonConfigurationInstance(asyncTask)
-        asyncTask.execute()
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
+
+        uiScope.launch {
+            // Show loading
+            loading?.visibility = View.VISIBLE
+            accounts_list?.alpha = 0.2f
+            //Move account
+            moveAccount(account, up)
+            refresh()
+
+            //Hide loading
+            loading?.visibility = View.GONE
+            accounts_list?.alpha = 1f
+
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -745,7 +768,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
      * changes.
      *
      * @param inst The [NonConfigurationInstance] that should be retained when
-     * [SettingsActivity.onRetainNonConfigurationInstance] is called.
+     * [SettingsActivity.onRetainCustomNonConfigurationInstance] is called.
      */
     override fun setNonConfigurationInstance(inst: NonConfigurationInstance?) {
         nonConfigurationInstance = inst
@@ -761,8 +784,26 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
     fun onExport(includeGlobals: Boolean, account: Account?) {
 
-        createStoragePermissionListeners()
-        if (hasWriteExternalPermission()) {        // TODO, prompt to allow a user to choose which accounts to export
+        permissionRequester.requestStoragePermission(
+                rootView,
+                object : PermissionListener {
+                    override fun onPermissionGranted(response: PermissionGrantedResponse?) {
+
+                    }
+
+                    override fun onPermissionRationaleShouldBeShown(permission: PermissionRequest?, token: PermissionToken?) {
+                    }
+
+                    override fun onPermissionDenied(response: PermissionDeniedResponse?) {
+                        val permissionDenied = resources.getString(R.string.download_snackbar_permission_permanently_denied)
+                        FeedbackTools.showLongFeedback(rootView, permissionDenied)
+                    }
+
+                }
+        )
+
+        if (permissionChecker.hasWriteExternalPermission()) {
+            // TODO, prompt to allow a user to choose which accounts to export
             var accountUuids: ArrayList<String>? = null
             if (account != null) {
                 accountUuids = ArrayList()
@@ -799,33 +840,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         asyncTask.execute()
     }
 
-    private fun hasWriteExternalPermission(): Boolean {
-        val res = applicationContext.checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        return res == PackageManager.PERMISSION_GRANTED
-    }
-
-    private class MoveAccountAsyncTask(activity: Activity, private val mAccount: Account, private val mUp: Boolean) : ExtendedAsyncTask<Void, Void, Void>(activity) {
-
-        override fun showProgressDialog() {
-            val message = mActivity.getString(R.string.manage_accounts_moving_message)
-            mProgressDialog = ProgressDialog.show(mActivity, null, message, true)
-        }
-
-        override fun doInBackground(vararg args: Void): Void? {
-            mAccount.move(Preferences.getPreferences(mContext), mUp)
-            return null
-        }
-
-        override fun onPostExecute(arg: Void) {
-            val activity = mActivity as SettingsActivity
-
-            // Let the activity know that the background task is complete
-            activity.setNonConfigurationInstance(null)
-
-            activity.refresh()
-            removeProgressDialog()
-        }
-    }
 
     internal inner class AccountListAdapter(accounts: List<BaseAccount>, private val onFolderClickListener: OnFolderClickListener, private val onBaseAccountClickListener: OnBaseAccountClickListener) : ArrayAdapter<BaseAccount>(this@SettingsActivity, 0, accounts) {
 
@@ -852,7 +866,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 holder.activeIcons = view.findViewById<View>(R.id.active_icons) as RelativeLayout
 
                 holder.folders = view.findViewById<View>(R.id.folders) as ImageButton
-                holder.deviceGroup = view.findViewById<View>(R.id.account_leave_device_group) as ImageButton
                 holder.settings = view.findViewById<View>(R.id.account_settings) as ImageButton
                 holder.accountsItemLayout = view.findViewById<View>(R.id.accounts_item_layout) as LinearLayout
                 val accountsDescriptionLayout = view.findViewById<View>(R.id.accounts_description_layout) as LinearLayout
@@ -900,13 +913,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 holder.newMessageCountWrapper!!.visibility = View.GONE
                 holder.flaggedMessageCountWrapper!!.visibility = View.GONE
             }
-            if (account is Account) {
-                val realAccount = account
-                holder.flaggedMessageCountIcon!!.setBackgroundDrawable(ContextCompat.getDrawable(this@SettingsActivity, R.drawable.ic_unread_toggle_star))
-            } else {
-                holder.flaggedMessageCountIcon!!.setBackgroundDrawable(ContextCompat.getDrawable(this@SettingsActivity,
-                        R.drawable.ic_unread_toggle_star))
-            }
+
+            holder.flaggedMessageCountIcon!!.setBackgroundResource(resourcesProvider.getAttributeResource(R.attr.iconFlagButton));
 
 
             fontSizes.setViewTextSize(holder.description, fontSizes.accountName)
@@ -924,14 +932,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 holder.settings?.let {
                     it.drawable.alpha = 255
                     it.setOnClickListener { onEditAccount(account as Account) }
-                }
-                holder.deviceGroup?.visibility = View.GONE
-                holder.deviceGroup?.let {
-                    it.setOnClickListener {
-                        Toast.makeText(this@SettingsActivity,
-                                "Leave Sync group: Option not implemented yet", Toast.LENGTH_LONG)
-                                .show()
-                    }
                 }
             }
 
@@ -978,7 +978,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             var activeIcons: RelativeLayout? = null
             var chip: View? = null
             var folders: ImageButton? = null
-            var deviceGroup: ImageButton? = null
             var settings: ImageButton? = null
             var accountsItemLayout: LinearLayout? = null
             var descriptionUnreadMessages: TextView? = null

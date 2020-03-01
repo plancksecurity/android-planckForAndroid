@@ -1,0 +1,7 @@
+<resources>
+<!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="outer_margin">16dp</dimen>
+    <dimen name="outer_margin_small">8dp</dimen>
+    <dimen name="min_height">52dp</dimen>
+    <dimen name="min_label_width">52dp</dimen>
+</resources>

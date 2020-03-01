@@ -1,31 +1,30 @@
 package com.fsck.k9.activity.compose;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.Contacts.Data;
+
 import androidx.annotation.Nullable;
 import androidx.loader.content.AsyncTaskLoader;
-import androidx.core.content.ContextCompat;
 
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.RecipientSelectView.RecipientCryptoStatus;
 
-import static android.Manifest.permission.WRITE_CONTACTS;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import security.pEp.permissions.PermissionChecker;
+import security.pEp.ui.permissions.PEpPermissionChecker;
 
 public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
     /*
@@ -82,7 +81,7 @@ public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
 
     private List<Recipient> cachedRecipients;
     private ForceLoadContentObserver observerContact, observerKey;
-
+    private PermissionChecker permissionChecker;
 
     public RecipientLoader(Context context, String cryptoProvider, String query) {
         super(context);
@@ -91,6 +90,7 @@ public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
         this.addresses = null;
         this.contactUri = null;
         this.cryptoProvider = cryptoProvider;
+        this.permissionChecker = new PEpPermissionChecker(context);
     }
 
     public RecipientLoader(Context context, String cryptoProvider, Address... addresses) {
@@ -100,6 +100,7 @@ public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
         this.contactUri = null;
         this.cryptoProvider = cryptoProvider;
         this.lookupKeyUri = null;
+        this.permissionChecker = new PEpPermissionChecker(context);
     }
 
     public RecipientLoader(Context context, String cryptoProvider, Uri contactUri, boolean isLookupKey) {
@@ -109,33 +110,37 @@ public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
         this.contactUri = isLookupKey ? null : contactUri;
         this.lookupKeyUri = isLookupKey ? contactUri : null;
         this.cryptoProvider = cryptoProvider;
+        this.permissionChecker = new PEpPermissionChecker(context);
     }
 
     @Override
     public List<Recipient> loadInBackground() {
+
         List<Recipient> recipients = new ArrayList<>();
-        Map<String, Recipient> recipientMap = new HashMap<>();
 
-        if (addresses != null) {
-            fillContactDataFromAddresses(addresses, recipients, recipientMap);
-        } else if (contactUri != null) {
-            fillContactDataFromEmailContentUri(contactUri, recipients, recipientMap);
-        } else if (query != null) {
-            fillContactDataFromQuery(query, recipients, recipientMap);
-        } else if (lookupKeyUri != null) {
-            fillContactDataFromLookupKey(lookupKeyUri, recipients, recipientMap);
-        } else {
-            throw new IllegalStateException("loader must be initialized with query or list of addresses!");
+        if (permissionChecker.hasContactsPermission()) {
+            Map<String, Recipient> recipientMap = new HashMap<>();
+
+            if (addresses != null) {
+                fillContactDataFromAddresses(addresses, recipients, recipientMap);
+            } else if (contactUri != null) {
+                fillContactDataFromEmailContentUri(contactUri, recipients, recipientMap);
+            } else if (query != null) {
+                fillContactDataFromQuery(query, recipients, recipientMap);
+            } else if (lookupKeyUri != null) {
+                fillContactDataFromLookupKey(lookupKeyUri, recipients, recipientMap);
+            } else {
+                throw new IllegalStateException("loader must be initialized with query or list of addresses!");
+            }
+
+            if (recipients.isEmpty()) {
+                return recipients;
+            }
+
+            if (cryptoProvider != null) {
+                fillCryptoStatusData(recipientMap);
+            }
         }
-
-        if (recipients.isEmpty()) {
-            return recipients;
-        }
-
-        if (cryptoProvider != null) {
-            fillCryptoStatusData(recipientMap);
-        }
-
         return recipients;
     }
 
@@ -267,13 +272,9 @@ public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
 
         String selection = Contacts.DISPLAY_NAME_PRIMARY + " LIKE ? " +
                 " OR (" + Email.ADDRESS + " LIKE ? AND " + Data.MIMETYPE + " = '" + Email.CONTENT_ITEM_TYPE + "')";
-        String[] selectionArgs = { query, query };
-        Cursor cursor = null;
-        int permissionCheck = ContextCompat.checkSelfPermission(getContext(),
-                WRITE_CONTACTS);
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            cursor = contentResolver.query(queryUri, PROJECTION, selection, selectionArgs, SORT_ORDER);
-        }
+        String[] selectionArgs = {query, query};
+
+        Cursor cursor = contentResolver.query(queryUri, PROJECTION, selection, selectionArgs, SORT_ORDER);
 
         if (cursor == null) {
             return false;

@@ -3,6 +3,8 @@ package com.fsck.k9.activity.setup;
 
 import android.content.Context;
 import android.os.Bundle;
+
+import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +17,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.helper.EmailHelper;
 import com.fsck.k9.mail.ServerSettings.Type;
+import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.ui.fragments.ChooseAccountTypeFragment;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.setup.ServerNameSuggester;
@@ -25,6 +28,8 @@ import com.fsck.k9.setup.ServerNameSuggester;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import javax.inject.Inject;
 
 import static com.fsck.k9.mail.ServerSettings.Type.IMAP;
 import static com.fsck.k9.mail.ServerSettings.Type.POP3;
@@ -37,13 +42,17 @@ import static com.fsck.k9.mail.ServerSettings.Type.WebDAV;
  * passed in email address, password and makeDefault are then passed on to the
  * AccountSetupIncoming activity.
  */
-public class AccountSetupAccountType extends K9Activity implements OnClickListener {
+
+public class AccountSetupAccountType extends PepActivity implements OnClickListener {
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_MAKE_DEFAULT = "makeDefault";
 
     private final ServerNameSuggester serverNameSuggester = new ServerNameSuggester();
     private Account mAccount;
     private boolean mMakeDefault;
+
+    @Inject
+    ToolBarCustomizer toolBarCustomizer;
 
     public static ChooseAccountTypeFragment actionSelectAccountType(Context context, Account account, boolean makeDefault) {
         ChooseAccountTypeFragment fragment = new ChooseAccountTypeFragment();
@@ -60,7 +69,7 @@ public class AccountSetupAccountType extends K9Activity implements OnClickListen
         bindViews(R.layout.account_setup_account_type);
 
         initializeToolbar(true, R.string.account_setup_account_type_title);
-        setStatusBarPepColor(getResources().getColor(R.color.white));
+        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.white));
 
         findViewById(R.id.pop).setOnClickListener(this);
         findViewById(R.id.imap).setOnClickListener(this);
@@ -74,6 +83,11 @@ public class AccountSetupAccountType extends K9Activity implements OnClickListen
     @Override
     public void search(String query) {
 
+    }
+
+    @Override
+    public void inject() {
+        getpEpComponent().inject(this);
     }
 
     @Override

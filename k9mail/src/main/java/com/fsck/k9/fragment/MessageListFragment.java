@@ -10,9 +10,12 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+
+import com.fsck.k9.pEp.ui.fragments.PEpFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import androidx.annotation.AttrRes;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.CursorLoader;
@@ -21,7 +24,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
-import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -106,6 +108,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Future;
 
+import javax.inject.Inject;
+
+import security.pEp.ui.resources.ResourcesProvider;
+import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
 import static android.view.View.GONE;
@@ -125,7 +131,7 @@ import static com.fsck.k9.fragment.MLFProjectionInfo.THREAD_ROOT_COLUMN;
 import static com.fsck.k9.fragment.MLFProjectionInfo.UID_COLUMN;
 
 
-public class MessageListFragment extends Fragment implements ConfirmationDialogFragmentListener, LoaderCallbacks<Cursor> {
+public class MessageListFragment extends PEpFragment implements ConfirmationDialogFragmentListener, LoaderCallbacks<Cursor> {
 
     private FloatingActionButton fab;
     private ProgressBar loadingView;
@@ -193,9 +199,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     private SwipeRefreshLayout swipeRefreshLayout;
     Parcelable savedListState;
 
-    int previewLines = 0;
-
-
     private MessageListAdapter adapter;
     private View footerView;
     private FolderInfoHolder currentFolder;
@@ -230,9 +233,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     private SortType sortType = SortType.SORT_DATE;
     private boolean sortAscending = true;
     private boolean sortDateAscending = false;
-    boolean senderAboveSubject = false;
     boolean checkboxes = true;
-    boolean stars = true;
 
     private int selectedCount = 0;
     Set<Long> selected = new HashSet<>();
@@ -277,7 +278,18 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 
 
     private SelectedItemActionModeCallback selectedMessageActionModeCallback = new SelectedItemActionModeCallback();
+    @Inject
+    ToolBarCustomizer toolBarCustomizer;
+    @Inject
+    ResourcesProvider resourcesProvider;
 
+    int getColorFromAttributeResource(@AttrRes int resource) {
+        return resourcesProvider.getColorFromAttributeResource(resource);
+    }
+
+    int getAttributeResource(@AttrRes int resource) {
+        return resourcesProvider.getAttributeResource(resource);
+    }
 
     private void enableSwipeToRefresh(boolean enable) {
         if (!isFastPolling()) {
@@ -482,9 +494,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         preferences = Preferences.getPreferences(appContext);
         messagingController = MessagingController.getInstance(getActivity().getApplication());
 
-        previewLines = K9.messageListPreviewLines();
         checkboxes = K9.messageListCheckboxes();
-        stars = K9.messageListStars();
 
         if (K9.showContactPicture()) {
             contactsPictureLoader = ContactPicture.getContactPictureLoader(getActivity());
@@ -496,6 +506,11 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         createCacheBroadcastReceiver(appContext);
 
         initialized = true;
+    }
+
+    @Override
+    protected void inject() {
+        getpEpComponent().inject(this);
     }
 
     @Override
@@ -743,11 +758,10 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
     public void onResume() {
         super.onResume();
 
-        Context appContext = getActivity().getApplicationContext();
-
-        senderAboveSubject = K9.messageListSenderAboveSubject();
         if (!loaderJustInitialized) {
-            restartLoader();
+            if(accountExists()) {
+                restartLoader();
+            }
         } else {
             loaderJustInitialized = false;
         }
@@ -782,15 +796,18 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         updateTitle();
         MessageList activity = (MessageList) getActivity();
         if (!activity.isMessageViewVisible() && activity.isThreadDisplayed()) {
-            Toolbar toolbar = ((K9Activity) getActivity()).getToolbar();
-            PEpUtils.colorToolbar(toolbar, PEpUtils.getRatingColor(worstThreadRating, getActivity()));
-            ((K9Activity) getActivity()).setStatusBarPepColor(worstThreadRating);
+            toolBarCustomizer.setToolbarColor(worstThreadRating);
+            toolBarCustomizer.setStatusBarPepColor(worstThreadRating);
         }
         if (isThreadDisplay) {
             fab.hide();
         } else {
             fab.show();
         }
+    }
+
+    private boolean accountExists() {
+        return preferences.getAccounts().contains(account);
     }
 
     private void restartLoader() {
@@ -824,7 +841,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         });
     }
 
-//    private void initializePullToRefresh(View layout) {
+    //    private void initializePullToRefresh(View layout) {
 //        swipeRefreshLayout = (SwipeRefreshLayout) layout.findViewById(R.id.swiperefresh);
 //        listView = (ListView) layout.findViewById(R.id.message_list);
 //
@@ -850,6 +867,7 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
 //        // Disable pull-to-refresh until the message list has been loaded
 //        swipeRefreshLayout.setEnabled(false);
 //    }
+
     private boolean isLongClicked;
 
     private void initializeLayout() {
@@ -857,7 +875,6 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
         listView.setLongClickable(true);
         listView.setFastScrollEnabled(true);
         listView.setScrollingCacheEnabled(false);
-        //listView.setOnItemClickListener(this);
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -2980,9 +2997,8 @@ public class MessageListFragment extends Fragment implements ConfirmationDialogF
             cursor.moveToNext();
         }
         if (!((MessageList) getActivity()).isMessageViewVisible()) {
-            Toolbar toolbar = ((K9Activity) getActivity()).getToolbar();
-            PEpUtils.colorToolbar(toolbar, PEpUtils.getRatingColor(worstThreadRating, getActivity()));
-            ((K9Activity) getActivity()).setStatusBarPepColor(worstThreadRating);
+            toolBarCustomizer.setToolbarColor(worstThreadRating);
+            toolBarCustomizer.setStatusBarPepColor(worstThreadRating);
         }
     }
 

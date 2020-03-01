@@ -1,90 +1,28 @@
 package com.fsck.k9.activity;
 
 
-import android.Manifest;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-
-import androidx.core.content.ContextCompat;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.fsck.k9.Account;
-import com.fsck.k9.AccountStats;
-import com.fsck.k9.BaseAccount;
-import com.fsck.k9.FontSizes;
-import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
-import com.fsck.k9.R;
-import com.fsck.k9.activity.compose.MessageActions;
-import com.fsck.k9.activity.misc.ExtendedAsyncTask;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
-import com.fsck.k9.activity.setup.AccountSetupBasics;
-import com.fsck.k9.activity.setup.WelcomeMessage;
-import com.fsck.k9.controller.MessagingController;
-import com.fsck.k9.helper.SizeFormatter;
-import com.fsck.k9.mailstore.LocalFolder;
-import com.fsck.k9.mailstore.StorageManager;
-import com.fsck.k9.pEp.PEpImporterActivity;
-import com.fsck.k9.pEp.ui.AboutActivity;
-import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener;
-import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
-import com.fsck.k9.pEp.ui.tools.NestedListView;
-import com.fsck.k9.preferences.SettingsExporter;
-import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
-import com.fsck.k9.search.SearchSpecification.Attribute;
-import com.fsck.k9.search.SearchSpecification.SearchField;
-import com.fsck.k9.ui.settings.K9SettingsActivity;
-import com.fsck.k9.ui.settings.account.AccountSettingsActivity;
-import com.karumi.dexter.listener.single.CompositePermissionListener;
-
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import foundation.pEp.jniadapter.Rating;
-import timber.log.Timber;
 
 
-public class AccountsLegacy extends PEpImporterActivity {
+public class AccountsLegacy
+        //extends PEpImporterActivity
+ {
+/*
 
-    /**
+    */
+/**
      * URL used to open Android Market application
-     */
+     *//*
+
     private static final String ANDROID_MARKET_URL = "https://play.google.com/store/apps/details?id=org.openintents.filemanager";
 
-    /**
+    */
+/**
      * Number of special accounts ('Unified Inbox' and 'All Messages')
-     */
+     *//*
+
     private static final int SPECIAL_ACCOUNTS_COUNT = 2;
 
     private static final int DIALOG_REMOVE_ACCOUNT = 1;
@@ -94,9 +32,11 @@ public class AccountsLegacy extends PEpImporterActivity {
 
     private MessagingController controller;
 
-    /*
+    */
+/*
      * Must be serializable hence implementation class used for declaration.
-     */
+     *//*
+
     private ConcurrentHashMap<String, AccountStats> accountStats = new ConcurrentHashMap<String, AccountStats>();
 
     private ConcurrentMap<BaseAccount, String> pendingWork = new ConcurrentHashMap<BaseAccount, String>();
@@ -116,11 +56,13 @@ public class AccountsLegacy extends PEpImporterActivity {
     private boolean exportGlobalSettings;
     private ArrayList<String> exportAccountUuids;
 
-    /**
+    */
+/**
      * Contains information about objects that need to be retained on configuration changes.
      *
      * @see #onRetainNonConfigurationInstance()
-     */
+     *//*
+
     private NonConfigurationInstance nonConfigurationInstance;
 
 
@@ -229,7 +171,8 @@ public class AccountsLegacy extends PEpImporterActivity {
 
         @Override
         public void folderStatusChanged(Account account, String folderServerId, int unreadMessageCount) {
-            /*try {
+            */
+/*try {
                 //TODO: FIX;
                 AccountStats stats = controller.getAccountStats(account);
                 if (stats == null) {
@@ -239,7 +182,8 @@ public class AccountsLegacy extends PEpImporterActivity {
                 }
             } catch (Exception e) {
                 Timber.e(e, "Unable to get account stats");
-            }*/
+            }*//*
+
         }
         @Override
         public void accountStatusChanged(BaseAccount account, AccountStats stats) {
@@ -449,14 +393,16 @@ public class AccountsLegacy extends PEpImporterActivity {
     }
 
     private void setupSettingsButton() {
-        /*View settingsButton = findViewById(R.id.settings_container);
+        */
+/*View settingsButton = findViewById(R.id.settings_container);
         settingsButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 onEditSettings();
             }
         });
-    */}
+    *//*
+}
 
     private void setupAddAccountButton() {
         addAccountButton = findViewById(R.id.add_account_container);
@@ -474,9 +420,11 @@ public class AccountsLegacy extends PEpImporterActivity {
         setStatusBarPepColor(Rating.pEpRatingFullyAnonymous);
     }
 
-    /**
+    */
+/**
      * Creates and initializes the special accounts ('Unified Inbox' and 'All Messages')
-     */
+     *//*
+
     private void createSpecialAccounts() {
         unifiedInboxAccount = SearchAccount.createUnifiedInboxAccount(this);
         allMessagesAccount = SearchAccount.createAllMessagesAccount(this);
@@ -551,9 +499,11 @@ public class AccountsLegacy extends PEpImporterActivity {
         mListener.onPause(this);
     }
 
-    /**
+    */
+/**
      * Save the reference to a currently displayed dialog or a running AsyncTask (if available).
-     */
+     *//*
+
     // TODO: 28/9/16 Fix this
 //    @Override
 //    public Object onRetainNonConfigurationInstance() {
@@ -686,11 +636,13 @@ public class AccountsLegacy extends PEpImporterActivity {
     }
 
 
-    /*
+    */
+/*
      * This method is called with 'null' for the argument 'account' if
      * all accounts are to be checked. This is handled accordingly in
      * MessagingController.checkMail().
-     */
+     *//*
+
     private void onCheckMail(Account account) {
         MessagingController.getInstance(getApplication()).checkMail(this, account, true, true, null);
         if (account == null) {
@@ -719,12 +671,14 @@ public class AccountsLegacy extends PEpImporterActivity {
         }
     }
 
-    /**
+    */
+/**
      * Show that account's inbox or folder-list
      * or return false if the account is not available.
      * @param account the account to open ({@link SearchAccount} or {@link Account})
      * @return false if unsuccessful
-     */
+     *//*
+
     private boolean onOpenAccount(BaseAccount account) {
         if (account instanceof SearchAccount) {
             SearchAccount searchAccount = (SearchAccount)account;
@@ -757,14 +711,16 @@ public class AccountsLegacy extends PEpImporterActivity {
         promptForServerPasswords(disabledAccounts);
     }
 
-    /**
+    */
+/**
      * Ask the user to enter the server passwords for disabled accounts.
      *
      * @param disabledAccounts
      *         A non-empty list of {@link Account}s to ask the user for passwords. Never
      *         {@code null}.
      *         <p><strong>Note:</strong> Calling this method will modify the supplied list.</p>
-     */
+     *//*
+
     private void promptForServerPasswords(final List<Account> disabledAccounts) {
         Account account = disabledAccounts.remove(0);
         PasswordPromptDialog dialog = new PasswordPromptDialog(account, disabledAccounts);
@@ -1019,11 +975,13 @@ public class AccountsLegacy extends PEpImporterActivity {
     }
 
 
-    /**
+    */
+/**
      * Get current version number.
      *
      * @return String version
-     */
+     *//*
+
     private String getVersionNumber() {
         String version = "?";
         try {
@@ -1120,14 +1078,16 @@ public class AccountsLegacy extends PEpImporterActivity {
     }
 
 
-    /**
+    */
+/**
      * Set the {@code NonConfigurationInstance} this activity should retain on configuration
      * changes.
      *
      * @param inst
      *         The {@link NonConfigurationInstance} that should be retained when
      *         {@link AccountsLegacy#onRetainNonConfigurationInstance()} is called.
-     */
+     *//*
+
     public void setNonConfigurationInstance(NonConfigurationInstance inst) {
         nonConfigurationInstance = inst;
     }
@@ -1389,4 +1349,4 @@ public class AccountsLegacy extends PEpImporterActivity {
             public TextView descriptionUnreadMessages;
         }
     }
-}
+*/}

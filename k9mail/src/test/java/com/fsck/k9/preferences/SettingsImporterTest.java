@@ -1,27 +1,28 @@
 package com.fsck.k9.preferences;
 
 
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.fsck.k9.Account;
+import com.fsck.k9.Preferences;
+import com.fsck.k9.mail.AuthType;
+
+import org.apache.tools.ant.filters.StringInputStream;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.fsck.k9.Account;
-import com.fsck.k9.K9RobolectricTestRunner;
-import com.fsck.k9.Preferences;
-import com.fsck.k9.mail.AuthType;
-import org.apache.tools.ant.filters.StringInputStream;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 
-@SuppressWarnings("unchecked")
-@RunWith(K9RobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class SettingsImporterTest {
 
     @Before
@@ -30,7 +31,7 @@ public class SettingsImporterTest {
     }
 
     private void deletePreExistingAccounts() {
-        Preferences preferences = Preferences.getPreferences(RuntimeEnvironment.application);
+        Preferences preferences = Preferences.getPreferences(ApplicationProvider.getApplicationContext());
         for (Account account : preferences.getAccounts()) {
             preferences.deleteAccount(account);
         }
@@ -41,7 +42,7 @@ public class SettingsImporterTest {
         InputStream inputStream = new StringInputStream("");
         List<String> accountUuids = new ArrayList<>();
 
-        SettingsImporter.importSettings(RuntimeEnvironment.application, inputStream, true, accountUuids, true);
+        SettingsImporter.importSettings(ApplicationProvider.getApplicationContext(), inputStream, true, accountUuids, true);
     }
 
     @Test(expected = SettingsImportExportException.class)
@@ -49,7 +50,7 @@ public class SettingsImporterTest {
         InputStream inputStream = new StringInputStream("<k9settings version=\"1\"></k9settings>");
         List<String> accountUuids = new ArrayList<>();
 
-        SettingsImporter.importSettings(RuntimeEnvironment.application, inputStream, true, accountUuids, true);
+        SettingsImporter.importSettings(ApplicationProvider.getApplicationContext(), inputStream, true, accountUuids, true);
     }
 
     @Test(expected = SettingsImportExportException.class)
@@ -57,7 +58,7 @@ public class SettingsImporterTest {
         InputStream inputStream = new StringInputStream("<k9settings version=\"1\" format=\"A\"></k9settings>");
         List<String> accountUuids = new ArrayList<>();
 
-        SettingsImporter.importSettings(RuntimeEnvironment.application, inputStream, true, accountUuids, true);
+        SettingsImporter.importSettings(ApplicationProvider.getApplicationContext(), inputStream, true, accountUuids, true);
     }
 
     @Test(expected = SettingsImportExportException.class)
@@ -65,7 +66,7 @@ public class SettingsImporterTest {
         InputStream inputStream = new StringInputStream("<k9settings version=\"1\" format=\"0\"></k9settings>");
         List<String> accountUuids = new ArrayList<>();
 
-        SettingsImporter.importSettings(RuntimeEnvironment.application, inputStream, true, accountUuids, true);
+        SettingsImporter.importSettings(ApplicationProvider.getApplicationContext(), inputStream, true, accountUuids, true);
     }
 
     @Test(expected = SettingsImportExportException.class)
@@ -73,7 +74,7 @@ public class SettingsImporterTest {
         InputStream inputStream = new StringInputStream("<k9settings format=\"1\"></k9settings>");
         List<String> accountUuids = new ArrayList<>();
 
-        SettingsImporter.importSettings(RuntimeEnvironment.application, inputStream, true, accountUuids, true);
+        SettingsImporter.importSettings(ApplicationProvider.getApplicationContext(), inputStream, true, accountUuids, true);
     }
 
     @Test(expected = SettingsImportExportException.class)
@@ -81,7 +82,7 @@ public class SettingsImporterTest {
         InputStream inputStream = new StringInputStream("<k9settings format=\"1\" version=\"A\"></k9settings>");
         List<String> accountUuids = new ArrayList<>();
 
-        SettingsImporter.importSettings(RuntimeEnvironment.application, inputStream, true, accountUuids, true);
+        SettingsImporter.importSettings(ApplicationProvider.getApplicationContext(), inputStream, true, accountUuids, true);
     }
 
     @Test(expected = SettingsImportExportException.class)
@@ -89,7 +90,7 @@ public class SettingsImporterTest {
         InputStream inputStream = new StringInputStream("<k9settings format=\"1\" version=\"0\"></k9settings>");
         List<String> accountUuids = new ArrayList<>();
 
-        SettingsImporter.importSettings(RuntimeEnvironment.application, inputStream, true, accountUuids, true);
+        SettingsImporter.importSettings(ApplicationProvider.getApplicationContext(), inputStream, true, accountUuids, true);
     }
 
     @Test
@@ -149,16 +150,16 @@ public class SettingsImporterTest {
         InputStream inputStream = new StringInputStream("<k9settings format=\"1\" version=\"1\">" +
                 "<accounts><account uuid=\"" + validUUID + "\"><name>Account</name>" +
                 "<incoming-server type=\"IMAP\">" +
-                    "<connection-security>SSL_TLS_REQUIRED</connection-security>" +
-                    "<username>user@gmail.com</username>" +
-                    "<authentication-type>CRAM_MD5</authentication-type>" +
-                    "<host>googlemail.com</host>" +
+                "<connection-security>SSL_TLS_REQUIRED</connection-security>" +
+                "<username>user@gmail.com</username>" +
+                "<authentication-type>CRAM_MD5</authentication-type>" +
+                "<host>googlemail.com</host>" +
                 "</incoming-server>" +
                 "<outgoing-server type=\"SMTP\">" +
-                    "<connection-security>SSL_TLS_REQUIRED</connection-security>" +
-                    "<username>user@googlemail.com</username>" +
-                    "<authentication-type>CRAM_MD5</authentication-type>" +
-                    "<host>googlemail.com</host>" +
+                "<connection-security>SSL_TLS_REQUIRED</connection-security>" +
+                "<username>user@googlemail.com</username>" +
+                "<authentication-type>CRAM_MD5</authentication-type>" +
+                "<host>googlemail.com</host>" +
                 "</outgoing-server>" +
                 "<settings><value key=\"a\">b</value></settings>" +
                 "<identities><identity><email>user@gmail.com</email></identity></identities>" +
@@ -167,14 +168,14 @@ public class SettingsImporterTest {
         accountUuids.add(validUUID);
 
         SettingsImporter.ImportResults results = SettingsImporter.importSettings(
-                RuntimeEnvironment.application, inputStream, true, accountUuids, false);
+                ApplicationProvider.getApplicationContext(), inputStream, true, accountUuids, false);
 
         assertEquals(0, results.erroneousAccounts.size());
         assertEquals(1, results.importedAccounts.size());
         assertEquals("Account", results.importedAccounts.get(0).imported.name);
         assertEquals(validUUID, results.importedAccounts.get(0).imported.uuid);
 
-        assertFalse(Preferences.getPreferences(RuntimeEnvironment.application)
+        assertFalse(Preferences.getPreferences(ApplicationProvider.getApplicationContext())
                 .getAccount(validUUID).isEnabled());
     }
 
@@ -183,14 +184,14 @@ public class SettingsImporterTest {
         String validUUID = UUID.randomUUID().toString();
         InputStream inputStream = new StringInputStream("<k9settings format=\"1\" version=\"1\">" +
                 "<accounts>" +
-                    "<account uuid=\"" + validUUID + "\">" +
-                        "<name>Account</name>" +
-                        "<identities>" +
-                            "<identity>" +
-                                "<email>user@gmail.com</email>" +
-                            "</identity>" +
-                        "</identities>" +
-                    "</account>" +
+                "<account uuid=\"" + validUUID + "\">" +
+                "<name>Account</name>" +
+                "<identities>" +
+                "<identity>" +
+                "<email>user@gmail.com</email>" +
+                "</identity>" +
+                "</identities>" +
+                "</account>" +
                 "</accounts></k9settings>");
 
         SettingsImporter.ImportContents results = SettingsImporter.getImportStreamContents(inputStream);
@@ -206,14 +207,14 @@ public class SettingsImporterTest {
         String validUUID = UUID.randomUUID().toString();
         InputStream inputStream = new StringInputStream("<k9settings format=\"1\" version=\"1\">" +
                 "<accounts>" +
-                    "<account uuid=\"" + validUUID + "\">" +
-                        "<name></name>" +
-                        "<identities>" +
-                            "<identity>" +
-                                "<email>user@gmail.com</email>" +
-                            "</identity>" +
-                        "</identities>" +
-                    "</account>" +
+                "<account uuid=\"" + validUUID + "\">" +
+                "<name></name>" +
+                "<identities>" +
+                "<identity>" +
+                "<email>user@gmail.com</email>" +
+                "</identity>" +
+                "</identities>" +
+                "</account>" +
                 "</accounts></k9settings>");
 
         SettingsImporter.ImportContents results = SettingsImporter.getImportStreamContents(inputStream);

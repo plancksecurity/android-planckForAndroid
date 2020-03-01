@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
 
@@ -48,7 +49,7 @@ import timber.log.Timber;
  * pep provider implementation. Dietz is the culprit.
  */
 public class PEpProviderImpl implements PEpProvider {
-    private static final String TAG = "pEp";
+    private static final String TAG = "pEpEngine-provider";
     private static final String PEP_SIGNALING_BYPASS_DOMAIN = "@peptunnel.com";
     private final ThreadExecutor threadExecutor;
     private final PostExecutionThread postExecutionThread;
@@ -196,6 +197,31 @@ public class PEpProviderImpl implements PEpProvider {
             Log.d(TAG, "pEpdecryptMessage() after decrypt Subject" +  decReturn.dst.getShortmsg());
             Message message = decReturn.dst;
             MimeMessage decMsg = getMimeMessage(source, message);
+
+//            try {
+//                int i = Integer.parseInt(decMsg.getSubject());
+//                if (i%2 == 1 ) {
+//                    Message msg = new Message();
+//                    msg.setFrom(message.getFrom());
+//                    msg.setTo(message.getTo());
+//                    msg.setId(MessageIdGenerator.getInstance().generateMessageId());
+//                    Log.e("pEpEngine", "I am D2: ");
+//                    msg.setShortmsg(i + 1 + "");
+//                    msg.setLongmsg(i + 1 + "");
+//                    msg.setReplyTo(new Vector<>());
+//                    MessagingController.getInstance().messageToSend(msg);
+//                }
+//            } catch (Exception e) {
+//
+//            }
+            if (PEpUtils.isAutoConsumeMessage(decMsg)) {
+                Log.e("pEpEngine", "Called decrypt on auto-consume message");
+                Log.e("pEpEngine", message.getAttachments().get(0).toString());
+            } else {
+                Log.e("pEpEngine", "Called decrypt on non auto-consume message");
+                Log.e("pEpEngine", "Subject: " + decMsg.getSubject() + "Message-id: " + decMsg.getMessageId());
+
+            }
             boolean neverUnprotected = decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE).length > 0
                     && decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE)[0].equals(PEP_ALWAYS_SECURE_TRUE);
             decMsg.setFlag(Flag.X_PEP_NEVER_UNSECURE, neverUnprotected);
@@ -209,8 +235,7 @@ public class PEpProviderImpl implements PEpProvider {
                         || decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY)) {
                     Log.d(TAG, "pEpdecryptMessage() after decrypt has usable pEp key (import)");
                     return new DecryptResult(decMsg, decReturn.rating, new KeyDetail("", null), decReturn.flags);
-                } else if (!decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_AUTOCONSUME) &&
-                        !decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY)) {
+                } else if (!PEpUtils.isAutoConsumeMessage(decMsg)) {
                     Log.d(TAG, "pEpdecryptMessage() after decrypt has usable PGP key (import)");
                     return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg), decReturn.flags);
                 } else return new DecryptResult(decMsg, decReturn.rating, null, 0x2);
@@ -243,8 +268,7 @@ public class PEpProviderImpl implements PEpProvider {
                 return new DecryptResult(decryptedMimeMessage, decReturn.rating, null, flags);
             }
         }
-        else if (decryptedMimeMessage.getHeaderNames().contains(MimeHeader.HEADER_PEP_AUTOCONSUME)
-                || decryptedMimeMessage.getHeaderNames().contains(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY)) {
+        else if (PEpUtils.isAutoConsumeMessage(decryptedMimeMessage)) {
             if (lastValidDate.after(decryptedMimeMessage.getSentDate())) {
                 flags = DecryptFlags.pEpDecryptFlagConsumed.value;
                 return new DecryptResult(decryptedMimeMessage, decReturn.rating, null, flags);
@@ -260,8 +284,10 @@ public class PEpProviderImpl implements PEpProvider {
         Vector<Address> replyTo = new Vector<>();
         for (Address address : decMsg.getReplyTo()) {
             if (address.getHostname().contains("peptunnel")) {
-                decMsg.addHeader(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY, address.getPersonal());
-                decMsg.addHeader(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY, "true");
+                decMsg.addHeader(MimeHeader.HEADER_PEP_KEY_IMPORT, address.getPersonal());
+                decMsg.addHeader(MimeHeader.HEADER_PEP_AUTOCONSUME, "true");
+            } else if (address.getAddress().contains(MimeHeader.HEADER_PEP_AUTOCONSUME.toUpperCase(Locale.ROOT))) {
+                decMsg.addHeader(MimeHeader.HEADER_PEP_AUTOCONSUME, "true");
             } else {
                 replyTo.add(address);
             }
@@ -647,7 +673,7 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public synchronized void close() {
         if (engine != null) {
-            engine.stopSync();
+            //engine.stopSync();
             engine.close();
         }
     }
@@ -892,9 +918,10 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public synchronized void startSync() {
         try {
+            Log.e("pEpEngine-app", "Trying to start sync thread Engine.startSync()");
             engine.startSync();
         } catch (pEpException exception) {
-            Log.e(TAG, "Cannot startSync", exception);
+            Log.e("pEpEngine", "Could not Engine.startSync()", exception);
         }
     }
 
@@ -969,9 +996,14 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void setIdentityFlag(Identity identity, Integer flags) {
+    public void setIdentityFlag(Identity identity, boolean sync) {
         try {
-            engine.set_identity_flags(identity, flags);
+            if (sync) {
+                engine.enable_identity_for_sync(identity);
+            } else {
+                engine.disable_identity_for_sync(identity);
+            }
+            engine.enable_identity_for_sync(identity);
         } catch (pEpException e) {
             Log.e(TAG, "setIdentityFlag: ", e);
         }
@@ -1020,8 +1052,9 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     private void getRating(@Nullable Identity identity, Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback) {
+        Timber.i("Contador de PEpProviderImpl+1");
+        EspressoTestingIdlingResource.increment();
         threadExecutor.execute(() -> {
-            EspressoTestingIdlingResource.increment();
             if (bccAddresses.size()  > 0) {
                 notifyLoaded(Rating.pEpRatingUnencrypted, callback);
                 return;
@@ -1058,11 +1091,12 @@ public class PEpProviderImpl implements PEpProvider {
                 Log.e(TAG, "during color test:", e);
                 notifyError(e, callback);
             } finally {
+                Timber.i("Contador de PEpProviderImpl  -1");
+                EspressoTestingIdlingResource.decrement();
                 if (testee != null) testee.close();
                 if (engine != null) {
                     engine.close();
                 }
-                EspressoTestingIdlingResource.decrement();
             }
         });
     }
@@ -1170,6 +1204,12 @@ public class PEpProviderImpl implements PEpProvider {
     public void stopSync() {
         createEngineInstanceIfNeeded();
         engine.stopSync();
+    }
+
+    @Override
+    public boolean isSyncRunning() {
+        createEngineInstanceIfNeeded();
+        return engine.isSyncRunning();
     }
 
 

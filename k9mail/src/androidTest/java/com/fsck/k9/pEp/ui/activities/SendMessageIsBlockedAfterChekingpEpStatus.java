@@ -1,10 +1,11 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Instrumentation;
-import androidx.test.platform.app.InstrumentationRegistry;
+
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.rule.ActivityTestRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
@@ -15,7 +16,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import pEp.jniadapter.Rating;
+import foundation.pEp.jniadapter.Rating;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.typeText;
@@ -44,22 +45,22 @@ public class SendMessageIsBlockedAfterChekingpEpStatus {
         testUtils = new TestUtils(uiDevice, instrumentation);
         testUtils.increaseTimeoutWait();
         espressoTestingIdlingResource = new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         testUtils.startActivity();
     }
 
     @After
     public void unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
     @Test (timeout = TIMEOUT_TEST)
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
-        testUtils.createAccount(false);
+        testUtils.createAccount();
         composeSelfMessage();
         testUtils.checkStatus(Rating.pEpRatingTrusted);
         testUtils.pressBack();
-        testUtils.selectoFromMenu(R.string.pep_force_unprotected);
+        testUtils.selectFromMenu(R.string.pep_force_unprotected);
         onView(withId(R.id.subject)).perform(typeText(" "));
         testUtils.checkStatus(Rating.pEpRatingUnencrypted);
         testUtils.goBackToMessageCompose();

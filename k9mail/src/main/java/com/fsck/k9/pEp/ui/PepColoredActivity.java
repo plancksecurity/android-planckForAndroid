@@ -1,12 +1,8 @@
 package com.fsck.k9.pEp.ui;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Window;
-import android.view.WindowManager;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.activity.K9Activity;
@@ -20,6 +16,8 @@ import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 
 import foundation.pEp.jniadapter.Rating;
+import security.pEp.ui.toolbar.PEpToolbarCustomizer;
+import security.pEp.ui.toolbar.ToolBarCustomizer;
 
 public abstract class PepColoredActivity extends K9Activity {
     public static final String CURRENT_RATING = "current_color";
@@ -29,9 +27,12 @@ public abstract class PepColoredActivity extends K9Activity {
     private PEpProvider pEp;
     private PEpComponent pEpComponent;
 
+    ToolBarCustomizer toolBarCustomizer;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        toolBarCustomizer = new PEpToolbarCustomizer(this);
         initializeInjector(getApplicationComponent());
         inject();
     }
@@ -45,9 +46,14 @@ public abstract class PepColoredActivity extends K9Activity {
 
     protected void colorActionBar() {
         if (getToolbar() != null) {
-            PEpUtils.colorToolbar(uiCache, getToolbar(), pEpRating);
-            setStatusBarPepColor();
+            toolBarCustomizer.setToolbarColor(pEpRating);
+            toolBarCustomizer.setStatusBarPepColor(pEpRating);
         }
+    }
+
+    protected void colorActionBar(Rating pEpRating) {
+        toolBarCustomizer.setToolbarColor(pEpRating);
+        toolBarCustomizer.setStatusBarPepColor(pEpRating);
     }
 
     public void setToolbarTitle(String title) {
@@ -103,29 +109,6 @@ public abstract class PepColoredActivity extends K9Activity {
                 .activityModule(new ActivityModule(this))
                 .pEpModule(new PEpModule(this, getSupportLoaderManager(), getSupportFragmentManager()))
                 .build();
-    }
-
-    public void setStatusBarPepColor() {
-        Window window = this.getWindow();
-
-        // clear FLAG_TRANSLUCENT_STATUS flag:
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-        // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
-        // finally change the color
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int color = (uiCache.getColor(pEpRating) & 0x00FFFFFF);
-            int red = Color.red(color);
-            int green = Color.green(color);
-            int blue = Color.blue(color);
-            float[] hsv = new float[3];
-            Color.RGBToHSV(red, green, blue, hsv);
-            hsv[2] = hsv[2]*0.9f;
-            color = Color.HSVToColor(hsv);
-            window.setStatusBarColor(color);
-        }
     }
 
     public PEpComponent getpEpComponent() {

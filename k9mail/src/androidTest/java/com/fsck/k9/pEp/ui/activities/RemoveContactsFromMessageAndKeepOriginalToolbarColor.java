@@ -1,11 +1,12 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Instrumentation;
-import androidx.test.platform.app.InstrumentationRegistry;
+
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.rule.ActivityTestRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.UiDevice;
 
@@ -63,7 +64,7 @@ public class RemoveContactsFromMessageAndKeepOriginalToolbarColor {
     @Test (timeout = TIMEOUT_TEST)
     public void assertRemoveTwoDifferentColorContactsAndKeepOriginalToolbarColor() {
         testUtils.increaseTimeoutWait();
-        testUtils.createAccount(false);
+        testUtils.createAccount();
         messageFrom = testUtils.getTextFromTextViewThatContainsText("@");
         assertToolBarHasNoColorWhenUnkownReceiver(messageFrom);
         assertToolBarHasNoColorWhenUnkownReceiver("random@test.pep-security.net");

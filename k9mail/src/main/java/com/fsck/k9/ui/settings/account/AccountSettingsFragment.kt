@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.preference.ListPreference
 import com.fsck.k9.Account
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.activity.ManageIdentities
 import com.fsck.k9.activity.setup.AccountSetupBasics
@@ -62,6 +63,10 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializeCryptoSettings(account)
         initializeFolderSettings(account)
         initializeAccountpEpKeyReset(account)
+
+        if (!BuildConfig.WITH_KEY_SYNC) {
+            hideKeySyncOptions()
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -163,6 +168,10 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
                 true
             }
         }
+    }
+
+    private fun hideKeySyncOptions() {
+        findPreference(PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT)?.remove()
     }
 
     private fun dopEpKeyReset(account: Account) {
@@ -282,6 +291,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_TRASH_FOLDER = "trash_folder"
 
         private const val PREFERENCE_PEP_ACCOUNT_KEY_RESET = "pep_key_reset_account"
+        private const val PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT = "pep_enable_sync_account"
         private const val DELETE_POLICY_MARK_AS_READ = "MARK_AS_READ"
 
         private val FOLDER_LIST_PREFERENCES = listOf(

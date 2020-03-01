@@ -26,7 +26,7 @@ dependencies {
     implementation "com.jakewharton.timber:timber:${versions.timber}"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
 
-    androidTestImplementation 'androidx.test:runner:1.1.0'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'com.madgag.spongycastle:pg:1.51.0.0'
 
     testImplementation "com.squareup.okio:okio:${versions.okio}"

@@ -143,9 +143,6 @@
     <string name="is_always_secure">Stocker protégé sur le serveur</string>
     <string name="master_key_management">Gestion de clef maîtresse</string>
     <string name="message_saving_error">Erreur lors de la sauvegarde du message</string>
-    <string name="intro_first_text">Crypte et anonymise automatiquement votre e-mail</string>
-    <string name="intro_second_text">Empêche l\'usurpation d’identité. Élimine le pourriel. Stoppe l\'hameçonnage.</string>
-    <string name="intro_third_text">Dit à quel point votre communication est sûre avec un code couleur simple.</string>
     <string name="is_not_always_secure">Stocke sans protection sur le serveur</string>
     <string name="action_continue">Continuer</string>
     <string name="battery_optimization_rationale_title">Désactiver les optimisation d\'économie d\'énergie</string>

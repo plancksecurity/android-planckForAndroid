@@ -1,10 +1,8 @@
 package com.fsck.k9.crypto;
 
 
-import java.util.ArrayList;
-import java.util.List;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.mail.BodyPart;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
@@ -17,9 +15,13 @@ import com.fsck.k9.mail.internet.MimeMessageHelper;
 import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -29,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 
-@RunWith(K9RobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 @Config(manifest = Config.NONE)
 public class MessageDecryptVerifierTest {
     private static final String MIME_TYPE_MULTIPART_ENCRYPTED = "multipart/encrypted";
@@ -94,8 +96,8 @@ public class MessageDecryptVerifierTest {
         Message message = messageFromBody(
                 multipart("mixed",
                         multipart("alternative",
-                            pgpInlinePart,
-                            bodypart("text/html")
+                                pgpInlinePart,
+                                bodypart("text/html")
                         ),
                         bodypart("application/octet-stream")
                 )
@@ -227,8 +229,8 @@ public class MessageDecryptVerifierTest {
         Message message = messageFromBody(
                 multipart("mixed",
                         multipart("encrypted",
-                            bodypart("application/pgp-encrypted"),
-                            bodypart("application/octet-stream")
+                                bodypart("application/pgp-encrypted"),
+                                bodypart("application/octet-stream")
                         )
                 )
         );
@@ -335,10 +337,10 @@ public class MessageDecryptVerifierTest {
     public void findEncrypted__withMultipartMixedSubSigned__shouldReturnSigned() throws Exception {
         Message message = messageFromBody(
                 multipart("mixed",
-                    multipart("signed",
-                            bodypart("text/plain"),
-                            bodypart("application/pgp-signature")
-                    )
+                        multipart("signed",
+                                bodypart("text/plain"),
+                                bodypart("application/pgp-signature")
+                        )
                 )
         );
 

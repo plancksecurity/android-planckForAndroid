@@ -9,6 +9,12 @@ import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
+import security.pEp.permissions.PermissionRequester;
+import security.pEp.ui.permissions.PepPermissionRequester;
+import security.pEp.ui.resources.PEpResourcesProvider;
+import security.pEp.ui.resources.ResourcesProvider;
+import security.pEp.ui.toolbar.PEpToolbarCustomizer;
+import security.pEp.ui.toolbar.ToolBarCustomizer;
 
 @Module
 public class ActivityModule {
@@ -29,5 +35,20 @@ public class ActivityModule {
     @Named("ActivityContext")
     Context provideActivityContext() {
         return this.activity;
+    }
+
+    @Provides
+    PermissionRequester providepEpPermissionRequestProvider() {
+        return new PepPermissionRequester(activity);
+    }
+
+    @Provides
+    ToolBarCustomizer providepEpToolbarCustomizer() {
+        return new PEpToolbarCustomizer(activity);
+    }
+
+    @Provides
+    public ResourcesProvider providepEpResourcesProvider() {
+        return new PEpResourcesProvider(activity);
     }
 }

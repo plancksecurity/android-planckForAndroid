@@ -2,8 +2,6 @@ package com.fsck.k9.pEp.ui.adapters;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -13,17 +11,18 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.models.PEpIdentity;
-
-import foundation.pEp.jniadapter.Identity;
-import foundation.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Rating;
+import security.pEp.ui.PEpUIUtils;
 
 public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdapter.ViewHolder> {
     private final ContextActions contextActions;
@@ -147,7 +146,7 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
                 identityAdress.setTextColor(context.getResources().getColor(android.R.color.black));
                 handshakeText.setTextColor(context.getResources().getColor(android.R.color.black));
             }
-            Drawable drawableForRating = PEpUtils.getDrawableForRatingRecipient(context, rating);
+            Drawable drawableForRating = PEpUIUtils.getDrawableForRatingRecipient(context, rating);
             badge.setImageDrawable(drawableForRating);
         }
 
@@ -160,7 +159,7 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
         }
 
         private void renderColor(Rating rating) {
-            int colorCode = PePUIArtefactCache.getInstance(context).getColor(rating);
+            int colorCode = PEpUIUtils.getRatingColor(context, rating);
             container.setBackgroundColor(colorCode);
         }
 

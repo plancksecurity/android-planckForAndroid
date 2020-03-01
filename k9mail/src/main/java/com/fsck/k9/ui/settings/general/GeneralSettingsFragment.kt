@@ -5,9 +5,10 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.preference.CheckBoxPreference
 import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
-import com.fsck.k9.K9
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.helper.FileBrowserHelper
 import com.fsck.k9.notification.NotificationController
@@ -43,7 +44,15 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeNotificationQuickDelete()
         initializeExtraKeysManagement()
         initializeGlobalpEpKeyReset()
-        initializeGlobalpEpSync()
+        initializeAfterMessageDeleteBehavior()
+
+        if (!BuildConfig.WITH_KEY_SYNC) {
+            hideKeySyncOptions()
+        }
+    }
+
+    private fun hideKeySyncOptions() {
+        findPreference(PREFERENCE_PEP_ENABLE_SYNC)?.remove()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -123,6 +132,22 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    private fun initializeAfterMessageDeleteBehavior() {
+        val returnToList: CheckBoxPreference? = findPreference(MESSAGEVIEW_RETURN_TO_LIST) as? CheckBoxPreference
+        val showNextMsg: CheckBoxPreference? = findPreference(MESSAGEVIEW_SHOW_NEXT_MSG) as? CheckBoxPreference
+
+        returnToList?.setOnPreferenceChangeListener { _, check ->
+            showNextMsg?.isChecked = !(check as Boolean)
+            true
+        }
+
+        showNextMsg?.setOnPreferenceChangeListener { _, check ->
+            returnToList?.isChecked = !(check as Boolean)
+            true
+        }
+
+    }
+
     private fun dopEpKeyReset() {
         disableKeyResetClickListener()
         loading?.visibility = View.VISIBLE
@@ -149,42 +174,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         pEpProvider.apply {
             keyResetAllOwnKeys()
             close()
-        }
-    }
-
-    private fun initializeGlobalpEpSync() {
-        findPreference(PREFERENCE_PEP_ENABLE_SYNC)?.apply {
-
-            when (K9.ispEpSyncEnabled()) {
-                true-> this.setTitle(R.string.pep_sync_enable_global)
-                false -> this.setTitle(R.string.pep_sync_disable_global)
-            }
-
-            setOnPreferenceClickListener {
-                val app = context.applicationContext as K9
-                K9.setGrouped(false)
-
-                /*    when (K9.getpEpSyncEnabled()) {
-
-                    K9.SyncpEpStatus.DISABLED -> {
-                        app.setpEpSyncEnabled(K9.SyncpEpStatus.ENABLED_SOLE)
-                        app.pEpInitSyncEnvironment()
-                    }
-                    K9.SyncpEpStatus.ENABLED_GROUPED -> {
-                        app.leaveDeviceGroup()
-                    }
-                    K9.SyncpEpStatus.ENABLED_SOLE -> {
-                        this.setTitle(R.string.pep_sync_disable_global)
-                        app.setpEpSyncEnabled(K9.SyncpEpStatus.DISABLED)
-                        app.shutdownSync()
-                    }
-                    else -> {}
-
-                }*/
-                initializeGlobalpEpSync()
-
-                true
-            }
         }
     }
 
@@ -223,6 +212,8 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_PEP_EXTRA_KEYS = "pep_extra_keys"
         private const val PREFERENCE_PEP_OWN_IDS_KEY_RESET = "pep_key_reset"
         private const val PREFERENCE_PEP_ENABLE_SYNC = "pep_enable_sync"
+        private const val MESSAGEVIEW_RETURN_TO_LIST = "messageview_return_to_list"
+        private const val MESSAGEVIEW_SHOW_NEXT_MSG = "messageview_show_next"
 
 
         fun create(rootKey: String? = null) = GeneralSettingsFragment().withArguments(

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/resetDataLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginTop="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/key_reset_for_identity_context_title"/>
+
+    <Button
+        android:id="@+id/button_identity_key_reset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="@dimen/button_minWidth"
+        android:padding="10dip"
+        android:text="@string/reset"
+        android:theme="@style/PEpStyleButton.Grey"/>
+</LinearLayout>
