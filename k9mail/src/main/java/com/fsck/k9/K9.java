@@ -777,6 +777,8 @@ public class K9 extends MultiDexApplication {
             if (pEpSyncEnabled) {
                 initSync();
             }
+        } else {
+            Log.e("pEpEngine-app", "There is no accounts set up, not trying to start sync");
         }
     }
 

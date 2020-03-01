@@ -39,6 +39,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 import security.pEp.ui.resources.ResourcesProvider;
+import timber.log.Timber;
 
 public class PEpAddDevice extends WizardActivity implements AddDeviceView {
 
@@ -121,7 +122,7 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
         getToolbar().setOverflowIcon(ContextCompat.getDrawable(this, resource));
         initPep();
 
-        if (getIntent() != null) {
+        if (intent != null) {
             explanationTextView.setText(intent.getStringExtra(EXPLANATION));
             if (intent.hasExtra(TRUSTWORDS)) {
                 tvTrustwords.setText(getIntent().getStringExtra(TRUSTWORDS));
@@ -132,6 +133,18 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
                 boolean isManualSync = intent.getBooleanExtra(MANUAL, false);
                 List<Account> accounts = Preferences.getPreferences(PEpAddDevice.this).getAccounts();
 
+                try {
+                    Timber.e("------------------------");
+                    Timber.e(getIntent().getStringExtra(TRUSTWORDS));
+                    Timber.e(myIdentity.fpr);
+                    Timber.e(partnerIdentity.fpr);
+                    //FeedbackTools.showLongFeedback(getRootView(), myIdentity.fpr + "::" + partnerIdentity.fpr);
+                    Timber.e("------------------------");
+                } catch (Exception ignored) {}
+
+                intent.removeExtra(TRUSTWORDS);
+                intent.removeExtra(MYSELF);
+                intent.removeExtra(PARTNER);
                 presenter.initialize(this, getpEp(), myIdentity, partnerIdentity, accounts, isManualSync, intent.getStringExtra(PEP_KEY_LIST));
             }
         }
@@ -177,10 +190,26 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
                 if (item.getTitle().equals(getString(R.string.pep_menu_long_trustwords))){
                     item.setTitle(R.string.pep_menu_short_trustwords);
                     changeTrustwordsLength(false);
+                    try {
+                        Timber.e("------------------------");
+                        Timber.e(getIntent().getStringExtra(TRUSTWORDS));
+                        Timber.e(myIdentity.fpr);
+                        Timber.e(partnerIdentity.fpr);
+                        //FeedbackTools.showLongFeedback(getRootView(), myIdentity.fpr + "::" + partnerIdentity.fpr);
+                        Timber.e("------------------------");
+                    } catch (Exception ignored) {}
                 }
                 else{
                     item.setTitle(getString(R.string.pep_menu_long_trustwords));
                     changeTrustwordsLength(true);
+                    try {
+                        Timber.e("------------------------");
+                        Timber.e(getIntent().getStringExtra(TRUSTWORDS));
+                        Timber.e(myIdentity.fpr);
+                        Timber.e(partnerIdentity.fpr);
+                        //FeedbackTools.showLongFeedback(getRootView(), myIdentity.fpr + "::" + partnerIdentity.fpr);
+                        Timber.e("------------------------");
+                    } catch (Exception ignored) {}
                 }
 
                 return true;
@@ -201,6 +230,14 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
     }
 
     private boolean changeTrustwordsLanguage(Integer languagePosition) {
+        try {
+            Timber.e("------------------------");
+            Timber.e(getIntent().getStringExtra(TRUSTWORDS));
+            Timber.e(myIdentity.fpr);
+            Timber.e(partnerIdentity.fpr);
+            //FeedbackTools.showLongFeedback(getRootView(), myIdentity.fpr + "::" + partnerIdentity.fpr);
+            Timber.e("------------------------");
+        } catch (Exception ignored) {}
         final CharSequence[] pEpLanguages = PEpUtils.getPEpLocales();
         String language = pEpLanguages[languagePosition].toString();
         changeTrustwords(language);

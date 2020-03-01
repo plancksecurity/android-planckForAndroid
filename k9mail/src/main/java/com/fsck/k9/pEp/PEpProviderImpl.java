@@ -49,7 +49,7 @@ import timber.log.Timber;
  * pep provider implementation. Dietz is the culprit.
  */
 public class PEpProviderImpl implements PEpProvider {
-    private static final String TAG = "pEp";
+    private static final String TAG = "pEpEngine-provider";
     private static final String PEP_SIGNALING_BYPASS_DOMAIN = "@peptunnel.com";
     private final ThreadExecutor threadExecutor;
     private final PostExecutionThread postExecutionThread;
@@ -197,6 +197,31 @@ public class PEpProviderImpl implements PEpProvider {
             Log.d(TAG, "pEpdecryptMessage() after decrypt Subject" +  decReturn.dst.getShortmsg());
             Message message = decReturn.dst;
             MimeMessage decMsg = getMimeMessage(source, message);
+
+//            try {
+//                int i = Integer.parseInt(decMsg.getSubject());
+//                if (i%2 == 1 ) {
+//                    Message msg = new Message();
+//                    msg.setFrom(message.getFrom());
+//                    msg.setTo(message.getTo());
+//                    msg.setId(MessageIdGenerator.getInstance().generateMessageId());
+//                    Log.e("pEpEngine", "I am D2: ");
+//                    msg.setShortmsg(i + 1 + "");
+//                    msg.setLongmsg(i + 1 + "");
+//                    msg.setReplyTo(new Vector<>());
+//                    MessagingController.getInstance().messageToSend(msg);
+//                }
+//            } catch (Exception e) {
+//
+//            }
+            if (PEpUtils.isAutoConsumeMessage(decMsg)) {
+                Log.e("pEpEngine", "Called decrypt on auto-consume message");
+                Log.e("pEpEngine", message.getAttachments().get(0).toString());
+            } else {
+                Log.e("pEpEngine", "Called decrypt on non auto-consume message");
+                Log.e("pEpEngine", "Subject: " + decMsg.getSubject() + "Message-id: " + decMsg.getMessageId());
+
+            }
             boolean neverUnprotected = decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE).length > 0
                     && decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE)[0].equals(PEP_ALWAYS_SECURE_TRUE);
             decMsg.setFlag(Flag.X_PEP_NEVER_UNSECURE, neverUnprotected);
@@ -893,9 +918,10 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public synchronized void startSync() {
         try {
+            Log.e("pEpEngine-app", "Trying to start sync thread Engine.startSync()");
             engine.startSync();
         } catch (pEpException exception) {
-            Log.e(TAG, "Cannot startSync", exception);
+            Log.e("pEpEngine", "Could not Engine.startSync()", exception);
         }
     }
 

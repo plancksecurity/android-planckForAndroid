@@ -4880,6 +4880,8 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
 
     @Override
     public void messageToSend(foundation.pEp.jniadapter.Message pEpMessage) {
+        Log.e("pEpEngine", "messageToSend from<>to: " + pEpMessage.getFrom().address + "<>" + pEpMessage.getTo().get(0).address);
+        Log.e("pEpEngine", "messageToSend ID from engine: " + pEpMessage.getId());
         threadPool.execute(() -> {
             try {
                 Account fromAccount = loadAddressAccount(pEpMessage.getFrom().address);
@@ -4905,11 +4907,17 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                 List<Account> accountsToAppend = getAccountsToAppend(recipients);
                 if (accountsToAppend != null) {
                     for (Account account : accountsToAppend) {
+                        Log.e("pEpEngine", "Start Append: " + message.getMessageId());
                         appendToInboxpEpSyncMessage(account, message);
+                        Log.e("pEpEngine", "Finish Append: " + message.getMessageId());
+
                     }
 
                 } else {
+                    Log.e("pEpEngine", "Start SMTP send: " + message.getMessageId());
                     sendpEpSyncMessage(fromAccount, message);
+                    Log.e("pEpEngine", "Finish SMTP send: " + message.getMessageId());
+
                 }
 
             } catch (pEpException | MessagingException e) {
