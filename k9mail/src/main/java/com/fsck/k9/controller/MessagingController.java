@@ -4906,7 +4906,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                 recipients.addAll(ccRecipients);
 
                 List<Account> accountsToAppend = getAccountsToAppend(recipients);
-                if (accountsToAppend != null) {
+               /* if (accountsToAppend != null) {
                     for (Account account : accountsToAppend) {
                         Log.e("pEpEngine", "Start Append: " + message.getMessageId());
                         appendToInboxpEpSyncMessage(account, message);
@@ -4914,7 +4914,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
 
                     }
 
-                } else {
+                } else { */
                     Log.e("pEpEngine", "Start SMTP send: " + message.getMessageId());
                     sendpEpSyncMessage(fromAccount, message);
                     Log.e("pEpEngine", "Finish SMTP send: " + message.getMessageId());
