@@ -525,9 +525,11 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         pEpUiCache.setRecipients(mAccount, recipients);
     }
 
-    void onPEpPrivacyStatus() {
-        PendingIntent pendingIntent = PEpStatus.pendingIntentShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom(), presenter.isForceUnencrypted(), presenter.isAlwaysSecure());
-        launchUserInteractionPendingIntent(pendingIntent, PEpStatus.REQUEST_STATUS);
+        void onPEpPrivacyStatus() {
+            PendingIntent pendingIntent = PEpStatus.pendingIntentShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom(), presenter.isForceUnencrypted(), presenter.isAlwaysSecure());
+            launchUserInteractionPendingIntent(pendingIntent, PEpStatus.REQUEST_STATUS);
+
+        //FIXME P4A-934: "Caused by: android.os.TransactionTooLargeException: data parcel size 1064328 bytes", not always reproducible.
     }
 
     public void setMessageReference(MessageReference reference) {
