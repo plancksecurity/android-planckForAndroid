@@ -69,7 +69,7 @@
     </LinearLayout>
 
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <security.pEp.ui.toolbar.PEpSecurityStatusLayout
         android:id="@+id/actionbar_message_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -120,7 +120,7 @@
             tools:text="message subtitle that is big enough to fil"
             tools:visibility="gone" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </security.pEp.ui.toolbar.PEpSecurityStatusLayout>
 
 
 </FrameLayout>
