@@ -570,7 +570,10 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
         // This needs to be done before initializing the cursor loader below
         initializeSortSettings();
+        initializeLoaders();
+    }
 
+    private void initializeLoaders() {
         loaderJustInitialized = true;
         LoaderManager loaderManager = LoaderManager.getInstance(this);
         int len = accountUuids.length;
