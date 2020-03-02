@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.daimajia.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="80dp"
-    android:id="@+id/swipe_container">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipe_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
     <!-- Bottom View Start-->
 
     <LinearLayout
@@ -11,7 +14,8 @@
         android:background="#FF5722"
         android:orientation="horizontal"
         android:visibility="gone"
-        android:weightSum="1">
+        android:weightSum="1"
+        tools:visibility="visible">
 
         <ImageView
             android:id="@+id/delete_email"
@@ -20,8 +24,8 @@
             android:clickable="false"
             android:gravity="center_vertical"
             android:hapticFeedbackEnabled="true"
-            android:src="@drawable/ic_action_delete"
-            android:paddingLeft="24dp" />
+            android:paddingStart="24dp"
+            app:srcCompat="@drawable/ic_delete_white_24dp" />
 
     </LinearLayout>
 
@@ -41,33 +45,30 @@
             android:clickable="false"
             android:gravity="center_vertical"
             android:hapticFeedbackEnabled="true"
-            android:src="@drawable/ic_archive_email"
-            android:paddingLeft="24dp" />
+            android:paddingStart="24dp"
+            android:src="@drawable/ic_archive_email" />
 
     </LinearLayout>
 
     <!-- Bottom View End-->
 
     <!-- Surface View Start -->
-    <LinearLayout android:id="@+id/container_background"
-        android:padding="10dp"
+    <RelativeLayout
+        android:id="@+id/container_background"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        android:layout_height="wrap_content">
 
-            <include
-                android:id="@+id/message_read_container"
-                layout="@layout/message_list_item" />
+        <include
+            android:id="@+id/message_read_container"
+            layout="@layout/message_list_item"
+            tools:visibility="visible" />
 
-            <include
-                android:id="@+id/message_unread_container"
-                layout="@layout/unread_message_list_item"
-                android:visibility="gone" />
+        <include
+            android:id="@+id/message_unread_container"
+            layout="@layout/unread_message_list_item"
+            tools:visibility="gone" />
 
-        </FrameLayout>
         <!--What you want to show in SurfaceView-->
-    </LinearLayout>
+    </RelativeLayout>
     <!-- Surface View End -->
 </com.daimajia.swipe.SwipeLayout>

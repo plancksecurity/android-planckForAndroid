@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils.TruncateAt;
 import android.text.TextWatcher;
 import android.text.format.DateUtils;
@@ -21,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -69,6 +71,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import security.pEp.ui.resources.PEpResourcesProvider;
+import security.pEp.ui.resources.ResourcesProvider;
 import timber.log.Timber;
 
 import static com.fsck.k9.activity.MessageList.EXTRA_SEARCH_ACCOUNT;
@@ -110,6 +114,7 @@ public class FolderList extends K9ListActivity {
     private EditText searchInput;
     private View clearSearchIcon;
 
+    private ResourcesProvider resourcesProvider;
 
     private final K9JobManager jobManager = K9.jobManager;
 
@@ -264,6 +269,7 @@ public class FolderList extends K9ListActivity {
             return;
         }
 
+        resourcesProvider = new PEpResourcesProvider(this);
         actionBarProgressView = getActionBarProgressView();
         setContentView(R.layout.folder_list);
         initializeActionBar();
@@ -336,8 +342,13 @@ public class FolderList extends K9ListActivity {
         searchInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (searchInput!= null && !searchInput.getText().toString().isEmpty()) {
-                    search(searchInput.getText().toString());
+                if (actionId == EditorInfo.IME_ACTION_SEARCH || (event != null && event.getAction() == KeyEvent.ACTION_DOWN)) {
+                    if (searchInput != null && !searchInput.getText().toString().isEmpty()) {
+                        search(searchInput.getText().toString());
+                    }
+                    else {
+                        searchInput.setError(getString(R.string.search_empty_error));
+                    }
                 }
                 return true;
             }
@@ -346,9 +357,7 @@ public class FolderList extends K9ListActivity {
         clearSearchIcon.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchInput.setText(null);
                 hideSearchView();
-                KeyboardUtils.hideKeyboard(searchInput);
             }
         });
     }
@@ -369,15 +378,20 @@ public class FolderList extends K9ListActivity {
             if (searchLayout != null) {
                 getToolbar().setVisibility(View.GONE);
                 searchLayout.setVisibility(View.VISIBLE);
+                searchInput.setEnabled(true);
                 setFocusOnKeyboard();
+                searchInput.setError(null);
             }
         }
     }
 
     public void hideSearchView() {
         if (searchLayout != null) {
-            getToolbar().setVisibility(View.VISIBLE);
             searchLayout.setVisibility(View.GONE);
+            getToolbar().setVisibility(View.VISIBLE);
+            searchInput.setEnabled(false);
+            searchInput.setText(null);
+            KeyboardUtils.hideKeyboard(searchInput);
         }
     }
 
@@ -448,7 +462,7 @@ public class FolderList extends K9ListActivity {
      */
     @Override public void onResume() {
         super.onResume();
-
+        hideSearchView();
         if (!mAccount.isAvailable(this)) {
             Timber.i("account unavaliabale, not showing folder-list but account-list");
             SettingsActivity.Companion.listAccounts(this);
@@ -463,7 +477,6 @@ public class FolderList extends K9ListActivity {
         MessagingController.getInstance(getApplication()).addListener(mAdapter.mListener);
         //mAccount.refresh(Preferences.getPreferences(this));
         MessagingController.getInstance(getApplication()).getAccountStats(this, mAccount, mAdapter.mListener);
-
         onRefresh(!REFRESH_REMOTE);
 
         MessagingController.getInstance(getApplication()).cancelNotificationsForAccount(mAccount);
@@ -474,37 +487,37 @@ public class FolderList extends K9ListActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         //Shortcuts that work no matter what is selected
         switch (keyCode) {
-        case KeyEvent.KEYCODE_Q: {
-            onAccounts();
-            return true;
-        }
+            case KeyEvent.KEYCODE_Q: {
+                onAccounts();
+                return true;
+            }
 
-        case KeyEvent.KEYCODE_S: {
-            onEditSettings();
-            return true;
-        }
+            case KeyEvent.KEYCODE_S: {
+                onEditSettings();
+                return true;
+            }
 
-        case KeyEvent.KEYCODE_H: {
-            FeedbackTools.showLongFeedback(getListView(), getString(R.string.folder_list_help_key));
-            return true;
-        }
+            case KeyEvent.KEYCODE_H: {
+                FeedbackTools.showLongFeedback(getListView(), getString(R.string.folder_list_help_key));
+                return true;
+            }
 
-        case KeyEvent.KEYCODE_1: {
-            setDisplayMode(FolderMode.FIRST_CLASS);
-            return true;
-        }
-        case KeyEvent.KEYCODE_2: {
-            setDisplayMode(FolderMode.FIRST_AND_SECOND_CLASS);
-            return true;
-        }
-        case KeyEvent.KEYCODE_3: {
-            setDisplayMode(FolderMode.NOT_SECOND_CLASS);
-            return true;
-        }
-        case KeyEvent.KEYCODE_4: {
-            setDisplayMode(FolderMode.ALL);
-            return true;
-        }
+            case KeyEvent.KEYCODE_1: {
+                setDisplayMode(FolderMode.FIRST_CLASS);
+                return true;
+            }
+            case KeyEvent.KEYCODE_2: {
+                setDisplayMode(FolderMode.FIRST_AND_SECOND_CLASS);
+                return true;
+            }
+            case KeyEvent.KEYCODE_3: {
+                setDisplayMode(FolderMode.NOT_SECOND_CLASS);
+                return true;
+            }
+            case KeyEvent.KEYCODE_4: {
+                setDisplayMode(FolderMode.ALL);
+                return true;
+            }
         }//switch
 
 
@@ -533,8 +546,7 @@ public class FolderList extends K9ListActivity {
     }
 
     private void onAccounts() {
-        SettingsActivity.Companion.listAccounts(this);
-        finish();
+        SettingsActivity.launch(this);
     }
 
     private void onEmptyTrash(final Account account) {
@@ -678,12 +690,17 @@ public class FolderList extends K9ListActivity {
             }
         });
 
-        folderSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
+        folderMenuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                menu.findItem(R.id.search).setVisible(false);
+                return true;
+            }
 
             @Override
-            public boolean onClose() {
+            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
                 getToolbar().setTitle(R.string.folders_title);
-                return false;
+                return true;
             }
         });
     }
@@ -1097,8 +1114,6 @@ public class FolderList extends K9ListActivity {
                 holder.newMessageCount.setText(String.format("%d", folder.unreadMessageCount));
                 holder.newMessageCountWrapper.setOnClickListener(
                         createUnreadSearch(mAccount, folder));
-                holder.newMessageCountIcon.setBackgroundDrawable(
-                        mAccount.generateColorChip(false, false).drawable());
             } else {
                 holder.newMessageCountWrapper.setVisibility(View.GONE);
             }
@@ -1117,7 +1132,7 @@ public class FolderList extends K9ListActivity {
                 holder.flaggedMessageCountWrapper.setOnClickListener(
                         createFlaggedSearch(mAccount, folder));
                 holder.flaggedMessageCountWrapper.setVisibility(View.VISIBLE);
-                holder.flaggedMessageCountIcon.setBackgroundDrawable(getDrawable(R.drawable.ic_unread_toggle_star));
+                holder.flaggedMessageCountIcon.setBackgroundResource(resourcesProvider.getAttributeResource(R.attr.iconActionFlag));
             } else {
                 holder.flaggedMessageCountWrapper.setVisibility(View.GONE);
             }
@@ -1290,6 +1305,16 @@ public class FolderList extends K9ListActivity {
         @Override
         public void onClick(View v) {
             MessageList.actionDisplaySearch(FolderList.this, search, true, false, true);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(searchLayout != null && searchLayout.getVisibility() == View.VISIBLE) {
+            hideSearchView();
+        }
+        else {
+            super.onBackPressed();
         }
     }
 }

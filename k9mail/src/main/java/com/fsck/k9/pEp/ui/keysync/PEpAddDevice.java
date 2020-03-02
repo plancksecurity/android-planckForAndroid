@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
@@ -36,6 +38,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
+import security.pEp.ui.resources.ResourcesProvider;
+import timber.log.Timber;
 
 public class PEpAddDevice extends WizardActivity implements AddDeviceView {
 
@@ -65,6 +69,9 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
     RecyclerView identitiesList;
     @Bind(R.id.show_long_trustwords)
     ImageView showLongTrustwords;
+
+    @Inject
+    ResourcesProvider resourcesProvider;
 
     @Bind(R.id.fingerprintView) View fingerPrints;
     @Bind(R.id.partnerLabel) TextView partnerLabel;
@@ -110,10 +117,12 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
         setContentView(R.layout.pep_add_device);
         ButterKnife.bind(this);
         setUpToolbar(false);
-        getToolbar().setOverflowIcon(getResources().getDrawable(R.drawable.ic_language));
+
+        int resource = resourcesProvider.getAttributeResource(R.attr.iconLanguageGray);
+        getToolbar().setOverflowIcon(ContextCompat.getDrawable(this, resource));
         initPep();
 
-        if (getIntent() != null) {
+        if (intent != null) {
             explanationTextView.setText(intent.getStringExtra(EXPLANATION));
             if (intent.hasExtra(TRUSTWORDS)) {
                 tvTrustwords.setText(getIntent().getStringExtra(TRUSTWORDS));
@@ -124,6 +133,18 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
                 boolean isManualSync = intent.getBooleanExtra(MANUAL, false);
                 List<Account> accounts = Preferences.getPreferences(PEpAddDevice.this).getAccounts();
 
+                try {
+                    Timber.e("------------------------");
+                    Timber.e(getIntent().getStringExtra(TRUSTWORDS));
+                    Timber.e(myIdentity.fpr);
+                    Timber.e(partnerIdentity.fpr);
+                    //FeedbackTools.showLongFeedback(getRootView(), myIdentity.fpr + "::" + partnerIdentity.fpr);
+                    Timber.e("------------------------");
+                } catch (Exception ignored) {}
+
+                intent.removeExtra(TRUSTWORDS);
+                intent.removeExtra(MYSELF);
+                intent.removeExtra(PARTNER);
                 presenter.initialize(this, getpEp(), myIdentity, partnerIdentity, accounts, isManualSync, intent.getStringExtra(PEP_KEY_LIST));
             }
         }
@@ -169,10 +190,26 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
                 if (item.getTitle().equals(getString(R.string.pep_menu_long_trustwords))){
                     item.setTitle(R.string.pep_menu_short_trustwords);
                     changeTrustwordsLength(false);
+                    try {
+                        Timber.e("------------------------");
+                        Timber.e(getIntent().getStringExtra(TRUSTWORDS));
+                        Timber.e(myIdentity.fpr);
+                        Timber.e(partnerIdentity.fpr);
+                        //FeedbackTools.showLongFeedback(getRootView(), myIdentity.fpr + "::" + partnerIdentity.fpr);
+                        Timber.e("------------------------");
+                    } catch (Exception ignored) {}
                 }
                 else{
                     item.setTitle(getString(R.string.pep_menu_long_trustwords));
                     changeTrustwordsLength(true);
+                    try {
+                        Timber.e("------------------------");
+                        Timber.e(getIntent().getStringExtra(TRUSTWORDS));
+                        Timber.e(myIdentity.fpr);
+                        Timber.e(partnerIdentity.fpr);
+                        //FeedbackTools.showLongFeedback(getRootView(), myIdentity.fpr + "::" + partnerIdentity.fpr);
+                        Timber.e("------------------------");
+                    } catch (Exception ignored) {}
                 }
 
                 return true;
@@ -193,6 +230,14 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
     }
 
     private boolean changeTrustwordsLanguage(Integer languagePosition) {
+        try {
+            Timber.e("------------------------");
+            Timber.e(getIntent().getStringExtra(TRUSTWORDS));
+            Timber.e(myIdentity.fpr);
+            Timber.e(partnerIdentity.fpr);
+            //FeedbackTools.showLongFeedback(getRootView(), myIdentity.fpr + "::" + partnerIdentity.fpr);
+            Timber.e("------------------------");
+        } catch (Exception ignored) {}
         final CharSequence[] pEpLanguages = PEpUtils.getPEpLocales();
         String language = pEpLanguages[languagePosition].toString();
         changeTrustwords(language);

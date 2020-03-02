@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="intro_fragment_padding">24dp</dimen>
+
+    <dimen name="intro_contact_badge_width_height">52dp</dimen>
+
+    <dimen name="intro_margin_top_small">12dp</dimen>
+    <dimen name="intro_margin_top_standard">24dp</dimen>
+    <dimen name="intro_margin_top_large">48dp</dimen>
+    <dimen name="intro_margin_start_standard">12sp</dimen>
+    <dimen name="intro_margin_start_large">24sp</dimen>
+
+    <dimen name="intro_icon_width_height_standard">24dp</dimen>
+</resources>

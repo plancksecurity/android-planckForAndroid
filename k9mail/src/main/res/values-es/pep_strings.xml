@@ -135,9 +135,6 @@
     <string name="is_not_always_secure">Guardar sin protección en el servidor</string>
     <string name="master_key_management">Administración de la Clave Maestra</string>
     <string name="message_saving_error">Error guardando el mensaje</string>
-    <string name="intro_first_text">Automáticamente encripta y anonimiza tu e-mail</string>
-    <string name="intro_second_text">Previene la suplantación de identidad. Acaba con el spam y el phising.</string>
-    <string name="intro_third_text">Muestra la seguridad en tu comunicación usando los colores del semáforo.</string>
 
     <string name="action_continue">Continuar</string>
     <string name="battery_optimization_rationale_title">Desactivar la optimización de batería</string>

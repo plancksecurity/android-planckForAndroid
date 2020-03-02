@@ -3087,6 +3087,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                         // pEp the message to send...
                         Message encryptedMessage;
 //                        PEpUtils.dumpMimeMessage("beforeEncrypt", (MimeMessage) message);
+                        //If it is a pEpSyncMessage there is no need to encrypt it
                         if (message.isSet(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)
                                 || PEpUtils.ispEpDisabled(account, pEpProvider.getRating(message))) {
                             message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(Rating.pEpRatingUnencrypted));
@@ -4880,6 +4881,8 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
 
     @Override
     public void messageToSend(foundation.pEp.jniadapter.Message pEpMessage) {
+        Log.e("pEpEngine", "messageToSend from<>to: " + pEpMessage.getFrom().address + "<>" + pEpMessage.getTo().get(0).address);
+        Log.e("pEpEngine", "messageToSend ID from engine: " + pEpMessage.getId());
         threadPool.execute(() -> {
             try {
                 Account fromAccount = loadAddressAccount(pEpMessage.getFrom().address);
@@ -4903,14 +4906,22 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                 recipients.addAll(ccRecipients);
 
                 List<Account> accountsToAppend = getAccountsToAppend(recipients);
-                if (accountsToAppend != null) {
+               /* if (accountsToAppend != null) {
                     for (Account account : accountsToAppend) {
+                        Log.e("pEpEngine", "Start Append: " + message.getMessageId());
                         appendToInboxpEpSyncMessage(account, message);
+                        Log.e("pEpEngine", "Finish Append: " + message.getMessageId());
+
                     }
 
-                } else {
+                } else { */
+                    Log.e("pEpEngine", "Start SMTP send: " + message.getMessageId());
                     sendpEpSyncMessage(fromAccount, message);
-                }
+                    Log.e("pEpEngine", "Finish SMTP send: " + message.getMessageId());
+
+               // }
+
+                checkpEpSyncMailForAccount(fromAccount, null);
 
             } catch (pEpException | MessagingException e) {
                 Timber.e(e, "messageToSend: Cannot send message");

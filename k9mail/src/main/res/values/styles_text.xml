@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="LightBlackText">
+        <item name="android:textColor">@color/light_black</item>
+    </style>
+
+    <style name="GrayText">
+        <item name="android:textColor">@color/gray</item>
+    </style>
+
+    <style name="DarkGreyText">
+        <item name="android:textColor">@color/dark_gray</item>
+    </style>
+
+    <style name="PEpSecurityStatusTextView" parent="LightBlackText">
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/univers_lts_sd</item>
+    </style>
+
+    <style name="MediumComposeText" parent="LightBlackText">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="ComposeLabel" parent="@android:style/TextAppearance.Small">
+        <item name="android:textColor">@color/compose_gray</item>
+    </style>
+
+    <style name="ComposeLabelLarge" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">@color/compose_gray</item>
+    </style>
+
+    <style name="ComposeText" parent="@android:style/TextAppearance.Small">
+        <item name="android:textColorHint">@color/compose_gray</item>
+    </style>
+
+    <style name="ComposeTextLarge" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColorHint">@color/compose_gray</item>
+    </style>
+
+    <style name="ComposeEditTextLarge" parent="ComposeTextLarge">
+        <item name="background">@android:color/transparent</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:inputType">textMultiLine|textAutoCorrect|textCapSentences</item>
+    </style>
+
+    <style name="TitleMessageItemText" parent="LightBlackText">
+        <item name="android:clickable">false</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="SubTitleMessageItemText" parent="LightBlackText">
+        <item name="android:clickable">false</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TextMessageItemText" parent="GrayText">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:longClickable">false</item>
+        <item name="android:layout_marginTop">2dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="DateMessageItemText" parent="DarkGreyText">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:longClickable">false</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+
+</resources>
+

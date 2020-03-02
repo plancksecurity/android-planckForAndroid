@@ -2,6 +2,7 @@ package com.fsck.k9.pEp.ui.privacy.status;
 
 import android.content.Intent;
 import android.content.IntentSender;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
@@ -40,19 +41,26 @@ public class PEpStatusPresenter implements Presenter {
     private Rating currentRating;
     private Identity latestHandshakeId;
 
+    private static final String STATE_FORCE_UNENCRYPTED = "forceUnencrypted";
+    private static final String STATE_ALWAYS_SECURE = "alwaysSecure";
+
+    private boolean forceUnencrypted = false;
+    private boolean isAlwaysSecure = false;
+
     @Inject
     PEpStatusPresenter(SimpleMessageLoaderHelper simpleMessageLoaderHelper, PEpIdentityMapper pEpIdentityMapper) {
         this.simpleMessageLoaderHelper = simpleMessageLoaderHelper;
         this.pEpIdentityMapper = pEpIdentityMapper;
     }
 
-    void initilize(PEpStatusView pEpStatusView, PePUIArtefactCache uiCache, PEpProvider pEpProvider, boolean isMessageIncoming, Address senderAddress) {
+    void initilize(PEpStatusView pEpStatusView, PePUIArtefactCache uiCache, PEpProvider pEpProvider, boolean isMessageIncoming, Address senderAddress, boolean forceUnencrypted, boolean alwaysSecure) {
         this.view = pEpStatusView;
         this.cache = uiCache;
         this.pEpProvider = pEpProvider;
         this.isMessageIncoming = isMessageIncoming;
         this.senderAddress = senderAddress;
-        pEpIdentityMapper.initialize(pEpProvider);
+        this.forceUnencrypted = forceUnencrypted;
+        this.isAlwaysSecure = alwaysSecure;
     }
 
     void loadMessage(MessageReference messageReference) {
@@ -64,13 +72,13 @@ public class PEpStatusPresenter implements Presenter {
     void loadRecipients() {
         List<Identity> recipients = cache.getRecipients();
         identities = pEpIdentityMapper.mapRecipients(recipients);
-        view.setupRecipients(identities);
-    }
 
-    void resetRecipientTrust(int position) {
-        Identity id = identities.get(position);
-        resetTrust(id);
-
+        if(!identities.isEmpty()) {
+            view.setupRecipients(identities);
+        }
+        else {
+            view.showItsOnlyOwnMsg();
+        }
     }
 
     private void resetTrust(Identity id) {
@@ -132,7 +140,7 @@ public class PEpStatusPresenter implements Presenter {
     }
 
     @NonNull
-    private List<Address> getRecipientAddresses() {
+    List<Address> getRecipientAddresses() {
         List<Address> addresses = new ArrayList<>(identities.size());
         for (PEpIdentity identity : identities) {
             addresses.add(new Address(identity.address));
@@ -146,27 +154,18 @@ public class PEpStatusPresenter implements Presenter {
             localMessage.setpEpRating(rating);
         }
         view.setRating(rating);
-        view.setupBackIntent(rating);
+        view.setupBackIntent(rating,
+                forceUnencrypted, isAlwaysSecure);
     }
 
-    void loadRating(Rating rating) {
-        view.showPEpTexts(cache.getTitle(rating), cache.getSuggestion(rating));
-        if (rating == null) {
-            view.hideBadge();
-        } else {
-            view.showBadge(rating);
-        }
-    }
-
-    void onResult(Intent data) {
-        latestHandshakeId = ((Identity) data.getSerializableExtra(PEpTrustwords.PARTNER_DATA));
-        PEpProvider.TrustAction trustAction = ((PEpProvider.TrustAction) data.getSerializableExtra(PEpTrustwords.PARTNER_ACTION));
-
+    void onHandshakeResult(Identity id, boolean trust) {
+        latestHandshakeId = id;
         updateIdentities();
-
         refreshRating();
-
-        showUndoAction(trustAction);
+        if(trust) showUndoAction(PEpProvider.TrustAction.TRUST);
+        else {
+            view.showMistrustFeedback(latestHandshakeId.username);
+        }
     }
 
     private void updateIdentities() {
@@ -264,21 +263,50 @@ public class PEpStatusPresenter implements Presenter {
         };
     }
 
-    public void resetpEpData(int position) {
-
-        Identity id = identities.get(position);
-//            resetIncomingMessageTrust(id);
+    public void resetpEpData(Identity id) {
         pEpProvider.keyResetIdentity(id, null);
-        //Rating rating = pEpProvider.incomingMessageRating(localMessage);
         refreshRating();
-        //onTrustReset(currentRating, id);
+        onTrustReset(currentRating, id);
         view.showResetpEpDataFeedback();
-    //    view.finish();
     }
 
     public void undoTrust() {
         if (latestHandshakeId != null) {
             resetTrust(latestHandshakeId);
         }
+    }
+
+    public void saveInstanceState(Bundle outState) {
+        outState.putBoolean(STATE_FORCE_UNENCRYPTED, forceUnencrypted);
+        outState.putBoolean(STATE_ALWAYS_SECURE, isAlwaysSecure);
+    }
+
+    public void restoreInstanceState(Bundle savedInstanceState) {
+        if(savedInstanceState != null) {
+            forceUnencrypted = savedInstanceState.getBoolean(STATE_FORCE_UNENCRYPTED);
+            isAlwaysSecure = savedInstanceState.getBoolean(STATE_ALWAYS_SECURE);
+        }
+    }
+
+    public boolean isForceUnencrypted() {
+        return forceUnencrypted;
+    }
+
+    public void setForceUnencrypted(boolean forceUnencrypted) {
+        this.forceUnencrypted = forceUnencrypted;
+        view.updateToolbarColor(forceUnencrypted
+                ? Rating.getByInt(Rating.pEpRatingUnencrypted.value)
+                : currentRating
+        );
+        view.setupBackIntent(currentRating, forceUnencrypted, isAlwaysSecure);
+    }
+
+    public boolean isAlwaysSecure() {
+        return isAlwaysSecure;
+    }
+
+    public void setAlwaysSecure(boolean alwaysSecure) {
+        isAlwaysSecure = alwaysSecure;
+        view.setupBackIntent(currentRating, forceUnencrypted, alwaysSecure);
     }
 }

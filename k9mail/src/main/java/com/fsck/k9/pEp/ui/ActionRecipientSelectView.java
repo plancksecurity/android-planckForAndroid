@@ -2,13 +2,23 @@ package com.fsck.k9.pEp.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 
 import com.fsck.k9.view.RecipientSelectView;
 
+import org.jetbrains.annotations.NotNull;
+
+import security.pEp.ui.input.utils.InputConnectionProvider;
+import security.pEp.ui.input.utils.InputConnectionProviderImpl;
+
 public class ActionRecipientSelectView extends RecipientSelectView {
+
+    private InputConnectionProvider inputConnectionProvider;
 
     public interface OnCutCopyPasteListener {
         void onCut();
+
         void onCopy();
     }
 
@@ -20,14 +30,17 @@ public class ActionRecipientSelectView extends RecipientSelectView {
 
     public ActionRecipientSelectView(Context context) {
         super(context);
+        inputConnectionProvider = new InputConnectionProviderImpl(context);
     }
 
     public ActionRecipientSelectView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        inputConnectionProvider = new InputConnectionProviderImpl(context);
     }
 
     public ActionRecipientSelectView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        inputConnectionProvider = new InputConnectionProviderImpl(context);
     }
 
     /**
@@ -39,7 +52,7 @@ public class ActionRecipientSelectView extends RecipientSelectView {
     @Override
     public boolean onTextContextMenuItem(int id) {
         // React:
-        switch (id){
+        switch (id) {
             case android.R.id.cut:
                 onCut();
                 break;
@@ -55,13 +68,20 @@ public class ActionRecipientSelectView extends RecipientSelectView {
         return true;
     }
 
-    public void onCut(){
-        if(mOnCutCopyPasteListener!=null)
+    public void onCut() {
+        if (mOnCutCopyPasteListener != null)
             mOnCutCopyPasteListener.onCut();
     }
 
-    public void onCopy(){
-        if(mOnCutCopyPasteListener!=null)
+    public void onCopy() {
+        if (mOnCutCopyPasteListener != null)
             mOnCutCopyPasteListener.onCopy();
+    }
+
+
+    @Override
+    public InputConnection onCreateInputConnection(@NotNull EditorInfo editorInfo) {
+        InputConnection ic = super.onCreateInputConnection(editorInfo);
+        return inputConnectionProvider.provideInputConnection(ic, editorInfo);
     }
 }

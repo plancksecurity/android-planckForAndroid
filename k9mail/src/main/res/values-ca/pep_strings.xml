@@ -125,7 +125,6 @@
     <string name="is_not_always_secure">Desar sense protegir al servidor</string>
     <string name="master_key_management">Gestió de claus mestres</string>
     <string name="message_saving_error">S\'ha produït un error desant el missatge</string>
-    <string name="intro_first_text">Xifra i anonimitza els teus correus de forma automàtica</string>
     <string name="action_continue">Continuar</string>
     <string name="battery_optimization_rationale_title">Desactivar l\'optimitzaciò de bateria</string>
     <string name="battery_optimiazation_explanation">Per a sincronitzar els seus missatges en segon pla necessitem desactivar l\'optimització de bateria</string>

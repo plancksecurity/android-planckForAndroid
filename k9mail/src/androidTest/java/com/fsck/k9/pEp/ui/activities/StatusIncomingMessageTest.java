@@ -66,6 +66,7 @@ public class StatusIncomingMessageTest {
         assertIncomingTrustedPartnerMessageIsGreen();
     }
 
+    // TODO FIX TEST
     private void assertPartnerStatusIsTrusted() {
         testUtils.createAccount();
         testUtils.composeMessageButton();
@@ -77,7 +78,7 @@ public class StatusIncomingMessageTest {
         //testUtils.clickLastMessageReceived();
         testUtils.clickMessageStatus();
         testUtils.clickView(R.id.confirmTrustWords);
-        testUtils.clickView(R.id.tvPep);
+      //  testUtils.clickView(R.id.tvPep);
         testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
         device.waitForIdle();
         goBackToMessageList();
@@ -94,11 +95,12 @@ public class StatusIncomingMessageTest {
         }
     }
 
+    // TODO FIX TEST
     private void assertIncomingTrustedPartnerMessageIsGreen() {
         testUtils.composeMessageButton();
         fillMessage();
         device.waitForIdle();
-        onView(withId(R.id.pEp_indicator)).perform(click());
+     //   onView(withId(R.id.pEp_indicator)).perform(click());
         device.waitForIdle();
         testUtils.doWaitForResource(R.id.my_recycler_view);
         device.waitForIdle();

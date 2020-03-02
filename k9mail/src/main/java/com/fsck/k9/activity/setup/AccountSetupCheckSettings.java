@@ -34,6 +34,7 @@ import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.TransportProvider;
 import com.fsck.k9.mail.filter.Hex;
 import com.fsck.k9.mail.store.webdav.WebDavStore;
+import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpCertificateException;
 import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpSetupException;
 
@@ -46,6 +47,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
+import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
 /**
@@ -55,7 +59,7 @@ import timber.log.Timber;
  * XXX NOTE: The manifest for this app has it ignore config changes, because
  * it doesn't correctly deal with restarting while its thread is running.
  */
-public class AccountSetupCheckSettings extends K9Activity implements OnClickListener,
+public class AccountSetupCheckSettings extends PepActivity implements OnClickListener,
         ConfirmationDialogFragmentListener{
 
     public static final int ACTIVITY_REQUEST_CODE = 1;
@@ -83,6 +87,9 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
 
     private boolean mDestroyed;
 
+    @Inject
+    ToolBarCustomizer toolBarCustomizer;
+
     public static void actionCheckSettings(Activity context, Account account,
             CheckDirection direction) {
         Intent i = new Intent(context, AccountSetupCheckSettings.class);
@@ -96,7 +103,7 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
         super.onCreate(savedInstanceState);
         bindViews(R.layout.account_setup_check_settings);
         initializeToolbar(true, R.string.account_setup_check_settings_title);
-        setStatusBarPepColor(getResources().getColor(R.color.white));
+        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.white));
         mMessageView = (TextView)findViewById(R.id.message);
         mProgressBar = (ProgressBar)findViewById(R.id.progress);
         findViewById(R.id.cancel).setOnClickListener(this);
@@ -138,6 +145,11 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
     @Override
     public void search(String query) {
 
+    }
+
+    @Override
+    public void inject() {
+        getpEpComponent().inject(this);
     }
 
     @Override

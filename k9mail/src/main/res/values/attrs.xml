@@ -19,7 +19,9 @@
         <attr name="iconActionSearchFolder" format="reference" />
         <attr name="iconActionSend" format="reference" />
         <attr name="iconActionSettings" format="reference" />
+        <attr name="iconActionReply" format="reference" />
         <attr name="iconActionSingleMessageOptions" format="reference" />
+        <attr name="iconActionForward" format="reference" />
         <attr name="iconActionSort" format="reference" />
         <attr name="iconActionSpam" format="reference" />
         <attr name="iconActionFlag" format="reference" />
@@ -66,9 +68,14 @@
         <attr name="tintColorBulletPointNeutral" format="reference|color"/>
         <attr name="tintColorBulletPointNegative" format="reference|color"/>
         <attr name="iconpEpShield" format="reference"/>
+        <attr name="iconLanguage" format="reference"/>
+        <attr name="iconLanguageGray" format="reference"/>
 
         <attr name="iconpEpDeviceGroup" format="reference"/>
         <attr name="iconAdavancedSettings" format="reference"/>
+        <attr name="iconFlagButton" format="reference"/>
+        <attr name="iconFlagButtonGreen" format="reference"/>
+        <attr name="iconFlagButtonOpaque" format="reference"/>
 
         <attr name="openpgp_black" format="reference|color" />
         <attr name="openpgp_orange" format="reference|color" />

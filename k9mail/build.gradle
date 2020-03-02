@@ -66,7 +66,7 @@ dependencies {
     implementation "com.jakewharton:butterknife:${versions.butterKnife}"
     implementation "com.github.pedrovgs:renderers:${versions.renderers}"
     implementation "com.github.bumptech.glide:glide:${versions.glide}"
-    implementation "com.github.paolorotolo:appintro:${versions.appIntro}"
+    implementation "com.github.AppIntro:AppIntro:${versions.appIntro}"
     implementation "com.daimajia.swipelayout:library:${versions.swipeLayout}@aar"
     implementation "com.karumi:dexter:${versions.dexter}"
     implementation "ch.acra:acra:${versions.acra}"
@@ -102,17 +102,22 @@ dependencies {
     androidTestImplementation ("androidx.test.espresso:espresso-core:${versions.espresso}") {
         exclude module: 'support-annotations'
     }
+    // androidTestImplementation "androidx.test.uiautomator:uiautomator:${versions.uiAutomator}"
 
     testImplementation "org.robolectric:robolectric:${versions.robolectric}"
     testImplementation "junit:junit:${versions.junit}"
     testImplementation "org.mockito:mockito-core:${versions.mockito}"
+    testImplementation "org.mockito:mockito-inline:${versions.mockito}"
+    testImplementation "com.nhaarman:mockito-kotlin:${versions.mockitoKotlin}"
     testImplementation "org.jdom:jdom2:${versions.jdom}"
 
     implementation "androidx.test.espresso:espresso-idling-resource:${versions.espresso}"
+
     androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:${versions.espresso}"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:${versions.espresso}"
     testImplementation "androidx.test:core:${versions.androidX}"
     testImplementation "androidx.test.ext:junit:${versions.androidX}"
+    androidTestImplementation "androidx.test.ext:junit:${versions.androidX}"
     testImplementation "androidx.test:rules:${versions.runner_rules}"
     testImplementation "androidx.test:runner:${versions.runner_rules}"
 
@@ -120,8 +125,6 @@ dependencies {
     testImplementation "org.robolectric:robolectric:${versions.robolectric}"
     testImplementation "junit:junit:${versions.junit}"
     testImplementation "com.google.truth:truth:${versions.truth}"
-    testImplementation "org.mockito:mockito-core:${versions.mockito}"
-    testImplementation "com.nhaarman:mockito-kotlin:${versions.mockitoKotlin}"
     testImplementation "org.jdom:jdom2:2.0.6"
     testImplementation "org.koin:koin-test:${versions.koin}"
     testImplementation "org.robolectric:shadows-multidex:${versions.robolectric}"
@@ -164,7 +167,7 @@ android {
         setProperty("archivesBaseName", "$buildConfig.versionName-$versionCode")
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]
 
-       //        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testApplicationId "com.fsck.k9.pEp.ui.activities.test"
         testInstrumentationRunner "com.fsck.k9.pEp.ui.activities.test.CucumberTestCase"
 

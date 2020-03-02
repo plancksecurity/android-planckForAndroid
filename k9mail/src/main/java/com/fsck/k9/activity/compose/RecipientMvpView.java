@@ -1,11 +1,7 @@
 package com.fsck.k9.activity.compose;
 
 
-import java.util.Arrays;
-import java.util.List;
-
 import android.app.PendingIntent;
-import androidx.loader.app.LoaderManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -16,8 +12,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
-import android.widget.TextView;
 import android.widget.ViewAnimator;
+
+import androidx.loader.app.LoaderManager;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.FontSizes;
@@ -31,15 +28,17 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.ActionRecipientSelectView;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
-import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.RecipientSelectView.TokenListener;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
-
-import java.util.ArrayList;
+import security.pEp.ui.message_compose.ComposeAccountRecipient;
 
 
 public class RecipientMvpView implements OnFocusChangeListener, OnClickListener {
@@ -69,7 +68,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     private final ActionRecipientSelectView toView;
     private final ActionRecipientSelectView ccView;
     private final ActionRecipientSelectView bccView;
-    private final TextView fromView;
+    private final ComposeAccountRecipient fromView;
     private final ViewAnimator cryptoStatusView;
     private final ViewAnimator recipientExpanderContainer;
     private final Account mAccount;
@@ -86,7 +85,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     public RecipientMvpView(MessageCompose activity) {
         this.activity = activity;
         this.mAccount = activity.getAccount();
-        fromView = (TextView) activity.findViewById(R.id.identity);
+        fromView =  activity.findViewById(R.id.identity);
         toView = (ActionRecipientSelectView) activity.findViewById(R.id.to);
         ccView = (ActionRecipientSelectView) activity.findViewById(R.id.cc);
         bccView = (ActionRecipientSelectView) activity.findViewById(R.id.bcc);
@@ -492,33 +491,25 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     public void setpEpRating(Rating pEpRating) {
         this.pEpRating = pEpRating;
     }
+
     public Rating getpEpRating() {
         return pEpRating;
     }
+
     public void handlepEpState(boolean... withToast) {
         if (mAccount.ispEpPrivacyProtected()) {
             boolean reallyWithToast = true;
-            if(withToast.length>0) reallyWithToast = withToast[0];
+            if (withToast.length > 0) reallyWithToast = withToast[0];
             updatePePState();
-            PEpUtils.colorToolbar(pEpUiCache, activity.getToolbar(), pEpRating);
-
-            if(pEpIndicator!=null) {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    pEpIndicator.setIcon(pEpUiCache.getIcon());
-                }
-            });
+            if (pEpIndicator != null) {
+                new Handler(Looper.getMainLooper()).post(() -> pEpIndicator.setIcon(pEpUiCache.getIcon()));
                 String msg = pEpUiCache.getTitle(pEpRating);
             }
-        } else {
-            PEpUtils.colorToolbar(pEpUiCache, activity.getToolbar(), Rating.pEpRatingUndefined);
+            activity.setToolbarRating(pEpRating);
         }
-        activity.setStatusBarPepColor(pEpRating);
-
     }
 
-     void updatePePState() {
+    private void updatePePState() {
         presenter.updatepEpState();
     }
 
@@ -526,17 +517,19 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         this.pEpIndicator = pEpIndicator;
     }
 
-    public void onPepIndicator() {
+    public void refreshRecipients() {
         ArrayList<Identity> recipients = new ArrayList<>();
-        // update color, just to be sure...
         recipients.addAll(PEpUtils.createIdentities(getToAddresses(), activity.getApplicationContext()));
         recipients.addAll(PEpUtils.createIdentities(getCcAddresses(), activity.getApplicationContext()));
         recipients.addAll(PEpUtils.createIdentities(getBccAddresses(), activity.getApplicationContext()));
-
-//        mIgnoreOnPause = true;  // do *not* save state
         pEpUiCache.setRecipients(mAccount, recipients);
+    }
 
-        PEpStatus.actionShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom());
+        void onPEpPrivacyStatus() {
+            PendingIntent pendingIntent = PEpStatus.pendingIntentShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom(), presenter.isForceUnencrypted(), presenter.isAlwaysSecure());
+            launchUserInteractionPendingIntent(pendingIntent, PEpStatus.REQUEST_STATUS);
+
+        //FIXME P4A-934: "Caused by: android.os.TransactionTooLargeException: data parcel size 1064328 bytes", not always reproducible.
     }
 
     public void setMessageReference(MessageReference reference) {
@@ -610,7 +603,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     }
 
     public String getFrom() {
-        return fromView.getText().toString();
+        return fromView.getText();
     }
 
     public enum CryptoSpecialModeDisplayType {

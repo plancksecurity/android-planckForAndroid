@@ -16,13 +16,12 @@ import android.view.ContextMenu.ContextMenuInfo
 import android.view.View.OnClickListener
 import android.widget.*
 import android.widget.AdapterView.AdapterContextMenuInfo
-import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import com.fsck.k9.*
 import com.fsck.k9.activity.misc.NonConfigurationInstance
 import com.fsck.k9.activity.setup.AccountSetupBasics
-import com.fsck.k9.activity.setup.WelcomeMessage
+import security.pEp.ui.intro.WelcomeMessage
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.helper.SizeFormatter
 import com.fsck.k9.mailstore.LocalFolder
@@ -51,6 +50,8 @@ import kotlinx.android.synthetic.main.accounts.*
 import kotlinx.coroutines.*
 import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
+import security.pEp.ui.resources.ResourcesProvider
+import security.pEp.ui.intro.startWelcomeMessage
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -94,6 +95,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     lateinit var permissionRequester: PermissionRequester
     @Inject
     lateinit var permissionChecker: PermissionChecker
+    @Inject
+    lateinit var resourcesProvider: ResourcesProvider
 
     private val storageListener = object : StorageManager.StorageListener {
 
@@ -202,7 +205,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         if (ACTION_IMPORT_SETTINGS == intent.action) {
             onSettingsImport()
         } else if (accounts.size < 1) {
-            WelcomeMessage.showWelcomeMessage(this)
+
+            startWelcomeMessage()
             finish()
             return
         }
@@ -353,11 +357,10 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         accounts.clear()
         accounts.addAll(Preferences.getPreferences(this).accounts)
 
-        // see if we should show the welcome message
-        //        if (accounts.length < 1) {
-        //            WelcomeMessage.showWelcomeMessage(this);
-        //            finish();
-        //        }
+        if (accounts.size < 1) {
+            AccountSetupBasics.actionNewAccount(this)
+            finishAffinity()
+        }
 
         val newAccounts: MutableList<BaseAccount>
         if (!K9.isHideSpecialAccounts() && accounts.size > 0) {
@@ -910,13 +913,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 holder.newMessageCountWrapper!!.visibility = View.GONE
                 holder.flaggedMessageCountWrapper!!.visibility = View.GONE
             }
-            if (account is Account) {
-                val realAccount = account
-                holder.flaggedMessageCountIcon!!.setBackgroundDrawable(ContextCompat.getDrawable(this@SettingsActivity, R.drawable.ic_unread_toggle_star))
-            } else {
-                holder.flaggedMessageCountIcon!!.setBackgroundDrawable(ContextCompat.getDrawable(this@SettingsActivity,
-                        R.drawable.ic_unread_toggle_star))
-            }
+
+            holder.flaggedMessageCountIcon!!.setBackgroundResource(resourcesProvider.getAttributeResource(R.attr.iconFlagButton));
 
 
             fontSizes.setViewTextSize(holder.description, fontSizes.accountName)

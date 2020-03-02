@@ -5,17 +5,20 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.MenuItem
-
+import androidx.core.content.ContextCompat
 import com.fsck.k9.R
 import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.PepActivity
-
-import java.util.Calendar
-
 import kotlinx.android.synthetic.main.activity_about.*
+import security.pEp.ui.toolbar.ToolBarCustomizer
+import java.util.*
+import javax.inject.Inject
 
 
 class AboutActivity : PepActivity() {
+
+    @Inject
+    lateinit var toolbarCustomizer: ToolBarCustomizer
 
     private//Log.e(TAG, "Package name not found", e);
     val versionNumber: String
@@ -34,7 +37,8 @@ class AboutActivity : PepActivity() {
         super.onCreate(savedInstanceState)
         bindViews(R.layout.activity_about)
         setUpToolbar(true)
-        PEpUtils.colorToolbar(toolbar, resources.getColor(R.color.pep_green))
+
+        toolbarCustomizer.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary))
         val about = getString(R.string.about_action) + " " + getString(R.string.app_name)
         initializeToolbar(true, about)
         onAbout()

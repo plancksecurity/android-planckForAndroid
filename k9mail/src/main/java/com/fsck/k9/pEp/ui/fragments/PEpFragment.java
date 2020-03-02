@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.loader.app.LoaderManager;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
@@ -38,7 +39,7 @@ public abstract class PEpFragment extends Fragment {
         applicationComponent.inject(this);
         pEpComponent = DaggerPEpComponent.builder()
                 .applicationComponent(applicationComponent)
-                .pEpModule(new PEpModule(getActivity(), getLoaderManager(), getFragmentManager()))
+                .pEpModule(new PEpModule(getActivity(), LoaderManager.getInstance(this), getFragmentManager()))
                 .activityModule(new ActivityModule(getActivity()))
                 .build();
     }

@@ -43,6 +43,7 @@ import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.Poller;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
@@ -318,7 +319,7 @@ public class K9 extends MultiDexApplication {
     private static SortType mSortType;
     private static Map<SortType, Boolean> mSortAscending = new HashMap<SortType, Boolean>();
 
-    private static boolean sUseBackgroundAsUnreadIndicator = true;
+    private static boolean sUseBackgroundAsUnreadIndicator = false;
     private static boolean sThreadedViewEnabled = true;
     private static SplitViewMode sSplitViewMode = SplitViewMode.NEVER;
     private static boolean sColorizeMissingContactPictures = DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE;
@@ -743,6 +744,11 @@ public class K9 extends MultiDexApplication {
             }
 
         });
+
+        pEpSyncProvider = PEpProviderFactory.createAndSetupProvider(this);
+        for (Account account : prefs.getAccounts()) {
+            pEpSyncProvider.myself(PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), this));
+        }
         pEpInitSyncEnvironment();
         setupFastPoller();
 
@@ -773,6 +779,8 @@ public class K9 extends MultiDexApplication {
             if (pEpSyncEnabled) {
                 initSync();
             }
+        } else {
+            Log.e("pEpEngine-app", "There is no accounts set up, not trying to start sync");
         }
     }
 
@@ -782,7 +790,6 @@ public class K9 extends MultiDexApplication {
     }
 
     private void initSync() {
-        pEpSyncProvider = PEpProviderFactory.createAndSetupProvider(this);
 
         pEpSyncProvider.setSyncHandshakeCallback(notifyHandshakeCallback);
 
@@ -800,7 +807,9 @@ public class K9 extends MultiDexApplication {
             }
         });
 //        if (Preferences.getPreferences(this).getAccounts().size() > 0) {
-        pEpSyncProvider.startSync();
+        if (!pEpSyncProvider.isSyncRunning())  {
+            pEpSyncProvider.startSync();
+        }
 //        }
     }
 
@@ -812,13 +821,7 @@ public class K9 extends MultiDexApplication {
         Context context = K9.this.getApplicationContext();
         Intent syncTrustowordsActivity = PEpAddDevice.getActionRequestHandshake(context, trust, myself, partner, explanation, false);
         syncTrustowordsActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 22, syncTrustowordsActivity, 0);
-        try {
-            pendingIntent.send();
-        } catch (PendingIntent.CanceledException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        startActivity(syncTrustowordsActivity);
     }
 
     private void pEpSetupUiEngineSession() {
@@ -967,7 +970,7 @@ public class K9 extends MultiDexApplication {
 
         mAttachmentDefaultPath = storage.getString("attachmentdefaultpath",
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString());
-        sUseBackgroundAsUnreadIndicator = storage.getBoolean("useBackgroundAsUnreadIndicator", true);
+        sUseBackgroundAsUnreadIndicator = storage.getBoolean("useBackgroundAsUnreadIndicator", false);
         sThreadedViewEnabled = storage.getBoolean("threadedView", true);
         fontSizes.load(storage);
 
@@ -1666,6 +1669,7 @@ public class K9 extends MultiDexApplication {
             if (activityCount == 0) {
 //                if (activity instanceof K9Activity) pEpSyncProvider.setSyncHandshakeCallback((Sync.showHandshakeCallback) activity);
                 pEpProvider = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
+                pEpInitSyncEnvironment();
             }
             ++activityCount;
         }
@@ -1699,6 +1703,7 @@ public class K9 extends MultiDexApplication {
         public void onActivityDestroyed(Activity activity) {
             --activityCount;
             if (activityCount == 0) {
+                pEpSyncProvider.stopSync();
                 pEpProvider.close();
                 pEpProvider = null;
             }
@@ -1866,6 +1871,7 @@ public class K9 extends MultiDexApplication {
                     new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_LONG).show());
                     break;
                 case SyncNotifySole:
+                    needsFastPoll = false;
                     grouped = false;
                     break;
                 case SyncNotifyInGroup:
@@ -1887,7 +1893,7 @@ public class K9 extends MultiDexApplication {
         this.grouped = value;
     }
 
-    public boolean getGrouped() {
+    public boolean isGrouped() {
         return this.grouped;
     }
 

@@ -77,6 +77,7 @@ import javax.inject.Inject;
 import butterknife.OnTextChanged;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
+import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -128,6 +129,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
     PermissionChecker permissionChecker;
     @Inject
     PermissionRequester permissionRequester;
+    @Inject
+    ToolBarCustomizer toolBarCustomizer;
 
     @Nullable
     @Override
@@ -169,8 +172,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void setupToolbar() {
-        ((AccountSetupBasics) getActivity()).initializeToolbar(true, R.string.account_setup_basics_title);
-        ((AccountSetupBasics) getActivity()).setStatusBarPepColor(getResources().getColor(R.color.pep_green));
+        ((AccountSetupBasics) getActivity()).initializeToolbar(!getActivity().isTaskRoot(), R.string.account_setup_basics_title);
+        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.colorPrimary));
     }
 
     private void initializeViewListeners() {
@@ -529,7 +532,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
                             accountSetupNavigator.createGmailAccount(getActivity());
                         }
                     })
-                    .setNegativeButton(getResources().getString(R.string.skip_button), new DialogInterface.OnClickListener() {
+                    .setNegativeButton(getResources().getString(R.string.app_intro_skip_button), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             setup(email);

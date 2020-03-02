@@ -10,11 +10,12 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Menu;
+import android.view.MenuItem;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.loader.app.LoaderManager;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Identity;
@@ -37,21 +38,23 @@ import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.Poller;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
+
 import org.openintents.openpgp.OpenPgpApiManager;
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpApiManagerCallback;
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderError;
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderState;
-
-import org.openintents.openpgp.IOpenPgpService2;
 import org.openintents.openpgp.util.OpenPgpServiceConnection;
-
-import foundation.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
+
+import static com.fsck.k9.pEp.ui.PepColoredActivity.CURRENT_RATING;
+import static com.fsck.k9.pEp.ui.privacy.status.PEpStatus.REQUEST_STATUS;
 
 
 public class RecipientPresenter {
@@ -321,8 +324,6 @@ public class RecipientPresenter {
             menu.findItem(R.id.add_from_contacts).setVisible(false);
         }
 
-        menu.findItem(R.id.pEp_indicator).setVisible(account.ispEpPrivacyProtected());
-        menu.findItem(R.id.force_unencrypted).setVisible(account.ispEpPrivacyProtected());
 
     }
 
@@ -559,6 +560,9 @@ public class RecipientPresenter {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
+            case REQUEST_STATUS:
+                handlepEpDataIfNeeded(requestCode, data, resultCode);
+                break;
             case CONTACT_PICKER_TO:
             case CONTACT_PICKER_CC:
             case CONTACT_PICKER_BCC:
@@ -571,6 +575,19 @@ public class RecipientPresenter {
             case OPENPGP_USER_INTERACTION:
                 openPgpApiManager.onUserInteractionResult();
                 break;
+        }
+    }
+
+    private void handlepEpDataIfNeeded(int requestCode, Intent data, int resultCode) {
+        if (requestCode == REQUEST_STATUS && resultCode == Activity.RESULT_OK && data.hasExtra(CURRENT_RATING)) {
+            boolean forceUncrypted = data.getBooleanExtra(STATE_FORCE_UNENCRYPTED, this.forceUnencrypted);
+            boolean alwaysSecure = data.getBooleanExtra(STATE_ALWAYS_SECURE, this.isAlwaysSecure);
+            if (forceUncrypted != this.forceUnencrypted) {
+                switchPrivacyProtection(PEpProvider.ProtectionScope.MESSAGE);
+            }
+            if (alwaysSecure != this.isAlwaysSecure) {
+                setAlwaysSecure(alwaysSecure);
+            }
         }
     }
 
@@ -798,8 +815,8 @@ public class RecipientPresenter {
         poller.stopPolling();
     }
 
-    public void onPepIndicator() {
-        recipientMvpView.onPepIndicator();
+    public void onPEpPrivacyStatus() {
+        recipientMvpView.onPEpPrivacyStatus();
     }
 
 
@@ -833,6 +850,11 @@ public class RecipientPresenter {
     public boolean shouldSaveRemotely() {
         // TODO more appropriate logic?
         return cachedCryptoStatus == null || !cachedCryptoStatus.isEncryptionEnabled();
+    }
+
+    public boolean isPepStatusClickable() {
+        return recipientMvpView.pEpUiCache.getRecipients().size() > 0 &&
+                recipientMvpView.getpEpRating().value >= Rating.pEpRatingReliable.value;
     }
 
     public interface RecipientsChangedListener {
@@ -874,53 +896,49 @@ public class RecipientPresenter {
     }
 
     private void loadPEpStatus() {
-        if (forceUnencrypted) {
-            showRatingFeedback(Rating.pEpRatingUnencrypted);
-        } else {
-            Address fromAddress = recipientMvpView.getFromAddress();
-            List<Address> newToAdresses = recipientMvpView.getToAddresses();
-            List<Address> newCcAdresses = recipientMvpView.getCcAddresses();
-            List<Address> newBccAdresses = recipientMvpView.getBccAddresses();
-            toAdresses = initializeAdresses(toAdresses);
-            ccAdresses = initializeAdresses(ccAdresses);
-            bccAdresses = initializeAdresses(bccAdresses);
-            if(privacyState.value != Rating.pEpRatingUndefined.value && newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty()) {
-                showDefaultStatus();
-                recipientMvpView.unlockSendButton();
-                return;
-            }
-            if (fromAddress != null
-                    && (dirty
-                    || addressesChanged(toAdresses, newToAdresses)
-                    || addressesChanged(ccAdresses, newCcAdresses)
-                    || addressesChanged(bccAdresses, newBccAdresses))) {
-                dirty = false;
-                toAdresses = newToAdresses;
-                ccAdresses = newCcAdresses;
-                bccAdresses = newBccAdresses;
-                recipientMvpView.lockSendButton();
-                pEp = ((K9) context.getApplicationContext()).getpEpProvider();
-                pEp.getRating(fromAddress, toAdresses, ccAdresses, bccAdresses, new PEpProvider.ResultCallback<Rating>() {
-                    @Override
-                    public void onLoaded(Rating rating) {
-                        if(newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty()) {
-                            showDefaultStatus();
-                        } else {
-                            privacyState = rating;
-                            showRatingFeedback(rating);
-                        }
-                        recipientMvpView.unlockSendButton();
-                    }
-
-                    @Override
-                    public void onError(Throwable throwable) {
-                        showDefaultStatus();
-                        recipientMvpView.unlockSendButton();
-                    }
-                });
-            }
+        Address fromAddress = recipientMvpView.getFromAddress();
+        List<Address> newToAdresses = recipientMvpView.getToAddresses();
+        List<Address> newCcAdresses = recipientMvpView.getCcAddresses();
+        List<Address> newBccAdresses = recipientMvpView.getBccAddresses();
+        toAdresses = initializeAdresses(toAdresses);
+        ccAdresses = initializeAdresses(ccAdresses);
+        bccAdresses = initializeAdresses(bccAdresses);
+        if (privacyState.value != Rating.pEpRatingUndefined.value && newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty()) {
+            showDefaultStatus();
             recipientMvpView.unlockSendButton();
+            return;
         }
+        if (fromAddress != null
+                && (dirty
+                || addressesChanged(toAdresses, newToAdresses)
+                || addressesChanged(ccAdresses, newCcAdresses)
+                || addressesChanged(bccAdresses, newBccAdresses))) {
+            dirty = false;
+            toAdresses = newToAdresses;
+            ccAdresses = newCcAdresses;
+            bccAdresses = newBccAdresses;
+            recipientMvpView.lockSendButton();
+            pEp = ((K9) context.getApplicationContext()).getpEpProvider();
+            pEp.getRating(fromAddress, toAdresses, ccAdresses, bccAdresses, new PEpProvider.ResultCallback<Rating>() {
+                @Override
+                public void onLoaded(Rating rating) {
+                    if (newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty()) {
+                        showDefaultStatus();
+                    } else {
+                        privacyState = rating;
+                        showRatingFeedback(rating);
+                    }
+                    recipientMvpView.unlockSendButton();
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                    showDefaultStatus();
+                    recipientMvpView.unlockSendButton();
+                }
+            });
+        }
+        recipientMvpView.unlockSendButton();
     }
 
     private void showDefaultStatus() {
