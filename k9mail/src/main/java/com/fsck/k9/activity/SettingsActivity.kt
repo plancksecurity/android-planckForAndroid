@@ -1101,12 +1101,14 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     override fun onBackPressed() {
         if(currentAccountDeleted) {
             if (K9.startIntegratedInbox() && !K9.isHideSpecialAccounts()) {
-                if(onOpenAccount(unifiedInboxAccount)) finish()
+                if(onOpenAccount(unifiedInboxAccount)) {
+                    currentAccountDeleted = false
+                    finish()
+                }
             } else if (onOpenAccount(Preferences.getPreferences(this@SettingsActivity).defaultAccount)) {
+                currentAccountDeleted = false
                 finish()
             }
-            currentAccountDeleted = false
-            finish()
         }
         else {
             super.onBackPressed()
