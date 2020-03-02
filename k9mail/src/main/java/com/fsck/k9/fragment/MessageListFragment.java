@@ -516,12 +516,16 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
     public void destroyAllLoadersIfNeeded() {
         if(anyAccountWasDeleted()) {
-            LoaderManager manager = LoaderManager.getInstance(this);
-            for (int i = 0, len = accountUuids.length; i < len; i++) {
-                manager.destroyLoader(i);
-            }
-            loadersDestroyed = true;
+            destroyLoaders();
         }
+    }
+
+    private void destroyLoaders() {
+        LoaderManager manager = LoaderManager.getInstance(this);
+        for (int i = 0, len = accountUuids.length; i < len; i++) {
+            manager.destroyLoader(i);
+        }
+        loadersDestroyed = true;
     }
 
     private boolean anyAccountWasDeleted() {
