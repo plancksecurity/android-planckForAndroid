@@ -586,16 +586,16 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                     // are currently not inserted to be left
                 }
 
-                if(K9.startIntegratedInbox() ||
-                        Preferences.getPreferences(this@SettingsActivity).accounts.indexOf(realAccount) == 0) {
-                    currentAccountDeleted = true
-                }
-
                 MessagingController.getInstance(application)
                         .deleteAccount(realAccount)
                 Preferences.getPreferences(this@SettingsActivity)
                         .deleteAccount(realAccount)
                 K9.setServicesEnabled(this@SettingsActivity)
+
+                if(K9.startIntegratedInbox() ||
+                        Preferences.getPreferences(this@SettingsActivity).accounts.indexOf(realAccount) == 0) {
+                    currentAccountDeleted = true
+                }
                 refresh()
 
             }
