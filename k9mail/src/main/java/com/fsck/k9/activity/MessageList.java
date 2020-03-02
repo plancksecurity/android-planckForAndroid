@@ -404,12 +404,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         accountsDrawerLayout = findViewById(R.id.navigation_bar_accounts_layout);
     }
 
-    /*@Override
-    protected void onRestart() {
-        super.onRestart();
-        mMessageListFragment.destroyAllLoadersIfNeeded();
-    }*/
-
     @Override
     public void search(String query) {
         if (mAccount != null && query != null) {
@@ -1148,7 +1142,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         displayViews();
 
         channelUtils.updateChannels();
-        if (mAccount != null && mAccount.ispEpPrivacyProtected()) initializePepStatus();
         toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, getToolbar(), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.setDrawerListener(toggle);
