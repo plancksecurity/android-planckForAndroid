@@ -422,6 +422,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     public void search(String query) {
         if (mAccount != null && query != null) {
             final Bundle appData = new Bundle();
+            if(isUnifiedInbox(mSearch)) specialAccountUuid = SearchAccount.UNIFIED_INBOX;
             if(specialAccountUuid != null) {
                 appData.putString(EXTRA_SEARCH_ACCOUNT, specialAccountUuid);
             }
