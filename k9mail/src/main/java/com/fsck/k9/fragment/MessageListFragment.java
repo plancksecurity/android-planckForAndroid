@@ -136,7 +136,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     private FloatingActionButton fab;
     private ProgressBar loadingView;
     private Rating worstThreadRating;
-    private boolean loadersDestroyed;
 
     public static MessageListFragment newInstance(LocalSearch search, boolean isThreadDisplay, boolean threadedList) {
         MessageListFragment fragment = new MessageListFragment();
@@ -254,7 +253,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     private Context context;
     private final ActivityListener activityListener = new MessageListActivityListener();
     private Preferences preferences;
-    private boolean loaderJustInitialized;
+    private boolean loaderJustInitializedForTheFirstTime;
     MessageReference activeMessage;
     /**
      * {@code true} after {@link #onCreate(Bundle)} was executed. Used in {@link #updateTitle()} to
@@ -514,18 +513,11 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         getpEpComponent().inject(this);
     }
 
-    public void destroyAllLoadersIfNeeded() {
-        if(anyAccountWasDeleted()) {
-            destroyLoaders();
-        }
-    }
-
     private void destroyLoaders() {
         LoaderManager manager = LoaderManager.getInstance(this);
         for (int i = 0, len = accountUuids.length; i < len; i++) {
             manager.destroyLoader(i);
         }
-        loadersDestroyed = true;
     }
 
     private boolean anyAccountWasDeleted() {
@@ -574,11 +566,11 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
         // This needs to be done before initializing the cursor loader below
         initializeSortSettings();
+        loaderJustInitializedForTheFirstTime = true;
         initializeLoaders();
     }
 
     private void initializeLoaders() {
-        loaderJustInitialized = true;
         LoaderManager loaderManager = LoaderManager.getInstance(this);
         int len = accountUuids.length;
         cursors = new Cursor[len];
@@ -586,6 +578,15 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         for (int i = 0; i < len; i++) {
             loaderManager.initLoader(i, null, this);
             cursorValid[i] = false;
+        }
+    }
+
+    private void initializeLoadersIfNeeded() {
+        if(!loaderJustInitializedForTheFirstTime && !anyAccountWasDeleted()) {
+            initializeLoaders();
+        }
+        else {
+            loaderJustInitializedForTheFirstTime = false;
         }
     }
 
@@ -774,6 +775,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         localBroadcastManager.unregisterReceiver(cacheBroadcastReceiver);
         activityListener.onPause(getActivity());
         messagingController.removeListener(activityListener);
+        destroyLoaders();
     }
 
     /**
@@ -785,13 +787,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     public void onResume() {
         super.onResume();
 
-        if (!loaderJustInitialized
-                && !loadersDestroyed) {
-            restartLoader();
-        } else {
-            loaderJustInitialized = false;
-            loadersDestroyed = false;
-        }
+        initializeLoadersIfNeeded();
 
         // Check if we have connectivity.  Cache the value.
         if (hasConnectivity == null) {

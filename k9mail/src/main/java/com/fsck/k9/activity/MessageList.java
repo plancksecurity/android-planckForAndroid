@@ -404,11 +404,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         accountsDrawerLayout = findViewById(R.id.navigation_bar_accounts_layout);
     }
 
-    @Override
+    /*@Override
     protected void onRestart() {
         super.onRestart();
         mMessageListFragment.destroyAllLoadersIfNeeded();
-    }
+    }*/
 
     @Override
     public void search(String query) {
