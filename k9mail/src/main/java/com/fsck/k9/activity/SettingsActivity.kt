@@ -80,6 +80,10 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
     private var exportGlobalSettings: Boolean = false
     private var exportAccountUuids: ArrayList<String>? = null
+
+    /**
+     * This flag is true when messages of the deleted account were being diplayed in MessageList. (Wether it was done as Inbox or Unified Inbox).
+     */
     private var currentAccountDeleted = false
 
     /**
