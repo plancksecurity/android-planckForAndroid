@@ -253,4 +253,27 @@
 
     <string name="action_tutorial">Tutorial</string>
     <string name="only_own_identities">his is an own message, no communication partner involved.</string>
+
+    <!-- Key sync dialog Strings -->
+    <string name="keysync_wizard_handshake_message">Please make sure uou have both devices together so ou can compare the Trustwords on both devices. Are the Trustwords below equal to the Trustwords on the other device?</string>
+    <string name="keysync_wizard_waiting_message">Please give us a moment while we sync your devices. This can take a minute or more.</string>
+    <string name="keysync_wizard_error_message">Something went wrong with syncing the devices. Please try again.</string>
+
+    <!-- Group creation -->
+    <string name="keysync_wizard_create_group_first_message">A second device was detected. We can form a device group to sync all your privacy on both devices. Shall we start synchronizing</string>
+    <string name="keysync_wizard_group_creation_done_message">We successfully created a device group. All your privacy is now synchronized.</string>
+
+
+    <!-- Group extension -->
+    <string name="keysync_wizard_add_device_to_existing_group_message">Another device was detected. We can add it to your device group to sync all your privacy on all devices. Shall we start synchronizing?</string>
+    <string name="keysync_wizard_group_joining_done_message">The device is now member of your device group. All your privacy is now synchronized.</string>
+
+    <!-- Key sync dialog button texts -->
+    <string name="keysync_wizard_action_cancel">Cancel</string>
+    <string name="keysync_wizard_action_next">Next</string>
+    <string name="keysync_wizard_action_leave">Leave</string>
+    <string name="keysync_wizard_action_try_again">Try again</string>
+    <!-- END Key sync dialog Strings -->
+
+
 </resources>
