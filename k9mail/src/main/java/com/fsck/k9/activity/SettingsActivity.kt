@@ -585,9 +585,12 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                     // Ignore, this may lead to localStores on sd-cards that
                     // are currently not inserted to be left
                 }
-                if(Preferences.getPreferences(this@SettingsActivity).accounts.indexOf(realAccount) == 0) {
+
+                if(K9.startIntegratedInbox() ||
+                        Preferences.getPreferences(this@SettingsActivity).accounts.indexOf(realAccount) == 0) {
                     currentAccountDeleted = true
                 }
+
                 MessagingController.getInstance(application)
                         .deleteAccount(realAccount)
                 Preferences.getPreferences(this@SettingsActivity)
@@ -1097,10 +1100,13 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
     override fun onBackPressed() {
         if(currentAccountDeleted) {
-            if(onOpenAccount(Preferences.getPreferences(this).defaultAccount)) {
-                currentAccountDeleted = false
+            if (K9.startIntegratedInbox() && !K9.isHideSpecialAccounts()) {
+                if(onOpenAccount(unifiedInboxAccount)) finish()
+            } else if (onOpenAccount(Preferences.getPreferences(this@SettingsActivity).defaultAccount)) {
                 finish()
             }
+            currentAccountDeleted = false
+            finish()
         }
         else {
             super.onBackPressed()
