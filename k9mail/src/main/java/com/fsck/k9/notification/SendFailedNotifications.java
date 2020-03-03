@@ -38,7 +38,7 @@ class SendFailedNotifications {
 
             AppDidntEncryptMessageException cannotEncryptEx = (AppDidntEncryptMessageException) exception;
             MessageReference messageReference = new MessageReference(account.getUuid(), account.getDraftsFolderName(), cannotEncryptEx.getMimeMessage().getUid(), Flag.X_PEP_WASNT_ENCRYPTED);
-            folderListPendingIntent = actionBuilder.createViewMessagePendingIntent(messageReference, notificationId);
+            folderListPendingIntent = actionBuilder.createMessageComposePendingIntent(messageReference, notificationId);
         } else {
             folderListPendingIntent = actionBuilder.createViewFolderListPendingIntent(account, notificationId);
         }

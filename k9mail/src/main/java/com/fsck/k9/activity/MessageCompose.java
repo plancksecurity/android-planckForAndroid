@@ -274,6 +274,14 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     private PEpSecurityStatusLayout pEpSecurityStatusLayout;
 
+    public static Intent actionEditDraftIntent(Context context, MessageReference messageReference) {
+        Intent intent = new Intent(context, MessageCompose.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra(MessageCompose.EXTRA_MESSAGE_REFERENCE, messageReference.toIdentityString());
+        intent.setAction(MessageCompose.ACTION_EDIT_DRAFT);
+        return intent;
+    }
+
     @Override
     public void inject() {
         getpEpComponent().inject(this);
