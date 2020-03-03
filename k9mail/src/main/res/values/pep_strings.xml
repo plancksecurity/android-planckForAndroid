@@ -276,4 +276,6 @@
 
     <string name="action_tutorial">Tutorial</string>
     <string name="only_own_identities">his is an own message, no communication partner involved.</string>
+    <string name="message_failed_to_encrypt">This message failed to encrypt</string>
+
 </resources>
