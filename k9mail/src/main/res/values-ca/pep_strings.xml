@@ -120,9 +120,64 @@
     <string name="action_continue">Continuar</string>
     <string name="battery_optimization_rationale_title">Desactivar l\'optimitzaciò de bateria</string>
     <string name="battery_optimiazation_explanation">Per a sincronitzar els seus missatges en segon pla necessitem desactivar l\'optimització de bateria</string>
-    <string name="pep_key_reset_all_own_ids_summary">Reset all accounts</string>
-    <string name="key_reset_own_identity_feedback">The account has been reset.</string>
-    <string name="key_reset_identity_feedback">All p≡p data for this communication partner has been reset.</string>
-    <string name="reset">Reset</string>
-    <string name="nnf_name">Name</string>
+    <string name="pep_key_reset_all_own_ids_summary">Restableix tots els comptes</string>
+    <string name="key_reset_own_identity_feedback">S\'ha restablert el compte.</string>
+    <string name="key_reset_identity_feedback">S\'han restablert totes les dades de p≡p relatives a aquest company de comunicació.</string>
+    <string name="reset">Restableix</string>
+    <string name="nnf_name">Nom</string>
+    <string name="pep_sync_disable_global">Desactiva la sincronització p≡p</string>
+    <string name="pep_sync_enable_global">Activa la sincronització p≡p</string>
+    <string name="pep_key_reset_own_id_warning_title">Restableix el compte de %s</string>
+    <string name="pep_key_reset_own_id_warning">Aquesta acció restablirà el teu compte. 
+\n Confirmes que vols fer el restabliment\?</string>
+    <string name="pep_key_reset_all_own_ids_warning">Aquesta acció restablirà tots els teus comptes. 
+\n Confirmes que vols fer el restabliment\?</string>
+    <string name="key_reset_all_own_identitities_feedback">S\'han restablert tots els comptes p≡p.</string>
+    <string name="mistrust_identity_feedback">Ara %s no és de confiança</string>
+    <string name="trust_identity_feedback">Ara %s és de confiança</string>
+    <string name="key_reset_for_identity_context_title">Restableix les dades p≡p</string>
+    <string name="reset_all">Restableix-ho tot</string>
+    <string name="key_import_from_fs_input_fpr">Introdueix l\'identificador de clau o l\'empremta de la clau.</string>
+    <string name="key_import_success">La clau %1$s s\'ha importat correctament de %2$s</string>
+    <string name="key_import_failure">No s\'ha pogut importar ni utilitzar cap clau de %1$s amb l\'identificador de clau %2$s</string>
+    <string name="key_import_wizard_pep_not_initial_explanation">Si has iniciat una importació de la clau per al compte següent: %s, fes clic a Inicia.</string>
+    <string name="pgp_key_import_instructions">Per continuar amb la importació de la clau, importa la clau p≡p pública adjunta i respon amb un missatge que compleixi aquestes condicions: 
+\n
+\n
+\n 1. Té adjunta la teva clau PGP pública.
+\n2. Està encriptat i signat amb la clau p≡p que acabes d\'importar.</string>
+    <string name="key_import_wizard_from_pgp_send_private_key_msg">Encripta i signa el missatge de resposta de nou amb la clau p≡p pública i envia\'l.</string>
+    <string name="key_import_wizard_from_pgp_create_private_key_msg">Al teu dispositiu PGP, crea un altre missatge de resposta al que has rebut de p≡p. En aquesta ocasió, no hi adjuntis la teva clau PGP privada.</string>
+    <string name="key_import_wizard_handshake_explanation_pgp">Compara les empremtes PGP de les claus següents amb les claus del teu dispositiu PGP i confirma que coincideixin.</string>
+    <string name="key_import_wizard_from_pgp_send_handshake_request">Encripta i signa el missatge de resposta amb la clau p≡p pública que acabes d\'importar i envia\'l.</string>
+    <string name="key_import_wizard_from_pgp_create_handshake_request">Al teu dispositiu PGP, crea un missatge de resposta al missatge rebut de p≡p i adjunta-hi la teva clau PGP pública.</string>
+    <string name="key_import_wizard_from_pgp_key_sent">Se t\'ha enviat un missatge amb la teva clau p≡p pública. Obre aquest missatge al teu dispositiu PGP i importa la teva clau p≡p pública al teu magatzem de claus.</string>
+    <string name="key_import_wizard_from_pgp_initial_text">Estàs a punt d\'iniciar el procés d\'importació de la clau des d\'un client PGP</string>
+    <string name="key_import_wizard_from_pep_initial_text">Estem a punt de començar el procés d\'importació de la clau. Aquesta acció importarà i farà servir la teva clau p≡p procedent d\'un altre dispositiu i exportarà la teva clau privada.</string>
+    <string name="key_import_wizard_handshake_explanation">Compara les paraules de confiança següents amb les que es mostrin a l\'altre dispositiu i confirma que coincideixin.</string>
+    <string name="open_pgp">OpenPGP</string>
+    <string name="pep_sync_leave_device_group">Surt del grup de dispositius</string>
+    <string name="pep_sync">p≡p sync</string>
+    <string name="pgp">PGP</string>
+    <string name="message_loading_error">La classificació del missatge encara s\'està carregant; torna-ho a provar</string>
+    <string name="key_import_reject_feedback">La clau s\'ha denegat</string>
+    <string name="key_import_accept_feedback">La clau s\'ha substituït</string>
+    <string name="key_import_reject">Denegar</string>
+    <string name="key_import_accept">Acceptar</string>
+    <string name="nnf_filename">Nom de fitxer</string>
+    <string name="nnf_need_valid_filename">Introdueix o selecciona un nom de fitxer vàlid</string>
+    <string name="nnf_select_something_first">Abans cal que seleccionis algun element</string>
+    <string name="nnf_create_folder_error">No s\'ha pogut crear la carpeta</string>
+    <string name="nnf_new_folder">Carpeta nova</string>
+    <string name="device_offline_warning">Sembla que el teu dispositiu no té connexió. Comprova-la abans de continuar.</string>
+    <string name="account_already_exists">El compte ja existeix</string>
+    <string name="add_account_message">Per poder fer servir aquest compte l\'has d\'afegir al teu dispositiu</string>
+    <string name="add_account_title">Afegeix el teu compte</string>
+    <string name="intro_third_text">T\'indica el nivell de seguretat de les teves comunicacions amb un semàfor.</string>
+    <string name="intro_second_text">Evita la suplantació d\'identitat. Elimina el correu brossa. Atura la pesca de credencials.</string>
+    <string name="download_snackbar_permission_rationale">Necessitem el teu permís per desar els fitxers adjunts dels teus correus electrònics.</string>
+    <string name="pep_keysync_timeout">Límit de temps de la sincronització p≡p</string>
+    <string name="pep_add_device_ask_move_trustwords">Estàs a punt de traslladar un dispositiu a un altre grup de dispositius p≡p. Confirma l\'acció verificant correctament les paraules de confiança següents.</string>
+    <string name="app_k9_pep_name">"K-9/p≡p "</string>
+    <string name="pep_app_description">K-9/p≡p és un client de correu electrònic per a Android, potent i gratuït, que utilitza el sistema p≡p (pretty Easy privacy).</string>
 </resources>
