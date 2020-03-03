@@ -134,4 +134,51 @@
     <string name="reset">Zurücksetzen</string>
     <string name="nnf_name">Name</string>
     <string name="pep_sync">p≡p Synchronisierung</string>
+    <string name="pep_sync_disable_global">p≡p Sync deaktivieren</string>
+    <string name="pep_sync_enable_global">p≡p Sync aktivieren</string>
+    <string name="pep_key_reset_all_own_ids_warning">Dieser Vorgang setzt alle Ihre Konten zurück. 
+\n Möchten Sie Ihr Konto wirklich zurücksetzen\?</string>
+    <string name="key_reset_all_own_identitities_feedback">Alle p≡p-Konten wurden zurückgesetzt.</string>
+    <string name="mistrust_identity_feedback">%s ist nicht vertrauenswürdig</string>
+    <string name="trust_identity_feedback">%s ist jetzt vertrauenswürdig</string>
+    <string name="key_reset_for_identity_context_title">p≡p-Daten zurücksetzen</string>
+    <string name="reset_all">Alles zurücksetzen</string>
+    <string name="key_import_from_fs_input_fpr">Bitte geben Sie die ID oder den Fingerabdruck des Schlüsselcodes ein.</string>
+    <string name="key_import_success">%1$s Schlüsselcode erfolgreich aus %2$s importiert</string>
+    <string name="key_import_failure">Fehler beim Importieren und Verwenden jeglicher Schlüsselcodes von %1$s mit der ID %2$s</string>
+    <string name="key_import_wizard_pep_not_initial_explanation">"Wenn Sie den Import eines Schlüsselcodes für das Konto  %s eingeleitet haben, dann klicken Sie auf Start."</string>
+    <string name="pgp_key_import_instructions">Um mit dem Import des Schlüsselcodes fortzufahren, importieren Sie bitte den angehängten öffentlichen p≡p-Schlüsselcode und antworten Sie mit einer Nachricht, die Folgendes erfüllt: 
+\n
+\n
+\n 1. Ihr öffentlicher PGP-Schlüsselcode ist angehängt und 
+\n2. Die Nachricht ist verschlüsselt und mit dem soeben importierten p≡p-Schlüsselcode signiert</string>
+    <string name="key_import_wizard_from_pgp_send_private_key_msg">Verschlüsseln und signieren Sie die Antwortnachricht erneut mit dem öffentlichen p≡p-Schlüssel und senden Sie sie.</string>
+    <string name="key_import_wizard_from_pgp_create_private_key_msg">Erstellen Sie auf Ihrem PGP-Gerät eine weitere Antwort auf die von p≡p erhaltene Nachricht. Bitte fügen Sie diesmal Ihren privaten PGP-Schlüsselcode hinzu.</string>
+    <string name="key_import_wizard_handshake_explanation_pgp">Bitte vergleichen Sie die PGP-Fingerabdrücke der nachfolgenden Tasten mit jenen auf Ihrem PGP-Gerät und bestätigen Sie, ob sie übereinstimmen.</string>
+    <string name="nnf_create_folder_error">Erstellen des Ordners fehlgeschlagen</string>
+    <string name="device_offline_warning">Ihr Gerät scheint offline zu sein. Prüfen Sie Ihre Verbindung, bevor Sie fortfahren.</string>
+    <string name="account_already_exists">Dieses Konto existiert bereits</string>
+    <string name="pep_key_reset_own_id_warning_title">Konto %s zurücksetzen</string>
+    <string name="pep_key_reset_own_id_warning">Dieser Vorgang setzt Ihr Konto zurück. 
+\n Möchten Sie Ihr Konto wirklich zurücksetzen\?</string>
+    <string name="key_import_wizard_from_pgp_send_handshake_request">Verschlüsseln und signieren Sie die Antwortnachricht mit dem soeben importierten öffentlichen p≡p-Schlüssel und senden Sie sie.</string>
+    <string name="key_import_wizard_from_pgp_create_handshake_request">Erstellen Sie auf Ihrem PGP-Gerät eine Antwort auf die von p≡p erhaltene Nachricht und fügen Sie Ihren öffentlichen PGP-Schlüssel hinzu.</string>
+    <string name="key_import_wizard_from_pgp_key_sent">Eine Nachricht mit Ihrem öffentlichen p≡p-Schlüsselcode wurde an Sie selbst gesendet. Bitte öffnen Sie diese Nachricht auf Ihrem PGP-Gerät und importieren Sie Ihren öffentlichen p≡p-Schlüsselcode in Ihren Speicherstift.</string>
+    <string name="key_import_wizard_from_pgp_initial_text">Sie sind dabei, den Import des Schlüsselcodes von einem PGP-Clienten zu starten</string>
+    <string name="key_import_wizard_from_pep_initial_text">Wir sind dabei, den Import des Schlüsselcodes zu starten: Dieser Vorgang importiert Ihren p≡p-Schlüsselcode von einem anderen Gerät, verwendet ihn und exportiert Ihren privaten Schlüsselcode.</string>
+    <string name="key_import_wizard_handshake_explanation">Bitte vergleichen Sie die folgenden Trustwords mit jenen auf Ihrem anderen Gerät und bestätigen Sie, ob sie übereinstimmen.</string>
+    <string name="open_pgp">OpenPGP</string>
+    <string name="pep_sync_leave_device_group">Gerätegruppe verlassen</string>
+    <string name="pgp">PGP</string>
+    <string name="message_loading_error">Die Bewertung der Nachricht wird noch geladen. Versuchen Sie es erneut</string>
+    <string name="key_import_reject_feedback">Schlüsselcode abgelehnt</string>
+    <string name="key_import_accept_feedback">Schlüsselcode ersetzt</string>
+    <string name="key_import_reject">Ablehnen</string>
+    <string name="key_import_accept">Bestätigen</string>
+    <string name="nnf_filename">Dateiname</string>
+    <string name="nnf_need_valid_filename">Bitte geben Sie einen gültigen Dateinamen ein oder wählen Sie einen solchen aus</string>
+    <string name="nnf_select_something_first">Bitte wählen Sie zuerst etwas aus</string>
+    <string name="nnf_new_folder">Neuer Ordner</string>
+    <string name="add_account_message">"Übertragen Sie dieses Konto auf Ihr Gerät, um es nutzen zu können "</string>
+    <string name="add_account_title">Ihr Konto hinzufügen</string>
 </resources>
