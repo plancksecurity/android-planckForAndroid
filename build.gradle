@@ -5,7 +5,7 @@ buildscript {
                 'targetSdk'            : 28,
                 'minSdk'               : 21,
                 'versionCode'          : 42,
-                'pEpEngineRevision'    : 4461,
+                'pEpEngineRevision'    : 4465,
                 'pEpJNIAdapterRevision': 653,
                 'versionName'          : '1.0.233',
                 'libpEpAdapterRevision': 158
