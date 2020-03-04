@@ -77,4 +77,14 @@ public enum Flag {
      * This flag is used for mark messages that always will be sent encrypted
      */
     X_PEP_NEVER_UNSECURE,
+
+    /**
+     * This flag is used to know if message should be encrypted
+     */
+    X_PEP_SHOWN_ENCRYPTED,
+
+    /**
+     * This flag is used to know if message was encrypted by the engine
+     */
+    X_PEP_WASNT_ENCRYPTED,
 }

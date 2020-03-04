@@ -363,6 +363,12 @@ public class PEpUtils {
                 || !account.ispEpPrivacyProtected();
     }
 
+    public static boolean isMessageToEncrypt(Account account, Rating messageRating, boolean isForceUnencrypted) {
+        return messageRating.value >= Rating.pEpRatingReliable.value
+                && account.ispEpPrivacyProtected()
+                && !isForceUnencrypted;
+    }
+
     @WorkerThread
     public static void pEpGenerateAccountKeys(Context context, Account account) {
         PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(context);

@@ -37,4 +37,16 @@ public class FeedbackTools {
             Timber.e(message);
         }
     }
+
+    public static void showIndefiniteFeedback(View rootView, String message, String actionText, View.OnClickListener actionListener) {
+        if (rootView != null) {
+            Resources resources = rootView.getResources();
+            Snackbar snackbar = Snackbar.make(rootView, message, Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction(actionText, actionListener);
+            snackbar.setActionTextColor(resources.getColor(R.color.pep_yellow));
+            snackbar.show();
+        } else {
+            Timber.e(message);
+        }
+    }
 }
