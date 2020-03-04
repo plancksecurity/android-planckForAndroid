@@ -819,18 +819,8 @@ public class RecipientPresenter {
         recipientMvpView.onPEpPrivacyStatus();
     }
 
-
-    public void updatepEpState() {
-        /* no-op */
-    }
-
-
     public void handlepEpState(boolean... withToast) {
         recipientMvpView.handlepEpState(withToast);
-    }
-
-    public void setpEpIndicator(MenuItem pEpIndicator) {
-        recipientMvpView.setpEpIndicator(pEpIndicator);
     }
 
     public boolean isForwardedMessageWeakestThanOriginal(Rating originalMessageRating) {
@@ -864,7 +854,6 @@ public class RecipientPresenter {
     private final OpenPgpApiManagerCallback openPgpCallback = new OpenPgpApiManagerCallback() {
         @Override
         public void onOpenPgpProviderStatusChanged() {
-            updatepEpState();
             //asyncUpdateCryptoStatus();
             if (openPgpApiManager.getOpenPgpProviderState() == OpenPgpProviderState.UI_REQUIRED) {
                 recipientMvpView.showErrorOpenPgpUserInteractionRequired();

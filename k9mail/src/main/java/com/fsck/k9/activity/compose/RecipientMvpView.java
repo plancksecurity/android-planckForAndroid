@@ -5,10 +5,7 @@ import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextWatcher;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
@@ -74,7 +71,6 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     private final Account mAccount;
 
     // pEp stuff
-    private MenuItem pEpIndicator;
     private Rating pEpRating = Rating.pEpRatingUndefined;
 
     PePUIArtefactCache pEpUiCache;
@@ -496,25 +492,12 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         return pEpRating;
     }
 
-    public void handlepEpState(boolean... withToast) {
+    void handlepEpState(boolean... withToast) {
         if (mAccount.ispEpPrivacyProtected()) {
             boolean reallyWithToast = true;
             if (withToast.length > 0) reallyWithToast = withToast[0];
-            updatePePState();
-            if (pEpIndicator != null) {
-                new Handler(Looper.getMainLooper()).post(() -> pEpIndicator.setIcon(pEpUiCache.getIcon()));
-                String msg = pEpUiCache.getTitle(pEpRating);
-            }
             activity.setToolbarRating(pEpRating);
         }
-    }
-
-    private void updatePePState() {
-        presenter.updatepEpState();
-    }
-
-    public void setpEpIndicator(MenuItem pEpIndicator) {
-        this.pEpIndicator = pEpIndicator;
     }
 
     public void refreshRecipients() {
