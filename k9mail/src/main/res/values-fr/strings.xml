@@ -946,7 +946,7 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="account_setup_basics_client_certificate">Utiliser le certificat client</string>
     <string name="client_certificate_spinner_empty">Aucun certificat client</string>
     <string name="client_certificate_spinner_delete">Enlever le choix de certificat client</string>
-    <string name="client_certificate_retrieval_failure">Impossible de d\'obtenir le certificat client pour l\'alias \« <xliff:g id="alias">%s</xliff:g>\ »</string>
+    <string name="client_certificate_retrieval_failure">=== App-specific strings =============================================================</string>
     <string name="client_certificate_advanced_options">Options avancées</string>
     <string name="client_certificate_expired">Le certificat client \« <xliff:g id="certificate_alias">%1$s</xliff:g>\ » est expiré ou n\'est pas encore valide (<xliff:g id="exception_message">%2$s</xliff:g>)</string>
     <!--Note: This references message_view_download_remainder-->

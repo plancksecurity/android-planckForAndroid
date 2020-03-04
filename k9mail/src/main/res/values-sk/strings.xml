@@ -128,9 +128,9 @@
     <string name="show_headers_action">Zobraziť hlavičky</string>
     <string name="hide_headers_action">Skryť hlavičky</string>
     <plurals name="copy_address_to_clipboard">
-        <item quantity="one">Adresa bola skopírovaná do schránky.</item>
-        <item quantity="few">Adresy boli skopírované do schránky.</item>
-        <item quantity="other">Adresy boli skopírované do schránky.</item>
+        <item quantity="one">Adresa bola skopírovaná do schránky</item>
+        <item quantity="few">Adresy boli skopírované do schránky</item>
+        <item quantity="other">Adresy boli skopírované do schránky</item>
     </plurals>
     <string name="message_view_theme_action_dark">Prepnúť na tmavú tému</string>
     <string name="message_view_theme_action_light">Prepnúť na svetlú tému</string>
@@ -205,7 +205,7 @@
     <string name="debug_enable_debug_logging_title">Povoliť vytváranie záznamov pre ladenie</string>
     <string name="debug_enable_debug_logging_summary">Zaznamenávať rozšírené diagnostické informácie</string>
     <string name="debug_enable_sensitive_logging_title">Zaznamenávať citlivé informácie</string>
-    <string name="debug_enable_sensitive_logging_summary">V záznamoch môžu byť zobrazené heslá</string>
+    <string name="debug_enable_sensitive_logging_summary">V záznamoch môžu byť zobrazené heslá.</string>
     <string name="message_list_load_more_messages_action">Načítať viac správ</string>
     <string name="message_to_fmt">Komu:<xliff:g id="counterParty">%s</xliff:g></string>
     <string name="message_compose_subject_hint">Predmet</string>
@@ -312,7 +312,7 @@
     <string name="account_setup_names_account_name_label">Pomenovať tento účet (voliteľné):</string>
     <string name="account_setup_names_user_name_label">Zadajte vaše meno (zobrazí sa v odchádzajúcich správach):</string>
     <string name="account_setup_account_type_title">Typ účtu</string>
-    <string name="account_setup_account_type_instructions">Typ účtu</string>
+    <string name="account_setup_account_type_instructions">Aký je to druh účtu\?</string>
     <string name="account_setup_account_type_pop_action">POP3</string>
     <string name="account_setup_account_type_imap_action">IMAP</string>
     <string name="account_setup_account_type_webdav_action">Exchange (WebDAV)</string>
@@ -369,7 +369,7 @@
     <string name="account_setup_outgoing_smtp_server_label">Server SMTP</string>
     <string name="account_setup_outgoing_port_label">Port</string>
     <string name="account_setup_outgoing_security_label">Zabezpečenie</string>
-    <string name="account_setup_outgoing_require_login_label">Vyžadovať prihlásenie</string>
+    <string name="account_setup_outgoing_require_login_label">Vyžadovať prihlásenie.</string>
     <string name="account_setup_outgoing_username_label">Používateľské meno</string>
     <string name="account_setup_outgoing_password_label">Heslo</string>
     <string name="account_setup_outgoing_authentication_label">Overenie</string>
@@ -422,7 +422,7 @@
     <string name="move_copy_cannot_copy_unsynced_message">Nemožno skopírovať alebo presunúť správu, ktorá nie je synchronizovaná so serverom</string>
     <string name="account_setup_failed_dlg_title">Nastavenie nemohlo byť dokončené</string>
     <string name="account_setup_failed_dlg_auth_message_fmt">Používateľské meno alebo heslo nie je správne.\n(<xliff:g id="error">%s</xliff:g>)</string>
-    <string name="account_setup_failed_dlg_certificate_message_fmt">Server predložil neplatný SSL certifikát. Niekedy je to kvôli zlej konfigurácii servera, inokedy zas preto, že niekto sa snaží zatočiť na vás alebo váš e-mailový server. Ak si nie ste istý, čo sa deje, kliknite na tlačidlo Odmietnuť a obráťte sa na ľudí, ktorí spravujú váš e-mailový server.\n\n(<xliff:g id="error">%s</xliff:g>)</string>
+    <string name="account_setup_failed_dlg_certificate_message_fmt">=== App-specific strings =============================================================<xliff:g id="error">%s</xliff:g>)</string>
     <string name="account_setup_failed_dlg_server_message_fmt">Nie je možné sa pripojiť k serveru.\n(<xliff:g id="error">%s</xliff:g>)</string>
     <string name="account_setup_failed_dlg_edit_details_action">Upraviť podrobnosti</string>
     <string name="account_setup_failed_dlg_continue_action">Pokračovať</string>
@@ -455,9 +455,9 @@
     <string name="account_settings_show_pictures_always">Od každého</string>
     <string name="account_settings_composition">Odosielanie správ</string>
     <string name="account_settings_default_quoted_text_shown_label">Citovať správu pri odpovedi</string>
-    <string name="account_settings_default_quoted_text_shown_summary">Zahrnúť pôvodnú správu do vašej odpovede</string>
+    <string name="account_settings_default_quoted_text_shown_summary">Zahrnúť pôvodnú správu do vašej odpovede.</string>
     <string name="account_settings_reply_after_quote_label">Odpovedať za citovaným textom</string>
-    <string name="account_settings_reply_after_quote_summary">Pôvodná správa bude umiestnená nad vašou odpoveďou</string>
+    <string name="account_settings_reply_after_quote_summary">Pôvodná správa bude umiestnená nad vašou odpoveďou.</string>
     <string name="account_settings_strip_signature_label">Odstrániť podpis z citovanej odpovedi</string>
     <string name="account_settings_strip_signature_summary">Podpisy budú odstránené z citovaných správ</string>
     <string name="account_settings_message_format_label">Formát správy</string>
@@ -923,15 +923,15 @@
     <string name="address_type_work">Práca</string>
     <string name="address_type_other">Iná</string>
     <string name="address_type_mobile">Mobilná</string>
-    <string name="compose_error_no_draft_folder">Pre tento účet nie je zadefinovaný priečinok pre koncepty správ.</string>
+    <string name="compose_error_no_draft_folder">Pre tento účet nie je zadefinovaný priečinok pre koncepty správ!</string>
     <string name="compose_error_no_signing_key">Nie je nastavený kľúč pre podpis! Prosím, skontroľujte si nastavenia.</string>
     <string name="compose_error_private_missing_keys">Je aktivovaný Súkromný režim, niektorí príjemcovia nemajú kľúče!</string>
     <string name="crypto_mode_disabled">Nešifrovať</string>
     <string name="crypto_mode_opportunistic">Ak je možné, šifrovať</string>
     <string name="crypto_mode_private">Šifrovať</string>
-    <string name="error_crypto_provider_connect">Nie je možné pripojenie ku poskytovateľovi šifrovania, skontrolujte svoje nastavenia alebo kliknite na ikonu šifrovania pre ďalší pokus.</string>
-    <string name="error_crypto_provider_ui_required">Bol odopretý prístup ku poskytovateľovi šifrovania, kliknite na ikonu šifrovania pre ďalší pokus.</string>
-    <string name="error_crypto_inline_attach">V režine PGP/INLINE nie sú prílohy podporované.</string>
+    <string name="error_crypto_provider_connect">Nie je možné pripojenie ku poskytovateľovi šifrovania, skontrolujte svoje nastavenia alebo kliknite na ikonu šifrovania pre ďalší pokus!</string>
+    <string name="error_crypto_provider_ui_required">Bol odopretý prístup ku poskytovateľovi šifrovania, kliknite na ikonu šifrovania pre ďalší pokus</string>
+    <string name="error_crypto_inline_attach">V režine PGP/INLINE nie sú prílohy podporované!</string>
     <string name="enable_inline_pgp">Povoliť PGP/INLINE</string>
     <string name="disable_inline_pgp">Zakázať PGP/INLINE</string>
     <string name="enable_sign_only">Povoliť PGP \"len podpis\"</string>
@@ -951,7 +951,7 @@
     <string name="openpgp_dialog_sign_only_text">V tomto režime bude pomocou vášho PGP kľúča vytvorený kryptografický podpis pre nešifrovanú správu.</string>
     <string name="openpgp_dialog_sign_only_plus_verified">E-mail nie je šifrovaný, je však možné overiť, že bola správa podpísaná vaším kľúčom.</string>
     <string name="openpgp_dialog_sign_only_minus_break">Podpisy môžu byť pri odoslaní do diskusných skupín poškodené.</string>
-    <string name="openpgp_dialog_sign_only_minus_attach">Niektoré e-mailové klienty zobrazujú podpis ako prílohu s názvom \'signature.asc\'</string>
+    <string name="openpgp_dialog_sign_only_minus_attach">Niektoré e-mailové klienty zobrazujú podpis ako prílohu s názvom \'signature.asc\'.</string>
     <string name="openpgp_dialog_sign_only_neutral_encsigned">Šifrované správy vždy obsahujú podpis.</string>
     <string name="crypto_msg_disabled">Správa nie je šifrovaná</string>
     <string name="crypto_msg_encrypted_error">Správa je šifrovaná, chyba dešifrovania správy.</string>
@@ -964,7 +964,7 @@
     <string name="crypto_msg_encrypted_unsigned">Správa je šifrovaná, nie je podpísaná.</string>
     <string name="crypto_msg_sign_unknown">Podpis vytvorený neznámym kľúčom.</string>
     <string name="crypto_msg_sign_verified">Podpis vytvorený dôveryhodným kľúčom.</string>
-    <string name="crypto_msg_sign_unverified">Podpis vytvorený nedôveryhodným kľúčom.</string>
+    <string name="crypto_msg_sign_unverified">Podpis vytvorený nedôveryhodným kľúčom!</string>
     <string name="crypto_msg_sign_error">Podpis je chybný.</string>
     <string name="crypto_msg_sign_mismatch">Podpis vytvorený nesprávnym kľúčom.</string>
     <string name="crypto_msg_sign_expired">Podpis vytvorený neplatným kľúčom.</string>
@@ -972,13 +972,13 @@
     <string name="crypto_msg_sign_insecure">Podpis vytvorený nezabezpečeným kľúčom.</string>
     <string name="crypto_msg_sign_incomplete">Pre overenie podpisu je potrebné stiahnuť celú správu.</string>
     <string name="crypto_msg_signed_encrypted">Správa je podpísaná a šifrovaná.</string>
-    <string name="crypto_msg_unsigned_encrypted">Chýbajúci podpis, správa mohla byť odchytená</string>
+    <string name="crypto_msg_unsigned_encrypted">Chýbajúci podpis, správa mohla byť odchytená.</string>
     <string name="crypto_info_ok">OK</string>
     <string name="crypto_info_view_key">Zobraziť podpisovateľa</string>
     <string name="locked_attach_unlock">Odomknúť</string>
     <string name="locked_attach_unencrypted">Táto časť nebola zašifrovaná a nemusí byť bezpečná.</string>
     <string name="locked_attach_title">Nechránená príloha</string>
-    <string name="message_progress_text">Načítavam...</string>
+    <string name="message_progress_text">Načítavam…</string>
     <string name="messageview_decrypt_cancelled">Dešifrovanie bolo zrušené.</string>
     <string name="messageview_decrypt_retry">Skúsiť znova</string>
     <string name="messageview_decrypt_incomplete">Šifrovaná správa musí byť stiahnutá pre dešifrovanie.</string>
@@ -990,7 +990,7 @@
     <string name="messageview_crypto_warning_error">Vyskytla sa <b>chyba v podpise správy!</b></string>
     <string name="recipient_error_non_ascii">Špeciálne znaky nie sú v súčasnosti podporované!</string>
     <string name="recipient_error_parse_failed">Chyba pri spracovaní adresy!</string>
-    <string name="error_sign_only_no_encryption">V režime \"len podpis\" nie je možné šifrovať.</string>
+    <string name="error_sign_only_no_encryption">V režime \"len podpis\" nie je možné šifrovať!</string>
     <string name="account_setup_basics_oauth2_token">Použite token OAuth 2.0 (účty Google)</string>
     <string name="settings_export_success_generic">Nastavenia boli úspešne exportované</string>
     <string name="account_settings_openpgp_missing">Chýba aplikácia OpenPGP - bola odinštalovaná\?</string>
@@ -1034,10 +1034,10 @@
     <string name="dialog_openkeychain_info_text">K-9 Mail vyžaduje OpenKeychain na šifrovanie end-to-end.</string>
     <string name="toast_account_not_found">Interná chyba: Neplatný účet!</string>
     <string name="ac_transfer_msg_body">Táto správa obsahuje všetky informácie o bezpečnom prenose nastavení automatického šifrovania spolu s tajným kľúčom z pôvodného zariadenia. Ak chcete nastaviť svoje nové zariadenie na automatické šifrovanie, postupujte podľa pokynov, ktoré by malo nové zariadenie predložiť. Túto správu si môžete ponechať a použiť ju ako zálohu tajného kľúča. Ak to chcete urobiť, mali by ste si zapísať heslo a bezpečne ho uložiť.</string>
-    <string name="status_poll_and_push_disabled">Polling and pushing disabled</string>
+    <string name="status_poll_and_push_disabled">Polling a pushing sú zakázané</string>
     <string name="debug_delete_local_body">Ladenie / vymazanie tela správy</string>
     <string name="messageview_crypto_warning_show_anyway">Zobraziť správu napriek tomu</string>
-    <string name="messageview_crypto_warning_unsigned">Táto správa bola šifrovaná, ale nebola podpísaná.</string>
+    <string name="messageview_crypto_warning_unsigned">=== App-specific strings =============================================================</string>
     <string name="account_settings_crypto_hide_sign_only">Skryť nezašifrované podpisy</string>
     <string name="account_settings_crypto_hide_sign_only_on">Zobrazia sa iba šifrované podpisy</string>
     <string name="account_settings_crypto_hide_sign_only_off">Budú zobrazené všetky podpisy</string>
