@@ -147,4 +147,9 @@
     <string name="action_continue">Continuer</string>
     <string name="battery_optimization_rationale_title">Désactiver les optimisation d\'économie d\'énergie</string>
     <string name="battery_optimiazation_explanation">Afin de synchroniser vos e-mail en tâche de fond, vous devez désactiver les optimisation d\'économie d\'énergie</string>
+    <string name="pgp_key_import_instructions">Afin de procéder à l’importation de la clef, veuillez importer la clef publique p≡p jointe et répondre avec un message qui : 
+\n
+\n
+\n 1 - possède votre clef publique PGP et
+\n 2 - soit crypté et signé avec la clef p≡p que vous venez d’importer.</string>
 </resources>

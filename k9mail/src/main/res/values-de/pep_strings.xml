@@ -131,4 +131,5 @@
     <string name="reset">Zurücksetzen</string>
     <string name="nnf_name">Name</string>
     <string name="pep_sync">p≡p Synchronisierung</string>
+    <string name="key_import_wizard_pep_not_initial_explanation">Wenn Sie den Import eines Schlüsselcodes für das Konto %s eingeleitet haben, dann klicken Sie auf Start.</string>
 </resources>

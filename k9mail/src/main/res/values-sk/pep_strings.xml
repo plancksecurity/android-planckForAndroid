@@ -71,7 +71,7 @@
     <string name="pep_force_protected">Povoľte ochranu</string>
     <string name="pep_receivedSecretKey">Tento tajný kľúč bol prijatý:</string>
     <string name="pep_username">Meno používateľa</string>
-    <string name="pep_userAddress">Adresa používateľa</string>
+    <string name="pep_userAddress">Adresa užívateľa</string>
     <string name="pep_secret_key_detected">Bol zistený tajný kľúč</string>
     <string name="pep_received_this_secret_key" translatable="false">The following secret key was received. Are you sure you want to use it?</string>
     <string name="pep_from_format">od odosielateľa % 1$s</string>
@@ -85,7 +85,7 @@
     <string name="pep_account_privacy_protection_explanation">Povoľte ochranu osobných údajov pre tento účet</string>
     <string name="pep_forward_warning">Varovanie nezabezpečenej odpovede</string>
     <string name="pep_forward_warning_description">Zobraziť upozornenie, keď správa stratí bezpečnosť odpoveďou alebo poslaním ďalej.</string>
-    <string name="key_list_title">Dostupné klávesy</string>
+    <string name="key_list_title">Dostupné kľúče</string>
     <string name="message_list_item_removed">Odstránené</string>
     <string name="message_list_item_undo">VRÁTENIE SPÄŤ</string>
     <string name="available_accounts_title">Dostupné účty</string>
