@@ -76,14 +76,14 @@
     <string name="pep_received_this_secret_key" translatable="false">The following secret key was received. Are you sure you want to use it?</string>
     <string name="pep_from_format">od odosielateľa %1$s</string>
     <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Dôverujte serveru a ukladajte e-maily nechránené</string>
-    <string name="pep_mistrust_server_and_store_mails_encrypted"/>
+    <string name="pep_mistrust_server_and_store_mails_encrypted">Ukladajte správy bezpečne</string>
     <string name="pep_enable_privacy_protection">p≡p ochrana súkromia</string>
     <string name="pep_explanation">Vysvetlenie</string>
     <string name="pep_suggestion">Návrh</string>
     <string name="pep_app_license">Licencované na základe GNU General Public License v3</string>
     <string name="pep_trust_server_description">Uchovávajte e-maily na serveri v bezpečnej forme.</string>
     <string name="pep_account_privacy_protection_explanation">Povoľte p≡p ochrana súkromia pre tento účet</string>
-    <string name="pep_forward_warning"/>
+    <string name="pep_forward_warning">Varovanie nezabezpečenej odpovede</string>
     <string name="pep_forward_warning_description">Zobraziť upozornenie, keď správa stratí bezpečnosť odpoveďou alebo preposlaním ďalej.</string>
     <string name="key_list_title">Dostupné klávesy</string>
     <string name="message_list_item_removed">Odstránené</string>
@@ -97,7 +97,7 @@
     <string name="pep_add_device_ask_move_trustwords">Chystáte sa presunúť zariadenie do inej skupiny zariadení p≡p</string>
     <string name="pep_device_group">p≡p Skupina zariadení</string>
     <string name="handshake_reset_dialog_message">Varovanie: Tento komunikačný partner bol predtým označený ako nedôverčivý</string>
-    <string name="pep_gpg_compatibility"/>
+    <string name="pep_gpg_compatibility">Kompatibilita s OpenPGP</string>
     <string name="crash_toast_text">Hops! Niečo sa pokazilo</string>
     <string name="advanced_options">Pokročilé možnosti</string>
     <string name="basic_options">Základné možnosti</string>
