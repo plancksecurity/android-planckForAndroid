@@ -14,7 +14,6 @@
     <string name="pep_extra_addresses">Ekstra anahtar kimlikleri:</string>
     <string name="pep_use_keyserver">Anahtarları anahtar sunucusunda ara</string>
     <string name="pep_passive_mode">Pasif mod</string>
-    <string name="pep_subject_unprotected">Korunmasız mesaj konularını etkinleştir</string>
     <string name="pep_add_key_to_blacklist">Kara listeye bir anahtarı ekleyin</string>
     <string name="pep_remove_key_from_blacklist">Kara listeden bir anahtarı çıkarın</string>
 

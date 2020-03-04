@@ -45,7 +45,7 @@ class GeneralSettingsDataStore(
             "sensitive_logging" -> K9.DEBUG_SENSITIVE
             "pep_use_keyserver" -> K9.getPEpUseKeyserver()
             "pep_passive_mode" -> K9.getPEpPassiveMode()
-            "pep_subject_unprotected" -> K9.ispEpSubjectUnprotected()
+            "pep_subject_protection" -> K9.ispEpSubjectProtection()
             "pep_forward_warning" -> K9.ispEpForwardWarningEnabled()
             "pep_enable_sync" -> K9.ispEpSyncEnabled()
             else -> defValue
@@ -84,7 +84,7 @@ class GeneralSettingsDataStore(
             "sensitive_logging" -> K9.DEBUG_SENSITIVE = value
             "pep_use_keyserver" -> app.setPEpUseKeyserver(value)
             "pep_passive_mode" -> app.setPEpPassiveMode(value)
-            "pep_subject_unprotected" -> app.setpEpSubjectUnprotected(value)
+            "pep_subject_protection" -> app.setpEpSubjectProtection(value)
             "pep_forward_warning" -> app.setpEpForwardWarningEnabled(value)
             "pep_enable_sync" -> app.setpEpSyncEnabled(value) //TODO: CHECK
             else -> return

@@ -15,7 +15,6 @@
     <string name="pep_extra_addresses">Zusätzliche Schlüsselkennungen:</string>
     <string name="pep_use_keyserver">Schlüssel auf Schlüsselserver suchen</string>
     <string name="pep_passive_mode">Passivmodus</string>
-    <string name="pep_subject_unprotected">Betreff in Nachrichten nicht schützen</string>
     <string name="pep_add_key_to_blacklist">Schlüssel nicht mehr verwenden</string>
     <string name="pep_remove_key_from_blacklist">Schlüssel wieder verwenden</string>
 

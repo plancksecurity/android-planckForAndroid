@@ -294,14 +294,15 @@ public class GlobalSettings {
         s.put("pEpPassiveMode", Settings.versions(
                 new V(43, new BooleanSetting(true))
         ));
-        s.put("pEpSubjectUnprotected", Settings.versions(
-                new V(46, new BooleanSetting(true))
-        ));
         s.put("pEpForwardWarningEnabled", Settings.versions(
                 new V(47, new BooleanSetting(false))
         ));
         s.put("pEpEnableSync", Settings.versions(
                 new V(49, new BooleanSetting(true))
+        ));
+
+        s.put("pEpSubjectProtection", Settings.versions(
+                new V(50, new BooleanSetting(true))
         ));
         SETTINGS = Collections.unmodifiableMap(s);
 
@@ -309,6 +310,7 @@ public class GlobalSettings {
         u.put(12, new SettingsUpgraderV12());
         u.put(24, new SettingsUpgraderV24());
         u.put(31, new SettingsUpgraderV31());
+        u.put(50, new SettingsUpgraderV50());
 
         UPGRADERS = Collections.unmodifiableMap(u);
     }
@@ -420,6 +422,27 @@ public class GlobalSettings {
                 }
             }
         }
+    }
+
+    /**
+     * Upgrades the settings from version 49 to 50.
+     *
+     * <p>
+     * Convert value from <em>pEpSubjectUnprotected</em> to
+     * <em>pEpSubjectProtection</em>.
+     * </p>
+     */
+    public static class SettingsUpgraderV50 implements SettingsUpgrader {
+
+        @Override
+        public Set<String> upgrade(Map<String, Object> settings) {
+            boolean oldValue = (Boolean) settings.get("pEpSubjectUnprotected");
+
+            settings.put("pEpSubjectProtection", !oldValue);
+
+            return new HashSet<>(Collections.singletonList("pEpSubjectUnprotected"));
+        }
+
     }
 
     private static class LanguageSetting extends PseudoEnumSetting<String> {

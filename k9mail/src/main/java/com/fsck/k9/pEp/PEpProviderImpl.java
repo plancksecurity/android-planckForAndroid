@@ -102,7 +102,7 @@ public class PEpProviderImpl implements PEpProvider {
     private void initEngineConfig(Engine engine) {
         engine.config_passive_mode(K9.getPEpPassiveMode());
         configKeyServerLockup(K9.getPEpUseKeyserver());
-        engine.config_unencrypted_subject(K9.ispEpSubjectUnprotected());
+        engine.config_unencrypted_subject(!K9.ispEpSubjectProtection());
         engine.setMessageToSendCallback(MessagingController.getInstance(context));
         engine.setNotifyHandshakeCallback(((K9) context.getApplicationContext()).getNotifyHandshakeCallback());
     }
@@ -832,9 +832,9 @@ public class PEpProviderImpl implements PEpProvider {
 //    }
 
     @Override
-    public synchronized void setSubjectUnprotected (boolean isUnprotected) {
+    public synchronized void setSubjectProtection(boolean isProtected) {
         createEngineInstanceIfNeeded();
-        engine.config_unencrypted_subject(isUnprotected);
+        engine.config_unencrypted_subject(!isProtected);
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.fsck.k9;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -332,7 +331,7 @@ public class K9 extends MultiDexApplication {
     private static String pEpExtraAccounts = "";
     //private static boolean pEpUseKeyserver = false;
     private static boolean pEpPassiveMode = false;
-    private static boolean pEpSubjectUnprotected = false;
+    private static boolean pEpSubjectProtection = true;
     private static boolean pEpForwardWarningEnabled = false;
     private static boolean pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
     private static boolean shallRequestPermissions = true;
@@ -604,7 +603,7 @@ public class K9 extends MultiDexApplication {
         editor.putString("pEpExtraAccounts", pEpExtraAccounts);
         //editor.putBoolean("pEpUseKeyserver", pEpUseKeyserver);
         editor.putBoolean("pEpPassiveMode", pEpPassiveMode);
-        editor.putBoolean("pEpSubjectUnprotected", pEpSubjectUnprotected);
+        editor.putBoolean("pEpSubjectProtection", pEpSubjectProtection);
         editor.putBoolean("pEpForwardWarningEnabled", pEpForwardWarningEnabled);
         editor.putBoolean("pEpEnableSync", pEpSyncEnabled);
         editor.putBoolean("shallRequestPermissions", shallRequestPermissions);
@@ -963,7 +962,7 @@ public class K9 extends MultiDexApplication {
         pEpExtraAccounts = storage.getString("pEpExtraAccounts", null);
         //pEpUseKeyserver = storage.getBoolean("pEpUseKeyserver", false);
         pEpPassiveMode = storage.getBoolean("pEpPassiveMode", false);
-        pEpSubjectUnprotected = storage.getBoolean("pEpSubjectUnprotected", false);
+        pEpSubjectProtection = storage.getBoolean("pEpSubjectProtection", true);
         pEpForwardWarningEnabled = storage.getBoolean("pEpForwardWarningEnabled", false);
         pEpSyncEnabled = storage.getBoolean("pEpEnableSync", BuildConfig.WITH_KEY_SYNC);
 
@@ -1750,14 +1749,14 @@ public class K9 extends MultiDexApplication {
 
     }
 
-    public static boolean ispEpSubjectUnprotected() {
-        return pEpSubjectUnprotected;
+    public static boolean ispEpSubjectProtection() {
+        return pEpSubjectProtection;
     }
 
-    public void setpEpSubjectUnprotected(boolean pEpSubjectUnprotected) {
-        K9.pEpSubjectUnprotected = pEpSubjectUnprotected;
-        pEpProvider.setSubjectUnprotected(pEpSubjectUnprotected);
-        MessagingController.getInstance(this).setSubjectUnprotected(pEpSubjectUnprotected);
+    public void setpEpSubjectProtection(boolean pEpSubjectProtection) {
+        K9.pEpSubjectProtection = pEpSubjectProtection;
+        pEpProvider.setSubjectProtection(pEpSubjectProtection);
+        MessagingController.getInstance(this).setSubjectProtected(pEpSubjectProtection);
     }
 
 

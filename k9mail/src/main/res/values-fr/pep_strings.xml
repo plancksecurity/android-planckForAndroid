@@ -15,7 +15,6 @@
     <!--<string name="pep_extra_addresses">Extra key ids:</string>-->
     <string name="pep_use_keyserver">Chercher les clefs sur le serveur de clefs</string>
     <!--<string name="pep_passive_mode">Passive mode</string>-->
-    <string name="pep_subject_unprotected">Ne pas protéger le sujet des messages</string>
     <!--<string name="pep_add_key_to_blacklist">Add a key to blacklist</string>-->
     <!--<string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>-->
 
