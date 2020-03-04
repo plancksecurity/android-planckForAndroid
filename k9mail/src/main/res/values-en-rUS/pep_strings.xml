@@ -214,4 +214,6 @@
     <string name="pep_key_reset_all_own_ids_warning">This action will reset all your accounts. \n Are you sure you want to reset?</string>
     <string name="pep_key_reset_own_id_warning">This action will reset your account. \n Are you sure you want to reset?</string>
     <string name="pep_key_reset_own_id_warning_title">Reset %s account</string>
+    <string name="intro_frag_third_text_1">Handshake</string>
+    <string name="keysync_wizard_action_cancel">Cancel</string>
 </resources>

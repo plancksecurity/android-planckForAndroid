@@ -133,4 +133,25 @@
     <string name="key_reset_own_identity_feedback">La cuenta ha sido restablecida.</string>
     <string name="pep_key_reset_all_own_ids_summary">Restablecer todas las cuentas</string>
     <string name="key_reset_identity_feedback">El estatus p≡p de este interlocutor ha sido restablecido.</string>
+    <string name="key_import_reject">Rechazar</string>
+    <string name="pep_sync">p≡p sync</string>
+    <string name="intro_frag_second_header_1">Seguro</string>
+    <string name="intro_frag_second_header_2">Seguro y de confianza</string>
+    <string name="intro_frag_second_header_3">Sospechoso</string>
+    <string name="intro_frag_second_text_3">Si las Trustwords no son correctas, tu interlocutor es sospechoso.</string>
+    <string name="intro_frag_third_text_1">Handshake</string>
+    <string name="intro_frag_third_text_2">Completa un handshake con tu interlocutor. Un handshake se necesita solo una vez por interlocutor y garantiza una comunicación segura y verificada.</string>
+    <string name="intro_frag_third_text_4">Al confirmar que tus Trustwords y las de tu interlocutor coincidan, tu comunicación será segura y verificada.</string>
+    <string name="pep_rating_secure">Seguro</string>
+    <string name="pep_rating_mistrusted">Sospechoso</string>
+    <string name="action_tutorial">Tutorial</string>
+    <string name="keysync_wizard_waiting_message">Espera unos instantes mientras sincronizamos tus dispositivos. Este proceso puede llevar unos minutos.</string>
+    <string name="keysync_wizard_error_message">Se ha producido un error al sincronizar los dispositivos. Vuelve a intentarlo.</string>
+    <string name="keysync_wizard_group_creation_done_message">Se ha creado con éxito un grupo de dispositivos. Ahora toda tu privacidad está sincronizada.</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Se ha encontrado otro dispositivo con el que puedes sincronizar toda tu tu privacidad. Quieres empezar a sincronizar\?</string>
+    <string name="keysync_wizard_group_joining_done_message">El dispositivo ahora forma parte de tu grupo de dispositivos. Ahora toda tu privacidad está sincronizada.</string>
+    <string name="keysync_wizard_action_cancel">Cancelar</string>
+    <string name="keysync_wizard_action_next">Siguiente</string>
+    <string name="keysync_wizard_action_leave">Salir</string>
+    <string name="nnf_name">Nombre</string>
 </resources>

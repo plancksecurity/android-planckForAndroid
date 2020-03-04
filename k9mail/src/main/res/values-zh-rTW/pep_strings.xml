@@ -210,4 +210,7 @@
     <string name="pep_key_reset_all_own_ids_warning"/>
     <string name="pep_key_reset_own_id_warning"/>
     <string name="pep_key_reset_own_id_warning_title"/>
+    <string name="intro_frag_third_text_1">Handshake</string>
+    <string name="keysync_wizard_action_cancel">取消</string>
+    <string name="keysync_wizard_action_next">下一步</string>
 </resources>

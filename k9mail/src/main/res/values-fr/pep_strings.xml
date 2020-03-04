@@ -152,4 +152,29 @@
 \n
 \n 1 - possède votre clef publique PGP et
 \n 2 - soit crypté et signé avec la clef p≡p que vous venez d’importer.</string>
+    <string name="key_reset_own_identity_feedback">The account has been reset.</string>
+    <string name="intro_frag_second_header_1">Sécurisé</string>
+    <string name="intro_frag_second_header_2">Sécurisé &amp; Authentique</string>
+    <string name="intro_frag_second_header_3">Suspect</string>
+    <string name="intro_frag_second_text_3">If the Trustwords are not correct, your communication partner is Mistrusted.</string>
+    <string name="intro_frag_third_text_1">Handshake</string>
+    <string name="intro_frag_third_text_2">When you click on the Privacy Status icon in the top bar, you will get to the Handshake, where you can verify your communication partner.</string>
+    <string name="intro_frag_third_text_4">Complete a handshake with your communication partner. A handshake is needed only once per partner and will ensure Secure and Trusted communication.</string>
+    <string name="pep_rating_secure">Sécurisé</string>
+    <string name="pep_rating_mistrusted">Suspect</string>
+    <string name="action_tutorial">Tutoriel</string>
+    <string name="keysync_wizard_waiting_message">Merci de patienter pendant la synchronisation vos dispositifs. Cela peut prendre quelques minutes.</string>
+    <string name="keysync_wizard_error_message">Une erreur s\'est produite durant la synchronisation des dispositifs. Veuillez réessayer.</string>
+    <string name="keysync_wizard_group_creation_done_message">Nous avons correctement créé un groupe de dispositifs. Toutes vos données confidentielles sont maintenant synchronisées.</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Another device was detected. We can add it to your device group to sync all your privacy on all devices. Shall we start synchronizing\?</string>
+    <string name="keysync_wizard_group_joining_done_message">Ce dispositif fait maintenant partie de votre Groupe de dispositifs. Toutes vos données confidentielles sont maintenant synchronisées.</string>
+    <string name="keysync_wizard_action_cancel">Annuler</string>
+    <string name="keysync_wizard_action_next">Suivant</string>
+    <string name="keysync_wizard_action_leave">Quitter</string>
+    <string name="key_reset_identity_feedback">All p≡p data for this communication partner has been reset.</string>
+    <string name="pep_key_reset_all_own_ids_summary">Reset all accounts</string>
+    <string name="nnf_name">Nom</string>
+    <string name="key_import_reject">Rejeter</string>
+    <string name="pep_sync">Sync p≡p</string>
+    <string name="reset">Reset</string>
 </resources>
