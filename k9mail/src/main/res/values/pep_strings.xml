@@ -276,6 +276,8 @@
 
     <string name="action_tutorial">Tutorial</string>
     <string name="only_own_identities">his is an own message, no communication partner involved.</string>
-    <string name="message_failed_to_encrypt">This message failed to encrypt</string>
+    <string name="message_failed_to_encrypt">We could not protect this message.</string>
+    <string name="notification_failed_to_encrypt_title">We could not protect this message.</string>
+    <string name="notification_failed_to_encrypt_text">We didn\'t send it and saved it to the draft folder instead.</string>
 
 </resources>

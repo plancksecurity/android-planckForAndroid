@@ -35,7 +35,8 @@ class SendFailedNotifications {
         int notificationId = NotificationIds.getSendFailedNotificationId(account);
         PendingIntent folderListPendingIntent;
         if (exception instanceof AppDidntEncryptMessageException) {
-
+            title = context.getString(R.string.notification_failed_to_encrypt_title);
+            text = context.getString(R.string.notification_failed_to_encrypt_text);
             AppDidntEncryptMessageException cannotEncryptEx = (AppDidntEncryptMessageException) exception;
             MessageReference messageReference = new MessageReference(account.getUuid(), account.getDraftsFolderName(), cannotEncryptEx.getMimeMessage().getUid(), Flag.X_PEP_WASNT_ENCRYPTED);
             folderListPendingIntent = actionBuilder.createMessageComposePendingIntent(messageReference, notificationId);
@@ -43,7 +44,8 @@ class SendFailedNotifications {
             folderListPendingIntent = actionBuilder.createViewFolderListPendingIntent(account, notificationId);
         }
 
-        NotificationCompat.Builder builder = controller.createNotificationBuilder(account, NotificationChannelManager.ChannelType.MISCELLANEOUS)
+        NotificationCompat.Builder builder = controller
+                .createNotificationBuilder(account, NotificationChannelManager.ChannelType.MISCELLANEOUS)
                 .setSmallIcon(getSendFailedNotificationIcon())
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true)
