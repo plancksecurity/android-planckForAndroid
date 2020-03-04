@@ -1037,7 +1037,7 @@
     <string name="status_poll_and_push_disabled">Polling and pushing disabled</string>
     <string name="debug_delete_local_body">Ladenie / vymazanie tela správy</string>
     <string name="messageview_crypto_warning_show_anyway">Zobraziť správu napriek tomu</string>
-    <string name="messageview_crypto_warning_unsigned">=== App-specific strings =============================================================</string>
+    <string name="messageview_crypto_warning_unsigned">Táto správa bola šifrovaná, ale nebola podpísaná.</string>
     <string name="account_settings_crypto_hide_sign_only">Skryť nezašifrované podpisy</string>
     <string name="account_settings_crypto_hide_sign_only_on">Zobrazia sa iba šifrované podpisy</string>
     <string name="account_settings_crypto_hide_sign_only_off">Budú zobrazené všetky podpisy</string>
@@ -1084,4 +1084,5 @@
     <string name="ac_transfer_error_send">Pri odosielaní správy došlo k chybe. Skontrolujte sieťové pripojenie a konfiguráciu servera odchádzajúcich serverov.</string>
     <string name="switch_on">Zapnúť</string>
     <string name="switch_off">Vypnúť</string>
+    <string name="global_settings_messageiew_after_delete_behavior_title">Správanie po odstránení správy</string>
 </resources>
