@@ -34,7 +34,6 @@ public class PEpStatusPresenterTest {
     @Mock SimpleMessageLoaderHelper simpleMessageLoaderHelper;
     @Mock PEpStatusView pEpStatusView;
     private PEpStatusPresenter presenter;
-    private PEpStatusPresenter presenterSpy;
     @Mock PePUIArtefactCache uiCache;
     @Mock PEpProvider provider;
     @Mock Address senderAddress;
@@ -42,10 +41,9 @@ public class PEpStatusPresenterTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        PEpIdentityMapper pEpIdentityMapper = new PEpIdentityMapper();
+        PEpIdentityMapper pEpIdentityMapper = new PEpIdentityMapper(provider);
         presenter = new PEpStatusPresenter(simpleMessageLoaderHelper,
                 pEpIdentityMapper);
-        presenterSpy = spy(presenter);
     }
 
     @Test
