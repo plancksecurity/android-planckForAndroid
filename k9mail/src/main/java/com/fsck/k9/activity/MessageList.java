@@ -270,6 +270,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             toggle.setDrawerIndicatorEnabled(enabled);
             if (!enabled) {
                 toggle.setToolbarNavigationClickListener(v -> onBackPressed());
+                if(messageViewVisible) {
+                    setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
+                }
             }
         }
     }
