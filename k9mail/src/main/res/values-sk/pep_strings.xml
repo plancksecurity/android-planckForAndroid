@@ -93,10 +93,10 @@
     <string name="app_k9_pep_name">"K-9/p≡p "</string>
     <string name="global_settings_title">Všeobecné nastavenia</string>
     <string name="configure_account_action">Správa účtov</string>
-    <string name="pep_add_device_ask_trustwords">Chystáte sa pridať zariadenie do inej skupiny zariadení p≡p</string>
-    <string name="pep_add_device_ask_move_trustwords">Chystáte sa presunúť zariadenie do inej skupiny zariadení p≡p</string>
+    <string name="pep_add_device_ask_trustwords">Chystáte sa pridať zariadenie do inej skupiny zariadení p≡p. Potvrďte úspešným overením nasledujúcich Trustwords.</string>
+    <string name="pep_add_device_ask_move_trustwords">Chystáte sa presunúť zariadenie do inej skupiny zariadení p≡p. Potvrďte úspešným overením nasledujúcich Trustwords.</string>
     <string name="pep_device_group">p≡p Skupina zariadení</string>
-    <string name="handshake_reset_dialog_message">Varovanie: Tento komunikačný partner bol predtým označený ako nedôverčivý</string>
+    <string name="handshake_reset_dialog_message">Varovanie: Tento komunikačný partner bol predtým označený ako nedôverčivý. Naozaj chcete pokračovať s ďalším Handshake\?</string>
     <string name="pep_gpg_compatibility">Kompatibilita s OpenPGP</string>
     <string name="crash_toast_text">Hops! Niečo sa pokazilo</string>
     <string name="advanced_options">Pokročilé možnosti</string>
@@ -117,7 +117,7 @@
     <string name="is_always_secure">Obchod je chránený na serveri</string>
     <string name="is_not_always_secure">Uchovávať nechránené na serveri</string>
     <string name="master_key_management">Správa extra kľúčov</string>
-    <string name="message_saving_error">Chyba pri ukladaní správy</string>
+    <string name="message_saving_error">Chyba pri ukladaní správ</string>
     <string name="intro_first_text">Automaticky šifruje a anonymizuje váš e-mail</string>
     <string name="intro_second_text">Zabraňuje krádeži identity. Zabíja spam. Zastaví phishing.</string>
     <string name="intro_third_text">Povie vám, ako je vaša komunikácia bezpečná na základe svetiel semaforov.</string>
@@ -126,9 +126,9 @@
     <string name="battery_optimiazation_explanation">Aby sme mohli synchronizovať vaše e-maily na pozadí, musíme deaktivovať optimalizáciu batérie</string>
     <string name="add_account_title">Pridajte svoj účet</string>
     <string name="add_account_message">Ak chcete tento účet používať, musíte si ho pridať do svojho zariadenia</string>
-    <string name="account_already_exists">účet už existuje</string>
+    <string name="account_already_exists">Účet už existuje</string>
     <string name="device_offline_warning">Zdá sa, že vaše zariadenie je v režime offline, skôr ako budete pokračovať, skontrolujte pripojenie</string>
-    <string name="permissions_needed_message">Neudelenie potrebných povolení môže spôsobiť neočakávané správanie. Stlačením tlačidla OK ich udelíte.</string>
+    <string name="permissions_needed_message">Neudelenie potrebných povolení môže spôsobiť neočakávané správanie</string>
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>
         <item>Cannot Decrypt<!--pEpRatingCannotDecrypt--></item>
@@ -177,7 +177,7 @@
     <string name="nnf_new_folder">Nový priečinok</string>
     <string name="nnf_create_folder_error">Nepodarilo sa vytvoriť priečinok</string>
     <string name="nnf_name">Meno</string>
-    <string name="nnf_select_something_first">Najskôr si niečo vyberte</string>
+    <string name="nnf_select_something_first">Najprv vyberte niečo</string>
     <string name="nnf_need_valid_filename">Zadajte alebo vyberte platný názov súboru</string>
     <string name="nnf_permission_external_write_denied">Povolenie na prístup k súborovému systému bolo zamietnuté</string>
     <string name="nnf_filename">Názov súboru</string>
@@ -222,7 +222,6 @@
     <string name="key_reset_all_own_identitities_feedback">Všetky účty P≡p boli resetované.</string>
     <string name="pep_key_reset_all_own_ids_warning">Táto akcia vynuluje všetky vaše účty.
 \n Naozaj chcete resetovať\?</string>
-    <string name="pep_key_reset_own_id_warning">Táto akcia resetuje váš účet.
-\nNaozaj chcete resetovať\?</string>
-    <string name="pep_key_reset_own_id_warning_title">Resetovať %s účtu</string>
+    <string name="pep_key_reset_own_id_warning">Táto akcia resetuje váš účet</string>
+    <string name="pep_key_reset_own_id_warning_title">Obnovte účet %s</string>
 </resources>
