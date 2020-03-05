@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!--<string name="pep_account_setup_generating_keys">Setting your Privacy by Default </string>-->
+<resources>     <!--<string name="pep_account_setup_generating_keys">Setting your Privacy by Default </string>-->
     <string name="pep_reset_trust">Desconfiar</string>
     <string name="pep_pgp_fingerprint">Huella PGP</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
@@ -9,13 +8,10 @@
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Continuar</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancelar</string>
     <string name="pep_dialog_confirm_forward_title">Confirmar reenvio</string>
-    <string name="pep_title_activity_privacy_status">Grado de privacidad</string>
-    <!--<string name="pep_extra_addresses">Extra key ids:</string>-->
+    <string name="pep_title_activity_privacy_status">Grado de privacidad</string>     <!--<string name="pep_extra_addresses">Extra key ids:</string>-->
     <string name="pep_use_keyserver">Buscar las claves en el servidor de claves</string>
     <string name="pep_passive_mode">Modo pasivo</string>
-    <string name="pep_subject_unprotected">Deshabilitar protección del asunto</string>
-    <!--<string name="pep_add_key_to_blacklist">Add a key to blacklist</string>-->
-    <!--<string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>-->
+    <string name="pep_subject_unprotected">Deshabilitar protección del asunto</string>     <!--<string name="pep_add_key_to_blacklist">Add a key to blacklist</string>-->     <!--<string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>-->
     <string name="pep_confirm_trustwords">Aceptar</string>
     <string name="pep_wrong_trustwords">Rechazar</string>
     <string name="pep_wrong_fingerprint">Huella incorrecta</string>
@@ -138,10 +134,8 @@
     <string name="key_reset_identity_feedback">El estatus p≡p de este interlocutor ha sido restablecido.</string>
     <string name="nnf_name">Nombre</string>
     <string name="pep_key_reset_own_id_warning_title">Restablecer la cuenta %s</string>
-    <string name="pep_key_reset_own_id_warning">Esta acción restablecerá tu cuenta. 
-\n ¿Confirmas que quieres hacerlo\?</string>
-    <string name="pep_key_reset_all_own_ids_warning">Esta acción restablecerá todas tus cuentas. 
-\n ¿Confirmas que quieres hacerlo\?</string>
+    <string name="pep_key_reset_own_id_warning">Esta acción restablecerá tu cuenta. \n ¿Confirmas que quieres hacerlo\?</string>
+    <string name="pep_key_reset_all_own_ids_warning">Esta acción restablecerá todas tus cuentas. \n ¿Confirmas que quieres hacerlo\?</string>
     <string name="key_reset_all_own_identitities_feedback">Todas las cuentas p≡p se han restablecido.</string>
     <string name="mistrust_identity_feedback">Ahora %s no es de confianza</string>
     <string name="trust_identity_feedback">Ahora %s es de confianza</string>
@@ -150,11 +144,7 @@
     <string name="key_import_success">La clave %1$s se ha importado correctamente de %2$s</string>
     <string name="key_import_failure">No se ha podido importar ni utilizar ninguna clave de %1$s con el identificador de clave %2$s</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Si has iniciado una importación de la clave para la cuenta %s, haz clic en Iniciar.</string>
-    <string name="pgp_key_import_instructions">Para proceder con la importación de la clave, importa la clave pública p≡p adjunta y responde con un mensaje que cumpla estas dos condiciones: 
-\n
-\n
-\n 1. Adjunta tu clave pública PGP. 
-\n 2. Está encriptado y firmado con la clave p≡p que acabas de importar.</string>
+    <string name="pgp_key_import_instructions">Para proceder con la importación de la clave, importa la clave pública p≡p adjunta y responde con un mensaje que cumpla estas dos condiciones: \n \n \n 1. Adjunta tu clave pública PGP. \n 2. Está encriptado y firmado con la clave p≡p que acabas de importar.</string>
     <string name="key_import_wizard_from_pgp_send_private_key_msg">Encripta y firma el mensaje de respuesta de nuevo con la clave pública p≡p y envíalo.</string>
     <string name="key_import_wizard_from_pgp_create_private_key_msg">En tu dispositivo PGP, crea otro mensaje de respuesta al que has recibido de p≡p. Esta vez, adjunta tu clave privada PGP.</string>
     <string name="key_import_wizard_from_pgp_create_handshake_request">En tu dispositivo PGP, crea un mensaje de respuesta al que has recibido de p≡p y adjunta tu clave pública PGP.</string>
