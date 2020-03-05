@@ -1431,7 +1431,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
         StorageManager.getInstance(getApplication()).addListener(mStorageListener);
 
-        if (!isThreadDisplayed) {
+        if (!messageViewVisible && !isThreadDisplayed) {
             toolBarCustomizer.setToolbarColor(Rating.pEpRatingTrustedAndAnonymized);
             toolBarCustomizer.setStatusBarPepColor(Rating.pEpRatingTrustedAndAnonymized);
         }
