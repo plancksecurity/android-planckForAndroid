@@ -177,6 +177,5 @@
     <string name="download_snackbar_permission_rationale">Necessitem el teu permís per desar els fitxers adjunts dels teus correus electrònics.</string>
     <string name="pep_keysync_timeout">Límit de temps de la sincronització p≡p</string>
     <string name="pep_add_device_ask_move_trustwords">Estàs a punt de traslladar un dispositiu a un altre grup de dispositius p≡p. Confirma l\'acció verificant correctament les paraules de confiança següents.</string>
-    <string name="app_k9_pep_name">"K-9/p≡p "</string>
-    <string name="pep_app_description">K-9/p≡p és un client de correu electrònic per a Android, potent i gratuït, que utilitza el sistema p≡p (pretty Easy privacy).</string>
+    <string name="pep_app_description">p≡p és un client de correu electrònic per a Android, potent i gratuït, que utilitza el sistema p≡p (pretty Easy privacy).</string>
 </resources>
