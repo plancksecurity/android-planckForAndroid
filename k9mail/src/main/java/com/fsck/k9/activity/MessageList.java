@@ -2429,7 +2429,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             if (mDisplayMode == DisplayMode.SPLIT_VIEW) {
                 showMessageViewPlaceHolder();
             } else {
-                showMessageList();
+                goBack();
             }
         }
     }
