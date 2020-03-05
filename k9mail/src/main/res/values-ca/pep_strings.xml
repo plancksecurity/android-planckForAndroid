@@ -116,6 +116,7 @@
     <string name="is_not_always_secure">Desar sense protegir al servidor</string>
     <string name="master_key_management">Gestió de claus mestres</string>
     <string name="message_saving_error">S\'ha produït un error desant el missatge</string>
+    <string name="intro_first_text">Xifra i anonimitza els teus correus de forma automàtica</string>
     <string name="action_continue">Continuar</string>
     <string name="battery_optimization_rationale_title">Desactivar l\'optimitzaciò de bateria</string>
     <string name="battery_optimiazation_explanation">Per a sincronitzar els seus missatges en segon pla necessitem desactivar l\'optimització de bateria</string>
@@ -127,10 +128,8 @@
     <string name="pep_sync_disable_global">Desactiva la sincronització p≡p</string>
     <string name="pep_sync_enable_global">Activa la sincronització p≡p</string>
     <string name="pep_key_reset_own_id_warning_title">Restableix el compte de %s</string>
-    <string name="pep_key_reset_own_id_warning">Aquesta acció restablirà el teu compte.
-\n Confirmes que vols fer el restabliment\?</string>
-    <string name="pep_key_reset_all_own_ids_warning">Aquesta acció restablirà tots els teus comptes.
-\n Confirmes que vols fer el restabliment\?</string>
+    <string name="pep_key_reset_own_id_warning">Aquesta acció restablirà el teu compte. \n Confirmes que vols fer el restabliment\?</string>
+    <string name="pep_key_reset_all_own_ids_warning">Aquesta acció restablirà tots els teus comptes. \n Confirmes que vols fer el restabliment\?</string>
     <string name="key_reset_all_own_identitities_feedback">S\'han restablert tots els comptes p≡p.</string>
     <string name="mistrust_identity_feedback">Ara %s no és de confiança</string>
     <string name="trust_identity_feedback">Ara %s és de confiança</string>
@@ -140,11 +139,7 @@
     <string name="key_import_success">La clau %1$s s\'ha importat correctament de %2$s</string>
     <string name="key_import_failure">No s\'ha pogut importar ni utilitzar cap clau de %1$s amb l\'identificador de clau %2$s</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Si has iniciat una importació de la clau per al compte següent: %s, fes clic a Inicia.</string>
-    <string name="pgp_key_import_instructions">Per continuar amb la importació de la clau, importa la clau p≡p pública adjunta i respon amb un missatge que compleixi aquestes condicions:
-\n
-\n
-\n 1. Té adjunta la teva clau PGP pública.
-\n2. Està encriptat i signat amb la clau p≡p que acabes d\'importar.</string>
+    <string name="pgp_key_import_instructions">Per continuar amb la importació de la clau, importa la clau p≡p pública adjunta i respon amb un missatge que compleixi aquestes condicions: \n \n \n 1. Té adjunta la teva clau PGP pública. \n2. Està encriptat i signat amb la clau p≡p que acabes d\'importar.</string>
     <string name="key_import_wizard_from_pgp_send_private_key_msg">Encripta i signa el missatge de resposta de nou amb la clau p≡p pública i envia\'l.</string>
     <string name="key_import_wizard_from_pgp_create_private_key_msg">Al teu dispositiu PGP, crea un altre missatge de resposta al que has rebut de p≡p. En aquesta ocasió, no hi adjuntis la teva clau PGP privada.</string>
     <string name="key_import_wizard_handshake_explanation_pgp">Compara les empremtes PGP de les claus següents amb les claus del teu dispositiu PGP i confirma que coincideixin.</string>
@@ -177,5 +172,6 @@
     <string name="download_snackbar_permission_rationale">Necessitem el teu permís per desar els fitxers adjunts dels teus correus electrònics.</string>
     <string name="pep_keysync_timeout">Límit de temps de la sincronització p≡p</string>
     <string name="pep_add_device_ask_move_trustwords">Estàs a punt de traslladar un dispositiu a un altre grup de dispositius p≡p. Confirma l\'acció verificant correctament les paraules de confiança següents.</string>
+    <string name="app_k9_pep_name">"p≡p "</string>
     <string name="pep_app_description">p≡p és un client de correu electrònic per a Android, potent i gratuït, que utilitza el sistema p≡p (pretty Easy privacy).</string>
 </resources>
