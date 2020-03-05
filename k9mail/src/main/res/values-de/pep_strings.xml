@@ -4,7 +4,7 @@
     <string name="pep_pgp_fingerprint">PGP-Fingerabdruck</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
     <string name="pep_account_setup_generating_keys">"Datenschutz wird eingerichtet "</string>
-    <string name="pep_dialog_weaker_forward_warning_message">"Sie versuchen, eine sichere Nachricht ungesichert weiterzuleiten. Wenn Sie damit fortfahren, setzen Sie sich und Ihre Kommunikationspartner dem Risiko aus, dass Dritte Zugriff auf vertrauliche Informationen erhalten. Möchten Sie wirklich fortfahren? "</string>
+    <string name="pep_dialog_weaker_forward_warning_message">Sie versuchen, eine sichere Nachricht ungesichert weiterzuleiten. Wenn Sie damit fortfahren, setzen Sie sich und Ihre Kommunikationspartner dem Risiko aus, dass Dritte Zugriff auf vertrauliche Informationen erhalten. Möchten Sie wirklich fortfahren\?</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Fortfahren</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Abbrechen</string>
     <string name="pep_dialog_confirm_forward_title">Weiterleitung bestätigen</string>
@@ -18,7 +18,7 @@
     <string name="pep_confirm_trustwords">Bestätigen</string>
     <string name="pep_wrong_trustwords">Ablehnen</string>
     <string name="pep_wrong_fingerprint">Falscher Fingerabdruck</string>
-    <string name="pep_ask_trustwords">Bitten Sie Ihren Kommunikationspartner, seine Trustwords persönlich oder telefonisch vorzulesen. Diese müssen mit den untenstehenden übereinstimmen.</string>
+    <string name="pep_ask_trustwords">Bitten Sie Ihren Kommunikationspartner, seine Trustwords persönlich oder telefonisch vorzulesen. Diese sollten mit den untenstehenden übereinstimmen.</string>
     <string name="pep_complete_partner_format">Partner\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_partner_format">Partner\n%1$s</string>
     <string name="pep_complete_myself_format">Ich\n%1$s &lt;%2$s&gt;</string>
@@ -110,11 +110,11 @@
     <string name="read_permission_first_explanation">Wir benötigen Ihre Erlaubnis, um auf die auf Ihrem Gerät gespeicherten Kontakte zuzugreifen</string>
     <string name="button_settings">Einstellungen</string>
     <string name="read_snackbar_permission_rationale">p≡p benötigt Ihre Erlaubnis, um die auf Ihrem Gerät gespeicherten Kontakte zu lesen</string>
-    <string name="read_snackbar_permission_permanently_denied">Ohne Zugriff auf die Kontakte können unerwartete Fehler auftreten.</string>
+    <string name="read_snackbar_permission_permanently_denied">Es kann zu unerwartetem Verhalten in der Anwendung führen, wenn Sie das Lesen der Kontakte nicht erlauben</string>
     <string name="read_permission_rationale_title">Lesezugriff auf Kontakte</string>
     <string name="download_permission_first_explanation">p≡p benötigt Ihre Erlaubnis, um Dateien auf Ihr Gerät herunterzuladen</string>
     <string name="download_snackbar_permission_rationale">p≡p benötigt Ihre Erlaubnis, um Dateien auf Ihr Gerät herunterzuladen</string>
-    <string name="download_snackbar_permission_permanently_denied">Ohne Erlaubnis für Downloads können unerwartete Fehler auftreten.</string>
+    <string name="download_snackbar_permission_permanently_denied">Es kann zu unerwartetem Verhalten in der Anwendung führen, wenn Sie das Herunterladen von Dateien nicht erlauben</string>
     <string name="download_permission_rationale_title">Dateien herunterladen</string>
     <string name="add_fpr">Fingerabdruck hinzufügen</string>
     <string name="error_parsing_fingerprint">Fehler beim Analysieren des Fingerabdrucks!</string>
@@ -122,6 +122,9 @@
     <string name="is_not_always_secure">Nachrichten auf Server ungeschützt speichern</string>
     <string name="master_key_management">Hauptschlüsselverwaltung</string>
     <string name="message_saving_error">Fehler beim Speichern der Nachricht</string>
+    <string name="intro_first_text">Verschlüsselt und anonymisiert Ihre Nachrichten automatisch</string>
+    <string name="intro_second_text">Verhindert Identitätsdiebstahl. Stoppt Spam und Phishing.</string>
+    <string name="intro_third_text">Zeigt Ihnen die Sicherheit Ihrer Kommunikation mit Ampelfarben an.</string>
     <string name="action_continue">Weiter</string>
     <string name="battery_optimization_rationale_title">Energiesparmodus deaktivieren</string>
     <string name="battery_optimiazation_explanation">Um Ihre Nachrichten im Hintergrund synchronisieren zu können, muss der Energiesparmodus deaktiviert werden</string>
@@ -131,24 +134,51 @@
     <string name="reset">Zurücksetzen</string>
     <string name="nnf_name">Name</string>
     <string name="pep_sync">p≡p Synchronisierung</string>
-    <string name="key_import_wizard_pep_not_initial_explanation">Wenn Sie den Import eines Schlüsselcodes für das Konto %s eingeleitet haben, dann klicken Sie auf Start.</string>
-    <string name="intro_frag_second_header_1">Sicher</string>
-    <string name="intro_frag_second_header_2">Sicher und verifiziert</string>
-    <string name="intro_frag_second_header_3">Verdächtig</string>
-    <string name="intro_frag_second_text_3">Wenn die Trustwords nicht übereinstimmen, ist Ihr Kommunikationspartner verdächtig.</string>
-    <string name="intro_frag_third_text_1">Handshake</string>
-    <string name="intro_frag_third_text_2">Durch Klick auf das Datenschutzstatussymbol öffnen Sie den Handshake-Dialog, in dem Sie Ihren Kommunikationspartner verifizieren können.</string>
-    <string name="intro_frag_third_text_4">Führen Sie einen Handshake mit Ihrem Kommunikationspartner durch. Der Handshake ist nur einmal pro Partner nötig und garantiert eine sichere und verifizierte Kommunikation.</string>
-    <string name="pep_rating_secure">Sicher</string>
-    <string name="pep_rating_mistrusted">Verdächtig</string>
-    <string name="action_tutorial">Tutorial</string>
-    <string name="keysync_wizard_waiting_message">Bitte warten Sie einen Moment, bis ihre Geräte synchronisiert sind. Das kann eine Minute oder länger dauern.</string>
-    <string name="keysync_wizard_error_message">Etwas ist beim Synchronisieren der Geräte schief gelaufen.Bitte versuchen Sie es noch einmal.</string>
-    <string name="keysync_wizard_group_creation_done_message">Ihre Gerätegruppe wurde erfolgreich gebildet. Ihre gesamten Datenschutz-Einstellungen sind jetzt synchronisiert.</string>
-    <string name="keysync_wizard_add_device_to_existing_group_message">Es wurde ein weiteres Gerät gefunden, mit dem Sie Ihre Datenschutzeinstellungen synchronisieren können. Möchten Sie mit der Synchronisierung beginnen\?</string>
-    <string name="keysync_wizard_group_joining_done_message">Das Gerät ist nun Teil Ihrer Gerätegruppe. Ihre gesamten Datenschutz-Einstellungen sind jetzt synchronisiert.</string>
-    <string name="keysync_wizard_action_cancel">Abbrechen</string>
-    <string name="keysync_wizard_action_next">Weiter</string>
-    <string name="keysync_wizard_action_leave">Verlassen</string>
+    <string name="pep_sync_disable_global">p≡p Sync deaktivieren</string>
+    <string name="pep_sync_enable_global">p≡p Sync aktivieren</string>
+    <string name="pep_key_reset_all_own_ids_warning">Dieser Vorgang setzt alle Ihre Konten zurück. 
+\n Möchten Sie Ihr Konto wirklich zurücksetzen\?</string>
+    <string name="key_reset_all_own_identitities_feedback">Alle p≡p-Konten wurden zurückgesetzt.</string>
+    <string name="mistrust_identity_feedback">%s ist nicht vertrauenswürdig</string>
+    <string name="trust_identity_feedback">%s ist jetzt vertrauenswürdig</string>
+    <string name="key_reset_for_identity_context_title">p≡p-Daten zurücksetzen</string>
+    <string name="reset_all">Alles zurücksetzen</string>
+    <string name="key_import_from_fs_input_fpr">Bitte geben Sie die ID oder den Fingerabdruck des Schlüsselcodes ein.</string>
+    <string name="key_import_success">%1$s Schlüsselcode erfolgreich aus %2$s importiert</string>
+    <string name="key_import_failure">Fehler beim Importieren und Verwenden jeglicher Schlüsselcodes von %1$s mit der ID %2$s</string>
+    <string name="key_import_wizard_pep_not_initial_explanation">"Wenn Sie den Import eines Schlüsselcodes für das Konto  %s eingeleitet haben, dann klicken Sie auf Start."</string>
+    <string name="pgp_key_import_instructions">Um mit dem Import des Schlüsselcodes fortzufahren, importieren Sie bitte den angehängten öffentlichen p≡p-Schlüsselcode und antworten Sie mit einer Nachricht, die Folgendes erfüllt: 
+\n
+\n
+\n 1. Ihr öffentlicher PGP-Schlüsselcode ist angehängt und 
+\n2. Die Nachricht ist verschlüsselt und mit dem soeben importierten p≡p-Schlüsselcode signiert</string>
+    <string name="key_import_wizard_from_pgp_send_private_key_msg">Verschlüsseln und signieren Sie die Antwortnachricht erneut mit dem öffentlichen p≡p-Schlüssel und senden Sie sie.</string>
+    <string name="key_import_wizard_from_pgp_create_private_key_msg">Erstellen Sie auf Ihrem PGP-Gerät eine weitere Antwort auf die von p≡p erhaltene Nachricht. Bitte fügen Sie diesmal Ihren privaten PGP-Schlüsselcode hinzu.</string>
+    <string name="key_import_wizard_handshake_explanation_pgp">Bitte vergleichen Sie die PGP-Fingerabdrücke der nachfolgenden Tasten mit jenen auf Ihrem PGP-Gerät und bestätigen Sie, ob sie übereinstimmen.</string>
+    <string name="nnf_create_folder_error">Erstellen des Ordners fehlgeschlagen</string>
+    <string name="device_offline_warning">Ihr Gerät scheint offline zu sein. Prüfen Sie Ihre Verbindung, bevor Sie fortfahren.</string>
+    <string name="account_already_exists">Dieses Konto existiert bereits</string>
+    <string name="pep_key_reset_own_id_warning_title">Konto %s zurücksetzen</string>
+    <string name="pep_key_reset_own_id_warning">Dieser Vorgang setzt Ihr Konto zurück. 
+\n Möchten Sie Ihr Konto wirklich zurücksetzen\?</string>
+    <string name="key_import_wizard_from_pgp_send_handshake_request">Verschlüsseln und signieren Sie die Antwortnachricht mit dem soeben importierten öffentlichen p≡p-Schlüssel und senden Sie sie.</string>
+    <string name="key_import_wizard_from_pgp_create_handshake_request">Erstellen Sie auf Ihrem PGP-Gerät eine Antwort auf die von p≡p erhaltene Nachricht und fügen Sie Ihren öffentlichen PGP-Schlüssel hinzu.</string>
+    <string name="key_import_wizard_from_pgp_key_sent">Eine Nachricht mit Ihrem öffentlichen p≡p-Schlüsselcode wurde an Sie selbst gesendet. Bitte öffnen Sie diese Nachricht auf Ihrem PGP-Gerät und importieren Sie Ihren öffentlichen p≡p-Schlüsselcode in Ihren Speicherstift.</string>
+    <string name="key_import_wizard_from_pgp_initial_text">Sie sind dabei, den Import des Schlüsselcodes von einem PGP-Clienten zu starten</string>
+    <string name="key_import_wizard_from_pep_initial_text">Wir sind dabei, den Import des Schlüsselcodes zu starten: Dieser Vorgang importiert Ihren p≡p-Schlüsselcode von einem anderen Gerät, verwendet ihn und exportiert Ihren privaten Schlüsselcode.</string>
+    <string name="key_import_wizard_handshake_explanation">Bitte vergleichen Sie die folgenden Trustwords mit jenen auf Ihrem anderen Gerät und bestätigen Sie, ob sie übereinstimmen.</string>
+    <string name="open_pgp">OpenPGP</string>
+    <string name="pep_sync_leave_device_group">Gerätegruppe verlassen</string>
+    <string name="pgp">PGP</string>
+    <string name="message_loading_error">Die Bewertung der Nachricht wird noch geladen. Versuchen Sie es erneut</string>
+    <string name="key_import_reject_feedback">Schlüsselcode abgelehnt</string>
+    <string name="key_import_accept_feedback">Schlüsselcode ersetzt</string>
     <string name="key_import_reject">Ablehnen</string>
+    <string name="key_import_accept">Bestätigen</string>
+    <string name="nnf_filename">Dateiname</string>
+    <string name="nnf_need_valid_filename">Bitte geben Sie einen gültigen Dateinamen ein oder wählen Sie einen solchen aus</string>
+    <string name="nnf_select_something_first">Bitte wählen Sie zuerst etwas aus</string>
+    <string name="nnf_new_folder">Neuer Ordner</string>
+    <string name="add_account_message">"Übertragen Sie dieses Konto auf Ihr Gerät, um es nutzen zu können "</string>
+    <string name="add_account_title">Ihr Konto hinzufügen</string>
 </resources>

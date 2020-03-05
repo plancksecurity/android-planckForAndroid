@@ -56,7 +56,7 @@
     <string name="pep_add_key_to_blacklist"/>
     <string name="pep_remove_key_from_blacklist"/>
     <string name="pep_confirm_trustwords"/>
-    <string name="pep_wrong_trustwords"/>
+    <string name="pep_wrong_trustwords">Decline</string>
     <string name="pep_wrong_fingerprint">Wrong fingerprint</string>
     <string name="pep_ask_trustwords"/>
     <string name="pep_complete_partner_format"/>

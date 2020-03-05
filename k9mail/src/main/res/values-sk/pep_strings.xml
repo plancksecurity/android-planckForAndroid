@@ -116,7 +116,7 @@
     <string name="error_parsing_fingerprint">Chyba pri spracovaní PGP Fingerprintu!</string>
     <string name="is_always_secure">Obchod je chránený na serveri</string>
     <string name="is_not_always_secure">Uchovávať nechránené na serveri</string>
-    <string name="master_key_management">Správa Extra kľúčov</string>
+    <string name="master_key_management">Správa extra kľúčov</string>
     <string name="message_saving_error">Chyba pri ukladaní správy</string>
     <string name="intro_first_text">Automaticky šifruje a anonymizuje váš e-mail</string>
     <string name="intro_second_text">Zabraňuje krádeži identity. Zabíja spam. Zastaví phishing.</string>

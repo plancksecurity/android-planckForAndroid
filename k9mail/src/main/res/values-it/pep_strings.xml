@@ -48,7 +48,7 @@
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Procedi</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Anullare</string>
     <string name="pep_dialog_confirm_forward_title"/>
-    <string name="pep_title_activity_privacy_status">Privacy Status</string>
+    <string name="pep_title_activity_privacy_status"/>
     <string name="pep_extra_addresses"/>
     <string name="pep_use_keyserver"/>
     <string name="pep_passive_mode"/>
@@ -56,7 +56,7 @@
     <string name="pep_add_key_to_blacklist"/>
     <string name="pep_remove_key_from_blacklist"/>
     <string name="pep_confirm_trustwords"/>
-    <string name="pep_wrong_trustwords"/>
+    <string name="pep_wrong_trustwords">Decline</string>
     <string name="pep_wrong_fingerprint">Wrong fingerprint</string>
     <string name="pep_ask_trustwords"/>
     <string name="pep_complete_partner_format"/>
@@ -114,6 +114,9 @@
     <string name="is_not_always_secure"/>
     <string name="master_key_management"/>
     <string name="message_saving_error"/>
+    <string name="intro_first_text"/>
+    <string name="intro_second_text"/>
+    <string name="intro_third_text"/>
     <string name="action_continue">Continua</string>
     <string name="battery_optimization_rationale_title"/>
     <string name="battery_optimiazation_explanation"/>
@@ -181,6 +184,8 @@
     <string name="message_loading_error"/>
     <string name="pep_sync"/>
     <string name="pep_sync_enable_account"/>
+    <string name="pep_sync_enable_global"/>
+    <string name="pep_sync_disable_global"/>
     <string name="pep_sync_leave_device_group"/>
     <string name="open_pgp"/>
     <string name="pgp"/>
@@ -210,16 +215,4 @@
     <string name="pep_key_reset_all_own_ids_warning"/>
     <string name="pep_key_reset_own_id_warning"/>
     <string name="pep_key_reset_own_id_warning_title"/>
-    <string name="intro_frag_second_header_1">Secure</string>
-    <string name="intro_frag_second_header_2">Secure &amp; Trusted</string>
-    <string name="intro_frag_second_header_3">Mistrusted</string>
-    <string name="intro_frag_second_text_3">If the Trustwords are not correct, your communication partner is Mistrusted.</string>
-    <string name="intro_frag_third_text_1">Handshake</string>
-    <string name="intro_frag_third_text_2">When you click on the Privacy Status icon in the top bar, you will get to the Handshake, where you can verify your communication partner.</string>
-    <string name="intro_frag_third_text_4">Complete a handshake with your communication partner. A handshake is needed only once per partner and will ensure Secure and Trusted communication.</string>
-    <string name="pep_rating_secure">Secure</string>
-    <string name="pep_rating_mistrusted">Mistrusted</string>
-    <string name="keysync_wizard_add_device_to_existing_group_message">Another device was detected. We can add it to your device group to sync all your privacy on all devices. Shall we start synchronizing\?</string>
-    <string name="keysync_wizard_action_cancel">Anullare</string>
-    <string name="keysync_wizard_action_next">Successivo</string>
 </resources>

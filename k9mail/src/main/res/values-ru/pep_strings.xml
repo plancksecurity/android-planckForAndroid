@@ -114,6 +114,9 @@
     <string name="is_not_always_secure"/>
     <string name="master_key_management"/>
     <string name="message_saving_error"/>
+    <string name="intro_first_text"/>
+    <string name="intro_second_text"/>
+    <string name="intro_third_text"/>
     <string name="action_continue">Продолжить</string>
     <string name="battery_optimization_rationale_title"/>
     <string name="battery_optimiazation_explanation"/>
@@ -181,6 +184,8 @@
     <string name="message_loading_error"/>
     <string name="pep_sync"/>
     <string name="pep_sync_enable_account"/>
+    <string name="pep_sync_enable_global"/>
+    <string name="pep_sync_disable_global"/>
     <string name="pep_sync_leave_device_group"/>
     <string name="open_pgp"/>
     <string name="pgp"/>
@@ -210,7 +215,4 @@
     <string name="pep_key_reset_all_own_ids_warning"/>
     <string name="pep_key_reset_own_id_warning"/>
     <string name="pep_key_reset_own_id_warning_title"/>
-    <string name="intro_frag_third_text_1">Handshake</string>
-    <string name="keysync_wizard_action_cancel">Отмена</string>
-    <string name="keysync_wizard_action_next">Далее</string>
 </resources>
