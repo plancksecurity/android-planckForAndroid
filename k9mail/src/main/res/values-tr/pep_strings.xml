@@ -104,10 +104,8 @@
     <string name="nnf_name">Adı</string>
     <string name="reset">Sıfırla</string>
     <string name="pep_key_reset_own_id_warning_title">%s hesabını sıfırla</string>
-    <string name="pep_key_reset_own_id_warning">Bu işlem hesabınızı sıfırlayacaktır. 
-\n Sıfırlamak istediğinizden emin misiniz\?</string>
-    <string name="pep_key_reset_all_own_ids_warning">Bu işlem tüm hesaplarınızı sıfırlayacaktır. 
-\n Sıfırlamak istediğinizden emin misiniz\?</string>
+    <string name="pep_key_reset_own_id_warning">Bu işlem hesabınızı sıfırlayacaktır. \n Sıfırlamak istediğinizden emin misiniz\?</string>
+    <string name="pep_key_reset_all_own_ids_warning">Bu işlem tüm hesaplarınızı sıfırlayacaktır. \n Sıfırlamak istediğinizden emin misiniz\?</string>
     <string name="key_reset_all_own_identitities_feedback">Tüm p≡p hesapları sıfırlandı.</string>
     <string name="mistrust_identity_feedback">%s artık güvenilir değil</string>
     <string name="trust_identity_feedback">%s artık güvenilir</string>
@@ -117,11 +115,7 @@
     <string name="key_import_success">%1$s Anahtarı öğesinden başarıyla içe aktarıldı%2$s</string>
     <string name="key_import_failure">%1$s öğesinden anahtar kimliği şu şekilde olan herhangi bir anahtar içe aktarılamadı ve kullanılamadı: %2$s</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Aşağıdaki hesaptan bir anahtar içe aktarma işlemi başlattıysanız: %s, lütfen Başlat’a tıklayın.</string>
-    <string name="pgp_key_import_instructions">Anahtar İçe Aktarmaya devam etmek için lütfen ekli genel p≡p anahtarını içe aktarın ve aşağıdaki özellikleri taşıyan bir ileti ile yanıt verin: 
-\n
-\n
-\n 1. genel PGP anahtarınızla ilişkilendirilmiş ve 
-\n 2. az önce içe aktardığınız p≡p anahtarı ile şifrelenmiş ve imzalanmış</string>
+    <string name="pgp_key_import_instructions">Anahtar İçe Aktarmaya devam etmek için lütfen ekli genel p≡p anahtarını içe aktarın ve aşağıdaki özellikleri taşıyan bir ileti ile yanıt verin: \n \n \n 1. genel PGP anahtarınızla ilişkilendirilmiş ve \n 2. az önce içe aktardığınız p≡p anahtarı ile şifrelenmiş ve imzalanmış</string>
     <string name="key_import_wizard_from_pgp_send_private_key_msg">Genel p≡p anahtarı ile yanıt iletisini yeniden şifreleyerek imzalayın ve gönderin.</string>
     <string name="key_import_wizard_from_pgp_create_private_key_msg">PGP aygıtınızda, p≡p’den aldığınıza başka bir yanıt iletisi oluşturun. Bu sefer lütfen özel PGP anahtarınızı iliştirin.</string>
     <string name="key_import_wizard_handshake_explanation_pgp">Lütfen aşağıdaki anahtarların PGP parmak izlerini PGP aygıtınızdakilerle karşılaştırın ve bunların uyumlu olduğunu teyit edin.</string>
