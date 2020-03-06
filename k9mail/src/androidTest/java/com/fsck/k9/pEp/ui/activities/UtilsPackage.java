@@ -157,6 +157,23 @@ public class UtilsPackage {
         };
     }
 
+    public static Matcher<View> withTextColor(final int expectedId) {
+        return new BoundedMatcher<View, TextView>(TextView.class) {
+
+            @Override
+            protected boolean matchesSafely(TextView textView) {
+                int colorId = ContextCompat.getColor(textView.getContext(), expectedId);
+                return textView.getCurrentTextColor() == colorId;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with text color: ");
+                description.appendValue(expectedId);
+            }
+        };
+    }
+
     public static int getViewColorHSV(ViewInteraction interaction) {
         final int[] color = new int[1];
         interaction.perform(new ViewAction() {
