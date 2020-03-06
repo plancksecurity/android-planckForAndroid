@@ -708,7 +708,7 @@ public class CucumberTestSteps {
     }
 
     private void checkPrivacyStatus(String status){
-        int statusRating = -10;
+        Rating statusRating = null;
         BySelector selector = By.clazz("android.widget.ScrollView");
         while (!viewIsDisplayed(R.id.toolbar)) {
             device.waitForIdle();
@@ -742,46 +742,46 @@ public class CucumberTestSteps {
             waitUntilIdle();
         switch (status){
             case "pEpRatingUndefined":
-                statusRating = Rating.pEpRatingUndefined.value;
+                statusRating = Rating.pEpRatingUndefined;
                 break;
             case "pEpRatingCannotDecrypt":
-                statusRating = Rating.pEpRatingCannotDecrypt.value;
+                statusRating = Rating.pEpRatingCannotDecrypt;
                 break;
             case "pEpRatingHaveNoKey":
-                statusRating = Rating.pEpRatingHaveNoKey.value;
+                statusRating = Rating.pEpRatingHaveNoKey;
                 break;
             case "pEpRatingUnencrypted":
-                statusRating = Rating.pEpRatingUnencrypted.value;
+                statusRating = Rating.pEpRatingUnencrypted;
                 break;
             case "pEpRatingUnencryptedForSome":
-                statusRating = Rating.pEpRatingUnencryptedForSome.value;
+                statusRating = Rating.pEpRatingUnencryptedForSome;
                 break;
             case "pEpRatingUnreliable":
-                statusRating = Rating.pEpRatingUnreliable.value;
+                statusRating = Rating.pEpRatingUnreliable;
                 break;
             case "pEpRatingReliable":
-                statusRating = Rating.pEpRatingReliable.value;
+                statusRating = Rating.pEpRatingReliable;
                 break;
             case "pEpRatingTrusted":
-                statusRating = Rating.pEpRatingTrusted.value;
+                statusRating = Rating.pEpRatingTrusted;
                 break;
             case "pEpRatingTrustedAndAnonymized":
-                statusRating = Rating.pEpRatingTrustedAndAnonymized.value;
+                statusRating = Rating.pEpRatingTrustedAndAnonymized;
                 break;
             case "pEpRatingFullyAnonymous":
-                statusRating = Rating.pEpRatingFullyAnonymous.value;
+                statusRating = Rating.pEpRatingFullyAnonymous;
                 break;
             case "pEpRatingMistrust":
-                statusRating = 10;
+                statusRating = Rating.pEpRatingMistrust;
                 break;
             case "pEpRatingB0rken":
-                statusRating = 11;
+                statusRating = Rating.pEpRatingB0rken;
                 break;
             case "pEpRatingUnderAttack":
-                statusRating = 12;
+                statusRating = Rating.pEpRatingUnderAttack;
                 break;
         }
-        if (statusRating != -10) {
+        if (statusRating != null) {
             testUtils.assertMessageStatus(statusRating);
         } else {
             testUtils.checkToolbarColor(testUtils.colorToID(status));
@@ -1414,7 +1414,7 @@ public class CucumberTestSteps {
     public void I_save_trustwords(){
         timeRequiredForThisMethod(10);
         device.waitForIdle();
-        onView(withId(R.id.tvPep)).perform(click());
+        onView(withId(R.id.securityStatusText)).perform(click());
         device.waitForIdle();
         trustWords = getTextFromView(onView(withId(R.id.trustwords)));
         testUtils.pressBack();
