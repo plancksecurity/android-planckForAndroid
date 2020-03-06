@@ -143,9 +143,6 @@
     <string name="add_account_title">Hesabınızı ekleyin</string>
     <string name="battery_optimiazation_explanation">E-postalarınızı arka planda eşitlemek için pil optimizasyonlarını devre dışı bırakmamız gerekmektedir</string>
     <string name="battery_optimization_rationale_title">Pil optimizasyonlarını devre dışı bırak</string>
-    <string name="intro_third_text">Trafik ışıklarına dayalı olarak iletişiminizin ne kadar güvenli olduğunu gösterir.</string>
-    <string name="intro_second_text">Kimlik Hırsızlığını Önler. İstenmeyen Postaları Ortadan Kaldırır. Kimlik Avlarını Durdurur.</string>
-    <string name="intro_first_text">E-postanızı otomatik olarak şifreler ve anonim hale getirir</string>
     <string name="message_saving_error">İleti kaydetme hatası</string>
     <string name="master_key_management">Ekstra Anahtar yönetimi</string>
     <string name="is_not_always_secure">Sunucuda korumasız olarak sakla</string>
@@ -164,8 +161,6 @@
     <string name="available_accounts_title">Müsait kişiler</string>
     <string name="message_list_item_undo">GERİ AL</string>
     <string name="pgp">PGP</string>
-    <string name="pep_sync_disable_global">p≡p eşitlemesini devre dışı bırak</string>
-    <string name="pep_sync_enable_global">p≡p eşitlemesini etkinleştir</string>
     <string name="nnf_select_something_first">Lütfen önce bir seçim yapın</string>
     <string name="download_permission_rationale_title">Dosyaları indir</string>
     <string name="download_permission_first_explanation">Dosyaları cep telefonunuza indirmek için izninize ihtiyacımız var</string>

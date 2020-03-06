@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="navigation_drawer_open">Navigatielade openen</string>
-    <string name="navigation_drawer_close">Navigatielade sluiten</string>     <!-- Unstranslatable strings -->
+    <string name="navigation_drawer_close">Navigatielade sluiten</string>
+    <!-- Unstranslatable strings -->
     <string name="pep" translatable="false">p≡p</string>
     <string name="pep_long" translatable="false">pretty Easy privacy</string>
     <string name="pep_handshake" translatable="false">Handshake</string>
@@ -38,7 +39,8 @@
         <item>@color/pep_red<!--pEpRatingMissTrust--></item>
         <item>@color/pep_red<!--pEpRatingB0rken--></item>
         <item>@color/pep_red<!--pEpRatingUnderAttack--></item>
-    </array>     <!-- Translatable strings -->
+    </array>
+    <!-- Translatable strings -->
     <string name="pep_account_setup_generating_keys">"Uw privacy standaard instellen "</string>
     <string name="pep_reset_trust">Stoppen met vertrouwen</string>
     <string name="pep_pgp_fingerprint">PGP-Fingerprint</string>
@@ -56,7 +58,7 @@
     <string name="pep_confirm_trustwords">Accepteren</string>
     <string name="pep_wrong_trustwords">Weigeren</string>
     <string name="pep_wrong_fingerprint">Verkeerde vingerafdruk</string>
-    <string name="pep_ask_trustwords" />
+    <string name="pep_ask_trustwords"/>
     <string name="pep_complete_partner_format">Partner \n%1$s &lt;%2$s&gt;</string>
     <string name="pep_partner_format">Partner \n%1$s</string>
     <string name="pep_complete_myself_format">Ikzelf \n%1$s &lt;%2$s&gt;</string>
@@ -100,11 +102,11 @@
     <string name="read_permission_first_explanation">We hebben uw toestemming nodig om de contactpersonen te lezen die op uw mobiele telefoon opgeslagen zijn</string>
     <string name="button_settings">Instellingen</string>
     <string name="read_snackbar_permission_rationale">We hebben uw toestemming nodig om de contactpersonen te lezen die op uw mobiele telefoon opgeslagen zijn</string>
-    <string name="read_snackbar_permission_permanently_denied" />
+    <string name="read_snackbar_permission_permanently_denied"/>
     <string name="read_permission_rationale_title">Contactpersonen lezen</string>
     <string name="download_permission_first_explanation">We hebben uw toestemming nodig om bestanden op uw mobiele telefoon te downloaden</string>
     <string name="download_snackbar_permission_rationale">We hebben uw toestemming nodig om bijlagen van uw e-mails op te slaan.</string>
-    <string name="download_snackbar_permission_permanently_denied" />
+    <string name="download_snackbar_permission_permanently_denied"/>
     <string name="download_permission_rationale_title">Bestanden downloaden</string>
     <string name="add_fpr">Vingerafdruk toevoegen</string>
     <string name="error_parsing_fingerprint">Fout bij het parseren van de vingerafdruk.</string>
@@ -112,9 +114,6 @@
     <string name="is_not_always_secure">Onbeschermd op server opslaan</string>
     <string name="master_key_management">Extra sleutelbeheer</string>
     <string name="message_saving_error">Fout bij opslaan van bericht</string>
-    <string name="intro_first_text">Versleutelt en anonimiseert uw e-mail automatisch</string>
-    <string name="intro_second_text">Voorkomt identiteitsdiefstal. Maakt spam onschadelijk. Stopt phishing.</string>
-    <string name="intro_third_text">Laat u weten hoe veilig uw communicatie is op basis van verkeerslichten.</string>
     <string name="action_continue">Doorgaan</string>
     <string name="battery_optimization_rationale_title">Batterij-optimalisaties uitschakelen</string>
     <string name="battery_optimiazation_explanation">Om uw e-mails op de achtergrond te synchroniseren, moeten we batterij-optimalisaties uitschakelen</string>
@@ -122,7 +121,7 @@
     <string name="add_account_message">Om deze account te kunnen gebruiken, moet u deze aan uw apparaat toevoegen</string>
     <string name="account_already_exists">Account bestaat al</string>
     <string name="device_offline_warning">Uw apparaat is blijkbaar offline. Controleer uw verbinding voordat u kunt doorgaan</string>
-    <string name="permissions_needed_message" />
+    <string name="permissions_needed_message"/>
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>
         <item>Cannot Decrypt<!--pEpRatingCannotDecrypt--></item>
@@ -173,7 +172,7 @@
     <string name="nnf_name">Naam</string>
     <string name="nnf_select_something_first">Selecteer eerst een item</string>
     <string name="nnf_need_valid_filename">Vul een geldige bestandsnaam in of selecteer deze</string>
-    <string name="nnf_permission_external_write_denied" />
+    <string name="nnf_permission_external_write_denied"/>
     <string name="nnf_filename">Bestandsnaam</string>
     <string name="key_import_accept">Accepteren</string>
     <string name="key_import_reject">Weigeren</string>
@@ -182,8 +181,6 @@
     <string name="message_loading_error">Nog bezig met het laden van berichtwaardering, probeer het opnieuw</string>
     <string name="pep_sync">p≡p-synchronisatie</string>
     <string name="pep_sync_enable_account">Deze account synchroniseren</string>
-    <string name="pep_sync_enable_global">p≡p-synchronisatie inschakelen</string>
-    <string name="pep_sync_disable_global">p≡p-synchronisatie uitschakelen</string>
     <string name="pep_sync_leave_device_group">Apparatengroep verlaten</string>
     <string name="open_pgp">OpenPGP</string>
     <string name="pgp">PGP</string>

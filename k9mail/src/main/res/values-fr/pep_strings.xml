@@ -1,22 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>     <!--<string name="pep_account_setup_generating_keys">Setting your Privacy by Default </string>-->
+<resources>
+    <!--<string name="pep_account_setup_generating_keys">Setting your Privacy by Default </string>-->
     <string name="pep_reset_trust">Ne plus faire confiance</string>
     <string name="pep_pgp_fingerprint">Empreinte PGP</string>
-    <string name="pEp_trustwords">p≡p Trustwords</string>     <!--<string name="pep_account_setup_generating_keys">Setting your Privacy by Default </string>-->
-    <string name="pep_dialog_weaker_forward_warning_message">Vous êtes sur le point de transférer un message sécurisé de façon non-securisée. Si vous décidez de continuer, vous prenez le risque de divulguer des informations confidentielles. </string>     <!--<string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Proceed</string>-->     <!--<string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancel</string>-->     <!--<string name="pep_dialog_confirm_forward_title">Confirm forward</string>-->
-    <string name="pep_title_activity_privacy_status">Protection de la vie privée</string>     <!--<string name="pep_extra_addresses">Extra key ids:</string>-->
-    <string name="pep_use_keyserver">Chercher les clefs sur le serveur de clefs</string>     <!--<string name="pep_passive_mode">Passive mode</string>-->
-    <string name="pep_subject_unprotected">Ne pas protéger le sujet des messages</string>     <!--<string name="pep_add_key_to_blacklist">Add a key to blacklist</string>-->     <!--<string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>-->
-    <string name="pep_confirm_trustwords">Accepter</string>     <!--<string name="pep_wrong_trustwords">Trustwords incorrects</string>-->     <!--<string name="pep_wrong_fingerprint">Wrong fingerprint</string>-->
+    <string name="pEp_trustwords">p≡p Trustwords</string>
+    <!--<string name="pep_account_setup_generating_keys">Setting your Privacy by Default </string>-->
+    <string name="pep_dialog_weaker_forward_warning_message">Vous êtes sur le point de transférer un message sécurisé de façon non-securisée. Si vous décidez de continuer, vous prenez le risque de divulguer des informations confidentielles. </string>
+    <!--<string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Proceed</string>-->
+    <!--<string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancel</string>-->
+    <!--<string name="pep_dialog_confirm_forward_title">Confirm forward</string>-->
+    <string name="pep_title_activity_privacy_status">Protection de la vie privée</string>
+    <!--<string name="pep_extra_addresses">Extra key ids:</string>-->
+    <string name="pep_use_keyserver">Chercher les clefs sur le serveur de clefs</string>
+    <!--<string name="pep_passive_mode">Passive mode</string>-->
+    <string name="pep_subject_unprotected">Ne pas protéger le sujet des messages</string>
+    <!--<string name="pep_add_key_to_blacklist">Add a key to blacklist</string>-->
+    <!--<string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>-->
+    <string name="pep_confirm_trustwords">Accepter</string>
+    <!--<string name="pep_wrong_trustwords">Trustwords incorrects</string>-->
+    <!--<string name="pep_wrong_fingerprint">Wrong fingerprint</string>-->
     <string name="pep_ask_trustwords">Demandez à votre partenaire: Quel sont vos Trustwords ? Puis comparez sa réponse à celle affichée ci-dessous.</string>
     <string name="pep_complete_partner_format">Partenaire\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_partner_format">Partenaire\n%1$s</string>
     <string name="pep_complete_myself_format">Moi même\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_myself_format">Moi même\n%1$s</string>
     <string name="pep_force_unprotected">Désactiver la protection</string>Désactiver
-    protection     <!--<string name="pep_receivedSecretKey">Received this Secret Key:</string>-->     <!--<string name="pep_username">User Name</string>-->     <!--<string name="pep_userAddress">User Address</string>-->     <!--<string name="pep_secret_key_detected">Secret key detected</string>-->     <!--<string name="pep_received_this_secret_key">The following secret key was received</string>-->     <!--<string name="pep_from_format">from sender %1$s</string>-->     <!--<string name="pep_trust_server_and_store_mails_unprotected">p≡p - Trust server and store mails unprotected</string>-->     <!--<string name="pep_mistrust_server_and_store_mails_encrypted">E-Mails on server are protected</string>-->     <!--<string name="pep_enable_privacy_protection">Privacy protection</string>-->
+    protection     <!--<string name="pep_receivedSecretKey">Received this Secret Key:</string>-->
+    <!--<string name="pep_username">User Name</string>-->
+    <!--<string name="pep_userAddress">User Address</string>-->
+    <!--<string name="pep_secret_key_detected">Secret key detected</string>-->
+    <!--<string name="pep_received_this_secret_key">The following secret key was received</string>-->
+    <!--<string name="pep_from_format">from sender %1$s</string>-->
+    <!--<string name="pep_trust_server_and_store_mails_unprotected">p≡p - Trust server and store mails unprotected</string>-->
+    <!--<string name="pep_mistrust_server_and_store_mails_encrypted">E-Mails on server are protected</string>-->
+    <!--<string name="pep_enable_privacy_protection">Privacy protection</string>-->
     <string name="pep_explanation">Explication</string>
-    <string name="pep_suggestion">Suggestion</string>     <!--<string name="pep_app_license">Licensed under the GNU General Public License v3</string>-->     <!--<string name="pep_trust_server_description">Store serverside mails in a safe form.</string>-->     <!--<string name="pep_account_privacy_protection_explanation">Enable privacy protection for this account </string>-->
+    <string name="pep_suggestion">Suggestion</string>
+    <!--<string name="pep_app_license">Licensed under the GNU General Public License v3</string>-->
+    <!--<string name="pep_trust_server_description">Store serverside mails in a safe form.</string>-->
+    <!--<string name="pep_account_privacy_protection_explanation">Enable privacy protection for this account </string>-->
     <string name="key_list_title">Clefs disponibles</string>
     <string name="pep_add_device_ask_trustwords">Vous êtes sur le point d\'ajouter un appareil à votre groupe d\'appareils p≡p. Veuillez confirmer en vérifiant les Trustwords suivants.</string>
     <string name="pep_device_group">Appareils liées par p≡p</string>
@@ -121,9 +143,6 @@
     <string name="is_always_secure">Stocker protégé sur le serveur</string>
     <string name="master_key_management">Gestion de clef maîtresse</string>
     <string name="message_saving_error">Erreur lors de la sauvegarde du message</string>
-    <string name="intro_first_text">Crypte et anonymise automatiquement votre e-mail</string>
-    <string name="intro_second_text">Empêche l\'usurpation d’identité. Élimine le pourriel. Stoppe l\'hameçonnage.</string>
-    <string name="intro_third_text">Dit à quel point votre communication est sûre avec un code couleur simple.</string>
     <string name="is_not_always_secure">Stocke sans protection sur le serveur</string>
     <string name="action_continue">Continuer</string>
     <string name="battery_optimization_rationale_title">Désactiver les optimisation d\'économie d\'énergie</string>
@@ -172,7 +191,5 @@
     <string name="key_import_wizard_from_pgp_send_private_key_msg">Veuillez crypter et signer à nouveau le message de réponse avec la clef publique p≡p et l\'envoyer.</string>
     <string name="pgp">PGP</string>
     <string name="open_pgp">OpenPGP</string>
-    <string name="pep_sync_disable_global">Désactiver sync p≡p</string>
-    <string name="pep_sync_enable_global">Autoriser sync p≡p</string>
     <string name="key_import_wizard_from_pgp_create_private_key_msg">Sur votre dispositif PGP, créer un autre message de réponse à celui reçu de p≡p. Cette fois-ci, veuillez joindre votre clef privée PGP.</string>
 </resources>

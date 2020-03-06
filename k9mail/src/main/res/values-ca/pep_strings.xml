@@ -116,7 +116,6 @@
     <string name="is_not_always_secure">Desar sense protegir al servidor</string>
     <string name="master_key_management">Gestió de claus mestres</string>
     <string name="message_saving_error">S\'ha produït un error desant el missatge</string>
-    <string name="intro_first_text">Xifra i anonimitza els teus correus de forma automàtica</string>
     <string name="action_continue">Continuar</string>
     <string name="battery_optimization_rationale_title">Desactivar l\'optimitzaciò de bateria</string>
     <string name="battery_optimiazation_explanation">Per a sincronitzar els seus missatges en segon pla necessitem desactivar l\'optimització de bateria</string>
@@ -125,8 +124,6 @@
     <string name="key_reset_identity_feedback">S\'han restablert totes les dades de p≡p relatives a aquest company de comunicació.</string>
     <string name="reset">Restableix</string>
     <string name="nnf_name">Nom</string>
-    <string name="pep_sync_disable_global">Desactiva la sincronització p≡p</string>
-    <string name="pep_sync_enable_global">Activa la sincronització p≡p</string>
     <string name="pep_key_reset_own_id_warning_title">Restableix el compte de %s</string>
     <string name="pep_key_reset_own_id_warning">Aquesta acció restablirà el teu compte. \n Confirmes que vols fer el restabliment\?</string>
     <string name="pep_key_reset_all_own_ids_warning">Aquesta acció restablirà tots els teus comptes. \n Confirmes que vols fer el restabliment\?</string>
@@ -167,8 +164,6 @@
     <string name="account_already_exists">El compte ja existeix</string>
     <string name="add_account_message">Per poder fer servir aquest compte l\'has d\'afegir al teu dispositiu</string>
     <string name="add_account_title">Afegeix el teu compte</string>
-    <string name="intro_third_text">T\'indica el nivell de seguretat de les teves comunicacions amb un semàfor.</string>
-    <string name="intro_second_text">Evita la suplantació d\'identitat. Elimina el correu brossa. Atura la pesca de credencials.</string>
     <string name="download_snackbar_permission_rationale">Necessitem el teu permís per desar els fitxers adjunts dels teus correus electrònics.</string>
     <string name="pep_keysync_timeout">Límit de temps de la sincronització p≡p</string>
     <string name="pep_add_device_ask_move_trustwords">Estàs a punt de traslladar un dispositiu a un altre grup de dispositius p≡p. Confirma l\'acció verificant correctament les paraules de confiança següents.</string>

@@ -118,9 +118,6 @@
     <string name="is_not_always_secure">Uchovávať nechránené na serveri</string>
     <string name="master_key_management">Správa extra kľúčov</string>
     <string name="message_saving_error">Chyba pri ukladaní správ</string>
-    <string name="intro_first_text">Automaticky šifruje a anonymizuje váš e-mail</string>
-    <string name="intro_second_text">Zabraňuje krádeži identity. Zabíja spam. Zastaví phishing.</string>
-    <string name="intro_third_text">Povie vám, ako je vaša komunikácia bezpečná na základe svetiel semaforov.</string>
     <string name="action_continue">Pokračovať</string>
     <string name="battery_optimization_rationale_title">Vypnite optimalizáciu batérie</string>
     <string name="battery_optimiazation_explanation">Aby sme mohli synchronizovať vaše e-maily na pozadí, musíme deaktivovať optimalizáciu batérie</string>
@@ -188,8 +185,6 @@
     <string name="message_loading_error">Hodnotenie správy sa stále načíta, skúste to znova</string>
     <string name="pep_sync">p≡p sync</string>
     <string name="pep_sync_enable_account">Synchronizujte tento účet</string>
-    <string name="pep_sync_enable_global">Povoliť synchronizáciu p≡p</string>
-    <string name="pep_sync_disable_global">Zakázať synchronizáciu p≡p</string>
     <string name="pep_sync_leave_device_group">Opustiť skupinu zariadení</string>
     <string name="open_pgp">OpenPGP</string>
     <string name="pgp">PGP</string>

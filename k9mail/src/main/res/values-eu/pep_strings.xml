@@ -114,9 +114,6 @@
     <string name="is_not_always_secure"/>
     <string name="master_key_management"/>
     <string name="message_saving_error"/>
-    <string name="intro_first_text"/>
-    <string name="intro_second_text"/>
-    <string name="intro_third_text"/>
     <string name="action_continue">Jarraitu</string>
     <string name="battery_optimization_rationale_title"/>
     <string name="battery_optimiazation_explanation"/>
@@ -184,8 +181,6 @@
     <string name="message_loading_error"/>
     <string name="pep_sync"/>
     <string name="pep_sync_enable_account"/>
-    <string name="pep_sync_enable_global"/>
-    <string name="pep_sync_disable_global"/>
     <string name="pep_sync_leave_device_group"/>
     <string name="open_pgp"/>
     <string name="pgp"/>

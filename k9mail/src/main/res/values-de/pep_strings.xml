@@ -122,9 +122,6 @@
     <string name="is_not_always_secure">Nachrichten auf Server ungeschützt speichern</string>
     <string name="master_key_management">Hauptschlüsselverwaltung</string>
     <string name="message_saving_error">Fehler beim Speichern der Nachricht</string>
-    <string name="intro_first_text">Verschlüsselt und anonymisiert Ihre Nachrichten automatisch</string>
-    <string name="intro_second_text">Verhindert Identitätsdiebstahl. Stoppt Spam und Phishing.</string>
-    <string name="intro_third_text">Zeigt Ihnen die Sicherheit Ihrer Kommunikation mit Ampelfarben an.</string>
     <string name="action_continue">Weiter</string>
     <string name="battery_optimization_rationale_title">Energiesparmodus deaktivieren</string>
     <string name="battery_optimiazation_explanation">Um Ihre Nachrichten im Hintergrund synchronisieren zu können, muss der Energiesparmodus deaktiviert werden</string>
@@ -134,8 +131,6 @@
     <string name="reset">Zurücksetzen</string>
     <string name="nnf_name">Name</string>
     <string name="pep_sync">p≡p Synchronisierung</string>
-    <string name="pep_sync_disable_global">p≡p Sync deaktivieren</string>
-    <string name="pep_sync_enable_global">p≡p Sync aktivieren</string>
     <string name="pep_key_reset_all_own_ids_warning">Dieser Vorgang setzt alle Ihre Konten zurück. \n Möchten Sie Ihr Konto wirklich zurücksetzen\?</string>
     <string name="key_reset_all_own_identitities_feedback">Alle p≡p-Konten wurden zurückgesetzt.</string>
     <string name="mistrust_identity_feedback">%s ist nicht vertrauenswürdig</string>

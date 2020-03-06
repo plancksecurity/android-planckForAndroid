@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>     <!--<string name="pep_account_setup_generating_keys">Setting your Privacy by Default </string>-->
+<resources>
+    <!--<string name="pep_account_setup_generating_keys">Setting your Privacy by Default </string>-->
     <string name="pep_reset_trust">Desconfiar</string>
     <string name="pep_pgp_fingerprint">Huella PGP</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
@@ -8,10 +9,13 @@
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Continuar</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancelar</string>
     <string name="pep_dialog_confirm_forward_title">Confirmar reenvio</string>
-    <string name="pep_title_activity_privacy_status">Grado de privacidad</string>     <!--<string name="pep_extra_addresses">Extra key ids:</string>-->
+    <string name="pep_title_activity_privacy_status">Grado de privacidad</string>
+    <!--<string name="pep_extra_addresses">Extra key ids:</string>-->
     <string name="pep_use_keyserver">Buscar las claves en el servidor de claves</string>
     <string name="pep_passive_mode">Modo pasivo</string>
-    <string name="pep_subject_unprotected">Deshabilitar protección del asunto</string>     <!--<string name="pep_add_key_to_blacklist">Add a key to blacklist</string>-->     <!--<string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>-->
+    <string name="pep_subject_unprotected">Deshabilitar protección del asunto</string>
+    <!--<string name="pep_add_key_to_blacklist">Add a key to blacklist</string>-->
+    <!--<string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>-->
     <string name="pep_confirm_trustwords">Aceptar</string>
     <string name="pep_wrong_trustwords">Rechazar</string>
     <string name="pep_wrong_fingerprint">Huella incorrecta</string>
@@ -122,9 +126,6 @@
     <string name="is_not_always_secure">Guardar sin protección en el servidor</string>
     <string name="master_key_management">Administración de la Clave Maestra</string>
     <string name="message_saving_error">Error guardando el mensaje</string>
-    <string name="intro_first_text">Automáticamente encripta y anonimiza tu e-mail</string>
-    <string name="intro_second_text">Previene la suplantación de identidad. Acaba con el spam y el phising.</string>
-    <string name="intro_third_text">Muestra la seguridad en tu comunicación usando los colores del semáforo.</string>
     <string name="action_continue">Continuar</string>
     <string name="battery_optimization_rationale_title">Desactivar la optimización de batería</string>
     <string name="battery_optimiazation_explanation">Para poder sincronizar sus correos en segundo plano, es necesario deshabilitar la optimización de batería</string>
@@ -166,8 +167,6 @@
     <string name="nnf_create_folder_error">No se ha podido crear la carpeta</string>
     <string name="device_offline_warning">Parece que tu dispositivo no está conectado. Revisa la conexión antes de continuar.</string>
     <string name="account_already_exists">La cuenta ya existe</string>
-    <string name="pep_sync_disable_global">Desactivar la sincronización p≡p</string>
-    <string name="pep_sync_enable_global">Activar la sincronización p≡p</string>
     <string name="reset_all">Restablecer todo</string>
     <string name="key_import_wizard_handshake_explanation_pgp">Compara las huellas PGP de las claves siguientes con las que se muestran en tu dispositivo PGP y confirma que coincidan.</string>
     <string name="key_import_wizard_from_pgp_send_handshake_request">Encripta y firma el mensaje de respuesta con la clave pública p≡p que acabas de importar y envíalo.</string>
