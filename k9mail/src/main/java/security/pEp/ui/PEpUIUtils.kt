@@ -109,11 +109,11 @@ object PEpUIUtils {
     @JvmStatic
     fun getToolbarRatingVisibility(rating: Rating?, encrypt: Boolean = true): Int {
         return when {
+            rating == null ||
+                    (rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value) ->
+                View.GONE
             !encrypt ->
                 View.VISIBLE
-            rating == null ||
-                    rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value ->
-                View.GONE
             rating.value == Rating.pEpRatingMistrust.value || rating.value >= Rating.pEpRatingReliable.value ->
                 View.VISIBLE
             else ->
@@ -131,11 +131,7 @@ object PEpUIUtils {
     @JvmStatic
     fun getRatingColorRes(rating: Rating?, encrypt: Boolean = true): Int {
         return when {
-            !encrypt ->
-                R.color.pep_no_color
-            rating == null ->
-                R.color.pep_no_color
-            rating == Rating.pEpRatingB0rken || rating == Rating.pEpRatingHaveNoKey ->
+            !encrypt || rating == null || rating == Rating.pEpRatingB0rken || rating == Rating.pEpRatingHaveNoKey ->
                 R.color.pep_no_color
             rating.value < Rating.pEpRatingUndefined.value ->
                 R.color.pep_red
@@ -153,12 +149,10 @@ object PEpUIUtils {
     @JvmStatic
     fun getRatingTextRes(rating: Rating?, encrypt: Boolean = true): Int {
         return when {
+            rating == null || rating == Rating.pEpRatingB0rken || rating == Rating.pEpRatingHaveNoKey || rating == Rating.pEpRatingUndefined ->
+                R.string.pep_rating_none
             !encrypt ->
                 R.string.pep_rating_forced_unencrypt
-            rating == null ->
-                R.string.pep_rating_none
-            rating == Rating.pEpRatingB0rken || rating == Rating.pEpRatingHaveNoKey ->
-                R.string.pep_rating_none
             rating.value < Rating.pEpRatingUndefined.value ->
                 R.string.pep_rating_mistrusted
             rating.value < Rating.pEpRatingReliable.value ->
