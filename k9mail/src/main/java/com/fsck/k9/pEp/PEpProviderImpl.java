@@ -314,6 +314,12 @@ public class PEpProviderImpl implements PEpProvider {
                 decReturn = engine.decrypt_message(srcMsg, new Vector<>(), 0);
                 Log.d(TAG, "decryptMessage() after decrypt");
 
+                if (decReturn.rating == Rating.pEpRatingCannotDecrypt
+                        || decReturn.rating == Rating.pEpRatingHaveNoKey){
+                    notifyError(new AppCannotDecryptException(PEpProvider.KEY_MIOSSING_ERORR_MESSAGE), callback);
+                    return;
+                }
+
                 Message message = decReturn.dst;
                 MimeMessage decMsg = getMimeMessage(source, message);
 
