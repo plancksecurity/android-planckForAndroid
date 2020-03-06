@@ -302,6 +302,12 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         mFragmentListener.updateMenu();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        messageLoaderHelper.cancelAndClearLocalMessageLoader();
+    }
+
     public void onPendingIntentResult(int requestCode, int resultCode, Intent data) {
         if ((requestCode & REQUEST_MASK_LOADER_HELPER) == REQUEST_MASK_LOADER_HELPER) {
             requestCode ^= REQUEST_MASK_LOADER_HELPER;
