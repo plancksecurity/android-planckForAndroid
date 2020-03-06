@@ -100,6 +100,7 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewWithTextIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withTextColor;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -1306,36 +1307,61 @@ public class TestUtils {
     }
 
     void checkStatus(Rating rating) {
-        assertMessageStatus(rating.value);
+        assertMessageStatus(rating);
     }
 
-    public void assertMessageStatus(int status){
+    public void assertMessageStatus(Rating status){
+        int statusColor;
         clickStatus();
         while (!viewIsDisplayed(R.id.toolbar)) {
             device.waitForIdle();
         }
         onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
-        while (!viewIsDisplayed(R.id.pEpTitle)) {
+        /*while (!viewIsDisplayed(R.id.pEpTitle)) {
             device.waitForIdle();
-        }
+        }*/
         waitForToolbar();
-        onView(withId(R.id.pEpTitle)).check(matches(withText(getResourceString(R.array.pep_title, status))));
+        statusColor = getSecurityStatusIconColor(status);
+        if (statusColor == -10) {
+            if (viewIsDisplayed(R.id.actionbar_message_view)) {
+                assertFailWithMessage("Wrong Status, it should be empty");
+            }
+        } else {
+            if (R.id.securityStatusIcon != statusColor) {
+                assertFailWithMessage("Wrong Status color");
+            }
+            onView(withId(R.id.securityStatusText)).check(matches(withText(getResourceString(R.array.pep_title, status.value))));
+        }
         if (!exists(onView(withId(R.id.send)))) {
             goBack(false);
         }
     }
 
+    private int getSecurityStatusIconColor (Rating rating){
+        int color;
+        if (rating == null) {
+            color = -10;
+        } else if (rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value) {
+            color = -10;
+        } else if (rating.value == Rating.pEpRatingMistrust.value) {
+            color = R.drawable.pep_status_red;
+        } else if (rating.value >= Rating.pEpRatingTrusted.value) {
+            color = R.drawable.pep_status_green;
+        } else if (rating.value == Rating.pEpRatingReliable.value) {
+            color = R.drawable.pep_status_yellow;
+        } else {
+            color = -10;
+        }
+        return color;
+    }
+
     public void clickStatus() {
         device.waitForIdle();
         onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
-        if (viewIsDisplayed(R.id.tvPep)) {
+        if (viewIsDisplayed(R.id.securityStatusText)) {
             device.waitForIdle();
-            onView(withId(R.id.tvPep)).check(matches(isDisplayed()));
-            onView(withId(R.id.tvPep)).perform(click());
-        } else if (viewIsDisplayed(R.id.pEp_indicator)) {
-            device.waitForIdle();
-            onView(withId(R.id.pEp_indicator)).check(matches(isDisplayed()));
-            onView(withId(R.id.pEp_indicator)).perform(click());
+            onView(withId(R.id.securityStatusText)).check(matches(isDisplayed()));
+            onView(withId(R.id.securityStatusText)).perform(click());
         }
         device.waitForIdle();
     }
@@ -1435,8 +1461,8 @@ public class TestUtils {
             device.waitForIdle();
             if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
                 waitForToolbar();
-                onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(color)));
-                checkUpperToolbar(color);
+                onView(withId(R.id.securityStatusText)).check(matches(withTextColor(color)));
+                //checkUpperToolbar(color);
                 return;
             }
         }
@@ -1463,12 +1489,11 @@ public class TestUtils {
         for (int waitLoop = 0; waitLoop < 1000; waitLoop++) {
             device.waitForIdle();
             Espresso.onIdle();
-            while (!viewIsDisplayed(R.id.toolbar) || !viewIsDisplayed(R.id.toolbar_container)) {
+            while (!viewIsDisplayed(R.id.toolbar)) {
                 device.waitForIdle();
             }
             device.waitForIdle();
             waitUntilIdle();
-            onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
             onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
             device.waitForIdle();
             waitUntilIdle();
@@ -1652,7 +1677,7 @@ public class TestUtils {
     }
 
     public void clickMessageStatus() {
-        clickView(R.id.tvPep);
+        clickView(R.id.securityStatusText);
     }
 
     public void goBackToMessageList(){
@@ -1724,7 +1749,7 @@ public class TestUtils {
         boolean messageClicked = false;
         while (!messageClicked) {
             device.waitForIdle();
-            if (!viewIsDisplayed(R.id.reply_message)) {
+            if (!viewIsDisplayed(R.id.openCloseButton)) {
                 try {
                     swipeDownMessageList();
                     device.waitForIdle();
@@ -1775,7 +1800,7 @@ public class TestUtils {
         boolean messageClicked = false;
         while (!messageClicked) {
             device.waitForIdle();
-            if (!viewIsDisplayed(R.id.reply_message)) {
+            if (!viewIsDisplayed(R.id.openCloseButton)) {
                 try {
                     swipeDownMessageList();
                     device.waitForIdle();
@@ -2016,13 +2041,13 @@ public class TestUtils {
             device.waitForIdle();
         }
         while ((exists(onView(withId(R.id.message_list))) || viewIsDisplayed(R.id.message_list))
-         && (!viewIsDisplayed(R.id.reply_message))){
+         && (!viewIsDisplayed(R.id.openCloseButton))){
             try{
                     device.waitForIdle();
                     swipeDownMessageList();
                     device.waitForIdle();
                     getMessageListSize();
-                    if (viewIsDisplayed(R.id.reply_message)) {
+                    if (viewIsDisplayed(R.id.openCloseButton)) {
                         return;
                     }
                     else {
