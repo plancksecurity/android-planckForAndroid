@@ -43,7 +43,6 @@ import android.view.View;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -311,15 +310,6 @@ public class TestUtils {
                 buttonClicked = true;
             }
         }
-    }
-
-    void yellowStatusMessageTest(String messageSubject, String messageBody, String messageTo) {
-        device.waitForIdle();
-        fillMessage(new TestUtils.BasicMessage("", messageSubject, messageSubject, messageTo), false);
-        onView(withId(R.id.pEp_indicator)).perform(click());
-        onView(withId(R.id.my_recycler_view)).check(doesNotExist());
-        assertCurrentActivityIsInstanceOf(PEpTrustwords.class);
-
     }
 
     private void assertCurrentActivityIsInstanceOf(Class<? extends Activity> activityClass) {
