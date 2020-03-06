@@ -81,7 +81,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
         goToSentFolder();
         testUtils.clickFirstMessage();
       //  testUtils.clickView(R.id.tvPep);
-        testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
+        testUtils.assertMessageStatus(Rating.pEpRatingTrusted);
         testUtils.goBackAndRemoveAccount();
     }
 

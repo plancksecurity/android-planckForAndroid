@@ -83,7 +83,7 @@ public class InboxActionBarChangingColorTest {
         testUtils.waitForNewMessage();
         //testUtils.clickLastMessageReceived();
       //  testUtils.clickView(R.id.tvPep);
-        testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
+        testUtils.assertMessageStatus(Rating.pEpRatingTrusted);
         device.waitForIdle();
         testUtils.pressBack();
         checkToolbarColor(R.color.pep_green);
