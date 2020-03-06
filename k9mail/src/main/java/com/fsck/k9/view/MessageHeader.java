@@ -240,7 +240,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         ClipboardManager clipboardManager = ClipboardManager.getInstance(mContext);
         clipboardManager.setText("addresses", addressList);
 
-        FeedbackTools.showLongFeedback(getRootView(), getContext().getString(R.string.status_network_error));
+        FeedbackTools.showLongFeedback(getRootView(), createMessage(addresses.length));
     }
 
     private void onAddRecipientsToClipboard(Message.RecipientType recipientType) {
