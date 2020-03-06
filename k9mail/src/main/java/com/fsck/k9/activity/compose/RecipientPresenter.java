@@ -253,6 +253,7 @@ public class RecipientPresenter {
     public void initFromDraftMessage(Message message) {
         initRecipientsFromDraftMessage(message);
         initPgpInlineFromDraftMessage(message);
+        setAlwaysSecure(message.isSet(Flag.X_PEP_NEVER_UNSECURE));
     }
 
     private void initRecipientsFromDraftMessage(Message message) {
