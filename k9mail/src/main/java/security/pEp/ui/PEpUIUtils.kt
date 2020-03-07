@@ -21,7 +21,7 @@ object PEpUIUtils {
         return when {
             rating == null ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_gray)
-            rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value ->
+            isUnsecure(rating) ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_gray)
             rating.value == Rating.pEpRatingMistrust.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red)
@@ -39,7 +39,7 @@ object PEpUIUtils {
         return when {
             rating == null ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_gray_bordered)
-            rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value ->
+            isUnsecure(rating) ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_gray_bordered)
             rating.value == Rating.pEpRatingMistrust.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red_bordered)
@@ -57,7 +57,7 @@ object PEpUIUtils {
         return when {
             rating == null ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_gray_white)
-            rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value ->
+            isUnsecure(rating) ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_gray_white)
             rating.value == Rating.pEpRatingMistrust.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red_white)
@@ -75,7 +75,7 @@ object PEpUIUtils {
         return when {
             rating == null ->
                 ColorDrawable(Color.TRANSPARENT)
-            rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value ->
+            isUnsecure(rating) ->
                 ColorDrawable(Color.TRANSPARENT)
             rating.value == Rating.pEpRatingMistrust.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red)
@@ -93,7 +93,7 @@ object PEpUIUtils {
         return when {
             rating == null ->
                 null
-            rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value ->
+            isUnsecure(rating) ->
                 null
             rating.value == Rating.pEpRatingMistrust.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red)
@@ -110,7 +110,7 @@ object PEpUIUtils {
     fun getToolbarRatingVisibility(rating: Rating?, encrypt: Boolean = true): Int {
         return when {
             rating == null ||
-                    (rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value) ->
+                    isUnsecure(rating) ->
                 View.GONE
             !encrypt ->
                 View.VISIBLE
@@ -165,6 +165,10 @@ object PEpUIUtils {
                 R.string.pep_rating_none
         }
     }
+
+    private fun isUnsecure(rating: Rating) =
+            rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value
+
 
 
 }
