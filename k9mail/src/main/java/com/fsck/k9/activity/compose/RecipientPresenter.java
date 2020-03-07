@@ -320,6 +320,7 @@ public class RecipientPresenter {
             menu.findItem(R.id.openpgp_sign_only_disable).setVisible(false);
         }*/
 
+        menu.findItem(R.id.privacyStatus).setVisible(getAllRecipients().size() > 0);
         boolean noContactPickerAvailable = !hasContactPicker();
         if (noContactPickerAvailable) {
             menu.findItem(R.id.add_from_contacts).setVisible(false);
