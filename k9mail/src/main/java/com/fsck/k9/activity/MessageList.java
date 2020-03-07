@@ -1380,6 +1380,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             if (mSingleAccountMode) {
                 mAccount = accounts.get(0);
             }
+            else {
+                mAccount = preferences.getDefaultAccount();
+            }
         } else {
             mSingleAccountMode = (accountUuids.length == 1);
             if (mSingleAccountMode) {
@@ -2058,15 +2061,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             menu.findItem(R.id.mark_all_as_read).setVisible(
                     mMessageListFragment.isMarkAllAsReadSupported());
 
-            if (!mMessageListFragment.isSingleAccountMode()) {
-                menu.findItem(R.id.send_messages).setVisible(false);
-                menu.findItem(R.id.show_folder_list).setVisible(false);
-                setDrawerEnabled(false);
-            } else {
-                menu.findItem(R.id.send_messages).setVisible(mMessageListFragment.isOutbox());
-                menu.findItem(R.id.show_folder_list).setVisible(true);
-                setDrawerEnabled(true);
-            }
+
+            menu.findItem(R.id.send_messages).setVisible(mMessageListFragment.isOutbox());
+            menu.findItem(R.id.show_folder_list).setVisible(true);
+            setDrawerEnabled(true);
+
             if(isThreadDisplayed) {
                 setDrawerEnabled(false);
             }
