@@ -557,5 +557,9 @@ public class PEpUtils {
         return headerNames.contains(MimeHeader.HEADER_PEP_AUTOCONSUME.toUpperCase(Locale.ROOT))
                 || headerNames.contains(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY.toUpperCase(Locale.ROOT));
     }
+
+    public static boolean isPepStatusClickable(ArrayList<Identity> recipients ,Rating rating) {
+        return recipients.size() > 0 && rating.value >= Rating.pEpRatingReliable.value;
+    }
 }
 

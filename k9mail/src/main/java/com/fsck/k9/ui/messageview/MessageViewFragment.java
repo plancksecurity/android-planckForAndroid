@@ -809,14 +809,9 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         pePUIArtefactCache.setRecipients(mAccount, addresses);
     }
 
-    private boolean isPepStatusClickable() {
-        return pePUIArtefactCache.getRecipients().size() > 0
-                && mMessage.getpEpRating().value >= Rating.pEpRatingReliable.value;
-    }
-
     public void onPEpPrivacyStatus(boolean force) {
         refreshRecipients(getContext());
-        if (force || isPepStatusClickable()) {
+        if (force || PEpUtils.isPepStatusClickable(pePUIArtefactCache.getRecipients(), pEpRating)) {
             String myAddress = mAccount.getEmail();
             PEpStatus.actionShowStatus(getActivity(), pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAddress);
         }
