@@ -1982,8 +1982,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
                 @Override
                 public void onPermissionDenied(PermissionDeniedResponse response) {
-                    String permissionDenied = getResources().getString(R.string.read_snackbar_permission_permanently_denied);
-                    FeedbackTools.showLongFeedback(getRootView(), permissionDenied);
+
                 }
 
                 @Override

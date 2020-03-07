@@ -1043,22 +1043,23 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void createPermissionListeners() {
-        permissionRequester.requestStoragePermission(getRootView(), new PermissionListener() {
-            @Override
-            public void onPermissionGranted(PermissionGrantedResponse response) {
+        if(permissionChecker.doesntHaveWriteExternalPermission()) {
+            permissionRequester.requestStoragePermission(getRootView(), new PermissionListener() {
+                @Override
+                public void onPermissionGranted(PermissionGrantedResponse response) {
 
-            }
+                }
 
-            @Override
-            public void onPermissionDenied(PermissionDeniedResponse response) {
-                String permissionDenied = getResources().getString(R.string.download_snackbar_permission_permanently_denied);
-                FeedbackTools.showLongFeedback(mMessageView, permissionDenied);
-            }
+                @Override
+                public void onPermissionDenied(PermissionDeniedResponse response) {
 
-            @Override
-            public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+                }
 
-            }
-        });
+                @Override
+                public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+
+                }
+            });
+        }
     }
 }
