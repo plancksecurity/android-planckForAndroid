@@ -21,7 +21,7 @@ object PEpUIUtils {
         return when {
             rating == null ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_gray)
-            rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value ->
+            isUnsecure(rating) ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_gray)
             rating.value == Rating.pEpRatingMistrust.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red)
@@ -39,7 +39,7 @@ object PEpUIUtils {
         return when {
             rating == null ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_gray_bordered)
-            rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value ->
+            isUnsecure(rating) ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_gray_bordered)
             rating.value == Rating.pEpRatingMistrust.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red_bordered)
@@ -57,7 +57,7 @@ object PEpUIUtils {
         return when {
             rating == null ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_gray_white)
-            rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value ->
+            isUnsecure(rating) ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_gray_white)
             rating.value == Rating.pEpRatingMistrust.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red_white)
@@ -75,7 +75,7 @@ object PEpUIUtils {
         return when {
             rating == null ->
                 ColorDrawable(Color.TRANSPARENT)
-            rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value ->
+            isUnsecure(rating) ->
                 ColorDrawable(Color.TRANSPARENT)
             rating.value == Rating.pEpRatingMistrust.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red)
@@ -93,7 +93,7 @@ object PEpUIUtils {
         return when {
             rating == null ->
                 null
-            rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value ->
+            isUnsecure(rating) ->
                 null
             rating.value == Rating.pEpRatingMistrust.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red)
@@ -109,11 +109,11 @@ object PEpUIUtils {
     @JvmStatic
     fun getToolbarRatingVisibility(rating: Rating?, encrypt: Boolean = true): Int {
         return when {
+            rating == null ||
+                    isUnsecure(rating) ->
+                View.GONE
             !encrypt ->
                 View.VISIBLE
-            rating == null ||
-                    rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value ->
-                View.GONE
             rating.value == Rating.pEpRatingMistrust.value || rating.value >= Rating.pEpRatingReliable.value ->
                 View.VISIBLE
             else ->
@@ -131,11 +131,7 @@ object PEpUIUtils {
     @JvmStatic
     fun getRatingColorRes(rating: Rating?, encrypt: Boolean = true): Int {
         return when {
-            !encrypt ->
-                R.color.pep_no_color
-            rating == null ->
-                R.color.pep_no_color
-            rating == Rating.pEpRatingB0rken || rating == Rating.pEpRatingHaveNoKey ->
+            !encrypt || rating == null || rating == Rating.pEpRatingB0rken || rating == Rating.pEpRatingHaveNoKey ->
                 R.color.pep_no_color
             rating.value < Rating.pEpRatingUndefined.value ->
                 R.color.pep_red
@@ -153,12 +149,10 @@ object PEpUIUtils {
     @JvmStatic
     fun getRatingTextRes(rating: Rating?, encrypt: Boolean = true): Int {
         return when {
+            rating == null || rating == Rating.pEpRatingB0rken || rating == Rating.pEpRatingHaveNoKey || rating == Rating.pEpRatingUndefined ->
+                R.string.pep_rating_none
             !encrypt ->
                 R.string.pep_rating_forced_unencrypt
-            rating == null ->
-                R.string.pep_rating_none
-            rating == Rating.pEpRatingB0rken || rating == Rating.pEpRatingHaveNoKey ->
-                R.string.pep_rating_none
             rating.value < Rating.pEpRatingUndefined.value ->
                 R.string.pep_rating_mistrusted
             rating.value < Rating.pEpRatingReliable.value ->
@@ -171,6 +165,10 @@ object PEpUIUtils {
                 R.string.pep_rating_none
         }
     }
+
+    private fun isUnsecure(rating: Rating) =
+            rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value
+
 
 
 }
