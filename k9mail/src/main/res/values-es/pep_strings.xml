@@ -174,4 +174,8 @@
     <string name="nnf_new_folder">Nueva carpeta</string>
     <string name="add_account_message">Para poder usar esta cuenta has de añadirla a tu dispositivo</string>
     <string name="add_account_title">Añade tu cuenta</string>
+    <string name="intro_frag_second_text_3">Si las Trustwords no son correctas, tu interlocutor es sospechoso.</string>
+    <string name="intro_frag_second_header_3">Sospechoso</string>
+    <string name="intro_frag_second_header_2">Seguro y de confianza</string>
+    <string name="intro_frag_second_header_1">Seguro</string>
 </resources>
