@@ -700,6 +700,7 @@ public class FolderList extends K9ListActivity {
             @Override
             public boolean onMenuItemActionCollapse(MenuItem menuItem) {
                 getToolbar().setTitle(R.string.folders_title);
+                menu.findItem(R.id.search).setVisible(true);
                 return true;
             }
         });

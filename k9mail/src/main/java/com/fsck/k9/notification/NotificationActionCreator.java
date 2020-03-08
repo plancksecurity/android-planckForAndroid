@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
+import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.SettingsActivity;
 import com.fsck.k9.activity.FolderList;
 import com.fsck.k9.activity.MessageList;
@@ -39,6 +40,10 @@ class NotificationActionCreator {
         this.context = context;
     }
 
+    public PendingIntent createMessageComposePendingIntent(MessageReference messageReference, int notificationId) {
+        TaskStackBuilder stack = buildMessageComposeBackStack(messageReference);
+        return stack.getPendingIntent(notificationId, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+    }
     public PendingIntent createViewMessagePendingIntent(MessageReference messageReference, int notificationId) {
         TaskStackBuilder stack = buildMessageViewBackStack(messageReference);
         return stack.getPendingIntent(notificationId, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
@@ -259,6 +264,15 @@ class NotificationActionCreator {
 
         stack.addNextIntent(intent);
 
+        return stack;
+    }
+
+    private TaskStackBuilder buildMessageComposeBackStack(MessageReference message) {
+        Account account = Preferences.getPreferences(context).getAccount(message.getAccountUuid());
+        String folderName = message.getFolderName();
+        TaskStackBuilder stack = buildMessageListBackStack(account, folderName);
+        Intent intent = MessageCompose.actionEditDraftIntent(context, message);
+        stack.addNextIntent(intent);
         return stack;
     }
 

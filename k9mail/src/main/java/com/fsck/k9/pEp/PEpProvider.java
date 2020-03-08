@@ -37,6 +37,7 @@ public interface PEpProvider extends AutoCloseable {
 
     String PEP_ALWAYS_SECURE_TRUE = "yes";
     String PEP_KEY_LIST_SEPARATOR = ",";
+    String KEY_MIOSSING_ERORR_MESSAGE = "Key missing";
 
     /**
      * checks the privacy level of the addresses supplied. This method creates a pEp message and
@@ -63,12 +64,20 @@ public interface PEpProvider extends AutoCloseable {
      * Implications from feeding LocalMessages into decryptMessage are currently not completely understood...
      *
      * @param source the (fully qualified) message to be decrypted.
-     * @return the decrypted message
+     * @return the decrypted message or the original message in case we cannot decrypt
      * <p/>
      * TODO: pEp: how do I get the color? Perhaps Via header value in return value?
      */
     DecryptResult decryptMessage(MimeMessage source);
 
+    /**
+     * Decrypts one k9 MimeMessage. Hides all the black magic associated with the real pEp library interaction.
+     * <p/>
+     *
+     * @param source the (fully qualified) message to be decrypted.
+     * @return the decrypted message or error en case we cannot decrypt or engine fails
+     * <p/>
+     */
     void decryptMessage(MimeMessage source, ResultCallback<DecryptResult> callback);
 
     /**

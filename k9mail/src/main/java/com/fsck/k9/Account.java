@@ -602,6 +602,13 @@ public class Account implements BaseAccount, StoreConfig {
         editor.remove(accountUuid + ".notifyMailCheck");
         editor.remove(accountUuid + ".pEpStoreEncryptedOnServer");
         editor.remove(accountUuid + ".pEpPrivacyProtected");
+
+        editor.remove(accountUuid + ".notifyContactsMailOnly");
+        editor.remove(accountUuid + ".openPgpHideSignOnly");
+        editor.remove(accountUuid + ".autocryptMutualMode");
+        editor.remove(accountUuid + ".pEpSync");
+        editor.remove(accountUuid + ".folderNotifyNewMailMode");
+
         for (NetworkType type : NetworkType.values()) {
             editor.remove(accountUuid + ".useCompression." + type.name());
         }
