@@ -65,7 +65,7 @@ class PEpMessageBuilder {
         // - plain text body if html above
         // - many attachments (of type binarymemoryblob (hopefully ;-)).
         Body b = mm.getBody();
-        Vector<Blob> attachments = new Vector<Blob>();
+        Vector<Blob> attachments = new Vector<>();
 
         if(!(b instanceof MimeMultipart)) { //FIXME: Don't do this assumption (if not Multipart then plain or html text)
 
@@ -232,7 +232,7 @@ class PEpMessageBuilder {
     }
 
     private Vector<String> createMessageReferences(String[] references) {
-        Vector<String> rv = new Vector<String>();
+        Vector<String> rv = new Vector<>();
         if(references != null)
             for(String s : references)
                 rv.add(s);
