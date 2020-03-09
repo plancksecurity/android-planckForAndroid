@@ -566,8 +566,10 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
         // This needs to be done before initializing the cursor loader below
         initializeSortSettings();
-        loaderJustInitializedForTheFirstTime = true;
-        initializeLoaders();
+        if(!anyAccountWasDeleted()) {
+            loaderJustInitializedForTheFirstTime = true;
+            initializeLoaders();
+        }
     }
 
     private void initializeLoaders() {
