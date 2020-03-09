@@ -84,7 +84,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     /**
      * This flag is true when messages of the deleted account were being diplayed in MessageList. (Wether it was done as Inbox or Unified Inbox).
      */
-    private var currentAccountDeleted = false
+    private var anyAccountWasDeleted = false
 
     /**
      * Contains information about objects that need to be retained on configuration changes.
@@ -596,10 +596,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                         .deleteAccount(realAccount)
                 K9.setServicesEnabled(this@SettingsActivity)
 
-                if(K9.startIntegratedInbox() ||
-                        Preferences.getPreferences(this@SettingsActivity).accounts.indexOf(realAccount) == 0) {
-                    currentAccountDeleted = true
-                }
+                anyAccountWasDeleted = true
+
                 refresh()
 
             }
@@ -1103,14 +1101,14 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     }
 
     override fun onBackPressed() {
-        if(currentAccountDeleted) {
+        if(anyAccountWasDeleted) {
             if (K9.startIntegratedInbox() && !K9.isHideSpecialAccounts()) {
                 if(onOpenAccount(unifiedInboxAccount)) {
-                    currentAccountDeleted = false
+                    anyAccountWasDeleted = false
                     finish()
                 }
             } else if (onOpenAccount(Preferences.getPreferences(this@SettingsActivity).defaultAccount)) {
-                currentAccountDeleted = false
+                anyAccountWasDeleted = false
                 finish()
             }
         }
