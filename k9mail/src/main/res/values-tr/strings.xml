@@ -910,4 +910,5 @@
     <string name="messageview_decrypt_retry">Tekrar</string>
     <string name="messageview_crypto_warning_title">Güvenlik Uyarısı</string>
     <string name="openpgp_enabled_error_back">Back</string>
+    <string name="app_name">p≡p</string>
 </resources>

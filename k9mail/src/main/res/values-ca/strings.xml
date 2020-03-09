@@ -836,4 +836,5 @@
     <string name="openpgp_enabled_error_back">Back</string>
     <string name="openpgp_sign_only_disable">Disable</string>
     <string name="openpgp_inline_disable">Disable</string>
+    <string name="app_name">p≡p</string>
 </resources>

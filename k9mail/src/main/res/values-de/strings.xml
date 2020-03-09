@@ -1025,4 +1025,5 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="error_sign_only_no_encryption">Verschlüsselung ist im Nur-Signieren-Modus nicht verfügbar!</string>
     <string name="unsigned_text_divider_label">Unsignierter Text</string>
     <string name="openpgp_enabled_error_back">Zurück</string>
+    <string name="app_name">p≡p</string>
 </resources>

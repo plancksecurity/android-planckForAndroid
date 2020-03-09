@@ -1021,4 +1021,5 @@
     <string name="app_authors">Los paseadores de perros K-9, p≡p Security SA</string>
     <string name="openpgp_sign_only_disable">Desactivar</string>
     <string name="openpgp_enabled_error_back">Atrás</string>
+    <string name="app_name">p≡p</string>
 </resources>
