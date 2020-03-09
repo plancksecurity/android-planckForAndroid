@@ -78,13 +78,7 @@ class PEpMessageBuilder {
                  //   return;
                 }
 
-            String charset =  MimeUtility.getHeaderParameter(mm.getContentType(), "charset");
-
-            if (charset == null || !Charset.isSupported(charset)) {
-                // failback when the header doesn't have charset parameter or it is invalid, defaults to UTF-8
-                // FIXME: charset, trate non text bod4y types like application/pgp-keys
-                charset = Charset.defaultCharset().name();
-            }
+            String charset = getMessageCharset();
             String text = new String(PEpUtils.extractBodyContent(b), charset);
             if(mm.isMimeType("text/html")) {
                 pEpMsg.setLongmsgFormatted(text);
@@ -98,6 +92,17 @@ class PEpMessageBuilder {
         handleMultipart(pEpMsg, mmp, attachments);           // recurse into the Joys of Mime...
 
         pEpMsg.setAttachments(attachments);
+    }
+
+    private String getMessageCharset() {
+        String charset =  MimeUtility.getHeaderParameter(mm.getContentType(), "charset");
+
+        if (charset == null || !Charset.isSupported(charset)) {
+            // failback when the header doesn't have charset parameter or it is invalid, defaults to UTF-8
+            // FIXME: charset, treat non text body types like application/pgp-keys
+            charset = Charset.defaultCharset().name();
+        }
+        return charset;
     }
 
     private void handleMultipart(Message pEpMsg, MimeMultipart mmp, Vector<Blob> attachments) throws MessagingException, IOException, UnsupportedEncodingException {
@@ -118,13 +123,9 @@ class PEpMessageBuilder {
 
             boolean plain = mbp.isMimeType("text/plain");
             if (plain || mbp.isMimeType("text/html")) {
-                String charset = MimeUtility.getHeaderParameter(mbp.getContentType(), "charset");
-                String text;
-                if (charset != null) {
-                    text = new String(PEpUtils.extractBodyContent(mbp_body), charset);
-                } else {
-                    text = new String(PEpUtils.extractBodyContent(mbp_body));
-                }
+                String charset = getMessageCharset();
+                String text = new String(PEpUtils.extractBodyContent(mbp_body), charset);
+
                 if (plain) {
                     String longmsg = pEpMsg.getLongmsg();
                     if (longmsg != null) {
