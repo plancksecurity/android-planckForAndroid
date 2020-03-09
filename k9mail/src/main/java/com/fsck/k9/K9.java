@@ -962,7 +962,7 @@ public class K9 extends MultiDexApplication {
         pEpExtraAccounts = storage.getString("pEpExtraAccounts", null);
         //pEpUseKeyserver = storage.getBoolean("pEpUseKeyserver", false);
         pEpPassiveMode = storage.getBoolean("pEpPassiveMode", false);
-        pEpSubjectProtection = storage.getBoolean("pEpSubjectProtection", true);
+        pEpSubjectProtection = getValuePEpSubjectProtection(storage);
         pEpForwardWarningEnabled = storage.getBoolean("pEpForwardWarningEnabled", false);
         pEpSyncEnabled = storage.getBoolean("pEpEnableSync", BuildConfig.WITH_KEY_SYNC);
 
@@ -1010,6 +1010,10 @@ public class K9 extends MultiDexApplication {
         K9.setK9ComposerThemeSetting(Theme.values()[themeValue]);
         K9.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
         K9.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
+    }
+
+    private static boolean getValuePEpSubjectProtection(Storage storage) {
+        return storage.getBoolean("pEpSubjectProtection", !storage.getBoolean("pEpSubjectUnprotected", false));
     }
 
     /**
