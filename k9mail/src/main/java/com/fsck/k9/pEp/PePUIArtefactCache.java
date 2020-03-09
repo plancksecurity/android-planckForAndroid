@@ -3,8 +3,6 @@ package com.fsck.k9.pEp;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
-import androidx.core.content.ContextCompat;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.R;
@@ -85,10 +83,6 @@ public class PePUIArtefactCache
     }
     public String getSuggestion(Rating rating) {
         return suggestions[colorIndexMapping.get(rating)];
-    }
-
-    public Drawable getIcon() {
-        return ContextCompat.getDrawable(context, R.drawable.ic_action_pep_indicator_white);
     }
 
     public ArrayList<Identity> getRecipients() {

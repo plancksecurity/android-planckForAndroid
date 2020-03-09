@@ -363,6 +363,12 @@ public class PEpUtils {
                 || !account.ispEpPrivacyProtected();
     }
 
+    public static boolean isMessageToEncrypt(Account account, Rating messageRating, boolean isForceUnencrypted) {
+        return messageRating.value >= Rating.pEpRatingReliable.value
+                && account.ispEpPrivacyProtected()
+                && !isForceUnencrypted;
+    }
+
     @WorkerThread
     public static void pEpGenerateAccountKeys(Context context, Account account) {
         PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(context);
@@ -550,6 +556,10 @@ public class PEpUtils {
         final Set<String> headerNames = message.getHeaderNames();
         return headerNames.contains(MimeHeader.HEADER_PEP_AUTOCONSUME.toUpperCase(Locale.ROOT))
                 || headerNames.contains(MimeHeader.HEADER_PEP_AUTOCONSUME_LEGACY.toUpperCase(Locale.ROOT));
+    }
+
+    public static boolean isPepStatusClickable(ArrayList<Identity> recipients ,Rating rating) {
+        return recipients.size() > 0 && rating.value >= Rating.pEpRatingReliable.value;
     }
 }
 

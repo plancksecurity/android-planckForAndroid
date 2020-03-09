@@ -302,6 +302,12 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         mFragmentListener.updateMenu();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        messageLoaderHelper.cancelAndClearLocalMessageLoader();
+    }
+
     public void onPendingIntentResult(int requestCode, int resultCode, Intent data) {
         if ((requestCode & REQUEST_MASK_LOADER_HELPER) == REQUEST_MASK_LOADER_HELPER) {
             requestCode ^= REQUEST_MASK_LOADER_HELPER;
@@ -803,14 +809,9 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         pePUIArtefactCache.setRecipients(mAccount, addresses);
     }
 
-    private boolean isPepStatusClickable() {
-        return pePUIArtefactCache.getRecipients().size() > 0
-                && mMessage.getpEpRating().value >= Rating.pEpRatingReliable.value;
-    }
-
     public void onPEpPrivacyStatus(boolean force) {
         refreshRecipients(getContext());
-        if (force || isPepStatusClickable()) {
+        if (force || PEpUtils.isPepStatusClickable(pePUIArtefactCache.getRecipients(), pEpRating)) {
             String myAddress = mAccount.getEmail();
             PEpStatus.actionShowStatus(getActivity(), pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAddress);
         }
@@ -975,20 +976,18 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
                     localMessage = folder.storeSmallMessage(decryptedMessage, () -> {
                     });
                     mMessage = localMessage;
-                    if (Rating.pEpRatingHaveNoKey.value == decryptResult.rating.value
-                            || !canDecrypt()) {
-                        showKeyNotFoundFeedback();
-                    } else {
-                        refreshMessage();
-                    }
+                    refreshMessage();
+
                 } catch (MessagingException e) {
-                    Timber.e("pEp", "decryptMessage: view", e);
+                    Timber.e("pEp %s", "decryptMessage: view", e);
                 }
             }
 
             @Override
             public void onError(Throwable throwable) {
-
+                if (throwable.getMessage().equals(PEpProvider.KEY_MIOSSING_ERORR_MESSAGE)) {
+                    showKeyNotFoundFeedback();
+                }
             }
         });
     }
@@ -1044,22 +1043,23 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void createPermissionListeners() {
-        permissionRequester.requestStoragePermission(getRootView(), new PermissionListener() {
-            @Override
-            public void onPermissionGranted(PermissionGrantedResponse response) {
+        if(permissionChecker.doesntHaveWriteExternalPermission()) {
+            permissionRequester.requestStoragePermission(getRootView(), new PermissionListener() {
+                @Override
+                public void onPermissionGranted(PermissionGrantedResponse response) {
 
-            }
+                }
 
-            @Override
-            public void onPermissionDenied(PermissionDeniedResponse response) {
-                String permissionDenied = getResources().getString(R.string.download_snackbar_permission_permanently_denied);
-                FeedbackTools.showLongFeedback(mMessageView, permissionDenied);
-            }
+                @Override
+                public void onPermissionDenied(PermissionDeniedResponse response) {
 
-            @Override
-            public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+                }
 
-            }
-        });
+                @Override
+                public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+
+                }
+            });
+        }
     }
 }

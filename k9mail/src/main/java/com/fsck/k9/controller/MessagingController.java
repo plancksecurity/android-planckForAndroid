@@ -104,6 +104,7 @@ import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpProviderImpl;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
+import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException;
 import com.fsck.k9.pEp.manualsync.ImportKeyController;
 import com.fsck.k9.pEp.manualsync.ImportKeyController.KeyImportMessagingActions;
 import com.fsck.k9.pEp.manualsync.ImportKeyControllerFactory;
@@ -3124,6 +3125,11 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                         wasPermanentFailure = e.isPermanentFailure();
 
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
+                    }  catch (AppDidntEncryptMessageException e) {
+                        lastFailure = e;
+                        wasPermanentFailure = true;
+
+                        handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
                     } catch (Exception e) {
                         lastFailure = e;
                         wasPermanentFailure = true;
@@ -3220,7 +3226,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
         processPendingCommands(account);
     }
 
-    private Message processWithpEpAndSend(Transport transport, LocalMessage message, Account account) throws MessagingException {
+    private Message processWithpEpAndSend(Transport transport, LocalMessage message, Account account) throws MessagingException, AppDidntEncryptMessageException  {
         Preferences preferences = Preferences.getPreferences(context);
         //TODO: Move to pEp provider
         String[] keys = K9.getMasterKeys().toArray(new String[0]);

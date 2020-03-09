@@ -15,6 +15,7 @@ import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
+import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException;
 import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
 import com.fsck.k9.pEp.ui.HandshakeData;
@@ -313,6 +314,12 @@ public class PEpProviderImpl implements PEpProvider {
                 decReturn = engine.decrypt_message(srcMsg, new Vector<>(), 0);
                 Log.d(TAG, "decryptMessage() after decrypt");
 
+                if (decReturn.rating == Rating.pEpRatingCannotDecrypt
+                        || decReturn.rating == Rating.pEpRatingHaveNoKey){
+                    notifyError(new AppCannotDecryptException(PEpProvider.KEY_MIOSSING_ERORR_MESSAGE), callback);
+                    return;
+                }
+
                 Message message = decReturn.dst;
                 MimeMessage decMsg = getMimeMessage(source, message);
 
@@ -422,6 +429,8 @@ public class PEpProviderImpl implements PEpProvider {
             }
             resultMessages.add(getEncryptedCopy(source, message, extraKeys));
             return resultMessages;
+        } catch (AppDidntEncryptMessageException e) {
+            throw e;
         } catch (Throwable t) {
             Log.e(TAG, "while encrypting message:", t);
             throw new RuntimeException("Could not encrypt", t);
@@ -534,7 +543,7 @@ public class PEpProviderImpl implements PEpProvider {
         }
     }
 
-    private MimeMessage getEncryptedCopy(MimeMessage source, Message message, String[] extraKeys) throws pEpException, MessagingException {
+    private MimeMessage getEncryptedCopy(MimeMessage source, Message message, String[] extraKeys) throws pEpException, MessagingException, AppDidntEncryptMessageException {
         message.setDir(Message.Direction.Outgoing);
         Log.d(TAG, "encryptMessage() before encrypt");
         Identity from = message.getFrom();
@@ -542,7 +551,13 @@ public class PEpProviderImpl implements PEpProvider {
         from.me = true;
         message.setFrom(from);
         Message currentEnc = engine.encrypt_message(message, convertExtraKeys(extraKeys), message.getEncFormat());
-        if (currentEnc == null) currentEnc = message;
+        source.setFlag(Flag.X_PEP_WASNT_ENCRYPTED, source.isSet(Flag.X_PEP_SHOWN_ENCRYPTED) && currentEnc == null);
+        if (currentEnc == null) {
+            if (source.isSet(Flag.X_PEP_SHOWN_ENCRYPTED)) {
+                throw new AppDidntEncryptMessageException(source);
+            }
+            currentEnc = message;
+        }
         Log.d(TAG, "encryptMessage() after encrypt");
         return getMimeMessage(source, currentEnc);
     }

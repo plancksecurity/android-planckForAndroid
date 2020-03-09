@@ -8,7 +8,10 @@ import androidx.core.app.NotificationManagerCompat;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.R;
+import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.helper.ExceptionHelper;
+import com.fsck.k9.mail.Flag;
+import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException;
 
 import static com.fsck.k9.notification.NotificationController.NOTIFICATION_LED_BLINK_FAST;
 import static com.fsck.k9.notification.NotificationController.NOTIFICATION_LED_FAILURE_COLOR;
@@ -30,10 +33,19 @@ class SendFailedNotifications {
         String text = ExceptionHelper.getRootCauseMessage(exception);
 
         int notificationId = NotificationIds.getSendFailedNotificationId(account);
-        PendingIntent folderListPendingIntent = actionBuilder.createViewFolderListPendingIntent(
-                account, notificationId);
+        PendingIntent folderListPendingIntent;
+        if (exception instanceof AppDidntEncryptMessageException) {
+            title = context.getString(R.string.notification_failed_to_encrypt_title);
+            text = context.getString(R.string.notification_failed_to_encrypt_text);
+            AppDidntEncryptMessageException cannotEncryptEx = (AppDidntEncryptMessageException) exception;
+            MessageReference messageReference = new MessageReference(account.getUuid(), account.getDraftsFolderName(), cannotEncryptEx.getMimeMessage().getUid(), Flag.X_PEP_WASNT_ENCRYPTED);
+            folderListPendingIntent = actionBuilder.createMessageComposePendingIntent(messageReference, notificationId);
+        } else {
+            folderListPendingIntent = actionBuilder.createViewFolderListPendingIntent(account, notificationId);
+        }
 
-        NotificationCompat.Builder builder = controller.createNotificationBuilder(account, NotificationChannelManager.ChannelType.MISCELLANEOUS)
+        NotificationCompat.Builder builder = controller
+                .createNotificationBuilder(account, NotificationChannelManager.ChannelType.MISCELLANEOUS)
                 .setSmallIcon(getSendFailedNotificationIcon())
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true)

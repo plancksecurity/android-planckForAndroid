@@ -113,7 +113,6 @@ public class MessageLoaderHelper {
                 Timber.e("Got decryption result of unknown type - ignoring");
             }
         }
-
         startOrResumeLocalMessageLoader();
     }
 
@@ -230,7 +229,7 @@ public class MessageLoaderHelper {
         callback.onMessageDataLoadFailed();
     }
 
-    private void cancelAndClearLocalMessageLoader() {
+    public void cancelAndClearLocalMessageLoader() {
         loaderManager.destroyLoader(LOCAL_MESSAGE_LOADER_ID);
     }
 

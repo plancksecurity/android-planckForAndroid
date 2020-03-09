@@ -253,6 +253,7 @@ public class RecipientPresenter {
     public void initFromDraftMessage(Message message) {
         initRecipientsFromDraftMessage(message);
         initPgpInlineFromDraftMessage(message);
+        setAlwaysSecure(message.isSet(Flag.X_PEP_NEVER_UNSECURE));
     }
 
     private void initRecipientsFromDraftMessage(Message message) {
@@ -319,6 +320,7 @@ public class RecipientPresenter {
             menu.findItem(R.id.openpgp_sign_only_disable).setVisible(false);
         }*/
 
+        menu.findItem(R.id.privacyStatus).setVisible(getAllRecipients().size() > 0);
         boolean noContactPickerAvailable = !hasContactPicker();
         if (noContactPickerAvailable) {
             menu.findItem(R.id.add_from_contacts).setVisible(false);
@@ -819,18 +821,8 @@ public class RecipientPresenter {
         recipientMvpView.onPEpPrivacyStatus();
     }
 
-
-    public void updatepEpState() {
-        /* no-op */
-    }
-
-
     public void handlepEpState(boolean... withToast) {
         recipientMvpView.handlepEpState(withToast);
-    }
-
-    public void setpEpIndicator(MenuItem pEpIndicator) {
-        recipientMvpView.setpEpIndicator(pEpIndicator);
     }
 
     public boolean isForwardedMessageWeakestThanOriginal(Rating originalMessageRating) {
@@ -852,11 +844,6 @@ public class RecipientPresenter {
         return cachedCryptoStatus == null || !cachedCryptoStatus.isEncryptionEnabled();
     }
 
-    public boolean isPepStatusClickable() {
-        return recipientMvpView.pEpUiCache.getRecipients().size() > 0 &&
-                recipientMvpView.getpEpRating().value >= Rating.pEpRatingReliable.value;
-    }
-
     public interface RecipientsChangedListener {
         void onRecipientsChanged();
     }
@@ -864,7 +851,6 @@ public class RecipientPresenter {
     private final OpenPgpApiManagerCallback openPgpCallback = new OpenPgpApiManagerCallback() {
         @Override
         public void onOpenPgpProviderStatusChanged() {
-            updatepEpState();
             //asyncUpdateCryptoStatus();
             if (openPgpApiManager.getOpenPgpProviderState() == OpenPgpProviderState.UI_REQUIRED) {
                 recipientMvpView.showErrorOpenPgpUserInteractionRequired();
