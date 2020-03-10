@@ -170,4 +170,7 @@
     <string name="nnf_new_folder">Neuer Ordner</string>
     <string name="add_account_message">"Übertragen Sie dieses Konto auf Ihr Gerät, um es nutzen zu können "</string>
     <string name="add_account_title">Ihr Konto hinzufügen</string>
+    <string name="keysync_wizard_create_group_first_message">Es wurde ein zweites Gerät gefunden, mit dem Sie Ihre Datenschutzeinstellungen synchronisieren können. Möchten Sie mit der Synchronisierung beginnen\?</string>
+    <string name="keysync_wizard_handshake_message">Bitte stellen Sie sicher, das Sie beide Geräte vor sich haben, um die Trustwords zu vergleichen. Stimmen die Trustwords unten mit denen auf dem anderen Gerät überein\?</string>
+    <string name="intro_frag_second_text_2">Wenn die Trustwords übereinstimmen und Sie den Handshake abschließen, ist Ihre Kommunikation sicher und verifiziert.</string>
 </resources>
