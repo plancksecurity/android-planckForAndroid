@@ -1026,4 +1026,5 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="unsigned_text_divider_label">Unsignierter Text</string>
     <string name="openpgp_enabled_error_back">Zurück</string>
     <string name="app_name">p≡p</string>
+    <string name="switch_off">Aus</string>
 </resources>
