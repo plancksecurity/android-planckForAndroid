@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="navigation_drawer_open"/>
-    <string name="navigation_drawer_close"/>
+    <string name="navigation_drawer_open">Otwórz szufladę nawigacji</string>
+    <string name="navigation_drawer_close">Zamknij szufladę nawigacji</string>
     <!-- Unstranslatable strings -->
     <string name="pep" translatable="false">p≡p</string>
     <string name="pep_long" translatable="false">pretty Easy privacy</string>
     <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
-    <string name="pEp_trustwords"/>
+    <string name="pEp_trustwords">p≡p Trustwords</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_user_name_format" translatable="false">%1$s</string>
     <string-array name="pep_states">
@@ -41,10 +41,10 @@
         <item>@color/pep_red<!--pEpRatingUnderAttack--></item>
     </array>
     <!-- Translatable strings -->
-    <string name="pep_account_setup_generating_keys"/>
-    <string name="pep_reset_trust"/>
-    <string name="pep_pgp_fingerprint"/>
-    <string name="pep_dialog_weaker_forward_warning_message"/>
+    <string name="pep_account_setup_generating_keys">"domyślna ochrona prywatności "</string>
+    <string name="pep_reset_trust">Przestań ufać</string>
+    <string name="pep_pgp_fingerprint">Odcisk palca PGP</string>
+    <string name="pep_dialog_weaker_forward_warning_message">Za chwilę przekażesz bezpieczną wiadomość jako niezabezpieczoną. Jeśli zdecydujesz się kontynuować, poufne informacje mogą zostać ujawnione, co stanowi zagrożenie dla Ciebie i Twoich partnerów komunikacyjnych. Jesteś pewien, że chcesz kontynuować\?</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Przejdź dalej</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Anuluj</string>
     <string name="pep_dialog_confirm_forward_title"/>

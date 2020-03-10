@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="navigation_drawer_open"/>
-    <string name="navigation_drawer_close"/>
+    <string name="navigation_drawer_open">打开抽屉式导航栏</string>
+    <string name="navigation_drawer_close">关闭抽屉式导航栏</string>
     <!-- Unstranslatable strings -->
     <string name="pep" translatable="false">p≡p</string>
     <string name="pep_long" translatable="false">pretty Easy privacy</string>
     <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
-    <string name="pEp_trustwords"/>
+    <string name="pEp_trustwords">p≡p Trustwords</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_user_name_format" translatable="false">%1$s</string>
     <string-array name="pep_states">
@@ -41,8 +41,8 @@
         <item>@color/pep_red<!--pEpRatingUnderAttack--></item>
     </array>
     <!-- Translatable strings -->
-    <string name="pep_account_setup_generating_keys"/>
-    <string name="pep_reset_trust"/>
+    <string name="pep_account_setup_generating_keys">"默认设置您的隐私 "</string>
+    <string name="pep_reset_trust">停止信任</string>
     <string name="pep_pgp_fingerprint">PGP指纹</string>
     <string name="pep_dialog_weaker_forward_warning_message">您将以不安全的方式转发安全邮件。如果您选择继续，将有可能泄露机密信息，并给您和您的通讯对象带来一定风险。您确认继续吗？</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button"/>

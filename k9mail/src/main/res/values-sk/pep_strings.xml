@@ -223,7 +223,8 @@
     <string name="keysync_wizard_action_next">Ďalej</string>
     <string name="intro_frag_second_header_2">Zabezpečené a dôveryhodné</string>
     <string name="keysync_wizard_add_device_to_existing_group_message">Bolo zistené ďalšie zariadenie. Môžeme ho pridať do skupiny zariadení, aby sa synchronizovalo všetko vaše súkromie na všetkých zariadeniach. Začneme synchronizáciu\?</string>
-    <string name="keysync_wizard_group_joining_done_message">Zariadenie je teraz členom vašej skupiny zariadení. Všetko vaše súkromie je teraz synchronizované.</string>
+    <string name="keysync_wizard_group_joining_done_message">Zariadenie je teraz členom vašej skupiny zariadení. Všetko vaše súkromie je teraz synchronizované.
+\n</string>
     <string name="intro_frag_second_header_1">Zabezpečiť</string>
     <string name="keysync_wizard_error_message">Pri synchronizácii zariadení sa vyskytla chyba. Prosím skúste znova.</string>
     <string name="keysync_wizard_group_creation_done_message">Úspešne sme vytvorili skupinu zariadení. Všetko vaše súkromie je teraz synchronizované.</string>
@@ -236,4 +237,9 @@
     <string name="intro_frag_second_header_3">nedôveroval</string>
     <string name="keysync_wizard_action_cancel">Zrušiť</string>
     <string name="pep_rating_secure">Zabezpečiť</string>
+    <string name="keysync_wizard_create_group_first_message">Bolo zistené druhé zariadenie. Môžeme vytvoriť skupinu zariadení na synchronizáciu všetkého vášho súkromia na oboch zariadeniach. Začneme synchronizáciu\?</string>
+    <string name="keysync_wizard_handshake_message">Uistite sa, že máte obe zariadenia spolu, aby ste mohli porovnávať Trustwords na oboch zariadeniach. Sú Trustwords nižšie rovnaké ako Trustwords na druhom zariadení\?</string>
+    <string name="only_own_identities">Je to vlastná správa, bez zapojeného komunikačného partnera.</string>
+    <string name="intro_frag_second_text_1">Pri tomto Stave súkromia je všetka komunikácia bezpečná, ale na potvrdenie, že váš kontakt je skutočne osobou, ktorú poznáte, by ste si s týmto kontaktom mali overiť Trustwords.</string>
+    <string name="intro_frag_second_text_2">Po potvrdení správnosti Trustwords a dokončení Handshake bude komunikácia úplne bezpečná a dôveryhodná.</string>
 </resources>
