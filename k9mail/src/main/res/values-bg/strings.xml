@@ -948,4 +948,5 @@
     <string name="recipient_error_parse_failed">Грешка при обработването на адреса!</string>
     <string name="error_sign_only_no_encryption">Криптирането не е възможно, когато се използва режима само подпис! </string>
     <string name="unsigned_text_divider_label">Неподписан текст</string>
+    <string name="global_settings_privacy_hide_hostname_when_connecting_detail">Идентифицирайте се като „localhost“, когато се свързвате към SMTP сървъри</string>
 </resources>
