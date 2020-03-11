@@ -1,13 +1,14 @@
 package com.fsck.k9.pEp.ui.fragments;
 
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.Spinner;
+
+import androidx.annotation.Nullable;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -61,80 +62,38 @@ public class AccountSetupOptionsFragment extends PEpFragment {
 
         ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_settings_title_fmt);
 
-        mCheckFrequencyView = (Spinner)rootView.findViewById(R.id.account_check_frequency);
-        mDisplayCountView = (Spinner)rootView.findViewById(R.id.account_display_count);
-        mNotifyView = (CheckBox)rootView.findViewById(R.id.account_notify);
-        mNotifySyncView = (CheckBox)rootView.findViewById(R.id.account_notify_sync);
-        mPushEnable = (CheckBox)rootView.findViewById(R.id.account_enable_push);
-
-        mUntrustedServer = (CheckBox) rootView.findViewById(R.id.account_trust_server);
-        rootView.findViewById(R.id.next).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onDone();
-            }
-        });
-
-        SpinnerOption checkFrequencies[] = {
-                new SpinnerOption(-1,
-                        getString(R.string.account_setup_options_mail_check_frequency_never)),
-                new SpinnerOption(1,
-                        getString(R.string.account_setup_options_mail_check_frequency_1min)),
-                new SpinnerOption(5,
-                        getString(R.string.account_setup_options_mail_check_frequency_5min)),
-                new SpinnerOption(10,
-                        getString(R.string.account_setup_options_mail_check_frequency_10min)),
-                new SpinnerOption(15,
-                        getString(R.string.account_setup_options_mail_check_frequency_15min)),
-                new SpinnerOption(30,
-                        getString(R.string.account_setup_options_mail_check_frequency_30min)),
-                new SpinnerOption(60,
-                        getString(R.string.account_setup_options_mail_check_frequency_1hour)),
-                new SpinnerOption(120,
-                        getString(R.string.account_setup_options_mail_check_frequency_2hour)),
-                new SpinnerOption(180,
-                        getString(R.string.account_setup_options_mail_check_frequency_3hour)),
-                new SpinnerOption(360,
-                        getString(R.string.account_setup_options_mail_check_frequency_6hour)),
-                new SpinnerOption(720,
-                        getString(R.string.account_setup_options_mail_check_frequency_12hour)),
-                new SpinnerOption(1440,
-                        getString(R.string.account_setup_options_mail_check_frequency_24hour)),
-
-        };
-
-        ArrayAdapter<SpinnerOption> checkFrequenciesAdapter = new ArrayAdapter<SpinnerOption>(getActivity(),
-                android.R.layout.simple_spinner_item, checkFrequencies);
-        checkFrequenciesAdapter
-                .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mCheckFrequencyView.setAdapter(checkFrequenciesAdapter);
-
-        SpinnerOption displayCounts[] = {
-                new SpinnerOption(10, getString(R.string.account_setup_options_mail_display_count_10)),
-                new SpinnerOption(25, getString(R.string.account_setup_options_mail_display_count_25)),
-                new SpinnerOption(50, getString(R.string.account_setup_options_mail_display_count_50)),
-                new SpinnerOption(100, getString(R.string.account_setup_options_mail_display_count_100)),
-                new SpinnerOption(250, getString(R.string.account_setup_options_mail_display_count_250)),
-                new SpinnerOption(500, getString(R.string.account_setup_options_mail_display_count_500)),
-                new SpinnerOption(1000, getString(R.string.account_setup_options_mail_display_count_1000)),
-        };
-
-        ArrayAdapter<SpinnerOption> displayCountsAdapter = new ArrayAdapter<SpinnerOption>(getActivity(),
-                android.R.layout.simple_spinner_item, displayCounts);
-        displayCountsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mDisplayCountView.setAdapter(displayCountsAdapter);
-
-        String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
-        mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
+        getAccount();
+        setupView();
+        setupFrequenciesSpinner();
+        setupDisplayCountSpinner();
 
         mNotifyView.setChecked(mAccount.isNotifyNewMail());
         mNotifySyncView.setChecked(mAccount.isShowOngoing());
-        SpinnerOption.setSpinnerOptionValue(mCheckFrequencyView, mAccount
-                .getAutomaticCheckIntervalMinutes());
-        SpinnerOption.setSpinnerOptionValue(mDisplayCountView, mAccount
-                .getDisplayCount());
 
+        setPushEnabled();
 
+        return rootView;
+    }
+
+    private void getAccount() {
+        if (getArguments() != null) {
+            String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
+            mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
+        }
+    }
+
+    private void setupView() {
+        mCheckFrequencyView = rootView.findViewById(R.id.account_check_frequency);
+        mDisplayCountView = rootView.findViewById(R.id.account_display_count);
+        mNotifyView = rootView.findViewById(R.id.account_notify);
+        mNotifySyncView = rootView.findViewById(R.id.account_notify_sync);
+        mPushEnable = rootView.findViewById(R.id.account_enable_push);
+
+        mUntrustedServer = rootView.findViewById(R.id.account_trust_server);
+        rootView.findViewById(R.id.next).setOnClickListener(v -> onDone());
+    }
+
+    private void setPushEnabled() {
         boolean isPushCapable = false;
         try {
             Store store = mAccount.getRemoteStore();
@@ -149,7 +108,47 @@ public class AccountSetupOptionsFragment extends PEpFragment {
         } else {
             mPushEnable.setChecked(true);
         }
-        return rootView;
+    }
+
+    private void setupFrequenciesSpinner() {
+        SpinnerOption[] checkFrequencies = {
+                new SpinnerOption(-1, getString(R.string.account_setup_options_mail_check_frequency_never)),
+                new SpinnerOption(1, getString(R.string.account_setup_options_mail_check_frequency_1min)),
+                new SpinnerOption(5, getString(R.string.account_setup_options_mail_check_frequency_5min)),
+                new SpinnerOption(10, getString(R.string.account_setup_options_mail_check_frequency_10min)),
+                new SpinnerOption(15, getString(R.string.account_setup_options_mail_check_frequency_15min)),
+                new SpinnerOption(30, getString(R.string.account_setup_options_mail_check_frequency_30min)),
+                new SpinnerOption(60, getString(R.string.account_setup_options_mail_check_frequency_1hour)),
+                new SpinnerOption(120, getString(R.string.account_setup_options_mail_check_frequency_2hour)),
+                new SpinnerOption(180, getString(R.string.account_setup_options_mail_check_frequency_3hour)),
+                new SpinnerOption(360, getString(R.string.account_setup_options_mail_check_frequency_6hour)),
+                new SpinnerOption(720, getString(R.string.account_setup_options_mail_check_frequency_12hour)),
+                new SpinnerOption(1440, getString(R.string.account_setup_options_mail_check_frequency_24hour)),
+        };
+
+        ArrayAdapter<SpinnerOption> checkFrequenciesAdapter =
+                new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, checkFrequencies);
+        checkFrequenciesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mCheckFrequencyView.setAdapter(checkFrequenciesAdapter);
+        SpinnerOption.setSpinnerOptionValue(mCheckFrequencyView, mAccount.getAutomaticCheckIntervalMinutes());
+    }
+
+    private void setupDisplayCountSpinner() {
+        SpinnerOption[] displayCounts = {
+                new SpinnerOption(10, getString(R.string.account_setup_options_mail_display_count_10)),
+                new SpinnerOption(25, getString(R.string.account_setup_options_mail_display_count_25)),
+                new SpinnerOption(50, getString(R.string.account_setup_options_mail_display_count_50)),
+                new SpinnerOption(100, getString(R.string.account_setup_options_mail_display_count_100)),
+                new SpinnerOption(250, getString(R.string.account_setup_options_mail_display_count_250)),
+                new SpinnerOption(500, getString(R.string.account_setup_options_mail_display_count_500)),
+                new SpinnerOption(1000, getString(R.string.account_setup_options_mail_display_count_1000)),
+        };
+
+        ArrayAdapter<SpinnerOption> displayCountsAdapter = new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_spinner_item, displayCounts);
+        displayCountsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mDisplayCountView.setAdapter(displayCountsAdapter);
+        SpinnerOption.setSpinnerOptionValue(mDisplayCountView, mAccount.getDisplayCount());
     }
 
     @Override
@@ -161,9 +160,9 @@ public class AccountSetupOptionsFragment extends PEpFragment {
         mAccount.setDescription(mAccount.getEmail());
         mAccount.setNotifyNewMail(mNotifyView.isChecked());
         mAccount.setShowOngoing(mNotifySyncView.isChecked());
-        mAccount.setAutomaticCheckIntervalMinutes((Integer)((SpinnerOption)mCheckFrequencyView
+        mAccount.setAutomaticCheckIntervalMinutes((Integer) ((SpinnerOption) mCheckFrequencyView
                 .getSelectedItem()).value);
-        mAccount.setDisplayCount((Integer)((SpinnerOption)mDisplayCountView
+        mAccount.setDisplayCount((Integer) ((SpinnerOption) mDisplayCountView
                 .getSelectedItem()).value);
 
         if (mPushEnable.isChecked()) {
@@ -181,14 +180,6 @@ public class AccountSetupOptionsFragment extends PEpFragment {
         }
         K9.setServicesEnabled(getActivity());
         AccountSetupNames.actionSetNames(getActivity(), mAccount);
-    }
-
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.next:
-                onDone();
-                break;
-        }
     }
 
     @Override
