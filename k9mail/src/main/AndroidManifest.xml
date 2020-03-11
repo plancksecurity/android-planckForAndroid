@@ -159,10 +159,6 @@
             android:configChanges="locale"
             android:label="@string/account_setup_outgoing_title" />
         <activity
-            android:name=".activity.setup.AccountSetupOptions"
-            android:configChanges="locale"
-            android:label="@string/account_setup_options_title" />
-        <activity
             android:name=".activity.setup.AccountSetupNames"
             android:configChanges="locale"
             android:label="@string/account_setup_names_title"

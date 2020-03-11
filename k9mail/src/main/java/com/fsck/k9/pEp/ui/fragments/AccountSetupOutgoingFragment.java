@@ -30,7 +30,6 @@ import com.fsck.k9.account.AccountCreator;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
-import com.fsck.k9.activity.setup.AccountSetupOptions;
 import com.fsck.k9.activity.setup.AuthTypeAdapter;
 import com.fsck.k9.activity.setup.AuthTypeHolder;
 import com.fsck.k9.activity.setup.ConnectionSecurityAdapter;
@@ -572,7 +571,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
                 mAccount.save(Preferences.getPreferences(getActivity()));
                 goForward();
             } else {
-                AccountSetupOptions.actionOptions(getActivity(), mAccount, mMakeDefault);
                 goForward();
             }
         }
