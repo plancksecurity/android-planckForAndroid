@@ -3,11 +3,13 @@ package com.fsck.k9.account;
 
 import com.fsck.k9.Account.DeletePolicy;
 import com.fsck.k9.mail.ConnectionSecurity;
-import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.ServerSettings.Type;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static security.pEp.utils.NetworkUtilsKt.checkIfAddressIsLocal;
 
 
 public class AccountCreatorTest {
@@ -53,4 +55,16 @@ public class AccountCreatorTest {
 
         assertEquals(Type.IMAP.defaultTlsPort, result);
     }
+
+    @Test
+    public void shouldQualityServerAsTrusted() {
+        String uri192 = "192.168.1.10";
+        String uri172 = "172.16.1.10";
+        String uri10 = "10.169.1.10";
+
+        assertTrue(checkIfAddressIsLocal(uri192));
+        assertTrue(checkIfAddressIsLocal(uri172));
+        assertTrue(checkIfAddressIsLocal(uri10));
+    }
+
 }
