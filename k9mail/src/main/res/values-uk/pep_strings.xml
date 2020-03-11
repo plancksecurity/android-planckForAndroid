@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="navigation_drawer_open"/>
-    <string name="navigation_drawer_close"/>
+    <string name="navigation_drawer_open">Відкрийте ящик для навігації</string>
+    <string name="navigation_drawer_close">Закрийте шухляду для навігації</string>
     <!-- Unstranslatable strings -->
     <string name="pep" translatable="false">p≡p</string>
-    <string name="pep_long" translatable="false">pretty Easy privacy</string>
-    <string name="pep_handshake" translatable="false">Handshake</string>
+    <string name="pep_long" translatable="false">досить легке конфіденційність</string>
+    <string name="pep_handshake" translatable="false">Рукостискання</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
-    <string name="pEp_trustwords"/>
+    <string name="pEp_trustwords">p≡p Trustwords</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_user_name_format" translatable="false">%1$s</string>
     <string-array name="pep_states">
