@@ -771,7 +771,7 @@ public class AccountSettings extends K9PreferenceActivity {
 //        }
 
         pEpSaveEncrypted = (CheckBoxPreference) findPreference(PREFERENCE_PEP_SAVE_ENCRYPTED_ON_SERVER);
-        pEpSaveEncrypted.setChecked(account.isUntrustedSever());
+        pEpSaveEncrypted.setChecked(account.isUntrustedServer());
 
         pEpDisablePrivacyProtection = (CheckBoxPreference) findPreference(PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION);
         pEpDisablePrivacyProtection.setChecked(account.ispEpPrivacyProtected());
@@ -953,7 +953,7 @@ public class AccountSettings extends K9PreferenceActivity {
         }
 
         // pEp:
-        account.setPEpStoreEncryptedOnServer(pEpSaveEncrypted.isChecked());
+        account.setUntrustedServer(pEpSaveEncrypted.isChecked());
         account.setpEpPrivacyProtection(pEpDisablePrivacyProtection.isChecked());
        // account.setPEpSyncAccount(mPEpSyncAccount.isChecked());
 

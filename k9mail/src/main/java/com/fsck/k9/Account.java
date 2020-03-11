@@ -1683,14 +1683,13 @@ public class Account implements BaseAccount, StoreConfig {
         return notificationSetting;
     }
 
-
     // TODO: pEp: do we really *need* synchronized here?!
-    public synchronized boolean isUntrustedSever() {
+    public synchronized boolean isUntrustedServer() {
         return pEpUntrustedServer;
     }
 
-    public synchronized void setPEpStoreEncryptedOnServer(boolean mPEpStoreEncryptedOnServer) {
-        this.pEpUntrustedServer = mPEpStoreEncryptedOnServer;
+    public synchronized void setUntrustedServer(boolean pEpUntrustedServer) {
+        this.pEpUntrustedServer = pEpUntrustedServer;
     }
 
     /**

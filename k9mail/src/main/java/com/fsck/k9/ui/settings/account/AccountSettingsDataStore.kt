@@ -35,7 +35,7 @@ class AccountSettingsDataStore(
             "remote_search_enabled" -> account.allowRemoteSearch()
             "openpgp_hide_sign_only" -> account.openPgpHideSignOnly
             "pep_disable_privacy_protection" -> account.ispEpPrivacyProtected()
-            "pep_save_encrypted" -> account.isUntrustedSever
+            "pep_save_encrypted" -> account.isUntrustedServer
             else -> defValue
         }
     }
@@ -66,7 +66,7 @@ class AccountSettingsDataStore(
             "remote_search_enabled" -> account.setAllowRemoteSearch(value)
             "openpgp_hide_sign_only" -> account.openPgpHideSignOnly = value
             "pep_disable_privacy_protection" -> account.setpEpPrivacyProtection(value)
-            "pep_save_encrypted" -> account.setPEpStoreEncryptedOnServer(value)
+            "pep_save_encrypted" -> account.setUntrustedServer(value)
             else -> return
         }
 

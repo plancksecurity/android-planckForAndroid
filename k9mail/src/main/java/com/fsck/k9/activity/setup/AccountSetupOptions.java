@@ -169,7 +169,7 @@ public class AccountSetupOptions extends K9Activity implements OnClickListener {
             mAccount.setFolderPushMode(Account.FolderMode.NONE);
         }
 
-        mAccount.setPEpStoreEncryptedOnServer(!mUntrustedServer.isChecked());
+        mAccount.setUntrustedServer(!mUntrustedServer.isChecked());
 
         mAccount.save(Preferences.getPreferences(this));
         if (mAccount.equals(Preferences.getPreferences(this).getDefaultAccount()) ||

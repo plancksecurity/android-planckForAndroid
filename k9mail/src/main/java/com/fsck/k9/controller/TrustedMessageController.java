@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
@@ -21,25 +20,25 @@ class TrustedMessageController {
 
     boolean shouldDownloadMessageInTrustedServer(PEpProvider.DecryptResult result, MimeMessage decryptedMessage, Account account) {
         return account.ispEpPrivacyProtected()
-                && !account.isUntrustedSever()
+                && !account.isUntrustedServer()
                 && result.flags == -1
                 && !decryptedMessage.isSet(Flag.X_PEP_NEVER_UNSECURE);
     }
 
     <T extends Message> boolean shouldAppendMessageInTrustedServer(T message, Account account) {
-        return !account.isUntrustedSever() && !message.isSet(Flag.X_PEP_NEVER_UNSECURE);
+        return !account.isUntrustedServer() && !message.isSet(Flag.X_PEP_NEVER_UNSECURE);
     }
 
     boolean getAlreadyDecrypted(Message message, Account account, Rating rating) {
         return account.ispEpPrivacyProtected()
-                && !account.isUntrustedSever()
+                && !account.isUntrustedServer()
                 && !message.isSet(Flag.X_PEP_NEVER_UNSECURE)
                 && !rating.equals(Rating.pEpRatingUndefined)
                 && rating.value > Rating.pEpRatingUnencrypted.value;
     }
 
     boolean shouldAppendMessageOnUntrustedServer(Account account, Rating rating) {
-        return !account.isUntrustedSever() && rating.equals(Rating.pEpRatingUndefined);
+        return !account.isUntrustedServer() && rating.equals(Rating.pEpRatingUndefined);
     }
 
     Message getOwnMessageCopy(Context context, PEpProvider pEpProvider, Account account, LocalMessage localMessage) throws MessagingException {
@@ -54,7 +53,7 @@ class TrustedMessageController {
 
         if (localMessage.getFlags().contains(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)) return localMessage;
 
-        if (account.isUntrustedSever() ||
+        if (account.isUntrustedServer() ||
                 localMessage.getFlags().contains(Flag.X_PEP_NEVER_UNSECURE)) { //Untrusted server
             encryptedMessage = encryptUntrustedMessage(context, pEpProvider, account, localMessage);
         } else { // Trusted

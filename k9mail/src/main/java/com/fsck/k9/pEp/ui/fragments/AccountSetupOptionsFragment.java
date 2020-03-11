@@ -40,7 +40,7 @@ public class AccountSetupOptionsFragment extends PEpFragment {
     private CheckBox mNotifyView;
     private CheckBox mNotifySyncView;
     private CheckBox mPushEnable;
-    private CheckBox mUntrustedServer;
+    private CheckBox trustedServer;
 
     private Account mAccount;
     private View rootView;
@@ -171,7 +171,7 @@ public class AccountSetupOptionsFragment extends PEpFragment {
             mAccount.setFolderPushMode(Account.FolderMode.NONE);
         }
 
-        mAccount.setPEpStoreEncryptedOnServer(!mUntrustedServer.isChecked());
+        mAccount.setUntrustedServer(!trustedServer.isChecked());
 
         mAccount.save(Preferences.getPreferences(getActivity()));
         if (mAccount.equals(Preferences.getPreferences(getActivity()).getDefaultAccount()) ||
