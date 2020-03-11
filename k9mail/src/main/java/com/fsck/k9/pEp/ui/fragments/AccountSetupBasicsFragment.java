@@ -83,6 +83,7 @@ import timber.log.Timber;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static com.fsck.k9.mail.ServerSettings.Type.IMAP;
+import static security.pEp.utils.NetworkUtilsKt.checkIfAddressIsLocal;
 
 public class AccountSetupBasicsFragment extends PEpFragment
         implements View.OnClickListener, TextWatcher, CompoundButton.OnCheckedChangeListener, ClientCertificateSpinner.OnClientCertificateChangedListener {
@@ -453,6 +454,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
             mAccount.setEmail(email);
             mAccount.setStoreUri(incomingUri.toString());
             mAccount.setTransportUri(outgoingUri.toString());
+            mAccount.setUntrustedServer(!checkIfAddressIsLocal(incomingUri.toString()));
 
             setupFolderNames(incomingUriTemplate.getHost().toLowerCase(Locale.US));
 
@@ -715,6 +717,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         String transportUri = Transport.createTransportUri(transportServer);
         mAccount.setStoreUri(storeUri);
         mAccount.setTransportUri(transportUri);
+        mAccount.setUntrustedServer(!checkIfAddressIsLocal(imapHost));
 
         setupFolderNames(domain);
 

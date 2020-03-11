@@ -66,10 +66,6 @@ public class AccountSetupOptionsFragment extends PEpFragment {
         setupView();
         setupFrequenciesSpinner();
         setupDisplayCountSpinner();
-
-        mNotifyView.setChecked(mAccount.isNotifyNewMail());
-        mNotifySyncView.setChecked(mAccount.isShowOngoing());
-
         setPushEnabled();
 
         return rootView;
@@ -88,9 +84,13 @@ public class AccountSetupOptionsFragment extends PEpFragment {
         mNotifyView = rootView.findViewById(R.id.account_notify);
         mNotifySyncView = rootView.findViewById(R.id.account_notify_sync);
         mPushEnable = rootView.findViewById(R.id.account_enable_push);
+        trustedServer = rootView.findViewById(R.id.account_trust_server);
 
-        mUntrustedServer = rootView.findViewById(R.id.account_trust_server);
         rootView.findViewById(R.id.next).setOnClickListener(v -> onDone());
+
+        mNotifyView.setChecked(mAccount.isNotifyNewMail());
+        mNotifySyncView.setChecked(mAccount.isShowOngoing());
+        trustedServer.setChecked(!mAccount.isUntrustedServer());
     }
 
     private void setPushEnabled() {
@@ -101,7 +101,6 @@ public class AccountSetupOptionsFragment extends PEpFragment {
         } catch (Exception e) {
             Timber.e(e, "Could not get remote store");
         }
-
 
         if (!isPushCapable) {
             mPushEnable.setVisibility(View.GONE);
@@ -160,10 +159,8 @@ public class AccountSetupOptionsFragment extends PEpFragment {
         mAccount.setDescription(mAccount.getEmail());
         mAccount.setNotifyNewMail(mNotifyView.isChecked());
         mAccount.setShowOngoing(mNotifySyncView.isChecked());
-        mAccount.setAutomaticCheckIntervalMinutes((Integer) ((SpinnerOption) mCheckFrequencyView
-                .getSelectedItem()).value);
-        mAccount.setDisplayCount((Integer) ((SpinnerOption) mDisplayCountView
-                .getSelectedItem()).value);
+        mAccount.setAutomaticCheckIntervalMinutes((Integer) ((SpinnerOption) mCheckFrequencyView.getSelectedItem()).value);
+        mAccount.setDisplayCount((Integer) ((SpinnerOption) mDisplayCountView.getSelectedItem()).value);
 
         if (mPushEnable.isChecked()) {
             mAccount.setFolderPushMode(Account.FolderMode.FIRST_CLASS);

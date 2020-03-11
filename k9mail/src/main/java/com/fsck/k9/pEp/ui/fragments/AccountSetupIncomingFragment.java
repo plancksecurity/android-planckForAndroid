@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.NonNull;
+
 import androidx.core.widget.ContentLoadingProgressBar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -76,6 +76,7 @@ import javax.inject.Inject;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 
 import static android.app.Activity.RESULT_OK;
+import static security.pEp.utils.NetworkUtilsKt.checkIfAddressIsLocal;
 
 public class AccountSetupIncomingFragment extends PEpFragment {
 
@@ -728,6 +729,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         mAccount.setCompression(NetworkType.WIFI, mCompressionWifi.isChecked());
         mAccount.setCompression(NetworkType.OTHER, mCompressionOther.isChecked());
         mAccount.setSubscribedFoldersOnly(mSubscribedFoldersOnly.isChecked());
+        mAccount.setUntrustedServer(!checkIfAddressIsLocal(host));
     }
 
     public void onClick(View v) {
