@@ -178,4 +178,12 @@
     <string name="intro_frag_second_header_3">Sospechoso</string>
     <string name="intro_frag_second_header_2">Seguro y de confianza</string>
     <string name="intro_frag_second_header_1">Seguro</string>
+    <string name="keysync_wizard_group_creation_done_message">Se ha creado con éxito un grupo de dispositivos. Ahora toda tu privacidad está sincronizada.</string>
+    <string name="pep_rating_mistrusted">Sospechoso</string>
+    <string name="keysync_wizard_error_message">Se ha producido un error al sincronizar los dispositivos. Vuelve a intentarlo.</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Se ha encontrado otro dispositivo con el que puedes sincronizar toda tu tu privacidad. Quieres empezar a sincronizar\?</string>
+    <string name="keysync_wizard_waiting_message">Espera unos instantes mientras sincronizamos tus dispositivos. Este proceso puede llevar unos minutos.</string>
+    <string name="keysync_wizard_action_leave">Salir</string>
+    <string name="keysync_wizard_action_cancel">Cancelar</string>
+    <string name="keysync_wizard_action_next">Siguiente</string>
 </resources>

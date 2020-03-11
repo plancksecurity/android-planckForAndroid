@@ -169,4 +169,5 @@
     <string name="pep_add_device_ask_move_trustwords">Estàs a punt de traslladar un dispositiu a un altre grup de dispositius p≡p. Confirma l\'acció verificant correctament les paraules de confiança següents.</string>
     <string name="app_k9_pep_name">"p≡p "</string>
     <string name="pep_app_description">p≡p és un client de correu electrònic per a Android, potent i gratuït, que utilitza el sistema p≡p (pretty Easy privacy).</string>
+    <string name="keysync_wizard_waiting_message">Espera un moment mentre sincronitzem els teus dispositius. Aquest procés pot tardar un minut o més.</string>
 </resources>

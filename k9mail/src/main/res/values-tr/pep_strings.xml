@@ -168,4 +168,17 @@
     <string name="pep_forward_warning">Yanıt uyarısı güvenliğini kaldır</string>
     <string name="navigation_drawer_close">Gezinme çekmecesini kapat</string>
     <string name="navigation_drawer_open">Gezinme çekmecesini aç</string>
+    <string name="intro_frag_second_header_2">Güvenli &amp; Güvenilir</string>
+    <string name="keysync_wizard_group_creation_done_message">Başarıyla bir aygıt grubu oluşturduk. Gizliliğiniz artık tamamen işaretlendi.</string>
+    <string name="action_tutorial">Eğitim</string>
+    <string name="keysync_wizard_action_leave">Ayrıl</string>
+    <string name="intro_frag_third_text_1">Handshake</string>
+    <string name="intro_frag_second_header_1">Güvenli</string>
+    <string name="keysync_wizard_waiting_message">Lütfen aygıtlarınızı eşitlememiz için zaman tanıyın. Bu işlem bir dakika veya daha uzun sürebilir.</string>
+    <string name="intro_frag_second_header_3">Güvenilmez</string>
+    <string name="pep_rating_mistrusted">Güvenilmez</string>
+    <string name="keysync_wizard_action_cancel">Vazgeç</string>
+    <string name="keysync_wizard_error_message">Aygıtlar eşitlenirken bir şeyler yolunda gitmedi. Lütfen tekrar deneyin.</string>
+    <string name="keysync_wizard_action_next">İleri</string>
+    <string name="pep_rating_secure">Güvenli</string>
 </resources>

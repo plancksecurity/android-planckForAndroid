@@ -210,4 +210,7 @@
     <string name="pep_key_reset_all_own_ids_warning"/>
     <string name="pep_key_reset_own_id_warning"/>
     <string name="pep_key_reset_own_id_warning_title"/>
+    <string name="keysync_wizard_create_group_first_message">A second device was detected. We can form a device group to sync all your privacy on both devices. Shall we start synchronizing\?</string>
+    <string name="keysync_wizard_handshake_message">Please make sure you have both devices together so you can compare the Trustwords on both devices. Are the Trustwords below equal to the Trustwords on the other device\?</string>
+    <string name="intro_frag_second_text_2">When the Trustwords are confirmed to be correct and the Handshake is done, your communication will be completely Secure &amp; Trusted.</string>
 </resources>
