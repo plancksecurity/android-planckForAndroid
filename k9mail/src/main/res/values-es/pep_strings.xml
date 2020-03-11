@@ -140,12 +140,16 @@
     <string name="key_reset_all_own_identitities_feedback">Todas las cuentas p≡p se han restablecido.</string>
     <string name="mistrust_identity_feedback">Ahora %s no es de confianza</string>
     <string name="trust_identity_feedback">Ahora %s es de confianza</string>
-    <string name="key_reset_for_identity_context_title">Restablecer los datos p≡p</string>
+    <string name="key_reset_for_identity_context_title">Restablece todos los datos de p≡p relativos a este interlocutor:</string>
     <string name="key_import_from_fs_input_fpr">Introduce el identificador o la huella de la clave.</string>
     <string name="key_import_success">La clave %1$s se ha importado correctamente de %2$s</string>
     <string name="key_import_failure">No se ha podido importar ni utilizar ninguna clave de %1$s con el identificador de clave %2$s</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Si has iniciado una importación de la clave para la cuenta %s, haz clic en Iniciar.</string>
-    <string name="pgp_key_import_instructions">Para proceder con la importación de la clave, importa la clave pública p≡p adjunta y responde con un mensaje que cumpla estas dos condiciones: \n \n \n 1. Adjunta tu clave pública PGP. \n 2. Está encriptado y firmado con la clave p≡p que acabas de importar.</string>
+    <string name="pgp_key_import_instructions">Para proceder con la importación de la clave, importa la clave pública p≡p adjunta y responde con un mensaje que cumpla estas dos condiciones: 
+\n
+\n
+\n 1. Adjunta tu clave pública PGP. 
+\n 2. Está encriptado y firmado con la clave p≡p que acabas de importar.</string>
     <string name="key_import_wizard_from_pgp_send_private_key_msg">Encripta y firma el mensaje de respuesta de nuevo con la clave pública p≡p y envíalo.</string>
     <string name="key_import_wizard_from_pgp_create_private_key_msg">En tu dispositivo PGP, crea otro mensaje de respuesta al que has recibido de p≡p. Esta vez, adjunta tu clave privada PGP.</string>
     <string name="key_import_wizard_from_pgp_create_handshake_request">En tu dispositivo PGP, crea un mensaje de respuesta al que has recibido de p≡p y adjunta tu clave pública PGP.</string>
@@ -186,4 +190,25 @@
     <string name="keysync_wizard_action_leave">Salir</string>
     <string name="keysync_wizard_action_cancel">Cancelar</string>
     <string name="keysync_wizard_action_next">Siguiente</string>
+    <string name="permissions_needed_message">No conceder los permisos necesarios puede causar comportamientos inesperados. Presiona Aceptar para concedérnoslos.</string>
+    <string name="nnf_permission_external_write_denied">Se ha denegado el permiso para acceder al sistema de archivos</string>
+    <string name="pep_sync_is_enabled_global">La sincronización de p≡p está activada</string>
+    <string name="pep_sync_is_disabled_global">La sincronización de p≡p está desactivada</string>
+    <string name="search_empty_error">Escribe texto para buscar</string>
+    <string name="intro_frag_first_text_1">&lt;string name=\"pep_account_setup_generating_keys\"&gt;Setting your Privacy by Default &lt;/string&gt;</string>
+    <string name="intro_frag_first_text_2">&lt;string name=\"pep_account_setup_generating_keys\"&gt;Setting your Privacy by Default &lt;/string&gt;</string>
+    <string name="intro_frag_first_text_3">Y también en la barra superior, cuando abres o redactas un correo electrónico:</string>
+    <string name="intro_frag_second_text_1">Con este estado de privacidad, todas las comunicaciones son seguras, pero para confirmar que tu contacto es realmente la persona que conoces, deberías comprobar sus palabras de confianza.</string>
+    <string name="intro_frag_second_text_2">Cuando se confirma que las palabras de confianza son correctas y que se ha establecido la comunicación, esta se considera totalmente segura y de confianza.</string>
+    <string name="intro_frag_third_text_3">OUTDISTANCE\t\t\tCORRINA\t\t\tETHIOPIA\t\t\tOUTDRAW\t\t\tFLEECER\t\t\t…</string>
+    <string name="intro_frag_fourth_text_1">\@string/pep_title_activity_privacy_status</string>
+    <string name="intro_frag_fourth_text_2">El icono en la barra superior representa el estado de privacidad del mensaje, el cual es el denominador común más bajo de todos los interlocutores que participan en el mensaje. Por ejemplo:</string>
+    <string name="intro_frag_fourth_text_3">En este caso, el estado de privacidad del mensaje es seguro, ya que este es el denominador común más bajo de ambos interlocutores.</string>
+    <string name="pep_rating_secure_trusted">Seguro y de 
+\nconfianza</string>
+    <string name="pep_rating_forced_unencrypt">Desactivado</string>
+    <string name="only_own_identities">Este es un mensaje privado; no participa ningún interlocutor en él.</string>
+    <string name="keysync_wizard_handshake_message">Comprueba que tengas ambos dispositivos a tu alcance para comparar en ellos las palabras de confianza. Las palabras de confianza siguientes, ¿son las mismas que las del otro dispositivo\?</string>
+    <string name="keysync_wizard_create_group_first_message">Se ha detectado un segundo dispositivo. Podemos crear un grupo de dispositivos para sincronizar toda tu privacidad en ambos dispositivos. ¿Quieres que iniciemos la sincronización\?</string>
+    <string name="keysync_wizard_action_try_again">Vuelve a intentarlo</string>
 </resources>

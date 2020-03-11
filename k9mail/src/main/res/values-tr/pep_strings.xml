@@ -109,13 +109,17 @@
     <string name="key_reset_all_own_identitities_feedback">Tüm p≡p hesapları sıfırlandı.</string>
     <string name="mistrust_identity_feedback">%s artık güvenilir değil</string>
     <string name="trust_identity_feedback">%s artık güvenilir</string>
-    <string name="key_reset_for_identity_context_title">p≡p verilerini sıfırla</string>
+    <string name="key_reset_for_identity_context_title">Bu iletişim ortağı için tüm p≡p verilerini sıfırla:</string>
     <string name="reset_all">Tümünü sıfırla</string>
     <string name="key_import_from_fs_input_fpr">Lütfen Anahtar Kimliğini veya anahtarın parmak izini girin.</string>
     <string name="key_import_success">%1$s Anahtarı öğesinden başarıyla içe aktarıldı%2$s</string>
     <string name="key_import_failure">%1$s öğesinden anahtar kimliği şu şekilde olan herhangi bir anahtar içe aktarılamadı ve kullanılamadı: %2$s</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Aşağıdaki hesaptan bir anahtar içe aktarma işlemi başlattıysanız: %s, lütfen Başlat’a tıklayın.</string>
-    <string name="pgp_key_import_instructions">Anahtar İçe Aktarmaya devam etmek için lütfen ekli genel p≡p anahtarını içe aktarın ve aşağıdaki özellikleri taşıyan bir ileti ile yanıt verin: \n \n \n 1. genel PGP anahtarınızla ilişkilendirilmiş ve \n 2. az önce içe aktardığınız p≡p anahtarı ile şifrelenmiş ve imzalanmış</string>
+    <string name="pgp_key_import_instructions">Anahtar İçe Aktarmaya devam etmek için lütfen ekli genel p≡p anahtarını içe aktarın ve aşağıdaki özellikleri taşıyan bir ileti ile yanıt verin: 
+\n
+\n
+\n 1. genel PGP anahtarınızla ilişkilendirilmiş ve 
+\n 2. az önce içe aktardığınız p≡p anahtarı ile şifrelenmiş ve imzalanmış</string>
     <string name="key_import_wizard_from_pgp_send_private_key_msg">Genel p≡p anahtarı ile yanıt iletisini yeniden şifreleyerek imzalayın ve gönderin.</string>
     <string name="key_import_wizard_from_pgp_create_private_key_msg">PGP aygıtınızda, p≡p’den aldığınıza başka bir yanıt iletisi oluşturun. Bu sefer lütfen özel PGP anahtarınızı iliştirin.</string>
     <string name="key_import_wizard_handshake_explanation_pgp">Lütfen aşağıdaki anahtarların PGP parmak izlerini PGP aygıtınızdakilerle karşılaştırın ve bunların uyumlu olduğunu teyit edin.</string>
@@ -181,4 +185,31 @@
     <string name="keysync_wizard_error_message">Aygıtlar eşitlenirken bir şeyler yolunda gitmedi. Lütfen tekrar deneyin.</string>
     <string name="keysync_wizard_action_next">İleri</string>
     <string name="pep_rating_secure">Güvenli</string>
+    <string name="read_snackbar_permission_permanently_denied">Kişilerinizi okumamıza izin vermemeniz, beklenmedik davranışlara neden olabilir</string>
+    <string name="download_snackbar_permission_permanently_denied">Dosyaları indirmemize izin vermemeniz, beklenmedik davranışlara neden olabilir</string>
+    <string name="permissions_needed_message">Gerekli izinlerin verilmemesi, beklenmedik davranışlara neden olabilir. Bu izni bize vermek için Tamam’a basın.</string>
+    <string name="nnf_permission_external_write_denied">Dosya sistemine erişme izni reddedildi</string>
+    <string name="pep_sync_is_enabled_global">p≡p eşitlemesi etkinleştirildi</string>
+    <string name="pep_sync_is_disabled_global">p≡p eşitlemesi devre dışı bırakıldı</string>
+    <string name="search_empty_error">Aramak için lütfen metin yazın</string>
+    <string name="intro_frag_first_text_1"><font color="#4caf50">p≡p</font> eğitimine hoş geldiniz</string>
+    <string name="intro_frag_first_text_2">Bu eğitimi istediğiniz zaman kapatabilirsiniz.
+\n
+\n<font color="#4caf50">p≡p</font>, iletişiminizin ne kadar güvenli olduğunu göstermek için bir Gizlilik Durumu kullanır.
+\n
+\nBu Gizlilik Durumu, kullanıcının avatarında bir simge olarak gösterilir.</string>
+    <string name="intro_frag_first_text_3">Bir e-postayı açtığınızda veya yazdığınızda üst çubukta:</string>
+    <string name="intro_frag_second_text_1">Bu Gizlilik Durumuyla tüm iletişim Güvenlidir, ancak kişinizin gerçekten tanıdığınız kişi olduğunu onaylamak için bu kişiyle Güvenli kelimeler oluşturmalısınız.</string>
+    <string name="intro_frag_second_text_2">Güvenli kelimelerin doğru olduğu onaylandığında ve bir Anlaşma yapıldığında, iletişim tamamen güvenli ve güvenilir olacaktır.</string>
+    <string name="intro_frag_third_text_3">OUTDISTANCE\t\t\tCORRINA\t\t\tETHIOPIA\t\t\tOUTDRAW\t\t\tFLEECER\t\t\t…</string>
+    <string name="intro_frag_fourth_text_1">\@string/pep_title_activity_privacy_status</string>
+    <string name="intro_frag_fourth_text_2">Üst çubuktaki simge iletinin Gizlilik Durumunu yansıtır; bu, o iletinin tüm iletişim ortaklarının en düşük ortak paydasıdır, örneğin:</string>
+    <string name="intro_frag_fourth_text_3">Bu durumda iletinin Gizlilik Durumu Güvenli’dir, çünkü bu, iki iletişim ortağının en düşük ortak paydasıdır.</string>
+    <string name="pep_rating_secure_trusted">Güvenli ve
+\nGüvenilir</string>
+    <string name="pep_rating_forced_unencrypt">Devre dışı bırakıldı</string>
+    <string name="only_own_identities">Bu kendi iletisidir, hiçbir iletişim ortağı ilgili değildir.</string>
+    <string name="keysync_wizard_handshake_message">Aygıtlarda Güvenli kelimeleri karşılaştırmak için lütfen aygıtlarınızın bir arada durduğundan emin olun. Aşağıdaki Güvenli kelimeler, diğer aygıttaki Güvenli kelimelere eşit mi\?</string>
+    <string name="keysync_wizard_create_group_first_message">İkinci bir aygıt algılandı. Tüm gizliliğinizi her iki aygıtta eşitlemek için bir aygıt grubu oluşturabiliriz. Eşitlemeyi başlatalım mı\?</string>
+    <string name="keysync_wizard_action_try_again">Tekrar deneyin</string>
 </resources>

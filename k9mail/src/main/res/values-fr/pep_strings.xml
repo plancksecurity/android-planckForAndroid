@@ -152,7 +152,7 @@
     <string name="key_reset_identity_feedback">Toutes les données p≡p pour la communication avec ce partenaire ont été réinitialisées.</string>
     <string name="nnf_name">Nom</string>
     <string name="reset">Réinitialiser</string>
-    <string name="key_import_failure">Erreur lors de l’importation et de l\'utilisation de n’importe quelle clef depuis %1$s avec l’ID de clef : %2$s</string>
+    <string name="key_import_failure">Erreur lors de l’importation et de l\'utilisation de n’importe quelle clef depuis %1$s avec l’ID de clef : %2$s</string>
     <string name="add_account_title">Ajouter votre compte</string>
     <string name="add_account_message">Afin de pouvoir utiliser ce compte, vous devez l’ajouter à votre dispositif</string>
     <string name="account_already_exists">Le compte existe déjà</string>
@@ -170,26 +170,49 @@
     <string name="pep_sync">Sync p≡p</string>
     <string name="pep_sync_leave_device_group">Quitter le groupe de dispositifs</string>
     <string name="key_import_wizard_handshake_explanation">Veuillez comparer les Trustwords suivants avec ceux de votre dispositif et confirmer qu’ils coïncident.</string>
-    <string name="key_import_wizard_from_pep_initial_text">Nous allons commencer le processus d’importation de la clef : Cela importera et utilisera votre clef p≡p depuis un autre dispositif, et exportera votre clef privée.</string>
+    <string name="key_import_wizard_from_pep_initial_text">Nous allons commencer le processus d’importation de la clef : Cela importera et utilisera votre clef p≡p depuis un autre dispositif, et exportera votre clef privée.</string>
     <string name="key_import_wizard_from_pgp_initial_text">Nous allons commencer le procédé d’importation de la clef depuis un client PGP</string>
-    <string name="key_import_wizard_from_pgp_key_sent">Veuillez ouvrir ce message sur votre dispositif PGP et importer votre clef publique p≡p dans votre keychain.</string>
+    <string name="key_import_wizard_from_pgp_key_sent">Un message avec votre clef publique p≡p vous a été envoyé. Veuillez ouvrir ce message sur votre dispositif PGP et importer votre clef publique p≡p dans votre keychain.</string>
     <string name="key_import_wizard_from_pgp_create_handshake_request">Dans votre dispositif PGP, veuillez créer un message de réponse à celui reçu de p≡p et joindre votre clef publique PGP.</string>
     <string name="key_import_wizard_from_pgp_send_handshake_request">Veuillez crypter et signer le message de réponse avec la clef publique p≡p qui vient d’être importée et l’envoyer.</string>
     <string name="key_import_wizard_handshake_explanation_pgp">Veuillez comparer les empreintes PGP des clefs inférieures avec celles de votre dispositif PGP et confirmer qu’elles coïncident.</string>
-    <string name="key_import_wizard_pep_not_initial_explanation">Si vous réinitialiser une importation de clef pour le compte suivant : %s, veuillez cliquer sur Commencer.</string>
-    <string name="pep_key_reset_all_own_ids_warning">Cette action réinitialisera tous les comptes. \nÊtes-vous sûr de vouloir réinitialiser \?</string>
-    <string name="pep_key_reset_own_id_warning">Cette action réinitialisera votre compte. \nÊtes-vous sûr de vouloir réinitialiser \?</string>
+    <string name="key_import_wizard_pep_not_initial_explanation">Si vous réinitialiser une importation de clef pour le compte suivant : %s, veuillez cliquer sur Commencer.</string>
+    <string name="pep_key_reset_all_own_ids_warning">Cette action réinitialisera tous les comptes 
+\n Êtes-vous sûr de vouloir réinitialiser \?</string>
+    <string name="pep_key_reset_own_id_warning">Cette action réinitialisera votre compte 
+\n Êtes-vous sûr de vouloir réinitialiser \?</string>
     <string name="pep_key_reset_own_id_warning_title">Réinitialiser %s compte</string>
     <string name="key_reset_all_own_identitities_feedback">Tous les comptes p ≡ p ont été réinitialisés.</string>
     <string name="mistrust_identity_feedback">%s n’est plus de confiance</string>
     <string name="trust_identity_feedback">%s est maintenant de confiance</string>
-    <string name="key_reset_for_identity_context_title">Réinitialiser les données p≡p</string>
+    <string name="key_reset_for_identity_context_title">Réinitialiser toutes les données p≡p pour la communication avec ce partenaire :</string>
     <string name="reset_all">Tout réinitialiser</string>
     <string name="key_import_from_fs_input_fpr">Veuillez introduire la clef ID ou l’empreinte de la clef.</string>
     <string name="key_import_success">%1$s Clef importée correctement depuis %2$s</string>
     <string name="pgp_key_import_instructions">"Afin de procéder à l’importation de la clef, veuillez importer la clef publique p≡p jointe et répondre avec un message qui : \n \n \n 1 - possède votre clef publique PGP et \n 2 -  soit crypté et signé avec la clef p≡p que vous venez d’importer."</string>
     <string name="key_import_wizard_from_pgp_send_private_key_msg">Veuillez crypter et signer à nouveau le message de réponse avec la clef publique p≡p et l\'envoyer.</string>
     <string name="pgp">PGP</string>
-    <string name="open_pgp">OpenPGP</string>
+    <string name="open_pgp">Ouvrir PGP</string>
     <string name="key_import_wizard_from_pgp_create_private_key_msg">Sur votre dispositif PGP, créer un autre message de réponse à celui reçu de p≡p. Cette fois-ci, veuillez joindre votre clef privée PGP.</string>
+    <string name="permissions_needed_message">Ne pas fournir les autorisations nécessaires peut provoquer des comportements inattendus. Appuyer sur OK pour accorder toutes les autorisations.</string>
+    <string name="nnf_permission_external_write_denied">Autorisation d’accès au système de fichiers rejetée</string>
+    <string name="pep_sync_is_enabled_global">La sync p≡p est activée</string>
+    <string name="pep_sync_is_disabled_global">La sync p≡p est désactivée</string>
+    <string name="search_empty_error">Veuillez saisir votre recherche.</string>
+    <string name="intro_frag_first_text_1">&lt;string name=\"pep_account_setup_generating_keys\"&gt;Setting your Privacy by Default &lt;/string&gt;</string>
+    <string name="intro_frag_first_text_2">&lt;string name=\"pep_account_setup_generating_keys\"&gt;Setting your Privacy by Default &lt;/string&gt;</string>
+    <string name="intro_frag_first_text_3">Dans la barre supérieure lorsque vous ouvrez ou écrivez un e-mail :</string>
+    <string name="intro_frag_second_text_1">Avec ce statut de confidentialité, toutes les communications sont sécurisées, mais pour confirmer que votre contact est réellement la personne que vous connaissez, vous devriez envoyer un Trustword à ce contact.</string>
+    <string name="intro_frag_second_text_2">Lorsque les Trustwords sont confirmés correctement et que la poignée de main a été faite, la communication sera complètement sécurisée et de confiance.</string>
+    <string name="intro_frag_third_text_3">OUTDISTANCE\t\t\tCORRINA\t\t\tETHIOPIA\t\t\tOUTDRAW\t\t\tFLEECER\t\t\t…</string>
+    <string name="intro_frag_fourth_text_1">\@string/pep_title_activity_privacy_status</string>
+    <string name="intro_frag_fourth_text_2">L’icône dans la barre supérieure indique le statut de confidentialité du message, qui est le plus petit dénominateur commun entre tous les partenaires de ce message, par exemple :</string>
+    <string name="intro_frag_fourth_text_3">Dans ce cas-ci, le statut de confidentialité du message est sûr, car c’est le plus petit dénominateur commun des deux partenaires de communication.</string>
+    <string name="pep_rating_secure_trusted">Sécurisé &amp; 
+\nDe confiance</string>
+    <string name="pep_rating_forced_unencrypt">Désactivé</string>
+    <string name="only_own_identities">Ceci est un message interne, il n’y a pas de partenaire impliqué dans la communication.</string>
+    <string name="keysync_wizard_handshake_message">Veuillez vous assurer d’avoir les dispositifs à disposition afin de pouvoir comparer les Trustwords des dispositifs. Les Trustwors ci-dessous sont-ils équivalents aux Trustwords de l’autre dispositif \?</string>
+    <string name="keysync_wizard_create_group_first_message">Un deuxième équipement a été détecté. Nous pouvons créer un groupe de dispositifs pour synchroniser vos données confidentielles sur les deux équipements. Devons-nous commencer la synchronisation \?</string>
+    <string name="keysync_wizard_action_try_again">Réessayer</string>
 </resources>
