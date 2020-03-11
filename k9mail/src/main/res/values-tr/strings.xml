@@ -911,4 +911,145 @@
     <string name="messageview_crypto_warning_title">Güvenlik Uyarısı</string>
     <string name="openpgp_enabled_error_back">Back</string>
     <string name="app_name">p≡p</string>
+    <string name="global_settings_privacy_hide_timezone_detail">Posta üst bilgilerinde ve yanıt üst bilgisinde yerel zaman dilimi yerine UTC’yi kullan</string>
+    <string name="global_settings_privacy_hide_hostname_when_connecting_detail">SMTP sunucularına bağlanırken \'yerel ana bilgisayar’ olarak tanımla</string>
+    <string name="global_settings_messageiew_after_delete_behavior_title">İleti davranışı sildikten sonra</string>
+    <string name="account_setup_auth_type_xoauth2">OAuth 2.0 Belirteci</string>
+    <string name="crypto_msg_unsigned_encrypted">İmza yok, bu iletiye müdahale edilmiş olabilir.</string>
+    <string name="dialog_openkeychain_info_install">Yükle</string>
+    <string name="apg_deprecated_bullet_2">Düzeltilmemiş güvenlik sorunlarını içerir</string>
+    <string name="dialog_openkeychain_info_text">K-9 Mail, uçtan uca şifreleme için OpenKeychain gerektirir.</string>
+    <string name="dialog_openkeychain_info_title">Yüklenmiş OpenPGP uygulaması yok</string>
+    <string name="status_poll_and_push_disabled">Yoklama ve iletme devre dışı bırakıldı</string>
+    <string name="status_syncing">İletiler eşitleniyor</string>
+    <string name="message_view_status_no_space">Yeterli alan bulunmadığından ek kaydedilemedi.</string>
+    <string name="general_settings_title">Genel Ayarlar</string>
+    <string name="account_clear_dlg_instructions_fmt">=== App-specific strings =============================================================</string>
+    <string name="account_recreate_dlg_instructions_fmt">=== App-specific strings =============================================================</string>
+    <string name="app_license">Apache License, Sürüm 2.0 ile lisanslanmıştır.</string>
+    <string name="status_syncing_blocked">Eşitleme engellendi</string>
+    <string name="tap_hint">Okunmamış veya yıldızlanmış iletiler için daireye veya yıldıza dokunun</string>
+    <string name="enable_sign_only">PGP Yalnızca Oturum Açma İşlevini Etkinleştir</string>
+    <string name="openpgp_dialog_sign_only_minus_attach">Bazı istemcilerde, imzalar \'signature.asc\' eklentileri olarak görüntülenebilir.</string>
+    <string name="crypto_msg_unsupported_signed">İleti imzalandı ancak desteklenmeyen bir biçimde.</string>
+    <string name="crypto_msg_incomplete_encrypted">İleti şifrelendi ancak şifre çözme için tamamen indirilmesi gerekiyor.</string>
+    <string name="crypto_msg_cancelled">İleti şifrelendi ancak şifrele çözme iptal edildi.</string>
+    <string name="crypto_msg_encrypted_unsigned">İleti şifrelendi ancak imzalanmadı.</string>
+    <string name="crypto_msg_sign_unverified">İmza güvenilir olmayan bir anahtarla atıldı!</string>
+    <string name="crypto_msg_sign_verified">İmza güvenilir bir anahtarla atıldı.</string>
+    <string name="apg_learn_more">=== App-specific strings =============================================================</string>
+    <string name="fetching_folders_failed">Klasör listesini alma başarısız oldu</string>
+    <string name="error_recipient_crypto_retrieve">OpenPGP sağlayıcısından alıcı durumu alınırken hata oluştu!</string>
+    <string name="openpgp_enabled_error_msg">Seçili alıcılardan bazıları bu özelliği desteklemiyor!</string>
+    <string name="openpgp_description_text3">Şifreleme yalnızca tüm alıcılar tarafından desteklendiğinde görüntülenecektir ve bu alıcılar size önceden bir e-posta göndermiş olmalıdır.</string>
+    <string name="account_settings_crypto_prefer_encrypt">Karşılıklı modu otomatik olarak şifrele</string>
+    <string name="dialog_autocrypt_mutual_title">Karşılıklı modu otomatik olarak şifrele</string>
+    <string name="dialog_autocrypt_mutual_description_2">Hem gönderen hem de alıcıların karşılıklı modu etkinleştirmesi halinde, şifreleme varsayılan olarak etkinleştirilecektir.</string>
+    <string name="dialog_autocrypt_mutual_description_1">İletiler normalde seçime göre veya bir şifrelenmiş iletiye yanıt verildiğinde şifrelenecektir.</string>
+    <string name="dialog_autocrypt_mutual_learn_more">=== App-specific strings =============================================================</string>
+    <string name="ac_transfer_msg_body">Bu ileti, Otomatik şifreleme ayarlarınızı gizli anahtarınızla birlikte orijinal aygıtınızdan güvenli bir biçimde aktarmak için tüm bilgileri içerir. Yeni aygıtınızı Otomatik şifreleme için ayarlamak isterseniz, lütfen yeni aygıtınızda sunulacak talimatları izleyin. Bu iletiyi saklayabilir ve gizli anahtarınız için yedek olarak kullanabilirsiniz. Bunu yapmak isterseniz, parolayı bir kenara yazmalı ve güvenli bir şekilde saklamalısınız.</string>
+    <string name="mail_list_widget_text">p≡p İleti Listesi</string>
+    <string name="ac_transfer_title">Otomatik Şifreleme Kurulumu İletisi</string>
+    <string name="openpgp_dialog_sign_only_title">PGP Yalnızca Oturum Açma Modu</string>
+    <string name="switch_on">Açık</string>
+    <string name="apg_deprecated_1">APG artık muhafaza edilmiyor!</string>
+    <string name="unsigned_text_divider_label">İmzalanmamış Metin</string>
+    <string name="xoauth2_account_doesnt_exist">Hesap mevcut değil</string>
+    <string name="xoauth2_auth_cancelled_by_user">Kimlik Doğrulama iptal edildi</string>
+    <string name="ac_transfer_intro">Bir Otomatik Şifreleme Kurulumu İletisi, diğer aygıtlarla uçtan uca kurulumunuzu güvenli bir şekilde paylaş.</string>
+    <string name="crypto_msg_sign_incomplete">İmzanın doğrulanması için ileti tamamen indirilmelidir.</string>
+    <string name="enable_encryption">Şifrelemeyi Etkinleştir</string>
+    <string name="openpgp_enabled_error_gotit">Anladım</string>
+    <string name="crypto_no_provider_button">Ayarlara Git</string>
+    <string name="openpgp_description_text1">İletilerin şifrelenmesi, bunların yalnızca alıcı tarafından okunabilmesini sağlar.</string>
+    <string name="account_settings_crypto_summary_on">%s öğesine bağlandı</string>
+    <string name="crypto_msg_encrypted_error">İleti şifrelendi ancak bir şifre çözme hatası oluştu.</string>
+    <string name="status_no_network">Eşitleme devre dışı bırakıldı - Ağ yok</string>
+    <string name="debug_delete_local_body">Hataları Ayıkla / İleti gövdesini temizle</string>
+    <string name="status_no_background">Eşitleme devre dışı bırakıldı - Arka planda aktivite yok</string>
+    <string name="global_settings_confirm_menu_mark_all_read">Tüm iletileri okundu olarak işaretle</string>
+    <string name="global_settings_privacy_hide_hostname_when_connecting">Ana bilgisayar adını gizle</string>
+    <string name="app_copyright_fmt">=== App-specific strings =============================================================</string>
+    <string name="app_authors">The K-9 Dog Walkers, p≡p Security S.A.</string>
+    <string name="message_view_sender_label">%1$s aracılığıyla</string>
+    <string name="global_settings_privacy_hide_useragent_detail">Posta üst bilgilerinden p≡p Kullanıcı-Aracıyı kaldır</string>
+    <string name="account_settings_crypto_summary_off">Yapılandırılmış OpenPGP uygulaması yok</string>
+    <string name="account_settings_no_openpgp_provider_configured">Yapılandırılmış OpenPGP uygulaması yok</string>
+    <string name="account_settings_openpgp_missing">OpenPGP uygulaması eksik - kaldırıldı mı\?</string>
+    <string name="dialog_confirm_mark_all_as_read_title">Tümünü okundu olarak işaretlemeyi onayla</string>
+    <string name="dialog_confirm_mark_all_as_read_message">Tüm iletileri okundu olarak işaretlemek istiyor musunuz\?</string>
+    <string name="settings_export_success_generic">Ayarlar başarıyla dışarı aktarıldı</string>
+    <string name="account_setup_basics_oauth2_token">OAuth 2.0 belirtecini kullan (Google hesapları)</string>
+    <string name="disable_sign_only">PGP Yalnızca Oturum Açma İşlevini Devre Dışı Bırak</string>
+    <string name="openpgp_dialog_sign_only_text">Bu modda, PGP anahtarınız, şifrelenmemiş bir postanın kriptografik imzasını oluşturmak için kullanılacaktır.</string>
+    <string name="openpgp_dialog_sign_only_plus_verified">Bu, e-postayı şifrelemez ancak sizin anahtarınızla gönderildiğini doğrular.</string>
+    <string name="openpgp_dialog_sign_only_minus_break">Posta listelerine gönderim yapıldığında imzalarda sıkıntı oluşabilir.</string>
+    <string name="openpgp_dialog_sign_only_neutral_encsigned">Şifrelenmiş iletiler her zaman bir imza içerir.</string>
+    <string name="crypto_msg_signed_error">İleti imzalandı ancak imza doğrulanamadı.</string>
+    <string name="crypto_msg_unsupported_encrypted">İleti şifrelendi ancak desteklenmeyen bir biçimde.</string>
+    <string name="crypto_msg_signed_unencrypted">İleti imzalandı ancak şifrelenmedi.</string>
+    <string name="crypto_msg_sign_unknown">İmza bilinmeyen bir anahtarla atıldı.</string>
+    <string name="crypto_msg_sign_error">İmza bir hata içeriyor.</string>
+    <string name="crypto_msg_sign_mismatch">İmza yanlış anahtarla atıldı.</string>
+    <string name="crypto_msg_sign_expired">İmza süresi dolmuş bir anahtarla atıldı.</string>
+    <string name="crypto_msg_sign_revoked">İmza geri alınmış bir anahtarla atıldı.</string>
+    <string name="crypto_msg_sign_insecure">İmza güvenli olmayan bir anahtarla atıldı.</string>
+    <string name="crypto_msg_signed_encrypted">İleti imzalandı ve şifrelendi.</string>
+    <string name="crypto_info_view_key">İmzalayanı Görüntüle</string>
+    <string name="locked_attach_unencrypted">Bu kısım şifrelenmedi ve güvenli olmayabilir.</string>
+    <string name="locked_attach_title">Korunmayan Ek</string>
+    <string name="messageview_decrypt_cancelled">Şifre çözme iptal edildi.</string>
+    <string name="messageview_decrypt_incomplete">Şifre çözme için şifrelenen iletinin tamamen indirilmesi gerekiyor.</string>
+    <string name="messageview_crypto_error_title">Hata şifre çözme e-postası</string>
+    <string name="messageview_crypto_warning_revoked">=== App-specific strings =============================================================</string>
+    <string name="messageview_crypto_warning_expired">=== App-specific strings =============================================================</string>
+    <string name="messageview_crypto_warning_insecure">=== App-specific strings =============================================================</string>
+    <string name="messageview_crypto_warning_error">=== App-specific strings =============================================================</string>
+    <string name="recipient_error_non_ascii">Mevcut durumda özel karakterler desteklenmemektedir!</string>
+    <string name="messageview_crypto_warning_show_anyway">İletiyi yine de göster</string>
+    <string name="recipient_error_parse_failed">Adres ayrıştırılırken hata!</string>
+    <string name="account_settings_crypto_hide_sign_only">Şifrelenmemiş imzaları gizle</string>
+    <string name="account_settings_crypto_hide_sign_only_on">Yalnızca şifrelenmiş imzalar görüntülenecektir</string>
+    <string name="account_settings_crypto_hide_sign_only_off">Tüm imzalar görüntülenecektir</string>
+    <string name="error_sign_only_no_encryption">Şifreleme yalnızca oturum açma modunda kullanılamaz!</string>
+    <string name="openpgp_inline_text">E-posta PGP/INLINE biçiminde gönderildi.
+\nBu yalnızca uyumluluk için kullanılmalıdır.</string>
+    <string name="openpgp_inline_minus_transit">İletim sırasında imzalarda sıkıntı yaşanabilir</string>
+    <string name="apg_deprecated_title">APG Tükenme Uyarısı</string>
+    <string name="apg_deprecated_2">Bu nedenle, APG için destek K-9 Mail’den kaldırıldı.</string>
+    <string name="apg_deprecated_bullet_1">Geliştirme 2014’ün başlarında durduruldu</string>
+    <string name="apg">APG</string>
+    <string name="apg_deprecated_ok">Anladım!</string>
+    <string name="no_crypto_provider_see_global">Yapılandırılmış bir OpenPGP uygulaması yok, genel ayarlara bakın!</string>
+    <string name="crypto_no_provider_title">Bu e-posta şifrelenmiş</string>
+    <string name="crypto_no_provider_message">Bu e-posta OpenPGP ile şifrelenmiş.
+\nBunu okumak için uyumlu bir OpenPGP Uygulamasını yüklemeli ve yapılandırmalısınız.</string>
+    <string name="xoauth2_unable_to_contact_auth_server">Kimlik doğrulama sunucusu ile iletişim kurulamıyor</string>
+    <string name="xoauth2_error_contacting_auth_server">Kimlik doğrulama sunucusu ile temasa geçilirken hata</string>
+    <string name="hello_world">Merhaba dünya!</string>
+    <string name="decrypt_message_explanation">Bu e-posta şifrelenmiş ve şifre çözme işlemi birkaç saniye sürebilir. Devam etmek istiyor musunuz\?</string>
+    <string name="pep_menu_long_trustwords">Uzun Güvenli kelimeleri göster</string>
+    <string name="pep_menu_short_trustwords">Kısa Güvenli kelimeleri göster</string>
+    <string name="mail_list_widget_loading">Yüklenen mesajlar…</string>
+    <string name="messageview_crypto_warning_details">Ayrıntıları Göster</string>
+    <string name="openpgp_enabled_error_title">Şifreleme yapılamıyor</string>
+    <string name="disable_encryption">Şifrelemeyi Devre Dışı Bırak</string>
+    <string name="openpgp_description_text2">Bu simgeye tıklayarak şifreleme geçişini yapın.</string>
+    <string name="openpgp_enabled_error_disable">Şifrelemeyi Devre Dışı Bırak</string>
+    <string name="openpgp_encryption">OpenPGP Şifrelemesi</string>
+    <string name="encrypted_subject">Şifrelenmiş İleti</string>
+    <string name="toast_account_not_found">Dahili hata: Geçersiz hesap!</string>
+    <string name="toast_openpgp_provider_error">%s öğesine bağlanılırken hata!</string>
+    <string name="ac_transfer_setting_title">Otomatik Şifreleme Kurulumu İletisi Gönder</string>
+    <string name="ac_transfer_setting_summary">Diğer aygıtlarla uçtan uca kurulumu güvenli bir şekilde paylaş</string>
+    <string name="ac_transfer_will_be_sent">İleti adresinize gönderilecektir:</string>
+    <string name="ac_transfer_button_send">Kurulum İletisi Gönder</string>
+    <string name="ac_transfer_generating">Kurulum iletisi oluşturuluyor…</string>
+    <string name="ac_transfer_sending_to">İleti şuraya gönderiliyor:</string>
+    <string name="ac_transfer_finish">Bitirmek için iletiyi diğer aygıtınızda açın ve kurulum kodunu girin.</string>
+    <string name="ac_transfer_show_code">Kurulum Kodunu Göster</string>
+    <string name="ac_transfer_msg_subject">Otomatik Şifreleme Kurulumu İletisi</string>
+    <string name="ac_transfer_error_send">İleti gönderilirken bir hata oluştu. Lütfen ağ bağlantınızı ve giden sunucu yapılandırmanızı kontrol edin.</string>
+    <string name="switch_off">Kapalı</string>
+    <string name="messageview_crypto_warning_unsigned">=== App-specific strings =============================================================</string>
 </resources>
