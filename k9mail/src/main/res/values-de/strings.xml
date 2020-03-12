@@ -1027,4 +1027,5 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="openpgp_enabled_error_back">Zurück</string>
     <string name="app_name">p≡p</string>
     <string name="switch_off">Aus</string>
+    <string name="app_authors">The K-9 Dog Walkers, p≡p Security S.A.</string>
 </resources>

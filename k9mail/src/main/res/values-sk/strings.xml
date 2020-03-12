@@ -301,7 +301,7 @@
     <string name="account_setup_basics_password_hint">Heslo</string>
     <string name="account_setup_basics_show_password">Zobraziť heslo</string>
     <string name="account_setup_basics_manual_setup_action">Ručné nastavenie</string>
-    <string name="account_setup_check_settings_title"/>
+    <string name="account_setup_check_settings_title">" "</string>
     <string name="account_setup_check_settings_retr_info_msg">Načítavanie informácií o účte\u2026</string>
     <string name="account_setup_check_settings_check_incoming_msg">Kontrola nastavení servera prichádzajúcej pošty\u2026</string>
     <string name="account_setup_check_settings_check_outgoing_msg">Kontrola nastavení servera odchádzajúcej pošty\u2026</string>
@@ -498,9 +498,9 @@
     <string name="account_settings_autodownload_message_size_256">256Kb</string>
     <string name="account_settings_autodownload_message_size_512">512Kb</string>
     <string name="account_settings_autodownload_message_size_1024">1Mb</string>
-    <string name="account_settings_autodownload_message_size_2048">2Mb</string>
-    <string name="account_settings_autodownload_message_size_5120">5Mb</string>
-    <string name="account_settings_autodownload_message_size_10240">10Mb</string>
+    <string name="account_settings_autodownload_message_size_2048">2 Mb</string>
+    <string name="account_settings_autodownload_message_size_5120">5 Mb</string>
+    <string name="account_settings_autodownload_message_size_10240">10 Mb</string>
     <string name="account_settings_autodownload_message_size_any">akákoľvek veľkosť (bez obmedzenia)</string>
     <string name="account_settings_message_age_label">Synchronizácia správ</string>
     <string name="account_settings_message_age_any">Akýkoľvek čas (bez obmedzenia)</string>
