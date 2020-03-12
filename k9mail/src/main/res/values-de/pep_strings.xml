@@ -101,7 +101,7 @@
     <string name="message_list_item_removed">Entfernt</string>
     <string name="message_list_item_undo">Rückgängig</string>
     <string name="available_accounts_title">Verfügbare Konten</string>
-    <string name="pep_app_description">p≡p is a powerful free email client for Android with pretty Easy privacy.</string>
+    <string name="pep_app_description">p≡p ist ein leistungsstarker E-Mail-Client für Android mit pretty Easy privacy.</string>
     <string name="app_k9_pep_name">"p≡p"</string>
     <string name="global_settings_title">Globale Einstellungen</string>
     <string name="configure_account_action">Konten verwalten</string>
@@ -197,4 +197,29 @@
     <string name="nnf_permission_external_write_denied">Zugriff auf das Dateisystem verweigert</string>
     <string name="pep_sync_is_enabled_global">p≡p Sync ist aktiviert</string>
     <string name="pep_sync_is_disabled_global">p≡p Sync ist deaktiviert</string>
+    <string name="notification_failed_to_encrypt_text">Wir haben diese Nachricht nicht gesendet und stattdessen im Entwurfsordner gespeichert.</string>
+    <string name="notification_failed_to_encrypt_title">Wir konnten diese Nachricht nicht schützen.</string>
+    <string name="message_failed_to_encrypt">Wir konnten diese Nachricht nicht schützen.</string>
+    <string name="keysync_wizard_action_leave">Verlassen</string>
+    <string name="keysync_wizard_action_next">Weiter</string>
+    <string name="keysync_wizard_action_cancel">Abbrechen</string>
+    <string name="keysync_wizard_group_joining_done_message">Das Gerät ist jetzt Mitglied Ihrer Gerätegruppe. Ihre Datenschutzeinstellungen sind jetzt synchronisiert.
+\n</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Ein anderes Gerät wurde erkannt. Wir können es Ihrer Gerätegruppe hinzufügen, um Ihre gesamte Datenschutzeinstellungen auf allen Geräten zu synchronisieren. Sollen wir anfangen zu synchronisieren\?</string>
+    <string name="keysync_wizard_group_creation_done_message">Wir haben erfolgreich eine Gerätegruppe erstellt. Ihre Datenschutzeinstellungen sind jetzt synchronisiert.</string>
+    <string name="keysync_wizard_error_message">Beim Synchronisieren der Geräte ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.</string>
+    <string name="only_own_identities">Dies ist eine eigene Nachricht, an der kein Kommunikationspartner beteiligt ist.</string>
+    <string name="action_tutorial">Tutorial</string>
+    <string name="pep_rating_mistrusted">Unsicher</string>
+    <string name="pep_rating_secure">Sicher</string>
+    <string name="intro_frag_third_text_4">Verifizieren Sie die Trustwords mit Ihrem Kommunikationspartner. Ein Handshake wird nur einmal pro Partner benötigt und gewährleistet eine sichere und vertrauenswürdige Kommunikation.</string>
+    <string name="intro_frag_third_text_2">Wenn Sie in der oberen Leiste auf das Symbol Datenschutzstatus klicken, gelangen Sie zum Handshake, in dem Sie Ihren Kommunikationspartner verifizieren können.</string>
+    <string name="intro_frag_third_text_1">Handshake</string>
+    <string name="intro_frag_second_text_3">Wenn die Trustwords nicht korrekt sind, ist die Kommunikation unsicher.</string>
+    <string name="intro_frag_second_text_1">Mit diesem Datenschutzstatus ist die gesamte Kommunikation sicher. Um jedoch zu bestätigen, dass Ihr Kontakt wirklich die Person ist, die Sie kennen, sollten Sie Trustwords mit diesem Kontakt vergleichen.</string>
+    <string name="intro_frag_second_header_3">Unsicher</string>
+    <string name="intro_frag_second_header_2">Sicher &amp; Vertrauenswürdig</string>
+    <string name="intro_frag_second_header_1">Sicher</string>
+    <string name="ellipsized_text" translatable="false">%s …</string>
+    <string name="pep_handshake" translatable="false">Handshake</string>
 </resources>
