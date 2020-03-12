@@ -219,4 +219,6 @@
     <string name="pep_title_activity_trustwords" translatable="false">Mots de confiance</string>
     <string name="pep_handshake" translatable="false">Protocole de transfert</string>
     <string name="intro_frag_second_header_1">Sécurisé</string>
+    <string name="intro_frag_second_header_3">Méfiant</string>
+    <string name="intro_frag_second_header_2">Sécurisé et fiable</string>
 </resources>
