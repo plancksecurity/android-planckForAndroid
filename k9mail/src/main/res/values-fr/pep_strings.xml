@@ -5,7 +5,7 @@
     <string name="pep_pgp_fingerprint">Empreinte PGP</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
     <!--<string name="pep_account_setup_generating_keys">Setting your Privacy by Default </string>-->
-    <string name="pep_dialog_weaker_forward_warning_message">Vous êtes sur le point de transférer un message sécurisé de façon non-securisée. Si vous décidez de continuer, vous prenez le risque de divulguer des informations confidentielles. </string>
+    <string name="pep_dialog_weaker_forward_warning_message">Vous êtes sur le point de transférer un message sécurisé de façon non securisé. Si vous décidez de continuer, vous prenez le risque de divulguer des informations confidentielles. Êtes-vous sûr de vouloir continuer\?</string>
     <!--<string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Proceed</string>-->
     <!--<string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancel</string>-->
     <!--<string name="pep_dialog_confirm_forward_title">Confirm forward</string>-->
@@ -125,7 +125,7 @@
     <string name="message_list_item_removed">Supprimé</string>
     <string name="message_list_item_undo">Défaire</string>
     <string name="available_accounts_title">Comptes disponibles</string>
-    <string name="pep_app_description">K-9/p≡p est un client e-mail puissant pour Android incluant Pretty Easy Privacy.</string>
+    <string name="pep_app_description">p≡p est un client de courriel puissant pour Android incluant Pretty Easy Privacy.</string>
     <string name="app_k9_pep_name">"K-9/p≡p "</string>
     <string name="configure_account_action">Gérer les comptes</string>
     <string name="pep_add_device_ask_move_trustwords">Vous êtes sur le point de déplacer votre appareils vers un autre groupe d\'appareil p≡p. Veuillez confirmer en vérifiant les Trustwords suivants.</string>
@@ -215,4 +215,8 @@
     <string name="keysync_wizard_handshake_message">Veuillez vous assurer d’avoir les dispositifs à disposition afin de pouvoir comparer les Trustwords des dispositifs. Les Trustwors ci-dessous sont-ils équivalents aux Trustwords de l’autre dispositif \?</string>
     <string name="keysync_wizard_create_group_first_message">Un deuxième équipement a été détecté. Nous pouvons créer un groupe de dispositifs pour synchroniser vos données confidentielles sur les deux équipements. Devons-nous commencer la synchronisation \?</string>
     <string name="keysync_wizard_action_try_again">Réessayer</string>
+    <string name="pep_received_this_secret_key" translatable="false">La clé secrète suivante a été reçue. Êtes-vous sûr de vouloir l\'utiliser\?</string>
+    <string name="pep_title_activity_trustwords" translatable="false">Mots de confiance</string>
+    <string name="pep_handshake" translatable="false">Protocole de transfert</string>
+    <string name="intro_frag_second_header_1">Sécurisé</string>
 </resources>
