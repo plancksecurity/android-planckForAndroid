@@ -221,4 +221,6 @@
     <string name="intro_frag_second_header_1">Sécurisé</string>
     <string name="intro_frag_second_header_3">Méfiant</string>
     <string name="intro_frag_second_header_2">Sécurisé et fiable</string>
+    <string name="intro_frag_third_text_1">Handshake</string>
+    <string name="intro_frag_second_text_3">Si les Trustwords ne sont pas corrects, votre communication n\'est pas fiable.</string>
 </resources>
