@@ -177,7 +177,7 @@
     <string name="nnf_permission_external_write_denied"/>
     <string name="nnf_filename"/>
     <string name="key_import_accept"/>
-    <string name="key_import_reject"/>
+    <string name="key_import_reject">Odmítnout</string>
     <string name="key_import_accept_feedback"/>
     <string name="key_import_reject_feedback"/>
     <string name="message_loading_error"/>

@@ -237,4 +237,17 @@
     <string name="keysync_wizard_handshake_message">Zorg dat u de apparaten bij elkaar hebt, zodat u de Trustwords op de apparaten kunt vergelijken. Stemmen de Trustwords hieronder overeen met de Trustwords op het andere apparaat\?</string>
     <string name="keysync_wizard_create_group_first_message">Er is een tweede apparaat gedetecteerd. We kunnen een apparatengroep vormen om al uw persoonlijke informatie op beide apparaten te synchroniseren. Zullen we beginnen met synchroniseren\?</string>
     <string name="keysync_wizard_action_try_again">Opnieuw proberen</string>
+    <string name="intro_frag_second_header_2">Veilig &amp; Vertrouwd</string>
+    <string name="action_tutorial">Zelfstudie</string>
+    <string name="intro_frag_second_header_3">Niet vertouwd</string>
+    <string name="pep_rating_secure">Veilig</string>
+    <string name="keysync_wizard_waiting_message">Geef ons een momentje om uw apparaten te synchroniseren. Dit kan een minuut of langer duren.</string>
+    <string name="intro_frag_second_header_1">Veilig</string>
+    <string name="pep_rating_mistrusted">Niet vertouwd</string>
+    <string name="keysync_wizard_group_joining_done_message">Het apparaat is nu een lid van uw apparatengroep. Al uw privacy is nu gesynchroniseerd.</string>
+    <string name="keysync_wizard_error_message">Er is iets misgelopen bij het synchroniseren van de apparaten. Probeer het opnieuw.</string>
+    <string name="keysync_wizard_action_leave">Verlaten</string>
+    <string name="keysync_wizard_action_next">Volgende</string>
+    <string name="keysync_wizard_group_creation_done_message">We hebben een apparatengroep gemaakt. Al uw privacy is nu gesynchroniseerd.</string>
+    <string name="keysync_wizard_action_cancel">Annuleren</string>
 </resources>
