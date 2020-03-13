@@ -215,7 +215,7 @@
     <string name="intro_frag_third_text_2">Durch Klick auf das Datenschutzstatussymbol öffnen Sie den Handshake-Dialog, in dem Sie Ihren Kommunikationspartner verifizieren können.</string>
     <string name="intro_frag_third_text_1">Handshake</string>
     <string name="intro_frag_second_text_3">Wenn die Trustwords nicht übereinstimmen, ist Ihr Kommunikationspartner verdächtig.</string>
-    <string name="intro_frag_second_text_1">Mit diesem Datenschutzstatus ist die gesamte Kommunikation sicher. Um jedoch zu bestätigen, dass Ihr Kontakt wirklich die Person ist, die Sie kennen, sollten Sie Trustwords mit diesem Kontakt vergleichen.</string>
+    <string name="intro_frag_second_text_1">Mit diesem Datenschutzstatus ist die gesamte Kommunikation sicher. Um jedoch zu bestätigen, dass Ihr Kontakt wirklich die Person ist, die Sie kennen, sollten Sie diesen Kontakt durch Vergleichen der Trustwords überprüfen.</string>
     <string name="intro_frag_second_header_3">Verdächtig</string>
     <string name="intro_frag_second_header_2">Sicher und verifiziert</string>
     <string name="intro_frag_second_header_1">Sicher</string>
