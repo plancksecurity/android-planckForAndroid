@@ -222,4 +222,7 @@
     <string name="pep_rating_secure">Sécurisé</string>
     <string name="intro_frag_third_text_4">Effectuez un handshake avec votre partenaire de communication. Un handshake n\'est nécessaire qu\'une seule fois par partenaire et garantira une communication sécurisée et fiable.</string>
     <string name="intro_frag_third_text_2">Lorsque vous cliquez sur l\'icône État de confidentialité dans la barre supérieure, vous accédez au Handshake, où vous pouvez vérifier votre partenaire de communication.</string>
+    <string name="notification_failed_to_encrypt_text">Nous ne l\'avons pas envoyé et enregistré à la place dans le dossier brouillon.</string>
+    <string name="notification_failed_to_encrypt_title">Nous n\'avons pas pu protéger ce message.</string>
+    <string name="message_failed_to_encrypt">Nous n\'avons pas pu protéger ce message.</string>
 </resources>
