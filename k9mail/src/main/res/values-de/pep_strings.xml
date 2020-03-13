@@ -37,7 +37,7 @@
     <string name="pep_suggestion">Vorschlag</string>
     <string name="pep_app_license">Lizenziert unter der GNU General Public License v3</string>
     <string name="pep_trust_server_description">Nachrichten auf dem Server geschützt speichern.</string>
-    <string name="pep_account_privacy_protection_explanation">"p≡p-Datenschutz für dieses Konto aktivieren "</string>
+    <string name="pep_account_privacy_protection_explanation">p≡p-Datenschutz für dieses Konto aktivieren</string>
     <string name="key_list_title">Verfügbare Schlüssel</string>
     <string name="pep_add_device_ask_trustwords">Sie möchten ein neues Gerät zu Ihrer p≡p-Gerätegruppe hinzufügen. Bitte bestätigen Sie dies, wenn die folgenden Trustwords auf den Geräten übereinstimmen.</string>
     <string name="pep_device_group">p≡p-Gerätegruppe</string>
@@ -101,8 +101,8 @@
     <string name="message_list_item_removed">Entfernt</string>
     <string name="message_list_item_undo">Rückgängig</string>
     <string name="available_accounts_title">Verfügbare Konten</string>
-    <string name="pep_app_description">p≡p is a powerful free email client for Android with pretty Easy privacy.</string>
-    <string name="app_k9_pep_name">"p≡p"</string>
+    <string name="pep_app_description">p≡p ist ein leistungsstarker E-Mail-Client für Android mit pretty Easy privacy.</string>
+    <string name="app_k9_pep_name">"p≡p "</string>
     <string name="global_settings_title">Globale Einstellungen</string>
     <string name="configure_account_action">Konten verwalten</string>
     <string name="pep_add_device_ask_move_trustwords">Sie möchten neues Gerät in eine andere p≡p-Gerätegruppe verschieben. Bitte bestätigen Sie dies, wenn die folgenden Trustwords auf den Geräten übereinstimmen.</string>
@@ -197,4 +197,29 @@
     <string name="nnf_permission_external_write_denied">Zugriff auf das Dateisystem verweigert</string>
     <string name="pep_sync_is_enabled_global">p≡p Sync ist aktiviert</string>
     <string name="pep_sync_is_disabled_global">p≡p Sync ist deaktiviert</string>
+    <string name="notification_failed_to_encrypt_text">Wir haben diese Nachricht nicht gesendet und stattdessen im Entwurfsordner gespeichert.</string>
+    <string name="notification_failed_to_encrypt_title">Wir konnten diese Nachricht nicht schützen.</string>
+    <string name="message_failed_to_encrypt">Wir konnten diese Nachricht nicht schützen.</string>
+    <string name="keysync_wizard_action_leave">Verlassen</string>
+    <string name="keysync_wizard_action_next">Weiter</string>
+    <string name="keysync_wizard_action_cancel">Abbrechen</string>
+    <string name="keysync_wizard_group_joining_done_message">Das Gerät ist nun Teil Ihrer Gerätegruppe. Ihre gesamten Datenschutz-Einstellungen sind jetzt synchronisiert.</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Es wurde ein weiteres Gerät gefunden, mit dem Sie Ihre Datenschutzeinstellungen synchronisieren können. Möchten Sie mit der Synchronisierung beginnen\?</string>
+    <string name="keysync_wizard_group_creation_done_message">Ihre Gerätegruppe wurde erfolgreich gebildet. Ihre gesamten Datenschutz-Einstellungen sind jetzt synchronisiert.</string>
+    <string name="keysync_wizard_error_message">Etwas ist beim Synchronisieren der Geräte schief gelaufen.Bitte versuchen Sie es noch einmal.</string>
+    <string name="only_own_identities">Dies ist eine eigene Nachricht, an der kein Kommunikationspartner beteiligt ist.</string>
+    <string name="action_tutorial">Tutorial</string>
+    <string name="pep_rating_mistrusted">Verdächtig</string>
+    <string name="pep_rating_secure">Sicher</string>
+    <string name="intro_frag_third_text_4">Führen Sie einen Handshake mit Ihrem Kommunikationspartner durch. Der Handshake ist nur einmal pro Partner nötig und garantiert eine sichere und verifizierte Kommunikation.</string>
+    <string name="intro_frag_third_text_2">Durch Klick auf das Datenschutzstatussymbol öffnen Sie den Handshake-Dialog, in dem Sie Ihren Kommunikationspartner verifizieren können.</string>
+    <string name="intro_frag_third_text_1">Handshake</string>
+    <string name="intro_frag_second_text_3">Wenn die Trustwords nicht übereinstimmen, ist Ihr Kommunikationspartner verdächtig.</string>
+    <string name="intro_frag_second_text_1">Mit diesem Datenschutzstatus ist die gesamte Kommunikation sicher. Um jedoch zu bestätigen, dass Ihr Kontakt wirklich die Person ist, die Sie kennen, sollten Sie diesen Kontakt durch Vergleichen der Trustwords überprüfen.</string>
+    <string name="intro_frag_second_header_3">Verdächtig</string>
+    <string name="intro_frag_second_header_2">Sicher und verifiziert</string>
+    <string name="intro_frag_second_header_1">Sicher</string>
+    <string name="ellipsized_text" translatable="false">%s …</string>
+    <string name="pep_handshake" translatable="false">Handshake</string>
+    <string name="keysync_wizard_waiting_message">Bitte warten Sie einen Moment, bis ihre Geräte synchronisiert sind. Das kann eine Minute oder länger dauern.</string>
 </resources>
