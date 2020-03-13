@@ -967,4 +967,7 @@
     <string name="openpgp_sign_only_disable">Uitzetten</string>
     <string name="openpgp_enabled_error_back">Back</string>
     <string name="app_name">p≡p</string>
+    <string name="account_recreate_dlg_instructions_fmt">Alle lokale gegevens voor \"&lt;xliff: g xmlns: xliff =\" urn: oasis: names: tc: xliff: document: 1.2 \"id =\" account \"&gt;% s &lt;/ xliff: g&gt;\" worden verwijderd. Accountinstellingen blijven behouden.<xliff:g id="account">%s</xliff:g>\" will be removed. Account settings will be retained.</string>
+    <string name="app_license">Gelicentieerd onder de Apache Licentie, Versie 2.0.</string>
+    <string name="app_authors">The K-9 Dog Walkers, p≡p Security S.A.</string>
 </resources>
