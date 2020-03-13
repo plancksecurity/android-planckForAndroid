@@ -85,7 +85,7 @@
     <string name="message_list_item_removed">Removed</string>
     <string name="message_list_item_undo">UNDO</string>
     <string name="available_accounts_title">Available accounts</string>
-    <string name="pep_app_description">K-9/p≡p is a powerful free email client for Android with pretty Easy privacy.</string>
+    <string name="pep_app_description">p≡p is a powerful email client for Android with pretty Easy privacy.</string>
     <string name="app_k9_pep_name">"K-9/p≡p "</string>
     <string name="global_settings_title">Global settings</string>
     <string name="configure_account_action">Manage accounts</string>
@@ -226,9 +226,9 @@
     <string name="intro_frag_second_header_1">Secure</string>
     <string name="intro_frag_second_header_2"><![CDATA[Secure & Trusted]]></string>
     <string name="intro_frag_second_header_3">Mistrusted</string>
-    <string name="intro_frag_second_text_1">With this Privacy Status all communication is Secure, but to confirm that your contact is really the person you know, you should Trustwords with this contact.</string>
+    <string name="intro_frag_second_text_1">With this Privacy Status all communication is Secure, but to confirm that your contact is really the person you know, you should verify this contact by comparing the Trustwords.</string>
     <string name="intro_frag_second_text_2">When the Trustwords are confirmed to be correct and the Handshake is done, the communication will be completely secure and trusted.</string>
-    <string name="intro_frag_second_text_3">If the Trustwords are not correct, your communication partner is Mistrusted.</string>
+    <string name="intro_frag_second_text_3">If the Trustwords are not correct, your communication is Mistrusted.</string>
     <string name="intro_frag_third_text_1">Handshake</string>
     <string name="intro_frag_third_text_2">When you click on the Privacy Status icon in the top bar, you will get to the Handshake, where you can verify your communication partner.</string>
     <string name="intro_frag_third_text_3">OUTDISTANCE\t\t\tCORRINA\t\t\tETHIOPIA\t\t\tOUTDRAW\t\t\tFLEECER\t\t\t…</string>
@@ -242,7 +242,7 @@
     <string name="pep_rating_forced_unencrypt">Disabled</string>
     <string name="pep_rating_none"/>
     <string name="action_tutorial">Tutorial</string>
-    <string name="only_own_identities">his is an own message, no communication partner involved.</string>
+    <string name="only_own_identities">this is an own message, no communication partner involved.</string>
     <!-- Key sync dialog Strings -->
     <string name="keysync_wizard_handshake_message">Please make sure uou have both devices together so ou can compare the Trustwords on both devices. Are the Trustwords below equal to the Trustwords on the other device?</string>
     <string name="keysync_wizard_waiting_message">Please give us a moment while we sync your devices. This can take a minute or more.</string>
@@ -277,5 +277,5 @@
     <!-- END Key sync dialog Strings -->
     <string name="message_failed_to_encrypt">We could not protect this message.</string>
     <string name="notification_failed_to_encrypt_title">We could not protect this message.</string>
-    <string name="notification_failed_to_encrypt_text">We didn\'t send it and saved it to the draft folder instead.</string>
+    <string name="notification_failed_to_encrypt_text">We didn\'t send this message and saved it to the draft folder instead.</string>
 </resources>

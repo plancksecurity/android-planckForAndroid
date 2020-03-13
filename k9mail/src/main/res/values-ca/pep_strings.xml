@@ -200,4 +200,16 @@
     <string name="keysync_wizard_handshake_message">Assegura\'t que tinguis els dispositius a mà per poder comparar-ne les paraules de confiança. Coincideixen les paraules de confiança següents amb les que es mostren a l\'altre dispositiu\?</string>
     <string name="keysync_wizard_create_group_first_message">S\'ha detectat un segon dispositiu. Podem crear un grup de dispositius per a sincronitzar tota la teva privacitat en ambdós dispositius. Vols que iniciem la sincronització\?</string>
     <string name="keysync_wizard_action_try_again">Torna-ho a provar</string>
+    <string name="pep_rating_secure">Segur</string>
+    <string name="keysync_wizard_action_cancel">Cancel·lar</string>
+    <string name="intro_frag_second_header_3">No confiable</string>
+    <string name="intro_frag_third_text_1">Handshake</string>
+    <string name="pep_rating_mistrusted">No confiable</string>
+    <string name="intro_frag_second_header_2">Segur i de confiança</string>
+    <string name="keysync_wizard_error_message">Hi ha hagut un problema amb la sincronització dels dispositius. Torna-ho a provar.</string>
+    <string name="keysync_wizard_action_leave">Surt</string>
+    <string name="intro_frag_second_header_1">Segur</string>
+    <string name="keysync_wizard_action_next">Següent</string>
+    <string name="keysync_wizard_group_joining_done_message">El dispositiu és ara membre del teu grup de dispositius. Tota la teva privacitat s\'ha sincronitzat.</string>
+    <string name="keysync_wizard_group_creation_done_message">Hem creat un grup de dispositius correctament. Tota la teva privacitat s\'ha sincronitzat.</string>
 </resources>
