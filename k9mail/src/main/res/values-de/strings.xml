@@ -1118,6 +1118,6 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="status_no_network">Synchronisierung deaktiviert - Keine Verbidnung</string>
     <string name="account_clear_dlg_instructions_fmt">=== App-specific strings =============================================================</string>
     <string name="account_recreate_dlg_instructions_fmt">=== App-specific strings =============================================================</string>
-    <string name="app_license">Lizenziert unter Apache License, Version 2.0.</string>
+    <string name="app_license">Lizenziert unter der Apache-Lizenz, Version 2.0.</string>
     <string name="app_copyright_fmt">=== App-specific strings =============================================================</string>
 </resources>
