@@ -255,4 +255,8 @@
     <string name="keysync_wizard_action_next">Volgende</string>
     <string name="keysync_wizard_action_cancel">Annuleren</string>
     <string name="keysync_wizard_group_creation_done_message">We hebben een apparatengroep gemaakt. Al uw privacy is nu gesynchroniseerd.</string>
+    <string name="notification_failed_to_encrypt_text">We hebben het niet verzonden en in plaats daarvan opgeslagen in de conceptmap.</string>
+    <string name="notification_failed_to_encrypt_title">We konden dit bericht niet beschermen.</string>
+    <string name="message_failed_to_encrypt">We konden dit bericht niet beschermen.</string>
+    <string name="pep_rating_none">" "</string>
 </resources>
