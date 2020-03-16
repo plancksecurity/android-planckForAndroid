@@ -65,7 +65,7 @@
     <string name="read_messages_label">lire les courriels</string>
     <string name="read_messages_desc">Permet à cette application de lire vos courriels.</string>
     <string name="delete_messages_label">Supprimer les courriels</string>
-    <string name="delete_messages_desc">Permettre à cette application de supprimer vos courriels</string>
+    <string name="delete_messages_desc">Permettre à cette application de supprimer vos courriels.</string>
     <string name="about_title_fmt">À propos de <xliff:g id="app_name">%s</xliff:g>
     </string>
     <string name="accounts_title">Comptes</string>
@@ -1055,7 +1055,7 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="ac_transfer_msg_subject">Message de configuration Autocrypt</string>
     <string name="ac_transfer_show_code">Afficher le code de configuration</string>
     <string name="ac_transfer_finish">Pour terminer, ouvrez le message sur votre autre appareil et entrez le code de configuration.</string>
-    <string name="ac_transfer_sending_to">Envoi du message à:</string>
+    <string name="ac_transfer_sending_to">Envoi du message à :</string>
     <string name="ac_transfer_generating">Génération d\'un message de configuration…</string>
     <string name="ac_transfer_will_be_sent">Le message sera envoyé à votre adresse:</string>
     <string name="ac_transfer_button_send">Envoyer un message de configuration</string>

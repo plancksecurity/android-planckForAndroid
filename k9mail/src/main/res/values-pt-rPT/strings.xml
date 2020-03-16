@@ -882,7 +882,7 @@
     <string name="compose_error_no_signing_key">Não foi configurada uma chave para assinatura! Por favor verifique as suas definições.</string>
     <string name="compose_error_private_missing_keys">O modo privado está ativado, mas alguns destinatários não possuem chaves!</string>
     <string name="error_crypto_provider_connect">Não foi possível ligar ao provedor de encriptação, verifique as suas definições ou clique no ícone de encriptação para tentar novamente!</string>
-    <string name="error_crypto_provider_ui_required">Acesso negado ao provedor de encriptação, clique no ícone de encriptação para tentar novamente!</string>
+    <string name="error_crypto_provider_ui_required">Falha ao inicializar a criptografia de ponta a ponta, verifique suas configurações</string>
     <string name="error_crypto_inline_attach">O modo PGP/INLINE não suporta anexos!</string>
     <string name="enable_inline_pgp">Ativar PGP/INLINE</string>
     <string name="disable_inline_pgp">Desativar PGP/INLINE</string>
