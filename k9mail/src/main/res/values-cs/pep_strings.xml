@@ -212,4 +212,5 @@
     <string name="pep_key_reset_all_own_ids_warning"/>
     <string name="pep_key_reset_own_id_warning"/>
     <string name="pep_key_reset_own_id_warning_title"/>
+    <string name="intro_frag_second_header_2">Bezpečné a důvěryhodné</string>
 </resources>
