@@ -95,7 +95,7 @@
     <string name="pep_add_device_ask_move_trustwords"/>
     <string name="pep_device_group"/>
     <string name="handshake_reset_dialog_message"/>
-    <string name="pep_gpg_compatibility"/>
+    <string name="pep_gpg_compatibility">Kompatibilita OpenPGP</string>
     <string name="crash_toast_text"/>
     <string name="advanced_options">Pokročilé možnosti</string>
     <string name="basic_options"/>

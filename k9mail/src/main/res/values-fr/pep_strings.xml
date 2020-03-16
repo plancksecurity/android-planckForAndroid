@@ -239,4 +239,9 @@
     <string name="pep_rating_none">" . "</string>
     <string name="intro_frag_third_text_4">Effectuez une poignée de main avec votre partenaire de communication. Une poignée de main n\'est nécessaire qu\'une seule fois par partenaire et garantira une communication sécurisée et fiable.</string>
     <string name="intro_frag_third_text_2">Lorsque vous cliquez sur l\'icône État de confidentialité dans la barre supérieure, vous accédez à la poignée de main, où vous pouvez vérifier votre partenaire de communication.</string>
+    <string name="keysync_wizard_error_message">Une erreur s\'est produite durant la synchronisation des dispositifs. Veuillez réessayer.</string>
+    <string name="pep_rating_secure">Sécurisé</string>
+    <string name="keysync_wizard_waiting_message">Merci de patienter pendant la synchronisation vos dispositifs. Cela peut prendre quelques minutes.</string>
+    <string name="pep_rating_mistrusted">Suspect</string>
+    <string name="action_tutorial">Tutoriel</string>
 </resources>
