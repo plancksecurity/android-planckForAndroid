@@ -60,7 +60,7 @@
     <string name="pep_wrong_fingerprint">Impressão digital errada</string>
     <string name="pep_ask_trustwords">Pergunte ao seu parceiro pessoalmente ou por telefone: Quais são as suas Trustwords\? Em seguida, compare com a resposta correta mostrada abaixo.</string>
     <string name="pep_complete_partner_format">Parceiro
-\n%1$s &lt;%2$s&gt;</string>
+\n%1$s&lt;%2$s&gt;</string>
     <string name="pep_partner_format">Parceiro
 \n%1$s</string>
     <string name="pep_complete_myself_format">Eu mesmo
