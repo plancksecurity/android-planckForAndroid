@@ -41,24 +41,24 @@
         <item>@color/pep_red<!--pEpRatingUnderAttack--></item>
     </array>
     <!-- Translatable strings -->
-    <string name="pep_account_setup_generating_keys">"Configurando sua privacidade por padrão "</string>
+    <string name="pep_account_setup_generating_keys">"Configurando sua privacidade por defeito "</string>
     <string name="pep_reset_trust">Pare de confiar</string>
     <string name="pep_pgp_fingerprint">Impressão digital PGP</string>
-    <string name="pep_dialog_weaker_forward_warning_message"/>
+    <string name="pep_dialog_weaker_forward_warning_message">Você está prestes a encaminhar uma mensagem segura como não segura. Se você optar por prosseguir, informações confidenciais poderão ser divulgadas, colocando você e seus parceiros de comunicação em risco. Você tem certeza que quer continuar\?</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Proceder</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancelar</string>
-    <string name="pep_dialog_confirm_forward_title"/>
-    <string name="pep_title_activity_privacy_status"/>
-    <string name="pep_extra_addresses"/>
-    <string name="pep_use_keyserver"/>
-    <string name="pep_passive_mode"/>
-    <string name="pep_subject_unprotected"/>
-    <string name="pep_add_key_to_blacklist"/>
-    <string name="pep_remove_key_from_blacklist"/>
-    <string name="pep_confirm_trustwords"/>
-    <string name="pep_wrong_trustwords"/>
-    <string name="pep_wrong_fingerprint"/>
-    <string name="pep_ask_trustwords"/>
+    <string name="pep_dialog_confirm_forward_title">Confirmar encaminhamento</string>
+    <string name="pep_title_activity_privacy_status">Status de Privacidade</string>
+    <string name="pep_extra_addresses">IDs de chave extras:</string>
+    <string name="pep_use_keyserver">Procurar chaves no servidor de chaves</string>
+    <string name="pep_passive_mode">Modo passivo</string>
+    <string name="pep_subject_unprotected">Assuntos de mensagem não protegidos</string>
+    <string name="pep_add_key_to_blacklist">Adicionar uma chave à lista negra</string>
+    <string name="pep_remove_key_from_blacklist">Remover uma chave da lista negra</string>
+    <string name="pep_confirm_trustwords">Confirmar</string>
+    <string name="pep_wrong_trustwords">Rejeitar</string>
+    <string name="pep_wrong_fingerprint">Impressão digital errada</string>
+    <string name="pep_ask_trustwords">Pergunte ao seu parceiro pessoalmente ou por telefone: Quais são as suas Trustwords\? Em seguida, compare com a resposta correta mostrada abaixo.</string>
     <string name="pep_complete_partner_format"/>
     <string name="pep_partner_format"/>
     <string name="pep_complete_myself_format"/>
