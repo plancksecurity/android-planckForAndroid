@@ -242,8 +242,8 @@
     <string name="only_own_identities">Je to vlastná správa, bez zapojeného komunikačného partnera.</string>
     <string name="intro_frag_second_text_1">Pri tomto Stave súkromia je všetka komunikácia bezpečná, ale na potvrdenie, že váš kontakt je skutočne osobou, ktorú poznáte, by ste si s týmto kontaktom mali overiť Trustwords.</string>
     <string name="intro_frag_second_text_2">Po potvrdení správnosti Trustwords a dokončení Handshake bude komunikácia úplne bezpečná a dôveryhodná.</string>
-    <string name="pep_rating_forced_unencrypt">Disabled</string>
-    <string name="intro_frag_fourth_text_3">In this case the Privacy Status of the message is Secure, because this is the lowest common denominator of the two communication partners.</string>
+    <string name="pep_rating_forced_unencrypt">Vypnuté</string>
+    <string name="intro_frag_fourth_text_3">V takom prípade je stav ochrany súkromia správy bezpečný, pretože ide o najmenšieho spoločného menovateľa oboch komunikačných partnerov.</string>
     <string name="intro_frag_third_text_4">Vyplňte handshake s vašim komunikačným partnerom. Handshake je potrebný iba raz pre partnera a zabezpečí bezpečnú a dôveryhodnú komunikáciu.</string>
     <string name="notification_failed_to_encrypt_text">Neodoslali sme ho a namiesto toho sme ho uložili do priečinka konceptu.</string>
     <string name="notification_failed_to_encrypt_title">Túto správu sme nemohli ochrániť.</string>

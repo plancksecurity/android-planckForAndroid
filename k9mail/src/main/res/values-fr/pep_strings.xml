@@ -219,18 +219,18 @@
     <string name="pep_title_activity_trustwords" translatable="false">Mots de confiance</string>
     <string name="pep_handshake" translatable="false">Protocole de transfert</string>
     <string name="intro_frag_second_header_1">Sécurisé</string>
-    <string name="intro_frag_second_header_3">Méfiant</string>
-    <string name="intro_frag_second_header_2">Sécurisé et fiable</string>
+    <string name="intro_frag_second_header_3">Suspect</string>
+    <string name="intro_frag_second_header_2">Sécurisé &amp; Authentique</string>
     <string name="intro_frag_third_text_1">Handshake</string>
-    <string name="intro_frag_second_text_3">Si les Trustwords ne sont pas corrects, votre communication n\'est pas fiable.</string>
+    <string name="intro_frag_second_text_3">If the Trustwords are not correct, your communication partner is Mistrusted.</string>
     <string name="notification_failed_to_encrypt_text">Nous n\'avons pas envoyé ce message et l\'avons enregistré dans le dossier brouillon à la place.</string>
     <string name="notification_failed_to_encrypt_title">Nous n\'avons pas pu protéger ce message.</string>
     <string name="message_failed_to_encrypt">Nous n\'avons pas pu protéger ce message.</string>
     <string name="keysync_wizard_action_leave">Quitter</string>
-    <string name="keysync_wizard_action_next">Suivant</string>
+    <string name="keysync_wizard_action_next">Next</string>
     <string name="keysync_wizard_action_cancel">Annuler</string>
-    <string name="keysync_wizard_group_joining_done_message">L\'appareil est maintenant membre de votre groupe d\'appareils. Toute votre vie privée est maintenant synchronisée.</string>
-    <string name="keysync_wizard_add_device_to_existing_group_message">Un autre appareil a été détecté. Nous pouvons l\'ajouter à votre groupe d\'appareils pour synchroniser toute votre confidentialité sur tous les appareils. Pouvons-nous commencer la synchronisation\?</string>
-    <string name="keysync_wizard_group_creation_done_message">Nous avons réussi à créer un groupe d\'appareils. Toute votre vie privée est maintenant synchronisée.</string>
+    <string name="keysync_wizard_group_joining_done_message">Ce dispositif fait maintenant partie de votre Groupe de dispositifs. Toutes vos données confidentielles sont maintenant synchronisées.</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Another device was detected. We can add it to your device group to sync all your privacy on all devices. Shall we start synchronizing\?</string>
+    <string name="keysync_wizard_group_creation_done_message">Nous avons correctement créé un groupe de dispositifs. Toutes vos données confidentielles sont maintenant synchronisées.</string>
     <string name="pep_rating_none">" "</string>
 </resources>
