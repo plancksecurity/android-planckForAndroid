@@ -89,7 +89,7 @@
     <string name="message_list_item_removed">Odstránené</string>
     <string name="message_list_item_undo">VRÁTENIE SPÄŤ</string>
     <string name="available_accounts_title">Dostupné účty</string>
-    <string name="pep_app_description">K-9 / p≡p je výkonný bezplatný e-mailový klient pre Android s technológiou pretty Easy privacy.</string>
+    <string name="pep_app_description">p≡p je výkonný bezplatný e-mailový klient pre Android s technológiou pretty Easy privacy.</string>
     <string name="app_k9_pep_name">"K-9/p≡p "</string>
     <string name="global_settings_title">Všeobecné nastavenia</string>
     <string name="configure_account_action">Správa účtov</string>
@@ -245,4 +245,19 @@
     <string name="pep_rating_forced_unencrypt">Disabled</string>
     <string name="intro_frag_fourth_text_3">In this case the Privacy Status of the message is Secure, because this is the lowest common denominator of the two communication partners.</string>
     <string name="intro_frag_third_text_4">Vyplňte handshake s vašim komunikačným partnerom. Handshake je potrebný iba raz pre partnera a zabezpečí bezpečnú a dôveryhodnú komunikáciu.</string>
+    <string name="notification_failed_to_encrypt_text">Neodoslali sme ho a namiesto toho sme ho uložili do priečinka konceptu.</string>
+    <string name="notification_failed_to_encrypt_title">Túto správu sme nemohli ochrániť.</string>
+    <string name="message_failed_to_encrypt">Túto správu sme nemohli ochrániť.</string>
+    <string name="keysync_wizard_action_try_again">Skúste to znova</string>
+    <string name="pep_rating_secure_trusted">Zabezpečené a
+\n dôveryhodné</string>
+    <string name="intro_frag_fourth_text_2">Ikona v hornom paneli odráža stav ochrany osobných údajov správy, ktorá je najnižším spoločným menovateľom všetkých komunikačných partnerov tejto správy, napríklad:</string>
+    <string name="intro_frag_fourth_text_1">\@string/pep_title_activity_privacy_status</string>
+    <string name="intro_frag_third_text_3">OUTDISTANCE\t\t\tCORRINA\t\t\tETHIOPIA\t\t\tOUTDRAW\t\t\tFLEECER\t\t\t…</string>
+    <string name="intro_frag_first_text_3">A pri otvorení alebo napísaní e-mailu na hornom paneli:</string>
+    <string name="intro_frag_first_text_2"> Unstranslatable strings </string>
+    <string name="intro_frag_first_text_1"> Unstranslatable strings </string>
+    <string name="search_empty_error">Ak chcete hľadať, napíšte text</string>
+    <string name="pep_sync_is_disabled_global">p≡p synchronizácia je zakázaná</string>
+    <string name="pep_sync_is_enabled_global">p≡p synchronizácia je povolená</string>
 </resources>

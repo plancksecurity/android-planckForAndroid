@@ -232,4 +232,5 @@
     <string name="keysync_wizard_group_joining_done_message">L\'appareil est maintenant membre de votre groupe d\'appareils. Toute votre vie privée est maintenant synchronisée.</string>
     <string name="keysync_wizard_add_device_to_existing_group_message">Un autre appareil a été détecté. Nous pouvons l\'ajouter à votre groupe d\'appareils pour synchroniser toute votre confidentialité sur tous les appareils. Pouvons-nous commencer la synchronisation\?</string>
     <string name="keysync_wizard_group_creation_done_message">Nous avons réussi à créer un groupe d\'appareils. Toute votre vie privée est maintenant synchronisée.</string>
+    <string name="pep_rating_none">" "</string>
 </resources>

@@ -197,7 +197,7 @@
     <string name="nnf_permission_external_write_denied">Zugriff auf das Dateisystem verweigert</string>
     <string name="pep_sync_is_enabled_global">p≡p Sync ist aktiviert</string>
     <string name="pep_sync_is_disabled_global">p≡p Sync ist deaktiviert</string>
-    <string name="notification_failed_to_encrypt_text">Wir haben diese Nachricht nicht gesendet und stattdessen im Entwurfsordner gespeichert.</string>
+    <string name="notification_failed_to_encrypt_text">Wir haben es nicht gesendet und stattdessen im Entwurfsordner gespeichert.</string>
     <string name="notification_failed_to_encrypt_title">Wir konnten diese Nachricht nicht schützen.</string>
     <string name="message_failed_to_encrypt">Wir konnten diese Nachricht nicht schützen.</string>
     <string name="keysync_wizard_action_leave">Verlassen</string>
@@ -214,8 +214,8 @@
     <string name="intro_frag_third_text_4">Führen Sie einen Handshake mit Ihrem Kommunikationspartner durch. Der Handshake ist nur einmal pro Partner nötig und garantiert eine sichere und verifizierte Kommunikation.</string>
     <string name="intro_frag_third_text_2">Durch Klick auf das Datenschutzstatussymbol öffnen Sie den Handshake-Dialog, in dem Sie Ihren Kommunikationspartner verifizieren können.</string>
     <string name="intro_frag_third_text_1">Handshake</string>
-    <string name="intro_frag_second_text_3">Wenn die Trustwords nicht übereinstimmen, ist Ihr Kommunikationspartner verdächtig.</string>
-    <string name="intro_frag_second_text_1">Mit diesem Datenschutzstatus ist die gesamte Kommunikation sicher. Um jedoch zu bestätigen, dass Ihr Kontakt wirklich die Person ist, die Sie kennen, sollten Sie diesen Kontakt durch Vergleichen der Trustwords überprüfen.</string>
+    <string name="intro_frag_second_text_3">Wenn die Vertrauenswörter nicht korrekt sind, ist Ihr Kommunikationspartner misstrauisch.</string>
+    <string name="intro_frag_second_text_1">Mit diesem Datenschutzstatus ist die gesamte Kommunikation sicher. Um jedoch zu bestätigen, dass Ihr Kontakt wirklich die Person ist, die Sie kennen, sollten Sie diesem Kontakt vertrauen.</string>
     <string name="intro_frag_second_header_3">Verdächtig</string>
     <string name="intro_frag_second_header_2">Sicher und verifiziert</string>
     <string name="intro_frag_second_header_1">Sicher</string>
