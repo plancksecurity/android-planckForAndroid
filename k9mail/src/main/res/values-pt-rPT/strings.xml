@@ -3,7 +3,7 @@
     <!--=== App-specific strings =============================================================-->
     <!--This should make it easier for forks to change the branding-->
     <!--Used in AndroidManifest.xml-->
-    <string name="app_name">K-9 Mail</string>
+    <string name="app_name">p≡p</string>
     <!--Used in the about dialog-->
     <string name="app_authors">Google, The K-9 Dog Walkers.</string>
     <string name="app_copyright_fmt">Copyright 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Partes protegidas por Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
