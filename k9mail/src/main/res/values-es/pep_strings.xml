@@ -214,11 +214,11 @@
     <string name="notification_failed_to_encrypt_text">No lo hemos enviado y lo guardamos en la carpeta de borradores en su lugar.</string>
     <string name="notification_failed_to_encrypt_title">No hemos podido proteger este mensaje.</string>
     <string name="message_failed_to_encrypt">No hemos podido proteger este mensaje.</string>
-    <string name="keysync_wizard_group_joining_done_message">El dispositivo ahora es miembro de su grupo de dispositivos. Toda su privacidad ahora está sincronizada.</string>
+    <string name="keysync_wizard_group_joining_done_message">El dispositivo ahora forma parte de tu grupo de dispositivos. Ahora toda tu privacidad está sincronizada.</string>
     <string name="action_tutorial">Tutorial</string>
     <string name="pep_rating_none">" . "</string>
     <string name="pep_rating_secure">Seguro</string>
-    <string name="intro_frag_third_text_4">Completa un Apretón de manos con tu interlocutor. Un Apretón de manos es necesario solo una vez por interlocutor y garantiza una comunicación segura y de confianza.</string>
-    <string name="intro_frag_third_text_2">Al hacer clic en el icono Estado de Privacidad en la barra superior, accederá al Apretón de manos, donde podrá verificar a su interlocutor.</string>
-    <string name="intro_frag_third_text_1">Apretón de manos</string>
+    <string name="intro_frag_third_text_4">Al confirmar que tus Trustwords y las de tu interlocutor coincidan, tu comunicación será segura y verificada.</string>
+    <string name="intro_frag_third_text_2">Completa un handshake con tu interlocutor. Un handshake se necesita solo una vez por interlocutor y garantiza una comunicación segura y verificada.</string>
+    <string name="intro_frag_third_text_1">Handshake</string>
 </resources>
