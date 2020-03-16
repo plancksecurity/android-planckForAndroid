@@ -67,17 +67,17 @@
     <string name="accounts_title">Cuentas</string>
     <string name="folders_title">Carpetas</string>
     <string name="advanced">Avanzado</string>
-    <string name="message_list_title">=== App-specific strings =============================================================</string>
+    <string name="message_list_title">"&lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"account\"&gt;%1$s&lt;/xliff:g&gt;:&lt;xliff:gxmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"folder\"&gt;%2$s&lt;/xliff:g&gt; "</string>
     <string name="compose_title_compose">Redactar</string>
     <string name="compose_title_reply">Responder</string>
     <string name="compose_title_reply_all">Responder a todos</string>
     <string name="compose_title_forward">Reenviar</string>
     <string name="choose_folder_title">Seleccionar carpeta</string>
-    <string name="status_loading_account_folder">=== App-specific strings =============================================================</string>
-    <string name="status_loading_account_folder_headers">=== App-specific strings =============================================================</string>
-    <string name="status_sending_account">=== App-specific strings =============================================================</string>
-    <string name="status_processing_account">=== App-specific strings =============================================================</string>
-    <string name="folder_progress">=== App-specific strings =============================================================</string>
+    <string name="status_loading_account_folder">Encuesta &lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"account\"&gt;%1$s&lt;/xliff:g&gt;:&lt;xliff:gxmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"folder\"&gt;%2$s&lt;/xliff:g&gt;&lt;xliff:gxmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"progress\"&gt;%3$s&lt;/xliff:g&gt;</string>
+    <string name="status_loading_account_folder_headers">"Obteniendo encabezados  &lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"account\"&gt;%1$s&lt;/xliff:g&gt;:&lt;xliff:gxmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"folder\"&gt;%2$s&lt;/xliff:g&gt;&lt;xliff:gxmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"progress\"&gt;%3$s&lt;/xliff:g&gt;"</string>
+    <string name="status_sending_account">Enviando &lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"account\"&gt;%1$s&lt;/xliff:g&gt;&lt;xliff:gxmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"progress\"&gt;%2$s&lt;/xliff:g&gt;</string>
+    <string name="status_processing_account">Proceso &lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"account\"&gt;%1$s&lt;/xliff:g&gt;:&lt;xliff:gxmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"command\"&gt;%2$s&lt;/xliff:g&gt;&lt;xliff:gxmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"progress\"&gt;%3$s&lt;/xliff:g&gt;</string>
+    <string name="folder_progress">" &lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"completed\"&gt;%1$d&lt;/xliff:g&gt;/&lt;xliff:gxmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"total\"&gt;%2$d&lt;/xliff:g&gt;"</string>
     <string name="status_next_poll">=== App-specific strings =============================================================</string>
     <string name="status_syncing_off">Sincronización deshabilitada</string>
     <string name="actionbar_selected">=== App-specific strings =============================================================</string>
