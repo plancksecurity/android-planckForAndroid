@@ -159,8 +159,8 @@
     <string name="recreating_account">Account \"<xliff:g id="account">%s</xliff:g>\" opnieuw instellen</string>
     <string name="notification_new_title">Nieuwe mail</string>
     <plurals name="notification_new_messages_title">
-        <item quantity="one"><xliff:g id="new_message_count">%d</xliff:g> nieuwe berichten</item>
-        <item quantity="other"><xliff:g id="new_message_count">%d</xliff:g> nieuwe berichten</item>
+        <item quantity="one">=== App-specific strings =============================================================</item>
+        <item quantity="other">=== App-specific strings =============================================================</item>
     </plurals>
     <string name="notification_new_one_account_fmt"><xliff:g id="unread_message_count">%1$d</xliff:g> Ongelezen (<xliff:g id="account">%2$s</xliff:g>)</string>
     <string name="notification_additional_messages">+ <xliff:g id="additional_messages">%1$d</xliff:g> meer bij <xliff:g id="account">%2$s</xliff:g></string>
@@ -230,7 +230,7 @@
     <string name="message_view_download_remainder">Download compleet bericht</string>
     <string name="message_view_toast_unable_to_display_message">Niet mogelijk om bericht te tonen</string>
     <!--NOTE: The following message refers to strings with id account_setup_incoming_save_all_headers_label and account_setup_incoming_title-->
-    <string name="message_no_additional_headers_available">Alle headers zijn gedownload, maar er zijn geen extra headers aan te tonen.</string>
+    <string name="message_no_additional_headers_available">Alle headers zijn gedownload, maar er zijn geen extra headers om te tonen.</string>
     <string name="message_additional_headers_retrieval_failed">Het ophalen van extra headers uit de database of e-mailserver is mislukt.</string>
     <string name="from_same_sender">Meer van deze afzender</string>
     <string name="message_discarded_toast">Bericht verwijderd</string>
@@ -255,7 +255,7 @@
     <string name="global_settings_messageview_fixedwidth_summary">Gebruik een lettertype met vaste breedte bij het weergeven van plain-tekstberichten</string>
     <string name="global_settings_messageview_autofit_width_label">Berichten auto-passen</string>
     <string name="global_settings_messageview_autofit_width_summary">Berichten passend maken op het scherm</string>
-    <string name="global_settings_messageview_return_to_list_label">Terug naar lijst na verwijderen</string>
+    <string name="global_settings_messageview_return_to_list_label">Keer terug naar de lijst na verwijdering</string>
     <string name="global_settings_messageview_return_to_list_summary">Terug naar de berichtenlijst na bericht verwijderen</string>
     <string name="global_settings_messageview_show_next_label">Volgend bericht laten zien na verwijderen</string>
     <string name="global_settings_messageview_show_next_summary">Standaard volgend bericht laten zien na verwijderen</string>
@@ -277,7 +277,7 @@
     <string name="global_settings_notification_quick_delete_when_single_msg">Notificatie voor los bericht</string>
     <string name="global_settings_notification_quick_delete_always">Altijd</string>
     <string name="global_settings_notification_quick_delete_description">Laat een knop in de notificatie zien om snel te verwijderen</string>
-    <string name="global_settings_lock_screen_notification_visibility_title">Start scherm notificatie</string>
+    <string name="global_settings_lock_screen_notification_visibility_title">Schermmeldingen vergrendelen</string>
     <string name="global_settings_lock_screen_notification_visibility_nothing">Geen start scherm notificatie</string>
     <string name="global_settings_lock_screen_notification_visibility_app_name">App naam</string>
     <string name="global_settings_lock_screen_notification_visibility_message_count">Ongelezen berichten teller</string>
@@ -411,7 +411,7 @@
     <string name="account_setup_options_mail_display_count_2500">2500 berichten</string>
     <string name="account_setup_options_mail_display_count_5000">5000 berichten</string>
     <string name="account_setup_options_mail_display_count_10000">10000 berichten</string>
-    <string name="account_setup_options_mail_display_count_all">alle berichten</string>
+    <string name="account_setup_options_mail_display_count_all">Alle berichten</string>
     <string name="move_copy_cannot_copy_unsynced_message">Kan bericht niet kopiëren of verplaatsen omdat deze niet gesynchroniseerd is met de server</string>
     <string name="account_setup_failed_dlg_title">Setup kon niet afronden</string>
     <string name="account_setup_failed_dlg_auth_message_fmt">Gebruikersnaam of wachtwoord ongeldig.\n(<xliff:g id="error">%s</xliff:g>)</string>
@@ -477,23 +477,23 @@
     <string name="account_settings_color_label">Account kleur</string>
     <string name="account_settings_color_summary">Kies de kleur van het account gebruikt in mappen en account lijst</string>
     <string name="account_settings_led_color_label">Notificatie LED kleur</string>
-    <string name="account_settings_led_color_summary">Kies de LED kleur van de telefoon, welke moet knipperen voor deze account</string>
+    <string name="account_settings_led_color_summary">De kleur van de LED van uw apparaat moet knipperen voor dit account</string>
     <string name="account_settings_mail_display_count_label">Aantal berichten om te laten zien</string>
     <string name="account_settings_autodownload_message_size_label">Automatisch berichten downloaden tot</string>
-    <string name="account_settings_autodownload_message_size_1">1Kb</string>
-    <string name="account_settings_autodownload_message_size_2">2Kb</string>
-    <string name="account_settings_autodownload_message_size_4">4Kb</string>
-    <string name="account_settings_autodownload_message_size_8">8Kb</string>
-    <string name="account_settings_autodownload_message_size_16">16Kb</string>
-    <string name="account_settings_autodownload_message_size_32">32Kb</string>
-    <string name="account_settings_autodownload_message_size_64">64Kb</string>
-    <string name="account_settings_autodownload_message_size_128">128Kb</string>
-    <string name="account_settings_autodownload_message_size_256">256Kb</string>
-    <string name="account_settings_autodownload_message_size_512">512Kb</string>
-    <string name="account_settings_autodownload_message_size_1024">1Mb</string>
-    <string name="account_settings_autodownload_message_size_2048">2Mb</string>
-    <string name="account_settings_autodownload_message_size_5120">5Mb</string>
-    <string name="account_settings_autodownload_message_size_10240">10Mb</string>
+    <string name="account_settings_autodownload_message_size_1">1 Kb</string>
+    <string name="account_settings_autodownload_message_size_2">2 Kb</string>
+    <string name="account_settings_autodownload_message_size_4">4 Kb</string>
+    <string name="account_settings_autodownload_message_size_8">8 Kb</string>
+    <string name="account_settings_autodownload_message_size_16">16 Kb</string>
+    <string name="account_settings_autodownload_message_size_32">32 Kb</string>
+    <string name="account_settings_autodownload_message_size_64">64 Kb</string>
+    <string name="account_settings_autodownload_message_size_128">128 Kb</string>
+    <string name="account_settings_autodownload_message_size_256">256 Kb</string>
+    <string name="account_settings_autodownload_message_size_512">512 Kb</string>
+    <string name="account_settings_autodownload_message_size_1024">1 Mb</string>
+    <string name="account_settings_autodownload_message_size_2048">2 Mb</string>
+    <string name="account_settings_autodownload_message_size_5120">5 Mb</string>
+    <string name="account_settings_autodownload_message_size_10240">10 Mb</string>
     <string name="account_settings_autodownload_message_size_any">elke grootte (geen limiet)</string>
     <string name="account_settings_message_age_label">Sync berichten van</string>
     <string name="account_settings_message_age_any">alles (geen limiet)</string>
@@ -543,7 +543,7 @@
     <string name="folder_settings_folder_sync_mode_normal">Geen</string>
     <string name="folder_settings_folder_sync_mode_first_class">1e klasse</string>
     <string name="folder_settings_folder_sync_mode_second_class">2e klasse</string>
-    <string name="folder_settings_folder_sync_mode_inherited">Same as display class</string>
+    <string name="folder_settings_folder_sync_mode_inherited">Hetzelfde als weergaveklasse</string>
     <string name="folder_settings_folder_push_mode_label">Map push klasse</string>
     <string name="folder_settings_folder_push_mode_normal">Geen</string>
     <string name="folder_settings_folder_push_mode_first_class">1e klasse</string>
@@ -628,7 +628,7 @@
     <string name="sort_by_attach">Bijlagen</string>
     <string name="account_delete_dlg_title">Verwijder Account</string>
     <string name="account_recreate_dlg_title">Opnieuw maken Account</string>
-    <string name="account_clear_dlg_title">Clear Account</string>
+    <string name="account_clear_dlg_title">Account Wissen</string>
     <string name="provider_note_auonejp">Zorg ervoor dat IMAP of POP3 in de au one mail instellingen pagina aan staan.</string>
     <string name="provider_note_naver">Zorg ervoor dat IMAP of POP3 aan staan in de Naver mail instellingen pagina.</string>
     <string name="provider_note_hanmail">Zorg ervoor dat IMAP of POP3 aan staan in de Hanmail(Daum) installingen pagina.</string>
@@ -695,7 +695,7 @@
     <string name="hide_special_accounts_title">Verberg speciale accounts</string>
     <string name="hide_special_accounts_summary">Verberg de gecombineerde inbox and alle berichtaccounts</string>
     <string name="search_title"><xliff:g id="search_name">%1$s</xliff:g> <xliff:g id="modifier">%2$s</xliff:g></string>
-    <string name="flagged_modifier"> - Starred</string>
+    <string name="flagged_modifier">- Met ster</string>
     <string name="unread_modifier"> - Ongelezen</string>
     <string name="search_all_messages_title">Alle berichten</string>
     <string name="search_all_messages_detail">Alle berichten in doorzoekbare mappen</string>
@@ -763,8 +763,8 @@
     <string name="dialog_confirm_mark_all_as_read_cancel_button">Nee</string>
     <string name="dialog_confirm_spam_title">Bevestig verplaatsing naar spam map</string>
     <plurals name="dialog_confirm_spam_message">
-        <item quantity="one">Wil je dit bericht echt verplaatsen naar de spam map?</item>
-        <item quantity="other">Wil je dit bericht echt verplaatsen naar de spam map?</item>
+        <item quantity="one">Wil je dit bericht echt verplaatsen naar de spam map\?</item>
+        <item quantity="other">=== App-specific strings =============================================================</item>
     </plurals>
     <string name="dialog_confirm_spam_confirm_button">Ja</string>
     <string name="dialog_confirm_spam_cancel_button">Nee</string>
@@ -862,7 +862,7 @@
     <string name="pull_to_refresh_remote_search_from_local_search_pull">Duw naar zoekserver…</string>
     <string name="pull_to_refresh_remote_search_from_local_search_release">Laat los om op server te zoeken…</string>
     <string name="remote_search_unavailable_no_network">Er is een netwerk verbinding nodig voor server zoeken.</string>
-    <string name="global_settings_background_as_unread_indicator_label">Dim berichten na lezen</string>
+    <string name="global_settings_background_as_unread_indicator_label">Verander de kleur bij het lezen</string>
     <string name="global_settings_background_as_unread_indicator_summary">Een grijze achtergrond geeft aan dat een bericht gelezen is</string>
     <string name="global_settings_threaded_view_label">Gesprek overzicht</string>
     <string name="global_settings_threaded_view_summary">Groepeer berichten per gesprek</string>
@@ -970,4 +970,39 @@
     <string name="account_recreate_dlg_instructions_fmt">Alle lokale gegevens voor \"&lt;xliff: g xmlns: xliff =\" urn: oasis: names: tc: xliff: document: 1.2 \"id =\" account \"&gt;% s &lt;/ xliff: g&gt;\" worden verwijderd. Accountinstellingen blijven behouden.<xliff:g id="account">%s</xliff:g>\" will be removed. Account settings will be retained.</string>
     <string name="app_license">Gelicentieerd onder de Apache Licentie, Versie 2.0.</string>
     <string name="app_authors">The K-9 Dog Walkers, p≡p Security S.A.</string>
+    <string name="settings_export_success_generic">Instellingen zijn succesvol geëxporteerd</string>
+    <string name="account_settings_openpgp_missing">Ontbrekende OpenPGP app - is deze verwijderd\?</string>
+    <string name="account_settings_no_openpgp_provider_configured">Geen OpenPGP app geconfigureerd</string>
+    <string name="account_settings_crypto_summary_on">Verbonden met %s</string>
+    <string name="account_settings_crypto_summary_off">Geen OpenPGP app geconfigureerd</string>
+    <string name="account_setup_auth_type_xoauth2">OAuth 2.0 Token</string>
+    <string name="message_view_status_no_space">De bijlage kan niet worden opgeslagen omdat er onvoldoende ruimte is.</string>
+    <string name="status_syncing">Berichten synchroniseren</string>
+    <string name="status_no_background">Synchronisatie uitgeschakeld - Geen achtergrondactiviteit</string>
+    <string name="global_settings_confirm_menu_mark_all_read">Markeer alle berichten als gelezen</string>
+    <string name="global_settings_privacy_hide_hostname_when_connecting_detail">Identificeer als \'localhost\' wanneer je verbinding maakt met SMTP-servers</string>
+    <string name="global_settings_privacy_hide_hostname_when_connecting">Hostnaam verbergen</string>
+    <string name="global_settings_privacy_hide_timezone_detail">Gebruik UTC in plaats van lokale tijdzone in mailheaders en antwoordheader</string>
+    <string name="global_settings_privacy_hide_useragent_detail">Verwijder p≡p Gebruikers-Agent uit mailheaders</string>
+    <string name="global_settings_messageiew_after_delete_behavior_title">Na bericht gedrag verwijderd</string>
+    <string name="debug_delete_local_body">Foutopsporing / Berichttekst wissen</string>
+    <string name="message_view_sender_label">via %1$s</string>
+    <string name="status_syncing_blocked">Synchronisatie geblokkeerd</string>
+    <string name="status_poll_and_push_disabled">Polling en pushing uitgeschakeld</string>
+    <string name="status_no_network">Synchronisatie uitgeschakeld: geen netwerk</string>
+    <string name="account_clear_dlg_instructions_fmt">Lokale kopieën van berichten in \"&lt;xliff: g xmlns: xliff =\" urn: oasis: names: tc: xliff: document: 1.2 \"id =\" account \"&gt;% s &lt;/ xliff: g&gt;\" worden verwijderd. Accountinstellingen blijven behouden.<xliff:g id="account">%s</xliff:g>\" will be removed. Account settings will be retained.</string>
+    <string name="openpgp_dialog_sign_only_neutral_encsigned">Versleutelde berichten bevatten altijd een handtekening.</string>
+    <string name="openpgp_dialog_sign_only_minus_attach">Handtekeningen kunnen bij sommige clients worden weergegeven als \'signature.asc\'-bijlagen.</string>
+    <string name="openpgp_dialog_sign_only_minus_break">Handtekeningen kunnen breken wanneer ze naar mailinglijsten worden gestuurd.</string>
+    <string name="openpgp_dialog_sign_only_plus_verified">Hiermee wordt de e-mail niet versleuteld, maar wordt geverifieerd dat deze is verzonden vanaf uw sleutel.</string>
+    <string name="openpgp_dialog_sign_only_text">In deze modus wordt uw PGP sleutel gebruikt om een cryptografische handtekening te maken van een niet-versleutelde e-mail.</string>
+    <string name="openpgp_dialog_sign_only_title">PGP Sign-Only Mode</string>
+    <string name="openpgp_sign_only_keep_enabled">Blijf Ingeschakeld</string>
+    <string name="openpgp_sign_only_ok">Ik snap het!</string>
+    <string name="disable_sign_only">PGP Sign-Only uitschakelen</string>
+    <string name="enable_sign_only">PGP Sign-Only inschakelen</string>
+    <string name="crypto_mode_private">Versleutelen</string>
+    <string name="crypto_mode_opportunistic">Versleutelen indien mogelijk</string>
+    <string name="crypto_mode_disabled">Niet versleutelen</string>
+    <string name="account_setup_basics_oauth2_token">Gebruik OAuth 2.0 token (Google accounts)</string>
 </resources>
