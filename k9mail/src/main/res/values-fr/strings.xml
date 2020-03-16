@@ -54,8 +54,7 @@
     <string name="import_dialog_error_message">Veuillez installer un gestionnaire de fichiers pour continuer cette importation.</string>
     <string name="open_market">Ouvrir le Google Play Store</string>
     <!--=== General strings ==================================================================-->
-    <string name="app_authors_fmt">Auteurs\u00A0: <xliff:g id="app_authors">%s</xliff:g>
-    </string>
+    <string name="app_authors_fmt">=== App-specific strings =============================================================</string>
     <string name="app_revision_fmt">Informations de révision\u00A0: %s</string>
     <string name="app_libraries">Nous utilisons les bibliothèques tierces suivantes\u00A0: <xliff:g id="app_libraries_list">%s</xliff:g>
     </string>
@@ -1130,4 +1129,7 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="message_view_status_no_space">La pièce jointe n\'a pas pu être enregistrée car l\'espace est insuffisant.</string>
     <string name="status_syncing">Synchronisation des messages</string>
     <string name="status_syncing_blocked">Synchronisation bloquée</string>
+    <string name="status_no_background">Sync désactivée - Aucune activité en arrière-plan</string>
+    <string name="pep_menu_short_trustwords">Afficher les Trustwords court</string>
+    <string name="pep_menu_long_trustwords">Afficher les Trustwords long</string>
 </resources>
