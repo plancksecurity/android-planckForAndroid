@@ -225,4 +225,15 @@
     <string name="notification_failed_to_encrypt_text">Nous ne l\'avons pas envoyé et enregistré à la place dans le dossier brouillon.</string>
     <string name="notification_failed_to_encrypt_title">Nous n\'avons pas pu protéger ce message.</string>
     <string name="message_failed_to_encrypt">Nous n\'avons pas pu protéger ce message.</string>
+    <string name="intro_frag_second_text_3">If the Trustwords are not correct, your communication partner is Mistrusted.</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Another device was detected. We can add it to your device group to sync all your privacy on all devices. Shall we start synchronizing\?</string>
+    <string name="intro_frag_second_header_3">Suspect</string>
+    <string name="keysync_wizard_group_joining_done_message">Ce dispositif fait maintenant partie de votre Groupe de dispositifs. Toutes vos données confidentielles sont maintenant synchronisées.</string>
+    <string name="keysync_wizard_action_cancel">Annuler</string>
+    <string name="keysync_wizard_action_leave">Quitter</string>
+    <string name="keysync_wizard_group_creation_done_message">Nous avons correctement créé un groupe de dispositifs. Toutes vos données confidentielles sont maintenant synchronisées.</string>
+    <string name="intro_frag_second_header_1">Sécurisé</string>
+    <string name="intro_frag_third_text_1">Handshake</string>
+    <string name="intro_frag_second_header_2">Sécurisé &amp; Authentique</string>
+    <string name="keysync_wizard_action_next">Next</string>
 </resources>
