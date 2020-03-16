@@ -219,6 +219,7 @@
     <string name="keysync_wizard_handshake_message">Veuillez vous assurer d’avoir les dispositifs à disposition afin de pouvoir comparer les Trustwords des dispositifs. Les Trustwors ci-dessous sont-ils équivalents aux Trustwords de l’autre dispositif \?</string>
     <string name="keysync_wizard_create_group_first_message">Un deuxième équipement a été détecté. Nous pouvons créer un groupe de dispositifs pour synchroniser vos données confidentielles sur les deux équipements. Devons-nous commencer la synchronisation \?</string>
     <string name="keysync_wizard_action_try_again">Réessayer</string>
+<<<<<<< HEAD
     <string name="pep_received_this_secret_key" translatable="false">La clé secrète suivante a été reçue. Êtes-vous sûr de vouloir l\'utiliser\?</string>
     <string name="pep_title_activity_trustwords" translatable="false">Mots de confiance</string>
     <string name="pep_handshake" translatable="false">Protocole de transfert</string>
@@ -244,4 +245,27 @@
     <string name="keysync_wizard_waiting_message">Merci de patienter pendant la synchronisation vos dispositifs. Cela peut prendre quelques minutes.</string>
     <string name="pep_rating_mistrusted">Suspect</string>
     <string name="action_tutorial">Tutoriel</string>
+=======
+    <string name="keysync_wizard_error_message">Une erreur s\'est produite durant la synchronisation des dispositifs. Veuillez réessayer.</string>
+    <string name="keysync_wizard_waiting_message">Merci de patienter pendant la synchronisation vos dispositifs. Cela peut prendre quelques minutes.</string>
+    <string name="action_tutorial">Tutoriel</string>
+    <string name="pep_rating_mistrusted">Suspect</string>
+    <string name="pep_rating_secure">Sécurisé</string>
+    <string name="intro_frag_third_text_4">Complete a handshake with your communication partner. A handshake is needed only once per partner and will ensure Secure and Trusted communication.</string>
+    <string name="intro_frag_third_text_2">When you click on the Privacy Status icon in the top bar, you will get to the Handshake, where you can verify your communication partner.</string>
+    <string name="notification_failed_to_encrypt_text">Nous ne l\'avons pas envoyé et enregistré à la place dans le dossier brouillon.</string>
+    <string name="notification_failed_to_encrypt_title">Nous n\'avons pas pu protéger ce message.</string>
+    <string name="message_failed_to_encrypt">Nous n\'avons pas pu protéger ce message.</string>
+    <string name="intro_frag_second_text_3">Si les mots de passe ne sont pas corrects, votre partenaire de communication n\'est pas digne de confiance.</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Another device was detected. We can add it to your device group to sync all your privacy on all devices. Shall we start synchronizing\?</string>
+    <string name="intro_frag_second_header_3">Suspect</string>
+    <string name="keysync_wizard_group_joining_done_message">Ce dispositif fait maintenant partie de votre Groupe de dispositifs. Toutes vos données confidentielles sont maintenant synchronisées.</string>
+    <string name="keysync_wizard_action_cancel">Annuler</string>
+    <string name="keysync_wizard_action_leave">Quitter</string>
+    <string name="keysync_wizard_group_creation_done_message">Nous avons correctement créé un groupe de dispositifs. Toutes vos données confidentielles sont maintenant synchronisées.</string>
+    <string name="intro_frag_second_header_1">Sécurisé</string>
+    <string name="intro_frag_third_text_1">Handshake</string>
+    <string name="intro_frag_second_header_2">Sécurisé &amp; Authentique</string>
+    <string name="keysync_wizard_action_next">Next</string>
+>>>>>>> f32b7231fa67d55065ba3dc1d40392693aea0f5b
 </resources>

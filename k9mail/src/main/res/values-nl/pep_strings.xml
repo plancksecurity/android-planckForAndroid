@@ -237,14 +237,21 @@
     <string name="keysync_wizard_handshake_message">Zorg dat u de apparaten bij elkaar hebt, zodat u de Trustwords op de apparaten kunt vergelijken. Stemmen de Trustwords hieronder overeen met de Trustwords op het andere apparaat\?</string>
     <string name="keysync_wizard_create_group_first_message">Er is een tweede apparaat gedetecteerd. We kunnen een apparatengroep vormen om al uw persoonlijke informatie op beide apparaten te synchroniseren. Zullen we beginnen met synchroniseren\?</string>
     <string name="keysync_wizard_action_try_again">Opnieuw proberen</string>
+<<<<<<< HEAD
     <string name="intro_frag_second_header_2">Veilig &amp; Vertrouwd</string>
     <string name="action_tutorial">Zelfstudie</string>
     <string name="intro_frag_second_header_3">Niet vertouwd</string>
+=======
+    <string name="action_tutorial">Zelfstudie</string>
+    <string name="intro_frag_second_header_3">Niet vertouwd</string>
+    <string name="intro_frag_third_text_2">Wanneer je op de Privacy Status knop in de bovenste balk klikt, kom je bij de Handdruk, waar je je communicatiepartner kunt verifiëren.</string>
+>>>>>>> f32b7231fa67d55065ba3dc1d40392693aea0f5b
     <string name="pep_rating_secure">Veilig</string>
     <string name="keysync_wizard_waiting_message">Geef ons een momentje om uw apparaten te synchroniseren. Dit kan een minuut of langer duren.</string>
     <string name="intro_frag_second_header_1">Veilig</string>
     <string name="pep_rating_mistrusted">Niet vertouwd</string>
     <string name="keysync_wizard_group_joining_done_message">Het apparaat is nu een lid van uw apparatengroep. Al uw privacy is nu gesynchroniseerd.</string>
+<<<<<<< HEAD
     <string name="keysync_wizard_error_message">Er is iets misgelopen bij het synchroniseren van de apparaten. Probeer het opnieuw.</string>
     <string name="keysync_wizard_action_leave">Verlaten</string>
     <string name="keysync_wizard_action_next">Volgende</string>
@@ -258,4 +265,20 @@
     <string name="intro_frag_third_text_2">Wanneer je op de Privacy Status knop in de bovenste balk klikt, kom je bij de Handdruk, waar je je communicatiepartner kunt verifiëren.</string>
     <string name="intro_frag_third_text_1">Handshake</string>
     <string name="intro_frag_second_text_3">Als de Vertrouwenswoorden niet correct zijn, wordt uw communicatiepartner Niet Vertrouwd.</string>
+=======
+    <string name="intro_frag_third_text_1">Handshake</string>
+    <string name="keysync_wizard_error_message">Er is iets misgelopen bij het synchroniseren van de apparaten. Probeer het opnieuw.</string>
+    <string name="keysync_wizard_action_leave">Verlaten</string>
+    <string name="intro_frag_second_header_2">Veilig &amp; Vertrouwd</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Er is een ander apparaat gedetecteerd. We kunnen het aan je apparaatgroep toevoegen om al je privacy op alle apparaten te synchroniseren. Zullen we synchroniseren\?</string>
+    <string name="intro_frag_third_text_4">Voltooi een Handdruk met je communicatiepartner. Een Handdruk is slechts één keer per partner nodig en zorgt voor Veilige &amp; Vertrouwde communicatie.</string>
+    <string name="intro_frag_second_text_3">Als de Vertrouwenswoorden niet correct zijn, wordt uw communicatiepartner Niet Vertrouwd.</string>
+    <string name="keysync_wizard_action_next">Volgende</string>
+    <string name="keysync_wizard_action_cancel">Annuleren</string>
+    <string name="keysync_wizard_group_creation_done_message">We hebben een apparatengroep gemaakt. Al uw privacy is nu gesynchroniseerd.</string>
+    <string name="notification_failed_to_encrypt_text">We hebben het niet verzonden en in plaats daarvan opgeslagen in de conceptmap.</string>
+    <string name="notification_failed_to_encrypt_title">We konden dit bericht niet beschermen.</string>
+    <string name="message_failed_to_encrypt">We konden dit bericht niet beschermen.</string>
+    <string name="pep_rating_none">" "</string>
+>>>>>>> f32b7231fa67d55065ba3dc1d40392693aea0f5b
 </resources>

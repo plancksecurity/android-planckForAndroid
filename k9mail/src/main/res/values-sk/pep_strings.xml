@@ -125,7 +125,7 @@
     <string name="add_account_message">Ak chcete tento účet používať, musíte si ho pridať do svojho zariadenia</string>
     <string name="account_already_exists">Účet už existuje</string>
     <string name="device_offline_warning">Zdá sa, že vaše zariadenie je v režime offline, skôr ako budete pokračovať, skontrolujte pripojenie</string>
-    <string name="permissions_needed_message">Neudelenie potrebných povolení môže spôsobiť neočakávané správanie</string>
+    <string name="permissions_needed_message">Neudelenie potrebných povolení môže spôsobiť neočakávané správanie. Stlačením tlačidla OK ich udelíte.</string>
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>
         <item>Cannot Decrypt<!--pEpRatingCannotDecrypt--></item>
@@ -208,7 +208,7 @@
     <string name="key_import_from_fs_input_fpr">Zadajte ID kľúča alebo odtlačok kľúča.</string>
     <string name="reset">Obnoviť</string>
     <string name="reset_all">Resetovať všetko</string>
-    <string name="key_reset_for_identity_context_title">Resetujte dáta p≡p</string>
+    <string name="key_reset_for_identity_context_title">Resetujte všetky dáta p≡p pre tohto komunikačného partnera:</string>
     <string name="key_reset_identity_feedback">Všetky dáta p≡p pre tohto komunikačného partnera boli resetované.</string>
     <string name="key_reset_own_identity_feedback">Účet bol resetovaný.</string>
     <string name="trust_identity_feedback">Teraz je% s dôveryhodné</string>
@@ -217,14 +217,14 @@
     <string name="key_reset_all_own_identitities_feedback">Všetky účty P≡p boli resetované.</string>
     <string name="pep_key_reset_all_own_ids_warning">Táto akcia vynuluje všetky vaše účty.
 \n Naozaj chcete resetovať\?</string>
-    <string name="pep_key_reset_own_id_warning">Táto akcia resetuje váš účet</string>
+    <string name="pep_key_reset_own_id_warning">Táto akcia resetuje váš účet.
+\n Naozaj chcete resetovať\?</string>
     <string name="pep_key_reset_own_id_warning_title">Obnovte účet %s</string>
     <string name="intro_frag_third_text_1">Handshake</string>
     <string name="keysync_wizard_action_next">Ďalej</string>
     <string name="intro_frag_second_header_2">Zabezpečené a dôveryhodné</string>
     <string name="keysync_wizard_add_device_to_existing_group_message">Bolo zistené ďalšie zariadenie. Môžeme ho pridať do skupiny zariadení, aby sa synchronizovalo všetko vaše súkromie na všetkých zariadeniach. Začneme synchronizáciu\?</string>
-    <string name="keysync_wizard_group_joining_done_message">Zariadenie je teraz členom vašej skupiny zariadení. Všetko vaše súkromie je teraz synchronizované.
-\n</string>
+    <string name="keysync_wizard_group_joining_done_message">Zariadenie je teraz členom vašej skupiny zariadení. Všetko vaše súkromie je teraz synchronizované.</string>
     <string name="intro_frag_second_header_1">Zabezpečiť</string>
     <string name="keysync_wizard_error_message">Pri synchronizácii zariadení sa vyskytla chyba. Prosím skúste znova.</string>
     <string name="keysync_wizard_group_creation_done_message">Úspešne sme vytvorili skupinu zariadení. Všetko vaše súkromie je teraz synchronizované.</string>
@@ -242,6 +242,7 @@
     <string name="only_own_identities">Je to vlastná správa, bez zapojeného komunikačného partnera.</string>
     <string name="intro_frag_second_text_1">Pri tomto Stave súkromia je všetka komunikácia bezpečná, ale na potvrdenie, že váš kontakt je skutočne osobou, ktorú poznáte, by ste si s týmto kontaktom mali overiť Trustwords.</string>
     <string name="intro_frag_second_text_2">Po potvrdení správnosti Trustwords a dokončení Handshake bude komunikácia úplne bezpečná a dôveryhodná.</string>
+<<<<<<< HEAD
     <string name="pep_rating_forced_unencrypt">Vypnuté</string>
     <string name="intro_frag_fourth_text_3">V takom prípade je stav ochrany súkromia správy bezpečný, pretože ide o najmenšieho spoločného menovateľa oboch komunikačných partnerov.</string>
     <string name="intro_frag_third_text_4">Vyplňte handshake s vašim komunikačným partnerom. Handshake je potrebný iba raz pre partnera a zabezpečí bezpečnú a dôveryhodnú komunikáciu.</string>
@@ -260,4 +261,9 @@
     <string name="search_empty_error">Ak chcete hľadať, napíšte text</string>
     <string name="pep_sync_is_disabled_global">p≡p synchronizácia je zakázaná</string>
     <string name="pep_sync_is_enabled_global">p≡p synchronizácia je povolená</string>
+=======
+    <string name="intro_frag_first_text_2"> Unstranslatable strings </string>
+    <string name="intro_frag_first_text_1"> Unstranslatable strings </string>
+    <string name="pep_rating_none">" "</string>
+>>>>>>> f32b7231fa67d55065ba3dc1d40392693aea0f5b
 </resources>

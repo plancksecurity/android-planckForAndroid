@@ -197,6 +197,7 @@
     <string name="nnf_permission_external_write_denied">Zugriff auf das Dateisystem verweigert</string>
     <string name="pep_sync_is_enabled_global">p≡p Sync ist aktiviert</string>
     <string name="pep_sync_is_disabled_global">p≡p Sync ist deaktiviert</string>
+<<<<<<< HEAD
     <string name="notification_failed_to_encrypt_text">Wir haben es nicht gesendet und stattdessen im Entwurfsordner gespeichert.</string>
     <string name="notification_failed_to_encrypt_title">Wir konnten diese Nachricht nicht schützen.</string>
     <string name="message_failed_to_encrypt">Wir konnten diese Nachricht nicht schützen.</string>
@@ -222,4 +223,30 @@
     <string name="ellipsized_text" translatable="false">%s …</string>
     <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="keysync_wizard_waiting_message">Bitte warten Sie einen Moment, bis ihre Geräte synchronisiert sind. Das kann eine Minute oder länger dauern.</string>
+=======
+    <string name="intro_frag_second_header_3">Verdächtig</string>
+    <string name="keysync_wizard_action_next">Weiter</string>
+    <string name="intro_frag_third_text_1">Handshake</string>
+    <string name="keysync_wizard_action_leave">Verlassen</string>
+    <string name="intro_frag_second_header_1">Sicher</string>
+    <string name="action_tutorial">Tutorial</string>
+    <string name="keysync_wizard_action_cancel">Abbrechen</string>
+    <string name="keysync_wizard_group_joining_done_message">Das Gerät ist nun Teil Ihrer Gerätegruppe. Ihre gesamten Datenschutz-Einstellungen sind jetzt synchronisiert.</string>
+    <string name="pep_rating_secure">Sicher</string>
+    <string name="keysync_wizard_error_message">Etwas ist beim Synchronisieren der Geräte schief gelaufen.Bitte versuchen Sie es noch einmal.</string>
+    <string name="keysync_wizard_waiting_message">Bitte warten Sie einen Moment, bis ihre Geräte synchronisiert sind. Das kann eine Minute oder länger dauern.</string>
+    <string name="pep_rating_mistrusted">Verdächtig</string>
+    <string name="intro_frag_third_text_4">Führen Sie einen Handshake mit Ihrem Kommunikationspartner durch. Der Handshake ist nur einmal pro Partner nötig und garantiert eine sichere und verifizierte Kommunikation.</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Es wurde ein weiteres Gerät gefunden, mit dem Sie Ihre Datenschutzeinstellungen synchronisieren können. Möchten Sie mit der Synchronisierung beginnen\?</string>
+    <string name="intro_frag_third_text_2">Durch Klick auf das Datenschutzstatussymbol öffnen Sie den Handshake-Dialog, in dem Sie Ihren Kommunikationspartner verifizieren können.</string>
+    <string name="keysync_wizard_group_creation_done_message">Ihre Gerätegruppe wurde erfolgreich gebildet. Ihre gesamten Datenschutz-Einstellungen sind jetzt synchronisiert.</string>
+    <string name="intro_frag_second_header_2">Sicher und verifiziert</string>
+    <string name="notification_failed_to_encrypt_text">Wir haben es nicht gesendet und stattdessen im Entwurfsordner gespeichert.</string>
+    <string name="notification_failed_to_encrypt_title">Wir konnten diese Nachricht nicht schützen.</string>
+    <string name="message_failed_to_encrypt">Wir konnten diese Nachricht nicht schützen.</string>
+    <string name="only_own_identities">Dies ist eine eigene Nachricht, an der kein Kommunikationspartner beteiligt ist.</string>
+    <string name="pep_rating_none">" "</string>
+    <string name="intro_frag_second_text_3">Wenn die Vertrauenswörter nicht korrekt sind, ist Ihr Kommunikationspartner misstrauisch.</string>
+    <string name="intro_frag_second_text_1">Mit diesem Datenschutzstatus ist die gesamte Kommunikation sicher. Um jedoch zu bestätigen, dass Ihr Kontakt wirklich die Person ist, die Sie kennen, sollten Sie diesem Kontakt vertrauen.</string>
+>>>>>>> f32b7231fa67d55065ba3dc1d40392693aea0f5b
 </resources>

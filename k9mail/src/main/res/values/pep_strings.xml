@@ -240,7 +240,7 @@
     <string name="pep_rating_secure">Secure</string>
     <string name="pep_rating_mistrusted">Mistrusted</string>
     <string name="pep_rating_forced_unencrypt">Disabled</string>
-    <string name="pep_rating_none"/>
+    <string name="pep_rating_none">" "</string>
     <string name="action_tutorial">Tutorial</string>
     <string name="only_own_identities">this is an own message, no communication partner involved.</string>
     <!-- Key sync dialog Strings -->
