@@ -242,4 +242,6 @@
     <string name="only_own_identities">Je to vlastná správa, bez zapojeného komunikačného partnera.</string>
     <string name="intro_frag_second_text_1">Pri tomto Stave súkromia je všetka komunikácia bezpečná, ale na potvrdenie, že váš kontakt je skutočne osobou, ktorú poznáte, by ste si s týmto kontaktom mali overiť Trustwords.</string>
     <string name="intro_frag_second_text_2">Po potvrdení správnosti Trustwords a dokončení Handshake bude komunikácia úplne bezpečná a dôveryhodná.</string>
+    <string name="intro_frag_first_text_2"> Unstranslatable strings </string>
+    <string name="intro_frag_first_text_1"> Unstranslatable strings </string>
 </resources>
