@@ -253,9 +253,9 @@
     <string name="notification_failed_to_encrypt_text">We hebben dit bericht niet verzonden en in plaats daarvan opgeslagen in de conceptmap.</string>
     <string name="notification_failed_to_encrypt_title">We konden dit bericht niet beschermen.</string>
     <string name="message_failed_to_encrypt">We konden dit bericht niet beschermen.</string>
-    <string name="keysync_wizard_add_device_to_existing_group_message">Er is een ander apparaat gedetecteerd. We kunnen het aan je apparaatgroep toevoegen om al je privacy op alle apparaten te synchroniseren. Zullen we beginnen met synchroniseren\?</string>
-    <string name="intro_frag_third_text_4">Voltooi een handdruk met je communicatiepartner. Een handdruk is slechts één keer per partner nodig en zorgt voor Veilige en Vertrouwde communicatie.</string>
-    <string name="intro_frag_third_text_2">Wanneer je op de knop Privacy Status in de bovenste balk klikt, kom je bij de Handdruk, waar je je communicatiepartner kunt verifiëren.</string>
-    <string name="intro_frag_third_text_1">Handdruk</string>
-    <string name="intro_frag_second_text_3">Als de Vertrouwenswoorden niet correct zijn, wordt je communicatiepartner Niet Vertouwd.</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Er is een ander apparaat gedetecteerd. We kunnen het aan je apparaatgroep toevoegen om al je privacy op alle apparaten te synchroniseren. Zullen we synchroniseren\?</string>
+    <string name="intro_frag_third_text_4">Voltooi een Handdruk met je communicatiepartner. Een Handdruk is slechts één keer per partner nodig en zorgt voor Veilige &amp; Vertrouwde communicatie.</string>
+    <string name="intro_frag_third_text_2">Wanneer je op de Privacy Status knop in de bovenste balk klikt, kom je bij de Handdruk, waar je je communicatiepartner kunt verifiëren.</string>
+    <string name="intro_frag_third_text_1">Handshake</string>
+    <string name="intro_frag_second_text_3">Als de Vertrouwenswoorden niet correct zijn, wordt uw communicatiepartner Niet Vertrouwd.</string>
 </resources>
