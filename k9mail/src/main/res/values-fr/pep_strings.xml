@@ -217,7 +217,7 @@
     <string name="pep_rating_forced_unencrypt">Désactivé</string>
     <string name="only_own_identities">Ceci est un message interne, il n’y a pas de partenaire impliqué dans la communication.</string>
     <string name="keysync_wizard_handshake_message">Veuillez vous assurer d’avoir les dispositifs à disposition afin de pouvoir comparer les Trustwords des dispositifs. Les Trustwors ci-dessous sont-ils équivalents aux Trustwords de l’autre dispositif \?</string>
-    <string name="keysync_wizard_create_group_first_message">Un deuxième équipement a été détecté. Nous pouvons créer un groupe de dispositifs pour synchroniser vos données confidentielles sur les deux équipements. Devons-nous commencer la synchronisation \?</string>
+    <string name="keysync_wizard_create_group_first_message">Un deuxième équipement a été détecté. Nous pouvons créer un groupe de dispositifs pour synchroniser vos données confidentielles sur les deux équipements. Devons-nous commencer la synchronisation \?</string>
     <string name="keysync_wizard_action_try_again">Réessayer</string>
     <string name="pep_received_this_secret_key" translatable="false">La clé secrète suivante a été reçue. Êtes-vous sûr de vouloir l\'utiliser\?</string>
     <string name="pep_title_activity_trustwords" translatable="false">Mots de confiance</string>
