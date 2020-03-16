@@ -211,4 +211,10 @@
     <string name="keysync_wizard_handshake_message">Comprueba que tengas ambos dispositivos a tu alcance para comparar en ellos las palabras de confianza. Las palabras de confianza siguientes, ¿son las mismas que las del otro dispositivo\?</string>
     <string name="keysync_wizard_create_group_first_message">Se ha detectado un segundo dispositivo. Podemos crear un grupo de dispositivos para sincronizar toda tu privacidad en ambos dispositivos. ¿Quieres que iniciemos la sincronización\?</string>
     <string name="keysync_wizard_action_try_again">Vuelve a intentarlo</string>
+    <string name="pep_rating_secure">Seguro</string>
+    <string name="action_tutorial">Tutorial</string>
+    <string name="intro_frag_third_text_1">Handshake</string>
+    <string name="keysync_wizard_group_joining_done_message">El dispositivo ahora forma parte de tu grupo de dispositivos. Ahora toda tu privacidad está sincronizada.</string>
+    <string name="intro_frag_third_text_2">Completa un handshake con tu interlocutor. Un handshake se necesita solo una vez por interlocutor y garantiza una comunicación segura y verificada.</string>
+    <string name="intro_frag_third_text_4">Al confirmar que tus Trustwords y las de tu interlocutor coincidan, tu comunicación será segura y verificada.</string>
 </resources>
