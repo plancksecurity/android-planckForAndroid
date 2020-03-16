@@ -197,4 +197,21 @@
     <string name="nnf_permission_external_write_denied">Zugriff auf das Dateisystem verweigert</string>
     <string name="pep_sync_is_enabled_global">p≡p Sync ist aktiviert</string>
     <string name="pep_sync_is_disabled_global">p≡p Sync ist deaktiviert</string>
+    <string name="intro_frag_second_header_3">Verdächtig</string>
+    <string name="keysync_wizard_action_next">Weiter</string>
+    <string name="intro_frag_third_text_1">Handshake</string>
+    <string name="keysync_wizard_action_leave">Verlassen</string>
+    <string name="intro_frag_second_header_1">Sicher</string>
+    <string name="action_tutorial">Tutorial</string>
+    <string name="keysync_wizard_action_cancel">Abbrechen</string>
+    <string name="keysync_wizard_group_joining_done_message">Das Gerät ist nun Teil Ihrer Gerätegruppe. Ihre gesamten Datenschutz-Einstellungen sind jetzt synchronisiert.</string>
+    <string name="pep_rating_secure">Sicher</string>
+    <string name="keysync_wizard_error_message">Etwas ist beim Synchronisieren der Geräte schief gelaufen.Bitte versuchen Sie es noch einmal.</string>
+    <string name="keysync_wizard_waiting_message">Bitte warten Sie einen Moment, bis ihre Geräte synchronisiert sind. Das kann eine Minute oder länger dauern.</string>
+    <string name="pep_rating_mistrusted">Verdächtig</string>
+    <string name="intro_frag_third_text_4">Führen Sie einen Handshake mit Ihrem Kommunikationspartner durch. Der Handshake ist nur einmal pro Partner nötig und garantiert eine sichere und verifizierte Kommunikation.</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Es wurde ein weiteres Gerät gefunden, mit dem Sie Ihre Datenschutzeinstellungen synchronisieren können. Möchten Sie mit der Synchronisierung beginnen\?</string>
+    <string name="intro_frag_third_text_2">Durch Klick auf das Datenschutzstatussymbol öffnen Sie den Handshake-Dialog, in dem Sie Ihren Kommunikationspartner verifizieren können.</string>
+    <string name="keysync_wizard_group_creation_done_message">Ihre Gerätegruppe wurde erfolgreich gebildet. Ihre gesamten Datenschutz-Einstellungen sind jetzt synchronisiert.</string>
+    <string name="intro_frag_second_header_2">Sicher und verifiziert</string>
 </resources>
