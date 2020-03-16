@@ -251,7 +251,7 @@
     <string name="keysync_wizard_action_try_again">Skúste to znova</string>
     <string name="pep_rating_secure_trusted">Zabezpečené a
 \n dôveryhodné</string>
-    <string name="intro_frag_fourth_text_2">Ikona v hornom paneli odráža stav ochrany osobných údajov správy, ktorá je najnižším spoločným menovateľom všetkých komunikačných partnerov tejto správy, napríklad:</string>
+    <string name="intro_frag_fourth_text_2">Ikona v hornom paneli odráža Stav súkromia správy, ktorá je najnižším spoločným menovateľom všetkých komunikačných partnerov tejto správy, napríklad:</string>
     <string name="intro_frag_fourth_text_1">\@string/pep_title_activity_privacy_status</string>
     <string name="intro_frag_third_text_3">OUTDISTANCE\t\t\tCORRINA\t\t\tETHIOPIA\t\t\tOUTDRAW\t\t\tFLEECER\t\t\t…</string>
     <string name="intro_frag_first_text_3">A pri otvorení alebo napísaní e-mailu na hornom paneli:</string>
