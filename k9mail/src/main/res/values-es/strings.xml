@@ -1022,4 +1022,6 @@
     <string name="openpgp_sign_only_disable">Desactivar</string>
     <string name="openpgp_enabled_error_back">Atrás</string>
     <string name="app_name">p≡p</string>
+    <string name="app_license">Licenciado bajo la Licencia Apache, Versión 2.0.</string>
+    <string name="app_copyright_fmt">=== App-specific strings =============================================================</string>
 </resources>
