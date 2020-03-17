@@ -422,7 +422,9 @@
     <string name="move_copy_cannot_copy_unsynced_message">Nemožno skopírovať alebo presunúť správu, ktorá nie je synchronizovaná so serverom</string>
     <string name="account_setup_failed_dlg_title">Nastavenie nemohlo byť dokončené</string>
     <string name="account_setup_failed_dlg_auth_message_fmt">Používateľské meno alebo heslo nie je správne.\n(<xliff:g id="error">%s</xliff:g>)</string>
-    <string name="account_setup_failed_dlg_certificate_message_fmt">=== App-specific strings =============================================================</string>
+    <string name="account_setup_failed_dlg_certificate_message_fmt">Server predložil neplatný certifikát SSL. Niekedy je to kvôli nesprávnej konfigurácii servera. Niekedy je to preto, že sa niekto pokúša napadnúť vás alebo váš poštový server. Ak si nie ste istí, čo sa deje, kliknite na tlačidlo Odmietnuť a kontaktujte ľudí, ktorí spravujú váš poštový server.
+
+(<xliff:g xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" id="error">%s</xliff:g>)</string>
     <string name="account_setup_failed_dlg_server_message_fmt">Nie je možné sa pripojiť k serveru.\n(<xliff:g id="error">%s</xliff:g>)</string>
     <string name="account_setup_failed_dlg_edit_details_action">Upraviť podrobnosti</string>
     <string name="account_setup_failed_dlg_continue_action">Pokračovať</string>
