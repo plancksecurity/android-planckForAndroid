@@ -34,6 +34,7 @@ import androidx.test.uiautomator.Direction;
 import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject;
 import androidx.test.uiautomator.UiObject2;
+import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiSelector;
 import androidx.test.uiautomator.Until;
 import android.text.format.DateUtils;
@@ -2263,6 +2264,24 @@ public class TestUtils {
         } while (!viewIsDisplayed(R.id.subject));
         onView(withId(R.id.subject)).check(matches(isCompletelyDisplayed()));
         onView(withId(R.id.subject)).perform(click());
+    }
+
+    public void scrollToView (boolean up, String text){
+        UiObject textView = device.findObject(new UiSelector().text(text).className("android.widget.TextView"));
+        UiObject listContainer = device.findObject(new UiSelector().resourceId("security.pEp.debug:id/generalSettingsContainer"));
+        while (!textView.exists()) {
+            device.waitForIdle();
+            Espresso.onIdle();
+            try {
+                if (up) {
+                    listContainer.swipeUp(100);
+                } else {
+                    listContainer.swipeDown(100);
+                }
+            } catch (UiObjectNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void setCheckBox(String resourceText, boolean checked) {
