@@ -919,7 +919,7 @@
     <string name="error_crypto_inline_attach">PGP/INLINE modus ondersteunt geen bijlagen!</string>
     <string name="enable_inline_pgp">PGP/INLINE aanzetten</string>
     <string name="disable_inline_pgp">PGP/INLINE uitzetten</string>
-    <string name="openpgp_inline_title">PGP/INLINE instellingen</string>
+    <string name="openpgp_inline_title">PGP/INLINE Modus</string>
     <string name="openpgp_inline_text">De mail is verzonden in PGP/INLINE formaat.\nDit word alleen gebruikt bij verenigbaarheid:</string>
     <string name="openpgp_inline_plus_compat">Sommige cliënts ondersteunen alleen dit formaat</string>
     <string name="openpgp_inline_minus_transit">Handtekening kan onderweg breken</string>
@@ -961,9 +961,9 @@
     <string name="messageview_crypto_warning_revoked">=== App-specific strings =============================================================</string>
     <string name="messageview_crypto_warning_expired">=== App-specific strings =============================================================</string>
     <string name="messageview_crypto_warning_insecure">=== App-specific strings =============================================================</string>
-    <string name="messageview_crypto_warning_error">Er was een <b>fout in de handtekening!</b></string>
-    <string name="recipient_error_non_ascii">Speciale leestekens worden nog niet ondersteund!</string>
-    <string name="recipient_error_parse_failed">Fout bij parsen van adres!</string>
+    <string name="messageview_crypto_warning_error">=== App-specific strings =============================================================</string>
+    <string name="recipient_error_non_ascii">Speciale tekens worden momenteel niet ondersteund!</string>
+    <string name="recipient_error_parse_failed">Fout bij het parseren van adres!</string>
     <string name="openpgp_sign_only_disable">Uitzetten</string>
     <string name="openpgp_enabled_error_back">Terug</string>
     <string name="app_name">p≡p</string>
@@ -1071,9 +1071,9 @@
     <string name="apg_deprecated_title">APG Beëindigingswaarschuwing</string>
     <string name="unsigned_text_divider_label">Niet-ondertekende Tekst</string>
     <string name="error_sign_only_no_encryption">Versleuteling niet beschikbaar in de modus alleen-ondertekenen!</string>
-    <string name="account_settings_crypto_hide_sign_only_off">Alle handtekeningen worden weergegeven</string>
+    <string name="account_settings_crypto_hide_sign_only_off">Alle handtekeningen worden getoond</string>
     <string name="account_settings_crypto_hide_sign_only_on">Alleen versleutelde handtekeningen worden weergegeven</string>
     <string name="account_settings_crypto_hide_sign_only">Verberg niet-versleutelde handtekeningen</string>
-    <string name="messageview_crypto_warning_show_anyway">Toon bericht alsnog</string>
+    <string name="messageview_crypto_warning_show_anyway">Bericht alsnog tonen</string>
     <string name="messageview_crypto_warning_unsigned">=== App-specific strings =============================================================</string>
 </resources>
