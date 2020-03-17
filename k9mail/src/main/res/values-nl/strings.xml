@@ -1036,34 +1036,34 @@
     <string name="account_settings_crypto_prefer_encrypt">Autocrypt wederzijdse modus</string>
     <string name="openpgp_encryption">OpenPGP Encryptie</string>
     <string name="openpgp_enabled_error_disable">Encryptie Uitschakelen</string>
-    <string name="openpgp_enabled_error_gotit">Ik snap het</string>
+    <string name="openpgp_enabled_error_gotit">Begrepen</string>
     <string name="openpgp_description_text2">Schakel de encryptie in door op deze knop te klikken.</string>
-    <string name="openpgp_description_text3">Encryptie wordt alleen weergegeven als dit wordt ondersteund door alle ontvangers en zij moeten u eerder een e-mail hebben gestuurd.</string>
+    <string name="openpgp_description_text3">Encryptie wordt alleen weergegeven als dit wordt ondersteund door alle ontvangers en zij moeten je eerder een e-mail hebben gestuurd.</string>
     <string name="openpgp_description_text1">Door berichten te versleutelen, kunnen ze alleen door de ontvanger en door niemand anders worden gelezen.</string>
     <string name="disable_encryption">Encryptie Uitschakelen</string>
-    <string name="enable_encryption">Encyptie Inschakelen</string>
+    <string name="enable_encryption">Encryptie Inschakelen</string>
     <string name="openpgp_enabled_error_msg">Sommige geselecteerde ontvangers ondersteunen deze functie niet!</string>
     <string name="openpgp_enabled_error_title">Encryptie is niet mogelijk</string>
     <string name="error_recipient_crypto_retrieve">Fout bij ophalen van ontvangerstatus van OpenPGP provider!</string>
-    <string name="messageview_crypto_warning_details">Toon Details</string>
+    <string name="messageview_crypto_warning_details">Details Tonen</string>
     <string name="fetching_folders_failed">Ophalen van mappenlijst is mislukt</string>
     <string name="mail_list_widget_loading">Berichten laden…</string>
     <string name="mail_list_widget_text">p≡p Berichtenlijst</string>
-    <string name="pep_menu_short_trustwords">Toon korte Vertrouwenswoorden</string>
-    <string name="pep_menu_long_trustwords">Toon lange Vertrouwenswoorden</string>
+    <string name="pep_menu_short_trustwords">Korte Vertrouwenswoorden tonen</string>
+    <string name="pep_menu_long_trustwords">Lange Vertrouwenswoorden tonen</string>
     <string name="decrypt_message_explanation">Deze e-mail is versleuteld en het kan enkele seconden duren om deze te decoderen. Wil je doorgaan\?</string>
     <string name="hello_world">Hallo Wereld!</string>
     <string name="xoauth2_account_doesnt_exist">Account bestaat niet</string>
-    <string name="xoauth2_error_contacting_auth_server">Fout bij contact maken met authenticatie-server</string>
-    <string name="xoauth2_unable_to_contact_auth_server">Kan geen verbinding maken met de authenticatie-server</string>
+    <string name="xoauth2_error_contacting_auth_server">Fout bij contact maken met authenticatie server</string>
+    <string name="xoauth2_unable_to_contact_auth_server">Kan geen verbinding maken met de authenticatie server</string>
     <string name="xoauth2_auth_cancelled_by_user">Authenticatie geannuleerd</string>
-    <string name="crypto_no_provider_button">Ga naar Instellingen</string>
-    <string name="crypto_no_provider_message">Deze e-mail is versleuteld met OpenPGP.
-\nOm deze te lezen, moet u een compatibele OpenPGP app installeren en configureren.</string>
+    <string name="crypto_no_provider_button">Naar Instellingen Gaan</string>
+    <string name="crypto_no_provider_message">Deze e-mail is versleuteld met OpenPGP. 
+\nOm deze te lezen, moet u een compatibele OpenPGP App installeren en configureren.</string>
     <string name="crypto_no_provider_title">Deze e-mail is versleuteld</string>
     <string name="no_crypto_provider_see_global">Geen OpenPGP app geconfigureerd, zie algemene instellingen!</string>
     <string name="apg">APG</string>
-    <string name="apg_deprecated_ok">Ik snap het!</string>
+    <string name="apg_deprecated_ok">Begrepen!</string>
     <string name="apg_learn_more">=== App-specific strings =============================================================</string>
     <string name="apg_deprecated_bullet_2">Bevat niet-opgeloste beveiligingsproblemen</string>
     <string name="apg_deprecated_bullet_1">Begin 2014 is de ontwikkeling gestopt</string>
