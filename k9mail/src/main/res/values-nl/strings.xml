@@ -933,7 +933,7 @@
     <string name="crypto_msg_unsupported_encrypted">Bericht is versleuteld, maar in een niet ondersteund formaat.</string>
     <string name="crypto_msg_unsupported_signed">Bericht is ondertekend, maar in een niet ondersteund formaat.</string>
     <string name="crypto_msg_incomplete_encrypted">Bericht is versleuteld, maar moet volledig worden gedownload om te worden gedecodeerd.</string>
-    <string name="crypto_msg_cancelled">Bericht is versleuteld, maar ontsleuteling was gestopt.</string>
+    <string name="crypto_msg_cancelled">Bericht is versleuteld, maar decodering is geannuleerd.</string>
     <string name="crypto_msg_signed_unencrypted">Bericht is ondertekend, maar niet versleuteld.</string>
     <string name="crypto_msg_encrypted_unsigned">Bericht is versleuteld, maar niet ondertekend.</string>
     <string name="crypto_msg_sign_unknown">Handtekening gemaakt door onbekende sleutel</string>
