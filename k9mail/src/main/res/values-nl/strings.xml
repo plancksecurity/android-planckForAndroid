@@ -948,19 +948,19 @@
     <string name="crypto_msg_signed_encrypted">Bericht is ondertekend en versleuteld.</string>
     <string name="crypto_msg_unsigned_encrypted">Er is geen handtekening, dit bericht is mogelijk onderschept.</string>
     <string name="crypto_info_ok">OK</string>
-    <string name="crypto_info_view_key">Bekijk ondertekenaar</string>
-    <string name="locked_attach_unlock">ontsluit</string>
-    <string name="locked_attach_unencrypted">Dit onderdeel is niet versleuteld en is mogelijk niet veilig.</string>
+    <string name="crypto_info_view_key">Ondertekenaar Bekijken</string>
+    <string name="locked_attach_unlock">Ontgrendelen</string>
+    <string name="locked_attach_unencrypted">Dit deel is niet versleuteld en is mogelijk niet veilig.</string>
     <string name="locked_attach_title">Onbeveiligde Bijlage</string>
-    <string name="message_progress_text">Laden…</string>
-    <string name="messageview_decrypt_cancelled">Ontsleuteling is gestopt.</string>
-    <string name="messageview_decrypt_retry">Opnieuw</string>
-    <string name="messageview_decrypt_incomplete">Versleuteld bericht moet gedownloed zijn voor ontsleuteling.</string>
-    <string name="messageview_crypto_error_title">Foute mail versleuteling</string>
-    <string name="messageview_crypto_warning_title">Beveiliging Waarschuwing</string>
-    <string name="messageview_crypto_warning_revoked">Dit bericht is ondertekend door een <b>ingetrokken sleutel!</b></string>
-    <string name="messageview_crypto_warning_expired">Dit bericht is getekend door een <b>verlopen sleutel!</b></string>
-    <string name="messageview_crypto_warning_insecure">Dit bericht is ondertekend door een <b>onveilige sleutel!</b></string>
+    <string name="message_progress_text">Bezig met laden…</string>
+    <string name="messageview_decrypt_cancelled">Decodering is geannuleerd.</string>
+    <string name="messageview_decrypt_retry">Opnieuw Proberen</string>
+    <string name="messageview_decrypt_incomplete">Versleuteld bericht moet worden gedownload om te worden gedecodeerd.</string>
+    <string name="messageview_crypto_error_title">Fout bij decoderen van e-mail</string>
+    <string name="messageview_crypto_warning_title">Veiligheidswaarschuwing</string>
+    <string name="messageview_crypto_warning_revoked">=== App-specific strings =============================================================</string>
+    <string name="messageview_crypto_warning_expired">=== App-specific strings =============================================================</string>
+    <string name="messageview_crypto_warning_insecure">=== App-specific strings =============================================================</string>
     <string name="messageview_crypto_warning_error">Er was een <b>fout in de handtekening!</b></string>
     <string name="recipient_error_non_ascii">Speciale leestekens worden nog niet ondersteund!</string>
     <string name="recipient_error_parse_failed">Fout bij parsen van adres!</string>
