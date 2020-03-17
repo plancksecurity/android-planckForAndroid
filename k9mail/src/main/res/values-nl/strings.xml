@@ -920,13 +920,14 @@
     <string name="enable_inline_pgp">PGP/INLINE aanzetten</string>
     <string name="disable_inline_pgp">PGP/INLINE uitzetten</string>
     <string name="openpgp_inline_title">PGP/INLINE Modus</string>
-    <string name="openpgp_inline_text">De mail is verzonden in PGP/INLINE formaat.\nDit word alleen gebruikt bij verenigbaarheid:</string>
-    <string name="openpgp_inline_plus_compat">Sommige cliënts ondersteunen alleen dit formaat</string>
-    <string name="openpgp_inline_minus_transit">Handtekening kan onderweg breken</string>
+    <string name="openpgp_inline_text">De mail is verzonden in PGP/INLINE formaat.
+\nDit mag alleen gebruikt worden voor compabiliteit:</string>
+    <string name="openpgp_inline_plus_compat">Sommige clients ondersteunen alleen dit formaat</string>
+    <string name="openpgp_inline_minus_transit">Handtekeningen kan onderweg breken</string>
     <string name="openpgp_inline_minus_attach">Bijlagen zijn niet ondersteund</string>
     <string name="openpgp_inline_ok">Begrepen!</string>
-    <string name="openpgp_inline_disable">Uitzetten</string>
-    <string name="openpgp_inline_keep_enabled">Aan laten staan</string>
+    <string name="openpgp_inline_disable">Uitschakelen</string>
+    <string name="openpgp_inline_keep_enabled">Blijf Ingeschakeld</string>
     <string name="crypto_msg_disabled">Bericht is niet versleuteld</string>
     <string name="crypto_msg_encrypted_error">Bericht is gecodeerd, maar er is een decoderingsfout opgetreden.</string>
     <string name="crypto_msg_signed_error">Bericht is ondertekend, maar de handtekening kan niet worden geverifieerd.</string>
