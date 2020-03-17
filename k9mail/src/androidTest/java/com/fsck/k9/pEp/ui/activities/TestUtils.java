@@ -1621,6 +1621,8 @@ public class TestUtils {
                 }
             }
         }
+        device.waitForIdle();
+        Espresso.onIdle();
     }
 
     void doWait(String viewId) {
