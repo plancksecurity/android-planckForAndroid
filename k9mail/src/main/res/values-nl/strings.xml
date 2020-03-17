@@ -942,9 +942,9 @@
     <string name="crypto_msg_sign_error">Handtekening bevatte een fout.</string>
     <string name="crypto_msg_sign_mismatch">Handtekening gemaakt met een foute sleutel.</string>
     <string name="crypto_msg_sign_expired">Handtekening gemaakt met verlopen sleutel.</string>
-    <string name="crypto_msg_sign_revoked">Handtekeninggemaakt door ingetrokken sleutel.</string>
-    <string name="crypto_msg_sign_insecure">Handtekening gemaakt door onveilige sleutel</string>
-    <string name="crypto_msg_sign_incomplete">Bericht volledig downloaden om de handtekening te verifieren.</string>
+    <string name="crypto_msg_sign_revoked">Handtekening gemaakt met ingetrokken sleutel.</string>
+    <string name="crypto_msg_sign_insecure">Handtekening gemaakt met onveilige sleutel.</string>
+    <string name="crypto_msg_sign_incomplete">Bericht moet volledig zijn gedownload om de handtekening te verifiëren.</string>
     <string name="crypto_msg_signed_encrypted">Bericht is ondertekend en versleuteld.</string>
     <string name="crypto_msg_unsigned_encrypted">Er is geen handtekening, dit bericht is mogelijk onderschept.</string>
     <string name="crypto_info_ok">OK</string>
