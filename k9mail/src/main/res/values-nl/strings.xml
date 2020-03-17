@@ -884,11 +884,11 @@
     <string name="global_settings_colorize_missing_contact_pictures_label">Contactafbeeldingen kleuren</string>
     <string name="global_settings_colorize_missing_contact_pictures_summary">Afwezige contactafbeeldingen inkleuren</string>
     <string name="global_settings_messageview_visible_refile_actions_title">Zichtbare berichtacties</string>
-    <string name="global_settings_messageview_visible_refile_actions_summary">Toon de geselecteerde acties in het Berichten-menu</string>
-    <string name="loading_attachment">Bijlage laden…</string>
+    <string name="global_settings_messageview_visible_refile_actions_summary">Geselecteerde acties in het berichtweergavemenu tonen</string>
+    <string name="loading_attachment">Bijlage aan het laden…</string>
     <string name="fetching_attachment_dialog_title_send">Bericht wordt verstuurd</string>
     <string name="fetching_attachment_dialog_title_save">Concept wordt opgeslagen</string>
-    <string name="fetching_attachment_dialog_message">Bijlage ophalen…</string>
+    <string name="fetching_attachment_dialog_message">Bijlage aan het ophalen…</string>
     <string name="auth_external_error">Kan niet authenticeren. De server ondersteunt geen SASL EXTERNAL. Dit kan komen door een probleem met het cliënt certificaat (verlopen of onbekende CA) of een ander configuratieprobleem.</string>
     <!--=== Client certificates specific ==================================================================-->
     <string name="account_setup_basics_client_certificate">Gebruik cliënt certificaat</string>
