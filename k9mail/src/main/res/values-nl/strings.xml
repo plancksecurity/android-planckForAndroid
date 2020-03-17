@@ -543,7 +543,7 @@
     <string name="folder_settings_folder_sync_mode_normal">Geen</string>
     <string name="folder_settings_folder_sync_mode_first_class">1e Klasse</string>
     <string name="folder_settings_folder_sync_mode_second_class">2e Klasse</string>
-    <string name="folder_settings_folder_sync_mode_inherited">Same as display class</string>
+    <string name="folder_settings_folder_sync_mode_inherited">Hetzelfde als weergaveklasse</string>
     <string name="folder_settings_folder_push_mode_label">Map push klasse</string>
     <string name="folder_settings_folder_push_mode_normal">Geen</string>
     <string name="folder_settings_folder_push_mode_first_class">1e Klasse</string>
@@ -628,7 +628,7 @@
     <string name="sort_by_attach">Bijlagen</string>
     <string name="account_delete_dlg_title">Verwijder Account</string>
     <string name="account_recreate_dlg_title">Account Opnieuw Aanmaken</string>
-    <string name="account_clear_dlg_title">Clear Account</string>
+    <string name="account_clear_dlg_title">Account wissen</string>
     <string name="provider_note_auonejp">Zorg ervoor dat IMAP of POP3 in de au one mail instellingen pagina aan staan.</string>
     <string name="provider_note_naver">Zorg ervoor dat IMAP of POP3 aan staan in de Naver mail instellingen pagina.</string>
     <string name="provider_note_hanmail">Zorg ervoor dat IMAP of POP3 aan staan in de Hanmail(Daum) installingen pagina.</string>
@@ -695,7 +695,7 @@
     <string name="hide_special_accounts_title">Verberg speciale accounts</string>
     <string name="hide_special_accounts_summary">Verberg de gecombineerde inbox and alle berichtaccounts</string>
     <string name="search_title"><xliff:g id="search_name">%1$s</xliff:g> <xliff:g id="modifier">%2$s</xliff:g></string>
-    <string name="flagged_modifier"> - Starred</string>
+    <string name="flagged_modifier">- Met ster</string>
     <string name="unread_modifier"> - Ongelezen</string>
     <string name="search_all_messages_title">Alle berichten</string>
     <string name="search_all_messages_detail">Alle berichten in doorzoekbare mappen</string>
@@ -788,7 +788,7 @@
     <string name="settings_import_success"><xliff:g id="accounts">%1$s</xliff:g> geimporteerd vanuit <xliff:g id="filename">%2$s</xliff:g></string>
     <plurals name="settings_import_accounts">
         <item quantity="one">1 account</item>
-        <item quantity="other"><xliff:g id="numAccounts">%s</xliff:g> accounts</item>
+        <item quantity="other">=== App-specific strings =============================================================</item>
     </plurals>
     <string name="settings_export_failure">Instellingen exporteren mislukt</string>
     <string name="settings_import_failure">Instellingen importeren mislukt vanuit <xliff:g id="filename">%s</xliff:g></string>
