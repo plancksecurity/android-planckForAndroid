@@ -699,92 +699,92 @@
     <string name="unread_modifier"> - Ongelezen</string>
     <string name="search_all_messages_title">Alle berichten</string>
     <string name="search_all_messages_detail">Alle berichten in doorzoekbare mappen</string>
-    <string name="integrated_inbox_title">Geïntegreerde Inbox</string>
-    <string name="integrated_inbox_detail">Alle berichten in geïntegreerde mappen</string>
+    <string name="integrated_inbox_title">Universele Inbox</string>
+    <string name="integrated_inbox_detail">Alle berichten in universele mappen</string>
     <string name="tap_hint">Tik de cirkel of ster aan voor ongelezen of gemarkeerde berichten</string>
-    <string name="folder_settings_include_in_integrated_inbox_label">Integreer</string>
-    <string name="folder_settings_include_in_integrated_inbox_summary">Ongelezen berichten worden weergegeven in de geïntegreerde Inbox</string>
+    <string name="folder_settings_include_in_integrated_inbox_label">Verenigen</string>
+    <string name="folder_settings_include_in_integrated_inbox_summary">Alle berichten worden getoond in de Universele Inbox</string>
     <string name="account_settings_searchable_label">Mappen om te doorzoeken</string>
     <string name="account_settings_searchable_all">Alle</string>
-    <string name="account_settings_searchable_displayable">Zichtbare</string>
+    <string name="account_settings_searchable_displayable">Zichtbaar</string>
     <string name="account_settings_searchable_none">Geen</string>
     <string name="font_size_settings_title">Lettergrootte</string>
     <string name="font_size_settings_description">Instellen lettergrootte</string>
     <string name="font_size_account_list">Account lijst</string>
     <string name="font_size_account_name">Account naam</string>
     <string name="font_size_account_description">Account beschrijving</string>
-    <string name="font_size_folder_list">Mappen lijst</string>
+    <string name="font_size_folder_list">Mappen lijsten</string>
     <string name="font_size_folder_name">Map naam</string>
     <string name="font_size_folder_status">Map status</string>
-    <string name="font_size_message_list">Berichten lijst</string>
-    <string name="font_size_message_list_subject">Bericht onderwerp</string>
-    <string name="font_size_message_list_sender">bericht afzender</string>
-    <string name="font_size_message_list_date">Bericht datum</string>
-    <string name="font_size_message_list_preview">Preview</string>
-    <string name="font_size_message_view">Beeld berichten</string>
-    <string name="font_size_message_view_sender">bericht afzender</string>
-    <string name="font_size_message_view_to">Bericht ontvanger (To)</string>
-    <string name="font_size_message_view_cc">Bericht ontvanger (CC)</string>
-    <string name="font_size_message_view_additional_headers">Extra koppen</string>
-    <string name="font_size_message_view_subject">Bericht onderwerp</string>
-    <string name="font_size_message_view_date">Bericht tijd en datum</string>
+    <string name="font_size_message_list">Berichtenlijsten</string>
+    <string name="font_size_message_list_subject">Onderwerp</string>
+    <string name="font_size_message_list_sender">Afzender</string>
+    <string name="font_size_message_list_date">Datum</string>
+    <string name="font_size_message_list_preview">Voorbeeld</string>
+    <string name="font_size_message_view">Berichten</string>
+    <string name="font_size_message_view_sender">Afzender</string>
+    <string name="font_size_message_view_to">Aan</string>
+    <string name="font_size_message_view_cc">Cc</string>
+    <string name="font_size_message_view_additional_headers">Extra headers</string>
+    <string name="font_size_message_view_subject">Onderwerp</string>
+    <string name="font_size_message_view_date">Tijd en datum</string>
     <string name="font_size_message_view_content">Bericht inhoud</string>
     <string name="font_size_message_view_content_summary"><xliff:g id="fontsize">%d</xliff:g>%%</string>
     <string name="font_size_message_view_content_dialog_title"><xliff:g id="title">%1$s</xliff:g>: <xliff:g id="summary">%2$s</xliff:g></string>
-    <string name="font_size_message_compose">Bericht opstellen</string>
+    <string name="font_size_message_compose">Bericht opstelling</string>
     <string name="font_size_message_compose_input">Tekst input velden</string>
     <string name="font_size_default">Standaard</string>
     <string name="font_size_tiniest">Kleinste</string>
-    <string name="font_size_tiny">Heel klein</string>
+    <string name="font_size_tiny">Heel Klein</string>
     <string name="font_size_smaller">Kleiner</string>
     <string name="font_size_small">Klein</string>
-    <string name="font_size_medium">Gemiddeld</string>
+    <string name="font_size_medium">Medium</string>
     <string name="font_size_large">Groot</string>
     <string name="font_size_larger">Groter</string>
-    <string name="miscellaneous_preferences">Diversen</string>
-    <string name="error_activity_not_found">Geen geschikte applicatie gevonden voor deze aktie.</string>
+    <string name="miscellaneous_preferences">Gemengd</string>
+    <string name="error_activity_not_found">Geen geschikte applicatie gevonden voor deze actie.</string>
     <string name="send_failed_reason">Verzenden mislukt: %s</string>
-    <string name="save_or_discard_draft_message_dlg_title">Ontwerp opslaan?</string>
-    <string name="save_or_discard_draft_message_instructions_fmt">Opslaan of negeren van dit bericht?</string>
+    <string name="save_or_discard_draft_message_dlg_title">Conceptbericht opslaan\?</string>
+    <string name="save_or_discard_draft_message_instructions_fmt">Dit bericht Opslaan of Afbreken\?</string>
     <string name="confirm_discard_draft_message_title">Bericht afbreken?</string>
     <string name="confirm_discard_draft_message">Weet je zeker dat je dit bericht wilt afbreken?</string>
-    <string name="select_text_now">Selecteer tekst om te kopieren.</string>
+    <string name="select_text_now">Selecteer tekst om te kopiëren.</string>
     <string name="dialog_confirm_delete_title">Bevestig verwijderen</string>
     <string name="dialog_confirm_delete_message">Wil je dit bericht verwijderen?</string>
     <plurals name="dialog_confirm_delete_messages">
         <item quantity="one">Wil je dit bericht echt verwijderen?</item>
         <item quantity="other">Wil je echt <xliff:g id="message_count">%1$d</xliff:g> berichten verwijderen?</item>
     </plurals>
-    <string name="dialog_confirm_delete_confirm_button">Verwijder</string>
-    <string name="dialog_confirm_delete_cancel_button">Niet verwijderen</string>
+    <string name="dialog_confirm_delete_confirm_button">Ja</string>
+    <string name="dialog_confirm_delete_cancel_button">Nee</string>
     <string name="dialog_confirm_mark_all_as_read_title">Markeer alles als gelezen</string>
     <string name="dialog_confirm_mark_all_as_read_message">Wil je alle berichten markeren als gelezen?</string>
     <string name="dialog_confirm_mark_all_as_read_confirm_button">Ja</string>
     <string name="dialog_confirm_mark_all_as_read_cancel_button">Nee</string>
     <string name="dialog_confirm_spam_title">Bevestig verplaatsing naar spam map</string>
     <plurals name="dialog_confirm_spam_message">
-        <item quantity="one">Wil je dit bericht echt verplaatsen naar de spam map?</item>
-        <item quantity="other">Wil je dit bericht echt verplaatsen naar de spam map?</item>
+        <item quantity="one">Wil je dit bericht echt verplaatsen naar de spam map\?</item>
+        <item quantity="other">=== App-specific strings =============================================================</item>
     </plurals>
     <string name="dialog_confirm_spam_confirm_button">Ja</string>
     <string name="dialog_confirm_spam_cancel_button">Nee</string>
-    <string name="dialog_attachment_progress_title">Bijlage wordt opgehaald</string>
-    <string name="debug_logging_enabled">Debug logging van Android logging systeem ingeschakeld</string>
+    <string name="dialog_attachment_progress_title">Bijlage wordt gedownload</string>
+    <string name="debug_logging_enabled">Logging voor foutopsporing ingeschakeld</string>
     <string name="messagelist_sent_to_me_sigil">»</string>
     <string name="messagelist_sent_cc_me_sigil">›</string>
-    <string name="import_export_action">Import &amp; Export instellingen</string>
+    <string name="import_export_action">Import &amp; Export Instellingen</string>
     <string name="settings_export_account">Export account instellingen</string>
     <string name="settings_export_all">Export instellingen en accounts</string>
-    <string name="settings_import_dialog_title">Import</string>
-    <string name="settings_export_dialog_title">Export</string>
-    <string name="settings_import">Import instellingen</string>
-    <string name="settings_import_selection">Import selectie</string>
-    <string name="settings_import_global_settings">Globale instellingen</string>
+    <string name="settings_import_dialog_title">Importeren</string>
+    <string name="settings_export_dialog_title">Exporteren</string>
+    <string name="settings_import">Instellingen importeren</string>
+    <string name="settings_import_selection">Selectie importeren</string>
+    <string name="settings_import_global_settings">Algemene instellingen</string>
     <string name="settings_exporting">Instellingen exporteren…</string>
     <string name="settings_importing">Instellingen importeren…</string>
-    <string name="settings_import_scanning_file">Bestanden scannen…</string>
-    <string name="settings_export_success">Geexporteerde instellingen opgeslagen in <xliff:g id="filename">%s</xliff:g></string>
-    <string name="settings_import_global_settings_success">Globale instellingen geimporteerd van <xliff:g id="filename">%s</xliff:g></string>
+    <string name="settings_import_scanning_file">Bestand scannen…</string>
+    <string name="settings_export_success">=== App-specific strings =============================================================</string>
+    <string name="settings_import_global_settings_success">Algemene instellingen geïmporteerd uit &lt;xliff: g xmlns: xliff = \"urn: oasis: names: tc: xliff: document: 1.2\" id = \"filename\"&gt;% s &lt;/ xliff: g&gt;<xliff:g id="filename">%s</xliff:g></string>
     <string name="settings_import_success"><xliff:g id="accounts">%1$s</xliff:g> geimporteerd vanuit <xliff:g id="filename">%2$s</xliff:g></string>
     <plurals name="settings_import_accounts">
         <item quantity="one">1 account</item>
@@ -792,12 +792,12 @@
     </plurals>
     <string name="settings_export_failure">Instellingen exporteren mislukt</string>
     <string name="settings_import_failure">Instellingen importeren mislukt vanuit <xliff:g id="filename">%s</xliff:g></string>
-    <string name="settings_export_success_header">Export gelukt</string>
-    <string name="settings_export_failed_header">Export mislukt</string>
-    <string name="settings_import_success_header">Import gelukt</string>
-    <string name="settings_import_failed_header">Import mislukt</string>
-    <string name="settings_import_activate_account_header">Activeer account</string>
-    <string name="settings_import_activate_account_intro">Om het account \"<xliff:g id="account">%1$s</xliff:g>\" te kunnen gebruiken is de <xliff:g id="server_passwords">%2$s</xliff:g> nodig.</string>
+    <string name="settings_export_success_header">Export is geslaagd</string>
+    <string name="settings_export_failed_header">Export is mislukt</string>
+    <string name="settings_import_success_header">Importer is geslaagd</string>
+    <string name="settings_import_failed_header">Import is mislukt</string>
+    <string name="settings_import_activate_account_header">Account activeren</string>
+    <string name="settings_import_activate_account_intro">Om het account \"&lt;xliff: g xmlns: xliff =\" te kunnen gebruiken urn: oasis: names: tc: xliff: document: 1.2 \"id =\" account \"&gt;% 1 $ s &lt;/ xliff: g&gt;\" te kunnen gebruiken is het nodig dat je de &lt;xliff: g xmlns: xliff = \"urn: oasis: names: tc: xliff: document: 1.2\" id = \"server_passwords\"&gt;% 2 $ s &lt;/ xliff: g&gt; opgeeft.<xliff:g id="account">%1$s</xliff:g>\" te kunnen gebruiken is de <xliff:g id="server_passwords">%2$s</xliff:g> nodig.</string>
     <plurals name="settings_import_server_passwords">
         <item quantity="one">server wachtwoord</item>
         <item quantity="other">server wachtwoorden</item>
@@ -805,40 +805,40 @@
     <string name="settings_import_incoming_server">Inkomende server (<xliff:g id="hostname">%s</xliff:g>):</string>
     <string name="settings_import_outgoing_server">Uitgaande server (<xliff:g id="hostname">%s</xliff:g>):</string>
     <plurals name="settings_import_setting_passwords">
-        <item quantity="one">Wachtwoord zetten…</item>
-        <item quantity="other">Wachtwoorden zetten…</item>
+        <item quantity="one">Wachtwoord instellen…</item>
+        <item quantity="other">Wachtwoorden instellen…</item>
     </plurals>
     <string name="settings_import_use_incoming_server_password">Gebruik het inkomende server wachtwoord</string>
     <string name="activate_account_action">Activeer</string>
     <string name="account_unavailable">Account \"<xliff:g id="account">%s</xliff:g>\" is niet beschikbaar; controleer opslag</string>
-    <string name="settings_attachment_default_path">Sla bijlagen op in...</string>
-    <string name="attachment_save_title">Sla bijlage op</string>
+    <string name="settings_attachment_default_path">Bijlagen opslaan in...</string>
+    <string name="attachment_save_title">Bijlage opslaan</string>
     <string name="attachment_save_desc">Geen bestandsverkenner gevonden. Waar wil je deze bijlage opslaan?</string>
     <string name="manage_accounts_move_up_action">Omhoog</string>
-    <string name="manage_accounts_move_down_action">Omlaag</string>
-    <string name="manage_accounts_moving_message">Account verhuizen…</string>
-    <string name="unread_widget_select_account">Laat ongelezen zien voor…</string>
-    <string name="import_dialog_error_title">Bestandsbeheer applicatie mist</string>
+    <string name="manage_accounts_move_down_action">Verplaats omlaag</string>
+    <string name="manage_accounts_moving_message">Account verplaatsen ...</string>
+    <string name="unread_widget_select_account">Toon ongelezen telling voor…</string>
+    <string name="import_dialog_error_title">Ontbrekende Applicatie Voor Bestandsbeheer</string>
     <string name="close">Sluiten</string>
     <string name="webview_empty_message">Geen tekst</string>
     <string name="webview_contextmenu_link_view_action">Open link</string>
-    <string name="webview_contextmenu_link_share_action">Deel link</string>
-    <string name="webview_contextmenu_link_copy_action">Kopieer link naar klembord</string>
+    <string name="webview_contextmenu_link_share_action">Link delen</string>
+    <string name="webview_contextmenu_link_copy_action">Link naar klembord kopiëren</string>
     <string name="webview_contextmenu_link_clipboard_label">Link</string>
     <string name="webview_contextmenu_image_title">Afbeelding</string>
-    <string name="webview_contextmenu_image_view_action">Afbeelding laten zien</string>
+    <string name="webview_contextmenu_image_view_action">Afbeelding tonen</string>
     <string name="webview_contextmenu_image_save_action">Afbeelding opslaan</string>
     <string name="webview_contextmenu_image_download_action">Afbeelding downloaden</string>
-    <string name="webview_contextmenu_image_copy_action">Kopieer afbeelding-URL naar klembord</string>
+    <string name="webview_contextmenu_image_copy_action">Afbeelding-URL naar klembord kopiëren</string>
     <string name="webview_contextmenu_image_clipboard_label">Afbeelding-URL</string>
     <string name="webview_contextmenu_phone_call_action">Bel nummer</string>
-    <string name="webview_contextmenu_phone_save_action">Opslaan in contacten</string>
-    <string name="webview_contextmenu_phone_copy_action">Kopieer nummer naar klembord</string>
+    <string name="webview_contextmenu_phone_save_action">Opslaan in Contacten</string>
+    <string name="webview_contextmenu_phone_copy_action">Nummer naar klembord kopiëren</string>
     <string name="webview_contextmenu_phone_clipboard_label">Telefoonnummer</string>
-    <string name="webview_contextmenu_email_send_action">Stuur mail</string>
-    <string name="webview_contextmenu_email_save_action">Opslaan in contacten</string>
-    <string name="webview_contextmenu_email_copy_action">Kopieer adres naar klembord</string>
-    <string name="webview_contextmenu_email_clipboard_label">Email adres</string>
+    <string name="webview_contextmenu_email_send_action">Mail sturen</string>
+    <string name="webview_contextmenu_email_save_action">Opslaan in Contacten</string>
+    <string name="webview_contextmenu_email_copy_action">Adres naar klembord kopiëren</string>
+    <string name="webview_contextmenu_email_clipboard_label">E-mailadres</string>
     <string name="image_saved_as">Afbeelding opgeslagen als \"<xliff:g id="filename">%s</xliff:g>\"</string>
     <string name="image_saving_failed">Afbeelding opslaan mislukt.</string>
     <string name="account_settings_remote_search_num_results_entries_all">Alle</string>
@@ -854,41 +854,41 @@
     <string name="remote_search_sending_query">Zoekopdracht naar server sturen</string>
     <string name="remote_search_downloading">%d resultaten ophalen</string>
     <string name="remote_search_downloading_limited">%1$d van %2$d resultaten ophalen</string>
-    <string name="remote_search_error">Zoekopdracht mislukt</string>
+    <string name="remote_search_error">Zoeken op afstand is mislukt</string>
     <string name="account_settings_search">Zoeken</string>
-    <string name="account_settings_remote_search_enabled">Server gebaseerd zoeken</string>
-    <string name="account_settings_remote_search_enabled_summary">Zoek berichten op de server en op je eigen toestel</string>
-    <string name="action_remote_search">Zoek berichten op server</string>
-    <string name="pull_to_refresh_remote_search_from_local_search_pull">Duw naar zoekserver…</string>
-    <string name="pull_to_refresh_remote_search_from_local_search_release">Laat los om op server te zoeken…</string>
-    <string name="remote_search_unavailable_no_network">Er is een netwerk verbinding nodig voor server zoeken.</string>
-    <string name="global_settings_background_as_unread_indicator_label">Dim berichten na lezen</string>
-    <string name="global_settings_background_as_unread_indicator_summary">Een grijze achtergrond geeft aan dat een bericht gelezen is</string>
-    <string name="global_settings_threaded_view_label">Gesprek overzicht</string>
+    <string name="account_settings_remote_search_enabled">Server zoeken inschakelen</string>
+    <string name="account_settings_remote_search_enabled_summary">Berichten zoeken op de server naast die al op je apparaat aanwezige</string>
+    <string name="action_remote_search">Berichten zoeken op server</string>
+    <string name="pull_to_refresh_remote_search_from_local_search_pull">Pull naar zoekserver…</string>
+    <string name="pull_to_refresh_remote_search_from_local_search_release">Vrijgeven voor zoekserver ...</string>
+    <string name="remote_search_unavailable_no_network">Een netwerkverbinding is vereist voor zoeken op de server.</string>
+    <string name="global_settings_background_as_unread_indicator_label">Verander de kleur bij het lezen</string>
+    <string name="global_settings_background_as_unread_indicator_summary">Een andere achtergrond laat zien dat het bericht is gelezen</string>
+    <string name="global_settings_threaded_view_label">Gespreksoverzicht</string>
     <string name="global_settings_threaded_view_summary">Groepeer berichten per gesprek</string>
     <string name="upgrade_databases_title">Databases bijwerken</string>
     <string name="upgrade_databases_unspecified">Databases bijwerken…</string>
     <string name="upgrade_database_format">Database van account \"<xliff:g id="account">%s</xliff:g>\" bijwerken</string>
-    <string name="message_list_loading">Laden…</string>
-    <string name="global_settings_splitview_mode_label">Split-screen laten zien</string>
+    <string name="message_list_loading">Bezig met laden…</string>
+    <string name="global_settings_splitview_mode_label">Split-screen tonen</string>
     <string name="global_settings_splitview_always">Altijd</string>
     <string name="global_settings_splitview_never">Nooit</string>
-    <string name="global_settings_splitview_when_in_landscape">In Landscape orientatie</string>
-    <string name="message_view_empty">Selecteer een bericht aan de linker kant</string>
-    <string name="global_settings_show_contact_picture_label">Laat contactafbeeldingen zien</string>
-    <string name="global_settings_show_contact_picture_summary">Laat contactafbeeldingen in de berichtenlijst zien</string>
-    <string name="last_refresh_time_format">Ververst <xliff:g id="formatted_time">%s</xliff:g></string>
-    <string name="last_refresh_time_format_with_push">Ververst <xliff:g id="time_with_preposition">%s</xliff:g> (Push actief)</string>
+    <string name="global_settings_splitview_when_in_landscape">In de liggende stand</string>
+    <string name="message_view_empty">Een bericht aan de linkerkant selecteren a.u.b.</string>
+    <string name="global_settings_show_contact_picture_label">Contactafbeeldingen tonen</string>
+    <string name="global_settings_show_contact_picture_summary">Contactafbeeldingen in de berichtenlijst tonen</string>
+    <string name="last_refresh_time_format">=== App-specific strings =============================================================</string>
+    <string name="last_refresh_time_format_with_push">=== App-specific strings =============================================================</string>
     <string name="preposition_for_date">op <xliff:g id="date">%s</xliff:g></string>
     <string name="mark_all_as_read">Markeer alles als gelezen</string>
     <string name="global_settings_colorize_missing_contact_pictures_label">Contactafbeeldingen kleuren</string>
-    <string name="global_settings_colorize_missing_contact_pictures_summary">Voorzie afwezige contactafbeeldingen van een kleur</string>
+    <string name="global_settings_colorize_missing_contact_pictures_summary">Afwezige contactafbeeldingen inkleuren</string>
     <string name="global_settings_messageview_visible_refile_actions_title">Zichtbare berichtacties</string>
-    <string name="global_settings_messageview_visible_refile_actions_summary">Toon de geselecteerde acties in het Berichten-menu</string>
-    <string name="loading_attachment">Bijlage laden…</string>
+    <string name="global_settings_messageview_visible_refile_actions_summary">Geselecteerde acties in het berichtweergavemenu tonen</string>
+    <string name="loading_attachment">Bijlage aan het laden…</string>
     <string name="fetching_attachment_dialog_title_send">Bericht wordt verstuurd</string>
     <string name="fetching_attachment_dialog_title_save">Concept wordt opgeslagen</string>
-    <string name="fetching_attachment_dialog_message">Bijlage ophalen…</string>
+    <string name="fetching_attachment_dialog_message">Bijlage aan het ophalen…</string>
     <string name="auth_external_error">Kan niet authenticeren. De server ondersteunt geen SASL EXTERNAL. Dit kan komen door een probleem met het cliënt certificaat (verlopen of onbekende CA) of een ander configuratieprobleem.</string>
     <!--=== Client certificates specific ==================================================================-->
     <string name="account_setup_basics_client_certificate">Gebruik cliënt certificaat</string>
@@ -981,7 +981,7 @@
     <string name="crypto_mode_opportunistic">Encrypten indien mogelijk</string>
     <string name="crypto_mode_disabled">Niet encrypten</string>
     <string name="account_setup_basics_oauth2_token">Gebruik OAuth 2.0 token (Google-accounts)</string>
-    <string name="settings_export_success_generic">Instellingen zijn geëxporteerd</string>
+    <string name="settings_export_success_generic">Instellingen succesvol geëxporteerd</string>
     <string name="account_settings_openpgp_missing">Ontbrekende OpenPGP app - is deze verwijderd\?</string>
     <string name="account_settings_no_openpgp_provider_configured">Geen OpenPGP app geconfigureerd</string>
     <string name="account_settings_crypto_summary_on">Verbonden met %s</string>
@@ -1061,14 +1061,6 @@
 \nOm deze te lezen, moet u een compatibele OpenPGP app installeren en configureren.</string>
     <string name="crypto_no_provider_title">Deze e-mail is versleuteld</string>
     <string name="no_crypto_provider_see_global">Geen OpenPGP app geconfigureerd, zie algemene instellingen!</string>
-    <string name="apg">APG</string>
-    <string name="apg_deprecated_ok">Ik snap het!</string>
-    <string name="apg_learn_more">=== App-specific strings =============================================================</string>
-    <string name="apg_deprecated_bullet_2">Bevat niet-opgeloste beveiligingsproblemen</string>
-    <string name="apg_deprecated_bullet_1">Begin 2014 is de ontwikkeling gestopt</string>
-    <string name="apg_deprecated_2">Hierdoor is de ondersteuning voor APG verwijderd uit K-9 Mail.</string>
-    <string name="apg_deprecated_1">APG wordt niet langer onderhouden!</string>
-    <string name="apg_deprecated_title">APG Beëindigingswaarschuwing</string>
     <string name="unsigned_text_divider_label">Niet-ondertekende Tekst</string>
     <string name="error_sign_only_no_encryption">Versleuteling niet beschikbaar in de modus alleen-ondertekenen!</string>
     <string name="account_settings_crypto_hide_sign_only_off">Alle handtekeningen worden weergegeven</string>

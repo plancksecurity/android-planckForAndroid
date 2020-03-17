@@ -989,14 +989,6 @@
 \nPara lê-lo, você precisa instalar e configurar um aplicativo OpenPGP compatível.</string>
     <string name="crypto_no_provider_title">Este email está encriptado</string>
     <string name="no_crypto_provider_see_global">Nenhum aplicativo OpenPGP configurado, veja as configurações globais!</string>
-    <string name="apg">APG</string>
-    <string name="apg_deprecated_ok">Entendi!</string>
-    <string name="apg_learn_more">=== App-specific strings =============================================================</string>
-    <string name="apg_deprecated_bullet_2">Contém problemas de segurança não corrigidos</string>
-    <string name="apg_deprecated_bullet_1">O desenvolvimento parou no início de 2014</string>
-    <string name="apg_deprecated_2">Por esse motivo, o suporte ao APG foi removido do K-9 Mail.</string>
-    <string name="apg_deprecated_1">O APG não é mais mantido!</string>
-    <string name="apg_deprecated_title">Aviso de descontinuação do APG</string>
     <string name="unsigned_text_divider_label">Texto não assinado</string>
     <string name="error_sign_only_no_encryption">Criptografia indisponível no modo somente assinatura!</string>
     <string name="account_settings_crypto_hide_sign_only_off">Todas as assinaturas serão exibidas</string>

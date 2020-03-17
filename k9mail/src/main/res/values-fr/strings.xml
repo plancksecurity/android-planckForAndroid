@@ -1046,4 +1046,6 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="status_no_background">Sync désactivée - Aucune activité en arrière-plan</string>
     <string name="pep_menu_short_trustwords">Afficher les Trustwords court</string>
     <string name="pep_menu_long_trustwords">Afficher les Trustwords long</string>
+    <string name="status_syncing_blocked">Synchronisation bloquée</string>
+    <string name="status_poll_and_push_disabled">Interroger et pousser désactivé</string>
 </resources>
