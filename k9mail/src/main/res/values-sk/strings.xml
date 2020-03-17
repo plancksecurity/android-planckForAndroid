@@ -422,9 +422,7 @@
     <string name="move_copy_cannot_copy_unsynced_message">Nemožno skopírovať alebo presunúť správu, ktorá nie je synchronizovaná so serverom</string>
     <string name="account_setup_failed_dlg_title">Nastavenie nemohlo byť dokončené</string>
     <string name="account_setup_failed_dlg_auth_message_fmt">Používateľské meno alebo heslo nie je správne.\n(<xliff:g id="error">%s</xliff:g>)</string>
-    <string name="account_setup_failed_dlg_certificate_message_fmt">Server predložil neplatný certifikát SSL. Niekedy je to kvôli nesprávnej konfigurácii servera. Niekedy je to preto, že sa niekto pokúša napadnúť vás alebo váš poštový server. Ak si nie ste istí, čo sa deje, kliknite na tlačidlo Odmietnuť a kontaktujte ľudí, ktorí spravujú váš poštový server.
-
-(<xliff:g xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" id="error">%s</xliff:g>)</string>
+    <string name="account_setup_failed_dlg_certificate_message_fmt">=== App-specific strings =============================================================</string>
     <string name="account_setup_failed_dlg_server_message_fmt">Nie je možné sa pripojiť k serveru.\n(<xliff:g id="error">%s</xliff:g>)</string>
     <string name="account_setup_failed_dlg_edit_details_action">Upraviť podrobnosti</string>
     <string name="account_setup_failed_dlg_continue_action">Pokračovať</string>
@@ -1036,7 +1034,7 @@
     <string name="status_poll_and_push_disabled">Polling a pushing sú zakázané</string>
     <string name="debug_delete_local_body">Ladenie / vymazanie tela správy</string>
     <string name="messageview_crypto_warning_show_anyway">Zobraziť správu napriek tomu</string>
-    <string name="messageview_crypto_warning_unsigned"/>
+    <string name="messageview_crypto_warning_unsigned">=== App-specific strings =============================================================</string>
     <string name="account_settings_crypto_hide_sign_only">Skryť nezašifrované podpisy</string>
     <string name="account_settings_crypto_hide_sign_only_on">Zobrazia sa iba šifrované podpisy</string>
     <string name="account_settings_crypto_hide_sign_only_off">Budú zobrazené všetky podpisy</string>
@@ -1058,7 +1056,7 @@
     <string name="dialog_autocrypt_mutual_title">Autocrypt vzájomný režim</string>
     <string name="dialog_autocrypt_mutual_description_1">Správy sa zvyčajne šifrujú podľa výberu alebo pri odpovedi na šifrovanú správu.</string>
     <string name="dialog_autocrypt_mutual_description_2">Ak odosielateľ aj príjemca povolia vzájomný režim, v predvolenom nastavení bude šifrovanie povolené.</string>
-    <string name="dialog_autocrypt_mutual_learn_more"/>
+    <string name="dialog_autocrypt_mutual_learn_more">=== App-specific strings =============================================================</string>
     <string name="general_settings_title">Všeobecné nastavenia</string>
     <string name="dialog_openkeychain_info_title">Nie je nainštalovaná žiadna aplikácia OpenPGP</string>
     <string name="dialog_openkeychain_info_install">Inštalovať</string>
