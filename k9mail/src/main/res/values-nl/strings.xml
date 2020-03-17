@@ -822,23 +822,23 @@
     <string name="close">Sluiten</string>
     <string name="webview_empty_message">Geen tekst</string>
     <string name="webview_contextmenu_link_view_action">Open link</string>
-    <string name="webview_contextmenu_link_share_action">Deel link</string>
-    <string name="webview_contextmenu_link_copy_action">Kopieer link naar klembord</string>
+    <string name="webview_contextmenu_link_share_action">Link delen</string>
+    <string name="webview_contextmenu_link_copy_action">Link naar klembord kopiëren</string>
     <string name="webview_contextmenu_link_clipboard_label">Link</string>
     <string name="webview_contextmenu_image_title">Afbeelding</string>
-    <string name="webview_contextmenu_image_view_action">Afbeelding laten zien</string>
+    <string name="webview_contextmenu_image_view_action">Afbeelding tonen</string>
     <string name="webview_contextmenu_image_save_action">Afbeelding opslaan</string>
     <string name="webview_contextmenu_image_download_action">Afbeelding downloaden</string>
-    <string name="webview_contextmenu_image_copy_action">Kopieer afbeelding-URL naar klembord</string>
+    <string name="webview_contextmenu_image_copy_action">Afbeelding-URL naar klembord kopiëren</string>
     <string name="webview_contextmenu_image_clipboard_label">Afbeelding-URL</string>
     <string name="webview_contextmenu_phone_call_action">Bel nummer</string>
-    <string name="webview_contextmenu_phone_save_action">Opslaan in contacten</string>
-    <string name="webview_contextmenu_phone_copy_action">Kopieer nummer naar klembord</string>
+    <string name="webview_contextmenu_phone_save_action">Opslaan in Contacten</string>
+    <string name="webview_contextmenu_phone_copy_action">Nummer naar klembord kopiëren</string>
     <string name="webview_contextmenu_phone_clipboard_label">Telefoonnummer</string>
-    <string name="webview_contextmenu_email_send_action">Stuur mail</string>
-    <string name="webview_contextmenu_email_save_action">Opslaan in contacten</string>
-    <string name="webview_contextmenu_email_copy_action">Kopieer adres naar klembord</string>
-    <string name="webview_contextmenu_email_clipboard_label">Email adres</string>
+    <string name="webview_contextmenu_email_send_action">Mail sturen</string>
+    <string name="webview_contextmenu_email_save_action">Opslaan in Contacten</string>
+    <string name="webview_contextmenu_email_copy_action">Adres naar klembord kopiëren</string>
+    <string name="webview_contextmenu_email_clipboard_label">E-mailadres</string>
     <string name="image_saved_as">Afbeelding opgeslagen als \"<xliff:g id="filename">%s</xliff:g>\"</string>
     <string name="image_saving_failed">Afbeelding opslaan mislukt.</string>
     <string name="account_settings_remote_search_num_results_entries_all">Alle</string>
@@ -854,35 +854,35 @@
     <string name="remote_search_sending_query">Zoekopdracht naar server sturen</string>
     <string name="remote_search_downloading">%d resultaten ophalen</string>
     <string name="remote_search_downloading_limited">%1$d van %2$d resultaten ophalen</string>
-    <string name="remote_search_error">Zoekopdracht mislukt</string>
+    <string name="remote_search_error">Zoeken op afstand is mislukt</string>
     <string name="account_settings_search">Zoeken</string>
-    <string name="account_settings_remote_search_enabled">Server gebaseerd zoeken</string>
-    <string name="account_settings_remote_search_enabled_summary">Zoek berichten op de server en op je eigen toestel</string>
-    <string name="action_remote_search">Zoek berichten op server</string>
-    <string name="pull_to_refresh_remote_search_from_local_search_pull">Duw naar zoekserver…</string>
-    <string name="pull_to_refresh_remote_search_from_local_search_release">Laat los om op server te zoeken…</string>
-    <string name="remote_search_unavailable_no_network">Er is een netwerk verbinding nodig voor server zoeken.</string>
-    <string name="global_settings_background_as_unread_indicator_label">Dim berichten na lezen</string>
-    <string name="global_settings_background_as_unread_indicator_summary">Een grijze achtergrond geeft aan dat een bericht gelezen is</string>
-    <string name="global_settings_threaded_view_label">Gesprek overzicht</string>
+    <string name="account_settings_remote_search_enabled">Server zoeken inschakelen</string>
+    <string name="account_settings_remote_search_enabled_summary">Berichten zoeken op de server naast die al op je apparaat aanwezige</string>
+    <string name="action_remote_search">Berichten zoeken op server</string>
+    <string name="pull_to_refresh_remote_search_from_local_search_pull">Pull naar zoekserver…</string>
+    <string name="pull_to_refresh_remote_search_from_local_search_release">Vrijgeven voor zoekserver ...</string>
+    <string name="remote_search_unavailable_no_network">Een netwerkverbinding is vereist voor zoeken op de server.</string>
+    <string name="global_settings_background_as_unread_indicator_label">Verander de kleur bij het lezen</string>
+    <string name="global_settings_background_as_unread_indicator_summary">Een andere achtergrond laat zien dat het bericht is gelezen</string>
+    <string name="global_settings_threaded_view_label">Gespreksoverzicht</string>
     <string name="global_settings_threaded_view_summary">Groepeer berichten per gesprek</string>
     <string name="upgrade_databases_title">Databases bijwerken</string>
     <string name="upgrade_databases_unspecified">Databases bijwerken…</string>
     <string name="upgrade_database_format">Database van account \"<xliff:g id="account">%s</xliff:g>\" bijwerken</string>
-    <string name="message_list_loading">Laden…</string>
-    <string name="global_settings_splitview_mode_label">Split-screen laten zien</string>
+    <string name="message_list_loading">Bezig met laden…</string>
+    <string name="global_settings_splitview_mode_label">Split-screen tonen</string>
     <string name="global_settings_splitview_always">Altijd</string>
     <string name="global_settings_splitview_never">Nooit</string>
-    <string name="global_settings_splitview_when_in_landscape">In Landscape orientatie</string>
-    <string name="message_view_empty">Selecteer een bericht aan de linker kant</string>
-    <string name="global_settings_show_contact_picture_label">Laat contactafbeeldingen zien</string>
-    <string name="global_settings_show_contact_picture_summary">Laat contactafbeeldingen in de berichtenlijst zien</string>
-    <string name="last_refresh_time_format">Ververst <xliff:g id="formatted_time">%s</xliff:g></string>
-    <string name="last_refresh_time_format_with_push">Ververst <xliff:g id="time_with_preposition">%s</xliff:g> (Push actief)</string>
+    <string name="global_settings_splitview_when_in_landscape">In de liggende stand</string>
+    <string name="message_view_empty">Een bericht aan de linkerkant selecteren a.u.b.</string>
+    <string name="global_settings_show_contact_picture_label">Contactafbeeldingen tonen</string>
+    <string name="global_settings_show_contact_picture_summary">Contactafbeeldingen in de berichtenlijst tonen</string>
+    <string name="last_refresh_time_format">=== App-specific strings =============================================================</string>
+    <string name="last_refresh_time_format_with_push">=== App-specific strings =============================================================</string>
     <string name="preposition_for_date">op <xliff:g id="date">%s</xliff:g></string>
     <string name="mark_all_as_read">Markeer alles als gelezen</string>
     <string name="global_settings_colorize_missing_contact_pictures_label">Contactafbeeldingen kleuren</string>
-    <string name="global_settings_colorize_missing_contact_pictures_summary">Voorzie afwezige contactafbeeldingen van een kleur</string>
+    <string name="global_settings_colorize_missing_contact_pictures_summary">Afwezige contactafbeeldingen inkleuren</string>
     <string name="global_settings_messageview_visible_refile_actions_title">Zichtbare berichtacties</string>
     <string name="global_settings_messageview_visible_refile_actions_summary">Toon de geselecteerde acties in het Berichten-menu</string>
     <string name="loading_attachment">Bijlage laden…</string>
