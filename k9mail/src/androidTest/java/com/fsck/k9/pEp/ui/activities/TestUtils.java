@@ -1611,8 +1611,11 @@ public class TestUtils {
                                 Espresso.onIdle();
                             }
                             device.waitForIdle();
+                            Espresso.onIdle();
                             return;
                         } catch (Exception ex1) {
+                            device.waitForIdle();
+                            Espresso.onIdle();
                             return;
                         }
                     }
@@ -1621,8 +1624,6 @@ public class TestUtils {
                 }
             }
         }
-        device.waitForIdle();
-        Espresso.onIdle();
     }
 
     void doWait(String viewId) {
