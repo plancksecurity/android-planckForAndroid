@@ -1012,14 +1012,6 @@
     <string name="openpgp_inline_ok">Got it!</string>
     <string name="openpgp_inline_disable">Disable</string>
     <string name="openpgp_inline_keep_enabled">Keep Enabled</string>
-    <string name="apg_deprecated_title">APG Deprecation Warning</string>
-    <string name="apg_deprecated_1">APG is no longer maintained!</string>
-    <string name="apg_deprecated_2">Because of this, support for APG has been removed from K-9 Mail.</string>
-    <string name="apg_deprecated_bullet_1">Development stopped in early 2014</string>
-    <string name="apg_deprecated_bullet_2">Contains unfixed security issues</string>
-    <string name="apg_learn_more">You can <a href="https://k9mail.github.io/2017/01/13/Why-APG-is-no-longer-supported.html">click here</a> to learn more.</string>
-    <string name="apg_deprecated_ok">Got it!</string>
-    <string name="apg">APG</string>
     <string name="no_crypto_provider_see_global">No OpenPGP app configured, see global settings!</string>
     <string name="crypto_no_provider_title">This email is encrypted</string>
     <string name="crypto_no_provider_message">This email has been encrypted with OpenPGP.\nTo read it, you need to install and configure a compatible OpenPGP App.</string>

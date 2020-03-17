@@ -1061,14 +1061,6 @@
 \nOm deze te lezen, moet u een compatibele OpenPGP app installeren en configureren.</string>
     <string name="crypto_no_provider_title">Deze e-mail is versleuteld</string>
     <string name="no_crypto_provider_see_global">Geen OpenPGP app geconfigureerd, zie algemene instellingen!</string>
-    <string name="apg">APG</string>
-    <string name="apg_deprecated_ok">Ik snap het!</string>
-    <string name="apg_learn_more">=== App-specific strings =============================================================</string>
-    <string name="apg_deprecated_bullet_2">Bevat niet-opgeloste beveiligingsproblemen</string>
-    <string name="apg_deprecated_bullet_1">Begin 2014 is de ontwikkeling gestopt</string>
-    <string name="apg_deprecated_2">Hierdoor is de ondersteuning voor APG verwijderd uit K-9 Mail.</string>
-    <string name="apg_deprecated_1">APG wordt niet langer onderhouden!</string>
-    <string name="apg_deprecated_title">APG Beëindigingswaarschuwing</string>
     <string name="unsigned_text_divider_label">Niet-ondertekende Tekst</string>
     <string name="error_sign_only_no_encryption">Versleuteling niet beschikbaar in de modus alleen-ondertekenen!</string>
     <string name="account_settings_crypto_hide_sign_only_off">Alle handtekeningen worden weergegeven</string>
