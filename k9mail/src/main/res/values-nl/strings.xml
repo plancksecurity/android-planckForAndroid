@@ -748,43 +748,43 @@
     <string name="save_or_discard_draft_message_instructions_fmt">Dit bericht Opslaan of Afbreken\?</string>
     <string name="confirm_discard_draft_message_title">Bericht afbreken?</string>
     <string name="confirm_discard_draft_message">Weet je zeker dat je dit bericht wilt afbreken?</string>
-    <string name="select_text_now">Selecteer tekst om te kopieren.</string>
+    <string name="select_text_now">Selecteer tekst om te kopiëren.</string>
     <string name="dialog_confirm_delete_title">Bevestig verwijderen</string>
     <string name="dialog_confirm_delete_message">Wil je dit bericht verwijderen?</string>
     <plurals name="dialog_confirm_delete_messages">
         <item quantity="one">Wil je dit bericht echt verwijderen?</item>
         <item quantity="other">Wil je echt <xliff:g id="message_count">%1$d</xliff:g> berichten verwijderen?</item>
     </plurals>
-    <string name="dialog_confirm_delete_confirm_button">Verwijder</string>
-    <string name="dialog_confirm_delete_cancel_button">Niet verwijderen</string>
+    <string name="dialog_confirm_delete_confirm_button">Ja</string>
+    <string name="dialog_confirm_delete_cancel_button">Nee</string>
     <string name="dialog_confirm_mark_all_as_read_title">Markeer alles als gelezen</string>
     <string name="dialog_confirm_mark_all_as_read_message">Wil je alle berichten markeren als gelezen?</string>
     <string name="dialog_confirm_mark_all_as_read_confirm_button">Ja</string>
     <string name="dialog_confirm_mark_all_as_read_cancel_button">Nee</string>
     <string name="dialog_confirm_spam_title">Bevestig verplaatsing naar spam map</string>
     <plurals name="dialog_confirm_spam_message">
-        <item quantity="one">Wil je dit bericht echt verplaatsen naar de spam map?</item>
-        <item quantity="other">Wil je dit bericht echt verplaatsen naar de spam map?</item>
+        <item quantity="one">Wil je dit bericht echt verplaatsen naar de spam map\?</item>
+        <item quantity="other">=== App-specific strings =============================================================</item>
     </plurals>
     <string name="dialog_confirm_spam_confirm_button">Ja</string>
     <string name="dialog_confirm_spam_cancel_button">Nee</string>
-    <string name="dialog_attachment_progress_title">Bijlage wordt opgehaald</string>
-    <string name="debug_logging_enabled">Debug logging van Android logging systeem ingeschakeld</string>
+    <string name="dialog_attachment_progress_title">Bijlage wordt gedownload</string>
+    <string name="debug_logging_enabled">Logging voor foutopsporing ingeschakeld</string>
     <string name="messagelist_sent_to_me_sigil">»</string>
     <string name="messagelist_sent_cc_me_sigil">›</string>
-    <string name="import_export_action">Import &amp; Export instellingen</string>
+    <string name="import_export_action">Import &amp; Export Instellingen</string>
     <string name="settings_export_account">Export account instellingen</string>
     <string name="settings_export_all">Export instellingen en accounts</string>
-    <string name="settings_import_dialog_title">Import</string>
-    <string name="settings_export_dialog_title">Export</string>
-    <string name="settings_import">Import instellingen</string>
-    <string name="settings_import_selection">Import selectie</string>
-    <string name="settings_import_global_settings">Globale instellingen</string>
+    <string name="settings_import_dialog_title">Importeren</string>
+    <string name="settings_export_dialog_title">Exporteren</string>
+    <string name="settings_import">Instellingen importeren</string>
+    <string name="settings_import_selection">Selectie importeren</string>
+    <string name="settings_import_global_settings">Algemene instellingen</string>
     <string name="settings_exporting">Instellingen exporteren…</string>
     <string name="settings_importing">Instellingen importeren…</string>
-    <string name="settings_import_scanning_file">Bestanden scannen…</string>
-    <string name="settings_export_success">Geexporteerde instellingen opgeslagen in <xliff:g id="filename">%s</xliff:g></string>
-    <string name="settings_import_global_settings_success">Globale instellingen geimporteerd van <xliff:g id="filename">%s</xliff:g></string>
+    <string name="settings_import_scanning_file">Bestand scannen…</string>
+    <string name="settings_export_success">=== App-specific strings =============================================================</string>
+    <string name="settings_import_global_settings_success">Algemene instellingen geïmporteerd uit &lt;xliff: g xmlns: xliff = \"urn: oasis: names: tc: xliff: document: 1.2\" id = \"filename\"&gt;% s &lt;/ xliff: g&gt;<xliff:g id="filename">%s</xliff:g></string>
     <string name="settings_import_success"><xliff:g id="accounts">%1$s</xliff:g> geimporteerd vanuit <xliff:g id="filename">%2$s</xliff:g></string>
     <plurals name="settings_import_accounts">
         <item quantity="one">1 account</item>
@@ -792,12 +792,12 @@
     </plurals>
     <string name="settings_export_failure">Instellingen exporteren mislukt</string>
     <string name="settings_import_failure">Instellingen importeren mislukt vanuit <xliff:g id="filename">%s</xliff:g></string>
-    <string name="settings_export_success_header">Export gelukt</string>
-    <string name="settings_export_failed_header">Export mislukt</string>
-    <string name="settings_import_success_header">Import gelukt</string>
-    <string name="settings_import_failed_header">Import mislukt</string>
-    <string name="settings_import_activate_account_header">Activeer account</string>
-    <string name="settings_import_activate_account_intro">Om het account \"<xliff:g id="account">%1$s</xliff:g>\" te kunnen gebruiken is de <xliff:g id="server_passwords">%2$s</xliff:g> nodig.</string>
+    <string name="settings_export_success_header">Export is geslaagd</string>
+    <string name="settings_export_failed_header">Export is mislukt</string>
+    <string name="settings_import_success_header">Importer is geslaagd</string>
+    <string name="settings_import_failed_header">Import is mislukt</string>
+    <string name="settings_import_activate_account_header">Account activeren</string>
+    <string name="settings_import_activate_account_intro">Om het account \"&lt;xliff: g xmlns: xliff =\" te kunnen gebruiken urn: oasis: names: tc: xliff: document: 1.2 \"id =\" account \"&gt;% 1 $ s &lt;/ xliff: g&gt;\" te kunnen gebruiken is het nodig dat je de &lt;xliff: g xmlns: xliff = \"urn: oasis: names: tc: xliff: document: 1.2\" id = \"server_passwords\"&gt;% 2 $ s &lt;/ xliff: g&gt; opgeeft.<xliff:g id="account">%1$s</xliff:g>\" te kunnen gebruiken is de <xliff:g id="server_passwords">%2$s</xliff:g> nodig.</string>
     <plurals name="settings_import_server_passwords">
         <item quantity="one">server wachtwoord</item>
         <item quantity="other">server wachtwoorden</item>
@@ -805,20 +805,20 @@
     <string name="settings_import_incoming_server">Inkomende server (<xliff:g id="hostname">%s</xliff:g>):</string>
     <string name="settings_import_outgoing_server">Uitgaande server (<xliff:g id="hostname">%s</xliff:g>):</string>
     <plurals name="settings_import_setting_passwords">
-        <item quantity="one">Wachtwoord zetten…</item>
-        <item quantity="other">Wachtwoorden zetten…</item>
+        <item quantity="one">Wachtwoord instellen…</item>
+        <item quantity="other">Wachtwoorden instellen…</item>
     </plurals>
     <string name="settings_import_use_incoming_server_password">Gebruik het inkomende server wachtwoord</string>
     <string name="activate_account_action">Activeer</string>
     <string name="account_unavailable">Account \"<xliff:g id="account">%s</xliff:g>\" is niet beschikbaar; controleer opslag</string>
-    <string name="settings_attachment_default_path">Sla bijlagen op in...</string>
-    <string name="attachment_save_title">Sla bijlage op</string>
+    <string name="settings_attachment_default_path">Bijlagen opslaan in...</string>
+    <string name="attachment_save_title">Bijlage opslaan</string>
     <string name="attachment_save_desc">Geen bestandsverkenner gevonden. Waar wil je deze bijlage opslaan?</string>
     <string name="manage_accounts_move_up_action">Omhoog</string>
-    <string name="manage_accounts_move_down_action">Omlaag</string>
-    <string name="manage_accounts_moving_message">Account verhuizen…</string>
-    <string name="unread_widget_select_account">Laat ongelezen zien voor…</string>
-    <string name="import_dialog_error_title">Bestandsbeheer applicatie mist</string>
+    <string name="manage_accounts_move_down_action">Verplaats omlaag</string>
+    <string name="manage_accounts_moving_message">Account verplaatsen ...</string>
+    <string name="unread_widget_select_account">Toon ongelezen telling voor…</string>
+    <string name="import_dialog_error_title">Ontbrekende Applicatie Voor Bestandsbeheer</string>
     <string name="close">Sluiten</string>
     <string name="webview_empty_message">Geen tekst</string>
     <string name="webview_contextmenu_link_view_action">Open link</string>
@@ -981,7 +981,7 @@
     <string name="crypto_mode_opportunistic">Encrypten indien mogelijk</string>
     <string name="crypto_mode_disabled">Niet encrypten</string>
     <string name="account_setup_basics_oauth2_token">Gebruik OAuth 2.0 token (Google-accounts)</string>
-    <string name="settings_export_success_generic">Instellingen zijn geëxporteerd</string>
+    <string name="settings_export_success_generic">Instellingen succesvol geëxporteerd</string>
     <string name="account_settings_openpgp_missing">Ontbrekende OpenPGP app - is deze verwijderd\?</string>
     <string name="account_settings_no_openpgp_provider_configured">Geen OpenPGP app geconfigureerd</string>
     <string name="account_settings_crypto_summary_on">Verbonden met %s</string>
