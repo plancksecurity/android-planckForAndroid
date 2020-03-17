@@ -89,7 +89,7 @@
     <string name="cancel_action">Zrušiť</string>
     <string name="send_action">Odoslať</string>
     <string name="send_again_action">Odoslať znovu</string>
-    <string name="empty_subject">Predmet správy je prázdny, kliknite ešte raz pre odoslanie s prázdnym predmetom.</string>
+    <string name="empty_subject">Predmet správy je prázdny, kliknite ešte raz pre odoslanie s prázdnym predmetom</string>
     <string name="select_action">Vybrať</string>
     <string name="deselect_action">Zrušiť výber</string>
     <string name="reply_action">Odpovedať</string>
