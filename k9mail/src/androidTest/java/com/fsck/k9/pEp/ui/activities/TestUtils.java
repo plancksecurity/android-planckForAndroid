@@ -1105,12 +1105,14 @@ public class TestUtils {
     }
 
     public void pressBack() {
+        Espresso.onIdle();
         device.waitForIdle();
         waitUntilIdle();
         if (exists(onView(withId(R.id.toolbar)))) {
             onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
         }
         onView(isRoot()).perform(ViewActions.pressBack());
+        Espresso.onIdle();
         device.waitForIdle();
     }
 
@@ -1602,7 +1604,10 @@ public class TestUtils {
                         try {
                             while (object.getText().equals(resources.getString(resource))) {
                                 device.waitForIdle();
+                                Espresso.onIdle();
                                 object.longClick();
+                                device.waitForIdle();
+                                Espresso.onIdle();
                             }
                             device.waitForIdle();
                             return;
