@@ -16,7 +16,7 @@
         android:layout_height="56dp"
         android:background="@drawable/selectable_item_background"
         android:clickable="true"
-        android:padding="8dp"
+        android:padding="16dp"
         android:src="?attr/iconActionDownload"
         app:layout_constraintBottom_toBottomOf="@+id/attachment_info"
         app:layout_constraintStart_toStartOf="parent"
