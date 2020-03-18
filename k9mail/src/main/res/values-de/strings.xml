@@ -1029,4 +1029,5 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="switch_off">Aus</string>
     <string name="app_authors">The K-9 Dog Walkers, p≡p Security S.A.</string>
     <string name="app_license">Lizenziert unter der Apache-Lizenz, Version 2.0.</string>
+    <string name="app_copyright_fmt">=== App-specific strings =============================================================</string>
 </resources>
