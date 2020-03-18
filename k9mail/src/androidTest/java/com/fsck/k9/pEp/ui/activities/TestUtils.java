@@ -2269,7 +2269,11 @@ public class TestUtils {
         onView(withId(R.id.subject)).perform(click());
     }
 
-
+    public void scrollToCehckBoxAndCheckIt(boolean up, int view) {
+        scrollToView(resources.getString(view));
+        checkBoxOnScreenChecked(view, false);
+        checkBoxOnScreenChecked(view, true);
+    }
     public void scrollToView (String text){
         UiObject textView = device.findObject(new UiSelector().text(text).className("android.widget.TextView"));
             device.waitForIdle();
