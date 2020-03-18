@@ -2274,6 +2274,12 @@ public class TestUtils {
         checkBoxOnScreenChecked(view, false);
         checkBoxOnScreenChecked(view, true);
     }
+
+    public void scrollToViewAndClickIt(int view) {
+        selectFromScreen(view);
+        scrollToView(resources.getString(view));
+    }
+
     public void scrollToView (String text){
         UiObject textView = device.findObject(new UiSelector().text(text).className("android.widget.TextView"));
             device.waitForIdle();
