@@ -2269,21 +2269,15 @@ public class TestUtils {
         onView(withId(R.id.subject)).perform(click());
     }
 
-    public void scrollToView (boolean up, String text){
+
+    public void scrollToView (String text){
         UiObject textView = device.findObject(new UiSelector().text(text).className("android.widget.TextView"));
-        UiObject listContainer = device.findObject(new UiSelector().resourceId("security.pEp.debug:id/generalSettingsContainer"));
-        while (!textView.exists()) {
             device.waitForIdle();
             Espresso.onIdle();
-            try {
-                if (up) {
-                    listContainer.swipeUp(100);
-                } else {
-                    listContainer.swipeDown(100);
-                }
-            } catch (UiObjectNotFoundException e) {
-                e.printStackTrace();
-            }
+        try {
+            textView.dragTo(500,500,30);
+        } catch (UiObjectNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
