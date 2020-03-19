@@ -1738,7 +1738,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                                     || account.ispEpPrivacyProtected() && (result.rating != Rating.pEpRatingUndefined
                                     || message.getFrom().length > 0 && message.getFrom()[0].getAddress() == null))
                                     ) {
-                                MimeMessage decryptedMessage = result.msg;
+                                MimeMessage decryptedMessage = alreadyDecrypted ? ((MimeMessage) message) : result.msg;
                                 if (message.getFolder().getName().equals(account.getSentFolderName())
                                         || message.getFolder().getName().equals(account.getDraftsFolderName())) {
                                     decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getRating(message)));
@@ -1748,14 +1748,14 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
 
                                 decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
 
-                                if (!alreadyDecrypted) {                    // Store the updated message locally
+                                // Store the updated message locally
                                     final LocalMessage localMessage = localFolder.storeSmallMessage(decryptedMessage, new Runnable() {
                                         @Override
                                         public void run() {
                                             progress.incrementAndGet();
                                         }
                                     });
-                                    if (controller.shouldDownloadMessageInTrustedServer(result, decryptedMessage, account)) {
+                                    if (controller.shouldReuploadMessageInTrustedServer(result, decryptedMessage, account, alreadyDecrypted)) {
                                         appendMessageCommand(account, localMessage, localFolder);
                                     }
                                     Timber.d("pep", "in download loop (nr=" + number + ") post pep");// Increment the number of "new messages" if the newly downloaded message is
@@ -1780,7 +1780,6 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                                         // Notify with the localMessage so that we don't have to recalculate the content preview.
                                         notificationController.addNewMailNotification(account, localMessage, unreadBeforeStart);
                                     }
-                                }
                             }
                         } catch (MessagingException | RuntimeException me) {
                             Timber.e(me, "SYNC: fetch small messages");

@@ -19,11 +19,15 @@ import timber.log.Timber;
 
 class TrustedMessageController {
 
-    boolean shouldDownloadMessageInTrustedServer(PEpProvider.DecryptResult result, MimeMessage decryptedMessage, Account account) {
+    boolean shouldReuploadMessageInTrustedServer(PEpProvider.DecryptResult result,
+                                                 MimeMessage decryptedMessage,
+                                                 Account account,
+                                                 boolean alreadyDecrypted) {
         return account.ispEpPrivacyProtected()
                 && !account.isUntrustedSever()
                 && result.flags == -1
-                && !decryptedMessage.isSet(Flag.X_PEP_NEVER_UNSECURE);
+                && !decryptedMessage.isSet(Flag.X_PEP_NEVER_UNSECURE)
+                && !alreadyDecrypted;
     }
 
     <T extends Message> boolean shouldAppendMessageInTrustedServer(T message, Account account) {
