@@ -42,7 +42,7 @@ public class PEpStatusPresenterTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        PEpIdentityMapper pEpIdentityMapper = new PEpIdentityMapper();
+        PEpIdentityMapper pEpIdentityMapper = new PEpIdentityMapper(provider);
         presenter = new PEpStatusPresenter(simpleMessageLoaderHelper,
                 pEpIdentityMapper);
         presenterSpy = spy(presenter);

@@ -2,30 +2,32 @@ package com.fsck.k9.ui.messageview;
 
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.helper.SizeFormatter;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 
+import timber.log.Timber;
 
-public class AttachmentView extends FrameLayout implements OnClickListener, OnLongClickListener {
+
+public class AttachmentView extends ConstraintLayout {
     private AttachmentViewInfo attachment;
     private AttachmentViewCallback callback;
 
-    private Button viewButton;
     private ImageView downloadButton;
-    private View attachmentContainer;
-
 
     public AttachmentView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -39,46 +41,42 @@ public class AttachmentView extends FrameLayout implements OnClickListener, OnLo
         super(context);
     }
 
+    private void init() {
+        downloadButton = findViewById(R.id.download);
+    }
+
     public AttachmentViewInfo getAttachment() {
         return attachment;
     }
 
+    public void setAttachment(AttachmentViewInfo attachment) {
+        this.attachment = attachment;
+        displayAttachmentInformation();
+    }
+
     public void enableButtons() {
-        viewButton.setEnabled(true);
         downloadButton.setEnabled(true);
     }
 
     public void disableButtons() {
-        viewButton.setEnabled(false);
         downloadButton.setEnabled(false);
     }
 
-    public void setAttachment(AttachmentViewInfo attachment) {
-        this.attachment = attachment;
-
-        displayAttachmentInformation();
-    }
-
     private void displayAttachmentInformation() {
-        attachmentContainer = findViewById(R.id.attachment_container);
-        viewButton = (Button) findViewById(R.id.view);
-        downloadButton = (ImageView) findViewById(R.id.download);
+        init();
 
         if (attachment.size > K9.MAX_ATTACHMENT_DOWNLOAD_SIZE) {
-            viewButton.setVisibility(View.GONE);
             downloadButton.setVisibility(View.GONE);
         }
 
-        attachmentContainer.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onViewClick();
-            }
+        setOnClickListener(v -> onViewClick());
+        downloadButton.setOnClickListener(v -> onSaveButtonClick());
+        downloadButton.setOnLongClickListener(v -> {
+            onSaveButtonLongClick();
+            return true;
         });
-        downloadButton.setOnClickListener(this);
-        downloadButton.setOnLongClickListener(this);
 
-        TextView attachmentName = (TextView) findViewById(R.id.attachment_name);
+        TextView attachmentName = findViewById(R.id.attachment_name);
         attachmentName.setText(attachment.displayName);
 
         setAttachmentSize(attachment.size);
@@ -87,33 +85,13 @@ public class AttachmentView extends FrameLayout implements OnClickListener, OnLo
     }
 
     private void setAttachmentSize(long size) {
-        TextView attachmentSize = (TextView) findViewById(R.id.attachment_info);
+        TextView attachmentSize = findViewById(R.id.attachment_info);
         if (size == AttachmentViewInfo.UNKNOWN_SIZE) {
             attachmentSize.setText("");
         } else {
             String text = SizeFormatter.formatSize(getContext(), size);
             attachmentSize.setText(text);
         }
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.download: {
-                onSaveButtonClick();
-                break;
-            }
-        }
-    }
-
-    @Override
-    public boolean onLongClick(View view) {
-        if (view.getId() == R.id.download) {
-            onSaveButtonLongClick();
-            return true;
-        }
-
-        return false;
     }
 
     private void onViewClick() {
@@ -133,11 +111,25 @@ public class AttachmentView extends FrameLayout implements OnClickListener, OnLo
     }
 
     public void refreshThumbnail() {
-        ImageView thumbnailView = (ImageView) findViewById(R.id.attachment_icon);
+        ImageView thumbnailView = findViewById(R.id.attachment_icon);
         Glide.with(getContext())
                 .load(attachment.internalUri)
-                .placeholder(R.drawable.attached_image_placeholder)
+                .placeholder(ContextCompat.getDrawable(getContext(), R.drawable.ic_file_light))
                 .centerCrop()
-                .into(thumbnailView);
+                .listener(new RequestListener<Uri, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        Timber.e(e);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, Uri model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        thumbnailView.setPadding(0, 0, 0, 0);
+                        return false;
+                    }
+                })
+                .into(thumbnailView)
+        ;
     }
 }

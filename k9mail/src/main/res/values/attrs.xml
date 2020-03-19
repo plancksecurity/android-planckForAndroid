@@ -33,6 +33,8 @@
         <attr name="iconActionAdd" format="reference" />
         <attr name="iconActionImportExport" format="reference" />
         <attr name="iconActionUpload" format="reference" />
+        <attr name="iconActionDownload" format="reference" />
+        <attr name="iconFile" format="reference" />
         <attr name="iconActionSelectAll" format="reference" />
         <attr name="iconActionSave" format="reference" />
         <attr name="iconActionCancel" format="reference" />

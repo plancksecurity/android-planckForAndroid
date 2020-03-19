@@ -43,6 +43,8 @@
         <item name="iconActionAdd">@drawable/ic_plus_light</item>
         <item name="iconActionImportExport">@drawable/ic_arrow_up_down_light</item>
         <item name="iconActionUpload">@drawable/ic_file_upload_light</item>
+        <item name="iconActionDownload">@drawable/ic_file_download_light</item>
+        <item name="iconFile">@drawable/ic_file_light</item>
         <item name="iconActionSelectAll">@drawable/ic_select_all_light</item>
         <item name="iconActionSave">@drawable/ic_floppy_light</item>
         <item name="iconActionCancel">@drawable/ic_clear_light</item>
@@ -139,6 +141,8 @@
         <item name="iconActionAdd">@drawable/ic_plus_dark</item>
         <item name="iconActionImportExport">@drawable/ic_arrow_up_down_dark</item>
         <item name="iconActionUpload">@drawable/ic_file_upload_dark</item>
+        <item name="iconActionDownload">@drawable/ic_file_download_dark</item>
+        <item name="iconFile">@drawable/ic_file_dark</item>
         <item name="iconActionSelectAll">@drawable/ic_select_all_dark</item>
         <item name="iconActionSave">@drawable/ic_floppy_dark</item>
         <item name="iconActionCancel">@drawable/ic_clear_dark</item>
@@ -271,6 +275,8 @@
         <item name="iconActionAdd">@drawable/ic_plus_light</item>
         <item name="iconActionImportExport">@drawable/ic_arrow_up_down_light</item>
         <item name="iconActionUpload">@drawable/ic_file_upload_light</item>
+        <item name="iconActionDownload">@drawable/ic_file_download_light</item>
+        <item name="iconFile">@drawable/ic_file_light</item>
         <item name="iconActionSelectAll">@drawable/ic_select_all_light</item>
         <item name="iconActionSave">@drawable/ic_floppy_light</item>
         <item name="iconActionCancel">@drawable/ic_clear_light</item>
@@ -358,6 +364,8 @@
         <item name="iconActionAdd">@drawable/ic_file_upload_dark</item>
         <item name="iconActionImportExport">@drawable/ic_arrow_up_down_dark</item>
         <item name="iconActionUpload">@drawable/ic_file_upload_dark</item>
+        <item name="iconActionDownload">@drawable/ic_file_download_dark</item>
+        <item name="iconFile">@drawable/ic_file_dark</item>
         <item name="iconActionSelectAll">@drawable/ic_select_all_dark</item>
         <item name="iconActionSave">@drawable/ic_floppy_dark</item>
         <item name="iconActionCancel">@drawable/ic_clear_dark</item>
