@@ -226,7 +226,7 @@
     <string name="intro_frag_second_header_1">Secure</string>
     <string name="intro_frag_second_header_2"><![CDATA[Secure & Trusted]]></string>
     <string name="intro_frag_second_header_3">Mistrusted</string>
-    <string name="intro_frag_second_text_1">With this Privacy Status all communication is Secure, but to confirm that your contact is really the person you know, you should verify this contact by comparing the Trustwords.</string>
+    <string name="intro_frag_second_text_1">With this Privacy Status all communication is Secure, but to confirm that your contact is really the person you know, you should compare the Trustwords with this contact.</string>
     <string name="intro_frag_second_text_2">When the Trustwords are confirmed to be correct and the Handshake is done, the communication will be completely secure and trusted.</string>
     <string name="intro_frag_second_text_3">If the Trustwords are not correct, your communication is Mistrusted.</string>
     <string name="intro_frag_third_text_1">Handshake</string>
