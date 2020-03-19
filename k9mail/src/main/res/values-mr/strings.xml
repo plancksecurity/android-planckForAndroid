@@ -1010,14 +1010,6 @@
     <string name="openpgp_inline_ok"/>
     <string name="openpgp_inline_disable">Disable</string>
     <string name="openpgp_inline_keep_enabled"/>
-    <string name="apg_deprecated_title"/>
-    <string name="apg_deprecated_1"/>
-    <string name="apg_deprecated_2"/>
-    <string name="apg_deprecated_bullet_1"/>
-    <string name="apg_deprecated_bullet_2"/>
-    <string name="apg_learn_more"><a href="https://k9mail.github.io/2017/01/13/Why-APG-is-no-longer-supported.html">click here</a> to learn more.</string>
-    <string name="apg_deprecated_ok"/>
-    <string name="apg"/>
     <string name="no_crypto_provider_see_global"/>
     <string name="crypto_no_provider_title"/>
     <string name="crypto_no_provider_message"/>
