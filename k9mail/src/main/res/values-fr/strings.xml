@@ -76,19 +76,12 @@
     <string name="choose_folder_title">Choisir un dossier</string>
     <string name="status_loading_account_folder">=== App-specific strings =============================================================</string>
     <string name="status_loading_account_folder_headers">=== App-specific strings =============================================================</string>
-    <string name="status_sending_account">Envoi <xliff:g id="account">%s</xliff:g>
-        <xliff:g id="progress">%s</xliff:g>
-    </string>
-    <string name="status_processing_account">Prép <xliff:g id="account">%s</xliff:g>:<xliff:g id="command">%s</xliff:g>
-        <xliff:g id="progress">%s</xliff:g>
-    </string>
-    <string name="folder_progress">\u0020<xliff:g id="completed">%d</xliff:g>/<xliff:g id="total">%d</xliff:g>
-    </string>
-    <string name="status_next_poll">Prochaine récup. <xliff:g id="nexttime">%s</xliff:g>
-    </string>
+    <string name="status_sending_account">=== App-specific strings =============================================================</string>
+    <string name="status_processing_account">=== App-specific strings =============================================================</string>
+    <string name="folder_progress">=== App-specific strings =============================================================</string>
+    <string name="status_next_poll">=== App-specific strings =============================================================</string>
     <string name="status_syncing_off">Synchronisation désactivée</string>
-    <string name="actionbar_selected">
-        <xliff:g id="selection_count">%d</xliff:g> sélectionné(s)</string>
+    <string name="actionbar_selected">=== App-specific strings =============================================================</string>
     <string name="next_action">Suivant</string>
     <string name="previous_action">Précédent</string>
     <!--Used to confirm acceptance of dialog boxes, warnings, errors, etc.-->
@@ -166,22 +159,17 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="abbrev_megabytes">Mo</string>
     <string name="abbrev_kilobytes">ko</string>
     <string name="abbrev_bytes">o</string>
-    <string name="account_size_changed">Compte «\u00A0<xliff:g id="account">%s</xliff:g>\u00A0» rétréci de <xliff:g id="oldSize">%s</xliff:g> à <xliff:g id="newSize">%s</xliff:g>
-    </string>
+    <string name="account_size_changed">=== App-specific strings =============================================================</string>
     <string name="compacting_account">Compactage du compte «\u00A0<xliff:g id="account">%s</xliff:g>\u00A0»</string>
     <string name="clearing_account">Effacement du compte «\u00A0<xliff:g id="account">%s</xliff:g>\u00A0»</string>
     <string name="recreating_account">Recréation du compte «\u00A0<xliff:g id="account">%s</xliff:g>\u00A0»</string>
     <string name="notification_new_title">Nouveau courriel</string>
     <plurals name="notification_new_messages_title">
-        <item quantity="one">
-            <xliff:g id="new_message_count">%d</xliff:g> nouveau message</item>
-        <item quantity="other">
-            <xliff:g id="new_message_count">%d</xliff:g> nouveaux messages</item>
+        <item quantity="one">=== App-specific strings =============================================================</item>
+        <item quantity="other">=== App-specific strings =============================================================</item>
     </plurals>
-    <string name="notification_new_one_account_fmt">
-        <xliff:g id="unread_message_count">%d</xliff:g> non lus (<xliff:g id="account">%s</xliff:g>)</string>
-    <string name="notification_additional_messages">+ <xliff:g id="additional_messages">%1$d</xliff:g> de plus sur <xliff:g id="account">%2$s</xliff:g>
-    </string>
+    <string name="notification_new_one_account_fmt">=== App-specific strings =============================================================</string>
+    <string name="notification_additional_messages">=== App-specific strings =============================================================</string>
     <string name="notification_action_reply">Répondre</string>
     <string name="notification_action_mark_as_read">Marquer comme lu</string>
     <string name="notification_action_mark_all_as_read">Tout marquer comme lu</string>
@@ -194,11 +182,9 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="notification_certificate_error_text">Vérifier vos paramètres de serveur</string>
     <string name="notification_authentication_error_title">Échec d\'authentification</string>
     <string name="notification_authentication_error_text">Échec d\'authentification pour <xliff:g id="account">%s</xliff:g>. Mettre à jour les paramètres du serveur.</string>
-    <string name="notification_bg_sync_ticker">Relève des courriels\u00A0: <xliff:g id="account">%s</xliff:g>:<xliff:g id="folder">%s</xliff:g>
-    </string>
+    <string name="notification_bg_sync_ticker">=== App-specific strings =============================================================</string>
     <string name="notification_bg_sync_title">Relève des courriels</string>
-    <string name="notification_bg_send_ticker">Envoi du courriel\u00A0: <xliff:g id="account">%s</xliff:g>
-    </string>
+    <string name="notification_bg_send_ticker">=== App-specific strings =============================================================</string>
     <string name="notification_bg_send_title">Envoi du courriel</string>
     <string name="notification_bg_title_separator">:</string>
     <string name="special_mailbox_name_inbox">Boîte de réception</string>
@@ -208,26 +194,19 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="special_mailbox_name_sent">Envoyés</string>
     <string name="special_mailbox_name_archive">Archive</string>
     <string name="special_mailbox_name_spam">Pourriel</string>
-    <string name="special_mailbox_name_drafts_fmt">
-        <xliff:g id="folder">%s</xliff:g> (Brouillons)</string>
-    <string name="special_mailbox_name_trash_fmt">
-        <xliff:g id="folder">%s</xliff:g> (Corbeille)</string>
-    <string name="special_mailbox_name_sent_fmt">
-        <xliff:g id="folder">%s</xliff:g> (Envoyés)</string>
-    <string name="special_mailbox_name_archive_fmt">
-        <xliff:g id="folder">%s</xliff:g> (Archive)</string>
-    <string name="special_mailbox_name_spam_fmt">
-        <xliff:g id="folder">%s</xliff:g> (Spam)</string>
+    <string name="special_mailbox_name_drafts_fmt">=== App-specific strings =============================================================</string>
+    <string name="special_mailbox_name_trash_fmt">=== App-specific strings =============================================================</string>
+    <string name="special_mailbox_name_sent_fmt">=== App-specific strings =============================================================</string>
+    <string name="special_mailbox_name_archive_fmt">=== App-specific strings =============================================================</string>
+    <string name="special_mailbox_name_spam_fmt">=== App-specific strings =============================================================</string>
     <string name="send_failure_subject">Échec lors de l\'envoi de certains messages</string>
-    <string name="debug_version_fmt">Version\u00A0: <xliff:g id="version">%s</xliff:g>
-    </string>
+    <string name="debug_version_fmt">=== App-specific strings =============================================================</string>
     <string name="debug_enable_debug_logging_title">Activer le journal de débogage</string>
     <string name="debug_enable_debug_logging_summary">Journaliser les informations de diagnostic supplémentaires</string>
     <string name="debug_enable_sensitive_logging_title">Journaliser les informations délicates</string>
     <string name="debug_enable_sensitive_logging_summary">Pourrait montrer les mots de passe dans les journaux.</string>
     <string name="message_list_load_more_messages_action">Charger plus de messages</string>
-    <string name="message_to_fmt">À\u00A0: <xliff:g id="counterParty">%s</xliff:g>
-    </string>
+    <string name="message_to_fmt">=== App-specific strings =============================================================</string>
     <string name="message_compose_subject_hint">Objet</string>
     <string name="message_compose_content_hint">Texte du message</string>
     <string name="message_compose_signature_hint">Signature</string>
@@ -237,8 +216,7 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="message_compose_quote_header_from">De\u00A0:</string>
     <string name="message_compose_quote_header_to">À\u00A0:</string>
     <string name="message_compose_quote_header_cc">Cc\u00A0:</string>
-    <string name="message_compose_reply_header_fmt">
-        <xliff:g id="sender">%s</xliff:g> a écrit\u00A0:</string>
+    <string name="message_compose_reply_header_fmt">=== App-specific strings =============================================================</string>
     <string name="message_compose_reply_header_fmt_with_date">Le <xliff:g id="sent_date">%1$s</xliff:g>, <xliff:g id="sender">%2$s</xliff:g> a écrit :</string>
     <string name="message_compose_error_no_recipients">Vous devez ajouter au moins un destinataire.</string>
     <string name="compose_error_incomplete_recipient">Le champ des destinataires contient une entrée incomplète !</string>
@@ -395,8 +373,7 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="account_setup_outgoing_password_label">Mot de passe</string>
     <string name="account_setup_outgoing_authentication_label">Authentification</string>
     <string name="account_setup_outgoing_invalid_setting_combo_notice">« <xliff:g id="setting_1_label">%1$s</xliff:g> = <xliff:g id="setting_1_value">%2$s</xliff:g> » n\'est pas valide avec \"<xliff:g id="setting_2_label">%3$s</xliff:g> = <xliff:g id="setting_2_value">%4$s</xliff:g> »</string>
-    <string name="account_setup_bad_uri">Paramétrage invalide\u00A0: <xliff:g id="err_mess">%s</xliff:g>
-    </string>
+    <string name="account_setup_bad_uri">=== App-specific strings =============================================================</string>
     <string name="account_setup_options_title">Options du compte</string>
     <string name="compact_action">Compacter le compte</string>
     <string name="clear_action">Vider les messages (danger\u00A0!)</string>
@@ -723,10 +700,7 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="count_search_summary">Désactiver pour un affichage plus rapide</string>
     <string name="hide_special_accounts_title">Masquer les comptes spéciaux</string>
     <string name="hide_special_accounts_summary">Masquer la boîte de réception unifiée et tous les comptes de messages</string>
-    <string name="search_title">
-        <xliff:g id="search_name">%s</xliff:g>
-        <xliff:g id="modifier">%s</xliff:g>
-    </string>
+    <string name="search_title">=== App-specific strings =============================================================</string>
     <string name="flagged_modifier"> - Étoilés</string>
     <string name="unread_modifier"> - Non lu</string>
     <string name="search_all_messages_title">Tous les messages</string>
@@ -761,11 +735,8 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="font_size_message_view_subject">Objet</string>
     <string name="font_size_message_view_date">Horodatage</string>
     <string name="font_size_message_view_content">Corps du message</string>
-    <string name="font_size_message_view_content_summary">
-        <xliff:g id="fontsize">%d</xliff:g>%%</string>
-    <string name="font_size_message_view_content_dialog_title">
-        <xliff:g id="title">%1$s</xliff:g>: <xliff:g id="summary">%2$s</xliff:g>
-    </string>
+    <string name="font_size_message_view_content_summary">=== App-specific strings =============================================================</string>
+    <string name="font_size_message_view_content_dialog_title">=== App-specific strings =============================================================</string>
     <string name="font_size_message_compose">Composition de message</string>
     <string name="font_size_message_compose_input">Champ de saisie de texte</string>
     <string name="font_size_default">Par défaut</string>
@@ -783,7 +754,7 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="save_or_discard_draft_message_instructions_fmt">Enregistrer ou jeter ce message\u00A0?</string>
     <string name="confirm_discard_draft_message_title">Jeter le message\u00A0?</string>
     <string name="confirm_discard_draft_message">Voulez-vous vraiment jeter ce message\u00A0?</string>
-    <string name="select_text_now">Sélectionner le texte à copier</string>
+    <string name="select_text_now">Sélectionner le texte à copier.</string>
     <string name="dialog_confirm_delete_title">Confirmer la suppression</string>
     <string name="dialog_confirm_delete_message">Voulez-vous supprimer ce message\u00A0?</string>
     <plurals name="dialog_confirm_delete_messages">
@@ -818,20 +789,15 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="settings_exporting">Exportation des paramètres…</string>
     <string name="settings_importing">Importation des paramètres…</string>
     <string name="settings_import_scanning_file">Analyse du fichier…</string>
-    <string name="settings_export_success">Paramètres exportés vers <xliff:g id="filename">%s</xliff:g>
-    </string>
-    <string name="settings_import_global_settings_success">Paramètres globaux importés depuis <xliff:g id="filename">%s</xliff:g>
-    </string>
-    <string name="settings_import_success">Importé <xliff:g id="accounts">%s</xliff:g> depuis <xliff:g id="filename">%s</xliff:g>
-    </string>
+    <string name="settings_export_success">=== App-specific strings =============================================================</string>
+    <string name="settings_import_global_settings_success">=== App-specific strings =============================================================</string>
+    <string name="settings_import_success">=== App-specific strings =============================================================</string>
     <plurals name="settings_import_accounts">
         <item quantity="one">1 compte</item>
-        <item quantity="other">
-            <xliff:g id="numAccounts">%s</xliff:g> comptes</item>
+        <item quantity="other">=== App-specific strings =============================================================</item>
     </plurals>
     <string name="settings_export_failure">Échec lors de l\'exportation des paramètres</string>
-    <string name="settings_import_failure">Échec lors de l\'importation des paramètres de <xliff:g id="filename">%s</xliff:g>
-    </string>
+    <string name="settings_import_failure">=== App-specific strings =============================================================</string>
     <string name="settings_export_success_header">Exportation réussie</string>
     <string name="settings_export_failed_header">Exportation échouée</string>
     <string name="settings_import_success_header">Importation réussie</string>
@@ -917,11 +883,9 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="message_view_empty">Veuillez choisir un message sur la gauche</string>
     <string name="global_settings_show_contact_picture_label">Afficher les images des contacts</string>
     <string name="global_settings_show_contact_picture_summary">Afficher les images des contacts dans la liste des messages</string>
-    <string name="last_refresh_time_format">Rafraîchi <xliff:g id="formatted_time">%s</xliff:g>
-    </string>
+    <string name="last_refresh_time_format">=== App-specific strings =============================================================</string>
     <string name="last_refresh_time_format_with_push">Rafraîchi <xliff:g id="time_with_preposition">%s</xliff:g> (pousser activé)</string>
-    <string name="preposition_for_date">le <xliff:g id="date">%s</xliff:g>
-    </string>
+    <string name="preposition_for_date">=== App-specific strings =============================================================</string>
     <string name="mark_all_as_read">Tout marquer comme lu</string>
     <string name="global_settings_colorize_missing_contact_pictures_label">Colorer les images des contacts</string>
     <string name="global_settings_colorize_missing_contact_pictures_summary">Colorer les images manquantes des contacts</string>
@@ -938,7 +902,7 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="client_certificate_spinner_delete">Enlever le choix de certificat client</string>
     <string name="client_certificate_retrieval_failure">=== App-specific strings =============================================================</string>
     <string name="client_certificate_advanced_options">Options avancées</string>
-    <string name="client_certificate_expired">Le certificat client \« <xliff:g id="certificate_alias">%1$s</xliff:g>\ » est expiré ou n\'est pas encore valide (<xliff:g id="exception_message">%2$s</xliff:g>)</string>
+    <string name="client_certificate_expired">=== App-specific strings =============================================================</string>
     <!--Note: This references message_view_download_remainder-->
     <string name="preview_encrypted">*Chiffré*</string>
     <string name="add_from_contacts">Ajouter à partir des contacts</string>
@@ -960,7 +924,7 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="crypto_mode_opportunistic">Chiffrer si possible</string>
     <string name="crypto_mode_private">Chiffrer</string>
     <string name="error_crypto_provider_connect">Impossible de se connecter au fournisseur cryptographique, vérifier vos paramètres ou cliquer sur l\'icône Cryptographie pour ressayer !</string>
-    <string name="error_crypto_provider_ui_required">L\'accès au fournisseur cryptographique est refusé, cliquer sur l\'icône Cryptographie pour ressayer !</string>
+    <string name="error_crypto_provider_ui_required">L\'accès au fournisseur cryptographique est refusé, cliquer sur l\'icône Cryptographie pour ressayer</string>
     <string name="error_crypto_inline_attach">Le mode PGP/INTÉGRÉ ne prend pas en charge les fichiers joints !</string>
     <string name="enable_inline_pgp">Activer PGP/INTÉGRÉ</string>
     <string name="disable_inline_pgp">Désactiver PGP/INTÉGRÉ</string>
@@ -1008,21 +972,17 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="locked_attach_unlock">Déverrrouiller</string>
     <string name="locked_attach_unencrypted">Cette partie n\'a pas été chiffrée et pourrait ne pas être fiable.</string>
     <string name="locked_attach_title">Pièce jointe non protégée</string>
-    <string name="message_progress_text">Chargement...</string>
+    <string name="message_progress_text">Chargement…</string>
     <string name="messageview_decrypt_cancelled">Le déchiffrement a été annulé.</string>
     <string name="messageview_decrypt_retry">Ressayer</string>
     <string name="messageview_decrypt_incomplete">Le message chiffré doit être téléchargé pour être déchiffré.</string>
     <string name="messageview_crypto_error_title">Erreur de déchiffrement du courriel</string>
     <string name="messageview_crypto_warning_title">Avertissement de sécurité</string>
-    <string name="messageview_crypto_warning_revoked">Ce message a été signé par une <b>clef révoquée !</b>
-    </string>
-    <string name="messageview_crypto_warning_expired">Ce message a été signé par une <b>clef arrivée à expiration !</b>
-    </string>
-    <string name="messageview_crypto_warning_insecure">Ce message a été signé par une <b>clef non fiable !</b>
-    </string>
-    <string name="messageview_crypto_warning_error">Il y a une <b>erreur dans la signature de ce message !</b>
-    </string>
-    <string name="recipient_error_non_ascii">Les caractères spéciaux ne sont actuellement pas pris en charge</string>
+    <string name="messageview_crypto_warning_revoked">=== App-specific strings =============================================================</string>
+    <string name="messageview_crypto_warning_expired">=== App-specific strings =============================================================</string>
+    <string name="messageview_crypto_warning_insecure">=== App-specific strings =============================================================</string>
+    <string name="messageview_crypto_warning_error">=== App-specific strings =============================================================</string>
+    <string name="recipient_error_non_ascii">Les caractères spéciaux ne sont actuellement pas pris en charge !</string>
     <string name="recipient_error_parse_failed">Erreur d\'analyse de l\'adresse !</string>
     <string name="error_sign_only_no_encryption">Le chiffrement n\'est pas proposé en mode signature-seulement !</string>
     <string name="unsigned_text_divider_label">Texte non signé</string>
@@ -1033,7 +993,7 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="global_settings_confirm_menu_mark_all_read">Marquer tous les messages comme lus</string>
     <string name="account_setup_auth_type_xoauth2">Jeton OAuth 2.0</string>
     <string name="status_no_network">Sync désactivé - Pas de réseau</string>
-    <string name="openpgp_enabled_error_back">Back</string>
+    <string name="openpgp_enabled_error_back">Retour</string>
     <string name="status_no_background">Sync désactivée - Aucune activité en arrière-plan</string>
     <string name="pep_menu_short_trustwords">Afficher les Trustwords court</string>
     <string name="pep_menu_long_trustwords">Afficher les Trustwords long</string>
