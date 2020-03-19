@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <!-- Unstranslatable strings -->
@@ -11,8 +10,6 @@
     <string name="pEp_trustwords">p≡p Trustwords</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_user_name_format" translatable="false">%1$s</string>
-
-
     <string-array name="pep_states">
         <item>pEpRatingUndefined</item>
         <item>pEpRatingCannotDecrypt</item>
@@ -28,7 +25,6 @@
         <item>pEpRatingB0rken</item>
         <item>pEpRatingUnderAttack</item>
     </string-array>
-
     <array name="pep_color">
         <item>@color/pep_no_color<!--pEpRatingUndefined--></item>
         <item>@color/pep_no_color<!--pEpRatingCannotDecrypt--></item>
@@ -44,19 +40,14 @@
         <item>@color/pep_red<!--pEpRatingB0rken--></item>
         <item>@color/pep_red<!--pEpRatingUnderAttack--></item>
     </array>
-
     <!-- Translatable strings -->
-
     <string name="pep_account_setup_generating_keys">"Setting up your Privacy by Default "</string>
     <string name="pep_reset_trust">Stop trusting</string>
     <string name="pep_pgp_fingerprint">PGP Fingerprint</string>
-
     <string name="pep_dialog_weaker_forward_warning_message">You\'re about to forward a secure message as unsecure. If you choose to proceed, confidential information might be leaked putting you and your communication partners at risk. Are you sure you want to continue? </string>
-
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Proceed</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancel</string>
     <string name="pep_dialog_confirm_forward_title">Confirm forward</string>
-
     <string name="pep_title_activity_privacy_status">Privacy Status</string>
     <string name="pep_extra_addresses">Extra key ids:</string>
     <string name="pep_use_keyserver">Look up keys on key server</string>
@@ -64,11 +55,10 @@
     <string name="pep_subject_unprotected">Unprotected message subjects</string>
     <string name="pep_add_key_to_blacklist">Add a key to blacklist</string>
     <string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>
-
     <string name="pep_confirm_trustwords">Confirm</string>
     <string name="pep_wrong_trustwords">Reject</string>
     <string name="pep_wrong_fingerprint">Wrong fingerprint</string>
-    <string name="pep_ask_trustwords">Ask your partner in person or over the phone: What are your trustwords? Then compare to the correct answer shown below.</string>
+    <string name="pep_ask_trustwords">Ask your partner in person or over the phone: What are your Trustwords\? Then compare to the correct answer shown below.</string>
     <string name="pep_complete_partner_format">Partner\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_partner_format">Partner\n%1$s</string>
     <string name="pep_complete_myself_format">Myself\n%1$s &lt;%2$s&gt;</string>
@@ -95,7 +85,7 @@
     <string name="message_list_item_removed">Removed</string>
     <string name="message_list_item_undo">UNDO</string>
     <string name="available_accounts_title">Available accounts</string>
-    <string name="pep_app_description">K-9/p≡p is a powerful free email client for Android with pretty Easy privacy.</string>
+    <string name="pep_app_description">p≡p is a powerful email client for Android with pretty Easy privacy.</string>
     <string name="app_k9_pep_name">"K-9/p≡p "</string>
     <string name="global_settings_title">Global settings</string>
     <string name="configure_account_action">Manage accounts</string>
@@ -114,7 +104,6 @@
     <string name="read_snackbar_permission_rationale">We need your permission to read the contacts stored on your mobile phone</string>
     <string name="read_snackbar_permission_permanently_denied">Not allowing us read your contacts may cause unexpected behaviour</string>
     <string name="read_permission_rationale_title">Reading contacts</string>
-
     <string name="download_permission_first_explanation">We need your permission to download files on your mobile phone</string>
     <string name="download_snackbar_permission_rationale">We need your permission to save attachments from your emails.</string>
     <string name="download_snackbar_permission_permanently_denied">Not allowing us download files may cause unexpected behaviour</string>
@@ -132,8 +121,7 @@
     <string name="add_account_message">To be able to use this account you should add it to your device</string>
     <string name="account_already_exists">Account already exists</string>
     <string name="device_offline_warning">Your device seems to be offline, please check your connection before you can continue</string>
-    <string name="permissions_needed_message">Not granting the needed permissions may cause unexpected behaviours. Press OK to grant them to us.</string>
-
+    <string name="permissions_needed_message">Not granting the needed permissions may cause unexpected behaviors. Press OK to grant them to us.</string>
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>
         <item>Cannot Decrypt<!--pEpRatingCannotDecrypt--></item>
@@ -149,7 +137,6 @@
         <item>Ooops: Internal problem<!--pEpRatingB0rken--></item>
         <item>Under Attack<!--pEpRatingUnderAttack--></item>
     </string-array>
-
     <string-array name="pep_explanation">
         <item>This message does not contain enough information to determine if it is secure.<!--pEpRatingUndefined--></item>
         <item>This message cannot be decrypted.<!--pEpRatingCannotDecrypt--></item>
@@ -165,7 +152,6 @@
         <item><!--pEpRatingB0rken--></item>
         <item>This message is not secure and has been tampered with.<!--pEpRatingUnderAttack--></item>
     </string-array>
-
     <string-array name="pep_suggestion">
         <item>Please add the necessary information.<!--pEpRatingUndefined--></item>
         <item>If this message was addressed to you, please inform the sender that you don\'t have the key.<!--pEpRatingCannotDecrypt--></item>
@@ -181,27 +167,23 @@
         <item><!--pEpRatingB0rken--></item>
         <item>Separately verify the content of this message with your communication partner.<!--pEpRatingUnderAttack--></item>
     </string-array>
-
     <string name="nnf_new_folder">New folder</string>
     <string name="nnf_create_folder_error">Failed to create folder</string>
     <string name="nnf_name">Name</string>
     <string name="nnf_select_something_first">Please select something first</string>
     <string name="nnf_need_valid_filename">Please enter or select a valid filename</string>
-    <string name="nnf_permission_external_write_denied">Permisson to access filesystem denied</string>
+    <string name="nnf_permission_external_write_denied">Permission to access filesystem denied</string>
     <string name="nnf_filename">Filename</string>
-
     <string name="key_import_accept">Accept</string>
     <string name="key_import_reject">Reject</string>
     <string name="key_import_accept_feedback">Key replaced</string>
     <string name="key_import_reject_feedback">Key rejected</string>
     <string name="message_loading_error">Message rating is still loading, try again</string>
-
     <string name="pep_sync">p≡p sync</string>
     <string name="pep_sync_enable_account">Synchronize this account</string>
     <string name="pep_sync_is_enabled_global">p≡p sync is enabled</string>
     <string name="pep_sync_is_disabled_global"> p≡p sync is disabled</string>
     <string name="pep_sync_leave_device_group">Leave Device group</string>
-
     <string name="open_pgp">OpenPGP</string>
     <string name="pgp">PGP</string>
     <string name="key_import_wizard_handshake_explanation">Please compare the following Trustwords with the ones on your other device and confirm if they match.</string>
@@ -222,7 +204,6 @@
     <string name="key_import_failure">Failed to import and use any key from %1$s with key id: %2$s</string>
     <string name="key_import_success">%1$s Key imported successfully from %2$s</string>
     <string name="key_import_from_fs_input_fpr">Please enter the Key ID or the fingerprint of the key.</string>
-
     <string name="reset">Reset</string>
     <string name="reset_all">Reset all</string>
     <string name="key_reset_for_identity_context_title">Reset all p≡p data for this communication partner:</string>
@@ -230,54 +211,71 @@
     <string name="key_reset_own_identity_feedback">The account has been reset.</string>
     <string name="trust_identity_feedback">%s now is trusted</string>
     <string name="mistrust_identity_feedback">%s now is mistrusted</string>
-
-
     <string name="pep_key_reset_all_own_ids_summary">Reset all accounts</string>
     <string name="key_reset_all_own_identitities_feedback">All p≡p accounts have been reset.</string>
-
     <string name="pep_key_reset_all_own_ids_warning">This action will reset all your accounts. \n Are you sure you want to reset?</string>
     <string name="pep_key_reset_own_id_warning">This action will reset your account. \n Are you sure you want to reset?</string>
-
     <string name="pep_key_reset_own_id_warning_title">Reset %s account</string>
     <string name="ellipsized_text" translatable="false">%s  …</string>
-
     <!-- Folder list-->
     <string name="search_empty_error">Please write text to search</string>
-
     <!-- Welcome/Tutorial-->
-
     <string name="intro_frag_first_text_1">Welcome to the <font color="#4caf50">p≡p</font> tutorial</string>
     <string name="intro_frag_first_text_2">You can close this tutorial any time.\n\n<font color="#4caf50">p≡p</font> uses a Privacy Status to indicate how secure your communication is.\n\nThis Privacy Status is shown as an icon in the user\'s avatar</string>
     <string name="intro_frag_first_text_3">And in the top bar when you open or write an e-mail:</string>
-
     <string name="intro_frag_second_header_1">Secure</string>
     <string name="intro_frag_second_header_2"><![CDATA[Secure & Trusted]]></string>
     <string name="intro_frag_second_header_3">Mistrusted</string>
-    <string name="intro_frag_second_text_1">With this Privacy Status all communication is Secure, but to confirm that your contact is really the person you know, you should Trustwords with this contact.</string>
+    <string name="intro_frag_second_text_1">With this Privacy Status all communication is Secure, but to confirm that your contact is really the person you know, you should compare the Trustwords with this contact.</string>
     <string name="intro_frag_second_text_2">When the Trustwords are confirmed to be correct and the Handshake is done, the communication will be completely secure and trusted.</string>
-    <string name="intro_frag_second_text_3">If the Trustwords are not correct, your communication partner is Mistrusted.</string>
-
+    <string name="intro_frag_second_text_3">If the Trustwords are not correct, your communication is Mistrusted.</string>
     <string name="intro_frag_third_text_1">Handshake</string>
     <string name="intro_frag_third_text_2">When you click on the Privacy Status icon in the top bar, you will get to the Handshake, where you can verify your communication partner.</string>
     <string name="intro_frag_third_text_3">OUTDISTANCE\t\t\tCORRINA\t\t\tETHIOPIA\t\t\tOUTDRAW\t\t\tFLEECER\t\t\t…</string>
     <string name="intro_frag_third_text_4">Complete a handshake with your communication partner. A handshake is needed only once per partner and will ensure Secure and Trusted communication.</string>
-
     <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
     <string name="intro_frag_fourth_text_2">The icon in the top bar reflects the Privacy Status of the message, which is the lowest common denominator of all communication partners of that message, for example:</string>
     <string name="intro_frag_fourth_text_3">In this case the Privacy Status of the message is Secure, because this is the lowest common denominator of the two communication partners.</string>
-
-
-
     <string name="pep_rating_secure_trusted">Secure &amp;\n Trusted</string>
     <string name="pep_rating_secure">Secure</string>
     <string name="pep_rating_mistrusted">Mistrusted</string>
     <string name="pep_rating_forced_unencrypt">Disabled</string>
-    <string name="pep_rating_none"></string>
-
+    <string name="pep_rating_none">" "</string>
     <string name="action_tutorial">Tutorial</string>
-    <string name="only_own_identities">his is an own message, no communication partner involved.</string>
+    <string name="only_own_identities">this is an own message, no communication partner involved.</string>
+    <!-- Key sync dialog Strings -->
+    <string name="keysync_wizard_handshake_message">Please make sure uou have both devices together so ou can compare the Trustwords on both devices. Are the Trustwords below equal to the Trustwords on the other device?</string>
+    <string name="keysync_wizard_waiting_message">Please give us a moment while we sync your devices. This can take a minute or more.</string>
+    <string name="keysync_wizard_error_message">Something went wrong with syncing the devices. Please try again.</string>
+    <!-- Group creation -->
+    <string name="keysync_wizard_create_group_first_message">A second device was detected. We can form a device group to sync all your privacy on both devices. Shall we start synchronizing</string>
+    <string name="keysync_wizard_group_creation_done_message">We successfully created a device group. All your privacy is now synchronized.</string>
+    <!-- Group extension -->
+    <string name="keysync_wizard_add_device_to_existing_group_message">Another device was detected. We can add it to your device group to sync all your privacy on all devices. Shall we start synchronizing?</string>
+    <string name="keysync_wizard_group_joining_done_message">The device is now member of your device group. All your privacy is now synchronized.</string>
+    <!-- Key sync dialog button texts -->
+    <string name="keysync_wizard_action_cancel">Cancel</string>
+    <string name="keysync_wizard_action_next">Next</string>
+    <string name="keysync_wizard_action_leave">Leave</string>
+    <string name="keysync_wizard_action_try_again">Try again</string>
+    <!-- END Key sync dialog Strings -->
+    <!-- Key sync dialog Strings -->
+    <string name="keysync_wizard_handshake_message">Please make sure uou have both devices together so ou can compare the Trustwords on both devices. Are the Trustwords below equal to the Trustwords on the other device?</string>
+    <string name="keysync_wizard_waiting_message">Please give us a moment while we sync your devices. This can take a minute or more.</string>
+    <string name="keysync_wizard_error_message">Something went wrong with syncing the devices. Please try again.</string>
+    <!-- Group creation -->
+    <string name="keysync_wizard_create_group_first_message">A second device was detected. We can form a device group to sync all your privacy on both devices. Shall we start synchronizing\?</string>
+    <string name="keysync_wizard_group_creation_done_message">We successfully created a device group. All your privacy is now synchronized.</string>
+    <!-- Group extension -->
+    <string name="keysync_wizard_add_device_to_existing_group_message">Another device was detected. We can add it to your device group to sync all your privacy on all devices. Shall we start synchronizing?</string>
+    <string name="keysync_wizard_group_joining_done_message">The device is now member of your device group. All your privacy is now synchronized.</string>
+    <!-- Key sync dialog button texts -->
+    <string name="keysync_wizard_action_cancel">Cancel</string>
+    <string name="keysync_wizard_action_next">Next</string>
+    <string name="keysync_wizard_action_leave">Leave</string>
+    <string name="keysync_wizard_action_try_again">Try again</string>
+    <!-- END Key sync dialog Strings -->
     <string name="message_failed_to_encrypt">We could not protect this message.</string>
     <string name="notification_failed_to_encrypt_title">We could not protect this message.</string>
-    <string name="notification_failed_to_encrypt_text">We didn\'t send it and saved it to the draft folder instead.</string>
-
+    <string name="notification_failed_to_encrypt_text">We didn\'t send this message and saved it to the draft folder instead.</string>
 </resources>

@@ -1,0 +1,1076 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- === App-specific strings ============================================================= -->
+    <!-- This should make it easier for forks to change the branding -->
+    <!-- Used in AndroidManifest.xml -->
+    <string name="app_name">p≡p</string>
+    <!--<string name="shortcuts_title">K-9 Accounts</string>-->
+    <!--<string name="unread_widget_label">K-9 Unread</string>-->
+    <!--<string name="remote_control_label">K-9 Mail remote control</string>-->
+    <!--<string name="remote_control_desc">Allows this application to control K-9 Mail activities and settings.</string>-->
+    <!-- Used in the about dialog -->
+    <string name="app_authors"/>
+    <string name="app_copyright_fmt"><xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
+    <string name="app_license"/>
+    <!-- Welcome message -->
+    <!--<string name="welcome_message_title">Welcome to K-9 Mail</string>-->
+    <!--<string name="accounts_welcome"><![CDATA[-->
+    <!--<p>-->
+    <!--K-9 Mail is a powerful free email client for Android.-->
+    <!--</p><p>-->
+    <!--Its improved features include:-->
+    <!--</p>-->
+    <!--<ul>-->
+    <!--<li>Push mail using IMAP IDLE</li>-->
+    <!--<li>Better performance</li>-->
+    <!--<li>Message refiling</li>-->
+    <!--<li>Email signatures</li>-->
+    <!--<li>Bcc-to-self</li>-->
+    <!--<li>Folder subscriptions</li>-->
+    <!--<li>All folder synchronization</li>-->
+    <!--<li>Return-address configuration</li>-->
+    <!--<li>Keyboard shortcuts</li>-->
+    <!--<li>Better IMAP support</li>-->
+    <!--<li>Saving attachments to SD</li>-->
+    <!--<li>Empty Trash</li>-->
+    <!--<li>Message sorting</li>-->
+    <!--<li>…and more</li>-->
+    <!--</ul>-->
+    <!--<p>-->
+    <!--Please note that K-9 does not support most free Hotmail accounts and, like many mail clients, has-->
+    <!--some quirks when talking to Microsoft Exchange.-->
+    <!--</p><p>-->
+    <!--Please submit bug reports, contribute new features and ask questions at-->
+    <!--<a href="https://github.com/k9mail/k-9/">https://github.com/k9mail/k-9/</a>.-->
+    <!--</p>-->
+    <!--]]></string>-->
+    <!-- Default signature -->
+    <!--<string name="default_signature">&#45;&#45; \nSent from my K-9 Mail/p≡p on Android.\n</string>-->
+    <!-- General strings that include the app name -->
+    <!--<string name="account_delete_dlg_instructions_fmt">The account \"<xliff:g id="account">%s</xliff:g>\" will be removed from K-9 Mail.</string>-->
+    <string name="account_recreate_dlg_instructions_fmt"><xliff:g id="account">%s</xliff:g>\" will be removed. Account settings will be retained.</string>
+    <string name="account_clear_dlg_instructions_fmt"><xliff:g id="account">%s</xliff:g>\" will be removed. Account settings will be retained.</string>
+    <!-- === App Store-specific strings ======================================================= -->
+    <string name="import_dialog_error_message"/>
+    <string name="open_market"/>
+    <!-- === General strings ================================================================== -->
+    <string name="app_authors_fmt"><xliff:g id="app_authors">%s</xliff:g></string>
+    <string name="app_revision_fmt"><xliff:g id="app_revision_url">%s</xliff:g></string>
+    <string name="app_libraries"><xliff:g id="app_libraries_list">%s</xliff:g></string>
+    <string name="app_emoji_icons"><xliff:g id="app_emoji_icons_link">%s</xliff:g></string>
+    <string name="read_attachment_label"/>
+    <string name="read_attachment_desc"/>
+    <string name="read_messages_label"/>
+    <string name="read_messages_desc"/>
+    <string name="delete_messages_label"/>
+    <string name="delete_messages_desc"/>
+    <string name="about_title_fmt"><xliff:g id="app_name">%s</xliff:g></string>
+    <string name="accounts_title"/>
+    <string name="folders_title"/>
+    <string name="advanced"/>
+    <string name="message_list_title"><xliff:g id="account">%1$s</xliff:g>:<xliff:g id="folder">%2$s</xliff:g> </string>
+    <string name="compose_title_compose"/>
+    <string name="compose_title_reply"/>
+    <string name="compose_title_reply_all"/>
+    <string name="compose_title_forward"/>
+    <string name="choose_folder_title"/>
+    <string name="status_loading_account_folder"><xliff:g id="account">%1$s</xliff:g>:<xliff:g id="folder">%2$s</xliff:g><xliff:g id="progress">%3$s</xliff:g></string>
+    <string name="status_loading_account_folder_headers"><xliff:g id="account">%1$s</xliff:g>:<xliff:g id="folder">%2$s</xliff:g><xliff:g id="progress">%3$s</xliff:g></string>
+    <string name="status_sending_account"><xliff:g id="account">%1$s</xliff:g><xliff:g id="progress">%2$s</xliff:g></string>
+    <string name="status_processing_account"><xliff:g id="account">%1$s</xliff:g>:<xliff:g id="command">%2$s</xliff:g><xliff:g id="progress">%3$s</xliff:g></string>
+    <string name="folder_progress"><xliff:g id="completed">%1$d</xliff:g>/<xliff:g id="total">%2$d</xliff:g></string>
+    <string name="status_next_poll"><xliff:g id="nexttime">%s</xliff:g></string>
+    <string name="status_no_network"/>
+    <string name="status_no_background"/>
+    <string name="status_poll_and_push_disabled"/>
+    <string name="status_syncing_blocked"/>
+    <string name="status_syncing_off"/>
+    <string name="status_syncing"/>
+    <string name="actionbar_selected"><xliff:g id="selection_count">%d</xliff:g> selected</string>
+    <string name="next_action"/>
+    <string name="previous_action"/>
+    <!-- Used to confirm acceptance of dialog boxes, warnings, errors, etc. -->
+    <string name="okay_action"/>
+    <string name="cancel_action"/>
+    <string name="send_action"/>
+    <string name="send_again_action"/>
+    <string name="empty_subject"/>
+    <string name="select_action"/>
+    <string name="deselect_action"/>
+    <string name="reply_action"/>
+    <string name="reply_all_action"/>
+    <string name="delete_action"/>
+    <string name="archive_action"/>
+    <string name="spam_action"/>
+    <string name="forward_action"/>
+    <string name="move_action"/>
+    <string name="single_message_options_action"/>
+    <string name="refile_action"/>
+    <string name="done_action"/>
+    <string name="discard_action"/>
+    <string name="save_draft_action"/>
+    <string name="check_mail_action"/>
+    <string name="send_messages_action"/>
+    <string name="refresh_folders_action"/>
+    <string name="filter_folders_action"/>
+    <string name="add_account_action"/>
+    <string name="compose_action"/>
+    <string name="search_action"/>
+    <string name="search_results"/>
+    <string name="action_settings"/>
+    <string name="account_settings_action"/>
+    <string name="folder_settings_action"/>
+    <string name="global_settings_action"/>
+    <string name="remove_account_action"/>
+    <string name="clear_pending_action"/>
+    <string name="mark_as_read_action"/>
+    <string name="send_alternate_action"/>
+    <string name="send_alternate_chooser_title"/>
+    <string name="flag_action"/>
+    <string name="unflag_action"/>
+    <string name="copy_action"/>
+    <string name="select_text_action"/>
+    <string name="show_headers_action"/>
+    <string name="hide_headers_action"/>
+    <plurals name="copy_address_to_clipboard">
+        <item quantity="one"/>
+        <item quantity="other"/>
+    </plurals>
+    <string name="message_view_theme_action_dark"/>
+    <string name="message_view_theme_action_light"/>
+    <string name="mark_as_unread_action"/>
+    <string name="read_receipt"/>
+    <string name="read_receipt_enabled"/>
+    <string name="read_receipt_disabled"/>
+    <string name="add_attachment_action"/>
+    <string name="empty_trash_action"/>
+    <string name="expunge_action"/>
+    <string name="clear_local_folder_action"/>
+    <string name="about_action"/>
+    <string name="prefs_title"/>
+    <string name="accounts_context_menu_title"/>
+    <!-- Shown in place of the subject when a message has no subject. Showing this in parentheses is customary. -->
+    <string name="general_no_subject"/>
+    <string name="general_no_sender"/>
+    <string name="status_loading"/>
+    <string name="status_loading_more"/>
+    <string name="status_network_error"/>
+    <string name="status_invalid_id_error"/>
+    <string name="status_loading_error"/>
+    <string name="status_loading_more_failed"/>
+    <string name="load_more_messages_fmt"><xliff:g id="messages_to_load">%d</xliff:g> more</string>
+    <string name="abbrev_gigabytes"/>
+    <string name="abbrev_megabytes"/>
+    <string name="abbrev_kilobytes"/>
+    <string name="abbrev_bytes"/>
+    <string name="account_size_changed"><xliff:g id="account">%1$s</xliff:g>\" shrunk from <xliff:g id="oldSize">%2$s</xliff:g> to <xliff:g id="newSize">%3$s</xliff:g></string>
+    <string name="compacting_account"><xliff:g id="account">%s</xliff:g>\"</string>
+    <string name="clearing_account"><xliff:g id="account">%s</xliff:g>\"</string>
+    <string name="recreating_account"><xliff:g id="account">%s</xliff:g>\"</string>
+    <string name="notification_new_title"/>
+    <plurals name="notification_new_messages_title">
+        <item quantity="one"/>
+        <item quantity="other"/>
+    </plurals>
+    <string name="notification_new_one_account_fmt"><xliff:g id="unread_message_count">%1$d</xliff:g> Unread (<xliff:g id="account">%2$s</xliff:g>)</string>
+    <string name="notification_additional_messages"><xliff:g id="additional_messages">%1$d</xliff:g> more on <xliff:g id="account">%2$s</xliff:g></string>
+    <string name="notification_action_reply"/>
+    <string name="notification_action_mark_as_read"/>
+    <string name="notification_action_mark_all_as_read"/>
+    <string name="notification_action_delete"/>
+    <string name="notification_action_delete_all"/>
+    <string name="notification_action_archive"/>
+    <string name="notification_action_archive_all"/>
+    <string name="notification_action_spam"/>
+    <string name="notification_certificate_error_title"><xliff:g id="account">%s</xliff:g></string>
+    <string name="notification_certificate_error_text"/>
+    <string name="notification_authentication_error_title"/>
+    <string name="notification_authentication_error_text"><xliff:g id="account">%s</xliff:g>. Update your server settings.</string>
+    <string name="notification_bg_sync_ticker"><xliff:g id="account">%1$s</xliff:g>:<xliff:g id="folder">%2$s</xliff:g></string>
+    <string name="notification_bg_sync_title"/>
+    <string name="notification_bg_send_ticker"><xliff:g id="account">%s</xliff:g></string>
+    <string name="notification_bg_send_title"/>
+    <string name="notification_bg_title_separator"/>
+    <string name="special_mailbox_name_inbox"/>
+    <string name="special_mailbox_name_outbox"/>
+    <string name="special_mailbox_name_drafts"/>
+    <string name="special_mailbox_name_trash"/>
+    <string name="special_mailbox_name_sent"/>
+    <string name="special_mailbox_name_archive"/>
+    <string name="special_mailbox_name_spam"/>
+    <string name="special_mailbox_name_drafts_fmt"><xliff:g id="folder">%s</xliff:g> (Drafts)</string>
+    <string name="special_mailbox_name_trash_fmt"><xliff:g id="folder">%s</xliff:g> (Trash)</string>
+    <string name="special_mailbox_name_sent_fmt"><xliff:g id="folder">%s</xliff:g> (Sent)</string>
+    <string name="special_mailbox_name_archive_fmt"><xliff:g id="folder">%s</xliff:g> (Archive)</string>
+    <string name="special_mailbox_name_spam_fmt"><xliff:g id="folder">%s</xliff:g> (Spam)</string>
+    <string name="send_failure_subject"/>
+    <string name="debug_version_fmt"><xliff:g id="version">%s</xliff:g></string>
+    <string name="debug_enable_debug_logging_title"/>
+    <string name="debug_enable_debug_logging_summary"/>
+    <string name="debug_enable_sensitive_logging_title"/>
+    <string name="debug_enable_sensitive_logging_summary"/>
+    <string name="message_list_load_more_messages_action"/>
+    <string name="message_to_fmt"><xliff:g id="counterParty">%s</xliff:g></string>
+    <string name="message_compose_subject_hint"/>
+    <string name="message_compose_content_hint"/>
+    <string name="message_compose_signature_hint"/>
+    <string name="message_compose_quote_header_separator"/>
+    <string name="message_compose_quote_header_subject"/>
+    <string name="message_compose_quote_header_send_date"/>
+    <string name="message_compose_quote_header_from"/>
+    <string name="message_compose_quote_header_to"/>
+    <string name="message_compose_quote_header_cc"/>
+    <string name="message_compose_reply_header_fmt"><xliff:g id="sender">%s</xliff:g> wrote:</string>
+    <string name="message_compose_reply_header_fmt_with_date"><xliff:g id="sent_date">%1$s</xliff:g>, <xliff:g id="sender">%2$s</xliff:g> wrote:</string>
+    <string name="message_compose_error_no_recipients"/>
+    <string name="compose_error_incomplete_recipient"/>
+    <string name="error_contact_address_not_found"/>
+    <string name="message_compose_attachments_skipped_toast"/>
+    <string name="message_compose_show_quoted_text_action"/>
+    <string name="message_compose_description_delete_quoted_text"/>
+    <string name="message_compose_description_edit_quoted_text"/>
+    <string name="message_view_from_format"><xliff:g id="name">%1$s</xliff:g> &lt;<xliff:g id="email">%2$s</xliff:g>&gt;</string>
+    <string name="message_to_label"/>
+    <string name="message_view_cc_label"/>
+    <string name="message_view_attachment_view_action"/>
+    <string name="message_view_attachment_download_action"/>
+    <string name="message_view_status_attachment_not_saved"/>
+    <string name="message_view_status_no_space"/>
+    <string name="message_view_show_pictures_action"/>
+    <string name="message_view_no_viewer"><xliff:g id="mimetype">%s</xliff:g>.</string>
+    <string name="message_view_download_remainder"/>
+    <string name="message_view_toast_unable_to_display_message"/>
+    <string name="message_view_sender_label"/>
+    <!-- NOTE: The following message refers to strings with id account_setup_incoming_save_all_headers_label and account_setup_incoming_title -->
+    <string name="message_no_additional_headers_available"/>
+    <string name="message_additional_headers_retrieval_failed"/>
+    <string name="from_same_sender"/>
+    <string name="debug_delete_local_body"/>
+    <string name="message_discarded_toast"/>
+    <string name="message_saved_toast"/>
+    <string name="global_settings_flag_label"/>
+    <string name="global_settings_flag_summary"/>
+    <string name="global_settings_checkbox_label"/>
+    <string name="global_settings_checkbox_summary"/>
+    <string name="global_settings_preview_lines_label"/>
+    <string name="global_settings_show_correspondent_names_label"/>
+    <string name="global_settings_show_correspondent_names_summary"/>
+    <string name="global_settings_sender_above_subject_label"/>
+    <string name="global_settings_sender_above_subject_summary"/>
+    <string name="global_settings_show_contact_name_label"/>
+    <string name="global_settings_show_contact_name_summary"/>
+    <string name="global_settings_registered_name_color_label"/>
+    <string name="global_settings_registered_name_color_default"/>
+    <string name="global_settings_registered_name_color_changed"/>
+    <string name="global_settings_folderlist_wrap_folder_names_label"/>
+    <string name="global_settings_folderlist_wrap_folder_names_summary"/>
+    <string name="global_settings_messageview_fixedwidth_label"/>
+    <string name="global_settings_messageview_fixedwidth_summary"/>
+    <string name="global_settings_messageview_autofit_width_label"/>
+    <string name="global_settings_messageview_autofit_width_summary"/>
+    <string name="global_settings_messageview_return_to_list_label"/>
+    <string name="global_settings_messageview_return_to_list_summary"/>
+    <string name="global_settings_messageview_show_next_label"/>
+    <string name="global_settings_messageview_show_next_summary"/>
+    <string name="global_settings_confirm_actions_title"/>
+    <string name="global_settings_confirm_actions_summary"/>
+    <string name="global_settings_confirm_action_delete"/>
+    <string name="global_settings_confirm_action_delete_starred"/>
+    <string name="global_settings_confirm_action_spam"/>
+    <string name="global_settings_confirm_menu_discard"/>
+    <string name="global_settings_confirm_menu_mark_all_read"/>
+    <string name="global_settings_confirm_action_delete_notif"/>
+    <string name="global_settings_privacy_hide_useragent"/>
+    <string name="global_settings_privacy_hide_useragent_detail"/>
+    <string name="global_settings_privacy_hide_timezone"/>
+    <string name="global_settings_privacy_hide_timezone_detail"/>
+    <string name="global_settings_privacy_hide_hostname_when_connecting"/>
+    <string name="global_settings_privacy_hide_hostname_when_connecting_detail"/>
+    <string name="global_settings_notification_hide_subject_title"/>
+    <string name="global_settings_notification_hide_subject_never"/>
+    <string name="global_settings_notification_hide_subject_when_locked"/>
+    <string name="global_settings_notification_hide_subject_always"/>
+    <string name="global_settings_notification_quick_delete_title"/>
+    <string name="global_settings_notification_quick_delete_never"/>
+    <string name="global_settings_notification_quick_delete_when_single_msg"/>
+    <string name="global_settings_notification_quick_delete_always"/>
+    <string name="global_settings_notification_quick_delete_description"/>
+    <string name="global_settings_lock_screen_notification_visibility_title"/>
+    <string name="global_settings_lock_screen_notification_visibility_nothing"/>
+    <string name="global_settings_lock_screen_notification_visibility_app_name"/>
+    <string name="global_settings_lock_screen_notification_visibility_message_count"/>
+    <string name="global_settings_lock_screen_notification_visibility_senders"/>
+    <string name="global_settings_lock_screen_notification_visibility_everything"/>
+    <string name="quiet_time"/>
+    <string name="quiet_time_description"/>
+    <string name="quiet_time_notification"/>
+    <string name="quiet_time_notification_description"/>
+    <string name="quiet_time_starts"/>
+    <string name="quiet_time_ends"/>
+    <string name="account_setup_basics_title"/>
+    <string name="account_setup_basics_email_hint"/>
+    <string name="account_setup_basics_password_hint"/>
+    <string name="account_setup_basics_show_password"/>
+    <string name="account_setup_basics_manual_setup_action"/>
+    <string name="account_setup_check_settings_title"/>
+    <string name="account_setup_check_settings_retr_info_msg"/>
+    <string name="account_setup_check_settings_check_incoming_msg"/>
+    <string name="account_setup_check_settings_check_outgoing_msg"/>
+    <string name="account_setup_check_settings_authenticate"/>
+    <string name="account_setup_check_settings_fetch"/>
+    <string name="account_setup_check_settings_canceling_msg"/>
+    <string name="account_setup_names_title"/>
+    <string name="account_setup_names_account_name_label"/>
+    <string name="account_setup_names_user_name_label"/>
+    <string name="account_setup_account_type_title"/>
+    <string name="account_setup_account_type_instructions"/>
+    <string name="account_setup_account_type_pop_action"/>
+    <string name="account_setup_account_type_imap_action"/>
+    <string name="account_setup_account_type_webdav_action"/>
+    <string name="account_setup_auth_type_normal_password"/>
+    <string name="account_setup_auth_type_insecure_password"/>
+    <string name="account_setup_auth_type_encrypted_password"/>
+    <string name="account_setup_auth_type_xoauth2"/>
+    <string name="account_setup_auth_type_tls_client_certificate"/>
+    <string name="account_setup_incoming_title"/>
+    <string name="account_setup_incoming_username_label"/>
+    <string name="account_setup_incoming_password_label"/>
+    <string name="account_setup_incoming_client_certificate_label"/>
+    <string name="account_setup_incoming_pop_server_label"/>
+    <string name="account_setup_incoming_imap_server_label"/>
+    <string name="account_setup_incoming_webdav_server_label"/>
+    <string name="account_setup_incoming_port_label"/>
+    <string name="account_setup_incoming_security_label"/>
+    <string name="account_setup_incoming_auth_type_label"/>
+    <string name="account_setup_incoming_security_none_label"/>
+    <string name="account_setup_incoming_security_ssl_label"/>
+    <string name="account_setup_incoming_security_tls_label"/>
+    <string name="account_setup_incoming_invalid_setting_combo_notice"><xliff:g id="setting_1_label">%1$s</xliff:g> = <xliff:g id="setting_1_value">%2$s</xliff:g>\" is not valid with \"<xliff:g id="setting_2_label">%3$s</xliff:g> = <xliff:g id="setting_2_value">%4$s</xliff:g>\"</string>
+    <string name="account_setup_incoming_delete_policy_label"/>
+    <string name="account_setup_incoming_delete_policy_never_label"/>
+    <string name="account_setup_incoming_delete_policy_delete_label"/>
+    <string name="account_setup_incoming_delete_policy_markread_label"/>
+    <string name="account_setup_incoming_compression_label"/>
+    <string name="account_setup_incoming_mobile_label"/>
+    <string name="account_setup_incoming_wifi_label"/>
+    <string name="account_setup_incoming_other_label"/>
+    <string name="local_storage_provider_external_label"/>
+    <string name="local_storage_provider_internal_label"/>
+    <string name="local_storage_provider_samsunggalaxy_label"/>
+    <string name="local_storage_provider_label"/>
+    <string name="account_setup_expunge_policy_label"/>
+    <string name="account_setup_expunge_policy_immediately"/>
+    <string name="account_setup_expunge_policy_on_poll"/>
+    <string name="account_setup_expunge_policy_manual"/>
+    <string name="account_setup_incoming_autodetect_namespace_label"/>
+    <string name="account_setup_incoming_imap_path_prefix_label"/>
+    <string name="drafts_folder_label"/>
+    <string name="sent_folder_label"/>
+    <string name="trash_folder_label"/>
+    <string name="archive_folder_label"/>
+    <string name="spam_folder_label"/>
+    <string name="account_setup_incoming_subscribed_folders_only_label"/>
+    <string name="account_setup_auto_expand_folder"/>
+    <string name="account_setup_incoming_webdav_path_prefix_label"/>
+    <string name="account_setup_incoming_webdav_path_prefix_hint"/>
+    <string name="account_setup_incoming_webdav_auth_path_label"/>
+    <string name="account_setup_incoming_webdav_auth_path_hint"/>
+    <string name="account_setup_incoming_webdav_mailbox_path_label"/>
+    <string name="account_setup_incoming_webdav_mailbox_path_hint"/>
+    <string name="account_setup_outgoing_title"/>
+    <string name="account_setup_outgoing_smtp_server_label"/>
+    <string name="account_setup_outgoing_port_label"/>
+    <string name="account_setup_outgoing_security_label"/>
+    <string name="account_setup_outgoing_require_login_label"/>
+    <string name="account_setup_outgoing_username_label"/>
+    <string name="account_setup_outgoing_password_label"/>
+    <string name="account_setup_outgoing_authentication_label"/>
+    <string name="account_setup_outgoing_invalid_setting_combo_notice"><xliff:g id="setting_1_label">%1$s</xliff:g> = <xliff:g id="setting_1_value">%2$s</xliff:g>\" is not valid with \"<xliff:g id="setting_2_label">%3$s</xliff:g> = <xliff:g id="setting_2_value">%4$s</xliff:g>\"</string>
+    <string name="account_setup_bad_uri"><xliff:g id="err_mess">%s</xliff:g></string>
+    <string name="account_setup_options_title"/>
+    <string name="compact_action"/>
+    <string name="clear_action"/>
+    <string name="recreate_action"/>
+    <string name="account_setup_options_mail_check_frequency_label"/>
+    <string name="account_setup_options_mail_check_frequency_never"/>
+    <string name="account_setup_options_mail_check_frequency_1min"/>
+    <string name="account_setup_options_mail_check_frequency_5min"/>
+    <string name="account_setup_options_mail_check_frequency_10min"/>
+    <string name="account_setup_options_mail_check_frequency_15min"/>
+    <string name="account_setup_options_mail_check_frequency_30min"/>
+    <string name="account_setup_options_mail_check_frequency_1hour"/>
+    <string name="account_setup_options_mail_check_frequency_2hour"/>
+    <string name="account_setup_options_mail_check_frequency_3hour"/>
+    <string name="account_setup_options_mail_check_frequency_6hour"/>
+    <string name="account_setup_options_mail_check_frequency_12hour"/>
+    <string name="account_setup_options_mail_check_frequency_24hour"/>
+    <string name="push_poll_on_connect_label"/>
+    <string name="account_setup_options_enable_push_label"/>
+    <string name="account_setup_options_enable_push_summary"/>
+    <string name="idle_refresh_period_label"/>
+    <string name="idle_refresh_period_1min"/>
+    <string name="idle_refresh_period_2min"/>
+    <string name="idle_refresh_period_3min"/>
+    <string name="idle_refresh_period_6min"/>
+    <string name="idle_refresh_period_12min"/>
+    <string name="idle_refresh_period_24min"/>
+    <string name="idle_refresh_period_36min"/>
+    <string name="idle_refresh_period_48min"/>
+    <string name="idle_refresh_period_60min"/>
+    <string name="account_setup_options_notify_label"/>
+    <string name="account_setup_options_notify_sync_label"/>
+    <string name="account_setup_options_mail_display_count_label"/>
+    <string name="account_setup_options_mail_display_count_10"/>
+    <string name="account_setup_options_mail_display_count_25"/>
+    <string name="account_setup_options_mail_display_count_50"/>
+    <string name="account_setup_options_mail_display_count_100"/>
+    <string name="account_setup_options_mail_display_count_250"/>
+    <string name="account_setup_options_mail_display_count_500"/>
+    <string name="account_setup_options_mail_display_count_1000"/>
+    <string name="account_setup_options_mail_display_count_2500"/>
+    <string name="account_setup_options_mail_display_count_5000"/>
+    <string name="account_setup_options_mail_display_count_10000"/>
+    <string name="account_setup_options_mail_display_count_all"/>
+    <string name="move_copy_cannot_copy_unsynced_message"/>
+    <string name="account_setup_failed_dlg_title"/>
+    <string name="account_setup_failed_dlg_auth_message_fmt"><xliff:g id="error">%s</xliff:g>)</string>
+    <string name="account_setup_failed_dlg_certificate_message_fmt"><xliff:g id="error">%s</xliff:g>)</string>
+    <string name="account_setup_failed_dlg_server_message_fmt"><xliff:g id="error">%s</xliff:g>)</string>
+    <string name="account_setup_failed_dlg_edit_details_action"/>
+    <string name="account_setup_failed_dlg_continue_action"/>
+    <string name="account_settings_push_advanced_title"/>
+    <string name="account_settings_title_fmt"/>
+    <string name="account_settings_default_label"/>
+    <string name="account_settings_default_summary"/>
+    <string name="account_settings_notify_label"/>
+    <string name="account_settings_folder_notify_new_mail_mode_label"/>
+    <string name="account_settings_folder_notify_new_mail_mode_all"/>
+    <string name="account_settings_folder_notify_new_mail_mode_first_class"/>
+    <string name="account_settings_folder_notify_new_mail_mode_first_and_second_class"/>
+    <string name="account_settings_folder_notify_new_mail_mode_not_second_class"/>
+    <string name="account_settings_folder_notify_new_mail_mode_none"/>
+    <string name="account_settings_notify_sync_label"/>
+    <string name="account_settings_email_label"/>
+    <string name="account_settings_notify_summary"/>
+    <string name="account_settings_notify_sync_summary"/>
+    <string name="account_settings_notify_self_label"/>
+    <string name="account_settings_notify_self_summary"/>
+    <string name="account_notify_contacts_mail_only_label"/>
+    <string name="account_notify_contacts_mail_only_summary"/>
+    <string name="account_settings_notification_opens_unread_label"/>
+    <string name="account_settings_notification_opens_unread_summary"/>
+    <string name="account_settings_mark_message_as_read_on_view_label"/>
+    <string name="account_settings_mark_message_as_read_on_view_summary"/>
+    <string name="account_settings_show_pictures_label"/>
+    <string name="account_settings_show_pictures_never"/>
+    <string name="account_settings_show_pictures_only_from_contacts"/>
+    <string name="account_settings_show_pictures_always"/>
+    <string name="account_settings_composition"/>
+    <string name="account_settings_default_quoted_text_shown_label"/>
+    <string name="account_settings_default_quoted_text_shown_summary"/>
+    <string name="account_settings_reply_after_quote_label"/>
+    <string name="account_settings_reply_after_quote_summary"/>
+    <string name="account_settings_strip_signature_label"/>
+    <string name="account_settings_strip_signature_summary"/>
+    <string name="account_settings_message_format_label"/>
+    <string name="account_settings_message_format_text"/>
+    <string name="account_settings_message_format_html"/>
+    <string name="account_settings_message_format_auto"/>
+    <string name="account_settings_always_show_cc_bcc_label"/>
+    <string name="account_settings_message_read_receipt_label"/>
+    <string name="account_settings_message_read_receipt_summary"/>
+    <string name="account_settings_quote_style_label"/>
+    <string name="account_settings_quote_style_prefix"/>
+    <string name="account_settings_quote_style_header"/>
+    <string name="account_settings_general_title"/>
+    <string name="account_settings_reading_mail"/>
+    <string name="account_settings_sync"/>
+    <string name="account_settings_folders"/>
+    <string name="account_settings_quote_prefix_label"/>
+    <string name="account_settings_crypto"/>
+    <string name="account_settings_crypto_app"/>
+    <string name="account_settings_crypto_key"/>
+    <string name="account_settings_crypto_summary_off"/>
+    <string name="account_settings_crypto_summary_on"/>
+    <string name="account_settings_no_openpgp_provider_configured"/>
+    <string name="account_settings_no_openpgp_provider_installed"/>
+    <string name="account_settings_mail_check_frequency_label"/>
+    <string name="account_settings_storage_title"/>
+    <string name="account_settings_color_label"/>
+    <string name="account_settings_color_summary"/>
+    <string name="account_settings_led_color_label"/>
+    <string name="account_settings_led_color_summary"/>
+    <string name="account_settings_mail_display_count_label"/>
+    <string name="account_settings_autodownload_message_size_label"/>
+    <string name="account_settings_autodownload_message_size_1"/>
+    <string name="account_settings_autodownload_message_size_2"/>
+    <string name="account_settings_autodownload_message_size_4"/>
+    <string name="account_settings_autodownload_message_size_8"/>
+    <string name="account_settings_autodownload_message_size_16"/>
+    <string name="account_settings_autodownload_message_size_32"/>
+    <string name="account_settings_autodownload_message_size_64"/>
+    <string name="account_settings_autodownload_message_size_128"/>
+    <string name="account_settings_autodownload_message_size_256"/>
+    <string name="account_settings_autodownload_message_size_512"/>
+    <string name="account_settings_autodownload_message_size_1024"/>
+    <string name="account_settings_autodownload_message_size_2048"/>
+    <string name="account_settings_autodownload_message_size_5120"/>
+    <string name="account_settings_autodownload_message_size_10240"/>
+    <string name="account_settings_autodownload_message_size_any"/>
+    <string name="account_settings_message_age_label"/>
+    <string name="account_settings_message_age_any"/>
+    <string name="account_settings_message_age_0"/>
+    <string name="account_settings_message_age_1"/>
+    <string name="account_settings_message_age_2"/>
+    <string name="account_settings_message_age_7"/>
+    <string name="account_settings_message_age_14"/>
+    <string name="account_settings_message_age_21"/>
+    <string name="account_settings_message_age_1_month"/>
+    <string name="account_settings_message_age_2_months"/>
+    <string name="account_settings_message_age_3_months"/>
+    <string name="account_settings_message_age_6_months"/>
+    <string name="account_settings_message_age_1_year"/>
+    <string name="account_settings_folder_display_mode_label"/>
+    <string name="account_settings_folder_display_mode_all"/>
+    <string name="account_settings_folder_display_mode_first_class"/>
+    <string name="account_settings_folder_display_mode_first_and_second_class"/>
+    <string name="account_settings_folder_display_mode_not_second_class"/>
+    <string name="account_settings_folder_sync_mode_label"/>
+    <string name="account_settings_folder_sync_mode_all"/>
+    <string name="account_settings_folder_sync_mode_first_class"/>
+    <string name="account_settings_folder_sync_mode_first_and_second_class"/>
+    <string name="account_settings_folder_sync_mode_not_second_class"/>
+    <string name="account_settings_folder_sync_mode_none"/>
+    <string name="account_settings_folder_push_mode_label"/>
+    <string name="account_settings_folder_push_mode_all"/>
+    <string name="account_settings_folder_push_mode_first_class"/>
+    <string name="account_settings_folder_push_mode_first_and_second_class"/>
+    <string name="account_settings_folder_push_mode_not_second_class"/>
+    <string name="account_settings_folder_push_mode_none"/>
+    <string name="account_settings_folder_target_mode_label"/>
+    <string name="account_settings_folder_target_mode_all"/>
+    <string name="account_settings_folder_target_mode_first_class"/>
+    <string name="account_settings_folder_target_mode_first_and_second_class"/>
+    <string name="account_settings_folder_target_mode_not_second_class"/>
+    <string name="account_settings_sync_remote_deletetions_label"/>
+    <string name="account_settings_sync_remote_deletetions_summary"/>
+    <string name="account_settings_openpgp_missing"/>
+    <string name="folder_settings_title"/>
+    <string name="folder_settings_in_top_group_label"/>
+    <string name="folder_settings_in_top_group_summary"/>
+    <string name="folder_settings_folder_display_mode_label"/>
+    <string name="folder_settings_folder_display_mode_normal"/>
+    <string name="folder_settings_folder_display_mode_first_class"/>
+    <string name="folder_settings_folder_display_mode_second_class"/>
+    <string name="folder_settings_folder_sync_mode_label"/>
+    <string name="folder_settings_folder_sync_mode_normal"/>
+    <string name="folder_settings_folder_sync_mode_first_class"/>
+    <string name="folder_settings_folder_sync_mode_second_class"/>
+    <string name="folder_settings_folder_sync_mode_inherited"/>
+    <string name="folder_settings_folder_push_mode_label"/>
+    <string name="folder_settings_folder_push_mode_normal"/>
+    <string name="folder_settings_folder_push_mode_first_class"/>
+    <string name="folder_settings_folder_push_mode_second_class"/>
+    <string name="folder_settings_folder_push_mode_inherited"/>
+    <string name="folder_settings_folder_notify_mode_label"/>
+    <string name="folder_settings_folder_notify_mode_normal"/>
+    <string name="folder_settings_folder_notify_mode_first_class"/>
+    <string name="folder_settings_folder_notify_mode_second_class"/>
+    <string name="folder_settings_folder_notify_mode_inherited"/>
+    <string name="account_settings_incoming_label"/>
+    <string name="account_settings_incoming_summary"/>
+    <string name="account_settings_outgoing_label"/>
+    <string name="account_settings_outgoing_summary"/>
+    <string name="account_settings_description_label"/>
+    <string name="account_settings_name_label"/>
+    <string name="notifications_title"/>
+    <string name="account_settings_vibrate_enable"/>
+    <string name="account_settings_vibrate_summary"/>
+    <string name="account_settings_vibrate_pattern_label"/>
+    <string name="account_settings_vibrate_pattern_default"/>
+    <string name="account_settings_vibrate_pattern_1"/>
+    <string name="account_settings_vibrate_pattern_2"/>
+    <string name="account_settings_vibrate_pattern_3"/>
+    <string name="account_settings_vibrate_pattern_4"/>
+    <string name="account_settings_vibrate_pattern_5"/>
+    <string name="account_settings_vibrate_times"/>
+    <string name="account_settings_ringtone"/>
+    <string name="account_settings_led_label"/>
+    <string name="account_settings_led_summary"/>
+    <string name="account_settings_composition_title"/>
+    <string name="account_settings_composition_label"/>
+    <string name="account_settings_composition_summary"/>
+    <string name="account_settings_identities_label"/>
+    <string name="account_settings_identities_summary"/>
+    <string name="manage_identities_title"/>
+    <string name="manage_identities_context_menu_title"/>
+    <string name="edit_identity_title"/>
+    <string name="new_identity_action"/>
+    <string name="account_settings_always_bcc_label"/>
+    <string name="manage_identities_edit_action"/>
+    <string name="manage_identities_move_up_action"/>
+    <string name="manage_identities_move_down_action"/>
+    <string name="manage_identities_move_top_action"/>
+    <string name="manage_identities_remove_action"/>
+    <string name="edit_identity_description_label"/>
+    <string name="edit_identity_description_hint"/>
+    <string name="edit_identity_name_label"/>
+    <string name="edit_identity_name_hint"/>
+    <string name="edit_identity_email_label"/>
+    <string name="edit_identity_email_hint"/>
+    <string name="edit_identity_reply_to_label"/>
+    <string name="edit_identity_reply_to_hint"/>
+    <string name="edit_identity_signature_label"/>
+    <string name="edit_identity_signature_hint"/>
+    <string name="account_settings_signature_use_label"/>
+    <string name="account_settings_signature_label"/>
+    <string name="default_identity_description"/>
+    <string name="choose_identity_title"/>
+    <string name="send_as"/>
+    <string name="no_removable_identity"/>
+    <string name="identity_has_no_email"/>
+    <string name="sort_earliest_first"/>
+    <string name="sort_latest_first"/>
+    <string name="sort_subject_alpha"/>
+    <string name="sort_subject_re_alpha"/>
+    <string name="sort_sender_alpha"/>
+    <string name="sort_sender_re_alpha"/>
+    <string name="sort_flagged_first"/>
+    <string name="sort_flagged_last"/>
+    <string name="sort_unread_first"/>
+    <string name="sort_unread_last"/>
+    <string name="sort_attach_first"/>
+    <string name="sort_unattached_first"/>
+    <string name="sort_by"/>
+    <string name="sort_by_date"/>
+    <string name="sort_by_arrival"/>
+    <string name="sort_by_subject"/>
+    <string name="sort_by_sender"/>
+    <string name="sort_by_flag"/>
+    <string name="sort_by_unread"/>
+    <string name="sort_by_attach"/>
+    <string name="account_delete_dlg_title"/>
+    <string name="account_recreate_dlg_title"/>
+    <string name="account_clear_dlg_title"/>
+    <string name="provider_note_auonejp"/>
+    <string name="provider_note_naver"/>
+    <string name="provider_note_hanmail"/>
+    <string name="account_setup_failed_dlg_invalid_certificate_title"/>
+    <string name="account_setup_failed_dlg_invalid_certificate_accept"/>
+    <string name="account_setup_failed_dlg_invalid_certificate_reject"/>
+    <string name="message_list_help_key"/>
+    <string name="folder_list_help_key"/>
+    <string name="folder_list_filter_hint"/>
+    <string name="folder_list_display_mode_label"/>
+    <string name="folder_list_display_mode_all"/>
+    <string name="folder_list_display_mode_first_class"/>
+    <string name="folder_list_display_mode_first_and_second_class"/>
+    <string name="folder_list_display_mode_not_second_class"/>
+    <string name="account_settings_signature__location_label"/>
+    <string name="account_settings_signature__location_before_quoted_text"/>
+    <string name="account_settings_signature__location_after_quoted_text"/>
+    <string name="setting_theme_global"/>
+    <string name="setting_theme_dark"/>
+    <string name="setting_theme_light"/>
+    <string name="display_preferences"/>
+    <string name="global_preferences"/>
+    <string name="debug_preferences"/>
+    <string name="privacy_preferences"/>
+    <string name="network_preferences"/>
+    <string name="interaction_preferences"/>
+    <string name="accountlist_preferences"/>
+    <string name="messagelist_preferences"/>
+    <string name="messageview_preferences"/>
+    <string name="folderlist_preferences"/>
+    <string name="settings_theme_label"/>
+    <string name="settings_message_theme_label"/>
+    <string name="settings_compose_theme_label"/>
+    <string name="settings_language_label"/>
+    <string name="settings_message_theme_selection_label"/>
+    <string name="settings_message_theme_selection_summary_off"/>
+    <string name="settings_message_theme_selection_summary_on"/>
+    <string name="setting_language_system"/>
+    <string name="background_ops_label"/>
+    <string name="background_ops_never"/>
+    <string name="background_ops_always"/>
+    <string name="background_ops_auto_sync_only"/>
+    <string name="batch_select_all"/>
+    <string name="account_setup_push_limit_label"/>
+    <string name="account_setup_push_limit_10"/>
+    <string name="account_setup_push_limit_25"/>
+    <string name="account_setup_push_limit_50"/>
+    <string name="account_setup_push_limit_100"/>
+    <string name="account_setup_push_limit_250"/>
+    <string name="account_setup_push_limit_500"/>
+    <string name="account_setup_push_limit_1000"/>
+    <string name="animations_title"/>
+    <string name="animations_summary"/>
+    <string name="gestures_title"/>
+    <string name="gestures_summary"/>
+    <string name="volume_navigation_title"/>
+    <string name="volume_navigation_message"/>
+    <string name="volume_navigation_list"/>
+    <string name="start_integrated_inbox_title"/>
+    <string name="measure_accounts_title"/>
+    <string name="measure_accounts_summary"/>
+    <string name="count_search_title"/>
+    <string name="count_search_summary"/>
+    <string name="hide_special_accounts_title"/>
+    <string name="hide_special_accounts_summary"/>
+    <string name="search_title"><xliff:g id="search_name">%1$s</xliff:g> <xliff:g id="modifier">%2$s</xliff:g></string>
+    <string name="flagged_modifier"/>
+    <string name="unread_modifier"/>
+    <string name="search_all_messages_title"/>
+    <string name="search_all_messages_detail"/>
+    <string name="integrated_inbox_title"/>
+    <string name="integrated_inbox_detail"/>
+    <string name="tap_hint"/>
+    <string name="folder_settings_include_in_integrated_inbox_label"/>
+    <string name="folder_settings_include_in_integrated_inbox_summary"/>
+    <string name="account_settings_searchable_label"/>
+    <string name="account_settings_searchable_all"/>
+    <string name="account_settings_searchable_displayable"/>
+    <string name="account_settings_searchable_none"/>
+    <string name="font_size_settings_title"/>
+    <string name="font_size_settings_description"/>
+    <string name="font_size_account_list"/>
+    <string name="font_size_account_name"/>
+    <string name="font_size_account_description"/>
+    <string name="font_size_folder_list"/>
+    <string name="font_size_folder_name"/>
+    <string name="font_size_folder_status"/>
+    <string name="font_size_message_list"/>
+    <string name="font_size_message_list_subject"/>
+    <string name="font_size_message_list_sender"/>
+    <string name="font_size_message_list_date"/>
+    <string name="font_size_message_list_preview"/>
+    <string name="font_size_message_view"/>
+    <string name="font_size_message_view_sender"/>
+    <string name="font_size_message_view_to"/>
+    <string name="font_size_message_view_cc"/>
+    <string name="font_size_message_view_additional_headers"/>
+    <string name="font_size_message_view_subject"/>
+    <string name="font_size_message_view_date"/>
+    <string name="font_size_message_view_content"/>
+    <string name="font_size_message_view_content_summary"><xliff:g id="fontsize">%d</xliff:g>%%</string>
+    <string name="font_size_message_view_content_dialog_title"><xliff:g id="title">%1$s</xliff:g>: <xliff:g id="summary">%2$s</xliff:g></string>
+    <string name="font_size_message_compose"/>
+    <string name="font_size_message_compose_input"/>
+    <string name="font_size_default"/>
+    <string name="font_size_tiniest"/>
+    <string name="font_size_tiny"/>
+    <string name="font_size_smaller"/>
+    <string name="font_size_small"/>
+    <string name="font_size_medium"/>
+    <string name="font_size_large"/>
+    <string name="font_size_larger"/>
+    <string name="miscellaneous_preferences"/>
+    <string name="error_activity_not_found"/>
+    <string name="send_failed_reason"/>
+    <string name="save_or_discard_draft_message_dlg_title"/>
+    <string name="save_or_discard_draft_message_instructions_fmt"/>
+    <string name="confirm_discard_draft_message_title"/>
+    <string name="confirm_discard_draft_message"/>
+    <string name="select_text_now"/>
+    <string name="dialog_confirm_delete_title"/>
+    <string name="dialog_confirm_delete_message"/>
+    <plurals name="dialog_confirm_delete_messages">
+        <item quantity="one"/>
+        <item quantity="other"/>
+    </plurals>
+    <string name="dialog_confirm_delete_confirm_button"/>
+    <string name="dialog_confirm_delete_cancel_button"/>
+    <string name="dialog_confirm_mark_all_as_read_title"/>
+    <string name="dialog_confirm_mark_all_as_read_message"/>
+    <string name="dialog_confirm_mark_all_as_read_confirm_button"/>
+    <string name="dialog_confirm_mark_all_as_read_cancel_button"/>
+    <string name="dialog_confirm_spam_title"/>
+    <plurals name="dialog_confirm_spam_message">
+        <item quantity="one"/>
+        <item quantity="other"/>
+    </plurals>
+    <string name="dialog_confirm_spam_confirm_button"/>
+    <string name="dialog_confirm_spam_cancel_button"/>
+    <string name="dialog_attachment_progress_title"/>
+    <string name="debug_logging_enabled"/>
+    <string name="messagelist_sent_to_me_sigil"/>
+    <string name="messagelist_sent_cc_me_sigil"/>
+    <string name="import_export_action"/>
+    <string name="settings_export_account"/>
+    <string name="settings_export_all"/>
+    <string name="settings_import_dialog_title"/>
+    <string name="settings_export_dialog_title"/>
+    <string name="settings_import"/>
+    <string name="settings_import_selection"/>
+    <string name="settings_import_global_settings"/>
+    <string name="settings_exporting"/>
+    <string name="settings_importing"/>
+    <string name="settings_import_scanning_file"/>
+    <string name="settings_export_success"><xliff:g id="filename">%s</xliff:g></string>
+    <string name="settings_export_success_generic"/>
+    <string name="settings_import_global_settings_success"><xliff:g id="filename">%s</xliff:g></string>
+    <string name="settings_import_success"><xliff:g id="accounts">%1$s</xliff:g> from <xliff:g id="filename">%2$s</xliff:g></string>
+    <plurals name="settings_import_accounts">
+        <item quantity="one"/>
+        <item quantity="other"/>
+    </plurals>
+    <string name="settings_export_failure"/>
+    <string name="settings_import_failure"><xliff:g id="filename">%s</xliff:g></string>
+    <string name="settings_export_success_header"/>
+    <string name="settings_export_failed_header"/>
+    <string name="settings_import_success_header"/>
+    <string name="settings_import_failed_header"/>
+    <string name="settings_import_activate_account_header"/>
+    <string name="settings_import_activate_account_intro"><xliff:g id="account">%1$s</xliff:g>\" you need to provide the <xliff:g id="server_passwords">%2$s</xliff:g>.</string>
+    <plurals name="settings_import_server_passwords">
+        <item quantity="one"/>
+        <item quantity="other"/>
+    </plurals>
+    <string name="settings_import_incoming_server"><xliff:g id="hostname">%s</xliff:g>):</string>
+    <string name="settings_import_outgoing_server"><xliff:g id="hostname">%s</xliff:g>):</string>
+    <plurals name="settings_import_setting_passwords">
+        <item quantity="one"/>
+        <item quantity="other"/>
+    </plurals>
+    <string name="settings_import_use_incoming_server_password"/>
+    <string name="activate_account_action"/>
+    <string name="account_unavailable"><xliff:g id="account">%s</xliff:g>\" is unavailable; check storage</string>
+    <string name="settings_attachment_default_path"/>
+    <string name="attachment_save_title"/>
+    <string name="attachment_save_desc"/>
+    <string name="manage_accounts_move_up_action"/>
+    <string name="manage_accounts_move_down_action"/>
+    <string name="manage_accounts_moving_message"/>
+    <string name="unread_widget_select_account"/>
+    <string name="import_dialog_error_title"/>
+    <string name="close"/>
+    <string name="webview_empty_message"/>
+    <string name="webview_contextmenu_link_view_action"/>
+    <string name="webview_contextmenu_link_share_action"/>
+    <string name="webview_contextmenu_link_copy_action"/>
+    <string name="webview_contextmenu_link_clipboard_label"/>
+    <string name="webview_contextmenu_image_title"/>
+    <string name="webview_contextmenu_image_view_action"/>
+    <string name="webview_contextmenu_image_save_action"/>
+    <string name="webview_contextmenu_image_download_action"/>
+    <string name="webview_contextmenu_image_copy_action"/>
+    <string name="webview_contextmenu_image_clipboard_label"/>
+    <string name="webview_contextmenu_phone_call_action"/>
+    <string name="webview_contextmenu_phone_save_action"/>
+    <string name="webview_contextmenu_phone_copy_action"/>
+    <string name="webview_contextmenu_phone_clipboard_label"/>
+    <string name="webview_contextmenu_email_send_action"/>
+    <string name="webview_contextmenu_email_save_action"/>
+    <string name="webview_contextmenu_email_copy_action"/>
+    <string name="webview_contextmenu_email_clipboard_label"/>
+    <string name="image_saved_as"><xliff:g id="filename">%s</xliff:g>\"</string>
+    <string name="image_saving_failed"/>
+    <string name="account_settings_remote_search_num_results_entries_all"/>
+    <string name="account_settings_remote_search_num_results_entries_10"/>
+    <string name="account_settings_remote_search_num_results_entries_25"/>
+    <string name="account_settings_remote_search_num_results_entries_50"/>
+    <string name="account_settings_remote_search_num_results_entries_100"/>
+    <string name="account_settings_remote_search_num_results_entries_250"/>
+    <string name="account_settings_remote_search_num_results_entries_500"/>
+    <string name="account_settings_remote_search_num_results_entries_1000"/>
+    <string name="account_settings_remote_search_num_label"/>
+    <string name="account_settings_remote_search_num_summary"><xliff:g id="num_results">%s</xliff:g> results.</string>
+    <string name="remote_search_sending_query"/>
+    <string name="remote_search_downloading"/>
+    <string name="remote_search_downloading_limited"/>
+    <string name="remote_search_error"/>
+    <string name="account_settings_search"/>
+    <string name="account_settings_remote_search_enabled"/>
+    <string name="account_settings_remote_search_enabled_summary"/>
+    <string name="action_remote_search"/>
+    <string name="pull_to_refresh_remote_search_from_local_search_pull"/>
+    <string name="pull_to_refresh_remote_search_from_local_search_release"/>
+    <string name="remote_search_unavailable_no_network"/>
+    <string name="global_settings_background_as_unread_indicator_label"/>
+    <string name="global_settings_background_as_unread_indicator_summary"/>
+    <string name="global_settings_threaded_view_label"/>
+    <string name="global_settings_threaded_view_summary"/>
+    <string name="upgrade_databases_title"/>
+    <string name="upgrade_databases_unspecified"/>
+    <string name="upgrade_database_format"><xliff:g id="account">%s</xliff:g>\"</string>
+    <string name="message_list_loading"/>
+    <string name="global_settings_splitview_mode_label"/>
+    <string name="global_settings_splitview_always"/>
+    <string name="global_settings_splitview_never"/>
+    <string name="global_settings_splitview_when_in_landscape"/>
+    <string name="message_view_empty"/>
+    <string name="global_settings_show_contact_picture_label"/>
+    <string name="global_settings_show_contact_picture_summary"/>
+    <string name="last_refresh_time_format"><xliff:g id="formatted_time">%s</xliff:g></string>
+    <string name="last_refresh_time_format_with_push"><xliff:g id="time_with_preposition">%s</xliff:g> (Push active)</string>
+    <string name="preposition_for_date"><xliff:g id="date">%s</xliff:g></string>
+    <string name="mark_all_as_read"/>
+    <string name="global_settings_colorize_missing_contact_pictures_label"/>
+    <string name="global_settings_colorize_missing_contact_pictures_summary"/>
+    <string name="global_settings_messageview_visible_refile_actions_title"/>
+    <string name="global_settings_messageview_visible_refile_actions_summary"/>
+    <string name="loading_attachment"/>
+    <string name="fetching_attachment_dialog_title_send"/>
+    <string name="fetching_attachment_dialog_title_save"/>
+    <string name="fetching_attachment_dialog_message"/>
+    <string name="auth_external_error"/>
+    <!-- === Client certificates specific ================================================================== -->
+    <string name="account_setup_basics_client_certificate"/>
+    <string name="account_setup_basics_oauth2_token"/>
+    <string name="client_certificate_spinner_empty"/>
+    <string name="client_certificate_spinner_delete"/>
+    <string name="client_certificate_retrieval_failure"><xliff:g id="alias">%s</xliff:g>\""</string>
+    <string name="client_certificate_advanced_options"/>
+    <string name="client_certificate_expired"><xliff:g id="certificate_alias">%1$s</xliff:g>\" has expired or is not yet valid (<xliff:g id="exception_message">%2$s</xliff:g>)"</string>
+    <!-- Note: This references message_view_download_remainder -->
+    <string name="preview_encrypted"/>
+    <string name="add_from_contacts"/>
+    <string name="crypto_settings_cancel"/>
+    <string name="crypto_settings_ok"/>
+    <string name="recipient_cc"/>
+    <string name="recipient_bcc"/>
+    <string name="recipient_to"/>
+    <string name="recipient_from"/>
+    <string name="unknown_recipient"/>
+    <string name="address_type_home"/>
+    <string name="address_type_work"/>
+    <string name="address_type_other"/>
+    <string name="address_type_mobile"/>
+    <string name="compose_error_no_draft_folder"/>
+    <string name="compose_error_no_signing_key"/>
+    <string name="compose_error_private_missing_keys"/>
+    <string name="crypto_mode_disabled"/>
+    <string name="crypto_mode_opportunistic"/>
+    <string name="crypto_mode_private"/>
+    <string name="error_crypto_provider_connect"/>
+    <string name="error_crypto_provider_ui_required"/>
+    <string name="error_crypto_inline_attach"/>
+    <string name="enable_inline_pgp"/>
+    <string name="disable_inline_pgp"/>
+    <string name="enable_sign_only"/>
+    <string name="disable_sign_only"/>
+    <string name="openpgp_sign_only_ok"/>
+    <string name="openpgp_sign_only_disable"/>
+    <string name="openpgp_sign_only_keep_enabled"/>
+    <string name="openpgp_dialog_sign_only_title"/>
+    <string name="openpgp_dialog_sign_only_text"/>
+    <string name="openpgp_dialog_sign_only_plus_verified"/>
+    <string name="openpgp_dialog_sign_only_minus_break"/>
+    <string name="openpgp_dialog_sign_only_minus_attach"/>
+    <string name="openpgp_dialog_sign_only_neutral_encsigned"/>
+    <string name="crypto_msg_disabled"/>
+    <string name="crypto_msg_encrypted_error"/>
+    <string name="crypto_msg_signed_error"/>
+    <string name="crypto_msg_unsupported_encrypted"/>
+    <string name="crypto_msg_unsupported_signed"/>
+    <string name="crypto_msg_incomplete_encrypted"/>
+    <string name="crypto_msg_cancelled"/>
+    <string name="crypto_msg_signed_unencrypted"/>
+    <string name="crypto_msg_encrypted_unsigned"/>
+    <string name="crypto_msg_sign_unknown"/>
+    <string name="crypto_msg_sign_verified"/>
+    <string name="crypto_msg_sign_unverified"/>
+    <string name="crypto_msg_sign_error"/>
+    <string name="crypto_msg_sign_mismatch"/>
+    <string name="crypto_msg_sign_expired"/>
+    <string name="crypto_msg_sign_revoked"/>
+    <string name="crypto_msg_sign_insecure"/>
+    <string name="crypto_msg_sign_incomplete"/>
+    <string name="crypto_msg_signed_encrypted"/>
+    <string name="crypto_msg_unsigned_encrypted"/>
+    <string name="crypto_info_ok"/>
+    <string name="crypto_info_view_key"/>
+    <string name="locked_attach_unlock"/>
+    <string name="locked_attach_unencrypted"/>
+    <string name="locked_attach_title"/>
+    <string name="message_progress_text"/>
+    <string name="messageview_decrypt_cancelled"/>
+    <string name="messageview_decrypt_retry"/>
+    <string name="messageview_decrypt_incomplete"/>
+    <string name="messageview_crypto_error_title"/>
+    <string name="messageview_crypto_warning_title"/>
+    <string name="messageview_crypto_warning_revoked"><b>revoked key!</b></string>
+    <string name="messageview_crypto_warning_expired"><b>expired key!</b></string>
+    <string name="messageview_crypto_warning_insecure"><b>insecure key!</b></string>
+    <string name="messageview_crypto_warning_error"><b>error in this message\'s signature!</b></string>
+    <string name="messageview_crypto_warning_unsigned"><b>not end-to-end secure</b>!</string>
+    <string name="messageview_crypto_warning_show_anyway"/>
+    <string name="recipient_error_non_ascii"/>
+    <string name="recipient_error_parse_failed"/>
+    <string name="account_settings_crypto_hide_sign_only"/>
+    <string name="account_settings_crypto_hide_sign_only_on"/>
+    <string name="account_settings_crypto_hide_sign_only_off"/>
+    <string name="error_sign_only_no_encryption"/>
+    <string name="unsigned_text_divider_label"/>
+    <string name="openpgp_inline_title"/>
+    <string name="openpgp_inline_text"/>
+    <string name="openpgp_inline_plus_compat"/>
+    <string name="openpgp_inline_minus_transit"/>
+    <string name="openpgp_inline_minus_attach"/>
+    <string name="openpgp_inline_ok"/>
+    <string name="openpgp_inline_disable"/>
+    <string name="openpgp_inline_keep_enabled"/>
+    <string name="apg_deprecated_title"/>
+    <string name="apg_deprecated_1"/>
+    <string name="apg_deprecated_2"/>
+    <string name="apg_deprecated_bullet_1"/>
+    <string name="apg_deprecated_bullet_2"/>
+    <string name="apg_learn_more"><a href="https://k9mail.github.io/2017/01/13/Why-APG-is-no-longer-supported.html">click here</a> to learn more.</string>
+    <string name="apg_deprecated_ok"/>
+    <string name="apg"/>
+    <string name="no_crypto_provider_see_global"/>
+    <string name="crypto_no_provider_title"/>
+    <string name="crypto_no_provider_message"/>
+    <string name="crypto_no_provider_button"/>
+    <string name="xoauth2_auth_cancelled_by_user"/>
+    <string name="xoauth2_unable_to_contact_auth_server"/>
+    <string name="xoauth2_error_contacting_auth_server"/>
+    <string name="xoauth2_account_doesnt_exist"/>
+    <string name="hello_world"/>
+    <string name="decrypt_message_explanation"/>
+    <string name="pep_menu_long_trustwords"/>
+    <string name="pep_menu_short_trustwords"/>
+    <string name="mail_list_widget_text"/>
+    <string name="mail_list_widget_loading"/>
+    <string name="fetching_folders_failed"/>
+    <string name="messageview_crypto_warning_details"/>
+    <string name="error_recipient_crypto_retrieve"/>
+    <string name="openpgp_enabled_error_title"/>
+    <string name="openpgp_enabled_error_msg"/>
+    <string name="enable_encryption"/>
+    <string name="disable_encryption"/>
+    <string name="openpgp_description_text1"/>
+    <string name="openpgp_description_text3"/>
+    <string name="openpgp_description_text2"/>
+    <string name="openpgp_enabled_error_gotit"/>
+    <string name="openpgp_enabled_error_back"/>
+    <string name="openpgp_enabled_error_disable"/>
+    <string name="openpgp_encryption"/>
+    <string name="account_settings_crypto_prefer_encrypt"/>
+    <string name="dialog_autocrypt_mutual_title"/>
+    <string name="dialog_autocrypt_mutual_description_1"/>
+    <string name="dialog_autocrypt_mutual_description_2"/>
+    <string name="dialog_autocrypt_mutual_learn_more"><a href="https://k9mail.github.io/2018/02/26/OpenPGP-Considerations-Part-III-Autocrypt.html">click here</a> to learn more.</string>
+    <string name="general_settings_title"/>
+    <string name="dialog_openkeychain_info_title"/>
+    <string name="dialog_openkeychain_info_install"/>
+    <string name="dialog_openkeychain_info_text"/>
+    <string name="encrypted_subject"/>
+    <string name="toast_account_not_found"/>
+    <string name="toast_openpgp_provider_error"/>
+    <string name="ac_transfer_setting_title"/>
+    <string name="ac_transfer_setting_summary"/>
+    <string name="ac_transfer_title"/>
+    <string name="ac_transfer_intro"/>
+    <string name="ac_transfer_button_send"/>
+    <string name="ac_transfer_will_be_sent"/>
+    <string name="ac_transfer_generating"/>
+    <string name="ac_transfer_sending_to"/>
+    <string name="ac_transfer_finish"/>
+    <string name="ac_transfer_show_code"/>
+    <string name="ac_transfer_msg_subject"/>
+    <string name="ac_transfer_msg_body"/>
+    <string name="ac_transfer_error_send"/>
+    <string name="switch_on"/>
+    <string name="switch_off"/>
+</resources>
