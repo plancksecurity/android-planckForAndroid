@@ -1,14 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <resources>
     <!--<string name="pep_account_setup_generating_keys">Setting your Privacy by Default </string>-->
     <string name="pep_reset_trust">Desconfiar</string>
     <string name="pep_pgp_fingerprint">Huella PGP</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
-    <string name="pep_account_setup_generating_keys">"Configurando su Privacidad por Defecto "</string>
+    <string name="pep_account_setup_generating_keys">Configurando su privacidad </string>
     <string name="pep_dialog_weaker_forward_warning_message">Esta a punto de reenviar un mensaje seguro como no seguro. Si continua, información confidencial podrías ser filtrada, poniéndole a usted y las personas implicadas en esta comunicación en peligro ¿Seguro que desea continuar? </string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Continuar</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancelar</string>
     <string name="pep_dialog_confirm_forward_title">Confirmar reenvio</string>
+
     <string name="pep_title_activity_privacy_status">Grado de privacidad</string>
     <!--<string name="pep_extra_addresses">Extra key ids:</string>-->
     <string name="pep_use_keyserver">Buscar las claves en el servidor de claves</string>
@@ -16,6 +17,7 @@
     <string name="pep_subject_unprotected">Deshabilitar protección del asunto</string>
     <!--<string name="pep_add_key_to_blacklist">Add a key to blacklist</string>-->
     <!--<string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>-->
+
     <string name="pep_confirm_trustwords">Aceptar</string>
     <string name="pep_wrong_trustwords">Rechazar</string>
     <string name="pep_wrong_fingerprint">Huella incorrecta</string>
@@ -48,8 +50,10 @@
     <string name="crash_toast_text">Oops, algo salió mal</string>
     <string name="advanced_options">Opciones avanzadas</string>
     <string name="basic_options">Opciones básicas</string>
+    <string name="pep_enable_auto_download">Descarga automática de mensajes</string>
     <string name="pep_sync_enable_account">Sincroniza esta cuenta</string>
     <string name="synchronize_these_accounts_between_my_devices">sincroniza estas cuentas entre mis dispositivos</string>
+
     <string-array name="pep_title">
         <item>Desconocido<!--pEpRatingUndefined--></item>
         <item>No se puede descifrar<!--pEpRatingCannotDecrypt--></item>
@@ -65,6 +69,7 @@
         <item>Ooops: Problema interno<!--pEpRatingB0rken--></item>
         <item>Falsificado<!--pEpRatingUnderAttack--></item>
     </string-array>
+
     <string-array name="pep_explanation">
         <item>No hay suficiente información para determinar si la comunicación es segura.<!--pEpRatingUndefined--></item>
         <item>No se ha podido descifrar el mensaje.<!--pEpRatingCannotDecrypt--></item>
@@ -80,6 +85,7 @@
         <item><!--pEpRatingB0rken--></item>
         <item>Este mensaje no es seguro y ha sido manipulado.<!--pEpRatingUnderAttack--></item>
     </string-array>
+
     <string-array name="pep_suggestion">
         <item>Por favor, introduzca la información necesaria.<!--pEpRatingUndefined--></item>
         <item>Si este mensaje va dirigido a ti, por favor informa a la persona que ha realizado el envio de que no dispones de su clave.<!--pEpRatingCannotDecrypt--></item>
@@ -95,18 +101,20 @@
         <item><!--pEpRatingB0rken--></item>
         <item>Verifique, tanto usted como su interlocutor el contenido del mensaje.<!--pEpRatingUnderAttack--></item>
     </string-array>
+
     <string name="pep_forward_warning_description">Mostrar un aviso si un mensaje pierde seguridad al responder o reenviar.</string>
     <string name="navigation_drawer_open">Abrir el panel lateral</string>
     <string name="navigation_drawer_close">Cerrar el panes de navegación</string>
     <string name="pep_extra_addresses">Ids de Extra key:</string>
     <string name="pep_add_key_to_blacklist">Añadir clave a la lista negra</string>
     <string name="pep_remove_key_from_blacklist">Eliminar claves de la lista negra</string>
+
     <string name="pep_force_protected">Habilitar protección</string>
     <string name="pep_forward_warning">Advertencia de respuesta insegura</string>
     <string name="message_list_item_removed">Eliminado</string>
     <string name="message_list_item_undo">DESHACER</string>
     <string name="available_accounts_title">Cuentas disponibles</string>
-    <string name="pep_app_description">K-9/p≡p es un potente cliente de correo electrónico gratuito para Android con pretty Easy privacy.</string>
+    <string name="pep_app_description">p≡p es un potente cliente de correo para Android con pretty Easy privacy.</string>
     <string name="app_k9_pep_name">"p≡p "</string>
     <string name="global_settings_title">Configuración global</string>
     <string name="pep_add_device_ask_move_trustwords">Estás a punto de mover un dispositivo a otro grupo de dispositivos de p≡p. Confirma verificando las siguientes Trustwords.</string>
@@ -115,9 +123,10 @@
     <string name="button_settings">Configuración</string>
     <string name="read_snackbar_permission_rationale">Necesitamos tu permiso para leer los contactos almacenados en tu móvil</string>
     <string name="read_snackbar_permission_permanently_denied">No permitir la lectura de contactos puede provocar que la app se comporte de manera inesperada</string>
-    <string name="read_permission_rationale_title">Leer contactos</string>
+    <string name="read_permission_rationale_title">"Leer  contactos"</string>
+
     <string name="download_permission_first_explanation">Necesitamos tu permiso para descargar archivos</string>
-    <string name="download_snackbar_permission_rationale">Necesitamos tu permiso para guardar adjuntos de tus correos electrónicos.</string>
+    <string name="download_snackbar_permission_rationale">Necesitamos tu permiso para descargar archivos</string>
     <string name="download_snackbar_permission_permanently_denied">No permitir la descarga de archivos puede provocar comportamientos inesperados</string>
     <string name="download_permission_rationale_title">Descargar archivos</string>
     <string name="add_fpr">Añadir huella PGP</string>
@@ -126,108 +135,9 @@
     <string name="is_not_always_secure">Guardar sin protección en el servidor</string>
     <string name="master_key_management">Administración de la Clave Maestra</string>
     <string name="message_saving_error">Error guardando el mensaje</string>
+
     <string name="action_continue">Continuar</string>
     <string name="battery_optimization_rationale_title">Desactivar la optimización de batería</string>
     <string name="battery_optimiazation_explanation">Para poder sincronizar sus correos en segundo plano, es necesario deshabilitar la optimización de batería</string>
-    <string name="reset">Restablecer</string>
-    <string name="key_reset_own_identity_feedback">La cuenta ha sido restablecida.</string>
-    <string name="pep_key_reset_all_own_ids_summary">Restablecer todas las cuentas</string>
-    <string name="key_reset_identity_feedback">El estatus p≡p de este interlocutor ha sido restablecido.</string>
-    <string name="nnf_name">Nombre</string>
-    <string name="pep_key_reset_own_id_warning_title">Restablecer la cuenta %s</string>
-    <string name="pep_key_reset_own_id_warning">Esta acción restablecerá tu cuenta. \n ¿Confirmas que quieres hacerlo\?</string>
-    <string name="pep_key_reset_all_own_ids_warning">Esta acción restablecerá todas tus cuentas. \n ¿Confirmas que quieres hacerlo\?</string>
-    <string name="key_reset_all_own_identitities_feedback">Todas las cuentas p≡p se han restablecido.</string>
-    <string name="mistrust_identity_feedback">Ahora %s no es de confianza</string>
-    <string name="trust_identity_feedback">Ahora %s es de confianza</string>
-    <string name="key_reset_for_identity_context_title">Restablece todos los datos de p≡p relativos a este interlocutor:</string>
-    <string name="key_import_from_fs_input_fpr">Introduce el identificador o la huella de la clave.</string>
-    <string name="key_import_success">La clave %1$s se ha importado correctamente de %2$s</string>
-    <string name="key_import_failure">No se ha podido importar ni utilizar ninguna clave de %1$s con el identificador de clave %2$s</string>
-    <string name="key_import_wizard_pep_not_initial_explanation">Si has iniciado una importación de la clave para la cuenta %s, haz clic en Iniciar.</string>
-    <string name="pgp_key_import_instructions">Para proceder con la importación de la clave, por favor importe la clave pública adjunta de p≡p y responde con un mensaje que cumpla estas dos condiciones: 
-\n 
-\n 
-\n 1. tiene adjunto tu clave pública PGP y
-\n 2. está encriptado y firmado con la clave p≡p que acabas de importar</string>
-    <string name="key_import_wizard_from_pgp_send_private_key_msg">Encripta y firma el mensaje de respuesta de nuevo con la clave pública p≡p y envíalo.</string>
-    <string name="key_import_wizard_from_pgp_create_private_key_msg">En tu dispositivo PGP, crea otro mensaje de respuesta al que has recibido de p≡p. Esta vez, adjunta tu clave privada PGP.</string>
-    <string name="key_import_wizard_from_pgp_create_handshake_request">En tu dispositivo PGP, crea un mensaje de respuesta al que has recibido de p≡p y adjunta tu clave pública PGP.</string>
-    <string name="key_import_wizard_from_pgp_key_sent">Se te ha enviado un mensaje con tu clave pública p≡p. Abre este mensaje en tu dispositivo PGP e importa tu clave pública p≡p en tu almacén de claves.</string>
-    <string name="key_import_wizard_from_pgp_initial_text">Estás a punto de iniciar el proceso de importación de la clave a partir de un cliente PGP</string>
-    <string name="key_import_wizard_from_pep_initial_text">Vamos a iniciar el proceso de importación de la clave: Se importará y usará tu clave p≡p de otro dispositivo, y se exportará tu clave privada.</string>
-    <string name="key_import_wizard_handshake_explanation">Compara las palabras de confianza siguientes con las que se muestran en tu otro dispositivo y confirma que coincidan.</string>
-    <string name="open_pgp">OpenPGP</string>
-    <string name="pep_sync_leave_device_group">Salir del grupo de dispositivos</string>
-    <string name="pep_sync">p≡p sync</string>
-    <string name="message_loading_error">La valoración del mensaje todavía se está cargando, vuelve a intentarlo</string>
-    <string name="key_import_reject_feedback">La clave se ha rechazado</string>
-    <string name="key_import_accept_feedback">La clave se ha sustituido</string>
-    <string name="key_import_reject">Rechazar</string>
-    <string name="key_import_accept">Aceptar</string>
-    <string name="nnf_filename">Nombre de archivo</string>
-    <string name="nnf_need_valid_filename">Introduce o selecciona un nombre de archivo válido</string>
-    <string name="nnf_select_something_first">Primero debes seleccionar algún elemento</string>
-    <string name="nnf_create_folder_error">No se ha podido crear la carpeta</string>
-    <string name="device_offline_warning">Parece que tu dispositivo no está conectado, por favor revisa la conexión antes de continuar</string>
-    <string name="account_already_exists">La cuenta ya existe</string>
-    <string name="reset_all">Restablecer todo</string>
-    <string name="key_import_wizard_handshake_explanation_pgp">Compara las huellas PGP de las claves siguientes con las que se muestran en tu dispositivo PGP y confirma que coincidan.</string>
-    <string name="key_import_wizard_from_pgp_send_handshake_request">Encripta y firma el mensaje de respuesta con la clave pública p≡p que acabas de importar y envíalo.</string>
-    <string name="pgp">PGP</string>
-    <string name="nnf_new_folder">Nueva carpeta</string>
-    <string name="add_account_message">Para poder usar esta cuenta has de añadirla a tu dispositivo</string>
-    <string name="add_account_title">Añade tu cuenta</string>
-    <string name="intro_frag_second_text_3">Si las Palabras de Confianza no son correctas, tu interlocutor no es de confianza.</string>
-    <string name="intro_frag_second_header_3">Sospechoso</string>
-    <string name="intro_frag_second_header_2">Seguro y de confianza</string>
-    <string name="intro_frag_second_header_1">Seguro</string>
-    <string name="keysync_wizard_group_creation_done_message">Se ha creado con éxito un grupo de dispositivos. Ahora toda tu privacidad está sincronizada.</string>
-    <string name="pep_rating_mistrusted">Sospechoso</string>
-    <string name="keysync_wizard_error_message">Se ha producido un error al sincronizar los dispositivos. Vuelve a intentarlo.</string>
-    <string name="keysync_wizard_add_device_to_existing_group_message">Se ha encontrado otro dispositivo con el que puedes sincronizar toda tu tu privacidad. Quieres empezar a sincronizar\?</string>
-    <string name="keysync_wizard_waiting_message">Espera unos instantes mientras sincronizamos tus dispositivos. Este proceso puede llevar unos minutos.</string>
-    <string name="keysync_wizard_action_leave">Salir</string>
-    <string name="keysync_wizard_action_cancel">Cancelar</string>
-    <string name="keysync_wizard_action_next">Siguiente</string>
-    <string name="permissions_needed_message">No conceder los permisos necesarios puede causar comportamientos inesperados. Presiona Aceptar para concedérnoslos.</string>
-    <string name="nnf_permission_external_write_denied">Se ha denegado el permiso para acceder al sistema de archivos</string>
-    <string name="pep_sync_is_enabled_global">La sincronización de p≡p está activada</string>
-    <string name="pep_sync_is_disabled_global">La sincronización de p≡p está desactivada</string>
-    <string name="search_empty_error">Escribe texto para buscar</string>
-    <string name="intro_frag_first_text_1">&lt;string name=\"pep_account_setup_generating_keys\"&gt;Setting your Privacy by Default &lt;/string&gt;</string>
-    <string name="intro_frag_first_text_2">&lt;string name=\"pep_account_setup_generating_keys\"&gt;Setting your Privacy by Default &lt;/string&gt;</string>
-    <string name="intro_frag_first_text_3">Y también en la barra superior, cuando abres o redactas un correo electrónico:</string>
-    <string name="intro_frag_second_text_1">Con este estado de privacidad, todas las comunicaciones son seguras, pero para confirmar que tu contacto es realmente la persona que conoces, deberías comprobar las Palabras de Confianza con este contacto.</string>
-    <string name="intro_frag_second_text_2">Cuando se confirma que las palabras de confianza son correctas y que se ha establecido la comunicación, esta se considera totalmente segura y de confianza.</string>
-    <string name="intro_frag_third_text_3">OUTDISTANCE\t\t\tCORRINA\t\t\tETHIOPIA\t\t\tOUTDRAW\t\t\tFLEECER\t\t\t…</string>
-    <string name="intro_frag_fourth_text_1">\@string/pep_title_activity_privacy_status</string>
-    <string name="intro_frag_fourth_text_2">El icono en la barra superior representa el estado de privacidad del mensaje, el cual es el denominador común más bajo de todos los interlocutores que participan en el mensaje. Por ejemplo:</string>
-    <string name="intro_frag_fourth_text_3">En este caso, el estado de privacidad del mensaje es seguro, ya que este es el denominador común más bajo de ambos interlocutores.</string>
-    <string name="pep_rating_secure_trusted">Seguro y de 
-\nconfianza</string>
-    <string name="pep_rating_forced_unencrypt">Desactivado</string>
-    <string name="only_own_identities">el suyo es un mensaje propio, sin que participe interlocutor.</string>
-    <string name="keysync_wizard_handshake_message">Comprueba que tengas ambos dispositivos a tu alcance para comparar en ellos las palabras de confianza. Las palabras de confianza siguientes, ¿son las mismas que las del otro dispositivo\?</string>
-    <string name="keysync_wizard_create_group_first_message">Se ha detectado un segundo dispositivo. Podemos crear un grupo de dispositivos para sincronizar toda tu privacidad en ambos dispositivos. ¿Quieres que iniciemos la sincronización\?</string>
-    <string name="keysync_wizard_action_try_again">Vuelve a intentarlo</string>
-<<<<<<< HEAD
-    <string name="pep_rating_secure">Seguro</string>
-    <string name="action_tutorial">Tutorial</string>
-    <string name="intro_frag_third_text_1">Handshake</string>
-    <string name="keysync_wizard_group_joining_done_message">El dispositivo ahora forma parte de tu grupo de dispositivos. Ahora toda tu privacidad está sincronizada.</string>
-    <string name="intro_frag_third_text_2">Completa un handshake con tu interlocutor. Un handshake se necesita solo una vez por interlocutor y garantiza una comunicación segura y verificada.</string>
-    <string name="intro_frag_third_text_4">Al confirmar que tus Trustwords y las de tu interlocutor coincidan, tu comunicación será segura y verificada.</string>
-=======
-    <string name="notification_failed_to_encrypt_text">No lo hemos enviado y lo guardamos en la carpeta de borradores en su lugar.</string>
-    <string name="notification_failed_to_encrypt_title">No hemos podido proteger este mensaje.</string>
-    <string name="message_failed_to_encrypt">No hemos podido proteger este mensaje.</string>
-    <string name="keysync_wizard_group_joining_done_message">El dispositivo ahora forma parte de tu grupo de dispositivos. Ahora toda tu privacidad está sincronizada.</string>
-    <string name="action_tutorial">Tutorial</string>
-    <string name="pep_rating_none">" . "</string>
-    <string name="pep_rating_secure">Seguro</string>
-    <string name="intro_frag_third_text_4">Al confirmar que tus Trustwords y las de tu interlocutor coincidan, tu comunicación será segura y verificada.</string>
-    <string name="intro_frag_third_text_2">Completa un handshake con tu interlocutor. Un handshake se necesita solo una vez por interlocutor y garantiza una comunicación segura y verificada.</string>
-    <string name="intro_frag_third_text_1">Handshake</string>
->>>>>>> f32b7231fa67d55065ba3dc1d40392693aea0f5b
+
 </resources>

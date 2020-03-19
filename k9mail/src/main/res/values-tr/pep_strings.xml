@@ -5,9 +5,11 @@
     <string name="pEp_trustwords">p≡p Trustwords</string>
     <string name="pep_account_setup_generating_keys">Gizlilik Ayarı </string>
     <string name="pep_dialog_weaker_forward_warning_message">Siz, emniyetli bir mesajı emniyetsiz olarak iletmek üzeresiniz. Devam etmeyi seçerseniz, sizi ve iletişim ortaklarınızı riske atabilecek gizli bilgiler sızdırılabilir. Devam etmek istediğinize emin misiniz? </string>
+
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">İlerle</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">İptal</string>
     <string name="pep_dialog_confirm_forward_title">İletiyi onayla</string>
+
     <string name="pep_title_activity_privacy_status">Gizlilik Durumu</string>
     <string name="pep_extra_addresses">Ekstra anahtar kimlikleri:</string>
     <string name="pep_use_keyserver">Anahtarları anahtar sunucusunda ara</string>
@@ -15,6 +17,7 @@
     <string name="pep_subject_unprotected">Korunmasız mesaj konularını etkinleştir</string>
     <string name="pep_add_key_to_blacklist">Kara listeye bir anahtarı ekleyin</string>
     <string name="pep_remove_key_from_blacklist">Kara listeden bir anahtarı çıkarın</string>
+
     <string name="pep_confirm_trustwords">Güvenlik kelimelerini Onayla</string>
     <string name="pep_wrong_trustwords">Hatalı Güvenlik kelimeleri</string>
     <string name="pep_wrong_fingerprint">Yanlış parmak izi</string>
@@ -38,6 +41,7 @@
     <string name="pep_app_license">GNU Genel Kamu Lisansı v3 altında Lisanslı</string>
     <string name="pep_trust_server_description">Server tarafındaki e-postaları güvenli bir biçimde saklayın.</string>
     <string name="pep_account_privacy_protection_explanation">Bu hesap için gizlilik korumasını etkinleştir </string>
+
     <string name="key_list_title">Available keys</string>
     <string name="pep_add_device_ask_trustwords">You are about to add a device to your pEp device group. Confirm by successfully verifying the following Trustwords.</string>
     <string name="pep_device_group">p≡p Aygхt grubu</string>
@@ -46,8 +50,10 @@
     <string name="crash_toast_text">Oops, something went wrong</string>
     <string name="advanced_options">Advanced options</string>
     <string name="basic_options">Basic options</string>
+    <string name="pep_enable_auto_download">Decrypt messages</string>
     <string name="pep_sync_enable_account">Synchronize this account</string>
     <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
+
     <string-array name="pep_title">
         <item>Bilinmeyen<!--pEpRatingUndefined--></item>
         <item>Deşifre edilemez<!--pEpRatingCannotDecrypt--></item>
@@ -63,6 +69,7 @@
         <item>Ooops: İç sorun<!--pEpRatingB0rken--></item>
         <item>Saldırı altında<!--pEpRatingUnderAttack--></item>
     </string-array>
+
     <string-array name="pep_explanation">
         <item>Bu mesajın emniyetli olup olmadığını belirlemek için yeterli bilgi bulunmamaktadır.<!--pEpRatingUndefined--></item>
         <item>Bu hesap için gizlilik korumasını etkinleştir.<!--pEpRatingCannotDecrypt--></item>
@@ -78,6 +85,7 @@
         <item><!--pEpRatingB0rken--></item>
         <item>Bu mesaj emniyetli değildir ve müdahale edilmiştir.<!--pEpRatingUnderAttack--></item>
     </string-array>
+
     <string-array name="pep_suggestion">
         <item>Lütfen gerekli bilgileri ekleyin.<!--pEpRatingUndefined--></item>
         <item>Bu mesaj size gönderilmiş ise lütfen gönderen kişiye anahtarın sizde olmadığını bildiriniz.<!--pEpRatingCannotDecrypt--></item>
@@ -93,123 +101,6 @@
         <item><!--pEpRatingB0rken--></item>
         <item>Bu mesajın içeriğini iletişim ortağınız ile ayrıca doğrulayın.<!--pEpRatingUnderAttack--></item>
     </string-array>
+    
     <string name="pep_forward_warning_description">Bir mesaj cevap veya ileti yoluyla güvenliğini kaybettiğinde uyarı mesajı göster.</string>
-    <string name="global_settings_title">Genel ayarlar</string>
-    <string name="pep_force_protected">Gizlilik korumasını etkinleştirir</string>
-    <string name="button_settings">Ayarlar</string>
-    <string name="action_continue">Devam</string>
-    <string name="pep_key_reset_all_own_ids_summary">Tüm hesapları sıfırla</string>
-    <string name="key_reset_own_identity_feedback">Hesap sıfırlandı.</string>
-    <string name="key_reset_identity_feedback">Bu iletişim ortağı için tüm p≡p verileri sıfırlandı.</string>
-    <string name="nnf_name">Adı</string>
-    <string name="reset">Sıfırla</string>
-    <string name="pep_key_reset_own_id_warning_title">%s hesabını sıfırla</string>
-    <string name="pep_key_reset_own_id_warning">Bu işlem hesabınızı sıfırlayacaktır. \n Sıfırlamak istediğinizden emin misiniz\?</string>
-    <string name="pep_key_reset_all_own_ids_warning">Bu işlem tüm hesaplarınızı sıfırlayacaktır. \n Sıfırlamak istediğinizden emin misiniz\?</string>
-    <string name="key_reset_all_own_identitities_feedback">Tüm p≡p hesapları sıfırlandı.</string>
-    <string name="mistrust_identity_feedback">%s artık güvenilir değil</string>
-    <string name="trust_identity_feedback">%s artık güvenilir</string>
-    <string name="key_reset_for_identity_context_title">Bu iletişim ortağı için tüm p≡p verilerini sıfırla:</string>
-    <string name="reset_all">Tümünü sıfırla</string>
-    <string name="key_import_from_fs_input_fpr">Lütfen Anahtar Kimliğini veya anahtarın parmak izini girin.</string>
-    <string name="key_import_success">%1$s Anahtarı öğesinden başarıyla içe aktarıldı%2$s</string>
-    <string name="key_import_failure">%1$s öğesinden anahtar kimliği şu şekilde olan herhangi bir anahtar içe aktarılamadı ve kullanılamadı: %2$s</string>
-    <string name="key_import_wizard_pep_not_initial_explanation">Aşağıdaki hesaptan bir anahtar içe aktarma işlemi başlattıysanız: %s, lütfen Başlat’a tıklayın.</string>
-    <string name="pgp_key_import_instructions">Anahtar İçe Aktarmaya devam etmek için lütfen ekli genel p≡p anahtarını içe aktarın ve aşağıdaki özellikleri taşıyan bir ileti ile yanıt verin: 
-\n
-\n
-\n 1. genel PGP anahtarınızla ilişkilendirilmiş ve 
-\n 2. az önce içe aktardığınız p≡p anahtarı ile şifrelenmiş ve imzalanmış</string>
-    <string name="key_import_wizard_from_pgp_send_private_key_msg">Genel p≡p anahtarı ile yanıt iletisini yeniden şifreleyerek imzalayın ve gönderin.</string>
-    <string name="key_import_wizard_from_pgp_create_private_key_msg">PGP aygıtınızda, p≡p’den aldığınıza başka bir yanıt iletisi oluşturun. Bu sefer lütfen özel PGP anahtarınızı iliştirin.</string>
-    <string name="key_import_wizard_handshake_explanation_pgp">Lütfen aşağıdaki anahtarların PGP parmak izlerini PGP aygıtınızdakilerle karşılaştırın ve bunların uyumlu olduğunu teyit edin.</string>
-    <string name="key_import_wizard_from_pgp_send_handshake_request">Yanıt iletisini az önce içe aktardığınız genel p≡p anahtarında şifreleyerek imzaladıktan sonra gönderin.</string>
-    <string name="key_import_wizard_from_pgp_create_handshake_request">PGP aygıtınızda, p≡p’den aldığınıza bir yanıt iletisi oluşturun ve genel PGP anahtarınızı bağlayın.</string>
-    <string name="key_import_wizard_from_pgp_key_sent">Size genel p≡p anahtarınızı içeren bir ileti gönderildi. Lütfen bu iletiyi PGP aygıtınızda açın ve genel p≡p anahtarını anahtar grubunuza aktarın.</string>
-    <string name="key_import_wizard_from_pgp_initial_text">PGP istemcisinden anahtar içe aktarma işlemine başlamak üzeresiniz:</string>
-    <string name="key_import_wizard_from_pep_initial_text">Anahtar içe aktarma işlemine başlamak üzereyiz: Bu işlem, p≡p anahtarınızı başka bir aygıttan içe aktararak kullanacak ve özel anahtarınızı dışa aktaracaktır.</string>
-    <string name="key_import_wizard_handshake_explanation">Lütfen aşağıdaki Güvenli kelimeleri aygıtınızdakilerle karşılaştırın ve bunların uyumlu olduğunu teyit edin.</string>
-    <string name="open_pgp">OpenPGP</string>
-    <string name="pep_sync_leave_device_group">Aygıt grubundan ayrıl</string>
-    <string name="pep_sync">p≡p eşitleme</string>
-    <string name="message_loading_error">İleti derecelendirmesi hala devam ediyor, tekrar deneyin</string>
-    <string name="key_import_reject_feedback">Anahtar reddedildi</string>
-    <string name="key_import_accept_feedback">Anahtar değiştirildi</string>
-    <string name="key_import_reject">Reddet</string>
-    <string name="key_import_accept">Güvenlik kelimelerini Onayla</string>
-    <string name="nnf_filename">Dosya adı</string>
-    <string name="nnf_need_valid_filename">Lütfen geçerli bir dosya adı girin veya seçin</string>
-    <string name="nnf_create_folder_error">Klasör oluşturulamadı</string>
-    <string name="nnf_new_folder">Yeni klasör</string>
-    <string name="device_offline_warning">Aygıtınız çevrim dışı görünüyor; devam etmeden önce lütfen bağlantınızı kontrol edin</string>
-    <string name="account_already_exists">Hesap zaten mevcut</string>
-    <string name="add_account_message">Aygıtınıza eklemeniz durumunda bu hesabı kullanabilmeniz için</string>
-    <string name="add_account_title">Hesabınızı ekleyin</string>
-    <string name="battery_optimiazation_explanation">E-postalarınızı arka planda eşitlemek için pil optimizasyonlarını devre dışı bırakmamız gerekmektedir</string>
-    <string name="battery_optimization_rationale_title">Pil optimizasyonlarını devre dışı bırak</string>
-    <string name="message_saving_error">İleti kaydetme hatası</string>
-    <string name="master_key_management">Ekstra Anahtar yönetimi</string>
-    <string name="is_not_always_secure">Sunucuda korumasız olarak sakla</string>
-    <string name="is_always_secure">Sunucuda korumalı olarak sakla</string>
-    <string name="error_parsing_fingerprint">Parmak izi ayrıştırılırken hata!</string>
-    <string name="add_fpr">Parmak izi ekle</string>
-    <string name="download_snackbar_permission_rationale">E-postalarınızdaki ekleri kaydetmek için izninize ihtiyacımız var.</string>
-    <string name="read_permission_rationale_title">Kişiler okunuyor</string>
-    <string name="read_snackbar_permission_rationale">Cep telefonunuzda kayıtlı kişileri okumak için izninize ihtiyacımız var</string>
-    <string name="read_permission_first_explanation">Cep telefonunuzda kayıtlı kişileri okumak için izninize ihtiyacımız var</string>
-    <string name="pep_keysync_timeout">p≡p eşitlemesi zaman aşımı</string>
-    <string name="pep_add_device_ask_move_trustwords">Aygıtı başka bir p≡p aygıt grubuna taşımak üzeresiniz. Aşağıdaki Güvenli kelimeleri başarıyla doğrulayarak onaylayın.</string>
-    <string name="configure_account_action">Hesapları yönet</string>
-    <string name="app_k9_pep_name">"K-9/p≡p "</string>
-    <string name="pep_app_description">K-9/p≡p oldukça kolay bir şekilde gizlilik sunan, Android için geliştirilmiş güçlü, ücretsiz bir e-posta istemcisidir.</string>
-    <string name="available_accounts_title">Müsait kişiler</string>
-    <string name="message_list_item_undo">GERİ AL</string>
-    <string name="pgp">PGP</string>
-    <string name="nnf_select_something_first">Lütfen önce bir seçim yapın</string>
-    <string name="download_permission_rationale_title">Dosyaları indir</string>
-    <string name="download_permission_first_explanation">Dosyaları cep telefonunuza indirmek için izninize ihtiyacımız var</string>
-    <string name="message_list_item_removed">Kaldırıldı</string>
-    <string name="pep_forward_warning">Yanıt uyarısı güvenliğini kaldır</string>
-    <string name="navigation_drawer_close">Gezinme çekmecesini kapat</string>
-    <string name="navigation_drawer_open">Gezinme çekmecesini aç</string>
-    <string name="intro_frag_second_header_2">Güvenli &amp; Güvenilir</string>
-    <string name="keysync_wizard_group_creation_done_message">Başarıyla bir aygıt grubu oluşturduk. Gizliliğiniz artık tamamen işaretlendi.</string>
-    <string name="action_tutorial">Eğitim</string>
-    <string name="keysync_wizard_action_leave">Ayrıl</string>
-    <string name="intro_frag_third_text_1">Handshake</string>
-    <string name="intro_frag_second_header_1">Güvenli</string>
-    <string name="keysync_wizard_waiting_message">Lütfen aygıtlarınızı eşitlememiz için zaman tanıyın. Bu işlem bir dakika veya daha uzun sürebilir.</string>
-    <string name="intro_frag_second_header_3">Güvenilmez</string>
-    <string name="pep_rating_mistrusted">Güvenilmez</string>
-    <string name="keysync_wizard_action_cancel">Vazgeç</string>
-    <string name="keysync_wizard_error_message">Aygıtlar eşitlenirken bir şeyler yolunda gitmedi. Lütfen tekrar deneyin.</string>
-    <string name="keysync_wizard_action_next">İleri</string>
-    <string name="pep_rating_secure">Güvenli</string>
-    <string name="read_snackbar_permission_permanently_denied">Kişilerinizi okumamıza izin vermemeniz, beklenmedik davranışlara neden olabilir</string>
-    <string name="download_snackbar_permission_permanently_denied">Dosyaları indirmemize izin vermemeniz, beklenmedik davranışlara neden olabilir</string>
-    <string name="permissions_needed_message">Gerekli izinlerin verilmemesi, beklenmedik davranışlara neden olabilir. Bu izni bize vermek için Tamam’a basın.</string>
-    <string name="nnf_permission_external_write_denied">Dosya sistemine erişme izni reddedildi</string>
-    <string name="pep_sync_is_enabled_global">p≡p eşitlemesi etkinleştirildi</string>
-    <string name="pep_sync_is_disabled_global">p≡p eşitlemesi devre dışı bırakıldı</string>
-    <string name="search_empty_error">Aramak için lütfen metin yazın</string>
-    <string name="intro_frag_first_text_1"><font color="#4caf50">p≡p</font> eğitimine hoş geldiniz</string>
-    <string name="intro_frag_first_text_2">Bu eğitimi istediğiniz zaman kapatabilirsiniz.
-\n
-\n<font color="#4caf50">p≡p</font>, iletişiminizin ne kadar güvenli olduğunu göstermek için bir Gizlilik Durumu kullanır.
-\n
-\nBu Gizlilik Durumu, kullanıcının avatarında bir simge olarak gösterilir.</string>
-    <string name="intro_frag_first_text_3">Bir e-postayı açtığınızda veya yazdığınızda üst çubukta:</string>
-    <string name="intro_frag_second_text_1">Bu Gizlilik Durumuyla tüm iletişim Güvenlidir, ancak kişinizin gerçekten tanıdığınız kişi olduğunu onaylamak için bu kişiyle Güvenli kelimeler oluşturmalısınız.</string>
-    <string name="intro_frag_second_text_2">Güvenli kelimelerin doğru olduğu onaylandığında ve bir Anlaşma yapıldığında, iletişim tamamen güvenli ve güvenilir olacaktır.</string>
-    <string name="intro_frag_third_text_3">OUTDISTANCE\t\t\tCORRINA\t\t\tETHIOPIA\t\t\tOUTDRAW\t\t\tFLEECER\t\t\t…</string>
-    <string name="intro_frag_fourth_text_1">\@string/pep_title_activity_privacy_status</string>
-    <string name="intro_frag_fourth_text_2">Üst çubuktaki simge iletinin Gizlilik Durumunu yansıtır; bu, o iletinin tüm iletişim ortaklarının en düşük ortak paydasıdır, örneğin:</string>
-    <string name="intro_frag_fourth_text_3">Bu durumda iletinin Gizlilik Durumu Güvenli’dir, çünkü bu, iki iletişim ortağının en düşük ortak paydasıdır.</string>
-    <string name="pep_rating_secure_trusted">Güvenli ve
-\nGüvenilir</string>
-    <string name="pep_rating_forced_unencrypt">Devre dışı bırakıldı</string>
-    <string name="only_own_identities">Bu kendi iletisidir, hiçbir iletişim ortağı ilgili değildir.</string>
-    <string name="keysync_wizard_handshake_message">Aygıtlarda Güvenli kelimeleri karşılaştırmak için lütfen aygıtlarınızın bir arada durduğundan emin olun. Aşağıdaki Güvenli kelimeler, diğer aygıttaki Güvenli kelimelere eşit mi\?</string>
-    <string name="keysync_wizard_create_group_first_message">İkinci bir aygıt algılandı. Tüm gizliliğinizi her iki aygıtta eşitlemek için bir aygıt grubu oluşturabiliriz. Eşitlemeyi başlatalım mı\?</string>
-    <string name="keysync_wizard_action_try_again">Tekrar deneyin</string>
 </resources>
