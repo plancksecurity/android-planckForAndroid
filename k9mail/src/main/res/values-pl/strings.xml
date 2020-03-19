@@ -992,5 +992,4 @@
     <string name="error_sign_only_no_encryption">Szyfrowanie nie jest dostępne w trybie sign-only!</string>
     <string name="unsigned_text_divider_label">Niepodpisany tekst</string>
     <string name="app_name">p≡p</string>
-    <string name="app_authors">Wyprowadzacze psów K-9, p≡p Security S.A.</string>
 </resources>

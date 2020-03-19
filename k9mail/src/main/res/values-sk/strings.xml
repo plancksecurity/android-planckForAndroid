@@ -10,7 +10,7 @@
     <!--<string name="remote_control_desc">Umožňuje tejto aplikácii ovládať aktivity a nastavenia K-9 Mail.</string>-->
     <!--&lt;!&ndash;Used in the about dialog&ndash;&gt;-->
     <!--<string name="app_authors">Google, The K-9 Dog Walkers.</string>-->
-    <string name="app_copyright_fmt">=== App-specific strings =============================================================</string>
+    <string name="app_copyright_fmt">Autorské práva 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
     <!--<string name="app_license">Licenciované pod licenciou Apache 2.0.</string>-->
     <!--&lt;!&ndash;Welcome message&ndash;&gt;-->
     <!--<string name="welcome_message_title">Vitajte v K-9 Mail</string>-->
@@ -89,7 +89,7 @@
     <string name="cancel_action">Zrušiť</string>
     <string name="send_action">Odoslať</string>
     <string name="send_again_action">Odoslať znovu</string>
-    <string name="empty_subject">Predmet správy je prázdny, kliknite ešte raz pre odoslanie s prázdnym predmetom</string>
+    <string name="empty_subject">Predmet správy je prázdny, kliknite ešte raz pre odoslanie s prázdnym predmetom.</string>
     <string name="select_action">Vybrať</string>
     <string name="deselect_action">Zrušiť výber</string>
     <string name="reply_action">Odpovedať</string>
@@ -422,7 +422,7 @@
     <string name="move_copy_cannot_copy_unsynced_message">Nemožno skopírovať alebo presunúť správu, ktorá nie je synchronizovaná so serverom</string>
     <string name="account_setup_failed_dlg_title">Nastavenie nemohlo byť dokončené</string>
     <string name="account_setup_failed_dlg_auth_message_fmt">Používateľské meno alebo heslo nie je správne.\n(<xliff:g id="error">%s</xliff:g>)</string>
-    <string name="account_setup_failed_dlg_certificate_message_fmt">=== App-specific strings =============================================================</string>
+    <string name="account_setup_failed_dlg_certificate_message_fmt">=== App-specific strings =============================================================<xliff:g id="error">%s</xliff:g>)</string>
     <string name="account_setup_failed_dlg_server_message_fmt">Nie je možné sa pripojiť k serveru.\n(<xliff:g id="error">%s</xliff:g>)</string>
     <string name="account_setup_failed_dlg_edit_details_action">Upraviť podrobnosti</string>
     <string name="account_setup_failed_dlg_continue_action">Pokračovať</string>
@@ -1015,6 +1015,9 @@
     <string name="xoauth2_auth_cancelled_by_user">Overenie bolo zrušené</string>
     <string name="hello_world">Ahoj svet!</string>
     <string name="decrypt_message_explanation">Tento e-mail je zašifrovaný a jeho dešifrovanie môže trvať niekoľko sekúnd. Chceš pokračovať\?</string>
+    <string name="apg_deprecated_title">Upozornenie na zastaranie APG</string>
+    <string name="apg_deprecated_2">Z tohto dôvodu bola podpora APG odstránená z K-9 Mail.</string>
+    <string name="apg_learn_more">=== App-specific strings =============================================================</string>
     <string name="no_crypto_provider_see_global">Nie je nakonfigurovaná žiadna aplikácia OpenPGP, pozrite si globálne nastavenia!</string>
     <string name="crypto_no_provider_message">Tento e-mail bol šifrovaný pomocou OpenPGP.
 \nAk si ju chcete prečítať, musíte si nainštalovať a nakonfigurovať kompatibilnú aplikáciu OpenPGP.</string>
@@ -1039,6 +1042,11 @@
     <string name="account_settings_crypto_hide_sign_only_on">Zobrazia sa iba šifrované podpisy</string>
     <string name="account_settings_crypto_hide_sign_only_off">Budú zobrazené všetky podpisy</string>
     <string name="unsigned_text_divider_label">Nepodpísaný text</string>
+    <string name="apg_deprecated_1">APG už nie je udržiavaný!</string>
+    <string name="apg_deprecated_bullet_1">Vývoj sa zastavil začiatkom roku 2014</string>
+    <string name="apg_deprecated_bullet_2">Obsahuje neopravené problémy so zabezpečením</string>
+    <string name="apg_deprecated_ok">Rozumiem!</string>
+    <string name="apg">APG</string>
     <string name="crypto_no_provider_title">Tento e-mail je šifrovaný</string>
     <string name="crypto_no_provider_button">Choď do nastavení</string>
     <string name="xoauth2_error_contacting_auth_server">Pri kontaktovaní autentifikačného servera sa vyskytla chyba</string>
