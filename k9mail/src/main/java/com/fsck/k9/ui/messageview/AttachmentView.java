@@ -20,6 +20,8 @@ import com.fsck.k9.R;
 import com.fsck.k9.helper.SizeFormatter;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 
+import timber.log.Timber;
+
 
 public class AttachmentView extends ConstraintLayout {
     private AttachmentViewInfo attachment;
@@ -117,6 +119,7 @@ public class AttachmentView extends ConstraintLayout {
                 .listener(new RequestListener<Uri, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        Timber.e(e);
                         return false;
                     }
 
