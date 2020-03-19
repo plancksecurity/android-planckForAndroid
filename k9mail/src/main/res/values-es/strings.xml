@@ -855,7 +855,7 @@
     <string name="settings_import_incoming_server">Servidor de entrada (<xliff:g id="hostname">%s</xliff:g>):</string>
     <string name="settings_import_outgoing_server">Servidor de salida (<xliff:g id="hostname">%s</xliff:g>):</string>
     <plurals name="settings_import_setting_passwords">
-        <item quantity="one">Definir password...</item>
+        <item quantity="one">Estableciendo contraseña...</item>
         <item quantity="other">Estableciendo contraseñas…</item>
     </plurals>
     <string name="settings_import_use_incoming_server_password">Usar la contraseña del Servidor de entrada</string>
